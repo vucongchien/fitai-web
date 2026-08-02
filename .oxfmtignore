@@ -1,0 +1,9 @@
+.agents/
+.next/
+.pnpm-store/
+node_modules/
+src/shared/api/gen/
+AGENTS.md
+CLAUDE.md
+docs/NGHIEP_VU_COT_LOI_BABOK.md
+skills-lock.json

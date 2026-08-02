@@ -1,0 +1,9 @@
+version: v2
+inputs:
+  - directory: ../gym-companion/proto
+plugins:
+  - local: protoc-gen-es
+    out: src/shared/api/gen
+    opt:
+      - target=ts
+    include_imports: true

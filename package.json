@@ -1,26 +1,62 @@
 {
-  "name": "forange",
+  "name": "fitai-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "oxlint --nextjs-plugin src tests",
+    "lint:fix": "oxlint --nextjs-plugin --fix src tests",
+    "format": "oxfmt --ignore-path .oxfmtignore .",
+    "format:check": "oxfmt --ignore-path .oxfmtignore --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "proto:gen": "buf generate ../gym-companion/proto --template buf.gen.yaml"
   },
   "dependencies": {
-    "next": "16.2.12",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "@base-ui/react": "1.6.0",
+    "@bufbuild/protobuf": "2.13.0",
+    "@connectrpc/connect": "2.1.2",
+    "@connectrpc/connect-web": "2.1.2",
+    "@hookform/resolvers": "5.5.7",
+    "@opentelemetry/api": "1.9.1",
+    "@opentelemetry/resources": "2.10.0",
+    "@opentelemetry/sdk-node": "0.221.0",
+    "@opentelemetry/sdk-trace-base": "2.10.0",
+    "@opentelemetry/semantic-conventions": "1.43.0",
+    "@tanstack/react-query": "5.101.4",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.28.0",
+    "next": "16.3.0-canary.106",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "7.84.0",
+    "tailwind-merge": "3.6.0",
+    "zod": "4.4.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.12",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+    "@bufbuild/buf": "1.72.0",
+    "@bufbuild/protoc-gen-es": "2.13.0",
+    "@playwright/test": "1.62.1",
+    "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/jest-dom": "7.0.0",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "26.1.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "jsdom": "30.0.1",
+    "oxfmt": "0.61.0",
+    "oxlint": "1.76.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "packageManager": "pnpm@11.9.0"
 }
