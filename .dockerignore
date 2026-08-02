@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+
+# Node
+node_modules
+.pnpm-store
+
+# Next.js build output (sẽ được build bên trong container)
+.next
+
+# Môi trường
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage
+test-results
+playwright-report
+
+# Dev tools / Agent files
+.agents
+.codex
+.impeccable
+skills-lock.json
+.github/skills
+.github/hooks
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
