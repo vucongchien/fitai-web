@@ -1,26 +1,48 @@
-# Mục lục kiểm thử frontend FITAI
+# FITAI frontend test index
 
-## Phạm vi
+## Contents
 
-| Nhóm        | File                                   | Kịch bản chính                                                  |
-| ----------- | -------------------------------------- | --------------------------------------------------------------- |
-| Component   | `dashboard.test.tsx`                   | Render workout contract, CTA, lịch tuần và Empty state          |
-| E2E desktop | `e2e/dashboard.spec.ts`                | Mở dashboard, đi vào chi tiết workout và xác nhận nội dung đích |
-| E2E mobile  | `e2e/dashboard.spec.ts`                | CTA chính và bottom navigation hiển thị ở viewport 390×844      |
-| Domain      | `shared/domain-progress.test.ts`       | Tính tiến độ tuần và xử lý danh sách rỗng                       |
-| Application | `shared/application-dashboard.test.ts` | Query key ổn định và service port độc lập nền tảng              |
-| Validation  | `shared/validation-login.test.ts`      | Input hợp lệ và lỗi validation trước RPC                        |
-| API         | `shared/api-transport.test.ts`         | Base URL và token provider độc lập Next.js/browser              |
+- [Unit coverage](#unit-coverage)
+- [Component coverage](#component-coverage)
+- [End-to-end coverage](#end-to-end-coverage)
+- [Required UI states](#required-ui-states)
+- [Commands](#commands)
 
-## Các trạng thái UI bắt buộc
+## Unit coverage
 
-- Loading: `src/app/loading.tsx` dùng skeleton có `aria-busy`.
-- Error: `src/app/error.tsx` có retry action và thông điệp dễ hiểu.
-- Empty: `DashboardEmptyState` dẫn người dùng tới onboarding.
+| File                             | Scenarios                                                               |
+| -------------------------------- | ----------------------------------------------------------------------- |
+| `unit/onboarding-schema.test.ts` | Valid beginner profile, missing availability, maximum six training days |
+| `unit/allowed-services.test.ts`  | User RPC allowlist, Admin denial, malformed path denial                 |
+| `unit/app-error.test.ts`         | Authentication and service-unavailable error mapping                    |
 
-## Lệnh chạy
+## Component coverage
 
-```bash
-pnpm test
-pnpm test:e2e
+| File                             | Scenarios                                                          |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `component/button.test.tsx`      | Loading state remains accessible and prevents duplicate submission |
+| `component/triple-lane.test.tsx` | Labelled signature has a non-color text alternative                |
+
+## End-to-end coverage
+
+| File                    | Scenarios                                                                          |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `e2e/core-flow.spec.ts` | Login → onboarding, Home → preparation → live workout → summary, mobile navigation |
+
+## Required UI states
+
+- Loading: `src/app/loading.tsx` uses a labelled lane skeleton without full-screen shimmer.
+- Error: `src/app/error.tsx` explains the failed route and exposes an explicit retry action.
+- Empty: feature-level `FeedbackState` explains why content is absent and supplies one next action.
+- Offline: Live Workout keeps the current set visible and disables submission until connectivity returns.
+- Injury: Live Workout stops first, explains the consequence, and requires an explicit safe action.
+
+## Commands
+
+```powershell
+pnpm.cmd typecheck
+pnpm.cmd lint
+pnpm.cmd test
+pnpm.cmd test:e2e
+pnpm.cmd build
 ```
