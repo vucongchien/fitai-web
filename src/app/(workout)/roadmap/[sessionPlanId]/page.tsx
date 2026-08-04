@@ -13,6 +13,7 @@ import { ViewTransition } from "react";
 import { exercises, nextSession } from "@/shared/lib/demo-data";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { buttonVariants } from "@/shared/ui/button";
+import { HeaderActions } from "@/shared/ui/header-actions";
 import { PageTransition } from "@/shared/ui/page-transition";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
@@ -27,12 +28,17 @@ export default async function WorkoutPreparationPage({
 
   return (
     <PageTransition className="workout-prep-page">
-      <header className="workout-prep-header">
-        <Link aria-label="Back to roadmap" href="/roadmap" transitionTypes={["nav-back"]}>
+      <header className="focused-header">
+        <Link
+          aria-label="Back to roadmap"
+          className="focused-header__back"
+          href="/roadmap"
+          transitionTypes={["nav-back"]}
+        >
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>
         <BrandMark />
-        <span>Manual mode</span>
+        <HeaderActions />
       </header>
 
       <main className="workout-prep-main">
@@ -64,7 +70,7 @@ export default async function WorkoutPreparationPage({
         <div className="workout-prep-grid">
           <section className="exercise-list">
             <div className="content-section__header">
-              <h2>Today’s exercises</h2>
+              <h2>Today&rsquo;s exercises</h2>
               <p>{exercises.length} movements</p>
             </div>
             <ol>
@@ -87,7 +93,7 @@ export default async function WorkoutPreparationPage({
               <ShieldCheck aria-hidden="true" size={22} />
               <div>
                 <h2>Ready to train</h2>
-                <p>No active injury constraints affect today’s exercise selection.</p>
+                <p>No active injury constraints affect today&rsquo;s exercise selection.</p>
               </div>
             </section>
             <section className="prep-note">

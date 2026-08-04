@@ -60,7 +60,7 @@ export default function HomePage() {
           <section className="nutrition-line">
             <Salad aria-hidden="true" size={21} />
             <div>
-              <strong>Today’s nutrition</strong>
+              <strong>Today&rsquo;s nutrition</strong>
               <span>1,420 of 2,050 kcal logged</span>
             </div>
           </section>
