@@ -14,6 +14,8 @@
     "plugins": [{ "name": "next" }],
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "strict": true,
     "target": "ES2022"
   },
