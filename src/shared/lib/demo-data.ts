@@ -12,13 +12,75 @@ export type SessionSummary = {
   status: SessionStatus;
 };
 
+export type TodayItemCategory = "meal" | "snack" | "workout";
+
+export type TodayTimelineItem = {
+  id: string;
+  time: string;
+  title: string;
+  subtitle: string;
+  category: TodayItemCategory;
+  status: SessionStatus;
+  href?: string;
+};
+
 export const activeRoadmap = {
   id: "roadmap-august",
   week: 2,
   totalWeeks: 4,
   phase: "Build capacity",
-  progressLabel: "4 of 8 sessions complete",
+  progressLabel: "3 of 5 goals complete today",
 };
+
+export const todayTimelineItems: TodayTimelineItem[] = [
+  {
+    id: "breakfast",
+    time: "07:30",
+    title: "Breakfast",
+    subtitle: "Lean beef pho & Green tea",
+    category: "meal",
+    status: "complete",
+    href: "/nutrition/breakfast",
+  },
+  {
+    id: "snack-morning",
+    time: "10:00",
+    title: "Morning snack",
+    subtitle: "Apple & Almonds",
+    category: "snack",
+    status: "complete",
+    href: "/nutrition/snack-morning",
+  },
+  {
+    id: "lunch",
+    time: "12:30",
+    title: "Lunch",
+    subtitle: "Chicken breast & Vegetable soup",
+    category: "meal",
+    status: "next",
+    href: "/nutrition/lunch",
+  },
+  {
+    id: "upper-workout",
+    time: "17:30",
+    title: "Upper-body workout",
+    subtitle: "42 min · Target RPE 7",
+    category: "workout",
+    status: "planned",
+    href: "/roadmap/upper-control",
+  },
+  {
+    id: "dinner",
+    time: "19:30",
+    title: "Dinner",
+    subtitle: "Salmon soup & Cucumber salad",
+    category: "meal",
+    status: "planned",
+    href: "/nutrition/dinner",
+  },
+];
+
+
 
 export const sessions: SessionSummary[] = [
   {

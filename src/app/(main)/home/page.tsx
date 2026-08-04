@@ -1,25 +1,28 @@
 import { ArrowRight, Dumbbell, Salad, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
-import { NextSessionPanel } from "@/features/roadmap/ui/next-session-panel";
-import { WeekRoute } from "@/features/roadmap/ui/week-route";
-import { activeRoadmap, nextSession, sessions } from "@/shared/lib/demo-data";
+import { CoachNote } from "@/features/home/ui/coach-note";
+import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
+import { TodayHeader } from "@/features/home/ui/today-header";
+import { TodayTimeline } from "@/features/home/ui/today-timeline";
+import { todayTimelineItems } from "@/shared/lib/demo-data";
 import { PageTransition } from "@/shared/ui/page-transition";
 
-export const metadata = { title: "Home" };
+export const metadata = { title: "Home — Today" };
 
 export default function HomePage() {
+  const coachNotice = "Intensity reduced today based on your recovery feedback.";
+
   return (
     <PageTransition className="page home-page">
-      <NextSessionPanel session={nextSession} />
+      <TodayHeader streakDays={4} />
+
+      <CoachNote message={coachNotice} />
 
       <div className="home-grid">
         <section className="content-section home-week">
-          <div className="content-section__header">
-            <h2>This week</h2>
-            <p>{activeRoadmap.progressLabel}</p>
-          </div>
-          <WeekRoute morphNextSession={false} sessions={sessions} />
+          <TodayTimeline items={todayTimelineItems} />
+
           <Link className="text-action" href="/roadmap" transitionTypes={["nav-forward"]}>
             Open the four-week roadmap
             <ArrowRight aria-hidden="true" size={17} />
@@ -47,16 +50,6 @@ export default function HomePage() {
             </div>
           </section>
 
-          <section className="recovery-note">
-            <span aria-hidden="true" className="recovery-note__icon">
-              <ShieldCheck size={21} />
-            </span>
-            <div>
-              <h2>Recovery is on course</h2>
-              <p>No active injury constraints. Friday stays at the planned intensity.</p>
-            </div>
-          </section>
-
           <section className="nutrition-line">
             <Salad aria-hidden="true" size={21} />
             <div>
@@ -66,6 +59,9 @@ export default function HomePage() {
           </section>
         </aside>
       </div>
+
+      {/* Floating Action Button only for Home */}
+      <QuickActionsFab />
     </PageTransition>
   );
 }

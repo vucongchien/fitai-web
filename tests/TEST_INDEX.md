@@ -25,6 +25,8 @@
 | `component/button.test.tsx`       | Loading state remains accessible and prevents duplicate submission                                                                           |
 | `component/triple-lane.test.tsx`  | Labelled signature has a non-color text alternative                                                                                          |
 | `component/login-actions.test.tsx`| Popup opens for Google/Facebook, popup-blocker fallback, OAUTH_COMPLETE navigates to dest, OAUTH_ERROR resets pending, popup closed manually resets, no duplicate clicks |
+| `component/today-timeline.test.tsx`| Render 4 meals + 1 workout, event time format, clean sub-labels without status duplication, accessible item links                           |
+
 
 ## End-to-end coverage
 
