@@ -1,13 +1,13 @@
 "use client";
 
-import { BarChart3, CalendarDays, Home, UserRound } from "lucide-react";
+import { Home, Route, Salad, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const destinations = [
-  { href: "/home", label: "Home", icon: Home },
-  { href: "/roadmap", label: "Roadmap", icon: CalendarDays },
-  { href: "/progress", label: "Progress", icon: BarChart3 },
+  { href: "/home", label: "Today", icon: Home },
+  { href: "/nutrition", label: "Nutrition", icon: Salad },
+  { href: "/roadmap", label: "Roadmap", icon: Route },
   { href: "/profile", label: "Profile", icon: UserRound },
 ] as const;
 

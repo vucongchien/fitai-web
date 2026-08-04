@@ -2,6 +2,6 @@ import type { ReactNode } from "react";
 
 import { AppShell } from "@/shared/ui/app-shell";
 
-export default function ProductLayout({ children }: { children: ReactNode }) {
+export default function MainLayout({ children }: { children: ReactNode }) {
   return <AppShell>{children}</AppShell>;
 }

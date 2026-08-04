@@ -22,11 +22,23 @@ typography:
     fontWeight: 680
     lineHeight: 1.02
     letterSpacing: "-0.035em"
+  headline:
+    fontFamily: "Anybody Variable, Arial Narrow, sans-serif"
+    fontSize: "1.25rem"
+    fontWeight: 650
+    lineHeight: 1.05
+    letterSpacing: "-0.02em"
   body:
     fontFamily: "Atkinson Hyperlegible Next, Arial, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
+  label:
+    fontFamily: "Atkinson Hyperlegible Next, Arial, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 750
+    lineHeight: 1
+    letterSpacing: "0.06em"
   data:
     fontFamily: "Atkinson Hyperlegible Mono, SFMono-Regular, Consolas, monospace"
     fontSize: "1rem"

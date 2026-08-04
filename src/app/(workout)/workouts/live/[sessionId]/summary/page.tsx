@@ -66,7 +66,7 @@ export default async function WorkoutSummaryPage({
           >
             Done
           </Link>
-          <Link className="text-action" href="/progress" transitionTypes={["nav-forward"]}>
+          <Link className="text-action" href="/profile/progress" transitionTypes={["nav-forward"]}>
             <TrendingUp aria-hidden="true" size={18} />
             View progress
             <ArrowRight aria-hidden="true" size={17} />

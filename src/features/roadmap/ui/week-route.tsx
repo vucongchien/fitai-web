@@ -72,7 +72,7 @@ export function WeekRoute({ morphNextSession = true, sessions }: WeekRouteProps)
               <Link
                 aria-label={`View ${session.title}`}
                 className="week-route__row"
-                href={`/workouts/${session.id}`}
+                href={`/roadmap/${session.id}`}
                 transitionTypes={["nav-forward"]}
               >
                 {content}
