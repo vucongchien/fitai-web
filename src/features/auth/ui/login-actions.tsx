@@ -1,61 +1,84 @@
 "use client";
 
-import { useTransition } from "react";
+import { useCallback, useState } from "react";
 
 import { Button } from "@/shared/ui/button";
+import { FacebookMark, GoogleMark } from "./provider-marks";
 
-function GoogleMark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path
-        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.31v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.09Z"
-        fill="#4285F4"
-      />
-      <path
-        d="M12 23c2.97 0 5.46-.98 7.29-2.66l-3.57-2.77c-.98.66-2.24 1.06-3.72 1.06-2.87 0-5.3-1.94-6.17-4.54H2.15v2.84A11 11 0 0 0 12 23Z"
-        fill="#34A853"
-      />
-      <path
-        d="M5.83 14.09A6.6 6.6 0 0 1 5.48 12c0-.73.13-1.43.35-2.09V7.07H2.15A11 11 0 0 0 1 12c0 1.77.42 3.44 1.15 4.93l3.68-2.84Z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M12 5.38c1.62 0 3.06.56 4.2 1.64l3.17-3.17A10.6 10.6 0 0 0 12 1a11 11 0 0 0-9.85 6.07l3.68 2.84C6.7 7.31 9.13 5.38 12 5.38Z"
-        fill="#EA4335"
-      />
-    </svg>
-  );
-}
+export type OAuthProvider = "google" | "facebook";
 
-function FacebookMark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path
-        d="M24 12a12 12 0 1 0-13.88 11.85v-8.47H7.08V12h3.04V9.43c0-3 1.79-4.66 4.53-4.66.9.01 1.8.09 2.69.24v2.95h-1.51c-1.49 0-1.95.92-1.95 1.87V12h3.32l-.53 3.38h-2.79v8.47A12 12 0 0 0 24 12Z"
-        fill="#1877F2"
-      />
-      <path
-        d="m16.67 15.38.53-3.38h-3.32V9.83c0-.95.46-1.87 1.95-1.87h1.51V5.01a20.6 20.6 0 0 0-2.69-.24c-2.74 0-4.53 1.66-4.53 4.66V12H7.08v3.38h3.04v8.47a12.2 12.2 0 0 0 3.76 0v-8.47h2.79Z"
-        fill="white"
-      />
-    </svg>
-  );
+export type OAuthMessage =
+  | { type: "OAUTH_COMPLETE"; dest?: string }
+  | { type: "OAUTH_ERROR"; message?: string };
+
+export function openOAuthPopup(provider: OAuthProvider) {
+  const url = `/api/auth/oauth/${provider}?popup=1`;
+  const popup = window.open(url, "oauth_popup", "popup=yes,width=500,height=650");
+
+  if (!popup) {
+    window.location.assign(url);
+    return null;
+  }
+
+  return popup;
 }
 
 export function LoginActions() {
-  const [pending, startTransition] = useTransition();
+  const [pending, setPending] = useState(false);
+  const isDev = process.env.NODE_ENV === "development";
 
-  function continueWith(provider: "google" | "facebook") {
-    startTransition(() => {
-      window.location.assign(`/auth/start/${provider}`);
-    });
-  }
+  const continueWith = useCallback((provider: OAuthProvider) => {
+    if (pending) return;
+    setPending(true);
+
+    const popup = openOAuthPopup(provider);
+    if (!popup) return;
+
+    let cleanedUp = false;
+
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      window.removeEventListener("message", onMessage);
+      clearInterval(pollClosed);
+      setPending(false);
+    };
+
+    const onMessage = (event: MessageEvent<OAuthMessage>) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.source !== popup) return;
+
+      if (event.data?.type === "OAUTH_COMPLETE") {
+        cleanup();
+        popup.close();
+        const dest =
+          typeof event.data.dest === "string" && event.data.dest.startsWith("/")
+            ? event.data.dest
+            : "/home";
+        window.location.assign(dest);
+        return;
+      }
+
+      if (event.data?.type === "OAUTH_ERROR") {
+        cleanup();
+        popup.close();
+        console.error(`[LoginActions] OAuth error: ${event.data.message ?? "unknown"}`);
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+
+    const pollClosed = window.setInterval(() => {
+      if (popup.closed) cleanup();
+    }, 500);
+  }, [pending]);
 
   return (
     <div className="login-actions">
       <Button
         className="login-provider"
         disabled={pending}
+        id="login-google"
         loading={pending}
         onClick={() => continueWith("google")}
         size="large"
@@ -69,6 +92,7 @@ export function LoginActions() {
       <Button
         className="login-provider"
         disabled={pending}
+        id="login-facebook"
         onClick={() => continueWith("facebook")}
         size="large"
         type="button"
@@ -79,6 +103,30 @@ export function LoginActions() {
         </span>
         Continue with Facebook
       </Button>
+
+      {isDev && (
+        <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px dashed #ccc", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+          <small style={{ color: "#888", fontWeight: 600 }}>🛠️ DEV MODE SHORTCUTS</small>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <Button
+              size="small"
+              type="button"
+              variant="secondary"
+              onClick={() => window.location.assign("/api/auth/dev-login?target=new")}
+            >
+              ⚡ Dev: New User
+            </Button>
+            <Button
+              size="small"
+              type="button"
+              variant="secondary"
+              onClick={() => window.location.assign("/api/auth/dev-login?target=existing")}
+            >
+              ⚡ Dev: Existing User
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

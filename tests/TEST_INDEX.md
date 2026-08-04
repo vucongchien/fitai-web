@@ -10,18 +10,21 @@
 
 ## Unit coverage
 
-| File                             | Scenarios                                                               |
-| -------------------------------- | ----------------------------------------------------------------------- |
-| `unit/onboarding-schema.test.ts` | Valid beginner profile, missing availability, maximum six training days |
-| `unit/allowed-services.test.ts`  | User RPC allowlist, Admin denial, malformed path denial                 |
-| `unit/app-error.test.ts`         | Authentication and service-unavailable error mapping                    |
+| File                              | Scenarios                                                                                                                      |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `unit/onboarding-schema.test.ts`  | Valid beginner profile, missing availability, maximum six training days                                                        |
+| `unit/allowed-services.test.ts`   | User RPC allowlist, Admin denial, malformed path denial                                                                        |
+| `unit/app-error.test.ts`          | Authentication and service-unavailable error mapping                                                                           |
+| `unit/oauth-bff-routes.test.ts`   | BFF entry: invalid provider, missing RPC URL, 307 + state cookie, backend error; Callback: missing code, state mismatch, route resolution (onboarding/planning), auth cookies, Profile API fallback |
+| `unit/dev-login-route.test.ts`    | Dev route: 404 in production, mock auth login for new vs existing user targets in development |
 
 ## Component coverage
 
-| File                             | Scenarios                                                          |
-| -------------------------------- | ------------------------------------------------------------------ |
-| `component/button.test.tsx`      | Loading state remains accessible and prevents duplicate submission |
-| `component/triple-lane.test.tsx` | Labelled signature has a non-color text alternative                |
+| File                              | Scenarios                                                                                                                                    |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `component/button.test.tsx`       | Loading state remains accessible and prevents duplicate submission                                                                           |
+| `component/triple-lane.test.tsx`  | Labelled signature has a non-color text alternative                                                                                          |
+| `component/login-actions.test.tsx`| Popup opens for Google/Facebook, popup-blocker fallback, OAUTH_COMPLETE navigates to dest, OAUTH_ERROR resets pending, popup closed manually resets, no duplicate clicks |
 
 ## End-to-end coverage
 
