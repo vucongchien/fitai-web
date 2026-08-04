@@ -34,7 +34,7 @@ export function NextSessionPanel({ session }: NextSessionPanelProps) {
         <p className="next-session-panel__muscles">{session.muscles.join(" · ")}</p>
         <Link
           className={buttonVariants({ size: "large", variant: "primary" })}
-          href={`/workouts/${session.id}`}
+          href={`/roadmap/${session.id}`}
           transitionTypes={["nav-forward"]}
         >
           Begin session
