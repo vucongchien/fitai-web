@@ -3,8 +3,8 @@
 import { Plus, Search, X } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 
-import { searchExercises } from "@/shared/api/bff/workout/actions";
-import type { ExerciseResult } from "@/shared/api/bff/workout/types";
+import { searchExercises } from "@/features/workout/server/workout-actions";
+import type { ExerciseResult } from "@/features/workout/model/workout.types";
 import { useDebounce } from "@/shared/lib/use-debounce";
 
 type ExerciseSearchSheetProps = {

@@ -1,4 +1,4 @@
-import type { ExerciseResult } from "@/shared/api/bff/workout/types";
+import type { ExerciseResult } from "@/features/workout/model/workout.types";
 
 export type AdhocExercise = {
   id: string;

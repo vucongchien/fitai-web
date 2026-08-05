@@ -1,4 +1,4 @@
-import type { SessionStatus } from "@/shared/api/bff/roadmap/types";
+import type { SessionStatus } from "@/features/roadmap/model/roadmap-page.types";
 import { SessionPlanStatus } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 
 export function mapSessionPlanStatus(

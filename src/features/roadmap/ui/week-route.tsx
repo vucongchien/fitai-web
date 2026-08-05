@@ -2,7 +2,7 @@ import { Check, ChevronRight, Moon, Play, SkipForward } from "lucide-react";
 import Link from "next/link";
 import { ViewTransition } from "react";
 
-import type { SessionSummary } from "@/shared/api/bff/roadmap/types";
+import type { SessionSummary } from "@/features/roadmap/model/roadmap-page.types";
 import { cn } from "@/shared/lib/cn";
 
 type WeekRouteProps = {

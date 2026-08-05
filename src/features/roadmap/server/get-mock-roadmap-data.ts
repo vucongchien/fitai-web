@@ -1,12 +1,8 @@
-import "server-only";
 import { CalendarRange, Gauge, Sparkles } from "lucide-react";
-import type { RoadmapPageData, SessionPlanPageData } from "./types";
 
-// ---------------------------------------------------------------------------
-// Mock data
-// ---------------------------------------------------------------------------
+import type { RoadmapPageData, SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
 
-function getMockRoadmapPageData(): RoadmapPageData {
+export function getMockRoadmapPageData(): RoadmapPageData {
   return {
     activeWeek: 2,
 
@@ -101,47 +97,16 @@ function getMockRoadmapPageData(): RoadmapPageData {
   };
 }
 
-function getMockSessionPlanData(sessionPlanId: string): SessionPlanPageData {
-  // Tìm session từ mock list, fallback về "upper-control"
+export function getMockSessionPlanData(sessionPlanId: string): SessionPlanPageData {
   const sessionMap: Record<
     string,
     Pick<SessionPlanPageData, "title" | "day" | "date" | "duration" | "targetRpe">
   > = {
-    "lower-foundation": {
-      title: "Lower-body foundation",
-      day: "Mon",
-      date: "Aug 3",
-      duration: 38,
-      targetRpe: 6,
-    },
-    "recovery-walk": {
-      title: "Recovery day",
-      day: "Tue",
-      date: "Aug 4",
-      duration: 20,
-      targetRpe: 3,
-    },
-    "upper-control": {
-      title: "Upper-body control",
-      day: "Wed",
-      date: "Aug 5",
-      duration: 42,
-      targetRpe: 7,
-    },
-    "posterior-chain": {
-      title: "Posterior-chain strength",
-      day: "Fri",
-      date: "Aug 7",
-      duration: 45,
-      targetRpe: 7,
-    },
-    "full-body-rhythm": {
-      title: "Full-body rhythm",
-      day: "Sun",
-      date: "Aug 9",
-      duration: 40,
-      targetRpe: 6,
-    },
+    "lower-foundation": { title: "Lower-body foundation", day: "Mon", date: "Aug 3", duration: 38, targetRpe: 6 },
+    "recovery-walk":    { title: "Recovery day",          day: "Tue", date: "Aug 4", duration: 20, targetRpe: 3 },
+    "upper-control":    { title: "Upper-body control",    day: "Wed", date: "Aug 5", duration: 42, targetRpe: 7 },
+    "posterior-chain":  { title: "Posterior-chain strength", day: "Fri", date: "Aug 7", duration: 45, targetRpe: 7 },
+    "full-body-rhythm": { title: "Full-body rhythm",      day: "Sun", date: "Aug 9", duration: 40, targetRpe: 6 },
   };
 
   const session = sessionMap[sessionPlanId] ?? sessionMap["upper-control"]!;
@@ -184,14 +149,12 @@ function getMockSessionPlanData(sessionPlanId: string): SessionPlanPageData {
       },
     ],
 
-    // ProfileService.getInjuryHistory → không có injury active → "safe"
     readinessNote: {
       variant: "safe",
       title: "Ready to train",
-      description: "No active injury constraints affect today\u2019s exercise selection.",
+      description: "No active injury constraints affect today’s exercise selection.",
     },
 
-    // Feature flags — BFF quyết định (không từ gRPC)
     featureNotes: [
       {
         id: "camera-coaching",
@@ -201,7 +164,6 @@ function getMockSessionPlanData(sessionPlanId: string): SessionPlanPageData {
       },
     ],
 
-    // Static content — BFF quyết định
     preSessionChecks: [
       "Clear enough space to move.",
       "Keep water within reach.",
@@ -210,58 +172,4 @@ function getMockSessionPlanData(sessionPlanId: string): SessionPlanPageData {
 
     startWorkoutHref: `/workouts/live/${sessionPlanId}`,
   };
-}
-
-// ---------------------------------------------------------------------------
-// Real gRPC adapters (uncomment khi backend sẵn sàng)
-// ---------------------------------------------------------------------------
-
-// async function getRealRoadmapPageData(): Promise<RoadmapPageData> {
-//   const cookieStore = await cookies();
-//   const token = cookieStore.get("fitai_access_token")?.value;
-//   const client = createClient(CoachingService, createServerTransport(token));
-//   const res = await client.getActiveRoadmap({ userId: "TODO: from session" });
-//   return adaptRoadmapPageData(res);
-// }
-
-// async function getRealSessionPlanData(sessionPlanId: string): Promise<SessionPlanPageData> {
-//   const cookieStore = await cookies();
-//   const token = cookieStore.get("fitai_access_token")?.value;
-//   const transport = createServerTransport(token);
-//   const [sessionRes, injuryRes] = await Promise.all([
-//     createClient(CoachingService, transport).getSessionPlan({ userId: "TODO", sessionPlanId }),
-//     createClient(ProfileService, transport).getInjuryHistory({ userId: "TODO" }),
-//   ]);
-//   return adaptSessionPlanData(sessionRes, injuryRes);
-// }
-
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-/**
- * BFF query cho Roadmap page.
- *
- * Gọi: CoachingService.getActiveRoadmap({ userId })
- * Trả: RoadmapPageData (weeks, sessions, context)
- */
-export async function getRoadmapPageData(): Promise<RoadmapPageData> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) return getMockRoadmapPageData();
-  // TODO: return getRealRoadmapPageData();
-  return getMockRoadmapPageData();
-}
-
-/**
- * BFF query cho Session Prep page.
- *
- * Gọi:
- *   - CoachingService.getSessionPlan({ userId, sessionPlanId }) → exercises, reasoning
- *   - ProfileService.getInjuryHistory({ userId }) → readinessNote
- */
-export async function getSessionPlanPageData(sessionPlanId: string): Promise<SessionPlanPageData> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) return getMockSessionPlanData(sessionPlanId);
-  // TODO: return getRealSessionPlanData(sessionPlanId);
-  return getMockSessionPlanData(sessionPlanId);
 }

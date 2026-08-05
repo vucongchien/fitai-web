@@ -17,8 +17,8 @@ import {
   beginWorkoutSession,
   getAdhocConfig,
   getAiRecommendation,
-} from "@/shared/api/bff/workout/actions";
-import type { ExerciseResult } from "@/shared/api/bff/workout/types";
+} from "@/features/workout/server/workout-actions";
+import type { ExerciseResult } from "@/features/workout/model/workout.types";
 import { useToast } from "@/shared/ui/toast/toast-context";
 
 export function useAdhocWorkout() {
