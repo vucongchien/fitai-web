@@ -26,6 +26,8 @@
 | `component/triple-lane.test.tsx`  | Labelled signature has a non-color text alternative                                                                                          |
 | `component/login-actions.test.tsx`| Popup opens for Google/Facebook, popup-blocker fallback, OAUTH_COMPLETE navigates to dest, OAUTH_ERROR resets pending, popup closed manually resets, no duplicate clicks |
 | `component/today-timeline.test.tsx`| Render 4 meals + 1 workout, event time format, clean sub-labels without status duplication, accessible item links                           |
+| `component/quick-actions-fab.test.tsx`| Renders closed by default, opens menu on click, toggles aria-expanded, renders correct number of items from BFF props                  |
+
 
 
 ## End-to-end coverage

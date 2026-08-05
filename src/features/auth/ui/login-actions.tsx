@@ -109,7 +109,7 @@ export function LoginActions() {
           <small style={{ color: "#888", fontWeight: 600 }}>🛠️ DEV MODE SHORTCUTS</small>
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <Button
-              size="small"
+              size="medium"
               type="button"
               variant="secondary"
               onClick={() => window.location.assign("/api/auth/dev-login?target=new")}
@@ -117,7 +117,7 @@ export function LoginActions() {
               ⚡ Dev: New User
             </Button>
             <Button
-              size="small"
+              size="medium"
               type="button"
               variant="secondary"
               onClick={() => window.location.assign("/api/auth/dev-login?target=existing")}

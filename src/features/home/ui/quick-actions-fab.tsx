@@ -4,7 +4,20 @@ import { Dumbbell, Plus, Scale, Utensils, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-export function QuickActionsFab() {
+import type { QuickAction } from "@/shared/api/bff/home/types";
+
+type QuickActionsFabProps = {
+  actions: QuickAction[];
+};
+
+const iconMap = {
+  dumbbell: Dumbbell,
+  scale: Scale,
+  utensils: Utensils,
+  plus: Plus,
+} as const;
+
+export function QuickActionsFab({ actions }: QuickActionsFabProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
@@ -27,41 +40,23 @@ export function QuickActionsFab() {
         className={`home-fab-menu ${isOpen ? "home-fab-menu--open" : ""}`}
         role="menu"
       >
-        <Link
-          className="home-fab-option"
-          href="/workout/adhoc"
-          onClick={closeMenu}
-          role="menuitem"
-        >
-          <span className="home-fab-option__label">Extra workout</span>
-          <span className="home-fab-option__icon home-fab-option__icon--blue">
-            <Dumbbell size={18} />
-          </span>
-        </Link>
-
-        <Link
-          className="home-fab-option"
-          href="/progress/weight"
-          onClick={closeMenu}
-          role="menuitem"
-        >
-          <span className="home-fab-option__label">Log weight</span>
-          <span className="home-fab-option__icon home-fab-option__icon--green">
-            <Scale size={18} />
-          </span>
-        </Link>
-
-        <Link
-          className="home-fab-option"
-          href="/nutrition/log"
-          onClick={closeMenu}
-          role="menuitem"
-        >
-          <span className="home-fab-option__label">Log meal</span>
-          <span className="home-fab-option__icon home-fab-option__icon--coral">
-            <Utensils size={18} />
-          </span>
-        </Link>
+        {actions.map((action) => {
+          const Icon = iconMap[action.icon] ?? Dumbbell;
+          return (
+            <Link
+              className="home-fab-option"
+              href={action.href}
+              key={action.id}
+              onClick={closeMenu}
+              role="menuitem"
+            >
+              <span className="home-fab-option__label">{action.label}</span>
+              <span className={`home-fab-option__icon home-fab-option__icon--${action.colorVariant}`}>
+                <Icon size={18} />
+              </span>
+            </Link>
+          );
+        })}
       </div>
 
       {/* Main Sticky Circular Action Button */}

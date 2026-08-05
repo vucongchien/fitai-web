@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ViewTransition } from "react";
 
 import { cn } from "@/shared/lib/cn";
-import type { SessionSummary } from "@/shared/lib/demo-data";
+import type { SessionSummary } from "@/shared/api/bff/roadmap/types";
 
 type WeekRouteProps = {
   morphNextSession?: boolean;

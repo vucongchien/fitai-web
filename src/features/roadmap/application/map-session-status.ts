@@ -1,5 +1,5 @@
 import { SessionPlanStatus } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
-import type { SessionStatus } from "@/shared/lib/demo-data";
+import type { SessionStatus } from "@/shared/api/bff/roadmap/types";
 
 export function mapSessionPlanStatus(
   status: SessionPlanStatus,

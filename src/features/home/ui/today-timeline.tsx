@@ -2,7 +2,7 @@ import { Apple, ChevronRight, Dumbbell, Soup } from "lucide-react";
 import Link from "next/link";
 
 import { cn } from "@/shared/lib/cn";
-import type { TodayItemCategory, TodayTimelineItem } from "@/shared/lib/demo-data";
+import type { TodayItemCategory, TodayTimelineItem } from "@/shared/api/bff/home/types";
 
 type TodayTimelineProps = {
   items: TodayTimelineItem[];
