@@ -25,3 +25,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Viết unit test cho các chức năng cụ thể.
 - Tạo file `.md` trong thư mục test chứa mục lục và mô tả chi tiết kịch bản test.
+
+## 4. Code Cleanup & Dead Code Removal
+
+- **Quy tắc Xóa Code Thừa Kiên Quyết**: Khi refactor hoặc review code, nếu phát hiện file, route, component hoặc logic dư thừa/trùng lặp (dead code), **luôn ưu tiên xóa tận gốc (hard delete)** thay vì giữ lại các giải pháp tạm thời như `redirect`, shim, hay comment ẩn.
+- **Quy trình Xóa**:
+  1. Dùng `grep` kiểm tra toàn bộ codebase để xác nhận không còn nơi nào import/gọi tới code thừa đó.
+  2. Xóa hẳn file/thư mục.
+  3. Xóa cache (ví dụ `.next`) và chạy `pnpm typecheck` + `pnpm test` + `pnpm build` để xác nhận hệ thống hoạt động sạch sẽ 100%.
+
