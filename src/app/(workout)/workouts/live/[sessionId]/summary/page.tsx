@@ -1,5 +1,6 @@
 import { ArrowRight, Check, Gauge, Medal, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { ViewTransition } from "react";
 
 import { buttonVariants } from "@/shared/ui/button";
@@ -8,22 +9,34 @@ import { TripleLane } from "@/shared/ui/triple-lane";
 
 export const metadata = { title: "Workout complete" };
 
-export default async function WorkoutSummaryPage({
+async function SessionTransition({ params }: { params: Promise<{ sessionId: string }> }) {
+  const { sessionId } = await params;
+  return (
+    <ViewTransition default="none" name={`workout-session-${sessionId}`} share="session-morph">
+      <div className="completion-mark">
+        <Check aria-hidden="true" size={30} />
+      </div>
+    </ViewTransition>
+  );
+}
+
+function SessionTransitionSkeleton() {
+  return <div className="completion-mark bg-gray-300 rounded animate-pulse" />;
+}
+
+export default function WorkoutSummaryPage({
   params,
 }: {
   params: Promise<{ sessionId: string }>;
 }) {
-  const { sessionId } = await params;
 
   return (
     <PageTransition className="summary-page">
       <main className="summary-main">
         <TripleLane active="recover" compact morph />
-        <ViewTransition default="none" name={`workout-session-${sessionId}`} share="session-morph">
-          <div className="completion-mark">
-            <Check aria-hidden="true" size={30} />
-          </div>
-        </ViewTransition>
+        <Suspense fallback={<SessionTransitionSkeleton />}>
+          <SessionTransition params={params} />
+        </Suspense>
         <h1>Session complete.</h1>
         <p>You kept the work controlled. This result is ready for the next plan review.</p>
 

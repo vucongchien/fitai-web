@@ -78,7 +78,7 @@ export function getMockHomePageData(): HomePageData {
       {
         id: "extra-workout",
         label: "Extra workout",
-        href: "/workout/adhoc",
+        href: "/workouts/adhoc",
         icon: "dumbbell",
         colorVariant: "blue",
       },
