@@ -12,12 +12,13 @@ import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 
+import { AdhocExercise, toAdhocExercise } from "@/features/workout/model/adhoc-types";
 import {
-  AdhocExercise,
-  isWeightedExercise,
-  toAdhocExercise,
-} from "@/features/workout/model/adhoc-types";
-import { getAdhocConfig, getAiRecommendation } from "@/shared/api/bff/workout/actions";
+  beginWorkoutSession,
+  getAdhocConfig,
+  getAiRecommendation,
+} from "@/shared/api/bff/workout/actions";
+import type { ExerciseResult } from "@/shared/api/bff/workout/types";
 import { useToast } from "@/shared/ui/toast/toast-context";
 
 export function useAdhocWorkout() {
@@ -30,9 +31,9 @@ export function useAdhocWorkout() {
   const [editingExercise, setEditingExercise] = useState<AdhocExercise | null>(null);
   const [targetRpe, setTargetRpe] = useState(6.5);
 
-  // AI Loading state dùng useTransition để không block UI
   const [aiPending, startAiTransition] = useTransition();
   const [configPending, startConfigTransition] = useTransition();
+  const [sessionPending, startSessionTransition] = useTransition();
 
   // Mount + load initial config từ BFF (Server Action)
   useEffect(() => {
@@ -98,19 +99,9 @@ export function useAdhocWorkout() {
     [showToast],
   );
 
-  const handleAddExercise = useCallback(
-    (rawItem: { id: string; name: string; prescription: string; rest: string; note: string }) => {
-      const newExercise: AdhocExercise = {
-        ...rawItem,
-        id: `${rawItem.id}-${Date.now()}`,
-        sets: 3,
-        reps: 10,
-        weightKg: isWeightedExercise(rawItem.name) ? 12 : undefined,
-      };
-      setExerciseList((prev) => [...prev, newExercise]);
-    },
-    [],
-  );
+  const handleAddExercise = useCallback((exercise: ExerciseResult) => {
+    setExerciseList((prev) => [...prev, toAdhocExercise(exercise, String(Date.now()))]);
+  }, []);
 
   const handleAiRecommend = useCallback(() => {
     startAiTransition(async () => {
@@ -144,9 +135,16 @@ export function useAdhocWorkout() {
   );
 
   const handleBeginSession = useCallback(() => {
-    const adhocPlanId = `plan_adhoc_${Date.now()}`;
-    router.push(`/workouts/live/adhoc?planId=${adhocPlanId}`);
-  }, [router]);
+    const exerciseIds = exerciseList.map((ex) => ex.id.split("-")[0]!);
+    startSessionTransition(async () => {
+      try {
+        const { sessionId } = await beginWorkoutSession(exerciseIds);
+        router.push(`/workouts/live/${sessionId}`);
+      } catch {
+        showToast({ message: "Failed to start session. Please try again.", type: "error" });
+      }
+    });
+  }, [exerciseList, router, showToast]);
 
   return {
     mounted,
@@ -157,6 +155,7 @@ export function useAdhocWorkout() {
     setEditingExercise,
     aiLoading: aiPending,
     configLoading: configPending,
+    sessionLoading: sessionPending,
     sensors,
     estimatedDuration,
     targetRpe,

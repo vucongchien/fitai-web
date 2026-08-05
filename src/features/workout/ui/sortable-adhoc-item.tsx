@@ -5,7 +5,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
 import React from "react";
 
-import { AdhocExercise, isWeightedExercise } from "@/features/workout/model/adhoc-types";
+import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
 
 interface SortableAdhocItemProps {
   exercise: AdhocExercise;
@@ -24,7 +24,7 @@ export function SortableAdhocItem({ exercise, index, onEdit, onDelete }: Sortabl
     transition,
   };
 
-  const hasWeight = isWeightedExercise(exercise.name) && exercise.weightKg;
+  const hasWeight = exercise.weightKg !== undefined && exercise.weightKg > 0;
 
   return (
     <li

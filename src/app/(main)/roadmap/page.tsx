@@ -1,4 +1,3 @@
-import { CalendarRange, Gauge, Sparkles } from "lucide-react";
 import { Suspense } from "react";
 
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
@@ -7,12 +6,6 @@ import { PageTransition } from "@/shared/ui/page-transition";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
 export const metadata = { title: "Roadmap" };
-
-const iconMap = {
-  "calendar-range": CalendarRange,
-  gauge: Gauge,
-  sparkles: Sparkles,
-} as const;
 
 async function RoadmapContent() {
   const data = await getRoadmapPageData();
@@ -49,7 +42,7 @@ async function RoadmapContent() {
 
         <aside className="roadmap-context">
           {data.contextItems.map((item) => {
-            const Icon = iconMap[item.icon] ?? Sparkles;
+            const { Icon } = item;
             return (
               <div className="roadmap-context__item" key={item.id}>
                 <Icon aria-hidden="true" size={20} />
@@ -68,26 +61,9 @@ async function RoadmapContent() {
 
 function RoadmapSkeleton() {
   return (
-    <div className="roadmap-skeleton" style={{ marginTop: "1rem" }}>
-      <div
-        className="skeleton-box"
-        style={{
-          height: "48px",
-          width: "100%",
-          marginBottom: "16px",
-          borderRadius: "8px",
-          background: "var(--color-surface-hover, #eee)",
-        }}
-      />
-      <div
-        className="skeleton-box"
-        style={{
-          height: "300px",
-          width: "100%",
-          borderRadius: "12px",
-          background: "var(--color-surface-hover, #eee)",
-        }}
-      />
+    <div className="roadmap-skeleton mt-4">
+      <div className="skeleton-box h-12 w-full mb-4 rounded-[10px] bg-[var(--color-surface-hover,#eee)]" />
+      <div className="skeleton-box h-[300px] w-full rounded-[14px] bg-[var(--color-surface-hover,#eee)]" />
     </div>
   );
 }

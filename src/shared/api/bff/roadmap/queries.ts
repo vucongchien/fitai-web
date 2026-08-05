@@ -1,4 +1,5 @@
 import "server-only";
+import { CalendarRange, Gauge, Sparkles } from "lucide-react";
 import type { RoadmapPageData, SessionPlanPageData } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -80,19 +81,19 @@ function getMockRoadmapPageData(): RoadmapPageData {
     contextItems: [
       {
         id: "sessions-count",
-        icon: "calendar-range",
+        Icon: CalendarRange,
         title: "3 strength sessions",
         description: "Plus one guided recovery day",
       },
       {
         id: "effort-target",
-        icon: "gauge",
+        Icon: Gauge,
         title: "Target effort 6–7",
         description: "Enough challenge to progress with control",
       },
       {
         id: "why-changed",
-        icon: "sparkles",
+        Icon: Sparkles,
         title: "Why this changed",
         description: "Wednesday moved later to match your updated availability.",
       },

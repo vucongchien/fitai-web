@@ -22,6 +22,7 @@ export function AdhocWorkoutBuilder() {
     editingExercise,
     setEditingExercise,
     aiLoading,
+    sessionLoading,
     sensors,
     estimatedDuration,
     targetRpe,
@@ -124,10 +125,11 @@ export function AdhocWorkoutBuilder() {
       <footer className="workout-prep-action">
         <button
           className={buttonVariants({ size: "large", variant: "primary" })}
+          disabled={sessionLoading}
           onClick={handleBeginSession}
           type="button"
         >
-          Begin session
+          {sessionLoading ? "Starting…" : "Begin session"}
           <ArrowRight aria-hidden="true" size={18} />
         </button>
       </footer>

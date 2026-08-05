@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { AdhocExercise, isWeightedExercise } from "@/features/workout/model/adhoc-types";
+import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
 
 interface ExerciseEditModalProps {
   exercise: AdhocExercise;
@@ -12,7 +12,7 @@ interface ExerciseEditModalProps {
 }
 
 export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditModalProps) {
-  const isWeighted = isWeightedExercise(exercise.name);
+  const isWeighted = exercise.weightKg !== undefined;
 
   const [sets, setSets] = useState(exercise.sets || 3);
   const [reps, setReps] = useState(exercise.reps || 10);

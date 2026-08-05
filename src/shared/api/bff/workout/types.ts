@@ -14,6 +14,12 @@
 export type ExerciseResult = {
   id: string;
   name: string;
+  /** Từ ExerciseInfo.equipment_id */
+  equipmentId: string;
+  /** BFF resolves: equipment.name !== "bodyweight" */
+  isWeighted: boolean;
+  /** BFF-provided default weight based on equipment type */
+  defaultWeightKg?: number;
   /** Hiển thị prescription mặc định, vd: "3 × 10" */
   prescription: string;
   /** Hiển thị rest time, vd: "60 sec" */

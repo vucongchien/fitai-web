@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react";
+
 /**
  * BFF Roadmap layer types.
  *
@@ -30,8 +32,7 @@ export type SessionSummary = {
 
 export type ContextItem = {
   id: string;
-  /** lucide icon name */
-  icon: "calendar-range" | "gauge" | "sparkles";
+  Icon: LucideIcon;
   title: string;
   description: string;
 };

@@ -10,6 +10,8 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {
     id: "incline-push-up",
     name: "Incline push-up",
+    equipmentId: "bodyweight",
+    isWeighted: false,
     prescription: "3 × 10",
     rest: "60 sec",
     note: "Keep ribs stacked and move as one unit.",
@@ -17,6 +19,9 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {
     id: "supported-row",
     name: "Supported dumbbell row",
+    equipmentId: "dumbbell",
+    isWeighted: true,
+    defaultWeightKg: 14,
     prescription: "3 × 10 / side",
     rest: "75 sec",
     note: "Pause briefly when the elbow reaches your side.",
@@ -24,6 +29,9 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {
     id: "half-kneeling-press",
     name: "Half-kneeling press",
+    equipmentId: "dumbbell",
+    isWeighted: true,
+    defaultWeightKg: 12,
     prescription: "3 × 8 / side",
     rest: "75 sec",
     note: "Use a weight that keeps the last two reps controlled.",
@@ -31,6 +39,8 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {
     id: "dead-bug",
     name: "Dead bug",
+    equipmentId: "bodyweight",
+    isWeighted: false,
     prescription: "3 × 6 / side",
     rest: "45 sec",
     note: "Stop the range before your lower back lifts.",
@@ -38,6 +48,9 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {
     id: "goblet-squat",
     name: "Goblet squat",
+    equipmentId: "dumbbell",
+    isWeighted: true,
+    defaultWeightKg: 16,
     prescription: "3 × 12",
     rest: "60 sec",
     note: "Chest tall, drive knees out.",
@@ -45,6 +58,9 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {
     id: "hip-hinge",
     name: "Romanian deadlift",
+    equipmentId: "barbell",
+    isWeighted: true,
+    defaultWeightKg: 40,
     prescription: "3 × 10",
     rest: "90 sec",
     note: "Feel hamstring tension before reversing.",
@@ -52,6 +68,8 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {
     id: "plank",
     name: "Plank hold",
+    equipmentId: "bodyweight",
+    isWeighted: false,
     prescription: "3 × 30 sec",
     rest: "45 sec",
     note: "Neutral spine, breathe through the hold.",
@@ -59,6 +77,8 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {
     id: "glute-bridge",
     name: "Glute bridge",
+    equipmentId: "bodyweight",
+    isWeighted: false,
     prescription: "3 × 15",
     rest: "45 sec",
     note: "Drive hips high, squeeze at the top.",
@@ -130,15 +150,25 @@ function getMockAiRecommendation(): AiRecommendResult {
 // ---------------------------------------------------------------------------
 
 // async function realSearchExercises(query: string): Promise<ExerciseResult[]> {
-//   const client = createClient(ExerciseService, createServerTransport());
-//   const res = await client.searchExercises({ keyword: query, limit: 20 });
-//   return res.exercises.map((ex) => ({
-//     id: ex.id,
-//     name: ex.name,
-//     prescription: "3 × 10",                          // BFF quyết định default
-//     rest: `${ex.defaultRestSeconds} sec`,
-//     note: ex.instructions,
-//   }));
+//   const [searchRes, metaRes] = await Promise.all([
+//     createClient(ExerciseService, createServerTransport()).searchExercises({ keyword: query, limit: 20 }),
+//     createClient(ExerciseService, createServerTransport()).getCatalogMetadata({}),
+//   ]);
+//   const equipmentMap = new Map(metaRes.equipments.map((e) => [e.id, e]));
+//   return searchRes.exercises.map((ex) => {
+//     const equipment = equipmentMap.get(ex.equipmentId);
+//     const isWeighted = equipment ? equipment.name.toLowerCase() !== "bodyweight" : false;
+//     return {
+//       id: ex.id,
+//       name: ex.name,
+//       equipmentId: ex.equipmentId,
+//       isWeighted,
+//       defaultWeightKg: isWeighted ? 10 : undefined,
+//       prescription: "3 × 10",
+//       rest: `${ex.defaultRestSeconds} sec`,
+//       note: ex.instructions,
+//     };
+//   });
 // }
 
 // async function realGetAdhocConfig(): Promise<AdhocConfig> {
@@ -193,4 +223,28 @@ export async function getAdhocConfig(): Promise<AdhocConfig> {
 export async function getAiRecommendation(): Promise<AiRecommendResult> {
   // TODO: gọi AI/coaching service khi có
   return getMockAiRecommendation();
+}
+
+/**
+ * Tạo adhoc session plan rồi start ngay, trả về sessionId để navigate.
+ *
+ * Real flow:
+ *   1. CoachingService.createAdhocSessionPlan({ exercise_ids }) → session_plan_id
+ *   2. WorkoutExecutionService.startWorkoutSession({ session_plan_id }) → session_id
+ */
+export async function beginWorkoutSession(_exerciseIds: string[]): Promise<{ sessionId: string }> {
+  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
+  if (!hasBackend) {
+    return { sessionId: `adhoc_${Date.now()}` };
+  }
+  // TODO: implement real flow
+  // const cookieStore = await cookies();
+  // const token = cookieStore.get("fitai_access_token")?.value;
+  // const transport = createServerTransport(token);
+  // const { sessionPlanId } = await createClient(CoachingService, transport)
+  //   .createAdhocSessionPlan({ exerciseIds });
+  // const { sessionId } = await createClient(WorkoutExecutionService, transport)
+  //   .startWorkoutSession({ sessionPlanId });
+  // return { sessionId };
+  return { sessionId: `adhoc_${Date.now()}` };
 }
