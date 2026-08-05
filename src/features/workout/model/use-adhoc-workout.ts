@@ -10,7 +10,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
 import {
   AdhocExercise,
@@ -49,6 +49,15 @@ export function useAdhocWorkout() {
     });
   }, []);
 
+  // Cleanup undo timeout khi unmount chống memory leak
+  useEffect(() => {
+    return () => {
+      if (undoTimeoutId) {
+        clearTimeout(undoTimeoutId);
+      }
+    };
+  }, [undoTimeoutId]);
+
   // DND-Kit Sensors
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -60,8 +69,8 @@ export function useAdhocWorkout() {
   const totalSets = exerciseList.reduce((acc, item) => acc + (item.sets || 3), 0);
   const estimatedDuration = Math.max(15, Math.round(totalSets * 2.5));
 
-  // Handlers
-  const handleDragEnd = (event: DragEndEvent) => {
+  // Handlers với useCallback để tránh re-render child components thừa
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       setExerciseList((items) => {
@@ -70,49 +79,60 @@ export function useAdhocWorkout() {
         return arrayMove(items, oldIndex, newIndex);
       });
     }
-  };
+  }, []);
 
-  const handleDeleteExercise = (id: string) => {
-    const index = exerciseList.findIndex((item) => item.id === id);
-    if (index === -1) return;
+  const handleDeleteExercise = useCallback(
+    (id: string) => {
+      setExerciseList((prev) => {
+        const index = prev.findIndex((item) => item.id === id);
+        if (index === -1) return prev;
 
-    const itemToDelete = exerciseList[index]!;
-    setExerciseList((prev) => prev.filter((item) => item.id !== id));
-    setDeletedDraft({ item: itemToDelete, index });
+        const itemToDelete = prev[index]!;
+        setDeletedDraft({ item: itemToDelete, index });
 
-    if (undoTimeoutId) clearTimeout(undoTimeoutId);
-    const tid = setTimeout(() => setDeletedDraft(null), 5000);
-    setUndoTimeoutId(tid);
-  };
+        if (undoTimeoutId) clearTimeout(undoTimeoutId);
+        const tid = setTimeout(() => setDeletedDraft(null), 5000);
+        setUndoTimeoutId(tid);
 
-  const handleUndo = () => {
+        return prev.filter((item) => item.id !== id);
+      });
+    },
+    [undoTimeoutId],
+  );
+
+  const handleUndo = useCallback(() => {
     if (!deletedDraft) return;
     const { item, index } = deletedDraft;
-    const restored = [...exerciseList];
-    restored.splice(index, 0, item);
-    setExerciseList(restored);
+    setExerciseList((prev) => {
+      const restored = [...prev];
+      restored.splice(index, 0, item);
+      return restored;
+    });
     setDeletedDraft(null);
     if (undoTimeoutId) clearTimeout(undoTimeoutId);
-  };
+  }, [deletedDraft, undoTimeoutId]);
 
-  const handleAddExercise = (rawItem: {
-    id: string;
-    name: string;
-    prescription: string;
-    rest: string;
-    note: string;
-  }) => {
-    const newExercise: AdhocExercise = {
-      ...rawItem,
-      id: `${rawItem.id}-${Date.now()}`,
-      sets: 3,
-      reps: 10,
-      weightKg: isWeightedExercise(rawItem.name) ? 12 : undefined,
-    };
-    setExerciseList((prev) => [...prev, newExercise]);
-  };
+  const handleAddExercise = useCallback(
+    (rawItem: {
+      id: string;
+      name: string;
+      prescription: string;
+      rest: string;
+      note: string;
+    }) => {
+      const newExercise: AdhocExercise = {
+        ...rawItem,
+        id: `${rawItem.id}-${Date.now()}`,
+        sets: 3,
+        reps: 10,
+        weightKg: isWeightedExercise(rawItem.name) ? 12 : undefined,
+      };
+      setExerciseList((prev) => [...prev, newExercise]);
+    },
+    [],
+  );
 
-  const handleAiRecommend = () => {
+  const handleAiRecommend = useCallback(() => {
     startAiTransition(async () => {
       const result = await getAiRecommendation();
       setExerciseList(
@@ -122,33 +142,31 @@ export function useAdhocWorkout() {
         })),
       );
     });
-  };
+  }, []);
 
-  const handleSaveEdit = (updated: {
-    sets: number;
-    reps: number;
-    rest: string;
-    weightKg?: number;
-  }) => {
-    if (!editingExercise) return;
-    setExerciseList((prev) =>
-      prev.map((item) =>
-        item.id === editingExercise.id
-          ? {
-              ...item,
-              ...updated,
-              prescription: `${updated.sets} × ${updated.reps}`,
-            }
-          : item,
-      ),
-    );
-    setEditingExercise(null);
-  };
+  const handleSaveEdit = useCallback(
+    (updated: { sets: number; reps: number; rest: string; weightKg?: number }) => {
+      if (!editingExercise) return;
+      setExerciseList((prev) =>
+        prev.map((item) =>
+          item.id === editingExercise.id
+            ? {
+                ...item,
+                ...updated,
+                prescription: `${updated.sets} × ${updated.reps}`,
+              }
+            : item,
+        ),
+      );
+      setEditingExercise(null);
+    },
+    [editingExercise],
+  );
 
-  const handleBeginSession = () => {
+  const handleBeginSession = useCallback(() => {
     const adhocPlanId = `plan_adhoc_${Date.now()}`;
     router.push(`/workouts/live/adhoc?planId=${adhocPlanId}`);
-  };
+  }, [router]);
 
   return {
     mounted,

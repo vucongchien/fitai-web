@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { AdhocExercise, isWeightedExercise } from "@/features/workout/model/adhoc-types";
 
@@ -19,6 +19,17 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
   const [weightKg, setWeightKg] = useState<number | undefined>(exercise.weightKg);
   const [rest, setRest] = useState(exercise.rest || "60 sec");
 
+  // Keyboard shortcut Escape để đóng modal (a11y)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   const handleSave = () => {
     onSave({
       sets,
@@ -29,8 +40,14 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
   };
 
   return (
-    <div className="exercise-edit-modal-backdrop">
-      <div className="exercise-edit-modal" role="dialog" aria-modal="true">
+    <div className="exercise-edit-modal-backdrop" onClick={onClose}>
+      <div
+        aria-label={`Configure ${exercise.name}`}
+        aria-modal="true"
+        className="exercise-edit-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+      >
         <div className="exercise-edit-modal__header">
           <h2>Configure {exercise.name}</h2>
           <button

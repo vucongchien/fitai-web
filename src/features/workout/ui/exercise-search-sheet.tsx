@@ -17,23 +17,43 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
   const [results, setResults] = useState<ExerciseResult[]>([]);
   const [isPending, startTransition] = useTransition();
 
-  // Search via Server Action khi query thay đổi
+  // Search via Server Action với isCurrent flag chống async race conditions
   useEffect(() => {
     if (!isOpen) return;
 
+    let isCurrent = true;
+
     startTransition(async () => {
       const data = await searchExercises(query);
-      setResults(data);
+      if (isCurrent) {
+        setResults(data);
+      }
     });
+
+    return () => {
+      isCurrent = false;
+    };
   }, [query, isOpen]);
 
-  // Reset state khi đóng sheet
+  // Escape key handler cho a11y & Reset state khi đóng sheet
   useEffect(() => {
     if (!isOpen) {
       setQuery("");
       setResults([]);
+      return;
     }
-  }, [isOpen]);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -41,10 +61,10 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
     <div className="bottom-search-sheet-container">
       <div aria-hidden="true" className="bottom-search-sheet__backdrop" onClick={onClose} />
       <div
+        aria-label="Add movement"
+        aria-modal="true"
         className="bottom-search-sheet"
         role="dialog"
-        aria-modal="true"
-        aria-label="Add movement"
       >
         <div className="bottom-search-sheet__handle" />
         <div className="bottom-search-sheet__header">
@@ -62,8 +82,8 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
         <div className="bottom-search-sheet__input-wrap">
           <Search className="bottom-search-sheet__search-icon" size={17} />
           <input
-            autoFocus
             aria-label="Search exercise library"
+            autoFocus
             className="bottom-search-sheet__input"
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by movement or target..."
@@ -72,9 +92,9 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
           />
         </div>
 
-        <div className="bottom-search-sheet__list" aria-busy={isPending}>
+        <div aria-busy={isPending} className="bottom-search-sheet__list">
           {isPending ? (
-            <p className="bottom-search-sheet__empty" aria-live="polite">
+            <p aria-live="polite" className="bottom-search-sheet__empty">
               Searching...
             </p>
           ) : results.length === 0 ? (
