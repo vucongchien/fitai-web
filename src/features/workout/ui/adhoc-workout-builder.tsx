@@ -140,8 +140,7 @@ export function AdhocWorkoutBuilder() {
           {/* Dynamic Estimates at the bottom of the list */}
           <div className="session-facts adhoc-estimates-bottom">
             <span>
-              <Clock3 aria-hidden="true" size={17} />
-              ~{estimatedDuration} min estimated
+              <Clock3 aria-hidden="true" size={17} />~{estimatedDuration} min estimated
             </span>
             <span>
               <Gauge aria-hidden="true" size={17} />

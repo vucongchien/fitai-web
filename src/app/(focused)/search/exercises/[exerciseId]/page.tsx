@@ -3,11 +3,7 @@ import { notFound } from "next/navigation";
 import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
 import { ExerciseDetail } from "@/features/exercise/ui/exercise-detail";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ exerciseId: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ exerciseId: string }> }) {
   const { exerciseId } = await params;
   const exercise = await exerciseSearchRepository.getById(exerciseId);
   return { title: exercise?.name ?? "Exercise" };

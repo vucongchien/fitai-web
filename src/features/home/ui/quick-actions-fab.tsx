@@ -1,6 +1,6 @@
 "use client";
 
-import { Dumbbell, Plus, Scale, Utensils, X } from "lucide-react";
+import { Dumbbell, Plus, Scale, Utensils } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -26,13 +26,7 @@ export function QuickActionsFab({ actions }: QuickActionsFabProps) {
   return (
     <div className="home-fab-container">
       {/* Backdrop overlay when menu is open */}
-      {isOpen && (
-        <div
-          aria-hidden="true"
-          className="home-fab-backdrop"
-          onClick={closeMenu}
-        />
-      )}
+      {isOpen && <div aria-hidden="true" className="home-fab-backdrop" onClick={closeMenu} />}
 
       {/* Floating Speed Dial Options Menu */}
       <div
@@ -51,7 +45,9 @@ export function QuickActionsFab({ actions }: QuickActionsFabProps) {
               role="menuitem"
             >
               <span className="home-fab-option__label">{action.label}</span>
-              <span className={`home-fab-option__icon home-fab-option__icon--${action.colorVariant}`}>
+              <span
+                className={`home-fab-option__icon home-fab-option__icon--${action.colorVariant}`}
+              >
                 <Icon size={18} />
               </span>
             </Link>

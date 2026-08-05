@@ -21,7 +21,7 @@ export const metadata = { title: "Prepare for your session" };
 
 const featureIconMap = {
   camera: Camera,
-  zap: Gauge,  // fallback
+  zap: Gauge, // fallback
   info: ShieldCheck, // fallback
 } as const;
 
@@ -83,7 +83,9 @@ async function PrepContent({
           </section>
 
           <aside className="prep-aside">
-            <section className={`prep-note${data.readinessNote.variant === "safe" ? " prep-note--safe" : ""}`}>
+            <section
+              className={`prep-note${data.readinessNote.variant === "safe" ? " prep-note--safe" : ""}`}
+            >
               <ShieldCheck aria-hidden="true" size={22} />
               <div>
                 <h2>{data.readinessNote.title}</h2>
@@ -135,8 +137,25 @@ async function PrepContent({
 function PrepSkeleton() {
   return (
     <div className="workout-prep-skeleton" style={{ padding: "2rem 1rem" }}>
-      <div className="skeleton-box" style={{ height: "180px", width: "100%", borderRadius: "12px", marginBottom: "1rem", background: "var(--color-surface-hover, #eee)" }} />
-      <div className="skeleton-box" style={{ height: "240px", width: "100%", borderRadius: "12px", background: "var(--color-surface-hover, #eee)" }} />
+      <div
+        className="skeleton-box"
+        style={{
+          height: "180px",
+          width: "100%",
+          borderRadius: "12px",
+          marginBottom: "1rem",
+          background: "var(--color-surface-hover, #eee)",
+        }}
+      />
+      <div
+        className="skeleton-box"
+        style={{
+          height: "240px",
+          width: "100%",
+          borderRadius: "12px",
+          background: "var(--color-surface-hover, #eee)",
+        }}
+      />
     </div>
   );
 }

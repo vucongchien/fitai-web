@@ -5,9 +5,27 @@ import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
 import type { QuickAction } from "@/shared/api/bff/home/types";
 
 const mockActions: QuickAction[] = [
-  { id: "extra-workout", label: "Extra workout", href: "/workout/adhoc", icon: "dumbbell", colorVariant: "blue" },
-  { id: "log-weight", label: "Log weight", href: "/progress/weight", icon: "scale", colorVariant: "green" },
-  { id: "log-meal", label: "Log meal", href: "/nutrition/log", icon: "utensils", colorVariant: "coral" },
+  {
+    id: "extra-workout",
+    label: "Extra workout",
+    href: "/workout/adhoc",
+    icon: "dumbbell",
+    colorVariant: "blue",
+  },
+  {
+    id: "log-weight",
+    label: "Log weight",
+    href: "/progress/weight",
+    icon: "scale",
+    colorVariant: "green",
+  },
+  {
+    id: "log-meal",
+    label: "Log meal",
+    href: "/nutrition/log",
+    icon: "utensils",
+    colorVariant: "coral",
+  },
 ];
 
 describe("QuickActionsFab Component", () => {

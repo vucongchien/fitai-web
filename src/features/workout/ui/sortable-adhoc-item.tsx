@@ -14,14 +14,10 @@ interface SortableAdhocItemProps {
   onDelete: () => void;
 }
 
-export function SortableAdhocItem({
-  exercise,
-  index,
-  onEdit,
-  onDelete,
-}: SortableAdhocItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: exercise.id });
+export function SortableAdhocItem({ exercise, index, onEdit, onDelete }: SortableAdhocItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: exercise.id,
+  });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),

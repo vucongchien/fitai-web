@@ -1,8 +1,8 @@
 import { CalendarRange, Gauge, Sparkles } from "lucide-react";
 import { Suspense } from "react";
 
-import { getRoadmapPageData } from "@/shared/api/bff/roadmap/queries";
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
+import { getRoadmapPageData } from "@/shared/api/bff/roadmap/queries";
 import { PageTransition } from "@/shared/ui/page-transition";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
@@ -69,8 +69,25 @@ async function RoadmapContent() {
 function RoadmapSkeleton() {
   return (
     <div className="roadmap-skeleton" style={{ marginTop: "1rem" }}>
-      <div className="skeleton-box" style={{ height: "48px", width: "100%", marginBottom: "16px", borderRadius: "8px", background: "var(--color-surface-hover, #eee)" }} />
-      <div className="skeleton-box" style={{ height: "300px", width: "100%", borderRadius: "12px", background: "var(--color-surface-hover, #eee)" }} />
+      <div
+        className="skeleton-box"
+        style={{
+          height: "48px",
+          width: "100%",
+          marginBottom: "16px",
+          borderRadius: "8px",
+          background: "var(--color-surface-hover, #eee)",
+        }}
+      />
+      <div
+        className="skeleton-box"
+        style={{
+          height: "300px",
+          width: "100%",
+          borderRadius: "12px",
+          background: "var(--color-surface-hover, #eee)",
+        }}
+      />
     </div>
   );
 }

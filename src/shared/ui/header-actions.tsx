@@ -17,9 +17,7 @@ export function HeaderActions({ hasNotifications = true }: HeaderActionsProps) {
         <Search aria-hidden="true" size={18} strokeWidth={2} />
       </Link>
       <Link
-        aria-label={
-          hasNotifications ? "Notifications, unread items available" : "Notifications"
-        }
+        aria-label={hasNotifications ? "Notifications, unread items available" : "Notifications"}
         className="header-actions__button"
         data-badge={hasNotifications || undefined}
         href="/notifications"

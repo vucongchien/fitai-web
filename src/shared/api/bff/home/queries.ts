@@ -1,5 +1,4 @@
 import "server-only";
-
 import type { HomePageData } from "./types";
 
 // ---------------------------------------------------------------------------

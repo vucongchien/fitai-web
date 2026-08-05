@@ -12,11 +12,7 @@ type ExerciseSearchSheetProps = {
   onAddExercise: (exercise: ExerciseResult) => void;
 };
 
-export function ExerciseSearchSheet({
-  isOpen,
-  onClose,
-  onAddExercise,
-}: ExerciseSearchSheetProps) {
+export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: ExerciseSearchSheetProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ExerciseResult[]>([]);
   const [isPending, startTransition] = useTransition();
@@ -43,12 +39,13 @@ export function ExerciseSearchSheet({
 
   return (
     <div className="bottom-search-sheet-container">
+      <div aria-hidden="true" className="bottom-search-sheet__backdrop" onClick={onClose} />
       <div
-        aria-hidden="true"
-        className="bottom-search-sheet__backdrop"
-        onClick={onClose}
-      />
-      <div className="bottom-search-sheet" role="dialog" aria-modal="true" aria-label="Add movement">
+        className="bottom-search-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Add movement"
+      >
         <div className="bottom-search-sheet__handle" />
         <div className="bottom-search-sheet__header">
           <h2>Add movement</h2>
@@ -77,7 +74,9 @@ export function ExerciseSearchSheet({
 
         <div className="bottom-search-sheet__list" aria-busy={isPending}>
           {isPending ? (
-            <p className="bottom-search-sheet__empty" aria-live="polite">Searching...</p>
+            <p className="bottom-search-sheet__empty" aria-live="polite">
+              Searching...
+            </p>
           ) : results.length === 0 ? (
             <p className="bottom-search-sheet__empty">No matching movements found.</p>
           ) : (

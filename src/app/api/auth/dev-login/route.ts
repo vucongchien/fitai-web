@@ -15,8 +15,16 @@ export async function GET(request: Request) {
 
   const response = NextResponse.redirect(new URL(dest, origin));
 
-  response.cookies.set("fitai_access_token", `mock_dev_access_token_${userId}`, createAuthCookieOptions({ maxAge: 60 * 60 }));
-  response.cookies.set("fitai_refresh_token", `mock_dev_refresh_token_${userId}`, createAuthCookieOptions({ maxAge: 60 * 60 * 24 }));
+  response.cookies.set(
+    "fitai_access_token",
+    `mock_dev_access_token_${userId}`,
+    createAuthCookieOptions({ maxAge: 60 * 60 }),
+  );
+  response.cookies.set(
+    "fitai_refresh_token",
+    `mock_dev_refresh_token_${userId}`,
+    createAuthCookieOptions({ maxAge: 60 * 60 * 24 }),
+  );
   response.cookies.set("fitai_user_id", userId, createAuthCookieOptions({ maxAge: 60 * 60 * 24 }));
 
   console.info(`[dev-login] Mock login triggered for target=${target} -> dest=${dest}`);

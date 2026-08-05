@@ -80,8 +80,6 @@ export const todayTimelineItems: TodayTimelineItem[] = [
   },
 ];
 
-
-
 export const sessions: SessionSummary[] = [
   {
     id: "lower-foundation",

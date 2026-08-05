@@ -1123,9 +1123,6 @@ a.week-route__row:hover {
   border: 1px solid color-mix(in srgb, var(--color-effort) 30%, transparent);
 }
 
-
-
-
 .roadmap-phase {
   flex: 0 0 auto;
   padding: 0.55rem 0.7rem;
@@ -3524,7 +3521,9 @@ a.week-route__row:hover {
   cursor: grab;
   touch-action: none;
   opacity: 0.5;
-  transition: opacity var(--duration-state) ease, color var(--duration-state) ease;
+  transition:
+    opacity var(--duration-state) ease,
+    color var(--duration-state) ease;
 }
 
 .drag-grip-handle:hover {
@@ -3574,7 +3573,9 @@ a.week-route__row:hover {
   border: 0;
   border-radius: var(--radius-round);
   cursor: pointer;
-  transition: background-color var(--duration-state) ease, color var(--duration-state) ease;
+  transition:
+    background-color var(--duration-state) ease,
+    color var(--duration-state) ease;
 }
 
 .adhoc-action-btn:hover {
@@ -3586,7 +3587,6 @@ a.week-route__row:hover {
   color: var(--color-danger);
   background: color-mix(in srgb, var(--color-danger) 12%, transparent);
 }
-
 
 .adhoc-tools-row {
   display: flex;
@@ -3683,7 +3683,6 @@ a.week-route__row:hover {
   padding-right: 2rem;
 }
 
-
 .adhoc-estimates-bottom {
   margin-top: 1.75rem;
   padding-top: 1rem;
@@ -3704,7 +3703,9 @@ a.week-route__row:hover {
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  transition: transform var(--duration-state) ease, opacity var(--duration-state) ease;
+  transition:
+    transform var(--duration-state) ease,
+    opacity var(--duration-state) ease;
 }
 
 .ai-recommend-button:hover:not(:disabled) {
@@ -3715,9 +3716,6 @@ a.week-route__row:hover {
 .ai-recommend-button:active:not(:disabled) {
   transform: scale(0.97);
 }
-
-
-
 
 .drag-handle {
   display: grid;
@@ -3758,7 +3756,9 @@ a.week-route__row:hover {
   border: 0;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color var(--duration-state) ease, color var(--duration-state) ease;
+  transition:
+    background-color var(--duration-state) ease,
+    color var(--duration-state) ease;
 }
 
 .exercise-action-btn:hover {

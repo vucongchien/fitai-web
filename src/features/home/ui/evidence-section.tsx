@@ -10,7 +10,7 @@ const iconMap = {
   dumbbell: Dumbbell,
   "shield-check": ShieldCheck,
   flame: Dumbbell, // fallback
-  zap: Dumbbell,   // fallback
+  zap: Dumbbell, // fallback
 } as const;
 
 export function EvidenceSection({ items }: EvidenceSectionProps) {

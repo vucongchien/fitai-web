@@ -22,4 +22,8 @@ export const buildPopupHtml = (dest: string, origin: string) =>
   popupResponse({ type: "OAUTH_COMPLETE", dest }, dest, origin);
 
 export const buildErrorPopupHtml = (code: string, origin: string) =>
-  popupResponse({ type: "OAUTH_ERROR", message: code }, `/login?error=${encodeURIComponent(code)}`, origin);
+  popupResponse(
+    { type: "OAUTH_ERROR", message: code },
+    `/login?error=${encodeURIComponent(code)}`,
+    origin,
+  );

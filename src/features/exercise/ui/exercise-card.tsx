@@ -1,10 +1,7 @@
 import { Camera, Dumbbell } from "lucide-react";
 import Link from "next/link";
 
-import {
-  type CatalogMetadata,
-  type ExerciseSummary,
-} from "@/features/exercise/domain/exercise";
+import { type CatalogMetadata, type ExerciseSummary } from "@/features/exercise/domain/exercise";
 
 type ExerciseCardProps = {
   exercise: ExerciseSummary;

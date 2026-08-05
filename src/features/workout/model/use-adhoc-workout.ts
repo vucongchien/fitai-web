@@ -12,12 +12,12 @@ import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
-import { getAdhocConfig, getAiRecommendation } from "@/shared/api/bff/workout/actions";
 import {
   AdhocExercise,
   isWeightedExercise,
   toAdhocExercise,
 } from "@/features/workout/model/adhoc-types";
+import { getAdhocConfig, getAiRecommendation } from "@/shared/api/bff/workout/actions";
 
 export function useAdhocWorkout() {
   const router = useRouter();
@@ -53,7 +53,7 @@ export function useAdhocWorkout() {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   // Dynamic Estimates
@@ -95,7 +95,13 @@ export function useAdhocWorkout() {
     if (undoTimeoutId) clearTimeout(undoTimeoutId);
   };
 
-  const handleAddExercise = (rawItem: { id: string; name: string; prescription: string; rest: string; note: string }) => {
+  const handleAddExercise = (rawItem: {
+    id: string;
+    name: string;
+    prescription: string;
+    rest: string;
+    note: string;
+  }) => {
     const newExercise: AdhocExercise = {
       ...rawItem,
       id: `${rawItem.id}-${Date.now()}`,
@@ -113,12 +119,17 @@ export function useAdhocWorkout() {
         result.exercises.map((ex) => ({
           ...ex,
           id: `${ex.id}-${Date.now()}`,
-        }))
+        })),
       );
     });
   };
 
-  const handleSaveEdit = (updated: { sets: number; reps: number; rest: string; weightKg?: number }) => {
+  const handleSaveEdit = (updated: {
+    sets: number;
+    reps: number;
+    rest: string;
+    weightKg?: number;
+  }) => {
     if (!editingExercise) return;
     setExerciseList((prev) =>
       prev.map((item) =>
@@ -128,8 +139,8 @@ export function useAdhocWorkout() {
               ...updated,
               prescription: `${updated.sets} × ${updated.reps}`,
             }
-          : item
-      )
+          : item,
+      ),
     );
     setEditingExercise(null);
   };

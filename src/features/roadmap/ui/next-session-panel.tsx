@@ -12,7 +12,10 @@ type NextSessionPanelProps = {
   phaseLabel?: string;
 };
 
-export function NextSessionPanel({ session, phaseLabel = "Active roadmap" }: NextSessionPanelProps) {
+export function NextSessionPanel({
+  session,
+  phaseLabel = "Active roadmap",
+}: NextSessionPanelProps) {
   return (
     <section className="next-session-panel">
       <div className="next-session-panel__route">
