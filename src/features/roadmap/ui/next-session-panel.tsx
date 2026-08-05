@@ -2,7 +2,7 @@ import { ArrowRight, Clock3, Gauge } from "lucide-react";
 import Link from "next/link";
 import { ViewTransition } from "react";
 
-import type { SessionSummary } from "@/shared/lib/demo-data";
+import type { SessionSummary } from "@/shared/api/bff/roadmap/types";
 import { buttonVariants } from "@/shared/ui/button";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
