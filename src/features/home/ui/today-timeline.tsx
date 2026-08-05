@@ -1,7 +1,7 @@
 import { Apple, ChevronRight, Dumbbell, Soup } from "lucide-react";
 import Link from "next/link";
 
-import type { TodayItemCategory, TodayTimelineItem } from "@/shared/api/bff/home/types";
+import type { TodayItemCategory, TodayTimelineItem } from "@/features/home/model/home-page.types";
 import { cn } from "@/shared/lib/cn";
 
 type TodayTimelineProps = {

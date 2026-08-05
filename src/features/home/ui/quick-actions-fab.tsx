@@ -4,7 +4,7 @@ import { Dumbbell, Plus, Scale, Utensils } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import type { QuickAction } from "@/shared/api/bff/home/types";
+import type { QuickAction } from "@/features/home/model/home-page.types";
 
 type QuickActionsFabProps = {
   actions: QuickAction[];

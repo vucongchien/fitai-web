@@ -1,6 +1,6 @@
 import { Salad } from "lucide-react";
 
-import type { NutritionSummary as NutritionSummaryData } from "@/shared/api/bff/home/types";
+import type { NutritionSummary as NutritionSummaryData } from "@/features/home/model/home-page.types";
 
 type NutritionSummaryProps = {
   summary: NutritionSummaryData;

@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
-import type { QuickAction } from "@/shared/api/bff/home/types";
+import type { QuickAction } from "@/features/home/model/home-page.types";
 
 const mockActions: QuickAction[] = [
   {

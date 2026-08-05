@@ -1,6 +1,6 @@
-import { Dumbbell, ShieldCheck } from "lucide-react";
+import { Dumbbell, Flame, ShieldCheck, Zap } from "lucide-react";
 
-import type { EvidenceItem } from "@/shared/api/bff/home/types";
+import type { EvidenceItem } from "@/features/home/model/home-page.types";
 
 type EvidenceSectionProps = {
   items: EvidenceItem[];
@@ -9,8 +9,8 @@ type EvidenceSectionProps = {
 const iconMap = {
   dumbbell: Dumbbell,
   "shield-check": ShieldCheck,
-  flame: Dumbbell, // fallback
-  zap: Dumbbell, // fallback
+  flame: Flame,
+  zap: Zap,
 } as const;
 
 export function EvidenceSection({ items }: EvidenceSectionProps) {

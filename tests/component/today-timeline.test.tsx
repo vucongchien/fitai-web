@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { TodayTimeline } from "@/features/home/ui/today-timeline";
-import type { TodayTimelineItem } from "@/shared/api/bff/home/types";
+import type { TodayTimelineItem } from "@/features/home/model/home-page.types";
 
 const mockTodayItems: TodayTimelineItem[] = [
   {
