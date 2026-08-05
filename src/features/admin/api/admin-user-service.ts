@@ -121,7 +121,7 @@ const INITIAL_ADMIN_USERS: AdminUser[] = [
     targetWeightKg: 55,
     targetBodyFatPercent: 19,
     injuries: [],
-    completionRate: 0.40,
+    completionRate: 0.4,
     aiCoachActivated: false,
     createdAt: "2025-06-01T09:00:00.000Z",
     updatedAt: "2026-07-20T11:30:00.000Z",
@@ -178,9 +178,8 @@ export async function fetchAdminUsers({
 
   const paginatedItems = result.slice(startIndex, startIndex + limit);
   const hasMore = startIndex + limit < result.length;
-  const nextCursor = hasMore && paginatedItems.length > 0
-    ? paginatedItems[paginatedItems.length - 1].userId
-    : null;
+  const nextCursor =
+    hasMore && paginatedItems.length > 0 ? paginatedItems[paginatedItems.length - 1].userId : null;
 
   return {
     items: paginatedItems,

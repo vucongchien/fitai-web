@@ -150,7 +150,8 @@ export function useLiveWorkoutEffects({
       if (!exercise || !step) return;
       playCueByCode("set-end", listening);
       const isCamera = cameraBranch && camera.state === "ready";
-      const actualReps = isCamera && motion.repCount > 0 ? motion.repCount : exercise.targetReps ?? 10;
+      const actualReps =
+        isCamera && motion.repCount > 0 ? motion.repCount : (exercise.targetReps ?? 10);
 
       session.actions.saveSet({
         actualReps,
@@ -169,7 +170,16 @@ export function useLiveWorkoutEffects({
 
       toast.success("Set completed!");
     },
-    [cameraBranch, camera.state, exercise, motion.repCount, playCueByCode, session.actions, spec, step],
+    [
+      cameraBranch,
+      camera.state,
+      exercise,
+      motion.repCount,
+      playCueByCode,
+      session.actions,
+      spec,
+      step,
+    ],
   );
 
   // Auto finish timed or reps-based sets
@@ -242,7 +252,16 @@ export function useLiveWorkoutEffects({
         toast.error("Could not save session report. Please try again.");
       }
     },
-    [audio, buildReport, camera, motion, plan.sessionId, router, session.actions, session.loggedSets],
+    [
+      audio,
+      buildReport,
+      camera,
+      motion,
+      plan.sessionId,
+      router,
+      session.actions,
+      session.loggedSets,
+    ],
   );
 
   // Auto close on long timeout or complete status

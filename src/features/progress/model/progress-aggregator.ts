@@ -1,4 +1,9 @@
-import type { PersonalRecord, RoadmapAdherence, UserProgressStats, WeeklyActivityDay } from "./types";
+import type {
+  PersonalRecord,
+  RoadmapAdherence,
+  UserProgressStats,
+  WeeklyActivityDay,
+} from "./types";
 
 export function calculateAdherencePercentage(completed: number, scheduled: number): number {
   if (scheduled <= 0) return 0;
@@ -26,9 +31,27 @@ export function getTopPersonalRecords(records: PersonalRecord[], limit = 3): Per
 
 export function getMockProgressStats(): UserProgressStats {
   const weeklyActivity: WeeklyActivityDay[] = [
-    { dayLabel: "Mon", date: "2026-08-03", status: "completed", sessionTitle: "Lower-body foundation", nutritionStatus: "completed" },
-    { dayLabel: "Tue", date: "2026-08-04", status: "recovery", sessionTitle: "Recovery day", nutritionStatus: "completed" },
-    { dayLabel: "Wed", date: "2026-08-05", status: "completed", sessionTitle: "Upper-body control", nutritionStatus: "completed" },
+    {
+      dayLabel: "Mon",
+      date: "2026-08-03",
+      status: "completed",
+      sessionTitle: "Lower-body foundation",
+      nutritionStatus: "completed",
+    },
+    {
+      dayLabel: "Tue",
+      date: "2026-08-04",
+      status: "recovery",
+      sessionTitle: "Recovery day",
+      nutritionStatus: "completed",
+    },
+    {
+      dayLabel: "Wed",
+      date: "2026-08-05",
+      status: "completed",
+      sessionTitle: "Upper-body control",
+      nutritionStatus: "completed",
+    },
     { dayLabel: "Thu", date: "2026-08-06", status: "rest", nutritionStatus: "off_target" },
     { dayLabel: "Fri", date: "2026-08-07", status: "rest", nutritionStatus: "none" },
     { dayLabel: "Sat", date: "2026-08-08", status: "rest", nutritionStatus: "none" },

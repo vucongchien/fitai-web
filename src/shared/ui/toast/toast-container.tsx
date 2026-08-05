@@ -5,9 +5,9 @@ import { AlertCircle, CheckCircle2, Info, X } from "lucide-react";
 import { useToast } from "./toast-context";
 
 const typeIcon = {
-  info:    Info,
+  info: Info,
   success: CheckCircle2,
-  error:   AlertCircle,
+  error: AlertCircle,
 };
 
 export function ToastContainer() {
@@ -16,12 +16,7 @@ export function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div
-      aria-label="Notifications"
-      aria-live="polite"
-      className="toast-stack"
-      role="region"
-    >
+    <div aria-label="Notifications" aria-live="polite" className="toast-stack" role="region">
       {toasts.map((toast) => {
         const type = toast.type ?? "info";
         const Icon = typeIcon[type];

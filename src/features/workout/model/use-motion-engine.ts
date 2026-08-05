@@ -9,7 +9,11 @@ import {
   type MotionEngineKind,
   type SetTelemetry,
 } from "@/features/workout/domain/motion-engine";
-import type { CalibrationDistance, CalibrationLighting, Pose } from "@/features/workout/domain/pose-metrics";
+import type {
+  CalibrationDistance,
+  CalibrationLighting,
+  Pose,
+} from "@/features/workout/domain/pose-metrics";
 import { resolveMotionEngine } from "@/features/workout/domain/resolve-motion-engine";
 import type { CueSeverity, MotionSpec } from "@/features/workout/model/live-session.types";
 

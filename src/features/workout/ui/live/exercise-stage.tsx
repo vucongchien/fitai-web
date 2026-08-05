@@ -1,16 +1,15 @@
 "use client";
 
-import type { AudioCoach } from "@/features/workout/model/use-audio-coach";
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
+import type { AudioCoach } from "@/features/workout/model/use-audio-coach";
+import type { useCameraStream } from "@/features/workout/model/use-camera-stream";
+import type { LiveSessionController } from "@/features/workout/model/use-live-session";
+import type { useMotionEngine } from "@/features/workout/model/use-motion-engine";
+import { CameraStage } from "@/features/workout/ui/live/camera-stage";
 import { GuideToggles } from "@/features/workout/ui/live/guide-toggles";
 import { MusicMiniControl } from "@/features/workout/ui/live/music-mini-control";
 import { RestView } from "@/features/workout/ui/live/rest-view";
 import { SetTimer } from "@/features/workout/ui/live/set-timer";
-import { CameraStage } from "@/features/workout/ui/live/camera-stage";
-
-import type { LiveSessionController } from "@/features/workout/model/use-live-session";
-import type { useCameraStream } from "@/features/workout/model/use-camera-stream";
-import type { useMotionEngine } from "@/features/workout/model/use-motion-engine";
 
 export function ExerciseStage({
   audio,

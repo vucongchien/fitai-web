@@ -1,10 +1,6 @@
 import type { Difficulty, ExerciseSummary } from "@/features/exercise/domain/exercise";
 
-export type AdminExerciseStatus =
-  | "created"
-  | "submittedForApproval"
-  | "approved"
-  | "archived";
+export type AdminExerciseStatus = "created" | "submittedForApproval" | "approved" | "archived";
 
 export const EXERCISE_STATUS_LABEL: Record<AdminExerciseStatus, string> = {
   created: "Draft",

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { MetadataItem } from "@/features/admin/domain/admin-types";
 import { Check, FolderTree, X } from "lucide-react";
+import { useEffect, useState } from "react";
+
+import type { MetadataItem } from "@/features/admin/domain/admin-types";
 
 export type MetadataDialogProps = {
   isOpen: boolean;
@@ -12,13 +13,7 @@ export type MetadataDialogProps = {
   onSave: (data: Omit<MetadataItem, "id">) => Promise<void>;
 };
 
-export function MetadataDialog({
-  isOpen,
-  category,
-  item,
-  onClose,
-  onSave,
-}: MetadataDialogProps) {
+export function MetadataDialog({ isOpen, category, item, onClose, onSave }: MetadataDialogProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

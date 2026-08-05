@@ -94,7 +94,8 @@ export class SimulatedMotionEngine implements MotionEngine {
       const pose = syntheticPose(this.video?.videoWidth ?? 1280, height, 0);
       // The synthetic body is framed correctly by construction, so distance only
       // fails here when the frame itself is unusable.
-      const distance = lighting === "low" ? ("unknown" as const) : calibrationDistance(pose, height);
+      const distance =
+        lighting === "low" ? ("unknown" as const) : calibrationDistance(pose, height);
       onEvent({ pose, type: "pose" });
       onEvent({
         distance,
@@ -128,7 +129,10 @@ export class SimulatedMotionEngine implements MotionEngine {
       const elapsed = Date.now() - this.setStartedAt;
       const progress = (elapsed % REP_PERIOD_MS) / REP_PERIOD_MS;
       const height = this.video?.videoHeight ?? 720;
-      onEvent({ pose: syntheticPose(this.video?.videoWidth ?? 1280, height, progress), type: "pose" });
+      onEvent({
+        pose: syntheticPose(this.video?.videoWidth ?? 1280, height, progress),
+        type: "pose",
+      });
 
       // Sweep the tracked joint through its full range once per period.
       const { startDeg, endDeg } = spec.romRange;

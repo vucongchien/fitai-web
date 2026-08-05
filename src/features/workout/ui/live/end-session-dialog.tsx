@@ -138,7 +138,10 @@ export function EndSessionDialog({
       <div className="flex flex-col items-center text-center pt-2 pb-1">
         <div className="w-20 h-20 rounded-3xl bg-[var(--color-action-soft,#eef0ff)] text-[var(--color-action,#4b57f2)] flex items-center justify-center mb-4 shadow-sm relative transform hover:scale-105 transition-transform">
           <ThumbsUp size={38} className="stroke-[2.5]" />
-          <Award size={20} className="absolute -top-1 -right-1 text-[var(--color-effort,#ff5a47)]" />
+          <Award
+            size={20}
+            className="absolute -top-1 -right-1 text-[var(--color-effort,#ff5a47)]"
+          />
         </div>
 
         <h2 className="text-2xl font-bold text-[var(--color-text,#101214)] mb-1">

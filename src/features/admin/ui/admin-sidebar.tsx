@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   ArrowLeft,
   ChevronRight,
@@ -11,6 +9,8 @@ import {
   Shield,
   Users,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export type AdminSidebarProps = {
   pendingApprovalCount?: number;

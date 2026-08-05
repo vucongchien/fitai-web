@@ -1,5 +1,4 @@
 import "server-only";
-
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
 
 import { getMockRoadmapPageData } from "./get-mock-roadmap-data";

@@ -1,8 +1,18 @@
 "use client";
 
+import {
+  Activity,
+  AlertTriangle,
+  Calendar,
+  Dumbbell,
+  HeartPulse,
+  Shield,
+  User,
+  X,
+} from "lucide-react";
+
 import type { AdminUser } from "@/features/admin/domain/admin-types";
 import { USER_ROLE_LABEL, USER_STATUS_LABEL } from "@/features/admin/domain/admin-types";
-import { Activity, AlertTriangle, Calendar, Dumbbell, HeartPulse, Shield, User, X } from "lucide-react";
 
 export type UserDialogProps = {
   isOpen: boolean;
@@ -81,16 +91,22 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                 <span className="text-slate-500 text-[11px] block">Height</span>
-                <span className="font-bold text-slate-900">{user.biologicalMetrics.heightCm} cm</span>
+                <span className="font-bold text-slate-900">
+                  {user.biologicalMetrics.heightCm} cm
+                </span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                 <span className="text-slate-500 text-[11px] block">Weight</span>
-                <span className="font-bold text-slate-900">{user.biologicalMetrics.weightKg} kg</span>
+                <span className="font-bold text-slate-900">
+                  {user.biologicalMetrics.weightKg} kg
+                </span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                 <span className="text-slate-500 text-[11px] block">Body Fat %</span>
                 <span className="font-bold text-slate-900">
-                  {user.biologicalMetrics.bodyFatPercent ? `${user.biologicalMetrics.bodyFatPercent}%` : "—"}
+                  {user.biologicalMetrics.bodyFatPercent
+                    ? `${user.biologicalMetrics.bodyFatPercent}%`
+                    : "—"}
                 </span>
               </div>
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
@@ -120,7 +136,10 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
               </span>
               <div className="flex flex-wrap gap-1">
                 {user.goals.map((g, i) => (
-                  <span key={i} className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-semibold">
+                  <span
+                    key={i}
+                    className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[11px] font-semibold"
+                  >
                     {g}
                   </span>
                 ))}
@@ -139,11 +158,17 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
             ) : (
               <div className="space-y-1.5">
                 {user.injuries.map((inj) => (
-                  <div key={inj.id} className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs flex items-center justify-between">
+                  <div
+                    key={inj.id}
+                    className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs flex items-center justify-between"
+                  >
                     <div>
-                      <span className="font-bold text-amber-900">{inj.affectedArea}</span> — {inj.type}
+                      <span className="font-bold text-amber-900">{inj.affectedArea}</span> —{" "}
+                      {inj.type}
                     </div>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${inj.isRecovered ? "bg-emerald-100 text-emerald-800" : "bg-amber-200 text-amber-900"}`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${inj.isRecovered ? "bg-emerald-100 text-emerald-800" : "bg-amber-200 text-amber-900"}`}
+                    >
                       {inj.isRecovered ? "Recovered" : "Active Injury"}
                     </span>
                   </div>

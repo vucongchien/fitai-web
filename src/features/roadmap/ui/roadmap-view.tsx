@@ -18,7 +18,6 @@ export function RoadmapView({ data }: RoadmapViewProps) {
         Week {data.activeWeek} active
       </span>
 
-
       <nav aria-label="Roadmap weeks" className="week-selector">
         {data.weeks.map((week) => (
           <button

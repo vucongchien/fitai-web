@@ -1,8 +1,10 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { Archive, ArrowLeft, CheckCircle2, Dumbbell, Plus, Save, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+
 import {
   approveExercise,
   archiveExercise,
@@ -11,25 +13,15 @@ import {
   fetchMetadataList,
   updateExercise,
 } from "@/features/admin/api/admin-exercise-service";
-import type { AdminExercise, AdminExerciseStatus, MetadataItem } from "@/features/admin/domain/admin-types";
+import type {
+  AdminExercise,
+  AdminExerciseStatus,
+  MetadataItem,
+} from "@/features/admin/domain/admin-types";
 import { EXERCISE_STATUS_LABEL, EXERCISE_STATUS_STYLE } from "@/features/admin/domain/admin-types";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
-import {
-  Archive,
-  ArrowLeft,
-  CheckCircle2,
-  Dumbbell,
-  Plus,
-  Save,
-  Trash2,
-  X,
-} from "lucide-react";
 
-export default function AdminExerciseDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default function AdminExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
 
@@ -101,7 +93,9 @@ export default function AdminExerciseDetailPage({
     return (
       <div className="py-16 text-center space-y-4">
         <h2 className="text-lg font-bold text-slate-900">Exercise Not Found</h2>
-        <p className="text-xs text-slate-500">The requested exercise with ID `{id}` does not exist.</p>
+        <p className="text-xs text-slate-500">
+          The requested exercise with ID `{id}` does not exist.
+        </p>
         <Link
           href="/admin/exercises"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
@@ -348,7 +342,9 @@ export default function AdminExerciseDetailPage({
             </div>
 
             <div className="space-y-1.5 pt-2">
-              <label className="text-xs font-bold text-slate-700">Default Rest Time (Seconds)</label>
+              <label className="text-xs font-bold text-slate-700">
+                Default Rest Time (Seconds)
+              </label>
               <input
                 type="number"
                 value={defaultRestSeconds}

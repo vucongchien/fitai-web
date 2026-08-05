@@ -1,7 +1,7 @@
 "use client";
 
-import { memo } from "react";
 import { BookOpen, Ear, Eye } from "lucide-react";
+import { memo } from "react";
 
 export const GuideToggles = memo(function GuideToggles({
   listening,

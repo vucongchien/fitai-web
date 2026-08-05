@@ -1,5 +1,4 @@
 import "server-only";
-
 import type { HomePageData } from "@/features/home/model/home-page.types";
 
 import { getMockHomePageData } from "./get-mock-home-page-data";

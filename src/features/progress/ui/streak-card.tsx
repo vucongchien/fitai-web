@@ -33,13 +33,17 @@ export function StreakCard({ stats }: StreakCardProps) {
 
       <div className="grid grid-cols-2 gap-3 pt-3 border-t border-[var(--color-mist,#ECEEF0)]">
         <div>
-          <span className="text-[11px] font-semibold text-[var(--color-graphite,#50565C)] block">Workouts Done</span>
+          <span className="text-[11px] font-semibold text-[var(--color-graphite,#50565C)] block">
+            Workouts Done
+          </span>
           <span className="font-mono text-lg font-bold text-[var(--color-true-ink,#101214)] tabular-nums">
             {stats.totalWorkoutsCompleted}
           </span>
         </div>
         <div>
-          <span className="text-[11px] font-semibold text-[var(--color-graphite,#50565C)] block">Total Volume</span>
+          <span className="text-[11px] font-semibold text-[var(--color-graphite,#50565C)] block">
+            Total Volume
+          </span>
           <span className="font-mono text-lg font-bold text-[var(--color-true-ink,#101214)] tabular-nums">
             {formatVolumeKg(stats.totalVolumeKg)}
           </span>

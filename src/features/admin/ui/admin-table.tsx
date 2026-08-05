@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { AlertCircle, Inbox, Loader2, RefreshCw } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 export type Column<T> = {
   header: string;
@@ -83,7 +83,8 @@ export function AdminTable<T>({
           {/* Body */}
           <tbody className="divide-y divide-slate-100 text-slate-800">
             {/* First Page Loading State */}
-            {isLoading && data.length === 0 && (
+            {isLoading &&
+              data.length === 0 &&
               Array.from({ length: 5 }).map((_, rIdx) => (
                 <tr key={rIdx} className="animate-pulse">
                   {columns.map((col, cIdx) => (
@@ -92,11 +93,11 @@ export function AdminTable<T>({
                     </td>
                   ))}
                 </tr>
-              ))
-            )}
+              ))}
 
             {/* Render Data Rows */}
-            {!isLoading && data.length > 0 && (
+            {!isLoading &&
+              data.length > 0 &&
               data.map((item) => (
                 <tr
                   key={keyExtractor(item)}
@@ -111,8 +112,7 @@ export function AdminTable<T>({
                     </td>
                   ))}
                 </tr>
-              ))
-            )}
+              ))}
           </tbody>
         </table>
 
@@ -122,9 +122,7 @@ export function AdminTable<T>({
             <div className="size-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mb-3 border border-rose-200">
               <AlertCircle className="size-6" />
             </div>
-            <p className="text-slate-900 font-bold text-sm mb-1">
-              Failed to load data
-            </p>
+            <p className="text-slate-900 font-bold text-sm mb-1">Failed to load data</p>
             <p className="text-slate-500 text-xs max-w-sm mb-4">
               {error.message || "Please check your connection and try again."}
             </p>

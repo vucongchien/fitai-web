@@ -1,5 +1,5 @@
-import { getMockProgressStats } from "@/features/progress/model/progress-aggregator";
 import { ProfileForm } from "@/features/profile/ui/profile-form";
+import { getMockProgressStats } from "@/features/progress/model/progress-aggregator";
 import { ProgressBentoGrid } from "@/features/progress/ui/progress-bento-grid";
 import { PageTransition } from "@/shared/ui/page-transition";
 
@@ -26,4 +26,3 @@ export default function ProfilePage() {
     </PageTransition>
   );
 }
-

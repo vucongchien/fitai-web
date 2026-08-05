@@ -31,7 +31,9 @@ export function PersonalRecordsCard({ nutrition, records }: PersonalRecordsCardP
           </div>
 
           {topRecords.length === 0 ? (
-            <p className="text-xs text-[var(--color-graphite,#50565C)] py-2">No personal records logged yet.</p>
+            <p className="text-xs text-[var(--color-graphite,#50565C)] py-2">
+              No personal records logged yet.
+            </p>
           ) : (
             <div className="space-y-2">
               {topRecords.map((pr) => (
@@ -76,19 +78,28 @@ export function PersonalRecordsCard({ nutrition, records }: PersonalRecordsCardP
                   Avg Daily Energy
                 </span>
                 <span className="font-mono text-xs font-bold text-[var(--color-true-ink,#101214)] tabular-nums">
-                  {nutrition.avgDailyCalories.toLocaleString()} / {nutrition.targetDailyCalories.toLocaleString()} kcal
+                  {nutrition.avgDailyCalories.toLocaleString()} /{" "}
+                  {nutrition.targetDailyCalories.toLocaleString()} kcal
                 </span>
               </div>
 
               {/* Macros Breakdown */}
               <div className="p-2.5 rounded-[10px] bg-[var(--color-soft-paper,#F7F8F6)] border border-[var(--color-mist,#ECEEF0)] flex items-center justify-between text-xs">
-                <span className="font-semibold text-[var(--color-graphite,#50565C)]">Macros (P / C / F)</span>
+                <span className="font-semibold text-[var(--color-graphite,#50565C)]">
+                  Macros (P / C / F)
+                </span>
                 <div className="font-mono font-bold space-x-1.5 tabular-nums">
-                  <span className="text-[var(--color-relay-blue,#4B57F2)]">{nutrition.proteinGrams}g P</span>
+                  <span className="text-[var(--color-relay-blue,#4B57F2)]">
+                    {nutrition.proteinGrams}g P
+                  </span>
                   <span className="text-[var(--color-graphite,#50565C)]">·</span>
-                  <span className="text-[var(--color-field-green,#25C77A)]">{nutrition.carbsGrams}g C</span>
+                  <span className="text-[var(--color-field-green,#25C77A)]">
+                    {nutrition.carbsGrams}g C
+                  </span>
                   <span className="text-[var(--color-graphite,#50565C)]">·</span>
-                  <span className="text-[var(--color-sprint-coral,#FF5A47)]">{nutrition.fatGrams}g F</span>
+                  <span className="text-[var(--color-sprint-coral,#FF5A47)]">
+                    {nutrition.fatGrams}g F
+                  </span>
                 </div>
               </div>
             </div>

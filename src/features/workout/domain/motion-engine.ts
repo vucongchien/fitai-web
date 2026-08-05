@@ -9,8 +9,16 @@
  * The UI only ever sees events, so swapping engines changes nothing upstream.
  */
 
-import type { CalibrationDistance, CalibrationLighting, Pose } from "@/features/workout/domain/pose-metrics";
-import type { CueSeverity, MotionSpec, RepLogEntry } from "@/features/workout/model/live-session.types";
+import type {
+  CalibrationDistance,
+  CalibrationLighting,
+  Pose,
+} from "@/features/workout/domain/pose-metrics";
+import type {
+  CueSeverity,
+  MotionSpec,
+  RepLogEntry,
+} from "@/features/workout/model/live-session.types";
 
 export type MotionEngineEvent =
   | { type: "ready" }

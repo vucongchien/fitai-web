@@ -7,7 +7,13 @@ type RoadmapProgressBannerProps = {
 };
 
 export function RoadmapProgressBanner({ adherence }: RoadmapProgressBannerProps) {
-  const { adherencePercentage, currentWeek, sessionsCompleted, totalSessionsScheduled, totalWeeks } = adherence;
+  const {
+    adherencePercentage,
+    currentWeek,
+    sessionsCompleted,
+    totalSessionsScheduled,
+    totalWeeks,
+  } = adherence;
 
   return (
     <div className="roadmap-progress-banner p-4 rounded-[14px] bg-[var(--color-clear-white,#FFFFFF)] border border-[var(--color-mist,#ECEEF0)] mb-4">
@@ -21,7 +27,8 @@ export function RoadmapProgressBanner({ adherence }: RoadmapProgressBannerProps)
               Route Adherence
             </h2>
             <p className="text-xs text-[var(--color-graphite,#50565C)]">
-              Week {currentWeek} of {totalWeeks} · <strong className="tabular-nums">{sessionsCompleted}</strong>/
+              Week {currentWeek} of {totalWeeks} ·{" "}
+              <strong className="tabular-nums">{sessionsCompleted}</strong>/
               <span className="tabular-nums">{totalSessionsScheduled}</span> sessions
             </p>
           </div>

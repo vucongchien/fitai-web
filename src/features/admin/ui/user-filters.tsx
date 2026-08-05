@@ -1,7 +1,12 @@
 "use client";
 
-import type { AdminUserRole, AdminUserStatus, UserAdminFilters } from "@/features/admin/domain/admin-types";
 import { Filter, RotateCcw, Search } from "lucide-react";
+
+import type {
+  AdminUserRole,
+  AdminUserStatus,
+  UserAdminFilters,
+} from "@/features/admin/domain/admin-types";
 
 export type UserFiltersProps = {
   filters: UserAdminFilters;
@@ -45,7 +50,8 @@ export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
           <select
             value={filters.role}
             onChange={(e) =>
-              onChange({ ...filters, role: e.target.value as AdminUserRole | "all" })}
+              onChange({ ...filters, role: e.target.value as AdminUserRole | "all" })
+            }
             className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
           >
             <option value="all">All Roles</option>
@@ -60,7 +66,8 @@ export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
           <select
             value={filters.status}
             onChange={(e) =>
-              onChange({ ...filters, status: e.target.value as AdminUserStatus | "all" })}
+              onChange({ ...filters, status: e.target.value as AdminUserStatus | "all" })
+            }
             className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
           >
             <option value="all">All Statuses</option>

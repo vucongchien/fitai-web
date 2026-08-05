@@ -23,11 +23,7 @@ function LiveWorkoutSkeleton() {
   );
 }
 
-export default function LiveWorkoutPage({
-  params,
-}: {
-  params: Promise<{ sessionId: string }>;
-}) {
+export default function LiveWorkoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   return (
     <PageTransition>
       <Suspense fallback={<LiveWorkoutSkeleton />}>

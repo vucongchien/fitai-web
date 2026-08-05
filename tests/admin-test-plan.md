@@ -18,6 +18,7 @@ Tài liệu này tổng hợp mục lục và chi tiết các kịch bản kiể
 - **Mục tiêu**: Kiểm tra logic xử lý dữ liệu bài tập trong Admin, phân trang Infinite Scroll (Cursor Pagination), các bộ lọc và các hàm mutation status (`approve`, `archive`, `create`, `update`, `delete`).
 
 ### Kịch bản chi tiết:
+
 1. `fetchAdminExercises`:
    - [x] Lấy trang đầu tiên thành công với `limit` chỉ định và trả về `nextCursor`.
    - [x] Lấy trang tiếp theo bằng `cursor` hợp lệ.
@@ -42,6 +43,7 @@ Tài liệu này tổng hợp mục lục và chi tiết các kịch bản kiể
 - **Mục tiêu**: Kiểm tra phân trang người dùng, lọc theo `role` (`admin`/`coach`/`user`), lọc theo `status` (`active`/`banned`), và action `toggleUserStatus`.
 
 ### Kịch bản chi tiết:
+
 1. `fetchAdminUsers`:
    - [x] Lấy danh sách phân trang người dùng.
    - [x] Tìm kiếm người dùng theo tên hoặc email.
@@ -57,6 +59,7 @@ Tài liệu này tổng hợp mục lục và chi tiết các kịch bản kiể
 - **Mục tiêu**: Kiểm tra việc render của Admin Table với các trạng thái Loading, Empty, Error và Data.
 
 ### Kịch bản chi tiết:
+
 1. Render Table:
    - [x] Hiển thị đúng danh sách cột và các dòng dữ liệu.
    - [x] Hiển thị Skeleton Loading khi đang tải dữ liệu.

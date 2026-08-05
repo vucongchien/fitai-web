@@ -4,6 +4,7 @@ import { Check, Clock3 } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/shared/ui/button";
+
 import { AvailabilityScheduler } from "./availability-scheduler";
 import { EquipmentSelector } from "./equipment-selector";
 import { InjuryConstraintsManager } from "./injury-constraints-manager";
@@ -86,7 +87,8 @@ export function ProfileForm() {
             <div className="schedule-impact flex items-center gap-2 text-xs text-[var(--color-graphite,#50565C)] p-3 rounded-[10px] bg-[var(--color-soft-paper,#F7F8F6)] border border-[var(--color-mist,#ECEEF0)]">
               <Clock3 className="shrink-0 text-[var(--color-relay-blue,#4B57F2)]" size={18} />
               <p>
-                Saving availability or equipment changes will ask before regenerating your 4-week roadmap.
+                Saving availability or equipment changes will ask before regenerating your 4-week
+                roadmap.
               </p>
             </div>
 

@@ -5,7 +5,6 @@ import type {
   MetadataItem,
   PaginatedResponse,
 } from "@/features/admin/domain/admin-types";
-
 import { MOCK_CATALOG } from "@/shared/mock/catalog";
 import { MOCK_EXERCISES } from "@/shared/mock/exercises";
 
@@ -104,9 +103,8 @@ export async function fetchAdminExercises({
 
   const paginatedItems = result.slice(startIndex, startIndex + limit);
   const hasMore = startIndex + limit < result.length;
-  const nextCursor = hasMore && paginatedItems.length > 0
-    ? paginatedItems[paginatedItems.length - 1].id
-    : null;
+  const nextCursor =
+    hasMore && paginatedItems.length > 0 ? paginatedItems[paginatedItems.length - 1].id : null;
 
   return {
     items: paginatedItems,
@@ -201,9 +199,7 @@ export async function fetchMetadataList(
   return metadataStore.filter((item) => item.category === category);
 }
 
-export async function createMetadataItem(
-  item: Omit<MetadataItem, "id">,
-): Promise<MetadataItem> {
+export async function createMetadataItem(item: Omit<MetadataItem, "id">): Promise<MetadataItem> {
   await new Promise((resolve) => setTimeout(resolve, 30));
   const prefix = item.category.substring(0, 2);
   const newId = `${prefix}-${Date.now().toString(36)}`;

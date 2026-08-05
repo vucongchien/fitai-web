@@ -17,10 +17,10 @@ export function adaptNutritionSummary(_nutritionRes: unknown): NutritionSummary 
 export function adaptHomePageData(roadmapRes: unknown, nutritionRes: unknown): HomePageData {
   return {
     streak: { days: 0 }, // TODO: roadmapRes.streak.days
-    coachNote: null,     // TODO: roadmapRes.coachNote
+    coachNote: null, // TODO: roadmapRes.coachNote
     todayTimeline: adaptTodayTimeline(roadmapRes),
-    evidenceItems: [],   // TODO: roadmapRes.evidenceItems
+    evidenceItems: [], // TODO: roadmapRes.evidenceItems
     nutritionSummary: adaptNutritionSummary(nutritionRes),
-    quickActions: [],    // TODO: static or from config service
+    quickActions: [], // TODO: static or from config service
   };
 }

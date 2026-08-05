@@ -1,6 +1,8 @@
 "use client";
 
+import { Dumbbell, FolderTree, Layers, Pencil, Plus, Tag, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import {
   createMetadataItem,
   deleteMetadataItem,
@@ -9,7 +11,6 @@ import {
 } from "@/features/admin/api/admin-exercise-service";
 import type { MetadataItem } from "@/features/admin/domain/admin-types";
 import { MetadataDialog } from "@/features/admin/ui/metadata-dialog";
-import { Dumbbell, FolderTree, Layers, Pencil, Plus, Tag, Trash2 } from "lucide-react";
 
 export default function AdminMetadataPage() {
   const [activeTab, setActiveTab] = useState<MetadataItem["category"]>("bodyPart");

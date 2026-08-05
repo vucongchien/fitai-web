@@ -1,6 +1,9 @@
 import { CalendarRange, Gauge, Sparkles } from "lucide-react";
 
-import type { RoadmapPageData, SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
+import type {
+  RoadmapPageData,
+  SessionPlanPageData,
+} from "@/features/roadmap/model/roadmap-page.types";
 
 export function getMockRoadmapPageData(): RoadmapPageData {
   return {
@@ -102,11 +105,41 @@ export function getMockSessionPlanData(sessionPlanId: string): SessionPlanPageDa
     string,
     Pick<SessionPlanPageData, "title" | "day" | "date" | "duration" | "targetRpe">
   > = {
-    "lower-foundation": { title: "Lower-body foundation", day: "Mon", date: "Aug 3", duration: 38, targetRpe: 6 },
-    "recovery-walk":    { title: "Recovery day",          day: "Tue", date: "Aug 4", duration: 20, targetRpe: 3 },
-    "upper-control":    { title: "Upper-body control",    day: "Wed", date: "Aug 5", duration: 42, targetRpe: 7 },
-    "posterior-chain":  { title: "Posterior-chain strength", day: "Fri", date: "Aug 7", duration: 45, targetRpe: 7 },
-    "full-body-rhythm": { title: "Full-body rhythm",      day: "Sun", date: "Aug 9", duration: 40, targetRpe: 6 },
+    "lower-foundation": {
+      title: "Lower-body foundation",
+      day: "Mon",
+      date: "Aug 3",
+      duration: 38,
+      targetRpe: 6,
+    },
+    "recovery-walk": {
+      title: "Recovery day",
+      day: "Tue",
+      date: "Aug 4",
+      duration: 20,
+      targetRpe: 3,
+    },
+    "upper-control": {
+      title: "Upper-body control",
+      day: "Wed",
+      date: "Aug 5",
+      duration: 42,
+      targetRpe: 7,
+    },
+    "posterior-chain": {
+      title: "Posterior-chain strength",
+      day: "Fri",
+      date: "Aug 7",
+      duration: 45,
+      targetRpe: 7,
+    },
+    "full-body-rhythm": {
+      title: "Full-body rhythm",
+      day: "Sun",
+      date: "Aug 9",
+      duration: 40,
+      targetRpe: 6,
+    },
   };
 
   const session = sessionMap[sessionPlanId] ?? sessionMap["upper-control"]!;

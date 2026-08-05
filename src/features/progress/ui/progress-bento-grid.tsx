@@ -14,7 +14,12 @@ type ProgressBentoGridProps = {
   onRetry?: () => void;
 };
 
-export function ProgressBentoGrid({ isError = false, isLoading = false, onRetry, stats }: ProgressBentoGridProps) {
+export function ProgressBentoGrid({
+  isError = false,
+  isLoading = false,
+  onRetry,
+  stats,
+}: ProgressBentoGridProps) {
   // 1. Loading State
   if (isLoading) {
     return (
@@ -37,7 +42,9 @@ export function ProgressBentoGrid({ isError = false, isLoading = false, onRetry,
         <div className="p-5 rounded-[14px] bg-[var(--color-coral-tint,#FFF0ED)] border border-[var(--color-sprint-coral,#FF5A47)] flex flex-col items-center text-center gap-3">
           <AlertCircle className="w-6 h-6 text-[var(--color-danger,#C92F42)]" />
           <div>
-            <h3 className="text-sm font-bold text-[var(--color-true-ink,#101214)]">Unable to load progress data</h3>
+            <h3 className="text-sm font-bold text-[var(--color-true-ink,#101214)]">
+              Unable to load progress data
+            </h3>
             <p className="text-xs text-[var(--color-graphite,#50565C)] mt-1">
               Check your connection or try refreshing your stats.
             </p>
@@ -65,9 +72,12 @@ export function ProgressBentoGrid({ isError = false, isLoading = false, onRetry,
             <Trophy className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[var(--color-true-ink,#101214)]">Start your progress journey</h3>
+            <h3 className="text-sm font-bold text-[var(--color-true-ink,#101214)]">
+              Start your progress journey
+            </h3>
             <p className="text-xs text-[var(--color-graphite,#50565C)] max-w-xs mt-1">
-              Complete your first session on the Roadmap to unlock consistency streak, personal records, and weekly activity.
+              Complete your first session on the Roadmap to unlock consistency streak, personal
+              records, and weekly activity.
             </p>
           </div>
         </div>
@@ -77,7 +87,10 @@ export function ProgressBentoGrid({ isError = false, isLoading = false, onRetry,
 
   // 4. Success State
   return (
-    <section aria-label="User progress and consistency" className="progress-bento-section my-4 space-y-3">
+    <section
+      aria-label="User progress and consistency"
+      className="progress-bento-section my-4 space-y-3"
+    >
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--color-graphite,#50565C)]">
           Your Progress & Evidence

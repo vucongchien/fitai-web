@@ -128,16 +128,15 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
             <Gauge aria-hidden="true" size={23} />
             <div>
               <h2>No form score today</h2>
-              <p>This session used manual logging, so FITAI will not invent a camera-based score.</p>
+              <p>
+                This session used manual logging, so FITAI will not invent a camera-based score.
+              </p>
             </div>
           </section>
         )}
 
         <div className="summary-actions">
-          <Link
-            className={buttonVariants({ size: "large", variant: "primary" })}
-            href="/home"
-          >
+          <Link className={buttonVariants({ size: "large", variant: "primary" })} href="/home">
             Done
           </Link>
           <Link className="text-action" href="/profile/progress">

@@ -187,4 +187,3 @@ export type SessionReport = {
 export function reportStorageKey(sessionId: string): string {
   return `fitai-live-report:${sessionId}`;
 }
-

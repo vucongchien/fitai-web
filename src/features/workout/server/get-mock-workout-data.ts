@@ -1,4 +1,8 @@
-import type { AdhocConfig, AiRecommendResult, ExerciseResult } from "@/features/workout/model/workout.types";
+import type {
+  AdhocConfig,
+  AiRecommendResult,
+  ExerciseResult,
+} from "@/features/workout/model/workout.types";
 
 const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
   {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+
 import { AdminQueryProvider } from "@/features/admin/ui/admin-query-provider";
 import { AdminSidebar } from "@/features/admin/ui/admin-sidebar";
 
@@ -31,9 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </header>
 
           {/* Page Content */}
-          <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">
-            {children}
-          </main>
+          <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto space-y-6">{children}</main>
         </div>
       </div>
     </AdminQueryProvider>

@@ -1,6 +1,9 @@
 "use client";
 
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Ban, CheckCircle, Eye, Shield } from "lucide-react";
 import { useMemo, useState } from "react";
+
 import { fetchAdminUsers, toggleUserStatus } from "@/features/admin/api/admin-user-service";
 import type { AdminUser, UserAdminFilters } from "@/features/admin/domain/admin-types";
 import {
@@ -12,8 +15,6 @@ import type { Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 import { UserDialog } from "@/features/admin/ui/user-dialog";
 import { UserFilters } from "@/features/admin/ui/user-filters";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Ban, CheckCircle, Eye, Shield } from "lucide-react";
 
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();

@@ -13,12 +13,12 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 
 import { AdhocExercise, toAdhocExercise } from "@/features/workout/model/adhoc-types";
+import type { ExerciseResult } from "@/features/workout/model/workout.types";
 import {
   beginWorkoutSession,
   getAdhocConfig,
   getAiRecommendation,
 } from "@/features/workout/server/workout-actions";
-import type { ExerciseResult } from "@/features/workout/model/workout.types";
 import { useToast } from "@/shared/ui/toast/toast-context";
 
 export function useAdhocWorkout() {

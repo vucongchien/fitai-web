@@ -75,10 +75,7 @@ export function SessionShell({
         className="workout-progress"
         role="progressbar"
       >
-        <span
-          className="workout-progress__fill"
-          style={{ transform: `scaleX(${progress})` }}
-        />
+        <span className="workout-progress__fill" style={{ transform: `scaleX(${progress})` }} />
       </div>
 
       <main className="live-workout__main">{children}</main>

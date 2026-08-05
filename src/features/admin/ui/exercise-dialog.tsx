@@ -1,9 +1,10 @@
 "use client";
 
+import { Check, Dumbbell, X } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import type { AdminExercise, AdminExerciseStatus } from "@/features/admin/domain/admin-types";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
-import { Check, Dumbbell, X } from "lucide-react";
 
 export type ExerciseDialogMode = "create" | "edit" | "view";
 
@@ -135,9 +136,7 @@ export function ExerciseDialog({
                 {mode === "view" && "Chi tiết Bài tập"}
               </h2>
               <p className="text-xs text-zinc-400">
-                {mode === "view"
-                  ? `ID: ${exercise?.id}`
-                  : "Điền đầy đủ thông tin bài tập bên dưới"}
+                {mode === "view" ? `ID: ${exercise?.id}` : "Điền đầy đủ thông tin bài tập bên dưới"}
               </p>
             </div>
           </div>
@@ -151,7 +150,11 @@ export function ExerciseDialog({
         </div>
 
         {/* Modal Body (Scrollable Large Modal) */}
-        <form id="exercise-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
+        <form
+          id="exercise-form"
+          onSubmit={handleSubmit}
+          className="flex-1 overflow-y-auto p-6 space-y-5"
+        >
           {/* Row 1: Name & Status */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2 space-y-1.5">
@@ -173,7 +176,8 @@ export function ExerciseDialog({
                 disabled={isReadOnly}
                 value={formData.status || "created"}
                 onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value as AdminExerciseStatus })}
+                  setFormData({ ...formData, status: e.target.value as AdminExerciseStatus })
+                }
                 className="w-full px-3.5 py-2.5 text-xs bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-xl text-zinc-100 focus:outline-none disabled:opacity-70 disabled:bg-zinc-900/50 cursor-pointer"
               >
                 <option value="created">Draft (Mới tạo)</option>
@@ -240,7 +244,8 @@ export function ExerciseDialog({
                 disabled={isReadOnly}
                 value={formData.difficulty || "beginner"}
                 onChange={(e) =>
-                  setFormData({ ...formData, difficulty: e.target.value as Difficulty })}
+                  setFormData({ ...formData, difficulty: e.target.value as Difficulty })
+                }
                 className="w-full px-3 py-2 text-xs bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-xl text-zinc-100 focus:outline-none disabled:opacity-70 cursor-pointer"
               >
                 <option value="beginner">Beginner</option>
@@ -261,7 +266,8 @@ export function ExerciseDialog({
                 disabled={isReadOnly}
                 value={formData.defaultRestSeconds ?? 60}
                 onChange={(e) =>
-                  setFormData({ ...formData, defaultRestSeconds: Number(e.target.value) })}
+                  setFormData({ ...formData, defaultRestSeconds: Number(e.target.value) })
+                }
                 className="w-full px-3.5 py-2 text-xs bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-xl text-zinc-100 focus:outline-none disabled:opacity-70"
               />
             </div>
@@ -272,8 +278,7 @@ export function ExerciseDialog({
                   type="checkbox"
                   disabled={isReadOnly}
                   checked={formData.hasAiSupported || false}
-                  onChange={(e) =>
-                    setFormData({ ...formData, hasAiSupported: e.target.checked })}
+                  onChange={(e) => setFormData({ ...formData, hasAiSupported: e.target.checked })}
                   className="size-4 rounded accent-amber-500 bg-zinc-900 border-zinc-800 cursor-pointer"
                 />
                 <span>Hỗ trợ Camera AI phân tích Form</span>

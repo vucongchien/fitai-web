@@ -1,5 +1,4 @@
 import "server-only";
-
 import type { SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
 
 import { getMockSessionPlanData } from "./get-mock-roadmap-data";

@@ -3684,9 +3684,15 @@ a.week-route__row:hover {
   line-height: 0;
 }
 
-.toast-type-icon--info    { color: #93c5fd; }
-.toast-type-icon--success { color: #4ade80; }
-.toast-type-icon--error   { color: #fca5a5; }
+.toast-type-icon--info {
+  color: #93c5fd;
+}
+.toast-type-icon--success {
+  color: #4ade80;
+}
+.toast-type-icon--error {
+  color: #fca5a5;
+}
 
 .toast-message {
   flex: 1;
@@ -3974,7 +3980,6 @@ a.week-route__row:hover {
   color: var(--color-text-muted);
   font-size: 0.76rem;
 }
-
 
 /* Edit Modal Backdrop */
 .exercise-edit-modal-backdrop {

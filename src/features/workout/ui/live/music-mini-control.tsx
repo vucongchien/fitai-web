@@ -1,7 +1,7 @@
 "use client";
 
-import { memo } from "react";
 import { Music, Pause, Play, SkipForward } from "lucide-react";
+import { memo } from "react";
 
 import type { AudioCoach } from "@/features/workout/model/use-audio-coach";
 

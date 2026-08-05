@@ -3,8 +3,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
-import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
 import { SetTimer } from "@/features/workout/ui/live/set-timer";
+import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
 
 describe("WorkoutSummaryView Component", () => {
   afterEach(() => {

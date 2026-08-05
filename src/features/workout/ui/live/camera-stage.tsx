@@ -1,8 +1,8 @@
 "use client";
 
+import { CameraOff, RefreshCw } from "lucide-react";
 import { useCallback, useState } from "react";
 import type { ReactNode, RefObject } from "react";
-import { CameraOff, RefreshCw } from "lucide-react";
 
 import type { Pose } from "@/features/workout/domain/pose-metrics";
 import type { CameraState } from "@/features/workout/model/use-camera-stream";
@@ -59,7 +59,11 @@ export function CameraStage({
 
       {state !== "ready" ? (
         <div className="camera-stage__placeholder relative z-10 flex flex-col items-center justify-center p-4 text-center">
-          <CameraOff aria-hidden="true" size={26} className="text-[var(--color-text-muted,#50565c)] mb-2" />
+          <CameraOff
+            aria-hidden="true"
+            size={26}
+            className="text-[var(--color-text-muted,#50565c)] mb-2"
+          />
           <p className="text-xs font-medium text-[var(--color-text-muted,#50565c)]">
             {state === "requesting"
               ? "Waiting for camera…"

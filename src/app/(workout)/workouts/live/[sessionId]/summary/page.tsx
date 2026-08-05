@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+
 import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
 
 export const metadata = { title: "Workout Summary | FITAI" };

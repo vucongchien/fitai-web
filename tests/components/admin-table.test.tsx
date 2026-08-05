@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import type { Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 
@@ -26,13 +27,7 @@ describe("AdminTable Component (Light Theme & English)", () => {
       { id: "2", name: "Item Two" },
     ];
 
-    render(
-      <AdminTable
-        columns={columns}
-        data={data}
-        keyExtractor={(item) => item.id}
-      />,
-    );
+    render(<AdminTable columns={columns} data={data} keyExtractor={(item) => item.id} />);
 
     expect(screen.getByText("ID")).toBeInTheDocument();
     expect(screen.getByText("Name")).toBeInTheDocument();

@@ -1,7 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Archive, CheckCircle2, Dumbbell, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
+
 import {
   approveExercise,
   archiveExercise,
@@ -9,10 +12,7 @@ import {
   deleteExercise,
   fetchAdminExercises,
 } from "@/features/admin/api/admin-exercise-service";
-import type {
-  AdminExercise,
-  ExerciseAdminFilters,
-} from "@/features/admin/domain/admin-types";
+import type { AdminExercise, ExerciseAdminFilters } from "@/features/admin/domain/admin-types";
 import {
   DEFAULT_EXERCISE_ADMIN_FILTERS,
   EXERCISE_STATUS_LABEL,
@@ -22,15 +22,6 @@ import type { Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 import { ExerciseFilters } from "@/features/admin/ui/exercise-filters";
 import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Archive,
-  CheckCircle2,
-  Dumbbell,
-  Pencil,
-  Plus,
-  Trash2,
-} from "lucide-react";
 
 export default function AdminExercisesPage() {
   const router = useRouter();
@@ -158,9 +149,7 @@ export default function AdminExercisesPage() {
     {
       header: "Rest Time",
       cell: (ex) => (
-        <span className="text-xs text-slate-600 font-mono">
-          {ex.defaultRestSeconds}s
-        </span>
+        <span className="text-xs text-slate-600 font-mono">{ex.defaultRestSeconds}s</span>
       ),
     },
     {

@@ -76,7 +76,14 @@ type Context = { timeline: SessionStep[] };
 function arriveAt(state: State, timeline: SessionStep[], index: number): State {
   const step = timeline[index];
   if (!step) {
-    return { ...state, status: "complete", stepIndex: index, restEndsAt: null, setEndsAt: null, review: null };
+    return {
+      ...state,
+      status: "complete",
+      stepIndex: index,
+      restEndsAt: null,
+      setEndsAt: null,
+      review: null,
+    };
   }
   return {
     ...state,
@@ -252,7 +259,14 @@ export function useLiveSession(plan: LiveSessionPlan) {
     } catch {
       // A full or blocked storage must never break the workout.
     }
-  }, [plan.sessionId, state.introSeen, state.loggedSets, state.skippedPhases, state.startedAt, state.stepIndex]);
+  }, [
+    plan.sessionId,
+    state.introSeen,
+    state.loggedSets,
+    state.skippedPhases,
+    state.startedAt,
+    state.stepIndex,
+  ]);
 
   const clearDraft = useCallback(() => {
     try {
@@ -263,7 +277,8 @@ export function useLiveSession(plan: LiveSessionPlan) {
   }, [plan.sessionId]);
 
   // --- clocks -------------------------------------------------------------
-  const needsTick = state.status === "working" || state.status === "resting" || state.status === "ready";
+  const needsTick =
+    state.status === "working" || state.status === "resting" || state.status === "ready";
   const now = useTicker(needsTick || state.status === "reviewing");
   const restLeft = secondsLeft(state.restEndsAt, now);
   const setLeft = secondsLeft(state.setEndsAt, now);
@@ -293,7 +308,10 @@ export function useLiveSession(plan: LiveSessionPlan) {
       await syncWorkoutLogs(plan.sessionId, pending);
       dispatch({
         type: "mark-synced",
-        setNumbers: pending.map((set) => ({ exerciseId: set.exerciseId, setNumber: set.setNumber })),
+        setNumbers: pending.map((set) => ({
+          exerciseId: set.exerciseId,
+          setNumber: set.setNumber,
+        })),
       });
     } catch {
       // Stay unsynced and retry on the next set or the next `online` event.
@@ -323,7 +341,10 @@ export function useLiveSession(plan: LiveSessionPlan) {
     (durationSeconds: number) => dispatch({ type: "start-set", durationSeconds }),
     [],
   );
-  const finishSet = useCallback((review: SetReview) => dispatch({ type: "finish-set", review }), []);
+  const finishSet = useCallback(
+    (review: SetReview) => dispatch({ type: "finish-set", review }),
+    [],
+  );
   const cancelReview = useCallback(() => dispatch({ type: "cancel-review" }), []);
   const endRest = useCallback(() => dispatch({ type: "end-rest" }), []);
   const addRest = useCallback((seconds: number) => dispatch({ type: "add-rest", seconds }), []);

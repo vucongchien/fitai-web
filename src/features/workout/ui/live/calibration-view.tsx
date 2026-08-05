@@ -46,11 +46,19 @@ export function CalibrationView({
         {!blocked ? (
           <ul className="calibration__checks">
             <li data-ok={distanceOk || undefined}>
-              {distanceOk ? <Check aria-hidden="true" size={16} /> : <MoveHorizontal aria-hidden="true" size={16} />}
+              {distanceOk ? (
+                <Check aria-hidden="true" size={16} />
+              ) : (
+                <MoveHorizontal aria-hidden="true" size={16} />
+              )}
               About two metres away
             </li>
             <li data-ok={lightOk || undefined}>
-              {lightOk ? <Check aria-hidden="true" size={16} /> : <Sun aria-hidden="true" size={16} />}
+              {lightOk ? (
+                <Check aria-hidden="true" size={16} />
+              ) : (
+                <Sun aria-hidden="true" size={16} />
+              )}
               Enough light to see you
             </li>
             <li data-ok>

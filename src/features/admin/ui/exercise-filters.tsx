@@ -1,8 +1,12 @@
 "use client";
 
-import type { AdminExerciseStatus, ExerciseAdminFilters } from "@/features/admin/domain/admin-types";
-import type { Difficulty } from "@/features/exercise/domain/exercise";
 import { Filter, RotateCcw, Search } from "lucide-react";
+
+import type {
+  AdminExerciseStatus,
+  ExerciseAdminFilters,
+} from "@/features/admin/domain/admin-types";
+import type { Difficulty } from "@/features/exercise/domain/exercise";
 
 export type ExerciseFiltersProps = {
   filters: ExerciseAdminFilters;
@@ -54,7 +58,8 @@ export function ExerciseFilters({
           <select
             value={filters.status}
             onChange={(e) =>
-              onChange({ ...filters, status: e.target.value as AdminExerciseStatus | "all" })}
+              onChange({ ...filters, status: e.target.value as AdminExerciseStatus | "all" })
+            }
             className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
           >
             <option value="all">All Statuses</option>
@@ -102,7 +107,8 @@ export function ExerciseFilters({
           <select
             value={filters.difficulty}
             onChange={(e) =>
-              onChange({ ...filters, difficulty: e.target.value as Difficulty | "all" })}
+              onChange({ ...filters, difficulty: e.target.value as Difficulty | "all" })
+            }
             className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
           >
             <option value="all">All Difficulties</option>

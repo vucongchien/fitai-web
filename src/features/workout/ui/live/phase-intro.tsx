@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
 import { ArrowRight, Clock3, Flame, SkipForward, Snowflake } from "lucide-react";
+import { useMemo } from "react";
 
 import { PHASE_LABEL } from "@/features/workout/domain/session-flow";
 import type { LiveExercise, SessionPhase } from "@/features/workout/model/live-session.types";
@@ -41,7 +41,8 @@ export function PhaseIntro({
         1,
         Math.round(
           exercises.reduce((total, exercise) => {
-            const work = exercise.durationSeconds > 0 ? exercise.durationSeconds : exercise.targetReps * 4;
+            const work =
+              exercise.durationSeconds > 0 ? exercise.durationSeconds : exercise.targetReps * 4;
             return total + (work + exercise.restSetSec) * Math.max(1, exercise.targetSets);
           }, 0) / 60,
         ),
@@ -68,8 +69,8 @@ export function PhaseIntro({
 
         <div className="flex items-center gap-4 bg-[var(--color-surface-subtle,#eceef0)] px-4 py-2 rounded-xl mb-6 text-xs font-semibold text-[var(--color-text,#101214)]">
           <span className="flex items-center gap-1.5">
-            <Clock3 aria-hidden="true" size={14} className="text-[var(--color-action,#4b57f2)]" />
-            ~{minutes} min
+            <Clock3 aria-hidden="true" size={14} className="text-[var(--color-action,#4b57f2)]" />~
+            {minutes} min
           </span>
           <span className="text-[var(--color-border,#c9cdd1)]">•</span>
           <span>
@@ -79,7 +80,10 @@ export function PhaseIntro({
 
         <ol className="w-full text-left space-y-2 mb-6 divide-y divide-[var(--color-surface-subtle,#eceef0)]">
           {exercises.map((exercise, idx) => (
-            <li key={exercise.exerciseId} className="pt-2 first:pt-0 flex items-center justify-between">
+            <li
+              key={exercise.exerciseId}
+              className="pt-2 first:pt-0 flex items-center justify-between"
+            >
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-[var(--color-text-muted,#50565c)] w-5">
                   {String(idx + 1).padStart(2, "0")}
@@ -90,7 +94,9 @@ export function PhaseIntro({
               </div>
               <span className="text-xs font-medium text-[var(--color-text-muted,#50565c)] bg-[var(--color-surface-subtle,#eceef0)] px-2 py-0.5 rounded-md">
                 {exercise.targetSets} ×{" "}
-                {exercise.durationSeconds > 0 ? `${exercise.durationSeconds}s` : `${exercise.targetReps}`}
+                {exercise.durationSeconds > 0
+                  ? `${exercise.durationSeconds}s`
+                  : `${exercise.targetReps}`}
               </span>
             </li>
           ))}
