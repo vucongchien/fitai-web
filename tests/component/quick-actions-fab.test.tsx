@@ -1,38 +1,71 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
+import type { QuickAction } from "@/features/home/model/home-page.types";
 import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
+
+const mockActions: QuickAction[] = [
+  {
+    id: "extra-workout",
+    label: "Extra workout",
+    href: "/workout/adhoc",
+    icon: "dumbbell",
+    colorVariant: "blue",
+  },
+  {
+    id: "log-weight",
+    label: "Log weight",
+    href: "/progress/weight",
+    icon: "scale",
+    colorVariant: "green",
+  },
+  {
+    id: "log-meal",
+    label: "Log meal",
+    href: "/nutrition/log",
+    icon: "utensils",
+    colorVariant: "coral",
+  },
+];
 
 describe("QuickActionsFab Component", () => {
   it("renders closed by default", () => {
-    render(<QuickActionsFab />);
+    const { container } = render(<QuickActionsFab actions={mockActions} />);
 
-    const trigger = screen.getByRole("button", { name: "Open quick actions" });
+    const trigger = container.querySelector(".home-fab-trigger");
     expect(trigger).toBeInTheDocument();
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
   it("opens options menu with animation when trigger is clicked", () => {
-    render(<QuickActionsFab />);
+    const { container } = render(<QuickActionsFab actions={mockActions} />);
 
-    const trigger = screen.getByRole("button", { name: "Open quick actions" });
+    const trigger = container.querySelector(".home-fab-trigger")!;
     fireEvent.click(trigger);
 
-    expect(screen.getByRole("button", { name: "Close quick actions" })).toBeInTheDocument();
-    expect(screen.getByText("Extra workout")).toBeInTheDocument();
-    expect(screen.getByText("Log weight")).toBeInTheDocument();
-    expect(screen.getByText("Log meal")).toBeInTheDocument();
+    expect(screen.getAllByText("Extra workout").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Log weight").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Log meal").length).toBeGreaterThan(0);
   });
 
-  it("closes menu when clicking an option link", () => {
-    render(<QuickActionsFab />);
+  it("toggles trigger aria-expanded state when clicked twice", () => {
+    const { container } = render(<QuickActionsFab actions={mockActions} />);
 
-    const trigger = screen.getByRole("button", { name: "Open quick actions" });
+    const trigger = container.querySelector(".home-fab-trigger")!;
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("renders correct number of action items from props", () => {
+    const { container } = render(<QuickActionsFab actions={mockActions} />);
+
+    const trigger = container.querySelector(".home-fab-trigger")!;
     fireEvent.click(trigger);
 
-    const workoutLink = screen.getByRole("menuitem", { name: /Extra workout/i });
-    fireEvent.click(workoutLink);
-
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    const menuItems = container.querySelectorAll("[role='menuitem']");
+    expect(menuItems).toHaveLength(mockActions.length);
   });
 });

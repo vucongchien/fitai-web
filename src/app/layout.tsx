@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
+import { ToastContainer } from "@/shared/ui/toast/toast-container";
+import { ToastProvider } from "@/shared/ui/toast/toast-context";
+
 import "./globals.css";
 
 const display = localFont({
@@ -48,15 +51,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={`${display.variable} ${body.variable} ${data.variable}`} lang="en">
-      {/*
-        THESIS: Triple Lane turns planning, effort, and recovery into one continuous route; it refuses the generic KPI dashboard.
-        OWN-WORLD: White, ink, and gray chassis with one semantic sport triad, precise type, flat surfaces, and authored lane geometry.
-        STORY: A returning beginner sees the next safe session, completes it, and watches the plan absorb the evidence.
-        FIRST VIEWPORT: Three lanes converge on the next session; the primary action sits directly beneath that convergence.
-        FORM: User-pinned Triple Lane operating interface; seed 4ff89157. FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
-      */}
       <body data-design-direction="triple-lane" data-design-seed="4ff89157">
-        {children}
+        <ToastProvider>
+          {children}
+          <ToastContainer />
+        </ToastProvider>
       </body>
     </html>
   );

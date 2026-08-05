@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { Button } from "@/shared/ui/button";
+
 import { FacebookMark, GoogleMark } from "./provider-marks";
 
 export type OAuthProvider = "google" | "facebook";
@@ -27,51 +28,54 @@ export function LoginActions() {
   const [pending, setPending] = useState(false);
   const isDev = process.env.NODE_ENV === "development";
 
-  const continueWith = useCallback((provider: OAuthProvider) => {
-    if (pending) return;
-    setPending(true);
+  const continueWith = useCallback(
+    (provider: OAuthProvider) => {
+      if (pending) return;
+      setPending(true);
 
-    const popup = openOAuthPopup(provider);
-    if (!popup) return;
+      const popup = openOAuthPopup(provider);
+      if (!popup) return;
 
-    let cleanedUp = false;
+      let cleanedUp = false;
 
-    const cleanup = () => {
-      if (cleanedUp) return;
-      cleanedUp = true;
-      window.removeEventListener("message", onMessage);
-      clearInterval(pollClosed);
-      setPending(false);
-    };
+      const cleanup = () => {
+        if (cleanedUp) return;
+        cleanedUp = true;
+        window.removeEventListener("message", onMessage);
+        clearInterval(pollClosed);
+        setPending(false);
+      };
 
-    const onMessage = (event: MessageEvent<OAuthMessage>) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.source !== popup) return;
+      const onMessage = (event: MessageEvent<OAuthMessage>) => {
+        if (event.origin !== window.location.origin) return;
+        if (event.source !== popup) return;
 
-      if (event.data?.type === "OAUTH_COMPLETE") {
-        cleanup();
-        popup.close();
-        const dest =
-          typeof event.data.dest === "string" && event.data.dest.startsWith("/")
-            ? event.data.dest
-            : "/home";
-        window.location.assign(dest);
-        return;
-      }
+        if (event.data?.type === "OAUTH_COMPLETE") {
+          cleanup();
+          popup.close();
+          const dest =
+            typeof event.data.dest === "string" && event.data.dest.startsWith("/")
+              ? event.data.dest
+              : "/home";
+          window.location.assign(dest);
+          return;
+        }
 
-      if (event.data?.type === "OAUTH_ERROR") {
-        cleanup();
-        popup.close();
-        console.error(`[LoginActions] OAuth error: ${event.data.message ?? "unknown"}`);
-      }
-    };
+        if (event.data?.type === "OAUTH_ERROR") {
+          cleanup();
+          popup.close();
+          console.error(`[LoginActions] OAuth error: ${event.data.message ?? "unknown"}`);
+        }
+      };
 
-    window.addEventListener("message", onMessage);
+      window.addEventListener("message", onMessage);
 
-    const pollClosed = window.setInterval(() => {
-      if (popup.closed) cleanup();
-    }, 500);
-  }, [pending]);
+      const pollClosed = window.setInterval(() => {
+        if (popup.closed) cleanup();
+      }, 500);
+    },
+    [pending],
+  );
 
   return (
     <div className="login-actions">
@@ -105,11 +109,20 @@ export function LoginActions() {
       </Button>
 
       {isDev && (
-        <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px dashed #ccc", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <div
+          style={{
+            marginTop: "1rem",
+            paddingTop: "1rem",
+            borderTop: "1px dashed #ccc",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.5rem",
+          }}
+        >
           <small style={{ color: "#888", fontWeight: 600 }}>🛠️ DEV MODE SHORTCUTS</small>
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <Button
-              size="small"
+              size="medium"
               type="button"
               variant="secondary"
               onClick={() => window.location.assign("/api/auth/dev-login?target=new")}
@@ -117,7 +130,7 @@ export function LoginActions() {
               ⚡ Dev: New User
             </Button>
             <Button
-              size="small"
+              size="medium"
               type="button"
               variant="secondary"
               onClick={() => window.location.assign("/api/auth/dev-login?target=existing")}

@@ -28,10 +28,7 @@ async function resolvePostLoginRoute(accessToken: string, userId: string): Promi
   }
 }
 
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ provider: string }> },
-) {
+export async function GET(request: Request, context: { params: Promise<{ provider: string }> }) {
   const { provider } = await context.params;
   const { origin } = new URL(request.url);
   const cookieStore = await cookies();
@@ -68,9 +65,21 @@ export async function GET(
       ? buildPopupHtml(dest, origin)
       : NextResponse.redirect(new URL(dest, origin));
 
-    response.cookies.set("fitai_access_token", result.accessToken, createAuthCookieOptions({ maxAge: 60 * 15 }));
-    response.cookies.set("fitai_refresh_token", result.refreshToken, createAuthCookieOptions({ maxAge: 60 * 60 * 24 * 30 }));
-    response.cookies.set("fitai_user_id", result.userId, createAuthCookieOptions({ maxAge: 60 * 60 * 24 * 30 }));
+    response.cookies.set(
+      "fitai_access_token",
+      result.accessToken,
+      createAuthCookieOptions({ maxAge: 60 * 15 }),
+    );
+    response.cookies.set(
+      "fitai_refresh_token",
+      result.refreshToken,
+      createAuthCookieOptions({ maxAge: 60 * 60 * 24 * 30 }),
+    );
+    response.cookies.set(
+      "fitai_user_id",
+      result.userId,
+      createAuthCookieOptions({ maxAge: 60 * 60 * 24 * 30 }),
+    );
     response.cookies.delete("fitai_oauth_state");
     response.cookies.delete("fitai_oauth_popup");
 

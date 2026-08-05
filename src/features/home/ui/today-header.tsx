@@ -5,10 +5,7 @@ type TodayHeaderProps = {
   streakDays?: number;
 };
 
-export function TodayHeader({
-  dateLabel = "Today",
-  streakDays = 4,
-}: TodayHeaderProps) {
+export function TodayHeader({ dateLabel = "Today", streakDays = 4 }: TodayHeaderProps) {
   return (
     <header className="today-header">
       <div className="today-header__titles">

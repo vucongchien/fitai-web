@@ -8,10 +8,7 @@ vi.mock("next/server", () => {
     status: number;
     headers: Headers;
     cookies = { set: mockCookieSet, delete: mockCookieDelete };
-    private body: string | null;
-
-    constructor(body: string | null, init?: ResponseInit) {
-      this.body = body;
+    constructor(_body: string | null, init?: ResponseInit) {
       this.status = init?.status ?? 200;
       this.headers = new Headers(init?.headers);
     }
@@ -180,18 +177,24 @@ describe("/auth/callback/[provider] (callback route)", () => {
   it("redirects to invalid_state when state cookie does not match", async () => {
     mockGetCookie.mockReturnValue({ value: "wrong_state" });
     const { GET } = await import("@/app/auth/callback/[provider]/route");
-    const res = await GET(makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`), {
-      params: Promise.resolve({ provider: "google" }),
-    });
+    const res = await GET(
+      makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`),
+      {
+        params: Promise.resolve({ provider: "google" }),
+      },
+    );
     expect(res.headers.get("location")).toContain("/login?error=invalid_state");
   });
 
   it("redirects to invalid_state when state cookie is absent", async () => {
     mockGetCookie.mockReturnValue(undefined);
     const { GET } = await import("@/app/auth/callback/[provider]/route");
-    const res = await GET(makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`), {
-      params: Promise.resolve({ provider: "google" }),
-    });
+    const res = await GET(
+      makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`),
+      {
+        params: Promise.resolve({ provider: "google" }),
+      },
+    );
     expect(res.headers.get("location")).toContain("/login?error=invalid_state");
   });
 
@@ -201,9 +204,12 @@ describe("/auth/callback/[provider] (callback route)", () => {
     mockGetProfile.mockResolvedValue({ completionRate: 30 });
 
     const { GET } = await import("@/app/auth/callback/[provider]/route");
-    const res = await GET(makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`), {
-      params: Promise.resolve({ provider: "google" }),
-    });
+    const res = await GET(
+      makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`),
+      {
+        params: Promise.resolve({ provider: "google" }),
+      },
+    );
     expect(res.headers.get("location")).toContain("/onboarding");
   });
 
@@ -213,9 +219,12 @@ describe("/auth/callback/[provider] (callback route)", () => {
     mockGetProfile.mockResolvedValue({ completionRate: 85 });
 
     const { GET } = await import("@/app/auth/callback/[provider]/route");
-    const res = await GET(makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`), {
-      params: Promise.resolve({ provider: "google" }),
-    });
+    const res = await GET(
+      makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`),
+      {
+        params: Promise.resolve({ provider: "google" }),
+      },
+    );
     expect(res.headers.get("location")).toContain("/planning");
   });
 
@@ -241,9 +250,12 @@ describe("/auth/callback/[provider] (callback route)", () => {
     mockLoginWithOAuth.mockRejectedValue(new Error("grpc error"));
 
     const { GET } = await import("@/app/auth/callback/[provider]/route");
-    const res = await GET(makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`), {
-      params: Promise.resolve({ provider: "google" }),
-    });
+    const res = await GET(
+      makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`),
+      {
+        params: Promise.resolve({ provider: "google" }),
+      },
+    );
     expect(res.headers.get("location")).toContain("/login?error=callback_failed");
   });
 
@@ -253,9 +265,12 @@ describe("/auth/callback/[provider] (callback route)", () => {
     mockGetProfile.mockRejectedValue(new Error("profile unavailable"));
 
     const { GET } = await import("@/app/auth/callback/[provider]/route");
-    const res = await GET(makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`), {
-      params: Promise.resolve({ provider: "google" }),
-    });
+    const res = await GET(
+      makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`),
+      {
+        params: Promise.resolve({ provider: "google" }),
+      },
+    );
     expect(res.headers.get("location")).toContain("/onboarding");
   });
 });

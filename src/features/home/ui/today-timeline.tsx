@@ -1,8 +1,8 @@
 import { Apple, ChevronRight, Dumbbell, Soup } from "lucide-react";
 import Link from "next/link";
 
+import type { TodayItemCategory, TodayTimelineItem } from "@/features/home/model/home-page.types";
 import { cn } from "@/shared/lib/cn";
-import type { TodayItemCategory, TodayTimelineItem } from "@/shared/lib/demo-data";
 
 type TodayTimelineProps = {
   items: TodayTimelineItem[];
@@ -35,10 +35,7 @@ export function TodayTimeline({ items }: TodayTimelineProps) {
         );
 
         return (
-          <li
-            className={cn("week-route__item", `week-route__item--${item.status}`)}
-            key={item.id}
-          >
+          <li className={cn("week-route__item", `week-route__item--${item.status}`)} key={item.id}>
             {item.href ? (
               <Link
                 aria-label={`Chi tiết ${item.title}`}

@@ -2,22 +2,27 @@ import { ArrowRight, Clock3, Gauge } from "lucide-react";
 import Link from "next/link";
 import { ViewTransition } from "react";
 
-import type { SessionSummary } from "@/shared/lib/demo-data";
+import type { SessionSummary } from "@/features/roadmap/model/roadmap-page.types";
 import { buttonVariants } from "@/shared/ui/button";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
 type NextSessionPanelProps = {
   session: SessionSummary;
+  /** Vd: "Week 2 · Build capacity" — từ BFF roadmap data */
+  phaseLabel?: string;
 };
 
-export function NextSessionPanel({ session }: NextSessionPanelProps) {
+export function NextSessionPanel({
+  session,
+  phaseLabel = "Active roadmap",
+}: NextSessionPanelProps) {
   return (
     <section className="next-session-panel">
       <div className="next-session-panel__route">
         <TripleLane labelled morph />
       </div>
       <div className="next-session-panel__content">
-        <p className="utility-label">Week 2 · Build capacity</p>
+        <p className="utility-label">{phaseLabel}</p>
         <ViewTransition default="none" name={`session-plan-${session.id}`} share="session-morph">
           <h1>{session.title}</h1>
         </ViewTransition>

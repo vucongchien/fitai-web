@@ -8,7 +8,7 @@ vi.mock("next/server", () => {
     headers: Headers;
     cookies = { set: mockCookieSet };
 
-    constructor(body: string | null, init?: ResponseInit) {
+    constructor(_body: string | null, init?: ResponseInit) {
       this.status = init?.status ?? 200;
       this.headers = new Headers(init?.headers);
     }

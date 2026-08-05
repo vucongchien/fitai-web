@@ -6,6 +6,10 @@ type PageTransitionProps = {
 };
 
 export function PageTransition({ children, className }: PageTransitionProps) {
+  if (!ViewTransition) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <ViewTransition
       default="none"

@@ -32,9 +32,7 @@ function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): Exerci
   const equipmentIds = params
     .getAll("equipment")
     .filter((id) => catalog.equipments.some((entry) => entry.id === id));
-  const tagIds = params
-    .getAll("tag")
-    .filter((id) => catalog.tags.some((entry) => entry.id === id));
+  const tagIds = params.getAll("tag").filter((id) => catalog.tags.some((entry) => entry.id === id));
   const difficulty = params
     .getAll("level")
     .filter((entry): entry is Difficulty => DIFFICULTY_ORDER.includes(entry as Difficulty));
@@ -66,8 +64,8 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
   const inputRef = useRef<HTMLInputElement>(null);
   const [, startTransition] = useTransition();
 
-  const [filters, setFilters] = useState<ExerciseFilters>(
-    () => parseFilters(new URLSearchParams(searchParams), catalog),
+  const [filters, setFilters] = useState<ExerciseFilters>(() =>
+    parseFilters(new URLSearchParams(searchParams), catalog),
   );
   const [panelOpen, setPanelOpen] = useState(false);
 
@@ -145,15 +143,15 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
           type="button"
         >
           <SlidersHorizontal aria-hidden="true" size={18} strokeWidth={2} />
-          {activeCount > 0 ? (
-            <span className="icon-button__badge">{activeCount}</span>
-          ) : null}
+          {activeCount > 0 ? <span className="icon-button__badge">{activeCount}</span> : null}
         </button>
       </header>
 
       <main className="focused-main">
         <div className="search-meta">
-          <span>{results.length} of {exercises.length} movements</span>
+          <span>
+            {results.length} of {exercises.length} movements
+          </span>
           {activeCount > 0 ? (
             <button
               className="text-button"

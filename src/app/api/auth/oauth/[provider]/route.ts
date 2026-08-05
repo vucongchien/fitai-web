@@ -10,10 +10,7 @@ const VALID_PROVIDERS = new Set(["google", "facebook"]);
 const STATE_MAX_AGE = 60 * 10;
 const POPUP_MAX_AGE = 60 * 10;
 
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ provider: string }> },
-) {
+export async function GET(request: Request, context: { params: Promise<{ provider: string }> }) {
   const { provider } = await context.params;
   const { origin, searchParams } = new URL(request.url);
   const isPopup = searchParams.get("popup") === "1";
@@ -42,10 +39,18 @@ export async function GET(
     const response = NextResponse.redirect(loginUrl, { status: 307 });
 
     if (state) {
-      response.cookies.set("fitai_oauth_state", state, createAuthCookieOptions({ maxAge: STATE_MAX_AGE }));
+      response.cookies.set(
+        "fitai_oauth_state",
+        state,
+        createAuthCookieOptions({ maxAge: STATE_MAX_AGE }),
+      );
     }
     if (isPopup) {
-      response.cookies.set("fitai_oauth_popup", "1", createAuthCookieOptions({ maxAge: POPUP_MAX_AGE }));
+      response.cookies.set(
+        "fitai_oauth_popup",
+        "1",
+        createAuthCookieOptions({ maxAge: POPUP_MAX_AGE }),
+      );
     }
 
     return response;

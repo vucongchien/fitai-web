@@ -33,14 +33,9 @@ export function FilterPanel({
 }: FilterPanelProps) {
   const activeCount = countActiveFilters(filters);
 
-  const toggleList = (
-    key: "bodyPartIds" | "equipmentIds" | "tagIds",
-    id: string,
-  ) => {
+  const toggleList = (key: "bodyPartIds" | "equipmentIds" | "tagIds", id: string) => {
     const current = filters[key];
-    const next = current.includes(id)
-      ? current.filter((entry) => entry !== id)
-      : [...current, id];
+    const next = current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id];
     onChange({ ...filters, [key]: next });
   };
 
