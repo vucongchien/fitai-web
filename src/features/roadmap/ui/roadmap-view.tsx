@@ -1,3 +1,5 @@
+import { getMockProgressStats } from "@/features/progress/model/progress-aggregator";
+import { RoadmapProgressBanner } from "@/features/progress/ui/roadmap-progress-banner";
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
 
@@ -6,11 +8,16 @@ type RoadmapViewProps = {
 };
 
 export function RoadmapView({ data }: RoadmapViewProps) {
+  const stats = getMockProgressStats();
+
   return (
     <>
+      <RoadmapProgressBanner adherence={stats.adherence} />
+
       <span className="roadmap-phase" style={{ position: "absolute", top: "1rem", right: "1rem" }}>
         Week {data.activeWeek} active
       </span>
+
 
       <nav aria-label="Roadmap weeks" className="week-selector">
         {data.weeks.map((week) => (

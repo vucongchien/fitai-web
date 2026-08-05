@@ -17,6 +17,7 @@
 | `unit/app-error.test.ts`         | Authentication and service-unavailable error mapping                                                                                                                                                |
 | `unit/oauth-bff-routes.test.ts`  | BFF entry: invalid provider, missing RPC URL, 307 + state cookie, backend error; Callback: missing code, state mismatch, route resolution (onboarding/planning), auth cookies, Profile API fallback |
 | `unit/dev-login-route.test.ts`   | Dev route: 404 in production, mock auth login for new vs existing user targets in development                                                                                                       |
+| `unit/progress-aggregator.test.ts` | Calculates adherence percentage, formats volume (kg/tonnes), sorts top PRs                                                                                            |
 
 ## Component coverage
 
@@ -27,6 +28,7 @@
 | `component/login-actions.test.tsx`     | Popup opens for Google/Facebook, popup-blocker fallback, OAUTH_COMPLETE navigates to dest, OAUTH_ERROR resets pending, popup closed manually resets, no duplicate clicks |
 | `component/today-timeline.test.tsx`    | Render 4 meals + 1 workout, event time format, clean sub-labels without status duplication, accessible item links                                                        |
 | `component/quick-actions-fab.test.tsx` | Renders closed by default, opens menu on click, toggles aria-expanded, renders correct number of items from BFF props                                                    |
+| `component/progress-bento-grid.test.tsx`| Renders 4 UI states: Loading skeleton, Error state with retry, Empty state with encouragement, and Success Bento grid                                                    |
 
 ## End-to-end coverage
 
