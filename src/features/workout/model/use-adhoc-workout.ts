@@ -18,9 +18,12 @@ import {
   toAdhocExercise,
 } from "@/features/workout/model/adhoc-types";
 import { getAdhocConfig, getAiRecommendation } from "@/shared/api/bff/workout/actions";
+import { useToast } from "@/shared/ui/toast/toast-context";
 
 export function useAdhocWorkout() {
   const router = useRouter();
+  const { showToast } = useToast();
+
   const [mounted, setMounted] = useState(false);
   const [exerciseList, setExerciseList] = useState<AdhocExercise[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -30,13 +33,6 @@ export function useAdhocWorkout() {
   // AI Loading state dùng useTransition để không block UI
   const [aiPending, startAiTransition] = useTransition();
   const [configPending, startConfigTransition] = useTransition();
-
-  // Undo Toast State
-  const [deletedDraft, setDeletedDraft] = useState<{
-    item: AdhocExercise;
-    index: number;
-  } | null>(null);
-  const [undoTimeoutId, setUndoTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   // Mount + load initial config từ BFF (Server Action)
   useEffect(() => {
@@ -49,15 +45,6 @@ export function useAdhocWorkout() {
     });
   }, []);
 
-  // Cleanup undo timeout khi unmount chống memory leak
-  useEffect(() => {
-    return () => {
-      if (undoTimeoutId) {
-        clearTimeout(undoTimeoutId);
-      }
-    };
-  }, [undoTimeoutId]);
-
   // DND-Kit Sensors
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -69,7 +56,7 @@ export function useAdhocWorkout() {
   const totalSets = exerciseList.reduce((acc, item) => acc + (item.sets || 3), 0);
   const estimatedDuration = Math.max(15, Math.round(totalSets * 2.5));
 
-  // Handlers với useCallback để tránh re-render child components thừa
+  // Handlers với useCallback
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -88,38 +75,31 @@ export function useAdhocWorkout() {
         if (index === -1) return prev;
 
         const itemToDelete = prev[index]!;
-        setDeletedDraft({ item: itemToDelete, index });
 
-        if (undoTimeoutId) clearTimeout(undoTimeoutId);
-        const tid = setTimeout(() => setDeletedDraft(null), 5000);
-        setUndoTimeoutId(tid);
+        // Gọi Global Toast System để hiển thị Toast & nút Undo
+        showToast({
+          message: `Removed "${itemToDelete.name}"`,
+          type: "info",
+          action: {
+            label: "Undo",
+            onClick: () => {
+              setExerciseList((currentList) => {
+                const restored = [...currentList];
+                restored.splice(index, 0, itemToDelete);
+                return restored;
+              });
+            },
+          },
+        });
 
         return prev.filter((item) => item.id !== id);
       });
     },
-    [undoTimeoutId],
+    [showToast],
   );
 
-  const handleUndo = useCallback(() => {
-    if (!deletedDraft) return;
-    const { item, index } = deletedDraft;
-    setExerciseList((prev) => {
-      const restored = [...prev];
-      restored.splice(index, 0, item);
-      return restored;
-    });
-    setDeletedDraft(null);
-    if (undoTimeoutId) clearTimeout(undoTimeoutId);
-  }, [deletedDraft, undoTimeoutId]);
-
   const handleAddExercise = useCallback(
-    (rawItem: {
-      id: string;
-      name: string;
-      prescription: string;
-      rest: string;
-      note: string;
-    }) => {
+    (rawItem: { id: string; name: string; prescription: string; rest: string; note: string }) => {
       const newExercise: AdhocExercise = {
         ...rawItem,
         id: `${rawItem.id}-${Date.now()}`,
@@ -177,13 +157,11 @@ export function useAdhocWorkout() {
     setEditingExercise,
     aiLoading: aiPending,
     configLoading: configPending,
-    deletedDraft,
     sensors,
     estimatedDuration,
     targetRpe,
     handleDragEnd,
     handleDeleteExercise,
-    handleUndo,
     handleAddExercise,
     handleAiRecommend,
     handleSaveEdit,

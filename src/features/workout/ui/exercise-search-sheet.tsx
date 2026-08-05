@@ -5,6 +5,7 @@ import { useEffect, useState, useTransition } from "react";
 
 import { searchExercises } from "@/shared/api/bff/workout/actions";
 import type { ExerciseResult } from "@/shared/api/bff/workout/types";
+import { useDebounce } from "@/shared/lib/use-debounce";
 
 type ExerciseSearchSheetProps = {
   isOpen: boolean;
@@ -14,17 +15,19 @@ type ExerciseSearchSheetProps = {
 
 export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: ExerciseSearchSheetProps) {
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 250);
+
   const [results, setResults] = useState<ExerciseResult[]>([]);
   const [isPending, startTransition] = useTransition();
 
-  // Search via Server Action với isCurrent flag chống async race conditions
+  // Search via Server Action khi debouncedQuery thay đổi (250ms delay chống lãng phí network request & server compute)
   useEffect(() => {
     if (!isOpen) return;
 
     let isCurrent = true;
 
     startTransition(async () => {
-      const data = await searchExercises(query);
+      const data = await searchExercises(debouncedQuery);
       if (isCurrent) {
         setResults(data);
       }
@@ -33,7 +36,7 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
     return () => {
       isCurrent = false;
     };
-  }, [query, isOpen]);
+  }, [debouncedQuery, isOpen]);
 
   // Escape key handler cho a11y & Reset state khi đóng sheet
   useEffect(() => {

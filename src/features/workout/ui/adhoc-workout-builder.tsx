@@ -9,7 +9,6 @@ import {
   GripVertical,
   Pencil,
   Plus,
-  RotateCcw,
   ShieldCheck,
   Sparkles,
   Trash2,
@@ -31,13 +30,11 @@ export function AdhocWorkoutBuilder() {
     editingExercise,
     setEditingExercise,
     aiLoading,
-    deletedDraft,
     sensors,
     estimatedDuration,
     targetRpe,
     handleDragEnd,
     handleDeleteExercise,
-    handleUndo,
     handleAddExercise,
     handleAiRecommend,
     handleSaveEdit,
@@ -171,19 +168,6 @@ export function AdhocWorkoutBuilder() {
           <ArrowRight aria-hidden="true" size={18} />
         </button>
       </footer>
-
-      {/* Custom Undo Toast Notification */}
-      {deletedDraft && (
-        <div className="custom-undo-toast" role="status" aria-live="polite">
-          <div className="custom-undo-toast__content">
-            <span>Removed &quot;{deletedDraft.item.name}&quot;</span>
-            <button className="custom-undo-toast__btn" onClick={handleUndo} type="button">
-              <RotateCcw size={14} />
-              Undo
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Exercise Configure Modal Dialog */}
       {editingExercise && (
