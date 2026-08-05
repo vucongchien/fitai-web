@@ -2,24 +2,16 @@
 
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import {
-  ArrowRight,
-  Clock3,
-  Gauge,
-  GripVertical,
-  Pencil,
-  Plus,
-  ShieldCheck,
-  Sparkles,
-  Trash2,
-} from "lucide-react";
+import { ArrowRight, GripVertical, Pencil, ShieldCheck, Trash2 } from "lucide-react";
 
 import { useAdhocWorkout } from "@/features/workout/model/use-adhoc-workout";
+import { AdhocEstimates } from "@/features/workout/ui/adhoc-estimates";
+import { AdhocHero } from "@/features/workout/ui/adhoc-hero";
+import { AdhocToolsRow } from "@/features/workout/ui/adhoc-tools-row";
 import { ExerciseEditModal } from "@/features/workout/ui/exercise-edit-modal";
 import { ExerciseSearchSheet } from "@/features/workout/ui/exercise-search-sheet";
 import { SortableAdhocItem } from "@/features/workout/ui/sortable-adhoc-item";
 import { buttonVariants } from "@/shared/ui/button";
-import { TripleLane } from "@/shared/ui/triple-lane";
 
 export function AdhocWorkoutBuilder() {
   const {
@@ -43,12 +35,7 @@ export function AdhocWorkoutBuilder() {
 
   return (
     <>
-      <section className="workout-prep-hero">
-        <TripleLane active="move" morph />
-        <p className="utility-label">Adhoc Session · Custom Workout</p>
-        <h1>Custom Workout Plan</h1>
-        <p>Build capacity and strength with movements selected for today.</p>
-      </section>
+      <AdhocHero />
 
       <div className="workout-prep-grid">
         <section className="adhoc-exercise-section">
@@ -110,41 +97,17 @@ export function AdhocWorkoutBuilder() {
             </ul>
           )}
 
-          {/* Tools Row at bottom of list */}
-          <div className="adhoc-tools-row">
-            <button
-              aria-label="Add movement"
-              className="ui-button ui-button--secondary ui-button--medium"
-              onClick={() => setIsSearchOpen(true)}
-              type="button"
-            >
-              <Plus size={16} />
-              Add movement
-            </button>
+          <AdhocToolsRow
+            aiLoading={aiLoading}
+            onAiRecommend={handleAiRecommend}
+            onOpenSearch={() => setIsSearchOpen(true)}
+          />
 
-            <button
-              aria-label="AI Recommend custom workout"
-              className="ai-recommend-button"
-              disabled={aiLoading}
-              onClick={handleAiRecommend}
-              type="button"
-            >
-              <Sparkles size={16} />
-              <span>{aiLoading ? "Generating..." : "AI Recommend"}</span>
-            </button>
-          </div>
-
-          {/* Dynamic Estimates at the bottom of the list */}
-          <div className="session-facts adhoc-estimates-bottom">
-            <span>
-              <Clock3 aria-hidden="true" size={17} />~{estimatedDuration} min estimated
-            </span>
-            <span>
-              <Gauge aria-hidden="true" size={17} />
-              {exerciseList.length} movements
-            </span>
-            <span>Target {targetRpe} RPE</span>
-          </div>
+          <AdhocEstimates
+            estimatedDuration={estimatedDuration}
+            exerciseCount={exerciseList.length}
+            targetRpe={targetRpe}
+          />
         </section>
 
         <aside className="prep-aside">
@@ -169,7 +132,6 @@ export function AdhocWorkoutBuilder() {
         </button>
       </footer>
 
-      {/* Exercise Configure Modal Dialog */}
       {editingExercise && (
         <ExerciseEditModal
           exercise={editingExercise}
@@ -178,7 +140,6 @@ export function AdhocWorkoutBuilder() {
         />
       )}
 
-      {/* Bottom Sheet Search */}
       <ExerciseSearchSheet
         isOpen={isSearchOpen}
         onAddExercise={handleAddExercise}
