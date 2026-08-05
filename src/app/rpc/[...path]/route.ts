@@ -6,8 +6,6 @@ import { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/
 import { createServerTransport } from "@/shared/api/server/transport";
 import { recordServerError } from "@/shared/observability/tracer";
 
-export const runtime = "nodejs";
-
 const forwardedRequestHeaders = [
   "accept",
   "connect-protocol-version",
