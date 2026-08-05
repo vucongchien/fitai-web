@@ -3601,59 +3601,116 @@ a.week-route__row:hover {
   border-top: 1px dashed var(--color-border);
 }
 
-/* Custom Toast Notification */
-.custom-undo-toast {
+/* Toast Stack */
+.toast-stack {
   position: fixed;
-  z-index: 100;
+  z-index: 200;
   bottom: calc(5.5rem + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
-  animation: toast-pop-up 220ms var(--ease-out);
-}
-
-@keyframes toast-pop-up {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
-}
-
-.custom-undo-toast__content {
   display: flex;
-  padding: 0.7rem 1.15rem;
+  flex-direction: column;
+  gap: 8px;
   align-items: center;
-  gap: 1rem;
+  pointer-events: none;
+  width: max-content;
+  max-width: min(400px, calc(100vw - 2rem));
+}
+
+.toast-item {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.65rem 1rem;
+  background: color-mix(in srgb, var(--color-text) 93%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 78%, white);
   color: #ffffff;
-  background: color-mix(in srgb, var(--color-text) 92%, #000000);
-  border: 1px solid color-mix(in srgb, var(--color-text) 80%, white);
   border-radius: var(--radius-round);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--color-text) 25%, transparent);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--color-text) 28%, transparent);
   backdrop-filter: blur(12px);
   font-size: 0.85rem;
   font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  animation: toast-enter 260ms var(--ease-out) both;
 }
 
-.custom-undo-toast__btn {
+.toast-item[data-exiting="true"] {
+  animation: toast-exit 200ms ease-in both;
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+}
+
+.toast-type-icon {
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.toast-type-icon--info    { color: #93c5fd; }
+.toast-type-icon--success { color: #4ade80; }
+.toast-type-icon--error   { color: #fca5a5; }
+
+.toast-message {
+  flex: 1;
+}
+
+.toast-action-btn {
+  flex-shrink: 0;
   display: inline-flex;
-  padding: 0.25rem 0.6rem;
   align-items: center;
-  gap: 0.35rem;
-  color: #60a5fa;
-  background: color-mix(in srgb, #3b82f6 15%, transparent);
-  border: 0;
+  padding: 0.2rem 0.65rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: var(--radius-round);
-  font-size: 0.8rem;
-  font-weight: 750;
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color var(--duration-state) ease;
+  letter-spacing: 0.01em;
+  transition: background var(--duration-state) ease;
 }
 
-.custom-undo-toast__btn:hover {
-  background: color-mix(in srgb, #3b82f6 30%, transparent);
+.toast-action-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.toast-close-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  line-height: 0;
+  margin-left: 2px;
+  transition: color var(--duration-state) ease;
+}
+
+.toast-close-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .edit-form-grid {
@@ -3901,45 +3958,6 @@ a.week-route__row:hover {
   font-size: 0.76rem;
 }
 
-/* Undo Toast */
-.undo-toast {
-  position: fixed;
-  z-index: 90;
-  bottom: calc(5.5rem + env(safe-area-inset-bottom));
-  left: 50%;
-  display: flex;
-  padding: 0.65rem 1.1rem;
-  align-items: center;
-  gap: 0.85rem;
-  color: white;
-  background: var(--color-text);
-  border-radius: var(--radius-round);
-  box-shadow: var(--shadow-float);
-  font-size: 0.82rem;
-  transform: translateX(-50%);
-  animation: toast-slide-up 200ms var(--ease-out);
-}
-
-@keyframes toast-slide-up {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 15px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-.undo-toast__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: var(--color-action);
-  background: transparent;
-  font-weight: 750;
-  cursor: pointer;
-}
 
 /* Edit Modal Backdrop */
 .exercise-edit-modal-backdrop {

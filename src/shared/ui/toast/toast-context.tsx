@@ -1,6 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+
+import { _register } from "./toast-store";
 
 export type ToastType = "info" | "success" | "error";
 
@@ -15,11 +17,12 @@ export type ToastItem = {
   type?: ToastType;
   durationMs?: number;
   action?: ToastAction;
+  exiting?: boolean;
 };
 
 type ToastContextValue = {
   toasts: ToastItem[];
-  showToast: (toast: Omit<ToastItem, "id">) => string;
+  showToast: (toast: Omit<ToastItem, "id" | "exiting">) => string;
   dismissToast: (id: string) => void;
 };
 
@@ -29,31 +32,31 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const dismissToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    setToasts((prev) => prev.map((t) => (t.id === id && !t.exiting ? { ...t, exiting: true } : t)));
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 220);
   }, []);
 
   const showToast = useCallback(
-    (toast: Omit<ToastItem, "id">) => {
+    (toast: Omit<ToastItem, "id" | "exiting">) => {
       const id = `toast_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-      const newToast: ToastItem = {
-        id,
-        durationMs: 4000,
-        type: "info",
-        ...toast,
-      };
+      const item: ToastItem = { id, durationMs: 4000, type: "info", ...toast };
 
-      setToasts((prev) => [...prev, newToast]);
+      setToasts((prev) => [...prev, item]);
 
-      if (newToast.durationMs && newToast.durationMs > 0) {
-        setTimeout(() => {
-          dismissToast(id);
-        }, newToast.durationMs);
+      if (item.durationMs && item.durationMs > 0) {
+        setTimeout(() => dismissToast(id), item.durationMs);
       }
 
       return id;
     },
     [dismissToast],
   );
+
+  // Register imperative API on mount so toast.success() etc. work outside React
+  useEffect(() => {
+    _register(showToast, dismissToast);
+    return () => _register(null, null);
+  }, [showToast, dismissToast]);
 
   return (
     <ToastContext.Provider value={{ toasts, showToast, dismissToast }}>
@@ -64,8 +67,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 export function useToast() {
   const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
-  }
+  if (!context) throw new Error("useToast must be used within a ToastProvider");
   return context;
 }
