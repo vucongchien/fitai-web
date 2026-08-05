@@ -18,15 +18,21 @@ export function getTopPersonalRecords(records: PersonalRecord[], limit = 3): Per
     .slice(0, limit);
 }
 
+// TODO (ConnectRPC Migration):
+// Replace getMockProgressStats() with a server-side fetcher function `getUserProgressStats()` calling:
+// 1. Workout Execution Service -> GetSessionHistory / GetPersonalRecords for streak, total volume, and PRs
+// 2. Nutrition Service -> GetDailyNutritionSummary / GetWeeklyNutritionAdherence for weekly nutrition status
+// 3. Roadmap Service -> GetActiveRoadmap for 4-week route adherence percentage
+
 export function getMockProgressStats(): UserProgressStats {
   const weeklyActivity: WeeklyActivityDay[] = [
-    { dayLabel: "Mon", date: "2026-08-03", status: "completed", sessionTitle: "Lower-body foundation" },
-    { dayLabel: "Tue", date: "2026-08-04", status: "recovery", sessionTitle: "Recovery day" },
-    { dayLabel: "Wed", date: "2026-08-05", status: "completed", sessionTitle: "Upper-body control" },
-    { dayLabel: "Thu", date: "2026-08-06", status: "rest" },
-    { dayLabel: "Fri", date: "2026-08-07", status: "rest" },
-    { dayLabel: "Sat", date: "2026-08-08", status: "rest" },
-    { dayLabel: "Sun", date: "2026-08-09", status: "rest" },
+    { dayLabel: "Mon", date: "2026-08-03", status: "completed", sessionTitle: "Lower-body foundation", nutritionStatus: "completed" },
+    { dayLabel: "Tue", date: "2026-08-04", status: "recovery", sessionTitle: "Recovery day", nutritionStatus: "completed" },
+    { dayLabel: "Wed", date: "2026-08-05", status: "completed", sessionTitle: "Upper-body control", nutritionStatus: "completed" },
+    { dayLabel: "Thu", date: "2026-08-06", status: "rest", nutritionStatus: "off_target" },
+    { dayLabel: "Fri", date: "2026-08-07", status: "rest", nutritionStatus: "none" },
+    { dayLabel: "Sat", date: "2026-08-08", status: "rest", nutritionStatus: "none" },
+    { dayLabel: "Sun", date: "2026-08-09", status: "rest", nutritionStatus: "none" },
   ];
 
   const personalRecords: PersonalRecord[] = [
@@ -72,5 +78,13 @@ export function getMockProgressStats(): UserProgressStats {
     adherence,
     weeklyActivity,
     personalRecords,
+    weeklyNutrition: {
+      avgDailyCalories: 2100,
+      targetDailyCalories: 2200,
+      proteinGrams: 140,
+      carbsGrams: 210,
+      fatGrams: 60,
+      avgWaterLiters: 2.2,
+    },
   };
 }

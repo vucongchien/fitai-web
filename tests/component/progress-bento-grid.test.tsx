@@ -32,8 +32,9 @@ describe("ProgressBentoGrid Component", () => {
 
     expect(screen.getAllByText(/consistency streak/i)[0]).toBeInTheDocument();
     expect(screen.getByText(/5 days/i)).toBeInTheDocument();
-    expect(screen.getByText(/weekly activity/i)).toBeInTheDocument();
+    expect(screen.getByText(/weekly activity & nutrition/i)).toBeInTheDocument();
     expect(screen.getByText(/personal records/i)).toBeInTheDocument();
+    expect(screen.getByText(/weekly nutrition & total intake/i)).toBeInTheDocument();
     expect(screen.getByText(/goblet squat/i)).toBeInTheDocument();
   });
 });

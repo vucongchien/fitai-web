@@ -1,23 +1,18 @@
 "use client";
 
-import { CloudOff, ShieldCheck, Timer, WifiOff, X } from "lucide-react";
+import { ArrowLeft, Bell } from "lucide-react";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 
 import type { ProtectionNote } from "@/features/workout/model/live-session.types";
-import { formatClock } from "@/features/workout/model/use-session-timer";
-import { BrandMark } from "@/shared/ui/brand-mark";
+import { toast } from "@/shared/ui/toast";
 
-/**
- * Frame around the live session: where you are, how far in you are, and the
- * notices that must stay visible (offline, unsynced sets, long session, post-injury
- * protection). The end-session control is always reachable in the top right.
- */
 export function SessionShell({
   children,
   durationWarning,
-  elapsedSec,
+  elapsedSec: _elapsedSec,
   online,
-  pendingSyncCount,
+  pendingSyncCount: _pendingSyncCount,
   phaseLabel,
   progress,
   protectionNote,
@@ -35,62 +30,56 @@ export function SessionShell({
   onEnd: () => void;
   children: ReactNode;
 }) {
+  // Trigger toasts for warnings/notices cleanly without spamming
+  useEffect(() => {
+    if (!online) {
+      toast.info("Offline Mode: You're offline. Sets are saved locally.");
+    }
+  }, [online]);
+
+  useEffect(() => {
+    if (durationWarning) {
+      toast.info(`Session Duration: ${durationWarning}`);
+    }
+  }, [durationWarning]);
+
+  useEffect(() => {
+    if (protectionNote) {
+      toast.info(`${protectionNote.title}: ${protectionNote.description}`);
+    }
+  }, [protectionNote]);
+
   return (
     <div className="live-workout">
       <header className="live-workout__header">
-        <BrandMark />
+        <button aria-label="Back" className="workout-close" onClick={onEnd} type="button">
+          <ArrowLeft aria-hidden="true" size={20} />
+        </button>
+
         <div className="live-workout__crumbs">
-          <span className="live-workout__phase">{phaseLabel}</span>
-          <span className="live-workout__step">{stepLabel}</span>
+          <span className="font-medium text-xs text-[var(--color-text-muted,#50565c)]">
+            {phaseLabel} · {stepLabel}
+          </span>
         </div>
-        <span className="live-workout__clock">
-          <Timer aria-hidden="true" size={15} />
-          {formatClock(elapsedSec)}
-        </span>
-        <button aria-label="End session" className="workout-close" onClick={onEnd} type="button">
-          <X aria-hidden="true" size={20} />
+
+        <button aria-label="Notifications" className="workout-close" type="button">
+          <Bell aria-hidden="true" size={18} />
         </button>
       </header>
 
       <div
-        className="workout-progress"
         aria-label={`Session ${Math.round(progress * 100)}% complete`}
-        role="progressbar"
-        aria-valuemin={0}
         aria-valuemax={100}
+        aria-valuemin={0}
         aria-valuenow={Math.round(progress * 100)}
+        className="workout-progress"
+        role="progressbar"
       >
-        <span style={{ transform: `scaleX(${progress})` }} />
+        <span
+          className="workout-progress__fill"
+          style={{ transform: `scaleX(${progress})` }}
+        />
       </div>
-
-      {!online ? (
-        <div className="network-notice" role="status">
-          <WifiOff aria-hidden="true" size={18} />
-          You&rsquo;re offline. Sets are kept on this device and sent when you reconnect.
-        </div>
-      ) : pendingSyncCount > 0 ? (
-        <div className="network-notice network-notice--quiet" role="status">
-          <CloudOff aria-hidden="true" size={18} />
-          {pendingSyncCount} {pendingSyncCount === 1 ? "set" : "sets"} waiting to sync.
-        </div>
-      ) : null}
-
-      {durationWarning ? (
-        <div className="network-notice network-notice--quiet" role="status">
-          <Timer aria-hidden="true" size={18} />
-          {durationWarning}
-        </div>
-      ) : null}
-
-      {protectionNote ? (
-        <div className="protection-note" role="status">
-          <ShieldCheck aria-hidden="true" size={18} />
-          <div>
-            <strong>{protectionNote.title}</strong>
-            <span>{protectionNote.description}</span>
-          </div>
-        </div>
-      ) : null}
 
       <main className="live-workout__main">{children}</main>
     </div>

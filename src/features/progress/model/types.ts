@@ -8,12 +8,14 @@ export type PersonalRecord = {
 };
 
 export type ActivityStatus = "completed" | "recovery" | "rest" | "missed";
+export type NutritionStatus = "completed" | "off_target" | "none";
 
 export type WeeklyActivityDay = {
   dayLabel: string; // "Mon", "Tue", etc.
   date: string; // "YYYY-MM-DD"
   status: ActivityStatus;
   sessionTitle?: string;
+  nutritionStatus?: NutritionStatus;
 };
 
 export type RoadmapAdherence = {
@@ -24,6 +26,15 @@ export type RoadmapAdherence = {
   adherencePercentage: number;
 };
 
+export type WeeklyNutritionSummary = {
+  avgDailyCalories: number;
+  targetDailyCalories: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+  avgWaterLiters: number;
+};
+
 export type UserProgressStats = {
   currentStreakDays: number;
   bestStreakDays: number;
@@ -32,4 +43,5 @@ export type UserProgressStats = {
   adherence: RoadmapAdherence;
   weeklyActivity: WeeklyActivityDay[];
   personalRecords: PersonalRecord[];
+  weeklyNutrition: WeeklyNutritionSummary;
 };

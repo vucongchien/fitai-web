@@ -29,6 +29,7 @@
 | `component/today-timeline.test.tsx`    | Render 4 meals + 1 workout, event time format, clean sub-labels without status duplication, accessible item links                                                        |
 | `component/quick-actions-fab.test.tsx` | Renders closed by default, opens menu on click, toggles aria-expanded, renders correct number of items from BFF props                                                    |
 | `component/progress-bento-grid.test.tsx`| Renders 4 UI states: Loading skeleton, Error state with retry, Empty state with encouragement, and Success Bento grid                                                    |
+| `component/profile-setup.test.tsx`      | Tests Availability Scheduler, Equipment array multi-select, and Injury constraints manager in Profile                                                         |
 
 ## End-to-end coverage
 

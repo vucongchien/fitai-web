@@ -89,7 +89,7 @@ export function ProgressBentoGrid({ isError = false, isLoading = false, onRetry,
         <ConsistencyHeatmap days={stats.weeklyActivity} />
       </div>
 
-      <PersonalRecordsCard records={stats.personalRecords} />
+      <PersonalRecordsCard nutrition={stats.weeklyNutrition} records={stats.personalRecords} />
     </section>
   );
 }

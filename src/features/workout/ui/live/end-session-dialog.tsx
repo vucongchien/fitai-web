@@ -1,12 +1,13 @@
 "use client";
 
-import { AlertTriangle, Flag, HeartPulse } from "lucide-react";
-import { useState } from "react";
+import { AlertTriangle, Award, Flag, HeartPulse, ThumbsUp } from "lucide-react";
+import { useEffect, useState } from "react";
 
+import { estimateCalories } from "@/features/workout/domain/training-load";
 import type { AbortReason } from "@/features/workout/model/live-session.types";
 import { Button } from "@/shared/ui/button";
 
-export type EndDialogVariant = "menu" | "reason" | "overload" | "empty";
+export type EndDialogVariant = "menu" | "reason" | "overload" | "empty" | "complete";
 
 const REASONS: Array<{ id: AbortReason; label: string; blurb: string }> = [
   { blurb: "Something hurts — stop now.", id: "pain", label: "Pain or discomfort" },
@@ -14,29 +15,33 @@ const REASONS: Array<{ id: AbortReason; label: string; blurb: string }> = [
   { blurb: "Not feeling it — that is fine.", id: "uncomfortable", label: "Doesn't feel right" },
 ];
 
-/**
- * Everything that can happen when a session ends.
- *
- *   menu     — finish normally, or stop early
- *   reason   — ux-flow-spec §5.6: why we are stopping, then a soft landing
- *   overload — BR-WL-02: load above 250% of the recent average needs a yes
- *   empty    — ux-flow-spec §5.5: nothing logged, so offer to cancel instead of saving
- */
 export function EndSessionDialog({
+  estimatedCalories,
   loadRatio,
   onAbort,
   onClose,
   onFinish,
+  totalSets = 0,
+  totalVolumeKg = 0,
   variant,
 }: {
   variant: EndDialogVariant;
   loadRatio: number;
+  totalSets?: number;
+  totalVolumeKg?: number;
+  estimatedCalories?: number;
   onClose: () => void;
   onFinish: (confirmOverload: boolean) => void;
   onAbort: (reason: AbortReason) => void;
 }) {
   const [view, setView] = useState<EndDialogVariant>(variant);
   const [reason, setReason] = useState<AbortReason | null>(null);
+
+  useEffect(() => {
+    setView(variant);
+  }, [variant]);
+
+  const calories = estimatedCalories ?? estimateCalories(30, totalVolumeKg);
 
   if (view === "overload") {
     return (
@@ -113,7 +118,12 @@ export function EndSessionDialog({
           </p>
         ) : null}
 
-        <Button disabled={reason === null} onClick={() => reason && onAbort(reason)} size="large" variant="danger">
+        <Button
+          disabled={reason === null}
+          onClick={() => reason && onAbort(reason)}
+          size="large"
+          variant="danger"
+        >
           End the session
         </Button>
         <button className="text-action" onClick={onClose} type="button">
@@ -124,27 +134,70 @@ export function EndSessionDialog({
   }
 
   return (
-    <Dialog label="End session">
-      <h2>Finish this session?</h2>
-      <p>Your logged sets are saved either way.</p>
-      <Button onClick={() => onFinish(false)} size="large">
-        Finish and see the report
-      </Button>
-      <button className="text-action" onClick={() => setView("reason")} type="button">
-        <HeartPulse aria-hidden="true" size={17} />
-        Stop early — pain or out of time
-      </button>
-      <button className="text-action" onClick={onClose} type="button">
-        Back to the session
-      </button>
+    <Dialog label="Workout completed">
+      <div className="flex flex-col items-center text-center pt-2 pb-1">
+        <div className="w-20 h-20 rounded-3xl bg-[var(--color-action-soft,#eef0ff)] text-[var(--color-action,#4b57f2)] flex items-center justify-center mb-4 shadow-sm relative transform hover:scale-105 transition-transform">
+          <ThumbsUp size={38} className="stroke-[2.5]" />
+          <Award size={20} className="absolute -top-1 -right-1 text-[var(--color-effort,#ff5a47)]" />
+        </div>
+
+        <h2 className="text-2xl font-bold text-[var(--color-text,#101214)] mb-1">
+          Great job! Workout completed
+        </h2>
+        <p className="text-xs text-[var(--color-text-muted,#50565c)] mb-6">
+          You kept your reps controlled and completed today&rsquo;s target load.
+        </p>
+
+        <div className="w-full bg-[var(--color-surface-subtle,#eceef0)] rounded-2xl p-4 flex items-center justify-around mb-6 border border-[var(--color-border,#c9cdd1)]">
+          <div className="flex-1 text-center border-r border-[var(--color-border,#c9cdd1)] pr-2">
+            <strong className="data-value text-2xl font-extrabold text-[var(--color-text,#101214)] block">
+              {totalSets}
+            </strong>
+            <span className="text-xs font-semibold text-[var(--color-text-muted,#50565c)] mt-0.5 block">
+              Total Sets
+            </span>
+          </div>
+          <div className="flex-1 text-center pl-2">
+            <strong className="data-value text-2xl font-extrabold text-[var(--color-text,#101214)] block">
+              {calories}
+            </strong>
+            <span className="text-xs font-semibold text-[var(--color-text-muted,#50565c)] mt-0.5 block">
+              Calories Burnt
+            </span>
+          </div>
+        </div>
+
+        <Button
+          className="w-full ui-button--primary bg-[var(--color-action,#4b57f2)] text-white text-base py-3.5 rounded-xl shadow-md hover:brightness-105 transition-all mb-2"
+          onClick={() => onFinish(false)}
+          size="large"
+        >
+          Next Challenge
+        </Button>
+        <button
+          className="text-action text-xs text-[var(--color-text-muted,#50565c)] hover:text-[var(--color-danger,#c92f42)] transition-colors"
+          onClick={() => setView("reason")}
+          type="button"
+        >
+          Report pain or stop early
+        </button>
+      </div>
     </Dialog>
   );
 }
 
 function Dialog({ children, label }: { children: React.ReactNode; label: string }) {
   return (
-    <div className="live-sheet live-sheet--dialog" role="dialog" aria-label={label} aria-modal="true">
-      <div className="end-dialog">{children}</div>
+    <div
+      aria-label={label}
+      aria-modal="true"
+      className="live-sheet live-sheet--dialog fix-sheet-modal"
+      role="dialog"
+    >
+      <div className="end-dialog max-w-sm mx-auto bg-[var(--color-surface,#ffffff)] rounded-3xl p-6 shadow-2xl border border-[var(--color-border,#c9cdd1)]">
+        <div className="w-12 h-1.5 bg-[var(--color-border,#c9cdd1)] rounded-full mx-auto mb-4 opacity-60" />
+        {children}
+      </div>
     </div>
   );
 }

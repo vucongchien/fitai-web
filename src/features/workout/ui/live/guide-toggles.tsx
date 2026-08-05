@@ -1,15 +1,9 @@
 "use client";
 
+import { memo } from "react";
 import { BookOpen, Ear, Eye } from "lucide-react";
 
-/**
- * Watch / Listen / Read.
- *
- * ux-flow-spec §5.3 is explicit that watching and listening are two independent
- * toggles and must not be merged into one "guidance" button. Reading is a sheet,
- * not a toggle — it is a one-off look at the cues.
- */
-export function GuideToggles({
+export const GuideToggles = memo(function GuideToggles({
   listening,
   onOpenInstructions,
   onToggleListening,
@@ -31,9 +25,10 @@ export function GuideToggles({
         onClick={onToggleWatching}
         type="button"
       >
-        <Eye aria-hidden="true" size={18} />
-        Watch
+        <Eye aria-hidden="true" size={14} />
+        <span>Watch</span>
       </button>
+
       <button
         aria-pressed={listening}
         className="guide-toggle"
@@ -41,13 +36,14 @@ export function GuideToggles({
         onClick={onToggleListening}
         type="button"
       >
-        <Ear aria-hidden="true" size={18} />
-        Listen
+        <Ear aria-hidden="true" size={14} />
+        <span>Listen</span>
       </button>
+
       <button className="guide-toggle" onClick={onOpenInstructions} type="button">
-        <BookOpen aria-hidden="true" size={18} />
-        Read
+        <BookOpen aria-hidden="true" size={14} />
+        <span>Read</span>
       </button>
     </div>
   );
-}
+});

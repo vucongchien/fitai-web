@@ -1,11 +1,11 @@
 "use client";
 
+import { memo } from "react";
 import { Music, Pause, Play, SkipForward } from "lucide-react";
 
 import type { AudioCoach } from "@/features/workout/model/use-audio-coach";
 
-/** Always-visible music control: what is playing, pause, next, open the picker. */
-export function MusicMiniControl({
+export const MusicMiniControl = memo(function MusicMiniControl({
   audio,
   onOpenSheet,
 }: {
@@ -15,7 +15,7 @@ export function MusicMiniControl({
   return (
     <div className="music-mini">
       <button className="music-mini__label" onClick={onOpenSheet} type="button">
-        <Music aria-hidden="true" size={15} />
+        <Music aria-hidden="true" size={14} />
         <span>{audio.track ? audio.track.title : "Choose music"}</span>
       </button>
       {audio.track ? (
@@ -26,16 +26,16 @@ export function MusicMiniControl({
             type="button"
           >
             {audio.isPlaying ? (
-              <Pause aria-hidden="true" size={15} />
+              <Pause aria-hidden="true" size={13} />
             ) : (
-              <Play aria-hidden="true" size={15} />
+              <Play aria-hidden="true" size={13} />
             )}
           </button>
           <button aria-label="Next track" onClick={audio.next} type="button">
-            <SkipForward aria-hidden="true" size={15} />
+            <SkipForward aria-hidden="true" size={13} />
           </button>
         </div>
       ) : null}
     </div>
   );
-}
+});

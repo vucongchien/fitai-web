@@ -18,7 +18,7 @@ import type {
   SetSource,
 } from "@/features/workout/model/live-session.types";
 import { elapsedSeconds, secondsLeft, useTicker } from "@/features/workout/model/use-session-timer";
-import { logWorkoutSet, syncWorkoutLogs } from "@/features/workout/server/workout-actions";
+import { syncWorkoutLogs } from "@/features/workout/server/workout-actions";
 
 /**
  * The live session state machine.
@@ -73,16 +73,14 @@ type Action =
 
 type Context = { timeline: SessionStep[] };
 
-/** Status on arriving at `index`: a new phase shows its intro card first. */
 function arriveAt(state: State, timeline: SessionStep[], index: number): State {
   const step = timeline[index];
   if (!step) {
     return { ...state, status: "complete", stepIndex: index, restEndsAt: null, setEndsAt: null, review: null };
   }
-  const needsIntro = !state.introSeen.includes(step.phase);
   return {
     ...state,
-    status: needsIntro ? "phase-intro" : "ready",
+    status: "ready",
     stepIndex: index,
     restEndsAt: null,
     setEndsAt: null,
@@ -210,7 +208,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
     (current: State, action: Action) => reducer(current, action, { timeline }),
     undefined,
     (): State => ({
-      status: timeline.length === 0 ? "complete" : "phase-intro",
+      status: timeline.length === 0 ? "complete" : "ready",
       stepIndex: 0,
       startedAt: Date.now(),
       setEndsAt: null,
@@ -222,8 +220,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
     }),
   );
 
-  // Restore an interrupted session. A running set or rest is not resumed — the
-  // user comes back to a calm "ready" state rather than a clock they cannot trust.
+  // Restore an interrupted session.
   const restored = useRef(false);
   useEffect(() => {
     if (restored.current) return;
@@ -234,7 +231,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
       type: "restore",
       state: {
         ...draft,
-        status: draft.introSeen.includes(timeline[draft.stepIndex]!.phase) ? "ready" : "phase-intro",
+        status: "ready",
         setEndsAt: null,
         restEndsAt: null,
         review: null,
@@ -293,9 +290,6 @@ export function useLiveSession(plan: LiveSessionPlan) {
     if (typeof navigator !== "undefined" && !navigator.onLine) return;
     syncing.current = true;
     try {
-      for (const set of pending) {
-        await logWorkoutSet(plan.sessionId, set);
-      }
       await syncWorkoutLogs(plan.sessionId, pending);
       dispatch({
         type: "mark-synced",

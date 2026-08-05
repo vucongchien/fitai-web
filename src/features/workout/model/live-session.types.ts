@@ -182,3 +182,9 @@ export type SessionReport = {
   hasUnverifiedSets: boolean;
   personalRecords: Array<{ exerciseId: string; name: string; oneRepMaxKg: number }>;
 };
+
+/** Key used in sessionStorage to persist the post-session report for Summary view. */
+export function reportStorageKey(sessionId: string): string {
+  return `fitai-live-report:${sessionId}`;
+}
+
