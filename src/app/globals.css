@@ -4609,6 +4609,11 @@ body:has(.live-screen) {
   transform: scale(0.985);
 }
 
+.live-timerbar__side:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .live-screen__footer > .live-timerbar__side:first-child {
   justify-self: start;
 }

@@ -6,6 +6,7 @@ import { CountdownRing } from "@/features/workout/ui/live/countdown-ring";
 
 export function ActiveTimerBar({
   addSeconds = 10,
+  disabled = false,
   display,
   onAddTime,
   onDone,
@@ -16,6 +17,8 @@ export function ActiveTimerBar({
   onDone: () => void;
   onAddTime: () => void;
   addSeconds?: number;
+  /** No running clock to extend — the + control has nothing to act on. */
+  disabled?: boolean;
 }) {
   return (
     <div className="live-screen__footer">
@@ -34,6 +37,7 @@ export function ActiveTimerBar({
       <button
         aria-label={`Add ${addSeconds} seconds`}
         className="live-timerbar__side"
+        disabled={disabled}
         onClick={onAddTime}
         type="button"
       >

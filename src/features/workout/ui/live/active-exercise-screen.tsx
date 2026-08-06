@@ -4,7 +4,7 @@ import { BookOpen, Maximize2, Volume2, VolumeX } from "lucide-react";
 import type { ReactNode } from "react";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
-import { formatClock } from "@/features/workout/model/use-session-timer";
+import { formatCountdown } from "@/features/workout/model/use-session-timer";
 import { ActiveTimerBar } from "@/features/workout/ui/live/active-timer-bar";
 import { CoachingPanel } from "@/features/workout/ui/live/coaching-panel";
 import { ExerciseMedia } from "@/features/workout/ui/live/exercise-media";
@@ -17,12 +17,6 @@ function targetLabel(exercise: LiveExercise): string {
   if (exercise.durationSeconds > 0) return `${exercise.durationSeconds} sec`;
   const reps = `${exercise.targetReps} reps`;
   return exercise.isWeighted ? `${reps} · ${exercise.targetWeightKg} kg` : reps;
-}
-
-/** formatClock doesn't zero-pad minutes ("0:30"); the timer bar always wants "00:30". */
-function padClockMinutes(clock: string): string {
-  const [minutes, seconds] = clock.split(":");
-  return `${minutes.padStart(2, "0")}:${seconds}`;
 }
 
 export function ActiveExerciseScreen({
@@ -87,17 +81,19 @@ export function ActiveExerciseScreen({
   // Three honest cases, and no fourth:
   //   timed hold          → clock counting down, arc depletes with it
   //   reps + camera count → "4 / 10", arc tracks the count
-  //   reps, no camera     → the target itself, bare track. There is no
-  //                         denominator to animate against and PRODUCT.md
-  //                         forbids inventing evidence, so nothing is faked.
+  //   reps, no camera     → nothing to count and no clock to run. The target
+  //                         is already shown by the meta row, so the ring
+  //                         (a timer instrument) says so with an em dash
+  //                         rather than echoing it, and PRODUCT.md forbids
+  //                         inventing evidence, so nothing is faked.
   const timed = exercise.durationSeconds > 0;
   const tracking = !timed && repCount !== undefined && exercise.targetReps > 0;
 
   const display = timed
-    ? padClockMinutes(formatClock(Math.max(0, secondsLeft)))
+    ? formatCountdown(Math.max(0, secondsLeft))
     : tracking
       ? `${repCount} / ${exercise.targetReps}`
-      : `${exercise.targetReps} reps`;
+      : "—";
 
   const progress = timed
     ? exercise.durationSeconds > 0
@@ -124,7 +120,13 @@ export function ActiveExerciseScreen({
 
       <CoachingPanel exercise={exercise} />
 
-      <ActiveTimerBar display={display} onAddTime={onAddTime} onDone={onDone} progress={progress} />
+      <ActiveTimerBar
+        disabled={!timed}
+        display={display}
+        onAddTime={onAddTime}
+        onDone={onDone}
+        progress={progress}
+      />
     </div>
   );
 }

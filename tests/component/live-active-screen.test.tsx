@@ -76,8 +76,7 @@ describe("ActiveExerciseScreen", () => {
       />,
     );
 
-    // Rendered in both the meta row and the timer ring, so more than one match.
-    expect(screen.getAllByText("10 reps").length).toBeGreaterThan(0);
+    expect(screen.getByText("10 reps")).toBeInTheDocument();
   });
 
   it("counts down the hold in the timer bar", () => {
@@ -98,7 +97,7 @@ describe("ActiveExerciseScreen", () => {
     expect(screen.getByText("4 / 10")).toBeInTheDocument();
   });
 
-  it("shows the rep target and no arc when nothing is counting reps", () => {
+  it("shows an em dash and no arc when nothing is counting reps", () => {
     const { container } = render(
       <ActiveExerciseScreen
         {...baseProps}
@@ -107,8 +106,9 @@ describe("ActiveExerciseScreen", () => {
       />,
     );
 
-    // Never a frozen 00:00, and never a fabricated progress arc.
-    expect(screen.getAllByText("10 reps").length).toBeGreaterThan(0);
+    // The target belongs to the meta row, and is not echoed by the ring.
+    expect(screen.getAllByText("10 reps")).toHaveLength(1);
+    expect(screen.getByRole("timer")).toHaveTextContent("—");
     expect(screen.queryByText("00:00")).not.toBeInTheDocument();
     expect(container.querySelector(".countdown-ring__arc")).toBeNull();
   });
@@ -146,5 +146,11 @@ describe("ActiveExerciseScreen", () => {
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
 
     expect(onDone).toHaveBeenCalledOnce();
+  });
+
+  it("keeps the add-time control live for a timed hold", () => {
+    render(<ActiveExerciseScreen {...baseProps} />);
+
+    expect(screen.getByRole("button", { name: "Add 10 seconds" })).toBeEnabled();
   });
 });

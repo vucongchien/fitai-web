@@ -63,4 +63,13 @@ describe("ActiveTimerBar", () => {
     expect(container.querySelector(".countdown-ring__arc")).toBeNull();
     expect(container.querySelector(".countdown-ring__track")).not.toBeNull();
   });
+
+  it("disables the add-time control when there is no clock to extend", () => {
+    render(
+      <ActiveTimerBar disabled display="—" onAddTime={vi.fn()} onDone={vi.fn()} progress={null} />,
+    );
+
+    expect(screen.getByRole("button", { name: "Add 10 seconds" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Done" })).toBeEnabled();
+  });
 });
