@@ -31,22 +31,12 @@ export function MetricGrid({ metrics }: MetricGridProps) {
 
             <span className="metric-grid__title">{metric.title}</span>
 
-            <strong className="metric-grid__value data-value">{metric.value}</strong>
+            <p className="metric-grid__value">
+              <strong className="data-value">{metric.value}</strong>
+              {metric.unit ? <span className="metric-grid__unit">{metric.unit}</span> : null}
+            </p>
 
-            <span className="metric-grid__goal">{metric.goal}</span>
-
-            {metric.percentage === null ? null : (
-              <div
-                aria-label={`${metric.title}: ${metric.percentage} percent of target`}
-                aria-valuemax={100}
-                aria-valuemin={0}
-                aria-valuenow={metric.percentage}
-                className="metric-grid__track"
-                role="progressbar"
-              >
-                <span style={{ inlineSize: `${metric.percentage}%` }} />
-              </div>
-            )}
+            <span className="metric-grid__caption">{metric.caption}</span>
           </li>
         );
       })}

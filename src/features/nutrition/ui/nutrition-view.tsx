@@ -2,7 +2,6 @@ import { Beef, Droplet, Salad, Wheat } from "lucide-react";
 
 import { WEEK_DAYS } from "@/features/nutrition/model/nutrition-page.mapper";
 import type { NutritionPageData } from "@/features/nutrition/model/nutrition-page.types";
-import { MacroRow } from "@/features/nutrition/ui/macro-row";
 import { MealTimeline } from "@/features/nutrition/ui/meal-timeline";
 import { MetricHero } from "@/shared/ui/charts/metric-hero";
 import { TrendLineChart } from "@/shared/ui/charts/trend-line-chart";
@@ -14,7 +13,6 @@ type NutritionViewProps = {
 const MACRO_ICONS = [Beef, Wheat, Droplet] as const;
 
 export function NutritionView({ data }: NutritionViewProps) {
-  const weekTarget = data.caloriesTargetPerDay * WEEK_DAYS;
   const average = data.caloriesAverage;
 
   return (
@@ -27,8 +25,8 @@ export function NutritionView({ data }: NutritionViewProps) {
         note={`Daily average · target ${data.caloriesTargetPerDay.toLocaleString()} kcal`}
         stats={data.macros.map((macro, index) => ({
           Icon: MACRO_ICONS[index] ?? Beef,
-          label: macro.label,
-          value: `${macro.grams.toLocaleString()} g`,
+          label: `${macro.label} / day`,
+          value: `${macro.gramsPerDay.toLocaleString()} g`,
         }))}
         unit="kcal"
         value={average ?? 0}
@@ -52,14 +50,6 @@ export function NutritionView({ data }: NutritionViewProps) {
           reference={{ label: "Target", value: data.caloriesTargetPerDay }}
           yLabel="kcal"
         />
-      </section>
-
-      <section className="content-section">
-        <div className="content-section__header">
-          <h2>Macros this week</h2>
-          <p>Against a {weekTarget.toLocaleString()} kcal week</p>
-        </div>
-        <MacroRow macros={data.macros} />
       </section>
 
       <section className="content-section">

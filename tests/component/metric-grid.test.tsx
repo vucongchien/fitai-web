@@ -9,46 +9,43 @@ import {
   getMockNutritionSummary,
   MOCK_TODAY,
 } from "@/features/nutrition/server/get-mock-nutrition-data";
-import { getMockWorkoutStatsData } from "@/features/workout-stats/server/get-mock-workout-stats";
+import {
+  getMockSessionPlans,
+  getMockWorkoutStatsData,
+} from "@/features/workout-stats/server/get-mock-workout-stats";
 
 // This project's vitest config does not enable `globals`, so RTL auto-cleanup is off.
 afterEach(cleanup);
 
 const card: MetricCard = {
-  goal: "of 2,050 kcal",
-  goalIsTarget: true,
+  caption: "Today",
+  unit: "kcal",
   icon: "flame",
   id: "calories-consumed",
-  percentage: 69,
   title: "Calories consumed",
   value: "1,420",
 };
 
 describe("MetricGrid", () => {
-  it("shows the actual value alongside its target", () => {
+  it("shows the reading with its unit and period", () => {
     render(<MetricGrid metrics={[card]} />);
 
     expect(screen.getByText("1,420")).toBeInTheDocument();
-    expect(screen.getByText("of 2,050 kcal")).toBeInTheDocument();
+    expect(screen.getByText("kcal")).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
   });
 
-  it("exposes the target as a progressbar when one exists", () => {
+  it("renders no progress bar, because targets live on the overview card", () => {
     render(<MetricGrid metrics={[card]} />);
 
-    const bar = screen.getByRole("progressbar", {
-      name: "Calories consumed: 69 percent of target",
-    });
-    expect(bar).toHaveAttribute("aria-valuenow", "69");
+    expect(screen.queryByRole("progressbar")).toBeNull();
   });
 
-  it("omits the progressbar when the wire carries no target", () => {
-    render(
-      <MetricGrid
-        metrics={[{ ...card, goal: "over the last 7 days", goalIsTarget: false, percentage: null }]}
-      />,
-    );
+  it("omits the unit when a metric carries none", () => {
+    render(<MetricGrid metrics={[{ ...card, unit: undefined, value: "5.4t" }]} />);
 
-    expect(screen.queryByRole("progressbar")).toBeNull();
+    expect(screen.getByText("5.4t")).toBeInTheDocument();
+    expect(screen.queryByText("kcal")).toBeNull();
   });
 });
 
@@ -57,11 +54,15 @@ describe("home overview mapping", () => {
     getMockNutritionSummary(),
     getMockMealRows(),
     getMockWorkoutStatsData(),
+    getMockSessionPlans(),
     MOCK_TODAY,
   );
 
-  it("builds exactly six metric cards", () => {
-    expect(overview.metrics).toHaveLength(6);
+  it("keeps the grid to the two readings that appear nowhere else", () => {
+    expect(overview.metrics.map((metric) => metric.id)).toEqual([
+      "calories-consumed",
+      "training-volume",
+    ]);
   });
 
   it("excludes metrics the protos cannot supply", () => {
@@ -72,23 +73,16 @@ describe("home overview mapping", () => {
     expect(titles).not.toContain("active minutes");
   });
 
-  it("derives the nutrition goal percentage from the summary", () => {
+  it("derives the nutrition goal percentage for the overview card", () => {
     // 1420 / 2050 = 69.27% -> 69
     expect(overview.nutritionGoalPercentage).toBe(69);
   });
 
-  it("gives volume and sets a trailing comparison instead of a fabricated target", () => {
-    const volume = overview.metrics.find((metric) => metric.id === "training-volume");
-
-    expect(volume?.goalIsTarget).toBe(false);
-    expect(volume?.percentage).toBeNull();
-  });
-
-  it("renders every card with real content", () => {
+  it("renders both cards with real content", () => {
     render(<MetricGrid metrics={overview.metrics} />);
 
     expect(screen.getByText("Calories consumed")).toBeInTheDocument();
     expect(screen.getByText("Training volume")).toBeInTheDocument();
-    expect(screen.getByText("Meals logged")).toBeInTheDocument();
+    expect(screen.getByText("1,420")).toBeInTheDocument();
   });
 });

@@ -6,7 +6,10 @@ import {
   getMockNutritionSummary,
   MOCK_TODAY,
 } from "@/features/nutrition/server/get-mock-nutrition-data";
-import { getMockWorkoutStatsData } from "@/features/workout-stats/server/get-mock-workout-stats";
+import {
+  getMockSessionPlans,
+  getMockWorkoutStatsData,
+} from "@/features/workout-stats/server/get-mock-workout-stats";
 
 /**
  * Fetches the Home overview card and metric grid.
@@ -25,6 +28,7 @@ export async function getHomeOverview(): Promise<HomeOverview> {
       getMockNutritionSummary(),
       getMockMealRows(),
       getMockWorkoutStatsData(),
+      getMockSessionPlans(),
       MOCK_TODAY,
     );
   }
@@ -35,6 +39,7 @@ export async function getHomeOverview(): Promise<HomeOverview> {
     getMockNutritionSummary(),
     getMockMealRows(),
     getMockWorkoutStatsData(),
+    getMockSessionPlans(),
     MOCK_TODAY,
   );
 }

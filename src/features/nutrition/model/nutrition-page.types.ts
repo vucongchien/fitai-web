@@ -1,10 +1,16 @@
 import type { DailyCalories, MealSlotGroup } from "@/shared/api/bff/aggregate/nutrition-daily";
 
-/** A value shown against its target. `target` is null when the wire carries none. */
+/**
+ * A macro's mean daily intake across logged days.
+ *
+ * No target is carried. `target_macros` is a daily figure the proto never labels as a floor
+ * or a ceiling, and the two need opposite readings — protein is a floor to reach, fat and
+ * carbs are allowances not to exceed. Showing one progress bar for all three would state
+ * something the wire does not support.
+ */
 export type MacroReading = {
-  grams: number;
+  gramsPerDay: number;
   label: string;
-  targetGrams: number | null;
 };
 
 export type NutritionPageData = {
@@ -17,7 +23,6 @@ export type NutritionPageData = {
   dateLabel: string;
   /** Days with at least one logged meal, out of seven. */
   daysLogged: number;
-  /** Weekly totals, shown against the week's target. */
   macros: MacroReading[];
   mealsLogged: number;
   /** Today's meal slots for the timeline. */

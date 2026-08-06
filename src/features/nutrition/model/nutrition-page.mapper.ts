@@ -20,6 +20,12 @@ type NutritionSummaryLike = {
   targetMacros?: { carbGrams: number; fatGrams: number; proteinGrams: number };
 };
 
+/** Mean per logged day, so a partly logged week is not read as a shortfall. */
+function perDay(total: number, loggedDays: number): number {
+  if (loggedDays <= 0) return 0;
+  return Math.round(total / loggedDays);
+}
+
 export const WEEK_DAYS = 7;
 
 /** Formats a range as "31 July – 6 August". */
@@ -43,9 +49,8 @@ export function formatRangeLabel(startKey: DayKey, endKey: DayKey): string {
  * Shapes the Nutrition screen from `GetNutritionSummary` + `GetNutritionHistory`,
  * over a trailing seven-day window.
  *
- * Reshape only. Weekly macro targets are the daily target multiplied by seven — plain
- * arithmetic on a wire value, not an estimate. A macro the wire omits keeps a null target
- * rather than borrowing one.
+ * Reshape only: sums divided by the number of logged days. Macro targets are deliberately
+ * not shown — see `MacroReading`.
  */
 export function adaptNutritionPageData(
   summary: NutritionSummaryLike,
@@ -55,30 +60,18 @@ export function adaptNutritionPageData(
   const window = dayKeyRange(today, WEEK_DAYS);
   const weekRows = mealsInWindow(mealRows, today, WEEK_DAYS);
   const totals = totalMacros(weekRows);
-  const target = summary.targetMacros;
+  const loggedDays = countLoggedDays(mealRows, today, WEEK_DAYS);
 
   return {
     calorieSeries: dailyCalorieSeries(mealRows, today, WEEK_DAYS),
     caloriesAverage: averageDailyCalories(mealRows, today, WEEK_DAYS),
     caloriesTargetPerDay: Math.round(summary.targetCalories),
     dateLabel: formatRangeLabel(window[0] ?? today, today),
-    daysLogged: countLoggedDays(mealRows, today, WEEK_DAYS),
+    daysLogged: loggedDays,
     macros: [
-      {
-        grams: totals.protein,
-        label: "Protein",
-        targetGrams: target ? Math.round(target.proteinGrams) * WEEK_DAYS : null,
-      },
-      {
-        grams: totals.carbs,
-        label: "Carbs",
-        targetGrams: target ? Math.round(target.carbGrams) * WEEK_DAYS : null,
-      },
-      {
-        grams: totals.fat,
-        label: "Fat",
-        targetGrams: target ? Math.round(target.fatGrams) * WEEK_DAYS : null,
-      },
+      { gramsPerDay: perDay(totals.protein, loggedDays), label: "Protein" },
+      { gramsPerDay: perDay(totals.carbs, loggedDays), label: "Carbs" },
+      { gramsPerDay: perDay(totals.fat, loggedDays), label: "Fat" },
     ],
     mealsLogged: countMealsInWindow(mealRows, today, WEEK_DAYS),
     slots: groupMealsBySlot(mealRows, today),

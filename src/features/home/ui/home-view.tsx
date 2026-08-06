@@ -27,8 +27,7 @@ export function HomeView({ data, overview }: HomeViewProps) {
 
       <section className="content-section">
         <div className="content-section__header">
-          <h2>Today at a glance</h2>
-          <p>Measured against your plan</p>
+          <h2>Latest readings</h2>
         </div>
         <MetricGrid metrics={overview.metrics} />
       </section>

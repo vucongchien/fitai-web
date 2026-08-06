@@ -4348,6 +4348,14 @@ a.week-route__row:hover {
   gap: var(--space-2);
 }
 
+/* Untimed set: one action, centred. It reserves the ring's height so the
+   coaching panel above does not resize when a set has no clock. */
+.live-screen__footer--untimed {
+  grid-template-columns: 1fr;
+  place-items: center;
+  min-height: clamp(7rem, 32vw, 9.75rem);
+}
+
 /* Rest variant: header, media, centered info, ring block, auto-transition note. */
 .live-screen--rest {
   grid-template-rows: auto auto minmax(0, 1fr) auto auto;
@@ -4421,10 +4429,12 @@ body:has(.live-screen) {
   }
 }
 
+/* `auto` on the counter, not `1fr`: the name gets every pixel the number does
+   not need, so a long exercise name wraps instead of colliding with it. */
 .live-meta {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
   gap: var(--space-3);
 }
 
@@ -4439,7 +4449,7 @@ body:has(.live-screen) {
   font-size: 1.125rem;
   font-weight: 680;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.15;
   color: var(--color-text);
 }
 
@@ -4453,9 +4463,34 @@ body:has(.live-screen) {
   color: var(--color-text-muted);
 }
 
+/* Inline with the name, so it needs its own breathing room rather than the
+   line gap it used to get from being a separate paragraph. */
+.live-meta__target {
+  margin-inline-start: var(--space-2);
+  white-space: nowrap;
+}
+
 .live-meta__sets {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
   font-size: 1rem;
   color: var(--color-text);
+}
+
+/* The live value leads; the denominator is context and stays quiet. Neutral,
+   not Coral — the ring arc still owns this screen's entire accent budget. */
+.live-meta__set-current {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-text);
+}
+
+.live-meta__set-total {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
 }
 
 .live-coach {
@@ -4601,6 +4636,38 @@ body:has(.live-screen) {
   }
 
   .live-timerbar__side:active {
+    transform: none;
+  }
+}
+
+/* The single control on an untimed set. It stands exactly where the ring
+   stands on a timed one, at the same diameter, so the footer does not shift
+   between set types. It inherits the ring's accent because it *is* the ring's
+   replacement — One Leader is preserved: there is no ring on this screen. */
+.live-timerbar__complete {
+  display: grid;
+  place-items: center;
+  width: clamp(4.5rem, 20vw, 5.5rem);
+  aspect-ratio: 1;
+  border: none;
+  border-radius: var(--radius-round);
+  background: var(--color-effort);
+  color: var(--color-on-effort, #fff);
+  cursor: pointer;
+  box-shadow: var(--shadow-float);
+  transition: transform var(--duration-press) var(--ease-standard);
+}
+
+.live-timerbar__complete:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-timerbar__complete {
+    transition: none;
+  }
+
+  .live-timerbar__complete:active {
     transform: none;
   }
 }
@@ -4972,31 +5039,29 @@ body:has(.live-screen) {
 }
 
 .metric-grid__value {
-  font-size: 1.45rem;
+  display: flex;
+  margin: 0;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.metric-grid__value strong {
+  font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.05;
 }
 
-.metric-grid__goal {
+.metric-grid__unit {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.metric-grid__caption {
   color: var(--color-text-muted);
   font-size: 0.74rem;
   line-height: 1.35;
-}
-
-.metric-grid__track {
-  height: 0.28rem;
-  margin-top: 0.4rem;
-  overflow: hidden;
-  background: var(--color-surface-subtle);
-  border-radius: var(--radius-round);
-}
-
-.metric-grid__track > span {
-  display: block;
-  height: 100%;
-  background: var(--color-action);
-  border-radius: var(--radius-round);
 }
 
 .view-plan-cta {
@@ -5030,7 +5095,6 @@ body:has(.live-screen) {
 
   .metric-grid {
     gap: 1rem;
-    grid-template-columns: repeat(3, 1fr);
   }
 
   .view-plan-cta {
@@ -5223,73 +5287,6 @@ body:has(.live-screen) {
   text-align: center;
 }
 
-/* == Macro list ============================================================ */
-
-.macro-list {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  gap: 1.15rem;
-  list-style: none;
-}
-
-.macro-list__item {
-  display: grid;
-  gap: 0.45rem 1rem;
-  align-items: baseline;
-  grid-template-columns: 1fr auto;
-}
-
-.macro-list__label {
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.macro-list__reading {
-  display: flex;
-  align-items: baseline;
-  gap: 0.15rem;
-}
-
-.macro-list__reading strong {
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.macro-list__unit {
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-}
-
-.macro-list__target {
-  margin-left: 0.3rem;
-  color: var(--color-text-muted);
-  font-size: 0.82rem;
-}
-
-.macro-list__track {
-  height: 0.4rem;
-  overflow: hidden;
-  background: var(--color-surface-subtle);
-  border-radius: var(--radius-round);
-  grid-column: 1 / -1;
-}
-
-.macro-list__track > span {
-  display: block;
-  height: 100%;
-  background: var(--color-action);
-  border-radius: var(--radius-round);
-  transition: inline-size var(--duration-route) var(--ease-out);
-}
-
-.macro-list__no-target {
-  color: var(--color-text-muted);
-  font-size: 0.78rem;
-  grid-column: 1 / -1;
-}
-
 /* == Chart legend ========================================================== */
 
 .chart-figure {
@@ -5325,8 +5322,7 @@ body:has(.live-screen) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .progress-ring__value,
-  .macro-list__track > span {
+  .progress-ring__value {
     transition: none;
   }
 }
@@ -5494,4 +5490,8 @@ body:has(.live-screen) {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
+}
+
+.chart-legend__series--effort::before {
+  border-top-color: var(--color-effort);
 }

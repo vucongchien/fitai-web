@@ -1,5 +1,5 @@
 import type { HomeOverview } from "@/features/home/model/home-overview.types";
-import { TrendLineChart } from "@/shared/ui/charts/trend-line-chart";
+import { DualFlowChart } from "@/shared/ui/charts/dual-flow-chart";
 
 type OverviewCardProps = {
   overview: HomeOverview;
@@ -43,15 +43,11 @@ export function OverviewCard({ overview }: OverviewCardProps) {
       </div>
 
       <div className="overview-card__chart">
-        <span className="utility-label">Calories, last 7 days</span>
-        <TrendLineChart
-          ariaLabel="Calories logged over the last seven days"
-          emptyMessage="No meals logged in the last seven days."
-          height={150}
-          points={overview.calorieTrend.map((day) => ({
-            label: day.key.slice(5),
-            value: day.calories,
-          }))}
+        <span className="utility-label">This week, against plan</span>
+        <DualFlowChart
+          ariaLabel="Nutrition and workout completion as a percentage of each day's target, over the week"
+          emptyMessage="Nothing logged this week yet."
+          points={overview.weeklyFlow}
         />
       </div>
     </section>

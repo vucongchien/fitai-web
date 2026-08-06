@@ -2,9 +2,13 @@ import type { HomeOverview, MetricCard } from "@/features/home/model/home-overvi
 import { formatVolume } from "@/features/workout-stats/model/workout-stats.mapper";
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
 import type { DayKey } from "@/shared/api/bff/aggregate/day-key";
+import { weekdayLabel } from "@/shared/api/bff/aggregate/day-key";
 import type { MealLogRow } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { countMeals, dailyCalorieSeries } from "@/shared/api/bff/aggregate/nutrition-daily";
+import type { SessionPlanRow } from "@/shared/api/bff/aggregate/workout-adherence";
+import { dailyAdherenceSeries } from "@/shared/api/bff/aggregate/workout-adherence";
 import { toPercentage } from "@/shared/ui/charts/circular-progress";
+import type { FlowPoint } from "@/shared/ui/charts/dual-flow-chart";
 
 type NutritionSummaryLike = {
   consumedCalories: number;
@@ -13,91 +17,57 @@ type NutritionSummaryLike = {
   targetMacros?: { proteinGrams: number };
 };
 
+const WEEK_DAYS = 7;
+
 /**
  * Shapes the Home overview card and metric grid.
  *
- * Every card is backed by a wire field. Water intake, calories burned and active minutes
- * are absent from the protos, so Training volume and Sets logged take those slots rather
- * than showing an estimate. Those two carry no target on the wire, so they show a trailing
- * seven-day comparison instead of a fabricated goal.
+ * The weekly flow puts both habits on one axis by expressing each as a percentage of its
+ * own target for that day: calories against `target_calories`, sessions against the day's
+ * scheduled count. Raw kcal and kg cannot share an axis without flattening one.
  */
 export function adaptHomeOverview(
   summary: NutritionSummaryLike,
   mealRows: readonly MealLogRow[],
   stats: WorkoutStatsData,
+  plans: readonly SessionPlanRow[],
   today: DayKey,
 ): HomeOverview {
-  const today7 = dailyCalorieSeries(mealRows, today, 7);
   const mealsLogged = countMeals(mealRows, today);
   const nutritionGoalPercentage = toPercentage(summary.consumedCalories, summary.targetCalories);
-
   const week = stats;
 
-  const proteinConsumed = Math.round(summary.consumedMacros?.proteinGrams ?? 0);
-  const proteinTarget = summary.targetMacros ? Math.round(summary.targetMacros.proteinGrams) : null;
+  const calories = dailyCalorieSeries(mealRows, today, WEEK_DAYS);
+  const workout = dailyAdherenceSeries(plans, today, WEEK_DAYS);
 
+  const weeklyFlow: FlowPoint[] = calories.map((day, index) => ({
+    label: weekdayLabel(day.key) ?? day.key.slice(5),
+    nutrition: day.calories === null ? null : toPercentage(day.calories, summary.targetCalories),
+    workout: workout[index]?.percentage ?? null,
+  }));
+
+  // Two cards only. Workout completion and nutrition goal already read on the overview
+  // card above with their own progress bars, so repeating them here said nothing new.
   const metrics: MetricCard[] = [
     {
-      goal: `of ${Math.round(summary.targetCalories).toLocaleString()} kcal`,
-      goalIsTarget: true,
+      caption: "Today",
       icon: "flame",
       id: "calories-consumed",
-      percentage: nutritionGoalPercentage,
       title: "Calories consumed",
+      unit: "kcal",
       value: Math.round(summary.consumedCalories).toLocaleString(),
     },
     {
-      goal: proteinTarget === null ? "No target set" : `of ${proteinTarget} g`,
-      goalIsTarget: proteinTarget !== null,
-      icon: "target",
-      id: "protein",
-      percentage: proteinTarget === null ? null : toPercentage(proteinConsumed, proteinTarget),
-      title: "Protein",
-      value: `${proteinConsumed} g`,
-    },
-    {
-      goal: mealsLogged === 0 ? "Nothing logged yet" : "logged today",
-      goalIsTarget: false,
-      icon: "utensils",
-      id: "meals-logged",
-      percentage: null,
-      title: "Meals logged",
-      value: String(mealsLogged),
-    },
-    {
-      goal:
-        week.adherence.scheduled === 0
-          ? "Nothing scheduled this week"
-          : `of ${week.adherence.scheduled} planned`,
-      goalIsTarget: week.adherence.scheduled > 0,
-      icon: "dumbbell",
-      id: "workout-completion",
-      percentage: week.adherence.scheduled === 0 ? null : week.adherence.percentage,
-      title: "Workout completion",
-      value: `${week.adherence.completed}`,
-    },
-    {
-      goal: "over the last 7 days",
-      goalIsTarget: false,
+      caption: "Last 7 days",
       icon: "weight",
       id: "training-volume",
-      percentage: null,
       title: "Training volume",
       value: formatVolume(week.volumeKg),
-    },
-    {
-      goal: "over the last 7 days",
-      goalIsTarget: false,
-      icon: "layers",
-      id: "total-sets",
-      percentage: null,
-      title: "Sets logged",
-      value: String(week.totalSets),
     },
   ];
 
   return {
-    calorieTrend: today7,
+    weeklyFlow,
     metrics,
     nutritionGoalPercentage,
     nutritionSummary:

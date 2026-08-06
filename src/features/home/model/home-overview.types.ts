@@ -1,4 +1,4 @@
-import type { DailyCalories } from "@/shared/api/bff/aggregate/nutrition-daily";
+import type { FlowPoint } from "@/shared/ui/charts/dual-flow-chart";
 
 /** Icons available to the metric grid, mapped to lucide components in the UI. */
 export type MetricIcon =
@@ -11,23 +11,24 @@ export type MetricIcon =
   | "weight";
 
 /**
- * One metric card. `goal` is the target line; when the wire carries no target it holds a
- * trailing comparison instead, and `goalIsTarget` says which it is.
+ * One metric card: a reading and the period it covers.
+ *
+ * No target or progress bar. Targets belong to the overview card above, which shows them
+ * once with their own bars; repeating them per card duplicated the same fact.
  */
 export type MetricCard = {
-  goal: string;
-  goalIsTarget: boolean;
+  /** The period the reading covers, e.g. "Today" or "Last 7 days". */
+  caption: string;
   icon: MetricIcon;
   id: string;
-  /** Percentage complete, present only when a real target exists. */
-  percentage: number | null;
   title: string;
+  unit?: string;
   value: string;
 };
 
 export type HomeOverview = {
-  /** Trailing 7-day calorie trend for the overview chart. */
-  calorieTrend: DailyCalories[];
+  /** Nutrition and workout as percentages of each day's target, across the week. */
+  weeklyFlow: FlowPoint[];
   metrics: MetricCard[];
   nutritionGoalPercentage: number;
   nutritionSummary: string;
