@@ -40,6 +40,9 @@ export type ExerciseSummary = {
   instructions?: string;
   formCues?: string[];
   commonMistakes?: string[];
+  // NOT IN CONTRACT: supporting.exercise.v1.ExerciseInfo has no breathing field yet.
+  // Mock-only, same status as formCues / commonMistakes. Add to the proto before wiring gRPC.
+  breathingCue?: string;
 };
 
 export type ExerciseFilters = {

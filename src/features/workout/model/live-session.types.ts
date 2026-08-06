@@ -35,6 +35,8 @@ export type LiveExercise = {
   instructions?: string;
   formCues: string[];
   commonMistakes: string[];
+  // NOT IN CONTRACT: see ExerciseSummary.breathingCue.
+  breathingCue?: string;
   /** Demo clip for the "watch the guide" overlay. */
   videoUrl?: string;
   thumbnailUrl?: string;
