@@ -4447,3 +4447,40 @@ body:has(.live-screen) {
     transform: none;
   }
 }
+
+.live-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.live-meta__col--end {
+  justify-self: end;
+  text-align: right;
+}
+
+/* An exercise name — display face is correct here. */
+.live-meta__name {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--color-text);
+}
+
+/* Values that change in place: data face, tabular. */
+.live-meta__target,
+.live-meta__sets {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.live-meta__sets {
+  font-size: 1rem;
+  color: var(--color-text);
+}
