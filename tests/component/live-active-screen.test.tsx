@@ -148,6 +148,37 @@ describe("ActiveExerciseScreen", () => {
     expect(onDone).toHaveBeenCalledOnce();
   });
 
+  // The ring shows three different things. Announcing a rep count as "time
+  // remaining" is false, so the name has to follow the same branch as the value.
+  it("names the ring for a timed hold", () => {
+    render(<ActiveExerciseScreen {...baseProps} />);
+
+    expect(screen.getByRole("timer")).toHaveAccessibleName("Time remaining in this set");
+  });
+
+  it("names the ring for a camera-counted rep set", () => {
+    render(
+      <ActiveExerciseScreen
+        {...baseProps}
+        exercise={makeExercise({ durationSeconds: 0, targetReps: 10 })}
+        repCount={4}
+      />,
+    );
+
+    expect(screen.getByRole("timer")).toHaveAccessibleName("Reps completed in this set");
+  });
+
+  it("names the ring for a set with neither a clock nor a rep count", () => {
+    render(
+      <ActiveExerciseScreen
+        {...baseProps}
+        exercise={makeExercise({ durationSeconds: 0, targetReps: 10 })}
+      />,
+    );
+
+    expect(screen.getByRole("timer")).toHaveAccessibleName("This set is not timed");
+  });
+
   it("keeps the add-time control live for a timed hold", () => {
     render(<ActiveExerciseScreen {...baseProps} />);
 

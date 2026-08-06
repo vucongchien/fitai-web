@@ -14,12 +14,6 @@ import type {
 
 export const PHASE_ORDER: SessionPhase[] = ["warmup", "main", "cooldown"];
 
-export const PHASE_LABEL: Record<SessionPhase, string> = {
-  warmup: "Warm-up",
-  main: "Main work",
-  cooldown: "Cooldown",
-};
-
 export type SessionStep = {
   /** Index inside the timeline. */
   index: number;

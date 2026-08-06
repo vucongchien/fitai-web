@@ -46,44 +46,61 @@ test.describe("live workout layout", () => {
   });
 
   // Guards DESIGN.md's One Leader Rule: the active screen spends its entire
-  // accent budget on the ring arc. Any second Coral element is a regression.
-  test("the ring is the screen's only accent", async ({ page }) => {
+  // accent budget on the ring arc. Any second Coral element is a regression —
+  // and Relay Blue is not an accent on either screen at all.
+  //
+  // The walk covers the whole `body`, not `.live-screen *`: fixed overlays
+  // (the framing check, the end-session dialog) are siblings of the screen, and
+  // scoping the old version inside it is exactly why a solid-blue camera button
+  // and a scrim went unseen.
+  const countElementsUsing = (
+    page: import("@playwright/test").Page,
+    token: string,
+    skip: string[],
+  ) =>
+    page.evaluate(
+      ({ skipProps, tokenName }) => {
+        const raw = getComputedStyle(document.documentElement).getPropertyValue(tokenName).trim();
+        const probe = document.createElement("span");
+        probe.style.color = raw;
+        document.body.appendChild(probe);
+        const target = getComputedStyle(probe).color;
+        probe.remove();
+
+        const props = [
+          "backgroundColor",
+          "color",
+          "stroke",
+          "fill",
+          "outlineColor",
+          "borderTopColor",
+          "borderRightColor",
+          "borderBottomColor",
+          "borderLeftColor",
+          "textDecorationColor",
+        ].filter((prop) => !skipProps.includes(prop));
+
+        return [...document.querySelectorAll<HTMLElement>("body *")].filter((el) => {
+          const style = getComputedStyle(el) as unknown as Record<string, string>;
+          return props.some((prop) => style[prop] === target);
+        }).length;
+      },
+      { skipProps: skip, tokenName: token },
+    );
+
+  test("the ring is the screen's only Sprint Coral", async ({ page }) => {
     await page.goto("/workouts/live/demo-session");
     await page.waitForSelector(".countdown-ring");
 
-    // Sprint Coral leads the active screen and belongs to the arc alone.
-    const coralElements = await page.evaluate(() => {
-      const coral = getComputedStyle(document.documentElement)
-        .getPropertyValue("--color-effort")
-        .trim();
-      const toRgb = (value: string) => {
-        const probe = document.createElement("span");
-        probe.style.color = value;
-        document.body.appendChild(probe);
-        const resolved = getComputedStyle(probe).color;
-        probe.remove();
-        return resolved;
-      };
-      const target = toRgb(coral);
+    expect(await countElementsUsing(page, "--color-effort", [])).toBe(1);
+  });
 
-      return [...document.querySelectorAll<HTMLElement>(".live-screen *")].filter((el) => {
-        const style = getComputedStyle(el);
-        const candidates = [
-          style.backgroundColor,
-          style.color,
-          style.stroke,
-          style.fill,
-          style.outlineColor,
-          style.borderTopColor,
-          style.borderRightColor,
-          style.borderBottomColor,
-          style.borderLeftColor,
-          style.textDecorationColor,
-        ];
-        return candidates.includes(target);
-      }).length;
-    });
+  test("Relay Blue is never used as an accent on the live screens", async ({ page }) => {
+    await page.goto("/workouts/live/demo-session");
+    await page.waitForSelector(".countdown-ring");
 
-    expect(coralElements).toBe(1);
+    // `outlineColor` is exempt for this colour alone: the global focus ring is
+    // Relay Blue by design, and it is the one place DESIGN.md still allows it.
+    expect(await countElementsUsing(page, "--color-action", ["outlineColor"])).toBe(0);
   });
 });

@@ -102,6 +102,14 @@ export function ActiveExerciseScreen({
       ? `${repCount} / ${exercise.targetReps}`
       : "—";
 
+  // The ring's accessible name has to follow the same branch as its value —
+  // announcing a rep count as "time remaining" is simply false.
+  const ringLabel = timed
+    ? "Time remaining in this set"
+    : tracking
+      ? "Reps completed in this set"
+      : "This set is not timed";
+
   const setTotal = setTotalSeconds > 0 ? setTotalSeconds : exercise.durationSeconds;
 
   const progress = timed
@@ -132,6 +140,7 @@ export function ActiveExerciseScreen({
       <ActiveTimerBar
         disabled={!timed}
         display={display}
+        label={ringLabel}
         onAddTime={onAddTime}
         onDone={onDone}
         progress={progress}

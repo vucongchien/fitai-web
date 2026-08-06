@@ -8,11 +8,18 @@ export function ActiveTimerBar({
   addSeconds = 10,
   disabled = false,
   display,
+  label,
   onAddTime,
   onDone,
   progress,
 }: {
   display: string;
+  /**
+   * Accessible name for the ring. The ring has three display modes — countdown,
+   * rep count, untimed — and only the caller knows which one it is showing, so
+   * the name is passed in rather than assumed.
+   */
+  label: string;
   progress: number | null;
   onDone: () => void;
   onAddTime: () => void;
@@ -27,12 +34,7 @@ export function ActiveTimerBar({
         <span>Done</span>
       </button>
 
-      <CountdownRing
-        display={display}
-        label="Time remaining in this set"
-        progress={progress}
-        tone="effort"
-      />
+      <CountdownRing display={display} label={label} progress={progress} tone="effort" />
 
       <button
         aria-label={`Add ${addSeconds} seconds`}

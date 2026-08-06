@@ -7,20 +7,44 @@ afterEach(cleanup);
 
 describe("ActiveTimerBar", () => {
   it("shows the timer as the dominant element", () => {
-    render(<ActiveTimerBar display="00:30" onAddTime={vi.fn()} onDone={vi.fn()} progress={1} />);
+    render(
+      <ActiveTimerBar
+        label="Time remaining in this set"
+        display="00:30"
+        onAddTime={vi.fn()}
+        onDone={vi.fn()}
+        progress={1}
+      />,
+    );
 
     expect(screen.getByText("00:30")).toBeInTheDocument();
   });
 
   it("offers Done on the left and +10s on the right", () => {
-    render(<ActiveTimerBar display="00:30" onAddTime={vi.fn()} onDone={vi.fn()} progress={1} />);
+    render(
+      <ActiveTimerBar
+        label="Time remaining in this set"
+        display="00:30"
+        onAddTime={vi.fn()}
+        onDone={vi.fn()}
+        progress={1}
+      />,
+    );
 
     expect(screen.getByRole("button", { name: "Done" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add 10 seconds" })).toBeInTheDocument();
   });
 
   it("never offers a skip control", () => {
-    render(<ActiveTimerBar display="00:30" onAddTime={vi.fn()} onDone={vi.fn()} progress={1} />);
+    render(
+      <ActiveTimerBar
+        label="Time remaining in this set"
+        display="00:30"
+        onAddTime={vi.fn()}
+        onDone={vi.fn()}
+        progress={1}
+      />,
+    );
 
     expect(screen.queryByRole("button", { name: /skip/i })).not.toBeInTheDocument();
   });
@@ -28,7 +52,15 @@ describe("ActiveTimerBar", () => {
   it("wires both handlers", () => {
     const onDone = vi.fn();
     const onAddTime = vi.fn();
-    render(<ActiveTimerBar display="00:30" onAddTime={onAddTime} onDone={onDone} progress={1} />);
+    render(
+      <ActiveTimerBar
+        label="Time remaining in this set"
+        display="00:30"
+        onAddTime={onAddTime}
+        onDone={onDone}
+        progress={1}
+      />,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
     fireEvent.click(screen.getByRole("button", { name: "Add 10 seconds" }));
@@ -38,7 +70,15 @@ describe("ActiveTimerBar", () => {
   });
 
   it("names the timer for assistive tech without announcing every tick", () => {
-    render(<ActiveTimerBar display="00:30" onAddTime={vi.fn()} onDone={vi.fn()} progress={1} />);
+    render(
+      <ActiveTimerBar
+        label="Time remaining in this set"
+        display="00:30"
+        onAddTime={vi.fn()}
+        onDone={vi.fn()}
+        progress={1}
+      />,
+    );
 
     const timer = screen.getByRole("timer", { name: "Time remaining in this set" });
     expect(timer).toBeInTheDocument();
@@ -47,7 +87,13 @@ describe("ActiveTimerBar", () => {
 
   it("passes the set progress straight through to the ring", () => {
     const { container } = render(
-      <ActiveTimerBar display="00:15" onAddTime={vi.fn()} onDone={vi.fn()} progress={0.5} />,
+      <ActiveTimerBar
+        label="Time remaining in this set"
+        display="00:15"
+        onAddTime={vi.fn()}
+        onDone={vi.fn()}
+        progress={0.5}
+      />,
     );
 
     const arc = container.querySelector(".countdown-ring__arc") as SVGCircleElement;
@@ -57,7 +103,13 @@ describe("ActiveTimerBar", () => {
 
   it("shows a bare track when the set has no honest progress denominator", () => {
     const { container } = render(
-      <ActiveTimerBar display="10 reps" onAddTime={vi.fn()} onDone={vi.fn()} progress={null} />,
+      <ActiveTimerBar
+        label="Time remaining in this set"
+        display="10 reps"
+        onAddTime={vi.fn()}
+        onDone={vi.fn()}
+        progress={null}
+      />,
     );
 
     expect(container.querySelector(".countdown-ring__arc")).toBeNull();
@@ -66,7 +118,14 @@ describe("ActiveTimerBar", () => {
 
   it("disables the add-time control when there is no clock to extend", () => {
     render(
-      <ActiveTimerBar disabled display="—" onAddTime={vi.fn()} onDone={vi.fn()} progress={null} />,
+      <ActiveTimerBar
+        disabled
+        label="Time remaining in this set"
+        display="—"
+        onAddTime={vi.fn()}
+        onDone={vi.fn()}
+        progress={null}
+      />,
     );
 
     expect(screen.getByRole("button", { name: "Add 10 seconds" })).toBeDisabled();
