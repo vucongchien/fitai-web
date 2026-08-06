@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 
+import { getHomeOverview } from "@/features/home/server/get-home-overview";
 import { getHomePageData } from "@/features/home/server/get-home-page-data";
 import { HomeView } from "@/features/home/ui/home-view";
 import { TodayHeader } from "@/features/home/ui/today-header";
@@ -8,8 +9,8 @@ import { PageTransition } from "@/shared/ui/page-transition";
 export const metadata = { title: "Home — Today" };
 
 async function HomeContent() {
-  const data = await getHomePageData();
-  return <HomeView data={data} />;
+  const [data, overview] = await Promise.all([getHomePageData(), getHomeOverview()]);
+  return <HomeView data={data} overview={overview} />;
 }
 
 function HomeSkeleton() {

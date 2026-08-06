@@ -54,18 +54,22 @@ export function getMockHomePageData(): HomePageData {
       },
     ],
 
+    // Training volume and sets already read on the metric grid, so evidence carries the
+    // readings that appear nowhere else. Average RPE is available on session completion
+    // (`CompleteWorkoutSessionResponse.average_rpe`) but not on `WorkoutSessionSummary`,
+    // so it stays a single-session figure rather than a weekly trend.
     evidenceItems: [
-      {
-        id: "training-volume",
-        icon: "dumbbell",
-        value: "8,460 kg",
-        label: "Training volume this week",
-      },
       {
         id: "avg-rpe",
         icon: "shield-check",
         value: "6.4 RPE",
-        label: "Controlled average effort",
+        label: "Average effort, last session",
+      },
+      {
+        id: "avg-form",
+        icon: "zap",
+        value: "88%",
+        label: "Average form score, last session",
       },
     ],
 
