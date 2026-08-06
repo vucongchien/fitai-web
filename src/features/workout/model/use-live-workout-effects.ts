@@ -12,6 +12,7 @@ import {
   sessionVolumeKg,
 } from "@/features/workout/domain/training-load";
 import type {
+  AbortReason,
   LiveSessionPlan,
   MotionSpec,
   SessionReport,
@@ -22,7 +23,10 @@ import type { AudioCoach } from "@/features/workout/model/use-audio-coach";
 import type { useCameraStream } from "@/features/workout/model/use-camera-stream";
 import type { LiveSessionController } from "@/features/workout/model/use-live-session";
 import type { useMotionEngine } from "@/features/workout/model/use-motion-engine";
-import { completeWorkoutSession } from "@/features/workout/server/workout-actions";
+import {
+  abortWorkoutSession,
+  completeWorkoutSession,
+} from "@/features/workout/server/workout-actions";
 import { toast } from "@/shared/ui/toast";
 
 export function useLiveWorkoutEffects({
@@ -253,6 +257,30 @@ export function useLiveWorkoutEffects({
     ],
   );
 
+  /**
+   * Stop the session without saving it as completed — the "pain / out of time /
+   * doesn't feel right" branch of the end-session dialog. No report is written,
+   * so there is no summary to route to; the user goes back to the roadmap.
+   */
+  const abortSession = useCallback(
+    async (reason: AbortReason) => {
+      setFinishing(true);
+      audio.stopAll();
+      camera.stop();
+      motion.dispose();
+
+      try {
+        await abortWorkoutSession(plan.sessionId, reason);
+        session.actions.clearDraft();
+        router.push("/roadmap");
+      } catch {
+        setFinishing(false);
+        toast.error("Could not end the session. Please try again.");
+      }
+    },
+    [audio, camera, motion, plan.sessionId, router, session.actions],
+  );
+
   // Auto close on long timeout or complete status
   const autoClosed = useRef(false);
   useEffect(() => {
@@ -279,5 +307,6 @@ export function useLiveWorkoutEffects({
     step,
     setManualForSet,
     finishSession,
+    abortSession,
   };
 }

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { shouldCalibrate } from "@/features/workout/domain/calibration-gate";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
+import { loadRatio, sessionVolumeKg } from "@/features/workout/domain/training-load";
 import type { LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useAudioCoach } from "@/features/workout/model/use-audio-coach";
 import { useCameraStream } from "@/features/workout/model/use-camera-stream";
@@ -13,6 +14,8 @@ import { useMotionEngine } from "@/features/workout/model/use-motion-engine";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
 import { CalibrationView } from "@/features/workout/ui/live/calibration-view";
 import { CameraStage } from "@/features/workout/ui/live/camera-stage";
+import type { EndDialogVariant } from "@/features/workout/ui/live/end-session-dialog";
+import { EndSessionDialog } from "@/features/workout/ui/live/end-session-dialog";
 import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
 import { toast } from "@/shared/ui/toast";
@@ -40,6 +43,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const [listening, setListening] = useState(false);
   const [cameraOn, setCameraOn] = useState(true);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [endOpen, setEndOpen] = useState(false);
 
   const motion = useMotionEngine({
     onFallback: (reason) => {
@@ -55,6 +59,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   const workoutEffects = useLiveWorkoutEffects({ audio, camera, motion, plan, session });
   const {
+    abortSession,
     cameraBranch,
     exercise,
     finishSet,
@@ -66,7 +71,10 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     step,
   } = workoutEffects;
 
-  const onBack = useCallback(() => void finishSession(true), [finishSession]);
+  // Back is a navigation affordance, so it must stay reversible. It opens the
+  // confirmation; only the dialog may end the session, which is what protects
+  // the resume draft that `finishSession` clears.
+  const onBack = useCallback(() => setEndOpen(true), []);
   const onToggleVoice = useCallback(() => setListening((value) => !value), []);
 
   // An AI set is only ready to run once the engine has loaded and the framing
@@ -132,28 +140,54 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   ) : null;
   const onToggleCamera = cameraBranch ? () => setCameraOn((value) => !value) : undefined;
 
+  // The confirmation behind the Back button. With nothing logged there is no
+  // session worth saving, so the dialog offers to cancel instead of "finish".
+  const loggedSets = session.loggedSets;
+  const volumeKg = sessionVolumeKg(loggedSets);
+  const endVariant: EndDialogVariant = loggedSets.length === 0 ? "empty" : "complete";
+  const endDialog = endOpen ? (
+    <EndSessionDialog
+      loadRatio={loadRatio(volumeKg, plan.recentAvgVolumeKg)}
+      onAbort={(reason) => {
+        setEndOpen(false);
+        void abortSession(reason);
+      }}
+      onClose={() => setEndOpen(false)}
+      onFinish={(confirmOverload) => {
+        setEndOpen(false);
+        void finishSession(confirmOverload);
+      }}
+      totalSets={loggedSets.length}
+      totalVolumeKg={volumeKg}
+      variant={endVariant}
+    />
+  ) : null;
+
   if (session.status === "resting") {
     const next = session.step;
     if (!next) return null;
 
     return (
-      <RestScreen
-        cameraActive={cameraActive}
-        cameraSlot={cameraStage}
-        exerciseNumber={next.sessionPosition}
-        nextExercise={next.exercise}
-        onAddTime={() => session.actions.addRest(ADD_SECONDS)}
-        onBack={onBack}
-        onSkipRest={session.actions.endRest}
-        onToggleCamera={onToggleCamera}
-        onToggleFullscreen={toggleFullscreen}
-        onToggleVoice={onToggleVoice}
-        secondsLeft={session.restLeft}
-        totalExercises={totalExerciseCount(plan)}
-        totalSeconds={session.restTotal}
-        voiceOn={listening}
-        workoutTitle={plan.title}
-      />
+      <>
+        <RestScreen
+          cameraActive={cameraActive}
+          cameraSlot={cameraStage}
+          exerciseNumber={next.sessionPosition}
+          nextExercise={next.exercise}
+          onAddTime={() => session.actions.addRest(ADD_SECONDS)}
+          onBack={onBack}
+          onSkipRest={session.actions.endRest}
+          onToggleCamera={onToggleCamera}
+          onToggleFullscreen={toggleFullscreen}
+          onToggleVoice={onToggleVoice}
+          secondsLeft={session.restLeft}
+          totalExercises={totalExerciseCount(plan)}
+          totalSeconds={session.restTotal}
+          voiceOn={listening}
+          workoutTitle={plan.title}
+        />
+        {endDialog}
+      </>
     );
   }
 
@@ -199,6 +233,8 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       {guideOpen ? (
         <InstructionsSheet exercise={exercise} onClose={() => setGuideOpen(false)} />
       ) : null}
+
+      {endDialog}
     </>
   );
 }
