@@ -45,6 +45,8 @@ test.describe("live workout layout", () => {
     expect(box!.y + box!.height).toBeLessThan(viewportHeight);
   });
 
+  // Guards DESIGN.md's One Leader Rule: the active screen spends its entire
+  // accent budget on the ring arc. Any second Coral element is a regression.
   test("the ring is the screen's only accent", async ({ page }) => {
     await page.goto("/workouts/live/demo-session");
     await page.waitForSelector(".countdown-ring");
@@ -66,12 +68,19 @@ test.describe("live workout layout", () => {
 
       return [...document.querySelectorAll<HTMLElement>(".live-screen *")].filter((el) => {
         const style = getComputedStyle(el);
-        return (
-          style.backgroundColor === target ||
-          style.color === target ||
-          style.stroke === target ||
-          style.borderTopColor === target
-        );
+        const candidates = [
+          style.backgroundColor,
+          style.color,
+          style.stroke,
+          style.fill,
+          style.outlineColor,
+          style.borderTopColor,
+          style.borderRightColor,
+          style.borderBottomColor,
+          style.borderLeftColor,
+          style.textDecorationColor,
+        ];
+        return candidates.includes(target);
       }).length;
     });
 
