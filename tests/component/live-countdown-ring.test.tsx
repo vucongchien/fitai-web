@@ -32,6 +32,31 @@ describe("CountdownRing", () => {
     expect(offset).toBeCloseTo(circumference * 0.5, 1);
   });
 
+  it("fills the whole arc at full progress and none of it at zero", () => {
+    const { container, rerender } = render(
+      <CountdownRing display="00:30" label="Time remaining" progress={1} tone="effort" />,
+    );
+
+    const arc = () => container.querySelector(".countdown-ring__arc") as SVGCircleElement;
+    const circumference = Number(arc().getAttribute("stroke-dasharray"));
+
+    expect(Number(arc().getAttribute("stroke-dashoffset"))).toBeCloseTo(0, 1);
+
+    rerender(<CountdownRing display="00:00" label="Time remaining" progress={0} tone="effort" />);
+
+    expect(Number(arc().getAttribute("stroke-dashoffset"))).toBeCloseTo(circumference, 1);
+  });
+
+  it("clamps negative progress to an empty arc", () => {
+    const { container } = render(
+      <CountdownRing display="00:00" label="Time remaining" progress={-0.4} tone="effort" />,
+    );
+
+    const arc = container.querySelector(".countdown-ring__arc") as SVGCircleElement;
+    const circumference = Number(arc.getAttribute("stroke-dasharray"));
+    expect(Number(arc.getAttribute("stroke-dashoffset"))).toBeCloseTo(circumference, 1);
+  });
+
   it("renders a bare track with no arc when progress is unknowable", () => {
     const { container } = render(
       <CountdownRing display="0 / —" label="Reps completed" progress={null} tone="effort" />,

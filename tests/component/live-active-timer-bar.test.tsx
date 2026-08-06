@@ -50,6 +50,17 @@ describe("ActiveTimerBar", () => {
       <ActiveTimerBar display="00:15" onAddTime={vi.fn()} onDone={vi.fn()} progress={0.5} />,
     );
 
-    expect(container.querySelector(".countdown-ring__arc")).not.toBeNull();
+    const arc = container.querySelector(".countdown-ring__arc") as SVGCircleElement;
+    const circumference = Number(arc.getAttribute("stroke-dasharray"));
+    expect(Number(arc.getAttribute("stroke-dashoffset"))).toBeCloseTo(circumference * 0.5, 1);
+  });
+
+  it("shows a bare track when the set has no honest progress denominator", () => {
+    const { container } = render(
+      <ActiveTimerBar display="10 reps" onAddTime={vi.fn()} onDone={vi.fn()} progress={null} />,
+    );
+
+    expect(container.querySelector(".countdown-ring__arc")).toBeNull();
+    expect(container.querySelector(".countdown-ring__track")).not.toBeNull();
   });
 });

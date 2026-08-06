@@ -4542,7 +4542,8 @@ body:has(.live-screen) {
 }
 
 .countdown-ring__arc {
-  transition: stroke-dashoffset var(--duration-state) linear;
+  /* Matches the one-second tick so the arc sweeps instead of hitching. */
+  transition: stroke-dashoffset 1s linear;
 }
 
 .countdown-ring[data-tone="effort"] .countdown-ring__arc {
@@ -4555,11 +4556,16 @@ body:has(.live-screen) {
 
 .countdown-ring__value {
   position: relative;
+  /* Stay inside the track: the arc's inner diameter less the stroke. */
+  max-width: 74%;
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
   font-size: clamp(1.75rem, 8vw, 2.25rem);
   font-weight: 700;
   line-height: 1;
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
   color: var(--color-text);
 }
 
