@@ -34,48 +34,45 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
 }
 
 describe("CoachingPanel", () => {
-  it("renders all four coaching blocks with their labels", () => {
-    render(<CoachingPanel exercise={makeExercise()} />);
-
-    expect(screen.getByText("Description")).toBeInTheDocument();
-    expect(screen.getByText("Form Tip")).toBeInTheDocument();
-    expect(screen.getByText("Breathing")).toBeInTheDocument();
-    expect(screen.getByText("Common Mistake")).toBeInTheDocument();
-  });
-
-  it("renders the coaching copy itself", () => {
+  it("renders the instruction itself, with no label above it", () => {
     render(<CoachingPanel exercise={makeExercise()} />);
 
     expect(
       screen.getByText("Maintain a straight body line while keeping your core engaged."),
     ).toBeInTheDocument();
-    expect(screen.getByText("Keep your elbows directly under your shoulders.")).toBeInTheDocument();
-    expect(
-      screen.getByText("Breathe slowly and consistently throughout the exercise."),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Avoid letting your hips drop or rise too high.")).toBeInTheDocument();
+    expect(screen.queryByText("Description")).not.toBeInTheDocument();
   });
 
-  it("omits a block the exercise has no data for", () => {
-    render(<CoachingPanel exercise={makeExercise({ breathingCue: undefined })} />);
-
-    expect(screen.queryByText("Breathing")).not.toBeInTheDocument();
-  });
-
-  it("shows only the first form cue and first mistake to keep each block to 1-2 lines", () => {
-    render(
-      <CoachingPanel
-        exercise={makeExercise({
-          commonMistakes: ["Hips drop", "Neck cranes forward"],
-          formCues: ["Elbows under shoulders", "Squeeze the glutes"],
-        })}
-      />,
+  it("splits a multi-paragraph instruction into separate paragraphs", () => {
+    const { container } = render(
+      <CoachingPanel exercise={makeExercise({ instructions: "Set up square.\n\nThen press." })} />,
     );
 
-    expect(screen.getByText("Elbows under shoulders")).toBeInTheDocument();
-    expect(screen.queryByText("Squeeze the glutes")).not.toBeInTheDocument();
-    expect(screen.getByText("Hips drop")).toBeInTheDocument();
-    expect(screen.queryByText("Neck cranes forward")).not.toBeInTheDocument();
+    expect(container.querySelectorAll(".live-coach__text")).toHaveLength(2);
+    expect(screen.getByText("Set up square.")).toBeInTheDocument();
+    expect(screen.getByText("Then press.")).toBeInTheDocument();
+  });
+
+  // The other three cues moved to the exercise guide sheet: a running set is
+  // read at a glance, and four labelled blocks is not a glance.
+  it("leaves form cues, breathing and mistakes to the guide sheet", () => {
+    render(<CoachingPanel exercise={makeExercise()} />);
+
+    expect(
+      screen.queryByText("Keep your elbows directly under your shoulders."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Breathe slowly and consistently throughout the exercise."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Avoid letting your hips drop or rise too high."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders nothing but an empty panel when the exercise has no instruction", () => {
+    const { container } = render(<CoachingPanel exercise={makeExercise({ instructions: "" })} />);
+
+    expect(container.querySelectorAll(".live-coach__text")).toHaveLength(0);
   });
 
   it("is reachable by keyboard so its content can be scrolled without a pointer", () => {

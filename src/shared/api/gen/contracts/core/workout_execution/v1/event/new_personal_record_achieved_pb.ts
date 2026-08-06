@@ -2,57 +2,60 @@
 // @generated from file contracts/core/workout_execution/v1/event/new_personal_record_achieved.proto (package contracts.core.workout_execution.v1.event, syntax proto3)
 /* eslint-disable */
 
+import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/workout_execution/v1/event/new_personal_record_achieved.proto.
  */
-export const file_contracts_core_workout_execution_v1_event_new_personal_record_achieved: GenFile = /*@__PURE__*/
-  fileDesc("Ckxjb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9ldmVudC9uZXdfcGVyc29uYWxfcmVjb3JkX2FjaGlldmVkLnByb3RvEiljb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5ldmVudCKlAQoZTmV3UGVyc29uYWxSZWNvcmRBY2hpZXZlZBIPCgd1c2VyX2lkGAEgASgJEhMKC2V4ZXJjaXNlX2lkGAIgASgJEhMKC29uZV9yZXBfbWF4GAMgASgCEg4KBndlaWdodBgEIAEoAhIMCgRyZXBzGAUgASgFEi8KC2FjaGlldmVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEJ4WnZnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL3dvcmtvdXRfZXhlY3V0aW9uL3YxL2V2ZW50O3dvcmtvdXRleGVjdXRpb252MWV2ZW50YgZwcm90bzM", [file_google_protobuf_timestamp]);
+export const file_contracts_core_workout_execution_v1_event_new_personal_record_achieved: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Ckxjb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9ldmVudC9uZXdfcGVyc29uYWxfcmVjb3JkX2FjaGlldmVkLnByb3RvEiljb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5ldmVudCKlAQoZTmV3UGVyc29uYWxSZWNvcmRBY2hpZXZlZBIPCgd1c2VyX2lkGAEgASgJEhMKC2V4ZXJjaXNlX2lkGAIgASgJEhMKC29uZV9yZXBfbWF4GAMgASgCEg4KBndlaWdodBgEIAEoAhIMCgRyZXBzGAUgASgFEi8KC2FjaGlldmVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEJ4WnZnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL3dvcmtvdXRfZXhlY3V0aW9uL3YxL2V2ZW50O3dvcmtvdXRleGVjdXRpb252MWV2ZW50YgZwcm90bzM",
+    [file_google_protobuf_timestamp],
+  );
 
 /**
  * @generated from message contracts.core.workout_execution.v1.event.NewPersonalRecordAchieved
  */
-export type NewPersonalRecordAchieved = Message<"contracts.core.workout_execution.v1.event.NewPersonalRecordAchieved"> & {
-  /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
+export type NewPersonalRecordAchieved =
+  Message<"contracts.core.workout_execution.v1.event.NewPersonalRecordAchieved"> & {
+    /**
+     * @generated from field: string user_id = 1;
+     */
+    userId: string;
 
-  /**
-   * @generated from field: string exercise_id = 2;
-   */
-  exerciseId: string;
+    /**
+     * @generated from field: string exercise_id = 2;
+     */
+    exerciseId: string;
 
-  /**
-   * @generated from field: float one_rep_max = 3;
-   */
-  oneRepMax: number;
+    /**
+     * @generated from field: float one_rep_max = 3;
+     */
+    oneRepMax: number;
 
-  /**
-   * @generated from field: float weight = 4;
-   */
-  weight: number;
+    /**
+     * @generated from field: float weight = 4;
+     */
+    weight: number;
 
-  /**
-   * @generated from field: int32 reps = 5;
-   */
-  reps: number;
+    /**
+     * @generated from field: int32 reps = 5;
+     */
+    reps: number;
 
-  /**
-   * @generated from field: google.protobuf.Timestamp achieved_at = 6;
-   */
-  achievedAt?: Timestamp | undefined;
-};
+    /**
+     * @generated from field: google.protobuf.Timestamp achieved_at = 6;
+     */
+    achievedAt?: Timestamp | undefined;
+  };
 
 /**
  * Describes the message contracts.core.workout_execution.v1.event.NewPersonalRecordAchieved.
  * Use `create(NewPersonalRecordAchievedSchema)` to create a new message.
  */
-export const NewPersonalRecordAchievedSchema: GenMessage<NewPersonalRecordAchieved> = /*@__PURE__*/
+export const NewPersonalRecordAchievedSchema: GenMessage<NewPersonalRecordAchieved> /*@__PURE__*/ =
   messageDesc(file_contracts_core_workout_execution_v1_event_new_personal_record_achieved, 0);
-

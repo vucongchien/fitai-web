@@ -38,6 +38,7 @@ const baseProps = {
   onBack: vi.fn(),
   onDone: vi.fn(),
   onOpenGuide: vi.fn(),
+  onReportPain: vi.fn(),
   onToggleCamera: vi.fn(),
   onToggleFullscreen: vi.fn(),
   onToggleVoice: vi.fn(),
@@ -62,10 +63,12 @@ describe("ActiveExerciseScreen", () => {
   });
 
   it("shows the target and the set counter in the meta row", () => {
-    render(<ActiveExerciseScreen {...baseProps} />);
+    const { container } = render(<ActiveExerciseScreen {...baseProps} />);
 
     expect(screen.getByText("30 sec")).toBeInTheDocument();
-    expect(screen.getByText("1 / 3 Sets")).toBeInTheDocument();
+    // The counter splits the current set from the total so the two can be
+    // weighted differently, so read the whole element rather than one node.
+    expect(container.querySelector(".live-meta__sets")?.textContent).toBe("1 / 3 Sets");
   });
 
   it("formats a rep-based prescription as reps, not seconds", () => {
@@ -97,7 +100,9 @@ describe("ActiveExerciseScreen", () => {
     expect(screen.getByText("4 / 10")).toBeInTheDocument();
   });
 
-  it("shows an em dash and no arc when nothing is counting reps", () => {
+  // No clock and no live rep count means there is no instrument to show. The
+  // footer becomes a single confirm button rather than a dead ring showing "—".
+  it("replaces the ring with a confirm button when nothing is counting reps", () => {
     const { container } = render(
       <ActiveExerciseScreen
         {...baseProps}
@@ -106,9 +111,10 @@ describe("ActiveExerciseScreen", () => {
       />,
     );
 
-    // The target belongs to the meta row, and is not echoed by the ring.
+    // The target belongs to the meta row, and is not echoed by the footer.
     expect(screen.getAllByText("10 reps")).toHaveLength(1);
-    expect(screen.getByRole("timer")).toHaveTextContent("—");
+    expect(screen.getByRole("button", { name: "Complete this set" })).toBeInTheDocument();
+    expect(screen.queryByRole("timer")).not.toBeInTheDocument();
     expect(screen.queryByText("00:00")).not.toBeInTheDocument();
     expect(container.querySelector(".countdown-ring__arc")).toBeNull();
   });
@@ -123,11 +129,22 @@ describe("ActiveExerciseScreen", () => {
     expect(Number(arc.getAttribute("stroke-dashoffset"))).toBeCloseTo(circumference * 0.5, 1);
   });
 
-  it("renders the coaching blocks", () => {
+  // A safety control must be present and must not be the one the header drops.
+  it("offers the pain report from the header", () => {
+    const onReportPain = vi.fn();
+    render(<ActiveExerciseScreen {...baseProps} onReportPain={onReportPain} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
+
+    expect(onReportPain).toHaveBeenCalledOnce();
+  });
+
+  it("renders the instruction, unlabelled", () => {
     render(<ActiveExerciseScreen {...baseProps} />);
 
-    expect(screen.getByText("Form Tip")).toBeInTheDocument();
-    expect(screen.getByText("Breathing")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Coaching instructions" })).toBeInTheDocument();
+    expect(screen.queryByText("Form Tip")).not.toBeInTheDocument();
+    expect(screen.queryByText("Breathing")).not.toBeInTheDocument();
   });
 
   it("reflects the voice toggle state", () => {
@@ -168,7 +185,7 @@ describe("ActiveExerciseScreen", () => {
     expect(screen.getByRole("timer")).toHaveAccessibleName("Reps completed in this set");
   });
 
-  it("names the ring for a set with neither a clock nor a rep count", () => {
+  it("offers no timer and no add-time control on a set with neither", () => {
     render(
       <ActiveExerciseScreen
         {...baseProps}
@@ -176,7 +193,9 @@ describe("ActiveExerciseScreen", () => {
       />,
     );
 
-    expect(screen.getByRole("timer")).toHaveAccessibleName("This set is not timed");
+    expect(screen.queryByRole("timer")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add 10 seconds" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Complete this set" })).toBeInTheDocument();
   });
 
   it("keeps the add-time control live for a timed hold", () => {

@@ -9,6 +9,8 @@ export type HeaderAction = {
   label: string;
   icon: ReactNode;
   active?: boolean;
+  /** "alert" marks a safety control so it reads apart from the utilities. */
+  tone?: "alert";
   onClick: () => void;
 };
 
@@ -29,12 +31,15 @@ export function SessionHeader({
 
       <h1 className="live-screen__title">{title}</h1>
 
+      {/* No slice: every action passed here is one the screen decided to offer,
+          and silently dropping the fourth would drop the pain control. */}
       <div className="live-screen__actions">
-        {actions.slice(0, 3).map((action) => (
+        {actions.map((action) => (
           <button
             aria-label={action.label}
             aria-pressed={action.active === undefined ? undefined : action.active}
             className="workout-close"
+            data-tone={action.tone}
             key={action.key}
             onClick={action.onClick}
             type="button"

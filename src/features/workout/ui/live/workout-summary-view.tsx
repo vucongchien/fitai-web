@@ -1,6 +1,14 @@
 "use client";
 
-import { AlertCircle, ArrowRight, Check, Gauge, Medal, TrendingUp, Trophy } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Check,
+  Minus,
+  TrendingDown,
+  TrendingUp,
+  Trophy,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -65,87 +73,95 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
   }
 
   const formattedVolume = new Intl.NumberFormat("en-US").format(report.totalVolumeKg);
+  const comparison = volumeComparison(report.totalVolumeKg, report.recentAvgVolumeKg);
 
   return (
     <PageTransition className="summary-page">
       <main className="summary-main">
+        {/* The summary is a destination, not a trap: it needs a way out that is
+            not "Done". Back goes home, same as Done, but reads as reversible. */}
+        <Link aria-label="Back to home" className="summary-back" href="/home">
+          <ArrowLeft aria-hidden="true" size={20} />
+        </Link>
+
         <div className="completion-mark">
           <Check aria-hidden="true" size={30} />
         </div>
 
         <h1>Session complete.</h1>
-        <p>You kept the work controlled. This result is ready for the next plan review.</p>
 
-        <dl className="summary-stats">
+        {/* Two numbers, not five. Duration and volume are what the session
+            actually was; RPE and form score were self-reported or absent, and a
+            wall of stats buries the one thing the user came here to see. */}
+        <dl className="summary-stats summary-stats--pair">
           <div>
-            <dt>Total sets</dt>
-            <dd className="data-value">{report.totalSets}</dd>
+            <dt>Time</dt>
+            <dd className="data-value">{report.durationMin} min</dd>
           </div>
           <div>
-            <dt>Training volume</dt>
+            <dt>Volume</dt>
             <dd className="data-value">{`${formattedVolume} kg`}</dd>
           </div>
-          <div>
-            <dt>Average effort</dt>
-            <dd className="data-value">
-              {report.averageRpe !== null ? `${report.averageRpe.toFixed(1)} RPE` : "N/A"}
-            </dd>
-          </div>
         </dl>
+
+        {comparison ? (
+          <section className="summary-compare" data-direction={comparison.direction}>
+            {comparison.direction === "up" ? (
+              <TrendingUp aria-hidden="true" size={20} />
+            ) : comparison.direction === "down" ? (
+              <TrendingDown aria-hidden="true" size={20} />
+            ) : (
+              <Minus aria-hidden="true" size={20} />
+            )}
+            <p>{comparison.text}</p>
+          </section>
+        ) : null}
 
         {report.personalRecords.length > 0 ? (
           <section className="summary-highlight">
             <Trophy aria-hidden="true" size={23} />
             <div>
-              <h2>New Personal Records!</h2>
+              <h2>{report.personalRecords.length === 1 ? "New record" : "New records"}</h2>
               <p>
-                {report.personalRecords
-                  .map((pr) => `${pr.name} (${pr.oneRepMaxKg} kg 1RM)`)
-                  .join(", ")}
+                {report.personalRecords.map((pr) => `${pr.name} — ${pr.oneRepMaxKg} kg`).join(", ")}
               </p>
             </div>
           </section>
-        ) : (
-          <section className="summary-highlight">
-            <Medal aria-hidden="true" size={23} />
-            <div>
-              <h2>A steadier session</h2>
-              <p>Your average effort stayed inside today’s target range.</p>
-            </div>
-          </section>
-        )}
-
-        {report.averageFormScore !== null ? (
-          <section className="summary-highlight summary-highlight--neutral">
-            <Gauge aria-hidden="true" size={23} />
-            <div>
-              <h2>Form Score: {Math.round(report.averageFormScore)}%</h2>
-              <p>AI Camera tracked your motion and form quality throughout the session.</p>
-            </div>
-          </section>
-        ) : (
-          <section className="summary-highlight summary-highlight--neutral">
-            <Gauge aria-hidden="true" size={23} />
-            <div>
-              <h2>No form score today</h2>
-              <p>
-                This session used manual logging, so FITAI will not invent a camera-based score.
-              </p>
-            </div>
-          </section>
-        )}
+        ) : null}
 
         <div className="summary-actions">
           <Link className={buttonVariants({ size: "large", variant: "primary" })} href="/home">
             Done
           </Link>
-          <Link className="text-action" href="/profile/progress">
-            <TrendingUp aria-hidden="true" size={18} />
-            View progress
-            <ArrowRight aria-hidden="true" size={17} />
-          </Link>
         </div>
       </main>
     </PageTransition>
   );
+}
+
+/**
+ * How this session compares with the user's recent average volume.
+ *
+ * Returns null when there is no history to compare against — an invented
+ * baseline would make "up 100%" out of a first-ever session. Within ±5% counts
+ * as holding steady rather than a change worth a percentage.
+ */
+function volumeComparison(
+  volumeKg: number,
+  recentAvgKg: number,
+): { direction: "up" | "down" | "level"; text: string } | null {
+  if (recentAvgKg <= 0 || volumeKg <= 0) return null;
+
+  const deltaPct = Math.round((volumeKg / recentAvgKg - 1) * 100);
+
+  if (Math.abs(deltaPct) <= 5) {
+    return { direction: "level", text: "Right in line with your recent average." };
+  }
+  if (deltaPct > 0) {
+    return { direction: "up", text: `${deltaPct}% more volume than your recent average.` };
+  }
+  return {
+    direction: "down",
+    text: `${Math.abs(deltaPct)}% less volume than your recent average.`,
+  };
 }

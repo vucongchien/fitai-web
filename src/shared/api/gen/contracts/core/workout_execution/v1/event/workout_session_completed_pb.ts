@@ -2,71 +2,74 @@
 // @generated from file contracts/core/workout_execution/v1/event/workout_session_completed.proto (package contracts.core.workout_execution.v1.event, syntax proto3)
 /* eslint-disable */
 
+import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/workout_execution/v1/event/workout_session_completed.proto.
  */
-export const file_contracts_core_workout_execution_v1_event_workout_session_completed: GenFile = /*@__PURE__*/
-  fileDesc("Ckljb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9ldmVudC93b3Jrb3V0X3Nlc3Npb25fY29tcGxldGVkLnByb3RvEiljb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5ldmVudCL4AQoXV29ya291dFNlc3Npb25Db21wbGV0ZWQSEgoKc2Vzc2lvbl9pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEjAKDGNvbXBsZXRlZF9hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKdG90YWxfc2V0cxgEIAEoBRIUCgx0b3RhbF92b2x1bWUYBSABKAISHwoSYXZlcmFnZV9mb3JtX3Njb3JlGAYgASgCSACIAQESEwoLYXZlcmFnZV9ycGUYByABKAISDwoHcGxhbl9pZBgIIAEoCUIVChNfYXZlcmFnZV9mb3JtX3Njb3JlQnhadmdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvd29ya291dF9leGVjdXRpb24vdjEvZXZlbnQ7d29ya291dGV4ZWN1dGlvbnYxZXZlbnRiBnByb3RvMw", [file_google_protobuf_timestamp]);
+export const file_contracts_core_workout_execution_v1_event_workout_session_completed: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Ckljb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9ldmVudC93b3Jrb3V0X3Nlc3Npb25fY29tcGxldGVkLnByb3RvEiljb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5ldmVudCL4AQoXV29ya291dFNlc3Npb25Db21wbGV0ZWQSEgoKc2Vzc2lvbl9pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEjAKDGNvbXBsZXRlZF9hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKdG90YWxfc2V0cxgEIAEoBRIUCgx0b3RhbF92b2x1bWUYBSABKAISHwoSYXZlcmFnZV9mb3JtX3Njb3JlGAYgASgCSACIAQESEwoLYXZlcmFnZV9ycGUYByABKAISDwoHcGxhbl9pZBgIIAEoCUIVChNfYXZlcmFnZV9mb3JtX3Njb3JlQnhadmdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvd29ya291dF9leGVjdXRpb24vdjEvZXZlbnQ7d29ya291dGV4ZWN1dGlvbnYxZXZlbnRiBnByb3RvMw",
+    [file_google_protobuf_timestamp],
+  );
 
 /**
  * @generated from message contracts.core.workout_execution.v1.event.WorkoutSessionCompleted
  */
-export type WorkoutSessionCompleted = Message<"contracts.core.workout_execution.v1.event.WorkoutSessionCompleted"> & {
-  /**
-   * @generated from field: string session_id = 1;
-   */
-  sessionId: string;
+export type WorkoutSessionCompleted =
+  Message<"contracts.core.workout_execution.v1.event.WorkoutSessionCompleted"> & {
+    /**
+     * @generated from field: string session_id = 1;
+     */
+    sessionId: string;
 
-  /**
-   * @generated from field: string user_id = 2;
-   */
-  userId: string;
+    /**
+     * @generated from field: string user_id = 2;
+     */
+    userId: string;
 
-  /**
-   * @generated from field: google.protobuf.Timestamp completed_at = 3;
-   */
-  completedAt?: Timestamp | undefined;
+    /**
+     * @generated from field: google.protobuf.Timestamp completed_at = 3;
+     */
+    completedAt?: Timestamp | undefined;
 
-  /**
-   * @generated from field: int32 total_sets = 4;
-   */
-  totalSets: number;
+    /**
+     * @generated from field: int32 total_sets = 4;
+     */
+    totalSets: number;
 
-  /**
-   * @generated from field: float total_volume = 5;
-   */
-  totalVolume: number;
+    /**
+     * @generated from field: float total_volume = 5;
+     */
+    totalVolume: number;
 
-  /**
-   * optional hỗ trợ N/A cho bài tập Phi AI
-   *
-   * @generated from field: optional float average_form_score = 6;
-   */
-  averageFormScore?: number | undefined;
+    /**
+     * optional hỗ trợ N/A cho bài tập Phi AI
+     *
+     * @generated from field: optional float average_form_score = 6;
+     */
+    averageFormScore?: number | undefined;
 
-  /**
-   * @generated from field: float average_rpe = 7;
-   */
-  averageRpe: number;
+    /**
+     * @generated from field: float average_rpe = 7;
+     */
+    averageRpe: number;
 
-  /**
-   * Liên kết sang DailyWorkoutPlan để đồng bộ trạng thái
-   *
-   * @generated from field: string plan_id = 8;
-   */
-  planId: string;
-};
+    /**
+     * Liên kết sang DailyWorkoutPlan để đồng bộ trạng thái
+     *
+     * @generated from field: string plan_id = 8;
+     */
+    planId: string;
+  };
 
 /**
  * Describes the message contracts.core.workout_execution.v1.event.WorkoutSessionCompleted.
  * Use `create(WorkoutSessionCompletedSchema)` to create a new message.
  */
-export const WorkoutSessionCompletedSchema: GenMessage<WorkoutSessionCompleted> = /*@__PURE__*/
+export const WorkoutSessionCompletedSchema: GenMessage<WorkoutSessionCompleted> /*@__PURE__*/ =
   messageDesc(file_contracts_core_workout_execution_v1_event_workout_session_completed, 0);
-

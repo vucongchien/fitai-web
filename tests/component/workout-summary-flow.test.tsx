@@ -21,6 +21,7 @@ describe("WorkoutSummaryView Component", () => {
       estimatedCalories: 250,
       hasUnverifiedSets: false,
       personalRecords: [{ exerciseId: "ex_1", name: "Barbell Squat", oneRepMaxKg: 100 }],
+      recentAvgVolumeKg: 1200,
       sessionId,
       totalSets: 6,
       totalVolumeKg: 1500,
@@ -31,10 +32,56 @@ describe("WorkoutSummaryView Component", () => {
     render(<WorkoutSummaryView sessionId={sessionId} />);
 
     expect(screen.getByText(/session complete/i)).toBeInTheDocument();
-    expect(screen.getByText("6")).toBeInTheDocument();
+    // Time and volume are the two numbers the summary keeps; set count, RPE and
+    // form score were dropped so the page has a focus.
+    expect(screen.getByText("30 min")).toBeInTheDocument();
     expect(screen.getByText(/1,500 kg/i)).toBeInTheDocument();
-    expect(screen.getByText(/7.5 RPE/i)).toBeInTheDocument();
+    expect(screen.queryByText(/RPE/i)).not.toBeInTheDocument();
     expect(screen.getByText(/barbell squat/i)).toBeInTheDocument();
+    // 1500 vs a 1200 average is +25%.
+    expect(screen.getByText("25% more volume than your recent average.")).toBeInTheDocument();
+  });
+
+  it("offers a way back out of the summary", () => {
+    const sessionId = "session_back";
+    const report: SessionReport = {
+      averageFormScore: null,
+      averageRpe: null,
+      durationMin: 20,
+      estimatedCalories: 100,
+      hasUnverifiedSets: false,
+      personalRecords: [],
+      recentAvgVolumeKg: 0,
+      sessionId,
+      totalSets: 2,
+      totalVolumeKg: 400,
+    };
+    sessionStorage.setItem(reportStorageKey(sessionId), JSON.stringify(report));
+
+    render(<WorkoutSummaryView sessionId={sessionId} />);
+
+    expect(screen.getByRole("link", { name: "Back to home" })).toHaveAttribute("href", "/home");
+  });
+
+  it("omits the comparison when there is no history to compare against", () => {
+    const sessionId = "session_first";
+    const report: SessionReport = {
+      averageFormScore: null,
+      averageRpe: null,
+      durationMin: 20,
+      estimatedCalories: 100,
+      hasUnverifiedSets: false,
+      personalRecords: [],
+      recentAvgVolumeKg: 0,
+      sessionId,
+      totalSets: 2,
+      totalVolumeKg: 400,
+    };
+    sessionStorage.setItem(reportStorageKey(sessionId), JSON.stringify(report));
+
+    render(<WorkoutSummaryView sessionId={sessionId} />);
+
+    expect(screen.queryByText(/recent average/i)).not.toBeInTheDocument();
   });
 
   it("renders Error State cleanly when sessionStorage has no data (no fake 2160kg report)", () => {
@@ -86,6 +133,7 @@ describe("ActiveExerciseScreen set controls", () => {
         onBack={vi.fn()}
         onDone={vi.fn()}
         onOpenGuide={vi.fn()}
+        onReportPain={vi.fn()}
         onToggleFullscreen={vi.fn()}
         onToggleVoice={vi.fn()}
         secondsLeft={0}
@@ -94,8 +142,10 @@ describe("ActiveExerciseScreen set controls", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "Done" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Add 10 seconds" })).toBeInTheDocument();
+    // This set is rep-based with no camera counting, so there is no clock and
+    // nothing to extend: one confirm control, and still no restart.
+    expect(screen.getByRole("button", { name: "Complete this set" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add 10 seconds" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /restart/i })).not.toBeInTheDocument();
   });
 });

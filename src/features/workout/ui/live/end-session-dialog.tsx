@@ -1,9 +1,8 @@
 "use client";
 
-import { AlertTriangle, Award, Flag, HeartPulse, ThumbsUp } from "lucide-react";
+import { AlertTriangle, Flag, HeartPulse } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { estimateCalories } from "@/features/workout/domain/training-load";
 import type { AbortReason } from "@/features/workout/model/live-session.types";
 import { Button } from "@/shared/ui/button";
 
@@ -16,20 +15,16 @@ const REASONS: Array<{ id: AbortReason; label: string; blurb: string }> = [
 ];
 
 export function EndSessionDialog({
-  estimatedCalories,
   loadRatio,
   onAbort,
   onClose,
   onFinish,
   totalSets = 0,
-  totalVolumeKg = 0,
   variant,
 }: {
   variant: EndDialogVariant;
   loadRatio: number;
   totalSets?: number;
-  totalVolumeKg?: number;
-  estimatedCalories?: number;
   onClose: () => void;
   onFinish: (confirmOverload: boolean) => void;
   onAbort: (reason: AbortReason) => void;
@@ -40,8 +35,6 @@ export function EndSessionDialog({
   useEffect(() => {
     setView(variant);
   }, [variant]);
-
-  const calories = estimatedCalories ?? estimateCalories(30, totalVolumeKg);
 
   if (view === "overload") {
     return (
@@ -133,58 +126,32 @@ export function EndSessionDialog({
     );
   }
 
+  // The confirmation behind the Back button, whenever any set is logged. It used
+  // to be a celebration screen — thumbs-up, calorie estimate, "Next Challenge" —
+  // which said the same thing as the summary, less accurately. Now it just asks
+  // the question Back raises, and offers the three honest answers: save it, stop
+  // early without saving, or carry on.
   return (
-    <Dialog label="Workout completed">
-      <div className="flex flex-col items-center text-center pt-2 pb-1">
-        <div className="w-20 h-20 rounded-3xl bg-[var(--color-action-soft,#eef0ff)] text-[var(--color-action,#4b57f2)] flex items-center justify-center mb-4 shadow-sm relative transform hover:scale-105 transition-transform">
-          <ThumbsUp size={38} className="stroke-[2.5]" />
-          <Award
-            size={20}
-            className="absolute -top-1 -right-1 text-[var(--color-effort,#ff5a47)]"
-          />
-        </div>
-
-        <h2 className="text-2xl font-bold text-[var(--color-text,#101214)] mb-1">
-          Great job! Workout completed
-        </h2>
-        <p className="text-xs text-[var(--color-text-muted,#50565c)] mb-6">
-          You kept your reps controlled and completed today&rsquo;s target load.
-        </p>
-
-        <div className="w-full bg-[var(--color-surface-subtle,#eceef0)] rounded-2xl p-4 flex items-center justify-around mb-6 border border-[var(--color-border,#c9cdd1)]">
-          <div className="flex-1 text-center border-r border-[var(--color-border,#c9cdd1)] pr-2">
-            <strong className="data-value text-2xl font-extrabold text-[var(--color-text,#101214)] block">
-              {totalSets}
-            </strong>
-            <span className="text-xs font-semibold text-[var(--color-text-muted,#50565c)] mt-0.5 block">
-              Total Sets
-            </span>
-          </div>
-          <div className="flex-1 text-center pl-2">
-            <strong className="data-value text-2xl font-extrabold text-[var(--color-text,#101214)] block">
-              {calories}
-            </strong>
-            <span className="text-xs font-semibold text-[var(--color-text-muted,#50565c)] mt-0.5 block">
-              Calories Burnt
-            </span>
-          </div>
-        </div>
-
-        <Button
-          className="w-full ui-button--primary bg-[var(--color-action,#4b57f2)] text-white text-base py-3.5 rounded-xl shadow-md hover:brightness-105 transition-all mb-2"
-          onClick={() => onFinish(false)}
-          size="large"
-        >
-          Next Challenge
-        </Button>
-        <button
-          className="text-action text-xs text-[var(--color-text-muted,#50565c)] hover:text-[var(--color-danger,#c92f42)] transition-colors"
-          onClick={() => setView("reason")}
-          type="button"
-        >
-          Report pain or stop early
-        </button>
+    <Dialog label="Finish this session?">
+      <div className="end-dialog__mark" aria-hidden="true">
+        <Flag size={24} />
       </div>
+      <h2>Finish here?</h2>
+      <p>
+        {totalSets === 1 ? "1 set is" : `${totalSets} sets are`} logged. We&rsquo;ll save the
+        session and show you the summary.
+      </p>
+      <Button onClick={() => onFinish(false)} size="large">
+        Finish and save
+      </Button>
+      <button className="text-action" onClick={onClose} type="button">
+        Keep training
+      </button>
+      {/* Stopping early is a different outcome from finishing — it must not be
+          reachable only by finishing first. */}
+      <button className="end-dialog__quiet" onClick={() => setView("reason")} type="button">
+        Stop without saving
+      </button>
     </Dialog>
   );
 }
@@ -194,13 +161,12 @@ function Dialog({ children, label }: { children: React.ReactNode; label: string 
     <div
       aria-label={label}
       aria-modal="true"
-      className="live-sheet live-sheet--dialog fix-sheet-modal"
+      className="live-sheet live-sheet--dialog"
       role="dialog"
     >
-      <div className="end-dialog max-w-sm mx-auto bg-[var(--color-surface,#ffffff)] rounded-3xl p-6 shadow-2xl border border-[var(--color-border,#c9cdd1)]">
-        <div className="w-12 h-1.5 bg-[var(--color-border,#c9cdd1)] rounded-full mx-auto mb-4 opacity-60" />
-        {children}
-      </div>
+      {/* The grab handle went with the bottom-sheet position: a centred dialog
+          cannot be dragged anywhere, so a drag affordance was a lie. */}
+      <div className="end-dialog">{children}</div>
     </div>
   );
 }

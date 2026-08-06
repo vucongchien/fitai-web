@@ -4,16 +4,41 @@
 
 import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+
 import { file_google_api_annotations } from "../../../../../google/api/annotations_pb";
 import { file_protoc_gen_openapiv2_options_annotations } from "../../../../../protoc-gen-openapiv2/options/annotations_pb";
-import type { CreateAdhocSessionPlanRequestSchema, CreateAdhocSessionPlanResponseSchema, GetActiveRoadmapRequestSchema, GetActiveRoadmapResponseSchema, GetRoadmapRequestSchema, GetRoadmapResponseSchema, GetSessionPlanRequestSchema, GetSessionPlanResponseSchema, InitiateRoadmapRequestSchema, InitiateRoadmapResponseSchema, ListRoadmapsRequestSchema, ListRoadmapsResponseSchema, RegenerateScheduleRequestSchema, RegenerateScheduleResponseSchema, SuggestAdHocSessionRequestSchema, SuggestAdHocSessionResponseSchema } from "../message/coaching_messages_pb";
+import type {
+  CreateAdhocSessionPlanRequestSchema,
+  CreateAdhocSessionPlanResponseSchema,
+  GetActiveRoadmapRequestSchema,
+  GetActiveRoadmapResponseSchema,
+  GetRoadmapRequestSchema,
+  GetRoadmapResponseSchema,
+  GetSessionPlanRequestSchema,
+  GetSessionPlanResponseSchema,
+  InitiateRoadmapRequestSchema,
+  InitiateRoadmapResponseSchema,
+  ListRoadmapsRequestSchema,
+  ListRoadmapsResponseSchema,
+  RegenerateScheduleRequestSchema,
+  RegenerateScheduleResponseSchema,
+  SuggestAdHocSessionRequestSchema,
+  SuggestAdHocSessionResponseSchema,
+} from "../message/coaching_messages_pb";
 import { file_contracts_core_coaching_v1_message_coaching_messages } from "../message/coaching_messages_pb";
 
 /**
  * Describes the file contracts/core/coaching/v1/service/coaching_service.proto.
  */
-export const file_contracts_core_coaching_v1_service_coaching_service: GenFile = /*@__PURE__*/
-  fileDesc("Cjljb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9zZXJ2aWNlL2NvYWNoaW5nX3NlcnZpY2UucHJvdG8SImNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLnNlcnZpY2UyxQwKD0NvYWNoaW5nU2VydmljZRK0AQoPSW5pdGlhdGVSb2FkbWFwEjouY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Jbml0aWF0ZVJvYWRtYXBSZXF1ZXN0GjsuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Jbml0aWF0ZVJvYWRtYXBSZXNwb25zZSIogtPkkwIiIiAvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9yb2FkbWFwcxKrAQoMTGlzdFJvYWRtYXBzEjcuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5MaXN0Um9hZG1hcHNSZXF1ZXN0GjguY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5MaXN0Um9hZG1hcHNSZXNwb25zZSIogtPkkwIiEiAvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9yb2FkbWFwcxKyAQoKR2V0Um9hZG1hcBI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuR2V0Um9hZG1hcFJlcXVlc3QaNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLkdldFJvYWRtYXBSZXNwb25zZSI1gtPkkwIvEi0vYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9yb2FkbWFwcy97cm9hZG1hcF9pZH0SvgEKEEdldEFjdGl2ZVJvYWRtYXASOy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLkdldEFjdGl2ZVJvYWRtYXBSZXF1ZXN0GjwuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5HZXRBY3RpdmVSb2FkbWFwUmVzcG9uc2UiL4LT5JMCKRInL2FwaS92MS91c2Vycy97dXNlcl9pZH0vcm9hZG1hcHMvYWN0aXZlEsgBCg5HZXRTZXNzaW9uUGxhbhI5LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuR2V0U2Vzc2lvblBsYW5SZXF1ZXN0GjouY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5HZXRTZXNzaW9uUGxhblJlc3BvbnNlIj+C0+STAjkSNy9hcGkvdjEvdXNlcnMve3VzZXJfaWR9L3Nlc3Npb24tcGxhbnMve3Nlc3Npb25fcGxhbl9pZH0S2AEKElJlZ2VuZXJhdGVTY2hlZHVsZRI9LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUmVnZW5lcmF0ZVNjaGVkdWxlUmVxdWVzdBo+LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUmVnZW5lcmF0ZVNjaGVkdWxlUmVzcG9uc2UiQ4LT5JMCPToBKiI4L2FwaS92MS91c2Vycy97dXNlcl9pZH0vcm9hZG1hcHMve3JvYWRtYXBfaWR9OnJlZ2VuZXJhdGUS1wEKFkNyZWF0ZUFkaG9jU2Vzc2lvblBsYW4SQS5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLkNyZWF0ZUFkaG9jU2Vzc2lvblBsYW5SZXF1ZXN0GkIuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5DcmVhdGVBZGhvY1Nlc3Npb25QbGFuUmVzcG9uc2UiNoLT5JMCMDoBKiIrL2FwaS92MS91c2Vycy97dXNlcl9pZH0vc2Vzc2lvbi1wbGFucy9hZGhvYxLWAQoTU3VnZ2VzdEFkSG9jU2Vzc2lvbhI+LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU3VnZ2VzdEFkSG9jU2Vzc2lvblJlcXVlc3QaPy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlN1Z2dlc3RBZEhvY1Nlc3Npb25SZXNwb25zZSI+gtPkkwI4OgEqIjMvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9zZXNzaW9uLXBsYW5zL2FkaG9jL3N1Z2dlc3RCzgJaaWdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvY29hY2hpbmcvdjEvc2VydmljZTtjb2FjaGluZ3Yxc2VydmljZZJB3wESkAEKF0FJIFdvcmtvdXQgQ29hY2hpbmcgQVBJEm9BUEkgZm9yIDQtd2VlayB3b3Jrb3V0IHJvYWRtYXAgcGxhbm5pbmcsIHdlZWtseSBzY2hlZHVsaW5nLCBkYWlseSBwbGFuIGV4ZWN1dGlvbiwgYW5kIGFkYXB0aXZlIGNvYWNoaW5nIHJldmlldy4yBDEuMThaOAo2CgpCZWFyZXJBdXRoEigIAhITQmVhcmVyIGFjY2VzcyB0b2tlbhoNQXV0aG9yaXphdGlvbiACYhAKDgoKQmVhcmVyQXV0aBIAYgZwcm90bzM", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_core_coaching_v1_message_coaching_messages]);
+export const file_contracts_core_coaching_v1_service_coaching_service: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Cjljb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9zZXJ2aWNlL2NvYWNoaW5nX3NlcnZpY2UucHJvdG8SImNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLnNlcnZpY2UyxQwKD0NvYWNoaW5nU2VydmljZRK0AQoPSW5pdGlhdGVSb2FkbWFwEjouY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Jbml0aWF0ZVJvYWRtYXBSZXF1ZXN0GjsuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Jbml0aWF0ZVJvYWRtYXBSZXNwb25zZSIogtPkkwIiIiAvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9yb2FkbWFwcxKrAQoMTGlzdFJvYWRtYXBzEjcuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5MaXN0Um9hZG1hcHNSZXF1ZXN0GjguY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5MaXN0Um9hZG1hcHNSZXNwb25zZSIogtPkkwIiEiAvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9yb2FkbWFwcxKyAQoKR2V0Um9hZG1hcBI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuR2V0Um9hZG1hcFJlcXVlc3QaNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLkdldFJvYWRtYXBSZXNwb25zZSI1gtPkkwIvEi0vYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9yb2FkbWFwcy97cm9hZG1hcF9pZH0SvgEKEEdldEFjdGl2ZVJvYWRtYXASOy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLkdldEFjdGl2ZVJvYWRtYXBSZXF1ZXN0GjwuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5HZXRBY3RpdmVSb2FkbWFwUmVzcG9uc2UiL4LT5JMCKRInL2FwaS92MS91c2Vycy97dXNlcl9pZH0vcm9hZG1hcHMvYWN0aXZlEsgBCg5HZXRTZXNzaW9uUGxhbhI5LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuR2V0U2Vzc2lvblBsYW5SZXF1ZXN0GjouY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5HZXRTZXNzaW9uUGxhblJlc3BvbnNlIj+C0+STAjkSNy9hcGkvdjEvdXNlcnMve3VzZXJfaWR9L3Nlc3Npb24tcGxhbnMve3Nlc3Npb25fcGxhbl9pZH0S2AEKElJlZ2VuZXJhdGVTY2hlZHVsZRI9LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUmVnZW5lcmF0ZVNjaGVkdWxlUmVxdWVzdBo+LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUmVnZW5lcmF0ZVNjaGVkdWxlUmVzcG9uc2UiQ4LT5JMCPToBKiI4L2FwaS92MS91c2Vycy97dXNlcl9pZH0vcm9hZG1hcHMve3JvYWRtYXBfaWR9OnJlZ2VuZXJhdGUS1wEKFkNyZWF0ZUFkaG9jU2Vzc2lvblBsYW4SQS5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLkNyZWF0ZUFkaG9jU2Vzc2lvblBsYW5SZXF1ZXN0GkIuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5DcmVhdGVBZGhvY1Nlc3Npb25QbGFuUmVzcG9uc2UiNoLT5JMCMDoBKiIrL2FwaS92MS91c2Vycy97dXNlcl9pZH0vc2Vzc2lvbi1wbGFucy9hZGhvYxLWAQoTU3VnZ2VzdEFkSG9jU2Vzc2lvbhI+LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU3VnZ2VzdEFkSG9jU2Vzc2lvblJlcXVlc3QaPy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlN1Z2dlc3RBZEhvY1Nlc3Npb25SZXNwb25zZSI+gtPkkwI4OgEqIjMvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9zZXNzaW9uLXBsYW5zL2FkaG9jL3N1Z2dlc3RCzgJaaWdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvY29hY2hpbmcvdjEvc2VydmljZTtjb2FjaGluZ3Yxc2VydmljZZJB3wESkAEKF0FJIFdvcmtvdXQgQ29hY2hpbmcgQVBJEm9BUEkgZm9yIDQtd2VlayB3b3Jrb3V0IHJvYWRtYXAgcGxhbm5pbmcsIHdlZWtseSBzY2hlZHVsaW5nLCBkYWlseSBwbGFuIGV4ZWN1dGlvbiwgYW5kIGFkYXB0aXZlIGNvYWNoaW5nIHJldmlldy4yBDEuMThaOAo2CgpCZWFyZXJBdXRoEigIAhITQmVhcmVyIGFjY2VzcyB0b2tlbhoNQXV0aG9yaXphdGlvbiACYhAKDgoKQmVhcmVyQXV0aBIAYgZwcm90bzM",
+    [
+      file_google_api_annotations,
+      file_protoc_gen_openapiv2_options_annotations,
+      file_contracts_core_coaching_v1_message_coaching_messages,
+    ],
+  );
 
 /**
  * @generated from service contracts.core.coaching.v1.service.CoachingService
@@ -28,7 +53,7 @@ export const CoachingService: GenService<{
     methodKind: "unary";
     input: typeof InitiateRoadmapRequestSchema;
     output: typeof InitiateRoadmapResponseSchema;
-  },
+  };
   /**
    * List roadmaps for a user, optionally filtered by status.
    *
@@ -38,7 +63,7 @@ export const CoachingService: GenService<{
     methodKind: "unary";
     input: typeof ListRoadmapsRequestSchema;
     output: typeof ListRoadmapsResponseSchema;
-  },
+  };
   /**
    * Get one roadmap by id.
    *
@@ -48,7 +73,7 @@ export const CoachingService: GenService<{
     methodKind: "unary";
     input: typeof GetRoadmapRequestSchema;
     output: typeof GetRoadmapResponseSchema;
-  },
+  };
   /**
    * Get the single active roadmap for a user.
    *
@@ -58,7 +83,7 @@ export const CoachingService: GenService<{
     methodKind: "unary";
     input: typeof GetActiveRoadmapRequestSchema;
     output: typeof GetActiveRoadmapResponseSchema;
-  },
+  };
   /**
    * Get a specific session plan by id.
    *
@@ -68,7 +93,7 @@ export const CoachingService: GenService<{
     methodKind: "unary";
     input: typeof GetSessionPlanRequestSchema;
     output: typeof GetSessionPlanResponseSchema;
-  },
+  };
   /**
    * Re-generate future unexecuted session plans when profile/adaptation rules trigger (FR-AC-06).
    *
@@ -78,7 +103,7 @@ export const CoachingService: GenService<{
     methodKind: "unary";
     input: typeof RegenerateScheduleRequestSchema;
     output: typeof RegenerateScheduleResponseSchema;
-  },
+  };
   /**
    * Create an ad-hoc session plan (Flow 2.1).
    *
@@ -88,7 +113,7 @@ export const CoachingService: GenService<{
     methodKind: "unary";
     input: typeof CreateAdhocSessionPlanRequestSchema;
     output: typeof CreateAdhocSessionPlanResponseSchema;
-  },
+  };
   /**
    * Suggest an ad-hoc session plan prescription (read-only advisory function).
    *
@@ -98,7 +123,5 @@ export const CoachingService: GenService<{
     methodKind: "unary";
     input: typeof SuggestAdHocSessionRequestSchema;
     output: typeof SuggestAdHocSessionResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_contracts_core_coaching_v1_service_coaching_service, 0);
-
+  };
+}> /*@__PURE__*/ = serviceDesc(file_contracts_core_coaching_v1_service_coaching_service, 0);

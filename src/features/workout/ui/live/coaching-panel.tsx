@@ -7,25 +7,19 @@ import type { LiveExercise } from "@/features/workout/model/live-session.types";
 /** How close to the bottom counts as "there is nothing more to see". */
 const BOTTOM_SLACK_PX = 8;
 
-type Block = { label: string; text: string };
-
-function blocksFor(exercise: LiveExercise): Block[] {
-  const blocks: Block[] = [];
-
-  if (exercise.instructions?.trim()) {
-    blocks.push({ label: "Description", text: exercise.instructions });
-  }
-  if (exercise.formCues[0]?.trim()) {
-    blocks.push({ label: "Form Tip", text: exercise.formCues[0] });
-  }
-  if (exercise.breathingCue?.trim()) {
-    blocks.push({ label: "Breathing", text: exercise.breathingCue });
-  }
-  if (exercise.commonMistakes[0]?.trim()) {
-    blocks.push({ label: "Common Mistake", text: exercise.commonMistakes[0] });
-  }
-
-  return blocks;
+/**
+ * The instruction, split into paragraphs.
+ *
+ * Only `instructions` reaches this screen: while a set is running the user is
+ * mid-plank glancing down, and one voice reads faster than four labelled ones.
+ * Form cues, breathing and common mistakes are still a tap away in the
+ * exercise guide sheet, which is where someone reads *about* the movement.
+ */
+function paragraphsFor(exercise: LiveExercise): string[] {
+  return (exercise.instructions ?? "")
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
 export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
@@ -72,14 +66,13 @@ export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
       role="region"
       tabIndex={0}
     >
-      <dl className="live-coach">
-        {blocksFor(exercise).map((block) => (
-          <div className="live-coach__block" key={block.label}>
-            <dt className="live-coach__label">{block.label}</dt>
-            <dd className="live-coach__text">{block.text}</dd>
-          </div>
+      <div className="live-coach">
+        {paragraphsFor(exercise).map((text) => (
+          <p className="live-coach__text" key={text}>
+            {text}
+          </p>
         ))}
-      </dl>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera } from "lucide-react";
+import { Camera, Play } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -40,14 +40,21 @@ export function ExerciseMedia({
   children,
   exercise,
   onOpenCamera,
+  onWatchVideo,
 }: {
   exercise: LiveExercise;
   children?: ReactNode;
   onOpenCamera?: () => void;
   cameraActive?: boolean;
+  /** Open the full demo clip. Only offered when there is a clip to open. */
+  onWatchVideo?: () => void;
 }) {
   const reducedMotion = useReducedMotion();
   const showCameraButton = Boolean(onOpenCamera) && exercise.hasAiSupported;
+  // No clip means no button: an affordance that opens nothing is worse than
+  // its absence. The demo assets are not seeded in the mock data yet, so this
+  // is the honest branch rather than a dead control on every exercise.
+  const showVideoButton = Boolean(onWatchVideo) && Boolean(exercise.videoUrl) && !cameraActive;
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -95,16 +102,33 @@ export function ExerciseMedia({
         </div>
       )}
 
-      {showCameraButton ? (
-        <button
-          aria-label="Open AI camera"
-          aria-pressed={cameraActive}
-          className="live-media__camera"
-          onClick={onOpenCamera}
-          type="button"
-        >
-          <Camera aria-hidden="true" size={18} />
-        </button>
+      {/* Overlay controls, top-right of the media. Solid surfaces, never a
+          translucent scrim — DESIGN.md rules out glassmorphism. */}
+      {showCameraButton || showVideoButton ? (
+        <div className="live-media__controls">
+          {showVideoButton ? (
+            <button
+              aria-label="Watch demo video"
+              className="live-media__control"
+              onClick={onWatchVideo}
+              type="button"
+            >
+              <Play aria-hidden="true" size={18} />
+            </button>
+          ) : null}
+
+          {showCameraButton ? (
+            <button
+              aria-label="Open AI camera"
+              aria-pressed={cameraActive}
+              className="live-media__control live-media__camera"
+              onClick={onOpenCamera}
+              type="button"
+            >
+              <Camera aria-hidden="true" size={18} />
+            </button>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );

@@ -13,15 +13,21 @@ describe("ExerciseMetaRow", () => {
     expect(screen.getByText("30 sec")).toBeInTheDocument();
   });
 
+  // The current set and the total live in separate spans so they can carry
+  // different weight, so these read the counter element as a whole.
   it("shows the set counter on the right in 'n / total Sets' form", () => {
-    render(<ExerciseMetaRow currentSet={1} name="Plank Hold" target="30 sec" totalSets={3} />);
+    const { container } = render(
+      <ExerciseMetaRow currentSet={1} name="Plank Hold" target="30 sec" totalSets={3} />,
+    );
 
-    expect(screen.getByText("1 / 3 Sets")).toBeInTheDocument();
+    expect(container.querySelector(".live-meta__sets")?.textContent).toBe("1 / 3 Sets");
   });
 
   it("uses the singular label for a one-set prescription", () => {
-    render(<ExerciseMetaRow currentSet={1} name="Plank Hold" target="30 sec" totalSets={1} />);
+    const { container } = render(
+      <ExerciseMetaRow currentSet={1} name="Plank Hold" target="30 sec" totalSets={1} />,
+    );
 
-    expect(screen.getByText("1 / 1 Set")).toBeInTheDocument();
+    expect(container.querySelector(".live-meta__sets")?.textContent).toBe("1 / 1 Set");
   });
 });

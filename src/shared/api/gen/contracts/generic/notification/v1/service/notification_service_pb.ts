@@ -4,16 +4,37 @@
 
 import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+
 import { file_google_api_annotations } from "../../../../../google/api/annotations_pb";
 import { file_protoc_gen_openapiv2_options_annotations } from "../../../../../protoc-gen-openapiv2/options/annotations_pb";
-import type { GetNotificationSettingsRequestSchema, GetNotificationSettingsResponseSchema, ListNotificationsRequestSchema, ListNotificationsResponseSchema, MarkNotificationAsReadRequestSchema, MarkNotificationAsReadResponseSchema, RegisterDeviceTokenRequestSchema, RegisterDeviceTokenResponseSchema, SendPushNotificationRequestSchema, SendPushNotificationResponseSchema, UpdateNotificationSettingsRequestSchema, UpdateNotificationSettingsResponseSchema } from "../message/notification_messages_pb";
+import type {
+  GetNotificationSettingsRequestSchema,
+  GetNotificationSettingsResponseSchema,
+  ListNotificationsRequestSchema,
+  ListNotificationsResponseSchema,
+  MarkNotificationAsReadRequestSchema,
+  MarkNotificationAsReadResponseSchema,
+  RegisterDeviceTokenRequestSchema,
+  RegisterDeviceTokenResponseSchema,
+  SendPushNotificationRequestSchema,
+  SendPushNotificationResponseSchema,
+  UpdateNotificationSettingsRequestSchema,
+  UpdateNotificationSettingsResponseSchema,
+} from "../message/notification_messages_pb";
 import { file_contracts_generic_notification_v1_message_notification_messages } from "../message/notification_messages_pb";
 
 /**
  * Describes the file contracts/generic/notification/v1/service/notification_service.proto.
  */
-export const file_contracts_generic_notification_v1_service_notification_service: GenFile = /*@__PURE__*/
-  fileDesc("CkRjb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvc2VydmljZS9ub3RpZmljYXRpb25fc2VydmljZS5wcm90bxIpY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLnNlcnZpY2Uy6QoKE05vdGlmaWNhdGlvblNlcnZpY2US0wEKFFNlbmRQdXNoTm90aWZpY2F0aW9uEkYuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuU2VuZFB1c2hOb3RpZmljYXRpb25SZXF1ZXN0GkcuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuU2VuZFB1c2hOb3RpZmljYXRpb25SZXNwb25zZSIqkkECYgCC0+STAh86ASoiGi9hcGkvdjEvbm90aWZpY2F0aW9ucy9wdXNoEtABChNSZWdpc3RlckRldmljZVRva2VuEkUuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuUmVnaXN0ZXJEZXZpY2VUb2tlblJlcXVlc3QaRi5jb250cmFjdHMuZ2VuZXJpYy5ub3RpZmljYXRpb24udjEubWVzc2FnZS5SZWdpc3RlckRldmljZVRva2VuUmVzcG9uc2UiKoLT5JMCJDoBKiIfL2FwaS92MS91c2Vycy97dXNlcl9pZH0vZGV2aWNlcxLoAQoXR2V0Tm90aWZpY2F0aW9uU2V0dGluZ3MSSS5jb250cmFjdHMuZ2VuZXJpYy5ub3RpZmljYXRpb24udjEubWVzc2FnZS5HZXROb3RpZmljYXRpb25TZXR0aW5nc1JlcXVlc3QaSi5jb250cmFjdHMuZ2VuZXJpYy5ub3RpZmljYXRpb24udjEubWVzc2FnZS5HZXROb3RpZmljYXRpb25TZXR0aW5nc1Jlc3BvbnNlIjaC0+STAjASLi9hcGkvdjEvdXNlcnMve3VzZXJfaWR9L25vdGlmaWNhdGlvbnMvc2V0dGluZ3MS9AEKGlVwZGF0ZU5vdGlmaWNhdGlvblNldHRpbmdzEkwuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuVXBkYXRlTm90aWZpY2F0aW9uU2V0dGluZ3NSZXF1ZXN0Gk0uY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuVXBkYXRlTm90aWZpY2F0aW9uU2V0dGluZ3NSZXNwb25zZSI5gtPkkwIzOgEqGi4vYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9ub3RpZmljYXRpb25zL3NldHRpbmdzEs0BChFMaXN0Tm90aWZpY2F0aW9ucxJDLmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLkxpc3ROb3RpZmljYXRpb25zUmVxdWVzdBpELmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLkxpc3ROb3RpZmljYXRpb25zUmVzcG9uc2UiLYLT5JMCJxIlL2FwaS92MS91c2Vycy97dXNlcl9pZH0vbm90aWZpY2F0aW9ucxL2AQoWTWFya05vdGlmaWNhdGlvbkFzUmVhZBJILmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLk1hcmtOb3RpZmljYXRpb25Bc1JlYWRSZXF1ZXN0GkkuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuTWFya05vdGlmaWNhdGlvbkFzUmVhZFJlc3BvbnNlIkeC0+STAkE6ASoiPC9hcGkvdjEvdXNlcnMve3VzZXJfaWR9L25vdGlmaWNhdGlvbnMve25vdGlmaWNhdGlvbl9pZH0vcmVhZEL3Alp0Z2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvc2VydmljZTtub3RpZmljYXRpb252MXNlcnZpY2WSQf0BEpUBChhOb3RpZmljYXRpb24gU2VydmljZSBBUEkSdEFQSSBn4butaSB0aMO0bmcgYsOhbyDEkeG6qXkgKFB1c2ggTm90aWZpY2F0aW9ucyksIHF14bqjbiBsw70gdG9rZW4gdGhp4bq/dCBi4buLIHbDoCBj4bqldSBow6xuaCBuaOG6rW4gdGjDtG5nIGLDoW8uMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_generic_notification_v1_message_notification_messages]);
+export const file_contracts_generic_notification_v1_service_notification_service: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "CkRjb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvc2VydmljZS9ub3RpZmljYXRpb25fc2VydmljZS5wcm90bxIpY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLnNlcnZpY2Uy6QoKE05vdGlmaWNhdGlvblNlcnZpY2US0wEKFFNlbmRQdXNoTm90aWZpY2F0aW9uEkYuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuU2VuZFB1c2hOb3RpZmljYXRpb25SZXF1ZXN0GkcuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuU2VuZFB1c2hOb3RpZmljYXRpb25SZXNwb25zZSIqkkECYgCC0+STAh86ASoiGi9hcGkvdjEvbm90aWZpY2F0aW9ucy9wdXNoEtABChNSZWdpc3RlckRldmljZVRva2VuEkUuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuUmVnaXN0ZXJEZXZpY2VUb2tlblJlcXVlc3QaRi5jb250cmFjdHMuZ2VuZXJpYy5ub3RpZmljYXRpb24udjEubWVzc2FnZS5SZWdpc3RlckRldmljZVRva2VuUmVzcG9uc2UiKoLT5JMCJDoBKiIfL2FwaS92MS91c2Vycy97dXNlcl9pZH0vZGV2aWNlcxLoAQoXR2V0Tm90aWZpY2F0aW9uU2V0dGluZ3MSSS5jb250cmFjdHMuZ2VuZXJpYy5ub3RpZmljYXRpb24udjEubWVzc2FnZS5HZXROb3RpZmljYXRpb25TZXR0aW5nc1JlcXVlc3QaSi5jb250cmFjdHMuZ2VuZXJpYy5ub3RpZmljYXRpb24udjEubWVzc2FnZS5HZXROb3RpZmljYXRpb25TZXR0aW5nc1Jlc3BvbnNlIjaC0+STAjASLi9hcGkvdjEvdXNlcnMve3VzZXJfaWR9L25vdGlmaWNhdGlvbnMvc2V0dGluZ3MS9AEKGlVwZGF0ZU5vdGlmaWNhdGlvblNldHRpbmdzEkwuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuVXBkYXRlTm90aWZpY2F0aW9uU2V0dGluZ3NSZXF1ZXN0Gk0uY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuVXBkYXRlTm90aWZpY2F0aW9uU2V0dGluZ3NSZXNwb25zZSI5gtPkkwIzOgEqGi4vYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9ub3RpZmljYXRpb25zL3NldHRpbmdzEs0BChFMaXN0Tm90aWZpY2F0aW9ucxJDLmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLkxpc3ROb3RpZmljYXRpb25zUmVxdWVzdBpELmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLkxpc3ROb3RpZmljYXRpb25zUmVzcG9uc2UiLYLT5JMCJxIlL2FwaS92MS91c2Vycy97dXNlcl9pZH0vbm90aWZpY2F0aW9ucxL2AQoWTWFya05vdGlmaWNhdGlvbkFzUmVhZBJILmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLk1hcmtOb3RpZmljYXRpb25Bc1JlYWRSZXF1ZXN0GkkuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuTWFya05vdGlmaWNhdGlvbkFzUmVhZFJlc3BvbnNlIkeC0+STAkE6ASoiPC9hcGkvdjEvdXNlcnMve3VzZXJfaWR9L25vdGlmaWNhdGlvbnMve25vdGlmaWNhdGlvbl9pZH0vcmVhZEL3Alp0Z2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvc2VydmljZTtub3RpZmljYXRpb252MXNlcnZpY2WSQf0BEpUBChhOb3RpZmljYXRpb24gU2VydmljZSBBUEkSdEFQSSBn4butaSB0aMO0bmcgYsOhbyDEkeG6qXkgKFB1c2ggTm90aWZpY2F0aW9ucyksIHF14bqjbiBsw70gdG9rZW4gdGhp4bq/dCBi4buLIHbDoCBj4bqldSBow6xuaCBuaOG6rW4gdGjDtG5nIGLDoW8uMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z",
+    [
+      file_google_api_annotations,
+      file_protoc_gen_openapiv2_options_annotations,
+      file_contracts_generic_notification_v1_message_notification_messages,
+    ],
+  );
 
 /**
  * @generated from service contracts.generic.notification.v1.service.NotificationService
@@ -28,7 +49,7 @@ export const NotificationService: GenService<{
     methodKind: "unary";
     input: typeof SendPushNotificationRequestSchema;
     output: typeof SendPushNotificationResponseSchema;
-  },
+  };
   /**
    * Đăng ký FCM / APNs device token của thiết bị người dùng
    *
@@ -38,7 +59,7 @@ export const NotificationService: GenService<{
     methodKind: "unary";
     input: typeof RegisterDeviceTokenRequestSchema;
     output: typeof RegisterDeviceTokenResponseSchema;
-  },
+  };
   /**
    * Lấy cấu hình nhận thông báo (Bật/tắt các kênh)
    *
@@ -48,7 +69,7 @@ export const NotificationService: GenService<{
     methodKind: "unary";
     input: typeof GetNotificationSettingsRequestSchema;
     output: typeof GetNotificationSettingsResponseSchema;
-  },
+  };
   /**
    * Cập nhật cấu hình nhận thông báo
    *
@@ -58,7 +79,7 @@ export const NotificationService: GenService<{
     methodKind: "unary";
     input: typeof UpdateNotificationSettingsRequestSchema;
     output: typeof UpdateNotificationSettingsResponseSchema;
-  },
+  };
   /**
    * Lấy danh sách lịch sử thông báo in-app của người dùng
    *
@@ -68,7 +89,7 @@ export const NotificationService: GenService<{
     methodKind: "unary";
     input: typeof ListNotificationsRequestSchema;
     output: typeof ListNotificationsResponseSchema;
-  },
+  };
   /**
    * Đánh dấu thông báo là đã đọc
    *
@@ -78,7 +99,8 @@ export const NotificationService: GenService<{
     methodKind: "unary";
     input: typeof MarkNotificationAsReadRequestSchema;
     output: typeof MarkNotificationAsReadResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_contracts_generic_notification_v1_service_notification_service, 0);
-
+  };
+}> /*@__PURE__*/ = serviceDesc(
+  file_contracts_generic_notification_v1_service_notification_service,
+  0,
+);

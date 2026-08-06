@@ -183,6 +183,13 @@ export type SessionReport = {
   /** Set to true when < 50% of camera frames tracked — BR-CC-02. */
   hasUnverifiedSets: boolean;
   personalRecords: Array<{ exerciseId: string; name: string; oneRepMaxKg: number }>;
+  /**
+   * The recent average volume this session is compared against on the summary.
+   * A *recent average*, not the immediately preceding session — that is the
+   * only history the plan actually carries, so the summary says so rather than
+   * implying a like-for-like "last time". 0 when there is no history yet.
+   */
+  recentAvgVolumeKg: number;
 };
 
 /** Key used in sessionStorage to persist the post-session report for Summary view. */

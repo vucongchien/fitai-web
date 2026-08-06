@@ -33,6 +33,7 @@ const baseProps = {
   nextExercise: makeExercise(),
   onAddTime: vi.fn(),
   onBack: vi.fn(),
+  onReportPain: vi.fn(),
   onSkipRest: vi.fn(),
   onToggleFullscreen: vi.fn(),
   onToggleVoice: vi.fn(),
@@ -58,10 +59,20 @@ describe("RestScreen", () => {
     expect(screen.queryByRole("button", { name: "Exercise guide" })).not.toBeInTheDocument();
   });
 
-  it("badges the upcoming exercise and names it", () => {
-    render(<RestScreen {...baseProps} />);
+  // Pain does not wait for the next set to begin.
+  it("offers the pain report during rest too", () => {
+    const onReportPain = vi.fn();
+    render(<RestScreen {...baseProps} onReportPain={onReportPain} />);
 
-    expect(screen.getByText("Next Exercise")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
+
+    expect(onReportPain).toHaveBeenCalledOnce();
+  });
+
+  it("labels the upcoming exercise and names it", () => {
+    const { container } = render(<RestScreen {...baseProps} />);
+
+    expect(container.querySelector(".live-next__badge")?.textContent).toContain("Next");
     expect(screen.getByText("Russian Twist")).toBeInTheDocument();
   });
 
@@ -82,17 +93,19 @@ describe("RestScreen", () => {
     expect(screen.getByText("30 Seconds")).toBeInTheDocument();
   });
 
-  it("shows the session-wide progress line", () => {
+  // The position folded into the "Next" line rather than occupying a fourth
+  // row of its own, which is what freed the vertical space for the media.
+  it("shows the session-wide position on the Next line", () => {
     render(<RestScreen {...baseProps} />);
 
-    expect(screen.getByText("Exercise 2 of 8")).toBeInTheDocument();
+    expect(screen.getByText("2/8")).toBeInTheDocument();
   });
 
-  it("labels and shows the rest countdown", () => {
+  it("shows the rest countdown, named for screen readers", () => {
     render(<RestScreen {...baseProps} />);
 
-    expect(screen.getByText("Rest Time Remaining")).toBeInTheDocument();
     expect(screen.getByText("00:20")).toBeInTheDocument();
+    expect(screen.getByRole("timer", { name: "Rest time remaining" })).toBeInTheDocument();
   });
 
   it("offers +10 Seconds and Skip Rest as two equal buttons", () => {
@@ -110,25 +123,13 @@ describe("RestScreen", () => {
   it("explains the automatic transition", () => {
     render(<RestScreen {...baseProps} />);
 
-    expect(
-      screen.getByText("The next exercise will start automatically when the timer reaches zero."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Next exercise starts automatically at zero.")).toBeInTheDocument();
   });
 
-  it("offers a live-preview camera button when the next exercise is AI-supported", () => {
-    render(<RestScreen {...baseProps} onToggleCamera={vi.fn()} />);
-
-    expect(screen.getByRole("button", { name: "Open AI camera" })).toBeInTheDocument();
-  });
-
-  it("hides the camera button when the next exercise has no AI support", () => {
-    render(
-      <RestScreen
-        {...baseProps}
-        nextExercise={makeExercise({ hasAiSupported: false })}
-        onToggleCamera={vi.fn()}
-      />,
-    );
+  // Rest is rest. Nothing is being tracked, so there is no camera to offer and
+  // no reason to hold the stream (and its recording indicator) open.
+  it("offers no camera controls at all during rest", () => {
+    render(<RestScreen {...baseProps} />);
 
     expect(screen.queryByRole("button", { name: "Open AI camera" })).not.toBeInTheDocument();
   });

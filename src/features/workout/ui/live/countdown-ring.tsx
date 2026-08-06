@@ -22,7 +22,7 @@ export function CountdownRing({
 }: {
   display: string;
   progress: number | null;
-  tone: "effort" | "recovery";
+  tone: "effort" | "recovery" | "action";
   label: string;
 }) {
   const filled = progress === null ? null : Math.min(1, Math.max(0, progress));

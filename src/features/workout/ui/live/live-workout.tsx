@@ -14,9 +14,11 @@ import { useMotionEngine } from "@/features/workout/model/use-motion-engine";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
 import { CalibrationView } from "@/features/workout/ui/live/calibration-view";
 import { CameraStage } from "@/features/workout/ui/live/camera-stage";
+import { DemoVideoOverlay } from "@/features/workout/ui/live/demo-video-overlay";
 import type { EndDialogVariant } from "@/features/workout/ui/live/end-session-dialog";
 import { EndSessionDialog } from "@/features/workout/ui/live/end-session-dialog";
 import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
+import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
 import { toast } from "@/shared/ui/toast";
 
@@ -44,6 +46,8 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const [cameraOn, setCameraOn] = useState(true);
   const [guideOpen, setGuideOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
+  const [painOpen, setPainOpen] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   const motion = useMotionEngine({
     onFallback: (reason) => {
@@ -71,9 +75,10 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     step,
   } = workoutEffects;
 
-  // Back is a navigation affordance, so it must stay reversible. It opens the
-  // confirmation; only the dialog may end the session, which is what protects
-  // the resume draft that `finishSession` clears.
+  // Back always asks first — mid-set or mid-rest, no exceptions. Leaving a
+  // running session is not something a single stray tap should be able to do,
+  // and the dialog is where the user chooses between finishing (which saves and
+  // shows the summary) and stopping early.
   const onBack = useCallback(() => setEndOpen(true), []);
   const onToggleVoice = useCallback(() => setListening((value) => !value), []);
 
@@ -158,8 +163,19 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         void finishSession(confirmOverload);
       }}
       totalSets={loggedSets.length}
-      totalVolumeKg={volumeKg}
       variant={endVariant}
+    />
+  ) : null;
+
+  // Pain is reportable from either screen, so the dialog lives here rather than
+  // inside one of them.
+  const painDialog = painOpen ? (
+    <PainReportDialog
+      onDismiss={() => setPainOpen(false)}
+      onStop={(note) => {
+        setPainOpen(false);
+        void abortSession("pain", note);
+      }}
     />
   ) : null;
 
@@ -170,14 +186,12 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     return (
       <>
         <RestScreen
-          cameraActive={cameraActive}
-          cameraSlot={cameraStage}
           exerciseNumber={next.sessionPosition}
           nextExercise={next.exercise}
           onAddTime={() => session.actions.addRest(ADD_SECONDS)}
           onBack={onBack}
+          onReportPain={() => setPainOpen(true)}
           onSkipRest={session.actions.endRest}
-          onToggleCamera={onToggleCamera}
           onToggleFullscreen={toggleFullscreen}
           onToggleVoice={onToggleVoice}
           secondsLeft={session.restLeft}
@@ -186,6 +200,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           voiceOn={listening}
           workoutTitle={plan.title}
         />
+        {painDialog}
         {endDialog}
       </>
     );
@@ -202,9 +217,11 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         onBack={onBack}
         onDone={() => finishSet(listening)}
         onOpenGuide={() => setGuideOpen(true)}
+        onReportPain={() => setPainOpen(true)}
         onToggleCamera={onToggleCamera}
         onToggleFullscreen={toggleFullscreen}
         onToggleVoice={onToggleVoice}
+        onWatchVideo={exercise.videoUrl ? () => setVideoOpen(true) : undefined}
         repCount={cameraActive ? motion.repCount : undefined}
         secondsLeft={session.setLeft}
         setTotalSeconds={session.setTotal}
@@ -234,6 +251,16 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         <InstructionsSheet exercise={exercise} onClose={() => setGuideOpen(false)} />
       ) : null}
 
+      {videoOpen && exercise.videoUrl ? (
+        <DemoVideoOverlay
+          name={exercise.name}
+          onClose={() => setVideoOpen(false)}
+          posterUrl={exercise.thumbnailUrl}
+          videoUrl={exercise.videoUrl}
+        />
+      ) : null}
+
+      {painDialog}
       {endDialog}
     </>
   );

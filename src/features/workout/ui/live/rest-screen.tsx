@@ -1,7 +1,6 @@
 "use client";
 
-import { Maximize2, Plus, SkipForward, Volume2, VolumeX } from "lucide-react";
-import type { ReactNode } from "react";
+import { Maximize2, Plus, SkipForward, TriangleAlert, Volume2, VolumeX } from "lucide-react";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { formatCountdown } from "@/features/workout/model/use-session-timer";
@@ -17,14 +16,12 @@ function prescriptionLabel(exercise: LiveExercise): string {
 }
 
 export function RestScreen({
-  cameraActive = false,
-  cameraSlot,
   exerciseNumber,
   nextExercise,
   onAddTime,
   onBack,
+  onReportPain,
   onSkipRest,
-  onToggleCamera,
   onToggleFullscreen,
   onToggleVoice,
   secondsLeft,
@@ -41,16 +38,22 @@ export function RestScreen({
   /** Full length of this rest, so the ring has a denominator. 0 hides the arc. */
   totalSeconds: number;
   onBack: () => void;
+  /** "Something hurts" — reachable during rest as well as mid-set. */
+  onReportPain: () => void;
   onToggleVoice: () => void;
   voiceOn: boolean;
   onToggleFullscreen: () => void;
   onAddTime: () => void;
   onSkipRest: () => void;
-  onToggleCamera?: () => void;
-  cameraActive?: boolean;
-  cameraSlot?: ReactNode;
 }) {
   const actions: HeaderAction[] = [
+    {
+      icon: <TriangleAlert aria-hidden="true" size={18} />,
+      key: "pain",
+      label: "Report pain",
+      onClick: onReportPain,
+      tone: "alert",
+    },
     {
       active: voiceOn,
       icon: voiceOn ? (
@@ -74,21 +77,22 @@ export function RestScreen({
     <div className="live-screen live-screen--rest">
       <SessionHeader actions={actions} onBack={onBack} title={workoutTitle} />
 
-      <ExerciseMedia
-        cameraActive={cameraActive}
-        exercise={nextExercise}
-        onOpenCamera={onToggleCamera}
-      >
-        {cameraSlot}
-      </ExerciseMedia>
+      {/* The upcoming exercise's demo clip. No camera controls here: nothing is
+          being tracked during rest, so a live preview would only mean "you are
+          being filmed while you catch your breath". */}
+      <ExerciseMedia exercise={nextExercise} />
 
       <div className="live-next">
-        <span className="live-next__badge">Next Exercise</span>
+        {/* One line instead of a badge plus a separate progress line: "Next"
+            and the position are the same thought. */}
+        <p className="live-next__badge">
+          Next{" "}
+          <span className="live-next__count">
+            {exerciseNumber}/{totalExercises}
+          </span>
+        </p>
         <p className="live-next__name">{nextExercise.name}</p>
         <p className="live-next__prescription">{prescriptionLabel(nextExercise)}</p>
-        <p className="live-next__progress">
-          Exercise {exerciseNumber} of {totalExercises}
-        </p>
       </div>
 
       <div className="live-rest">
@@ -102,15 +106,15 @@ export function RestScreen({
           <span>10s</span>
         </button>
 
-        <div className="live-rest__center">
-          <span className="live-rest__label">Rest Time Remaining</span>
-          <CountdownRing
-            display={formatCountdown(Math.max(0, secondsLeft))}
-            label="Rest time remaining"
-            progress={totalSeconds > 0 ? Math.max(0, secondsLeft) / totalSeconds : null}
-            tone="recovery"
-          />
-        </div>
+        {/* The ring's own accessible name already says "rest time remaining",
+            so the visible label above it was pure duplication — and it pushed
+            the ring down into the home-indicator zone. */}
+        <CountdownRing
+          display={formatCountdown(Math.max(0, secondsLeft))}
+          label="Rest time remaining"
+          progress={totalSeconds > 0 ? Math.max(0, secondsLeft) / totalSeconds : null}
+          tone="recovery"
+        />
 
         <button
           aria-label="Skip Rest"
@@ -123,9 +127,7 @@ export function RestScreen({
         </button>
       </div>
 
-      <p className="live-rest__note">
-        The next exercise will start automatically when the timer reaches zero.
-      </p>
+      <p className="live-rest__note">Next exercise starts automatically at zero.</p>
     </div>
   );
 }

@@ -4,16 +4,36 @@
 
 import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+
 import { file_google_api_annotations } from "../../../../../google/api/annotations_pb";
 import { file_protoc_gen_openapiv2_options_annotations } from "../../../../../protoc-gen-openapiv2/options/annotations_pb";
-import type { GetJWKSRequestSchema, GetJWKSResponseSchema, GetOAuthLoginURLRequestSchema, GetOAuthLoginURLResponseSchema, LoginWithOAuthRequestSchema, LoginWithOAuthResponseSchema, LogoutRequestSchema, LogoutResponseSchema, RefreshTokenRequestSchema, RefreshTokenResponseSchema, RotateKeysRequestSchema, RotateKeysResponseSchema } from "../message/auth_messages_pb";
+import type {
+  GetJWKSRequestSchema,
+  GetJWKSResponseSchema,
+  GetOAuthLoginURLRequestSchema,
+  GetOAuthLoginURLResponseSchema,
+  LoginWithOAuthRequestSchema,
+  LoginWithOAuthResponseSchema,
+  LogoutRequestSchema,
+  LogoutResponseSchema,
+  RefreshTokenRequestSchema,
+  RefreshTokenResponseSchema,
+  RotateKeysRequestSchema,
+  RotateKeysResponseSchema,
+} from "../message/auth_messages_pb";
 import { file_contracts_generic_auth_v1_message_auth_messages } from "../message/auth_messages_pb";
 
 /**
  * Describes the file contracts/generic/auth/v1/service/auth_service.proto.
  */
-export const file_contracts_generic_auth_v1_service_auth_service: GenFile = /*@__PURE__*/
-  fileDesc("CjRjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL3NlcnZpY2UvYXV0aF9zZXJ2aWNlLnByb3RvEiFjb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLnNlcnZpY2Uy8QgKC0F1dGhTZXJ2aWNlErwBCgxSZWZyZXNoVG9rZW4SNi5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuUmVmcmVzaFRva2VuUmVxdWVzdBo3LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5SZWZyZXNoVG9rZW5SZXNwb25zZSI7kkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCGToBKiIUL2FwaS92MS9hdXRoL3JlZnJlc2gSpwEKBkxvZ291dBIwLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dvdXRSZXF1ZXN0GjEuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ291dFJlc3BvbnNlIjiSQRcKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcoLT5JMCGDoBKiITL2FwaS92MS9hdXRoL2xvZ291dBLJAQoQR2V0T0F1dGhMb2dpblVSTBI6LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5HZXRPQXV0aExvZ2luVVJMUmVxdWVzdBo7LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5HZXRPQXV0aExvZ2luVVJMUmVzcG9uc2UiPJJBGQoVQXV0aGVudGljYXRpb24gLyBVc2VyYgCC0+STAhoSGC9hcGkvdjEvYXV0aC9vYXV0aC9sb2dpbhK5AQoKUm90YXRlS2V5cxI0LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Sb3RhdGVLZXlzUmVxdWVzdBo1LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Sb3RhdGVLZXlzUmVzcG9uc2UiPpJBGAoWQXV0aGVudGljYXRpb24gLyBBZG1pboLT5JMCHToBKiIYL2FwaS92MS9hdXRoL2tleXMvcm90YXRlEqcBCgdHZXRKV0tTEjEuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkdldEpXS1NSZXF1ZXN0GjIuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkdldEpXS1NSZXNwb25zZSI1kkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCExIRL2FwaS92MS9hdXRoL2p3a3MSxgEKDkxvZ2luV2l0aE9BdXRoEjguY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ2luV2l0aE9BdXRoUmVxdWVzdBo5LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dpbldpdGhPQXV0aFJlc3BvbnNlIj+SQRkKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcmIAgtPkkwIdOgEqIhgvYXBpL3YxL2F1dGgvbG9naW4vb2F1dGhCugJaZGdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2dlbmVyaWMvYXV0aC92MS9zZXJ2aWNlO2F1dGh2MXNlcnZpY2WSQdABEmkKHUlkZW50aXR5ICYgQXV0aGVudGljYXRpb24gQVBJEkNBUEkgeMOhYyB0aOG7sWMgbmfGsOG7nWkgZMO5bmcgYuG6sW5nIHTDoGkga2hv4bqjbiBHb29nbGUvRmFjZWJvb2suMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_generic_auth_v1_message_auth_messages]);
+export const file_contracts_generic_auth_v1_service_auth_service: GenFile /*@__PURE__*/ = fileDesc(
+  "CjRjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL3NlcnZpY2UvYXV0aF9zZXJ2aWNlLnByb3RvEiFjb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLnNlcnZpY2Uy8QgKC0F1dGhTZXJ2aWNlErwBCgxSZWZyZXNoVG9rZW4SNi5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuUmVmcmVzaFRva2VuUmVxdWVzdBo3LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5SZWZyZXNoVG9rZW5SZXNwb25zZSI7kkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCGToBKiIUL2FwaS92MS9hdXRoL3JlZnJlc2gSpwEKBkxvZ291dBIwLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dvdXRSZXF1ZXN0GjEuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ291dFJlc3BvbnNlIjiSQRcKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcoLT5JMCGDoBKiITL2FwaS92MS9hdXRoL2xvZ291dBLJAQoQR2V0T0F1dGhMb2dpblVSTBI6LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5HZXRPQXV0aExvZ2luVVJMUmVxdWVzdBo7LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5HZXRPQXV0aExvZ2luVVJMUmVzcG9uc2UiPJJBGQoVQXV0aGVudGljYXRpb24gLyBVc2VyYgCC0+STAhoSGC9hcGkvdjEvYXV0aC9vYXV0aC9sb2dpbhK5AQoKUm90YXRlS2V5cxI0LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Sb3RhdGVLZXlzUmVxdWVzdBo1LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Sb3RhdGVLZXlzUmVzcG9uc2UiPpJBGAoWQXV0aGVudGljYXRpb24gLyBBZG1pboLT5JMCHToBKiIYL2FwaS92MS9hdXRoL2tleXMvcm90YXRlEqcBCgdHZXRKV0tTEjEuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkdldEpXS1NSZXF1ZXN0GjIuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkdldEpXS1NSZXNwb25zZSI1kkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCExIRL2FwaS92MS9hdXRoL2p3a3MSxgEKDkxvZ2luV2l0aE9BdXRoEjguY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ2luV2l0aE9BdXRoUmVxdWVzdBo5LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dpbldpdGhPQXV0aFJlc3BvbnNlIj+SQRkKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcmIAgtPkkwIdOgEqIhgvYXBpL3YxL2F1dGgvbG9naW4vb2F1dGhCugJaZGdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2dlbmVyaWMvYXV0aC92MS9zZXJ2aWNlO2F1dGh2MXNlcnZpY2WSQdABEmkKHUlkZW50aXR5ICYgQXV0aGVudGljYXRpb24gQVBJEkNBUEkgeMOhYyB0aOG7sWMgbmfGsOG7nWkgZMO5bmcgYuG6sW5nIHTDoGkga2hv4bqjbiBHb29nbGUvRmFjZWJvb2suMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z",
+  [
+    file_google_api_annotations,
+    file_protoc_gen_openapiv2_options_annotations,
+    file_contracts_generic_auth_v1_message_auth_messages,
+  ],
+);
 
 /**
  * @generated from service contracts.generic.auth.v1.service.AuthService
@@ -28,7 +48,7 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof RefreshTokenRequestSchema;
     output: typeof RefreshTokenResponseSchema;
-  },
+  };
   /**
    * Đăng xuất và hủy phiên làm việc
    *
@@ -38,7 +58,7 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof LogoutRequestSchema;
     output: typeof LogoutResponseSchema;
-  },
+  };
   /**
    * Lấy URL đăng nhập OAuth (Google/Facebook)
    *
@@ -48,7 +68,7 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof GetOAuthLoginURLRequestSchema;
     output: typeof GetOAuthLoginURLResponseSchema;
-  },
+  };
   /**
    * Xoay khóa ký JWT thủ công (chỉ dành cho Admin)
    *
@@ -58,7 +78,7 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof RotateKeysRequestSchema;
     output: typeof RotateKeysResponseSchema;
-  },
+  };
   /**
    * Lấy danh sách Public Keys dưới dạng JWKS
    *
@@ -68,7 +88,7 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof GetJWKSRequestSchema;
     output: typeof GetJWKSResponseSchema;
-  },
+  };
   /**
    * Đăng nhập bằng tài khoản Google hoặc Facebook
    *
@@ -78,7 +98,5 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof LoginWithOAuthRequestSchema;
     output: typeof LoginWithOAuthResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_contracts_generic_auth_v1_service_auth_service, 0);
-
+  };
+}> /*@__PURE__*/ = serviceDesc(file_contracts_generic_auth_v1_service_auth_service, 0);

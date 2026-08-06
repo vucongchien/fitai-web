@@ -5786,9 +5786,11 @@ body:has(.live-screen) {
   list-style: none;
 }
 
-.meal-logged__list li {
+/* Direct children only: the recipe steps nested inside must not inherit this grid, or each
+   step is squeezed into the 1fr column and reads as a narrow vertical strip. */
+.meal-logged__list > li {
   display: grid;
-  gap: 0.7rem;
+  gap: 0.7rem 0.7rem;
   align-items: baseline;
   color: var(--color-recovery-ink);
   font-size: 0.86rem;

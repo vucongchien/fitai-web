@@ -52,6 +52,23 @@ export function useLiveWorkoutEffects({
     elapsedSecRef.current = session.elapsedSec;
   }, [session.elapsedSec]);
 
+  /**
+   * Live handles to the two controllers, for effects that must *not* re-run when
+   * the controllers change identity.
+   *
+   * `motion` carries `pose` and `calibration`, which update on every camera frame
+   * (~30/s). Depending on the object directly meant the camera-lifecycle effect
+   * below tore down and restarted the stream on every frame — `getUserMedia` was
+   * being called ~140 times a second, which is what made the screen flicker.
+   * The effect should re-run when the *exercise* changes, not when a pose lands.
+   */
+  const cameraRef = useRef(camera);
+  const motionRef = useRef(motion);
+  useEffect(() => {
+    cameraRef.current = camera;
+    motionRef.current = motion;
+  });
+
   const step = session.step;
   const exercise = step?.exercise ?? null;
   const spec: MotionSpec | null = useMemo(
@@ -80,19 +97,29 @@ export function useLiveWorkoutEffects({
   }, [exerciseId]);
 
   // --- Camera lifecycle ---
+  //
+  // Resting is excluded, not just "complete": while resting, `session.step`
+  // already points at the *next* exercise, so an AI-supported one would spin the
+  // camera up — permission prompt, indicator light, pose model — during the one
+  // stretch of the session where nothing is being tracked. Rest is rest; the
+  // camera starts when the set does.
+  const sessionStatus = session.status;
   useEffect(() => {
-    if (!cameraBranch || !spec || session.status === "complete") return;
+    if (!cameraBranch || !spec) return;
+    if (sessionStatus === "complete" || sessionStatus === "resting") return;
     let cancelled = false;
+    const cam = cameraRef.current;
+    const mot = motionRef.current;
 
     void (async () => {
-      const started = await camera.start();
+      const started = await cam.start();
       if (cancelled) return;
       if (!started) {
         setManualForSet(true);
         toast.info("Camera is unavailable — this set is logged by hand.");
         return;
       }
-      const kind = await motion.prepare(spec, camera.videoRef.current);
+      const kind = await mot.prepare(spec, cam.videoRef.current);
       if (cancelled) return;
       if (kind === "manual") {
         setManualForSet(true);
@@ -101,18 +128,22 @@ export function useLiveWorkoutEffects({
       if (kind === "simulated") {
         toast.info("Running camera in demo mode — pose model loading.");
       }
-      motion.startCalibration();
+      mot.startCalibration();
     })();
 
     return () => {
       cancelled = true;
-      motion.stopCalibration();
+      motionRef.current.stopCalibration();
     };
-  }, [cameraBranch, camera, exerciseId, motion, session.status, spec]);
+    // Keyed on the set, not on controller identity — see cameraRef above.
+  }, [cameraBranch, exerciseId, sessionStatus, spec]);
 
+  // Release the hardware whenever tracking is not wanted — no camera branch, or
+  // resting. Leaving the stream open would keep the recording indicator lit
+  // through a rest period, which reads as "still being watched".
   useEffect(() => {
-    if (!cameraBranch) camera.stop();
-  }, [cameraBranch, camera]);
+    if (!cameraBranch || sessionStatus === "resting") cameraRef.current.stop();
+  }, [cameraBranch, sessionStatus]);
 
   // --- Audio cue player helper ---
   const playCueByCode = useCallback(
@@ -208,6 +239,7 @@ export function useLiveWorkoutEffects({
           name: nameById.get(record.exerciseId) ?? record.exerciseId,
           oneRepMaxKg: Math.round(record.oneRepMaxKg * 10) / 10,
         })),
+        recentAvgVolumeKg: plan.recentAvgVolumeKg,
         sessionId: plan.sessionId,
         totalSets: sets.length,
         totalVolumeKg: volume,
@@ -259,20 +291,29 @@ export function useLiveWorkoutEffects({
 
   /**
    * Stop the session without saving it as completed — the "pain / out of time /
-   * doesn't feel right" branch of the end-session dialog. No report is written,
-   * so there is no summary to route to; the user goes back to the roadmap.
+   * doesn't feel right" branch. No report is written, so there is no summary.
+   *
+   * A pain stop gets its own destination rather than the roadmap: dropping
+   * someone who just got hurt back onto a list of upcoming work reads as a
+   * prompt to carry on. `note` is the user's optional description of what hurt.
    */
   const abortSession = useCallback(
-    async (reason: AbortReason) => {
+    async (reason: AbortReason, note?: string) => {
       setFinishing(true);
       audio.stopAll();
       camera.stop();
       motion.dispose();
 
       try {
-        await abortWorkoutSession(plan.sessionId, reason);
+        await abortWorkoutSession(plan.sessionId, reason, note);
         session.actions.clearDraft();
-        router.push("/roadmap");
+        // replace(), not push(): the live screen must not be one Back tap away
+        // once the session has been ended.
+        if (reason === "pain") {
+          router.replace(`/workouts/live/${plan.sessionId}/stopped`);
+        } else {
+          router.replace("/roadmap");
+        }
       } catch {
         setFinishing(false);
         toast.error("Could not end the session. Please try again.");
