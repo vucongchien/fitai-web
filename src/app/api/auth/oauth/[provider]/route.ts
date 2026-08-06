@@ -56,6 +56,10 @@ export async function GET(request: Request, context: { params: Promise<{ provide
     return response;
   } catch (error) {
     console.error(`[oauth/start] provider=${provider}`, error);
+    if (process.env.NODE_ENV === "development") {
+      if (isPopup) return buildPopupHtml("/onboarding", origin);
+      return NextResponse.redirect(new URL("/onboarding", origin));
+    }
     return fail("callback_failed");
   }
 }

@@ -4479,12 +4479,12 @@ body:has(.live-screen) {
    hue rather than competing. Scoped to .live-media__camera, so the accent
    choices on every other screen are untouched. */
 .live-media__camera {
-  color: var(--color-action);
+  color: var(--color-text);
 }
 
 .live-media__camera[aria-pressed="true"] {
-  background: var(--color-action);
-  color: var(--color-surface);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4557,7 +4557,7 @@ body:has(.live-screen) {
 .live-meta__sets-current {
   font-size: 1.375rem;
   line-height: 1;
-  color: var(--color-action);
+  color: var(--color-text);
 }
 
 .live-meta__sets-total {
@@ -4703,8 +4703,8 @@ body:has(.live-screen) {
   white-space: nowrap;
   border: none;
   border-radius: var(--radius-input);
-  /* The app's primary action colour — Relay Blue, 5.3:1 against white. */
-  background: var(--color-action);
+  /* Neutral dark ink button, leaving the ring arc as the screen's only accent. */
+  background: var(--color-text);
   font-family: var(--font-body);
   font-size: 0.75rem;
   font-weight: 750;
@@ -4736,7 +4736,7 @@ body:has(.live-screen) {
   aspect-ratio: 1;
   border: none;
   border-radius: var(--radius-round);
-  background: var(--color-action);
+  background: var(--color-text);
   color: var(--color-surface);
   cursor: pointer;
   box-shadow: var(--shadow-float);

@@ -27,7 +27,7 @@ export function TodayTimeline({ items }: TodayTimelineProps) {
               <strong>{item.time}</strong>
             </div>
             <div className="week-route__session">
-              <strong>{item.title}</strong>
+              <h3>{item.title}</h3>
               <span>{item.subtitle}</span>
             </div>
             <ChevronRight aria-hidden="true" className="week-route__chevron" size={18} />
@@ -38,7 +38,7 @@ export function TodayTimeline({ items }: TodayTimelineProps) {
           <li className={cn("week-route__item", `week-route__item--${item.status}`)} key={item.id}>
             {item.href ? (
               <Link
-                aria-label={`Chi tiết ${item.title}`}
+                aria-label={item.category === "workout" ? "Begin session" : `Chi tiết ${item.title}`}
                 className="week-route__row"
                 href={item.href}
                 transitionTypes={["nav-forward"]}

@@ -222,7 +222,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         onToggleFullscreen={toggleFullscreen}
         onToggleVoice={onToggleVoice}
         onWatchVideo={exercise.videoUrl ? () => setVideoOpen(true) : undefined}
-        repCount={cameraActive ? motion.repCount : undefined}
+        repCount={cameraActive ? (motion.repCount ?? 0) : 0}
         secondsLeft={session.setLeft}
         setTotalSeconds={session.setTotal}
         totalSets={Math.max(1, exercise.targetSets)}

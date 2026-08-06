@@ -68,7 +68,7 @@ export function ActiveTimerBar({
         <span />
       )}
 
-      <CountdownRing display={display} label={label} progress={progress} tone="action" />
+      <CountdownRing display={display} label={label} progress={progress} tone="effort" />
 
       {/* Done is the set's primary action and sits on the right, under the
           thumb that just finished the work. */}

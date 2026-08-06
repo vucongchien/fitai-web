@@ -41,18 +41,18 @@ export function LoginActions() {
       const cleanup = () => {
         if (cleanedUp) return;
         cleanedUp = true;
-        window.removeEventListener("message", onMessage);
         clearInterval(pollClosed);
         setPending(false);
       };
 
       const onMessage = (event: MessageEvent<OAuthMessage>) => {
-        if (event.origin !== window.location.origin) return;
-        if (event.source !== popup) return;
-
+        if (event.origin && event.origin !== "null" && event.origin !== window.location.origin) return;
         if (event.data?.type === "OAUTH_COMPLETE") {
+          window.removeEventListener("message", onMessage);
+          try {
+            popup.close();
+          } catch {}
           cleanup();
-          popup.close();
           const dest =
             typeof event.data.dest === "string" && event.data.dest.startsWith("/")
               ? event.data.dest
@@ -62,8 +62,11 @@ export function LoginActions() {
         }
 
         if (event.data?.type === "OAUTH_ERROR") {
+          window.removeEventListener("message", onMessage);
+          try {
+            popup.close();
+          } catch {}
           cleanup();
-          popup.close();
           console.error(`[LoginActions] OAuth error: ${event.data.message ?? "unknown"}`);
         }
       };
@@ -71,8 +74,10 @@ export function LoginActions() {
       window.addEventListener("message", onMessage);
 
       const pollClosed = window.setInterval(() => {
-        if (popup.closed) cleanup();
-      }, 500);
+        if (popup.closed) {
+          setPending(false);
+        }
+      }, 300);
     },
     [pending],
   );

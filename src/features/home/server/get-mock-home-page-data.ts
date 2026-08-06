@@ -37,7 +37,7 @@ export function getMockHomePageData(): HomePageData {
       {
         id: "upper-workout",
         time: "17:30",
-        title: "Upper-body workout",
+        title: "Upper-body control",
         subtitle: "42 min · Target RPE 7",
         category: "workout",
         status: "planned",
