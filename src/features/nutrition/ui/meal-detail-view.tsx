@@ -68,7 +68,7 @@ export function MealDetailView({ data }: MealDetailViewProps) {
             <span className="utility-label">Logged today</span>
             <ul className="meal-logged__list">
               {data.loggedMeals.map((meal) => (
-                <li key={meal.id}>
+                <li key={meal.id} className="divide-y divide-coral-tint-200">
                   {meal.time ? <span className="data-value">{meal.time}</span> : null}
                   <span className="meal-logged__name">{meal.name}</span>
                   <span className="data-value">{meal.calories} kcal</span>
