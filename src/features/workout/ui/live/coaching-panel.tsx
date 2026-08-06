@@ -45,6 +45,21 @@ export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
     measure();
   }, [exercise.exerciseId, measure]);
 
+  // Re-measure on layout changes too — mobile browser chrome collapsing or
+  // the on-screen keyboard opening changes clientHeight with no scroll
+  // event and no exercise change. jsdom has no ResizeObserver, so guard it.
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel || typeof ResizeObserver !== "function") return;
+
+    const observer = new ResizeObserver(() => measure());
+    observer.observe(panel);
+    // The list grows and shrinks with the exercise; watch it too.
+    if (panel.firstElementChild) observer.observe(panel.firstElementChild);
+
+    return () => observer.disconnect();
+  }, [measure]);
+
   return (
     <div
       // A scroll container must be reachable by keyboard, or its content is

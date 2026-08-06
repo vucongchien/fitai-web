@@ -1,10 +1,13 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { CoachingPanel } from "@/features/workout/ui/live/coaching-panel";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   return {
@@ -105,5 +108,41 @@ describe("CoachingPanel", () => {
     fireEvent.scroll(panel);
 
     expect(panel).toHaveAttribute("data-scrollable", "false");
+  });
+
+  it("re-measures when the panel is resized, not only when it is scrolled", () => {
+    let trigger: (() => void) | null = null;
+    const observe = vi.fn();
+    const disconnect = vi.fn();
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: () => void) {
+          trigger = callback;
+        }
+        observe = observe;
+        disconnect = disconnect;
+        unobserve = vi.fn();
+      },
+    );
+
+    const { container } = render(<CoachingPanel exercise={makeExercise()} />);
+    const panel = container.querySelector(".live-screen__coach") as HTMLElement;
+
+    expect(observe).toHaveBeenCalled();
+    expect(panel).toHaveAttribute("data-scrollable", "false");
+
+    // The viewport shrank: the same content now overflows.
+    Object.defineProperty(panel, "scrollHeight", { configurable: true, value: 400 });
+    Object.defineProperty(panel, "clientHeight", { configurable: true, value: 120 });
+    act(() => trigger!());
+
+    expect(panel).toHaveAttribute("data-scrollable", "true");
+  });
+
+  it("still renders when the browser has no ResizeObserver", () => {
+    vi.stubGlobal("ResizeObserver", undefined);
+
+    expect(() => render(<CoachingPanel exercise={makeExercise()} />)).not.toThrow();
   });
 });
