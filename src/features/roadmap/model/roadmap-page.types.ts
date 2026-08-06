@@ -38,6 +38,20 @@ export type RoadmapPageData = {
   contextItems: ContextItem[];
 };
 
+/** One week of the full four-week schedule. */
+export type ScheduleWeek = {
+  dateRange: string;
+  label: string;
+  number: number;
+  sessions: SessionSummary[];
+  state: WeekState;
+};
+
+export type SchedulePageData = {
+  activeWeek: number;
+  weeks: ScheduleWeek[];
+};
+
 // ---------------------------------------------------------------------------
 // Session Plan types
 // ---------------------------------------------------------------------------

@@ -1140,61 +1140,6 @@ a.week-route__row:hover {
   border: 1px solid color-mix(in srgb, var(--color-effort) 30%, transparent);
 }
 
-.roadmap-phase {
-  flex: 0 0 auto;
-  padding: 0.55rem 0.7rem;
-  color: var(--color-action-pressed);
-  background: var(--color-action-soft);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 750;
-}
-
-.week-selector {
-  display: grid;
-  margin: 2rem -1.25rem 0;
-  padding: 0 1.25rem 1rem;
-  grid-auto-columns: minmax(8.5rem, 1fr);
-  grid-auto-flow: column;
-  gap: 0.6rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.week-selector::-webkit-scrollbar {
-  display: none;
-}
-
-.week-selector__item {
-  display: flex;
-  min-height: 4.5rem;
-  padding: 0.8rem;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.5rem;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-input);
-  cursor: pointer;
-  flex-direction: column;
-  text-align: left;
-}
-
-.week-selector__item[data-state="active"] {
-  color: var(--color-text);
-  background: var(--color-action-soft);
-  border-color: var(--color-action);
-}
-
-.week-selector__item[data-state="complete"] .data-value {
-  color: var(--color-recovery-strong);
-}
-
-.week-selector__item strong {
-  font-size: 0.82rem;
-}
-
 .roadmap-layout {
   display: grid;
 }
@@ -4038,16 +3983,6 @@ a.week-route__row:hover {
     padding-top: 1.75rem;
   }
 
-  .week-selector {
-    margin-right: 0;
-    margin-left: 0;
-    padding-right: 0;
-    padding-left: 0;
-    grid-auto-flow: initial;
-    grid-template-columns: repeat(4, 1fr);
-    overflow: visible;
-  }
-
   .roadmap-layout {
     grid-template-columns: minmax(0, 1.5fr) minmax(17rem, 0.75fr);
     gap: 3rem;
@@ -4275,11 +4210,15 @@ a.week-route__row:hover {
    Live workout screens — fixed-height, mobile-first.
    The document never scrolls; only .live-screen__coach does.
 
+   Media leads: it is the demonstration, so it takes the largest share of the
+   screen and every other row is sized against what it leaves.
+
    Height budget at 390x844 with a 156px ring and a 34px home indicator:
-     header 48 + media 200 + meta 44 + footer 156 + note 0
-     + 4 gaps (48) + padding (12) + safe area (34) = 542
-     leaving ~300px for the coaching panel. At 375x667 it still clears ~180px.
-   Media is the shock absorber — shrink it before anything else.
+     header 48 + media 300 + meta 40 + footer 156 + footer lift 24
+     + 4 gaps (44) + padding (12) + safe area (34) = 658
+     leaving ~185px for the coaching panel — two or three paragraphs before it
+     scrolls, which is the read a mid-set glance can actually take in.
+   Media is still the shock absorber: its clamp shrinks first on short screens.
    --------------------------------------------------------------------------- */
 
 .live-screen {
@@ -4291,7 +4230,10 @@ a.week-route__row:hover {
   background: var(--color-canvas);
   /* DESIGN.md: 20px mobile gutters. */
   padding-inline: var(--space-5);
-  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  /* The footer is lifted clear of the home indicator rather than sitting on
+     it — a control that close to the edge reads as cut off, and the ring is
+     the screen's focal point, not its floor. */
+  padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
   padding-top: env(safe-area-inset-top, 0px);
   gap: var(--space-3);
 }
@@ -4323,9 +4265,13 @@ a.week-route__row:hover {
   gap: var(--space-1);
 }
 
+/* The demonstration is what the user is actually looking at, so it gets the
+   biggest block on the screen. 38dvh is roughly a third of the viewport — a
+   4:3-ish window at 390px wide — and the clamp lets it give ground first on
+   short screens so the coaching text never collapses to nothing. */
 .live-screen__media {
   position: relative;
-  height: clamp(140px, 24dvh, 220px);
+  height: clamp(200px, 38dvh, 340px);
   border-radius: var(--radius-hero);
   overflow: hidden;
   background: var(--color-surface-subtle);
@@ -4346,6 +4292,9 @@ a.week-route__row:hover {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: var(--space-2);
+  /* Breathing room between the scrolling text and the controls, so the ring
+     reads as a deliberate focal point rather than the end of the list. */
+  padding-top: var(--space-2);
 }
 
 /* Rest variant: header, media, centered info, ring block, auto-transition note. */
@@ -4421,41 +4370,67 @@ body:has(.live-screen) {
   }
 }
 
+/* Name+target on one baseline, set counter opposite — the two things checked
+   at a glance, on one 40px line instead of two stacked columns. */
 .live-meta {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   gap: var(--space-3);
 }
 
-.live-meta__col--end {
-  justify-self: end;
-  text-align: right;
+.live-meta__heading {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-width: 0;
+  margin: 0;
 }
 
 /* An exercise name — display face is correct here. */
 .live-meta__name {
   font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 680;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.1;
   color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Values that change in place: data face, tabular. */
-.live-meta__target,
-.live-meta__sets {
+.live-meta__target {
+  flex: none;
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: var(--color-text-muted);
 }
 
+/* No gap: the separator string carries its own spaces (see the component). */
 .live-meta__sets {
-  font-size: 1rem;
-  color: var(--color-text);
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  white-space: pre;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* The set you are on is the number that matters; the total is context. */
+.live-meta__sets-current {
+  font-size: 1.375rem;
+  line-height: 1;
+  color: var(--color-effort);
+}
+
+.live-meta__sets-total {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
 }
 
 .live-coach {
@@ -4464,23 +4439,18 @@ body:has(.live-screen) {
   gap: var(--space-3);
 }
 
-/* Label style per DESIGN.md: body face at 750, not the display face. */
-.live-coach__label {
-  font-family: var(--font-body);
-  font-size: 0.6875rem;
-  font-weight: 750;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
 .live-coach__text {
   font-family: var(--font-body);
   font-size: 0.9375rem;
-  line-height: 1.45;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* The opening line is the actual instruction; later paragraphs are refinement,
+   so the first one carries full contrast and the rest sit back. */
+.live-coach__text:first-child {
   color: var(--color-text);
-  margin-top: var(--space-1);
 }
 
 /* The fade tells the user there is more below without stealing vertical space. */
@@ -4574,6 +4544,48 @@ body:has(.live-screen) {
     transform var(--duration-press) var(--ease-standard);
 }
 
+/* Done is the primary action of the set: filled, in the effort hue it shares
+   with the ring arc. Same footprint as the neutral side buttons so the footer
+   stays symmetric around the ring. */
+.live-timerbar__done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  justify-self: start;
+  min-width: 4.5rem;
+  min-height: 3.5rem;
+  padding: var(--space-2);
+  border: none;
+  border-radius: var(--radius-input);
+  background: var(--color-effort);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  color: var(--color-surface);
+  cursor: pointer;
+  box-shadow: var(--shadow-float);
+  transition:
+    background-color var(--duration-state) var(--ease-standard),
+    transform var(--duration-press) var(--ease-standard);
+}
+
+.live-timerbar__done:active {
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-timerbar__done {
+    transition: none;
+  }
+
+  .live-timerbar__done:active {
+    transform: none;
+  }
+}
+
 .live-timerbar__side:hover {
   border-color: var(--color-border-strong);
 }
@@ -4618,16 +4630,26 @@ body:has(.live-screen) {
 /* Neutral, not tinted: Field Green is this screen's one accent and it belongs
    to the ring. A blue pill here would put two leaders on one screen. */
 .live-next__badge {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-round);
-  background: var(--color-surface-subtle);
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
   color: var(--color-text-muted);
   font-family: var(--font-body);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 750;
   line-height: 1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+/* The position within the session, in the recovery hue this screen already
+   leads with on the ring — one accent, used twice, not a second colour. */
+.live-next__count {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  color: var(--color-recovery);
 }
 
 /* The hero of this screen. Display face, capped at DESIGN.md's 2.5rem mobile
@@ -4661,6 +4683,7 @@ body:has(.live-screen) {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: var(--space-2);
+  padding-top: var(--space-2);
 }
 
 /* Both action buttons are the same size — the spec asks for symmetry. */
@@ -4672,22 +4695,9 @@ body:has(.live-screen) {
   justify-self: end;
 }
 
-.live-rest__center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
+/* The ring is a direct grid child now that its duplicate label is gone. */
+.live-rest > .countdown-ring {
   justify-self: center;
-}
-
-.live-rest__label {
-  font-family: var(--font-body);
-  font-size: 0.6875rem;
-  font-weight: 750;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
 }
 
 .live-rest__note {
@@ -4695,7 +4705,7 @@ body:has(.live-screen) {
   font-size: 0.75rem;
   text-align: center;
   color: var(--color-text-muted);
-  padding-top: var(--space-2);
+  padding-top: var(--space-3);
 }
 
 .live-screen--empty {
@@ -4775,101 +4785,6 @@ body:has(.live-screen) {
   font-size: 0.8125rem;
   text-align: center;
   color: var(--color-text-muted);
-}
-
-/* == Adherence banner & progress bars ====================================== */
-
-.adherence-banner {
-  display: grid;
-  padding: 1rem 1.1rem;
-  gap: 0.45rem 0.85rem;
-  align-items: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-surface);
-  grid-template-columns: auto 1fr auto;
-}
-
-.adherence-banner__icon {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  color: var(--color-action);
-  background: var(--color-action-soft);
-  border-radius: var(--radius-round);
-  place-items: center;
-}
-
-.adherence-banner__body p {
-  margin: 0.25rem 0 0;
-  color: var(--color-text-muted);
-  font-size: 0.82rem;
-  line-height: 1.35;
-}
-
-.adherence-banner__value {
-  color: var(--color-action);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.adherence-banner__track,
-.goal-bar__track {
-  height: 0.5rem;
-  overflow: hidden;
-  background: var(--color-surface-subtle);
-  border-radius: var(--radius-round);
-}
-
-.adherence-banner__track {
-  grid-column: 1 / -1;
-  margin-top: 0.35rem;
-}
-
-.adherence-banner__track > span,
-.goal-bar__track > span {
-  display: block;
-  height: 100%;
-  background: var(--color-action);
-  border-radius: var(--radius-round);
-  transition: inline-size var(--duration-route) var(--ease-out);
-}
-
-.goal-bar {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.goal-bar__header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.goal-bar__header strong {
-  font-size: 0.95rem;
-}
-
-.goal-bar__reading {
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-}
-
-.goal-bar--effort .goal-bar__track > span {
-  background: var(--color-effort);
-}
-
-.goal-bar--recovery .goal-bar__track > span {
-  background: var(--color-recovery-strong);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .adherence-banner__track > span,
-  .goal-bar__track > span {
-    transition: none;
-  }
 }
 
 /* == Home overview ========================================================= */
@@ -5299,38 +5214,49 @@ body:has(.live-screen) {
 
 /* == Weekly goals ========================================================== */
 
-.goal-bars {
-  display: grid;
-  gap: 1.35rem;
+/* == Four-week schedule ==================================================== */
+
+.roadmap-view__schedule {
+  width: 100%;
+  margin-top: 1.5rem;
 }
 
-.achievement-list {
+.schedule-weeks {
   display: grid;
-  margin: 0;
   gap: 0;
 }
 
-.achievement-list__row {
-  display: flex;
-  padding: 0.85rem 0;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  border-top: 1px solid var(--color-border);
-}
-
-.achievement-list__row:first-child {
+.schedule-week:first-child {
   border-top: 0;
   padding-top: 0;
 }
 
-.achievement-list dt {
+/* The active week leads; the rest recede without becoming unreadable. */
+.schedule-week:not([data-state="active"]) .content-section__header h2 {
+  color: var(--color-text-muted);
+}
+
+.schedule-week__state {
+  font-weight: 750;
+}
+
+.schedule-week[data-state="active"] .schedule-week__state {
+  color: var(--color-action);
+}
+
+.schedule-week[data-state="complete"] .schedule-week__state {
+  color: var(--color-recovery-strong);
+}
+
+.schedule-week__empty {
+  margin: 0;
   color: var(--color-text-muted);
   font-size: 0.9rem;
 }
 
-.achievement-list dd {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
+@media (min-width: 48rem) {
+  .roadmap-view__schedule {
+    width: auto;
+    min-width: 16rem;
+  }
 }

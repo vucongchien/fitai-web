@@ -1,4 +1,4 @@
-import { getMockMealRows, MOCK_TODAY } from "@/features/nutrition/server/get-mock-nutrition-data";
+import { MOCK_TODAY } from "@/features/nutrition/server/get-mock-nutrition-data";
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
 import type {
@@ -93,10 +93,5 @@ export function getMockSessionHistory(): SessionHistoryRow[] {
 }
 
 export function getMockWorkoutStatsData(): WorkoutStatsData {
-  return adaptWorkoutStatsData(
-    getMockSessionPlans(),
-    getMockSessionHistory(),
-    getMockMealRows(),
-    MOCK_TODAY,
-  );
+  return adaptWorkoutStatsData(getMockSessionPlans(), getMockSessionHistory(), MOCK_TODAY);
 }

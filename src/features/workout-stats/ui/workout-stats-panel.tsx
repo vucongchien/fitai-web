@@ -1,8 +1,7 @@
-import { Dumbbell, Layers, Weight } from "lucide-react";
+import { CalendarClock, Check, Weight } from "lucide-react";
 
 import { formatVolume } from "@/features/workout-stats/model/workout-stats.mapper";
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
-import { WeeklyProgressPanel } from "@/features/workout-stats/ui/weekly-progress-panel";
 import { MetricHero } from "@/shared/ui/charts/metric-hero";
 import { TrendLineChart } from "@/shared/ui/charts/trend-line-chart";
 
@@ -12,32 +11,25 @@ type WorkoutStatsPanelProps = {
 
 export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
   const { adherence } = data;
+  const remaining = Math.max(0, adherence.scheduled - adherence.completed);
 
   return (
     <>
+      {/* The headline is the week's planned total; the strip below breaks it down. */}
       <MetricHero
-        ariaLabel={`${adherence.completed} of ${adherence.scheduled} sessions completed this week`}
+        ariaLabel={`${adherence.scheduled} sessions planned this week, ${adherence.completed} completed`}
         dateLabel={data.dateLabel}
-        Icon={Dumbbell}
+        Icon={CalendarClock}
         max={adherence.scheduled}
-        note={
-          adherence.scheduled === 0
-            ? "No sessions scheduled this week"
-            : `of ${adherence.scheduled} sessions planned`
-        }
         stats={[
-          {
-            Icon: Weight,
-            label: "Volume",
-            value: formatVolume(data.volumeKg),
-          },
-          { Icon: Layers, label: "Sets", value: data.totalSets.toLocaleString() },
-          { Icon: Dumbbell, label: "Active days", value: String(data.activeDays) },
+          { Icon: Check, label: "Completed", value: String(adherence.completed) },
+          { Icon: CalendarClock, label: "Remaining", value: String(remaining) },
+          { Icon: Weight, label: "Volume", value: formatVolume(data.volumeKg) },
         ]}
         tone="effort"
-        unit={adherence.completed === 1 ? "session" : "sessions"}
+        unit={adherence.scheduled === 1 ? "session" : "sessions"}
         value={adherence.completed}
-        valueText={String(adherence.completed)}
+        valueText={String(adherence.scheduled)}
       />
 
       <section className="content-section">
@@ -55,8 +47,6 @@ export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
           yLabel="Sessions"
         />
       </section>
-
-      <WeeklyProgressPanel data={data} />
     </>
   );
 }

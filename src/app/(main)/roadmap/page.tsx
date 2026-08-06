@@ -5,7 +5,6 @@ import { RoadmapView } from "@/features/roadmap/ui/roadmap-view";
 import { getWorkoutStatsData } from "@/features/workout-stats/server/get-workout-stats-data";
 import { WorkoutStatsPanel } from "@/features/workout-stats/ui/workout-stats-panel";
 import { PageTransition } from "@/shared/ui/page-transition";
-import { TripleLane } from "@/shared/ui/triple-lane";
 
 export const metadata = { title: "Workout" };
 
@@ -50,8 +49,6 @@ export default function RoadmapPage() {
       <Suspense fallback={<StatsSkeleton />}>
         <WorkoutStatsContent />
       </Suspense>
-
-      <TripleLane active="plan" labelled morph />
 
       <Suspense fallback={<RoadmapSkeleton />}>
         <RoadmapContent />
