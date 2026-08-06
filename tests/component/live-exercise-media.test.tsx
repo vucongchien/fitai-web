@@ -4,7 +4,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ExerciseMedia } from "@/features/workout/ui/live/exercise-media";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   return {
@@ -85,5 +89,42 @@ describe("ExerciseMedia", () => {
     );
 
     expect(screen.getByTestId("camera")).toBeInTheDocument();
+  });
+
+  it("pauses the demo clip instead of looping it when the OS asks for reduced motion", () => {
+    const pause = vi.fn();
+    const play = vi.fn().mockResolvedValue(undefined);
+    vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(pause);
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(play);
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn().mockReturnValue({
+        matches: true,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
+    );
+
+    render(<ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />);
+
+    expect(pause).toHaveBeenCalled();
+    expect(play).not.toHaveBeenCalled();
+  });
+
+  it("plays the demo clip when motion is fine", () => {
+    const play = vi.fn().mockResolvedValue(undefined);
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(play);
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
+    );
+
+    render(<ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />);
+
+    expect(play).toHaveBeenCalled();
   });
 });
