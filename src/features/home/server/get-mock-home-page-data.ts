@@ -78,6 +78,9 @@ export function getMockHomePageData(): HomePageData {
       targetKcal: 2050,
     },
 
+    // Every action points at a route that exists. Logging a weight or a meal is a mutation
+    // and has no screen yet, so those two lead to the places that read the same data
+    // rather than to a dead URL.
     quickActions: [
       {
         id: "extra-workout",
@@ -87,16 +90,16 @@ export function getMockHomePageData(): HomePageData {
         colorVariant: "blue",
       },
       {
-        id: "log-weight",
-        label: "Log weight",
-        href: "/progress/weight",
-        icon: "scale",
+        id: "four-week-plan",
+        label: "Full schedule",
+        href: "/schedule",
+        icon: "dumbbell",
         colorVariant: "green",
       },
       {
-        id: "log-meal",
-        label: "Log meal",
-        href: "/nutrition/log",
+        id: "todays-menu",
+        label: "Today's menu",
+        href: "/nutrition/lunch",
         icon: "utensils",
         colorVariant: "coral",
       },

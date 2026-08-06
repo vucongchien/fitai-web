@@ -4294,10 +4294,13 @@ a.week-route__row:hover {
 .live-screen {
   display: grid;
   grid-template-rows: auto auto auto minmax(0, 1fr) auto;
-  /* Mobile-first and explicitly bounded. Without an upper bound the grid takes
-     its intrinsic width from the widest row (the 5-button header), which pushed
-     the whole screen ~29px past a 390px viewport and clipped the right edge of
-     every row. `min-width: 0` lets the rows shrink instead of forcing it. */
+  /* The single column MUST be declared as minmax(0, 1fr).
+     An implicit grid column is auto-sized, i.e. max-content: the column grew to
+     the widest row's intrinsic width (~399px, set by the header's title plus
+     four action buttons) inside a 350px content box, so every row overflowed the
+     right edge and got clipped by `overflow: hidden`. Mobile-first means the
+     column is bounded by the viewport and the content adapts to it. */
+  grid-template-columns: minmax(0, 1fr);
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -4525,11 +4528,12 @@ body:has(.live-screen) {
   font-weight: 700;
 }
 
-/* The set you are on is the number that matters; the total is context. */
+/* The set you are on is the number that matters; the total is context. Blue,
+   matching the ring and Done — the live screen leads with one accent. */
 .live-meta__sets-current {
   font-size: 1.375rem;
   line-height: 1;
-  color: var(--color-effort);
+  color: var(--color-action);
 }
 
 .live-meta__sets-total {
@@ -5522,4 +5526,235 @@ body:has(.live-screen) {
 
 .chart-frame--effort rect {
   fill: var(--color-effort);
+}
+
+/* == Meal detail =========================================================== */
+
+.meal-page__back {
+  display: inline-flex;
+  margin-bottom: 0.65rem;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.meal-page__back:hover {
+  color: var(--color-action);
+}
+
+.meal-logged {
+  display: grid;
+  padding: 1rem 1.1rem;
+  gap: 0.4rem 0.85rem;
+  align-items: start;
+  background: var(--color-recovery-soft);
+  border-radius: var(--radius-surface);
+  grid-template-columns: auto 1fr;
+}
+
+/* The total sits under the list rather than beside it: at 390px a third column squeezes
+   the meal name into two lines. */
+.meal-logged__total {
+  color: var(--color-recovery-ink);
+  font-size: 1.1rem;
+  font-weight: 700;
+  grid-column: 2;
+}
+
+.meal-logged__mark {
+  display: grid;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--color-surface);
+  background: var(--color-recovery-strong);
+  border-radius: var(--radius-round);
+  place-items: center;
+}
+
+.meal-logged__list {
+  display: grid;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  gap: 0.35rem;
+  list-style: none;
+}
+
+.meal-logged__list li {
+  display: grid;
+  gap: 0.7rem;
+  align-items: baseline;
+  color: var(--color-recovery-ink);
+  font-size: 0.86rem;
+  grid-template-columns: 3.2rem 1fr auto;
+}
+
+.meal-logged__name {
+  font-weight: 700;
+}
+
+.meal-empty {
+  max-width: 42ch;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.meal-choices {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 1rem;
+  list-style: none;
+}
+
+.meal-choice {
+  padding: 1.15rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-surface);
+}
+
+.meal-choice__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.meal-choice__head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-variation-settings: "wdth" 94;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.meal-choice__tier {
+  padding: 0.2rem 0.5rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-round);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.meal-choice__tier[data-tier="low"] {
+  color: var(--color-recovery-ink);
+  background: var(--color-recovery-soft);
+}
+
+.meal-choice__tier[data-tier="high"] {
+  color: var(--color-effort-ink);
+  background: var(--color-effort-soft);
+}
+
+.meal-choice__description {
+  max-width: 52ch;
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.meal-macros {
+  display: grid;
+  margin: 0.9rem 0 0;
+  padding: 0.85rem 0 0;
+  gap: 0.5rem;
+  border-top: 1px solid var(--color-border);
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.meal-macros dt {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.meal-macros dd {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.meal-recipe {
+  margin-top: 0.9rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.meal-recipe summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.85rem;
+  color: var(--color-action);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.meal-recipe summary::-webkit-details-marker {
+  display: none;
+}
+
+.meal-recipe__count {
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 400;
+}
+
+.meal-recipe__steps {
+  display: grid;
+  margin: 0.85rem 0 0;
+  padding-left: 1.35rem;
+  gap: 0.6rem;
+}
+
+.meal-recipe__steps li {
+  color: var(--color-text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.meal-recipe__steps li::marker {
+  color: var(--color-text-muted);
+  font-family: var(--font-data);
+  font-size: 0.82rem;
+}
+
+.meal-choice__no-recipe {
+  margin: 0.85rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.meal-skeleton {
+  display: grid;
+  gap: 1rem;
+}
+
+.meal-skeleton__row {
+  height: 7rem;
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-surface);
+}
+
+@media (min-width: 30rem) {
+  .meal-choices {
+    gap: 1.1rem;
+  }
 }
