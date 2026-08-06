@@ -1,4 +1,4 @@
-import { CalendarClock, Check, Weight } from "lucide-react";
+import { CalendarClock, Check, Timer, Weight } from "lucide-react";
 
 import { formatVolume } from "@/features/workout-stats/model/workout-stats.mapper";
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
@@ -11,7 +11,6 @@ type WorkoutStatsPanelProps = {
 
 export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
   const { adherence } = data;
-  const remaining = Math.max(0, adherence.scheduled - adherence.completed);
 
   return (
     <>
@@ -23,7 +22,11 @@ export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
         max={adherence.scheduled}
         stats={[
           { Icon: Check, label: "Completed", value: String(adherence.completed) },
-          { Icon: CalendarClock, label: "Remaining", value: String(remaining) },
+          {
+            Icon: Timer,
+            label: "Trained today",
+            value: data.minutesToday === 0 ? "—" : `${data.minutesToday} min`,
+          },
           { Icon: Weight, label: "Volume", value: formatVolume(data.volumeKg) },
         ]}
         tone="effort"

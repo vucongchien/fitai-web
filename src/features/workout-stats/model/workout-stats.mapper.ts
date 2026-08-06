@@ -8,6 +8,7 @@ import type {
 } from "@/shared/api/bff/aggregate/workout-adherence";
 import {
   historyInWindow,
+  minutesTrainedOnDay,
   planAdherence,
   plansInWindow,
   sumVolume,
@@ -46,6 +47,7 @@ export function adaptWorkoutStatsData(
   return {
     adherence: planAdherence(plansInWindow(plans, today, WEEK_DAYS)),
     dateLabel: formatRangeLabel(window[0] ?? today, today),
+    minutesToday: minutesTrainedOnDay(plans, today),
     volumeKg: sumVolume(historyInWindow(history, today, WEEK_DAYS)),
     volumeTrend: weeklyVolumeSeries(history, today, VOLUME_WEEKS).map((week) => ({
       label: weekLabel(week.weekStart),

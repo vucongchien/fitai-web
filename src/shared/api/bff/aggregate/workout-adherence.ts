@@ -23,8 +23,24 @@ export const SESSION_PLAN_STATUS = {
   UNSPECIFIED: 0,
 } as const;
 
+/** Structural subset of `PrescribedExercise`. */
+export type PrescribedExerciseRow = {
+  durationSeconds: number;
+  restExerciseSec: number;
+  restSetSec: number;
+  targetSets: number;
+};
+
+/** Structural subset of `WorkoutPrescription`. */
+export type PrescriptionRow = {
+  coolDowns?: PrescribedExerciseRow[];
+  mainExercises?: PrescribedExerciseRow[];
+  warmUps?: PrescribedExerciseRow[];
+};
+
 /** Structural subset of `SessionPlan`. */
 export type SessionPlanRow = {
+  prescription?: PrescriptionRow;
   scheduledDate?: CalendarDateLike;
   sessionPlanId: string;
   slotTime?: string;
@@ -97,6 +113,39 @@ function isCompleted(plan: SessionPlanRow) {
  */
 export function planAdherence(plans: readonly SessionPlanRow[]): Adherence {
   return toAdherence(plans.filter(isCompleted).length, plans.length);
+}
+
+/**
+ * Prescribed minutes for one session: every exercise's work time plus its rests.
+ *
+ * Straight addition over `PrescribedExercise` fields — no coefficient, no estimate. This is
+ * the session's prescribed length, which is the closest the wire gets to time spent:
+ * `WorkoutSessionSummary` carries no `started_at`/`completed_at`, so actual elapsed time is
+ * only knowable inside a live session and is not recoverable from history.
+ */
+export function prescribedMinutes(plan: SessionPlanRow): number {
+  const groups = [
+    plan.prescription?.warmUps ?? [],
+    plan.prescription?.mainExercises ?? [],
+    plan.prescription?.coolDowns ?? [],
+  ];
+
+  let seconds = 0;
+  for (const group of groups) {
+    for (const exercise of group) {
+      const sets = Math.max(1, exercise.targetSets);
+      seconds += sets * (exercise.durationSeconds + exercise.restSetSec) + exercise.restExerciseSec;
+    }
+  }
+
+  return Math.round(seconds / 60);
+}
+
+/** Prescribed minutes across the completed sessions on a given day. */
+export function minutesTrainedOnDay(plans: readonly SessionPlanRow[], key: DayKey): number {
+  return plansOnDay(plans, key)
+    .filter(isCompleted)
+    .reduce((total, plan) => total + prescribedMinutes(plan), 0);
 }
 
 /** Distinct days in the window holding at least one completed session. */

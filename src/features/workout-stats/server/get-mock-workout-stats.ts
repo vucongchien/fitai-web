@@ -2,6 +2,7 @@ import { MOCK_TODAY } from "@/features/nutrition/server/get-mock-nutrition-data"
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
 import type {
+  PrescriptionRow,
   SessionHistoryRow,
   SessionPlanRow,
 } from "@/shared/api/bff/aggregate/workout-adherence";
@@ -13,6 +14,27 @@ function august2026(day: number) {
 }
 
 /**
+ * A prescription whose parts sum to roughly `minutes`, shaped like `WorkoutPrescription`.
+ * The mapper does the real arithmetic; this only supplies plausible wire values.
+ */
+function prescription(mainExercises: number, minutes: number): PrescriptionRow {
+  // Work + rest per set, spread evenly across the main exercises.
+  const perExerciseSec = Math.round((minutes * 60) / mainExercises);
+  const sets = 3;
+
+  return {
+    coolDowns: [],
+    mainExercises: Array.from({ length: mainExercises }, () => ({
+      durationSeconds: Math.round(perExerciseSec / sets) - 45,
+      restExerciseSec: 0,
+      restSetSec: 45,
+      targetSets: sets,
+    })),
+    warmUps: [],
+  };
+}
+
+/**
  * Mock wire payloads shaped like `SessionPlan` and `WorkoutSessionSummary`, run through the
  * real mapper so mock and live paths behave identically.
  *
@@ -21,6 +43,7 @@ function august2026(day: number) {
 export function getMockSessionPlans(): SessionPlanRow[] {
   return [
     {
+      prescription: prescription(5, 38),
       scheduledDate: { day: 3, month: 8, year: 2026 },
       sessionPlanId: "lower-foundation",
       slotTime: "18:30",
@@ -28,6 +51,7 @@ export function getMockSessionPlans(): SessionPlanRow[] {
       targetMuscleGroups: ["Quads", "Glutes"],
     },
     {
+      prescription: prescription(6, 42),
       scheduledDate: { day: 5, month: 8, year: 2026 },
       sessionPlanId: "upper-control",
       slotTime: "18:30",
@@ -35,10 +59,11 @@ export function getMockSessionPlans(): SessionPlanRow[] {
       targetMuscleGroups: ["Chest", "Shoulders", "Core"],
     },
     {
+      prescription: prescription(6, 45),
       scheduledDate: { day: 6, month: 8, year: 2026 },
       sessionPlanId: "posterior-chain",
       slotTime: "18:00",
-      status: SESSION_PLAN_STATUS.PENDING,
+      status: SESSION_PLAN_STATUS.COMPLETED,
       targetMuscleGroups: ["Hamstrings", "Back"],
     },
     {
@@ -139,6 +164,13 @@ export function getMockSessionHistory(): SessionHistoryRow[] {
       sessionId: "hist-upper-control",
       totalSets: 18,
       totalVolume: 2960,
+    },
+    {
+      averageFormScore: 0.88,
+      date: { seconds: august2026(6) },
+      sessionId: "hist-posterior-chain",
+      totalSets: 17,
+      totalVolume: 2740,
     },
   ];
 }

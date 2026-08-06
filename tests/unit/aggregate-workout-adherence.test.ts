@@ -8,7 +8,9 @@ import {
   countActiveDays,
   flattenSessionPlans,
   historyInWindow,
+  minutesTrainedOnDay,
   planAdherence,
+  prescribedMinutes,
   plansOnDay,
   SESSION_PLAN_STATUS,
   sumSets,
@@ -125,6 +127,57 @@ describe("history rollups", () => {
   it("sums to zero for an empty history", () => {
     expect(sumVolume([])).toBe(0);
     expect(sumSets([])).toBe(0);
+  });
+});
+
+describe("prescribed minutes", () => {
+  const withPrescription: SessionPlanRow = {
+    prescription: {
+      mainExercises: [
+        // 3 sets x (60s work + 45s rest) = 315s, plus 60s before the next exercise.
+        { durationSeconds: 60, restExerciseSec: 60, restSetSec: 45, targetSets: 3 },
+        { durationSeconds: 60, restExerciseSec: 0, restSetSec: 45, targetSets: 3 },
+      ],
+      warmUps: [{ durationSeconds: 120, restExerciseSec: 0, restSetSec: 0, targetSets: 1 }],
+    },
+    scheduledDate: { day: 6, month: 8, year: 2026 },
+    sessionPlanId: "with-plan",
+    status: SESSION_PLAN_STATUS.COMPLETED,
+  };
+
+  it("sums work and rest across warm-ups, main work and cool-downs", () => {
+    // 120 warm-up + 375 + 315 = 810s -> 14 minutes (rounded).
+    expect(prescribedMinutes(withPrescription)).toBe(14);
+  });
+
+  it("treats a zero target-set count as one set rather than dropping the exercise", () => {
+    const zeroSets: SessionPlanRow = {
+      prescription: {
+        mainExercises: [{ durationSeconds: 600, restExerciseSec: 0, restSetSec: 0, targetSets: 0 }],
+      },
+      sessionPlanId: "zero-sets",
+      status: SESSION_PLAN_STATUS.COMPLETED,
+    };
+
+    expect(prescribedMinutes(zeroSets)).toBe(10);
+  });
+
+  it("returns zero when the plan carries no prescription", () => {
+    expect(prescribedMinutes({ sessionPlanId: "bare", status: 2 })).toBe(0);
+  });
+
+  it("counts only completed sessions on the given day", () => {
+    const pending: SessionPlanRow = {
+      ...withPrescription,
+      sessionPlanId: "pending",
+      status: SESSION_PLAN_STATUS.PENDING,
+    };
+
+    expect(minutesTrainedOnDay([withPrescription, pending], "2026-08-06")).toBe(14);
+  });
+
+  it("returns zero for a day with nothing completed", () => {
+    expect(minutesTrainedOnDay([withPrescription], "2026-08-07")).toBe(0);
   });
 });
 
