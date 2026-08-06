@@ -11,20 +11,23 @@ import { Button } from "@/shared/ui/button";
  * for, with plain "step back / step closer" feedback rather than a number.
  * Assumption-01: 1.5–2 m from the camera, enough light.
  *
+ * There is deliberately no "Start the set" button. The orchestrator starts the
+ * set the moment the framing check passes, which is the same moment this view
+ * closes — so a start control could only ever render disabled. Instead the view
+ * says what it is waiting for.
+ *
  * It never traps the user: manual logging is one tap away at all times.
  */
 export function CalibrationView({
   calibration,
   cameraState,
   onRetryPermission,
-  onStart,
   onUseManual,
   recommendedAngle,
 }: {
   calibration: CalibrationStatus | null;
   cameraState: CameraState;
   recommendedAngle: string;
-  onStart: () => void;
   onUseManual: () => void;
   onRetryPermission: () => void;
 }) {
@@ -83,13 +86,13 @@ export function CalibrationView({
             </>
           ) : (
             <>
-              <Button disabled={!ready} onClick={onStart} size="large">
-                {ready ? "Start the set" : "Line yourself up"}
+              <p aria-live="polite" className="calibration__status">
+                {ready ? "Starting the set…" : "The set starts on its own once you are lined up."}
+              </p>
+              <Button onClick={onUseManual} size="large" variant="secondary">
+                Skip the camera for this set
                 <ArrowRight aria-hidden="true" size={18} />
               </Button>
-              <button className="text-action" onClick={onUseManual} type="button">
-                Skip the camera for this set
-              </button>
             </>
           )}
         </div>

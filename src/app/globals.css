@@ -4731,152 +4731,6 @@ body:has(.live-screen) {
   grid-template-rows: none;
 }
 
-/* == Charts ================================================================ */
-
-.chart-frame {
-  position: relative;
-  width: 100%;
-}
-
-.chart-frame svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.chart-frame text {
-  fill: var(--color-text-muted);
-  font-family: var(--font-data);
-  font-size: 0.7rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.chart-frame path[stroke],
-.chart-frame line {
-  vector-effect: non-scaling-stroke;
-}
-
-.chart-frame path[fill="none"] {
-  stroke: var(--color-action);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.5;
-}
-
-.chart-frame rect {
-  fill: var(--color-action);
-}
-
-.chart-empty {
-  display: flex;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
-.chart-empty__baseline {
-  width: 100%;
-  border-top: 1px dashed var(--color-border);
-}
-
-.chart-empty p {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: 0.85rem;
-}
-
-/* == Circular progress ===================================================== */
-
-.circular-progress {
-  display: flex;
-  margin: 0;
-  align-items: center;
-  flex-direction: column;
-  gap: 1.1rem;
-  text-align: center;
-}
-
-.circular-progress__dial {
-  display: grid;
-  position: relative;
-  width: min(15rem, 62vw);
-  place-items: center;
-}
-
-.circular-progress__dial svg {
-  width: 100%;
-  transform: rotate(-90deg);
-  overflow: visible;
-}
-
-.circular-progress__dial circle {
-  fill: none;
-  stroke-width: 9;
-}
-
-.circular-progress__track {
-  stroke: var(--color-surface-subtle);
-}
-
-.circular-progress__value {
-  stroke: var(--color-action);
-  stroke-linecap: round;
-  transition: stroke-dashoffset var(--duration-route) var(--ease-out);
-}
-
-.circular-progress--effort .circular-progress__value {
-  stroke: var(--color-effort);
-}
-
-.circular-progress--recovery .circular-progress__value {
-  stroke: var(--color-recovery-strong);
-}
-
-.circular-progress__readout {
-  display: flex;
-  position: absolute;
-  align-items: center;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.circular-progress__readout strong {
-  font-size: clamp(2.1rem, 11vw, 2.9rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-
-.circular-progress__readout span {
-  max-width: 9rem;
-  color: var(--color-text-muted);
-  font-size: 0.82rem;
-  line-height: 1.35;
-}
-
-.circular-progress figcaption {
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.circular-progress figcaption p {
-  max-width: 26rem;
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: 0.9rem;
-  line-height: 1.45;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .circular-progress__value {
-    transition: none;
-  }
-}
-
 /*
  * Framing check for an AI set (ux-flow-spec §5.3). It sits over the active
  * screen so the camera preview stays mounted and visible while the user lines
@@ -4938,4 +4792,12 @@ body:has(.live-screen) {
   display: grid;
   gap: var(--space-2);
   justify-items: center;
+}
+
+/* No start button lives here — the set starts itself, and this says so. */
+.calibration__status {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  text-align: center;
+  color: var(--color-text-muted);
 }

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { shouldCalibrate } from "@/features/workout/domain/calibration-gate";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
 import type { LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useAudioCoach } from "@/features/workout/model/use-audio-coach";
@@ -71,14 +72,20 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   // An AI set is only ready to run once the engine has loaded and the framing
   // check passes. Starting before that would race `motion.prepare()` and count
   // reps against a model that is not there yet.
+  const sessionStatus = session.status;
+  const cameraActive = cameraBranch && cameraOn;
   const cameraReady =
     !motion.preparing && motion.kind !== null && Boolean(motion.calibration?.ready);
-  const needsCalibration = cameraBranch && !cameraReady;
+  const needsCalibration = shouldCalibrate({
+    cameraBranch,
+    cameraOn,
+    cameraReady,
+    status: sessionStatus,
+  });
 
   // The redesigned screens have no "start set" control: arriving at a step *is*
   // the intent to work. Without this the hold clock never runs, `+10s` has no
   // clock to extend and the camera never begins counting reps.
-  const sessionStatus = session.status;
   useEffect(() => {
     if (sessionStatus === "ready" && !needsCalibration) startSet(listening);
   }, [listening, needsCalibration, sessionStatus, startSet]);
@@ -114,7 +121,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   // `session.step` already points at the *next* step while resting, so
   // `cameraBranch` and `exercise` describe the upcoming exercise on both screens.
-  const cameraActive = cameraBranch && cameraOn;
   const cameraStage = cameraActive ? (
     <CameraStage
       alert={Boolean(motion.lastError)}
@@ -176,15 +182,15 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         Framing check before an AI set — ux-flow-spec §5.3. It covers the active
         screen rather than replacing it: `CameraStage` owns the <video> element
         that `motion.prepare()` and the calibration loop read from, so unmounting
-        the screen would deadlock the check it is trying to run. Manual logging
-        stays one tap away, so the camera can never trap the user here.
+        the screen would deadlock the check it is trying to run. `shouldCalibrate`
+        keeps it strictly pre-set, so it can never cover a running one. Manual
+        logging is one tap away, so the camera can never trap the user here.
       */}
       {needsCalibration ? (
         <CalibrationView
           calibration={motion.calibration}
           cameraState={camera.state}
           onRetryPermission={() => void camera.start()}
-          onStart={() => startSet(listening)}
           onUseManual={() => setManualForSet(true)}
           recommendedAngle={spec?.recommendedCameraAngle ?? ""}
         />
