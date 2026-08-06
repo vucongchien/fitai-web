@@ -127,37 +127,6 @@ export function sessionsPerWeekday(
   }));
 }
 
-/**
- * Per-day completion percentage across a trailing window, oldest first.
- *
- * `null` on a day with nothing scheduled — there is no ratio to report, and drawing 0%
- * would read as a failed session rather than a rest day.
- */
-export function dailyAdherenceSeries(
-  plans: readonly SessionPlanRow[],
-  endKey: DayKey,
-  length: number,
-): { key: DayKey; percentage: number | null }[] {
-  const scheduledByDay = new Map<DayKey, number>();
-  const completedByDay = new Map<DayKey, number>();
-
-  for (const plan of plans) {
-    const key = dayKeyFromCalendarDate(plan.scheduledDate);
-    if (!key) continue;
-    scheduledByDay.set(key, (scheduledByDay.get(key) ?? 0) + 1);
-    if (isCompleted(plan)) completedByDay.set(key, (completedByDay.get(key) ?? 0) + 1);
-  }
-
-  return dayKeyRange(endKey, length).map((key) => {
-    const scheduled = scheduledByDay.get(key);
-    if (!scheduled) return { key, percentage: null };
-    return {
-      key,
-      percentage: toAdherence(completedByDay.get(key) ?? 0, scheduled).percentage,
-    };
-  });
-}
-
 /** Distinct days in the window holding at least one completed session. */
 export function countActiveDays(
   plans: readonly SessionPlanRow[],

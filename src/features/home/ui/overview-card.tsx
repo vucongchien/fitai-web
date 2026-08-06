@@ -1,5 +1,4 @@
 import type { HomeOverview } from "@/features/home/model/home-overview.types";
-import { DualFlowChart } from "@/shared/ui/charts/dual-flow-chart";
 
 type OverviewCardProps = {
   overview: HomeOverview;
@@ -40,15 +39,6 @@ export function OverviewCard({ overview }: OverviewCardProps) {
             <span style={{ inlineSize: `${overview.nutritionGoalPercentage}%` }} />
           </div>
         </div>
-      </div>
-
-      <div className="overview-card__chart">
-        <span className="utility-label">This week, against plan</span>
-        <DualFlowChart
-          ariaLabel="Nutrition and workout completion as a percentage of each day's target, over the week"
-          emptyMessage="Nothing logged this week yet."
-          points={overview.weeklyFlow}
-        />
       </div>
     </section>
   );

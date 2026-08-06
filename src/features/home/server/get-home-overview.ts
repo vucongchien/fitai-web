@@ -6,19 +6,15 @@ import {
   getMockNutritionSummary,
   MOCK_TODAY,
 } from "@/features/nutrition/server/get-mock-nutrition-data";
-import {
-  getMockSessionPlans,
-  getMockWorkoutStatsData,
-} from "@/features/workout-stats/server/get-mock-workout-stats";
+import { getMockWorkoutStatsData } from "@/features/workout-stats/server/get-mock-workout-stats";
 
 /**
- * Fetches the Home overview card and metric grid.
+ * Fetches the two headline readings on Home.
  *
  * Calls:
- *   - NutritionService.getNutritionSummary → calories and protein against target
- *   - NutritionService.getNutritionHistory → meals logged, 7-day calorie trend
- *   - CoachingService.getActiveRoadmap + WorkoutExecutionService.getWorkoutHistory
- *     → workout completion, training volume, sets
+ *   - NutritionService.getNutritionSummary → calories against target
+ *   - NutritionService.getNutritionHistory → whether anything is logged today
+ *   - CoachingService.getActiveRoadmap → sessions completed against scheduled
  */
 export async function getHomeOverview(): Promise<HomeOverview> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
@@ -28,7 +24,6 @@ export async function getHomeOverview(): Promise<HomeOverview> {
       getMockNutritionSummary(),
       getMockMealRows(),
       getMockWorkoutStatsData(),
-      getMockSessionPlans(),
       MOCK_TODAY,
     );
   }
@@ -39,7 +34,6 @@ export async function getHomeOverview(): Promise<HomeOverview> {
     getMockNutritionSummary(),
     getMockMealRows(),
     getMockWorkoutStatsData(),
-    getMockSessionPlans(),
     MOCK_TODAY,
   );
 }
