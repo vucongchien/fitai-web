@@ -24,10 +24,10 @@ test("home leads into a manual workout and summary", async ({ page }) => {
   await page.getByRole("link", { name: "Begin session" }).click();
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("heading", { name: "Incline push-up" })).toBeVisible();
-  await page.getByRole("button", { name: "Log set" }).click();
-  await expect(page.getByText("Recovery", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Done" }).click();
+  await expect(page.getByText("Rest Time Remaining", { exact: true })).toBeVisible();
 
-  await page.getByRole("button", { name: "End session" }).click();
+  await page.getByRole("button", { name: "Back" }).click();
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("heading", { name: "Session complete." })).toBeVisible();
 });

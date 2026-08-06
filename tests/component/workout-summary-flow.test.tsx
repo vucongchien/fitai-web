@@ -1,9 +1,9 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { SessionReport } from "@/features/workout/model/live-session.types";
+import type { LiveExercise, SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
-import { SetTimer } from "@/features/workout/ui/live/set-timer";
+import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
 import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
 
 describe("WorkoutSummaryView Component", () => {
@@ -46,47 +46,56 @@ describe("WorkoutSummaryView Component", () => {
   });
 });
 
-describe("SetTimer Component", () => {
+// The old `SetTimer` offered a "Restart" control because its "+10s" label was
+// ambiguous. The redesigned footer replaces both with two explicitly named
+// controls — "Done" and "Add 10 seconds" — and no restart at all, so the same
+// concern is now asserted against the screen that replaced it.
+describe("ActiveExerciseScreen set controls", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it("renders Restart button with RotateCcw icon instead of confusing +10s label", () => {
-    const mockExercise = {
-      exerciseId: "ex_bench",
-      name: "Bench Press",
-      phase: "main" as const,
-      equipmentId: "eq_bench",
-      targetSets: 3,
-      targetReps: 10,
-      durationSeconds: 0,
-      targetWeightKg: 60,
-      isWeighted: true,
-      restSetSec: 60,
-      restExerciseSec: 90,
-      targetRpe: 8,
-      notes: "Control tempo",
-      formCues: [],
+  it("names the footer controls explicitly and offers no restart", () => {
+    const mockExercise: LiveExercise = {
+      breathingCue: "Exhale as you press.",
       commonMistakes: [],
+      durationSeconds: 0,
+      equipmentId: "eq_bench",
+      exerciseId: "ex_bench",
+      formCues: [],
       hasAiSupported: false,
+      instructions: "",
+      isWeighted: true,
+      name: "Bench Press",
+      notes: "Control tempo",
+      phase: "main",
+      restExerciseSec: 90,
+      restSetSec: 60,
+      targetReps: 10,
+      targetRpe: 8,
+      targetSets: 3,
+      targetWeightKg: 60,
     };
 
-    const handleRestart = vi.fn();
-    const handleFinish = vi.fn();
-    const handleStart = vi.fn();
-
     render(
-      <SetTimer
+      <ActiveExerciseScreen
+        cameraActive={false}
+        currentSet={1}
         exercise={mockExercise}
-        onFinish={handleFinish}
-        onRestart={handleRestart}
-        onStart={handleStart}
-        running={true}
+        onAddTime={vi.fn()}
+        onBack={vi.fn()}
+        onDone={vi.fn()}
+        onOpenGuide={vi.fn()}
+        onToggleFullscreen={vi.fn()}
+        onToggleVoice={vi.fn()}
         secondsLeft={0}
+        totalSets={3}
+        voiceOn={false}
       />,
     );
 
-    const restartBtn = screen.getByRole("button", { name: /restart/i });
-    expect(restartBtn).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Done" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add 10 seconds" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /restart/i })).not.toBeInTheDocument();
   });
 });

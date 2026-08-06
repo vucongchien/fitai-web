@@ -70,14 +70,6 @@ export function useLiveWorkoutEffects({
     };
   }, []);
 
-  // --- Audio playlist priming ---
-  const playlistPrimed = useRef(false);
-  useEffect(() => {
-    if (playlistPrimed.current || audio.playlistId || plan.playlists.length === 0) return;
-    playlistPrimed.current = true;
-    audio.selectPlaylist(plan.playlists[0]!.id, { autoplay: false });
-  }, [audio, plan.playlists]);
-
   // --- Exercise reset ---
   const exerciseId = exercise?.exerciseId ?? null;
   useEffect(() => {
@@ -135,7 +127,6 @@ export function useLiveWorkoutEffects({
     (listening: boolean) => {
       if (!exercise) return;
       session.actions.startSet(exercise.durationSeconds);
-      if (!audio.isPlaying) audio.play();
       playCueByCode("set-start", listening);
       if (cameraBranch) {
         motion.stopCalibration();
