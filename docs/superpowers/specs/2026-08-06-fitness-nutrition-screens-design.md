@@ -16,15 +16,15 @@ The full proto set was read field by field before design. Findings that shaped t
 
 ### Available
 
-| UI need | Source field |
-| --- | --- |
-| Calories consumed / target | `GetNutritionSummaryResponse.consumed_calories` / `.target_calories` |
-| Protein / carbs / fat, consumed + target | `GetNutritionSummaryResponse.consumed_macros.*` / `.target_macros.*` (`protein_grams`, `carb_grams`, `fat_grams`) |
-| Meal log rows | `GetNutritionHistoryResponse.meals[]` → `MealLogItem{meal_name, meal_type, calories, protein, carbs, fat, logged_at}` |
-| Planned menu per slot | `GetTodayMenuResponse.meals.{breakfast,lunch,dinner,snack}[]` → `MealOption` |
-| Roadmap tree + status | `GetActiveRoadmapResponse.roadmap` → `week_plans[] → day_plans[] → session_plans[]`, `SessionPlan.status`, `SessionPlan.scheduled_date`, `SessionPlan.slot_time` |
-| Session history | `GetWorkoutHistoryResponse.sessions[]` → `WorkoutSessionSummary{session_id, date, total_sets, total_volume, average_form_score}` |
-| Personal records | `GetPersonalRecordsResponse.records[]` → `PersonalRecord` |
+| UI need                                  | Source field                                                                                                                                                     |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Calories consumed / target               | `GetNutritionSummaryResponse.consumed_calories` / `.target_calories`                                                                                             |
+| Protein / carbs / fat, consumed + target | `GetNutritionSummaryResponse.consumed_macros.*` / `.target_macros.*` (`protein_grams`, `carb_grams`, `fat_grams`)                                                |
+| Meal log rows                            | `GetNutritionHistoryResponse.meals[]` → `MealLogItem{meal_name, meal_type, calories, protein, carbs, fat, logged_at}`                                            |
+| Planned menu per slot                    | `GetTodayMenuResponse.meals.{breakfast,lunch,dinner,snack}[]` → `MealOption`                                                                                     |
+| Roadmap tree + status                    | `GetActiveRoadmapResponse.roadmap` → `week_plans[] → day_plans[] → session_plans[]`, `SessionPlan.status`, `SessionPlan.scheduled_date`, `SessionPlan.slot_time` |
+| Session history                          | `GetWorkoutHistoryResponse.sessions[]` → `WorkoutSessionSummary{session_id, date, total_sets, total_volume, average_form_score}`                                 |
+| Personal records                         | `GetPersonalRecordsResponse.records[]` → `PersonalRecord`                                                                                                        |
 
 ### Absent — dropped from scope
 
@@ -126,13 +126,13 @@ The library is a cartesian grammar — its marks are `lineY`, `barX/barY`, `area
 `rect/cell`, `hexagon`, `link`, `arrow`, `frame`. **It has no arc, pie, radial, or gauge
 mark**, so the circular progress hero cannot use it and is authored as inline SVG.
 
-| Element | Implementation |
-| --- | --- |
-| 7-day nutrition trend (S1) | `lineY` + `scalePoint` / `scaleLinear` |
-| Calories per meal (S2) | `barY` + `scaleBand` / `scaleLinear` |
-| Sessions per weekday (S3) | `lineY` |
-| Circular progress hero (S2/S3/S4) | inline SVG |
-| Progress bars (S4) | CSS |
+| Element                           | Implementation                         |
+| --------------------------------- | -------------------------------------- |
+| 7-day nutrition trend (S1)        | `lineY` + `scalePoint` / `scaleLinear` |
+| Calories per meal (S2)            | `barY` + `scaleBand` / `scaleLinear`   |
+| Sessions per weekday (S3)         | `lineY`                                |
+| Circular progress hero (S2/S3/S4) | inline SVG                             |
+| Progress bars (S4)                | CSS                                    |
 
 Wrappers live in `shared/ui/charts/` so the pre-1.0 API is isolated: a breaking upgrade
 touches those files, not the screens. Because `Chart` is a hooks adapter it needs
@@ -152,17 +152,18 @@ Extends the existing `HomeView`; `TodayHeader` and the static shell stay as the 
 1. Overview card: Workout Completion, Nutrition Goal, and a 7-day line chart.
 2. Six-card metric grid (2 columns), each card carrying icon, title, current value, target:
 
-   | Card | Source | BFF op |
-   | --- | --- | --- |
-   | Calories Consumed | `consumed_calories` / `target_calories` | pass-through |
-   | Protein | `consumed_macros.protein_grams` / target | pass-through |
-   | Meals Logged | today's `meals[]` | count |
-   | Workout Completion | `SessionPlan.status` | count COMPLETED ÷ total |
-   | Training Volume | `WorkoutSessionSummary.total_volume` | sum |
-   | Total Sets | `WorkoutSessionSummary.total_sets` | sum |
+   | Card               | Source                                   | BFF op                  |
+   | ------------------ | ---------------------------------------- | ----------------------- |
+   | Calories Consumed  | `consumed_calories` / `target_calories`  | pass-through            |
+   | Protein            | `consumed_macros.protein_grams` / target | pass-through            |
+   | Meals Logged       | today's `meals[]`                        | count                   |
+   | Workout Completion | `SessionPlan.status`                     | count COMPLETED ÷ total |
+   | Training Volume    | `WorkoutSessionSummary.total_volume`     | sum                     |
+   | Total Sets         | `WorkoutSessionSummary.total_sets`       | sum                     |
 
    Training Volume and Total Sets have no proto target, so they show a trailing 7-day
    comparison instead of a fabricated goal.
+
 3. "View Today's Plan" CTA that scrolls to the existing `TodayTimeline`.
 
 The CTA is a small client component using `scrollIntoView`, honoring
@@ -213,7 +214,7 @@ state is client-side.
 `tests/unit/progress-aggregator.test.ts`, and a stale `.next` route type for
 `profile/progress`.
 
-Screen 4 *is* the progress feature, so the rebuild resolves this rather than deleting
+Screen 4 _is_ the progress feature, so the rebuild resolves this rather than deleting
 evidence. `features/progress/model/progress-aggregator.ts` is written to the contract the
 orphan test already specifies:
 
