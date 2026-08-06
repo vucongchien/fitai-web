@@ -66,8 +66,66 @@ export function getMockSessionPlans(): SessionPlanRow[] {
   ];
 }
 
+/** Epoch seconds for 12:00Z on a given July 2026 day. */
+function july2026(day: number) {
+  return Math.floor(Date.UTC(2026, 6, day, 12) / 1000);
+}
+
+/**
+ * Four weeks of completed sessions, so the volume trend has a real shape: a build across
+ * the first three weeks, then the current week still in progress.
+ */
 export function getMockSessionHistory(): SessionHistoryRow[] {
   return [
+    // Week of Mon 13 Jul.
+    {
+      averageFormScore: 0.78,
+      date: { seconds: july2026(13) },
+      sessionId: "hist-w-3-a",
+      totalSets: 12,
+      totalVolume: 1680,
+    },
+    {
+      averageFormScore: 0.8,
+      date: { seconds: july2026(16) },
+      sessionId: "hist-w-3-b",
+      totalSets: 13,
+      totalVolume: 1740,
+    },
+
+    // Week of Mon 20 Jul.
+    {
+      averageFormScore: 0.82,
+      date: { seconds: july2026(20) },
+      sessionId: "hist-w-2-a",
+      totalSets: 14,
+      totalVolume: 1960,
+    },
+    {
+      averageFormScore: 0.84,
+      date: { seconds: july2026(22) },
+      sessionId: "hist-w-2-b",
+      totalSets: 15,
+      totalVolume: 2100,
+    },
+
+    // Week of Mon 27 Jul.
+    {
+      averageFormScore: 0.81,
+      date: { seconds: july2026(29) },
+      sessionId: "hist-week1-lower",
+      totalSets: 14,
+      totalVolume: 2020,
+    },
+    {
+      averageFormScore: 0.85,
+      date: { seconds: july2026(31) },
+      sessionId: "hist-w-1-b",
+      totalSets: 16,
+      totalVolume: 2380,
+    },
+
+    // Current week, Mon 3 Aug — still in progress.
     {
       averageFormScore: 0.86,
       date: { seconds: august2026(3) },
@@ -81,13 +139,6 @@ export function getMockSessionHistory(): SessionHistoryRow[] {
       sessionId: "hist-upper-control",
       totalSets: 18,
       totalVolume: 2960,
-    },
-    {
-      averageFormScore: 0.81,
-      date: { seconds: Math.floor(Date.UTC(2026, 6, 29, 12) / 1000) },
-      sessionId: "hist-week1-lower",
-      totalSets: 14,
-      totalVolume: 2020,
     },
   ];
 }

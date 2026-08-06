@@ -1,10 +1,13 @@
-import type { Adherence, WeekdayCount } from "@/shared/api/bff/aggregate/workout-adherence";
+import type { Adherence } from "@/shared/api/bff/aggregate/workout-adherence";
 
 export type WorkoutStatsData = {
   adherence: Adherence;
   /** Context line under the ring, e.g. "31 July – 6 August". */
   dateLabel: string;
   volumeKg: number;
-  /** Completed sessions per weekday across the week. */
-  weekdaySeries: WeekdayCount[];
+  /**
+   * Training volume per week, oldest first — whether the load is going up.
+   * `volumeKg` is null for a week with no logged session.
+   */
+  volumeTrend: { label: string; volumeKg: number | null }[];
 };

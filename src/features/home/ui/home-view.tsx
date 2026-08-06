@@ -1,25 +1,20 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-import type { HomeOverview } from "@/features/home/model/home-overview.types";
 import type { HomePageData } from "@/features/home/model/home-page.types";
 import { CoachNote } from "@/features/home/ui/coach-note";
 import { EvidenceSection } from "@/features/home/ui/evidence-section";
-import { OverviewCard } from "@/features/home/ui/overview-card";
 import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
 import { TodayTimeline } from "@/features/home/ui/today-timeline";
 
 type HomeViewProps = {
   data: HomePageData;
-  overview: HomeOverview;
 };
 
-export function HomeView({ data, overview }: HomeViewProps) {
+export function HomeView({ data }: HomeViewProps) {
   return (
     <>
       <CoachNote message={data.coachNote} />
-
-      <OverviewCard overview={overview} />
 
       <div className="home-grid">
         <section className="content-section home-week">

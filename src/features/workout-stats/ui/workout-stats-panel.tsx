@@ -3,7 +3,7 @@ import { CalendarClock, Check, Weight } from "lucide-react";
 import { formatVolume } from "@/features/workout-stats/model/workout-stats.mapper";
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
 import { MetricHero } from "@/shared/ui/charts/metric-hero";
-import { TrendLineChart } from "@/shared/ui/charts/trend-line-chart";
+import { VolumeBarChart } from "@/shared/ui/charts/volume-bar-chart";
 
 type WorkoutStatsPanelProps = {
   data: WorkoutStatsData;
@@ -34,17 +34,13 @@ export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
 
       <section className="content-section">
         <div className="content-section__header">
-          <h2>Sessions per day</h2>
-          <p>Completed this week</p>
+          <h2>Training volume</h2>
+          <p>Total lifted per week</p>
         </div>
-        <TrendLineChart
-          ariaLabel="Completed workout sessions per day this week"
-          emptyMessage="No sessions scheduled this week yet."
-          points={data.weekdaySeries.map((day) => ({
-            label: day.label,
-            value: day.sessions,
-          }))}
-          yLabel="Sessions"
+        <VolumeBarChart
+          ariaLabel="Total training volume lifted each week over the last four weeks"
+          bars={data.volumeTrend}
+          emptyMessage="Complete a session to start the volume record."
         />
       </section>
     </>

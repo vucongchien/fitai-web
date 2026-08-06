@@ -4262,7 +4262,23 @@ a.week-route__row:hover {
 .live-screen__actions {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 0;
+}
+
+/* Four utilities plus a Back button do not fit 390px at 3rem each. These are
+   icon targets in a fixed row, so they narrow to 2.5rem while keeping the full
+   3rem height — the touch target stays at PRODUCT.md's floor in the axis that
+   the thumb actually misses on. */
+.live-screen__actions > .workout-close {
+  width: 2.5rem;
+  height: 3rem;
+  border-radius: var(--radius-input);
+}
+
+/* The pain control is a safety affordance, so it reads apart from the
+   utilities beside it rather than hiding among them. */
+.live-screen__actions > .workout-close[data-tone="alert"] {
+  color: var(--color-danger);
 }
 
 /* The demonstration is what the user is actually looking at, so it gets the
@@ -4714,6 +4730,176 @@ body:has(.live-screen) {
   grid-template-rows: none;
 }
 
+/* ---------------------------------------------------------------------------
+   Pain report — the one interruption that must cost no thought at all.
+   --------------------------------------------------------------------------- */
+
+.pain-dialog {
+  width: 100%;
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-hero);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
+  text-align: center;
+}
+
+.pain-dialog__mark {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-round);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.pain-dialog__title {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+
+.pain-dialog__body {
+  margin-top: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Left-aligned: this is a form, and centred labels over a text field read as
+   decoration rather than instruction. */
+.pain-dialog__field {
+  margin-top: var(--space-5);
+  text-align: left;
+}
+
+.pain-dialog__field label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.pain-dialog__field textarea {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-canvas);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--color-text);
+  resize: none;
+}
+
+.pain-dialog__field textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.pain-dialog__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.pain-dialog__actions > .ui-button {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+   Pain-stop screen. No stats by design — see pain-stop-view.tsx.
+   --------------------------------------------------------------------------- */
+
+.pain-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 26rem;
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-5) calc(var(--space-8) + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.pain-stop__mark {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-round);
+  /* Recovery green, not danger red: the message is "this was the right call",
+     and alarming the user about their own good decision would be perverse. */
+  background: var(--color-recovery-soft);
+  color: var(--color-recovery-strong);
+}
+
+.pain-stop__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 7vw, 2.25rem);
+  font-weight: 680;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: var(--color-text);
+}
+
+.pain-stop__body {
+  margin-top: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: var(--color-text-muted);
+}
+
+.pain-stop__care {
+  width: 100%;
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  border-radius: var(--radius-hero);
+  background: var(--color-surface-subtle);
+  list-style: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.pain-stop__note {
+  margin-top: var(--space-5);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.pain-stop__actions {
+  width: 100%;
+  margin-top: var(--space-6);
+}
+
+.pain-stop__actions > a {
+  width: 100%;
+}
+
 /*
  * Framing check for an AI set (ux-flow-spec §5.3). It sits over the active
  * screen so the camera preview stays mounted and visible while the user lines
@@ -4788,78 +4974,6 @@ body:has(.live-screen) {
 }
 
 /* == Home overview ========================================================= */
-
-.overview-card {
-  display: grid;
-  padding: 1.35rem;
-  gap: 1.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-hero);
-}
-
-.overview-card__pair {
-  display: grid;
-  gap: 1.35rem;
-  grid-template-columns: 1fr 1fr;
-}
-
-.overview-card__reading {
-  display: grid;
-  gap: 0.35rem;
-  align-content: start;
-}
-
-.overview-card__reading strong {
-  font-size: clamp(1.7rem, 8vw, 2.1rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-
-.overview-card__detail {
-  color: var(--color-text-muted);
-  font-size: 0.78rem;
-  line-height: 1.35;
-}
-
-.overview-card__track {
-  height: 0.35rem;
-  margin-top: 0.3rem;
-  overflow: hidden;
-  background: var(--color-surface-subtle);
-  border-radius: var(--radius-round);
-}
-
-.overview-card__track > span {
-  display: block;
-  height: 100%;
-  background: var(--color-action);
-  border-radius: var(--radius-round);
-  transition: inline-size var(--duration-route) var(--ease-out);
-}
-
-.overview-card__track--effort > span {
-  background: var(--color-effort);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .overview-card__track > span {
-    transition: none;
-  }
-}
-
-@media (min-width: 48rem) {
-  .overview-card {
-    padding: 1.75rem;
-    gap: 1.75rem;
-    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
-  }
-
-  .overview-card__pair {
-    grid-template-columns: 1fr;
-  }
-}
 
 /* == Charts ================================================================ */
 
@@ -5259,4 +5373,8 @@ body:has(.live-screen) {
     width: auto;
     min-width: 16rem;
   }
+}
+
+.chart-frame--effort rect {
+  fill: var(--color-effort);
 }

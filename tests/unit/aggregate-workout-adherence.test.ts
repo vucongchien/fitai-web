@@ -11,9 +11,9 @@ import {
   planAdherence,
   plansOnDay,
   SESSION_PLAN_STATUS,
-  sessionsPerWeekday,
   sumSets,
   sumVolume,
+  weeklyVolumeSeries,
   toAdherence,
 } from "@/shared/api/bff/aggregate/workout-adherence";
 
@@ -93,19 +93,6 @@ describe("plansOnDay", () => {
   });
 });
 
-describe("sessionsPerWeekday", () => {
-  it("reports completed counts and marks unscheduled days as absent", () => {
-    const plans = [plan(4, SESSION_PLAN_STATUS.COMPLETED), plan(6, SESSION_PLAN_STATUS.PENDING)];
-    const series = sessionsPerWeekday(plans, "2026-08-06", 3);
-
-    expect(series).toEqual([
-      { label: "Tue", sessions: 1 },
-      { label: "Wed", sessions: null },
-      { label: "Thu", sessions: 0 },
-    ]);
-  });
-});
-
 describe("countActiveDays", () => {
   it("counts distinct days holding a completed session", () => {
     const plans = [
@@ -138,5 +125,52 @@ describe("history rollups", () => {
   it("sums to zero for an empty history", () => {
     expect(sumVolume([])).toBe(0);
     expect(sumSets([])).toBe(0);
+  });
+});
+
+describe("weeklyVolumeSeries", () => {
+  function at(iso: string, totalVolume: number): SessionHistoryRow {
+    return {
+      date: { seconds: Math.floor(Date.parse(iso) / 1000) },
+      sessionId: iso,
+      totalSets: 10,
+      totalVolume,
+    };
+  }
+
+  it("buckets sessions into ISO weeks starting Monday, oldest first", () => {
+    // Mon 3 Aug 2026 and Wed 5 Aug are the same week; Mon 27 Jul is the week before.
+    const rows = [
+      at("2026-07-27T12:00:00Z", 2000),
+      at("2026-08-03T12:00:00Z", 2400),
+      at("2026-08-05T12:00:00Z", 2600),
+    ];
+
+    expect(weeklyVolumeSeries(rows, "2026-08-06", 2)).toEqual([
+      { volumeKg: 2000, weekStart: "2026-07-27" },
+      { volumeKg: 5000, weekStart: "2026-08-03" },
+    ]);
+  });
+
+  it("groups a Sunday with the Monday that opened its week", () => {
+    // Sun 9 Aug belongs to the week starting Mon 3 Aug, not the next one.
+    const series = weeklyVolumeSeries([at("2026-08-09T12:00:00Z", 1500)], "2026-08-09", 1);
+    expect(series).toEqual([{ volumeKg: 1500, weekStart: "2026-08-03" }]);
+  });
+
+  it("marks a week with no logged session as null, not zero", () => {
+    const series = weeklyVolumeSeries([at("2026-08-03T12:00:00Z", 2400)], "2026-08-06", 3);
+
+    expect(series.map((week) => week.volumeKg)).toEqual([null, null, 2400]);
+  });
+
+  it("returns an empty series for a non-positive week count", () => {
+    expect(weeklyVolumeSeries([], "2026-08-06", 0)).toEqual([]);
+  });
+
+  it("ignores rows carrying no date", () => {
+    expect(
+      weeklyVolumeSeries([{ sessionId: "x", totalSets: 4, totalVolume: 900 }], "2026-08-06", 1),
+    ).toEqual([{ volumeKg: null, weekStart: "2026-08-03" }]);
   });
 });
