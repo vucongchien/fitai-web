@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/core/coaching/v1/message/coaching_messages.proto.
  */
 export const file_contracts_core_coaching_v1_message_coaching_messages: GenFile = /*@__PURE__*/
-  fileDesc("Cjpjb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9tZXNzYWdlL2NvYWNoaW5nX21lc3NhZ2VzLnByb3RvEiJjb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlIikKFkluaXRpYXRlUm9hZG1hcFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJXChdJbml0aWF0ZVJvYWRtYXBSZXNwb25zZRI8Cgdyb2FkbWFwGAEgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIpABChNMaXN0Um9hZG1hcHNSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSQQoGc3RhdHVzGAIgASgOMjEuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwU3RhdHVzEhEKCXBhZ2Vfc2l6ZRgDIAEoBRISCgpwYWdlX3Rva2VuGAQgASgJIm4KFExpc3RSb2FkbWFwc1Jlc3BvbnNlEj0KCHJvYWRtYXBzGAEgAygLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSI4ChFHZXRSb2FkbWFwUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhIKCnJvYWRtYXBfaWQYAiABKAkiUgoSR2V0Um9hZG1hcFJlc3BvbnNlEjwKB3JvYWRtYXAYASABKAsyKy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXAiKgoXR2V0QWN0aXZlUm9hZG1hcFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJYChhHZXRBY3RpdmVSb2FkbWFwUmVzcG9uc2USPAoHcm9hZG1hcBgBIAEoCzIrLmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUm9hZG1hcCJBChVHZXRTZXNzaW9uUGxhblJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIXCg9zZXNzaW9uX3BsYW5faWQYAiABKAkiXwoWR2V0U2Vzc2lvblBsYW5SZXNwb25zZRJFCgxzZXNzaW9uX3BsYW4YASABKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIlAKGVJlZ2VuZXJhdGVTY2hlZHVsZVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRISCgpyb2FkbWFwX2lkGAIgASgJEg4KBnJlYXNvbhgDIAEoCSJaChpSZWdlbmVyYXRlU2NoZWR1bGVSZXNwb25zZRI8Cgdyb2FkbWFwGAEgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIv8BCgdSb2FkbWFwEhIKCnJvYWRtYXBfaWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRJBCgZzdGF0dXMYAyABKA4yMS5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXBTdGF0dXMSJQoKc3RhcnRfZGF0ZRgEIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSIwoIZW5kX2RhdGUYBSABKAsyES5nb29nbGUudHlwZS5EYXRlEkAKCndlZWtfcGxhbnMYBiADKAsyLC5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLldlZWtQbGFuItYCCghXZWVrUGxhbhIUCgx3ZWVrX3BsYW5faWQYASABKAkSEgoKcm9hZG1hcF9pZBgCIAEoCRIPCgd1c2VyX2lkGAMgASgJEhMKC3dlZWtfbnVtYmVyGAQgASgFEj8KBXBoYXNlGAUgASgOMjAuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwUGhhc2USEgoKdGFyZ2V0X3JwZRgGIAEoAhIlCgpzdGFydF9kYXRlGAcgASgLMhEuZ29vZ2xlLnR5cGUuRGF0ZRIjCghlbmRfZGF0ZRgIIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSGQoRbXVzY2xlX3NwbGl0X3R5cGUYCSABKAkSPgoJZGF5X3BsYW5zGAogAygLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5EYXlQbGFuIuEBCgdEYXlQbGFuEhMKC2RheV9wbGFuX2lkGAEgASgJEhQKDHdlZWtfcGxhbl9pZBgCIAEoCRISCgpyb2FkbWFwX2lkGAMgASgJEg8KB3VzZXJfaWQYBCABKAkSKQoOc2NoZWR1bGVkX2RhdGUYBSABKAsyES5nb29nbGUudHlwZS5EYXRlEhMKC2lzX3Jlc3RfZGF5GAYgASgIEkYKDXNlc3Npb25fcGxhbnMYByADKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIq0DCgtTZXNzaW9uUGxhbhIXCg9zZXNzaW9uX3BsYW5faWQYASABKAkSEwoLZGF5X3BsYW5faWQYAiABKAkSFAoMd2Vla19wbGFuX2lkGAMgASgJEhIKCnJvYWRtYXBfaWQYBCABKAkSDwoHdXNlcl9pZBgFIAEoCRIpCg5zY2hlZHVsZWRfZGF0ZRgGIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSEQoJc2xvdF90aW1lGAcgASgJEkUKBnN0YXR1cxgIIAEoDjI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU2Vzc2lvblBsYW5TdGF0dXMSHAoUdGFyZ2V0X211c2NsZV9ncm91cHMYCSADKAkSTQoMcHJlc2NyaXB0aW9uGAogASgLMjcuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Xb3Jrb3V0UHJlc2NyaXB0aW9uEhEKCXJlYXNvbmluZxgLIAEoCRIwCgxnZW5lcmF0ZWRfYXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIvsBChNXb3Jrb3V0UHJlc2NyaXB0aW9uEkgKCHdhcm1fdXBzGAEgAygLMjYuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5QcmVzY3JpYmVkRXhlcmNpc2USTgoObWFpbl9leGVyY2lzZXMYAiADKAsyNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlByZXNjcmliZWRFeGVyY2lzZRJKCgpjb29sX2Rvd25zGAMgAygLMjYuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5QcmVzY3JpYmVkRXhlcmNpc2Ui7wEKElByZXNjcmliZWRFeGVyY2lzZRITCgtleGVyY2lzZV9pZBgBIAEoCRIVCg1leGVyY2lzZV9uYW1lGAIgASgJEhMKC3RhcmdldF9zZXRzGAMgASgFEhMKC3RhcmdldF9yZXBzGAQgASgFEhUKDXRhcmdldF93ZWlnaHQYBSABKAISGAoQZHVyYXRpb25fc2Vjb25kcxgGIAEoBRINCgVub3RlcxgHIAEoCRIUCgxyZXN0X3NldF9zZWMYCCABKAUSGQoRcmVzdF9leGVyY2lzZV9zZWMYCSABKAUSEgoKdGFyZ2V0X3JwZRgKIAEoAipoCg1Sb2FkbWFwU3RhdHVzEh4KGlJPQURNQVBfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGQoVUk9BRE1BUF9TVEFUVVNfQUNUSVZFEAESHAoYUk9BRE1BUF9TVEFUVVNfQ09NUExFVEVEEAIqnQEKEVNlc3Npb25QbGFuU3RhdHVzEiMKH1NFU1NJT05fUExBTl9TVEFUVVNfVU5TUEVDSUZJRUQQABIfChtTRVNTSU9OX1BMQU5fU1RBVFVTX1BFTkRJTkcQARIhCh1TRVNTSU9OX1BMQU5fU1RBVFVTX0NPTVBMRVRFRBACEh8KG1NFU1NJT05fUExBTl9TVEFUVVNfU0tJUFBFRBADKpsBCgxSb2FkbWFwUGhhc2USHQoZUk9BRE1BUF9QSEFTRV9VTlNQRUNJRklFRBAAEh4KGlJPQURNQVBfUEhBU0VfQUNDVU1VTEFUSU9OEAESGgoWUk9BRE1BUF9QSEFTRV9PVkVSTE9BRBACEhYKElJPQURNQVBfUEhBU0VfUEVBSxADEhgKFFJPQURNQVBfUEhBU0VfREVMT0FEEARCa1ppZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9tZXNzYWdlO2NvYWNoaW5ndjFtZXNzYWdlYgZwcm90bzM", [file_google_protobuf_timestamp, file_google_type_date]);
+  fileDesc("Cjpjb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9tZXNzYWdlL2NvYWNoaW5nX21lc3NhZ2VzLnByb3RvEiJjb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlIikKFkluaXRpYXRlUm9hZG1hcFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJXChdJbml0aWF0ZVJvYWRtYXBSZXNwb25zZRI8Cgdyb2FkbWFwGAEgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIpABChNMaXN0Um9hZG1hcHNSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSQQoGc3RhdHVzGAIgASgOMjEuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwU3RhdHVzEhEKCXBhZ2Vfc2l6ZRgDIAEoBRISCgpwYWdlX3Rva2VuGAQgASgJIm4KFExpc3RSb2FkbWFwc1Jlc3BvbnNlEj0KCHJvYWRtYXBzGAEgAygLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSI4ChFHZXRSb2FkbWFwUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhIKCnJvYWRtYXBfaWQYAiABKAkiUgoSR2V0Um9hZG1hcFJlc3BvbnNlEjwKB3JvYWRtYXAYASABKAsyKy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXAiKgoXR2V0QWN0aXZlUm9hZG1hcFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJYChhHZXRBY3RpdmVSb2FkbWFwUmVzcG9uc2USPAoHcm9hZG1hcBgBIAEoCzIrLmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUm9hZG1hcCJBChVHZXRTZXNzaW9uUGxhblJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIXCg9zZXNzaW9uX3BsYW5faWQYAiABKAkiXwoWR2V0U2Vzc2lvblBsYW5SZXNwb25zZRJFCgxzZXNzaW9uX3BsYW4YASABKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIlAKGVJlZ2VuZXJhdGVTY2hlZHVsZVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRISCgpyb2FkbWFwX2lkGAIgASgJEg4KBnJlYXNvbhgDIAEoCSJaChpSZWdlbmVyYXRlU2NoZWR1bGVSZXNwb25zZRI8Cgdyb2FkbWFwGAEgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIv8BCgdSb2FkbWFwEhIKCnJvYWRtYXBfaWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRJBCgZzdGF0dXMYAyABKA4yMS5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXBTdGF0dXMSJQoKc3RhcnRfZGF0ZRgEIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSIwoIZW5kX2RhdGUYBSABKAsyES5nb29nbGUudHlwZS5EYXRlEkAKCndlZWtfcGxhbnMYBiADKAsyLC5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLldlZWtQbGFuItYCCghXZWVrUGxhbhIUCgx3ZWVrX3BsYW5faWQYASABKAkSEgoKcm9hZG1hcF9pZBgCIAEoCRIPCgd1c2VyX2lkGAMgASgJEhMKC3dlZWtfbnVtYmVyGAQgASgFEj8KBXBoYXNlGAUgASgOMjAuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwUGhhc2USEgoKdGFyZ2V0X3JwZRgGIAEoAhIlCgpzdGFydF9kYXRlGAcgASgLMhEuZ29vZ2xlLnR5cGUuRGF0ZRIjCghlbmRfZGF0ZRgIIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSGQoRbXVzY2xlX3NwbGl0X3R5cGUYCSABKAkSPgoJZGF5X3BsYW5zGAogAygLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5EYXlQbGFuIswBCgdEYXlQbGFuEhMKC2RheV9wbGFuX2lkGAEgASgJEhQKDHdlZWtfcGxhbl9pZBgCIAEoCRISCgpyb2FkbWFwX2lkGAMgASgJEg8KB3VzZXJfaWQYBCABKAkSKQoOc2NoZWR1bGVkX2RhdGUYBSABKAsyES5nb29nbGUudHlwZS5EYXRlEkYKDXNlc3Npb25fcGxhbnMYByADKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIvQDCgtTZXNzaW9uUGxhbhIXCg9zZXNzaW9uX3BsYW5faWQYASABKAkSEwoLZGF5X3BsYW5faWQYAiABKAkSFAoMd2Vla19wbGFuX2lkGAMgASgJEhIKCnJvYWRtYXBfaWQYBCABKAkSDwoHdXNlcl9pZBgFIAEoCRIpCg5zY2hlZHVsZWRfZGF0ZRgGIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSEQoJc2xvdF90aW1lGAcgASgJEkUKBnN0YXR1cxgIIAEoDjI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU2Vzc2lvblBsYW5TdGF0dXMSHAoUdGFyZ2V0X211c2NsZV9ncm91cHMYCSADKAkSTQoMcHJlc2NyaXB0aW9uGAogASgLMjcuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Xb3Jrb3V0UHJlc2NyaXB0aW9uEhEKCXJlYXNvbmluZxgLIAEoCRIwCgxnZW5lcmF0ZWRfYXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEkUKBnNvdXJjZRgNIAEoDjI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU2Vzc2lvblBsYW5Tb3VyY2Ui+wEKE1dvcmtvdXRQcmVzY3JpcHRpb24SSAoId2FybV91cHMYASADKAsyNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlByZXNjcmliZWRFeGVyY2lzZRJOCg5tYWluX2V4ZXJjaXNlcxgCIAMoCzI2LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUHJlc2NyaWJlZEV4ZXJjaXNlEkoKCmNvb2xfZG93bnMYAyADKAsyNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlByZXNjcmliZWRFeGVyY2lzZSLvAQoSUHJlc2NyaWJlZEV4ZXJjaXNlEhMKC2V4ZXJjaXNlX2lkGAEgASgJEhUKDWV4ZXJjaXNlX25hbWUYAiABKAkSEwoLdGFyZ2V0X3NldHMYAyABKAUSEwoLdGFyZ2V0X3JlcHMYBCABKAUSFQoNdGFyZ2V0X3dlaWdodBgFIAEoAhIYChBkdXJhdGlvbl9zZWNvbmRzGAYgASgFEg0KBW5vdGVzGAcgASgJEhQKDHJlc3Rfc2V0X3NlYxgIIAEoBRIZChFyZXN0X2V4ZXJjaXNlX3NlYxgJIAEoBRISCgp0YXJnZXRfcnBlGAogASgCIkYKHUNyZWF0ZUFkaG9jU2Vzc2lvblBsYW5SZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSFAoMZXhlcmNpc2VfaWRzGAIgAygJImcKHkNyZWF0ZUFkaG9jU2Vzc2lvblBsYW5SZXNwb25zZRJFCgxzZXNzaW9uX3BsYW4YASABKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIoQBCglBZEhvY0hpbnQSEQoJZnJlZV90ZXh0GAEgASgJEhUKDW11c2NsZV9ncm91cHMYAiADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgDIAMoCRIYChBkdXJhdGlvbl9taW51dGVzGAQgASgFEhYKDmludGVuc2l0eV9oaW50GAUgASgJImoKGlN1Z2dlc3RBZEhvY1Nlc3Npb25SZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSOwoEaGludBgCIAEoCzItLmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuQWRIb2NIaW50Iq0BChtTdWdnZXN0QWRIb2NTZXNzaW9uUmVzcG9uc2USFQoNbXVzY2xlX2dyb3VwcxgBIAMoCRJNCgxwcmVzY3JpcHRpb24YAiABKAsyNy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLldvcmtvdXRQcmVzY3JpcHRpb24SEQoJcmVhc29uaW5nGAMgASgJEhUKDWVzdGltYXRlZF9ycGUYBCABKAIqaAoNUm9hZG1hcFN0YXR1cxIeChpST0FETUFQX1NUQVRVU19VTlNQRUNJRklFRBAAEhkKFVJPQURNQVBfU1RBVFVTX0FDVElWRRABEhwKGFJPQURNQVBfU1RBVFVTX0NPTVBMRVRFRBACKr4BChFTZXNzaW9uUGxhblN0YXR1cxIjCh9TRVNTSU9OX1BMQU5fU1RBVFVTX1VOU1BFQ0lGSUVEEAASHwobU0VTU0lPTl9QTEFOX1NUQVRVU19QRU5ESU5HEAESIQodU0VTU0lPTl9QTEFOX1NUQVRVU19DT01QTEVURUQQAhIfChtTRVNTSU9OX1BMQU5fU1RBVFVTX1NLSVBQRUQQAxIfChtTRVNTSU9OX1BMQU5fU1RBVFVTX0FCT1JURUQQBCqFAQoRU2Vzc2lvblBsYW5Tb3VyY2USIwofU0VTU0lPTl9QTEFOX1NPVVJDRV9VTlNQRUNJRklFRBAAEicKI1NFU1NJT05fUExBTl9TT1VSQ0VfQ09BQ0hfU0NIRURVTEVEEAESIgoeU0VTU0lPTl9QTEFOX1NPVVJDRV9VU0VSX0FESE9DEAIqmwEKDFJvYWRtYXBQaGFzZRIdChlST0FETUFQX1BIQVNFX1VOU1BFQ0lGSUVEEAASHgoaUk9BRE1BUF9QSEFTRV9BQ0NVTVVMQVRJT04QARIaChZST0FETUFQX1BIQVNFX09WRVJMT0FEEAISFgoSUk9BRE1BUF9QSEFTRV9QRUFLEAMSGAoUUk9BRE1BUF9QSEFTRV9ERUxPQUQQBEJrWmlnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL2NvYWNoaW5nL3YxL21lc3NhZ2U7Y29hY2hpbmd2MW1lc3NhZ2ViBnByb3RvMw", [file_google_protobuf_timestamp, file_google_type_date]);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.InitiateRoadmapRequest
@@ -394,11 +394,6 @@ export type DayPlan = Message<"contracts.core.coaching.v1.message.DayPlan"> & {
   scheduledDate?: Date | undefined;
 
   /**
-   * @generated from field: bool is_rest_day = 6;
-   */
-  isRestDay: boolean;
-
-  /**
    * @generated from field: repeated contracts.core.coaching.v1.message.SessionPlan session_plans = 7;
    */
   sessionPlans: SessionPlan[];
@@ -474,6 +469,11 @@ export type SessionPlan = Message<"contracts.core.coaching.v1.message.SessionPla
    * @generated from field: google.protobuf.Timestamp generated_at = 12;
    */
   generatedAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.SessionPlanSource source = 13;
+   */
+  source: SessionPlanSource;
 };
 
 /**
@@ -573,6 +573,136 @@ export const PrescribedExerciseSchema: GenMessage<PrescribedExercise> = /*@__PUR
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 17);
 
 /**
+ * @generated from message contracts.core.coaching.v1.message.CreateAdhocSessionPlanRequest
+ */
+export type CreateAdhocSessionPlanRequest = Message<"contracts.core.coaching.v1.message.CreateAdhocSessionPlanRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: repeated string exercise_ids = 2;
+   */
+  exerciseIds: string[];
+};
+
+/**
+ * Describes the message contracts.core.coaching.v1.message.CreateAdhocSessionPlanRequest.
+ * Use `create(CreateAdhocSessionPlanRequestSchema)` to create a new message.
+ */
+export const CreateAdhocSessionPlanRequestSchema: GenMessage<CreateAdhocSessionPlanRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 18);
+
+/**
+ * @generated from message contracts.core.coaching.v1.message.CreateAdhocSessionPlanResponse
+ */
+export type CreateAdhocSessionPlanResponse = Message<"contracts.core.coaching.v1.message.CreateAdhocSessionPlanResponse"> & {
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.SessionPlan session_plan = 1;
+   */
+  sessionPlan?: SessionPlan | undefined;
+};
+
+/**
+ * Describes the message contracts.core.coaching.v1.message.CreateAdhocSessionPlanResponse.
+ * Use `create(CreateAdhocSessionPlanResponseSchema)` to create a new message.
+ */
+export const CreateAdhocSessionPlanResponseSchema: GenMessage<CreateAdhocSessionPlanResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 19);
+
+/**
+ * @generated from message contracts.core.coaching.v1.message.AdHocHint
+ */
+export type AdHocHint = Message<"contracts.core.coaching.v1.message.AdHocHint"> & {
+  /**
+   * @generated from field: string free_text = 1;
+   */
+  freeText: string;
+
+  /**
+   * @generated from field: repeated string muscle_groups = 2;
+   */
+  muscleGroups: string[];
+
+  /**
+   * @generated from field: repeated string available_equipment = 3;
+   */
+  availableEquipment: string[];
+
+  /**
+   * @generated from field: int32 duration_minutes = 4;
+   */
+  durationMinutes: number;
+
+  /**
+   * @generated from field: string intensity_hint = 5;
+   */
+  intensityHint: string;
+};
+
+/**
+ * Describes the message contracts.core.coaching.v1.message.AdHocHint.
+ * Use `create(AdHocHintSchema)` to create a new message.
+ */
+export const AdHocHintSchema: GenMessage<AdHocHint> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 20);
+
+/**
+ * @generated from message contracts.core.coaching.v1.message.SuggestAdHocSessionRequest
+ */
+export type SuggestAdHocSessionRequest = Message<"contracts.core.coaching.v1.message.SuggestAdHocSessionRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.AdHocHint hint = 2;
+   */
+  hint?: AdHocHint | undefined;
+};
+
+/**
+ * Describes the message contracts.core.coaching.v1.message.SuggestAdHocSessionRequest.
+ * Use `create(SuggestAdHocSessionRequestSchema)` to create a new message.
+ */
+export const SuggestAdHocSessionRequestSchema: GenMessage<SuggestAdHocSessionRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 21);
+
+/**
+ * @generated from message contracts.core.coaching.v1.message.SuggestAdHocSessionResponse
+ */
+export type SuggestAdHocSessionResponse = Message<"contracts.core.coaching.v1.message.SuggestAdHocSessionResponse"> & {
+  /**
+   * @generated from field: repeated string muscle_groups = 1;
+   */
+  muscleGroups: string[];
+
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.WorkoutPrescription prescription = 2;
+   */
+  prescription?: WorkoutPrescription | undefined;
+
+  /**
+   * @generated from field: string reasoning = 3;
+   */
+  reasoning: string;
+
+  /**
+   * @generated from field: float estimated_rpe = 4;
+   */
+  estimatedRpe: number;
+};
+
+/**
+ * Describes the message contracts.core.coaching.v1.message.SuggestAdHocSessionResponse.
+ * Use `create(SuggestAdHocSessionResponseSchema)` to create a new message.
+ */
+export const SuggestAdHocSessionResponseSchema: GenMessage<SuggestAdHocSessionResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 22);
+
+/**
  * @generated from enum contracts.core.coaching.v1.message.RoadmapStatus
  */
 export enum RoadmapStatus {
@@ -622,11 +752,18 @@ export enum SessionPlanStatus {
   COMPLETED = 2,
 
   /**
-   * Đã bỏ qua / không tập
+   * Đã bỏ qua / không tập (never started)
    *
    * @generated from enum value: SESSION_PLAN_STATUS_SKIPPED = 3;
    */
   SKIPPED = 3,
+
+  /**
+   * Hủy giữa chừng / hết 4h timeout
+   *
+   * @generated from enum value: SESSION_PLAN_STATUS_ABORTED = 4;
+   */
+  ABORTED = 4,
 }
 
 /**
@@ -634,6 +771,32 @@ export enum SessionPlanStatus {
  */
 export const SessionPlanStatusSchema: GenEnum<SessionPlanStatus> = /*@__PURE__*/
   enumDesc(file_contracts_core_coaching_v1_message_coaching_messages, 1);
+
+/**
+ * @generated from enum contracts.core.coaching.v1.message.SessionPlanSource
+ */
+export enum SessionPlanSource {
+  /**
+   * @generated from enum value: SESSION_PLAN_SOURCE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: SESSION_PLAN_SOURCE_COACH_SCHEDULED = 1;
+   */
+  COACH_SCHEDULED = 1,
+
+  /**
+   * @generated from enum value: SESSION_PLAN_SOURCE_USER_ADHOC = 2;
+   */
+  USER_ADHOC = 2,
+}
+
+/**
+ * Describes the enum contracts.core.coaching.v1.message.SessionPlanSource.
+ */
+export const SessionPlanSourceSchema: GenEnum<SessionPlanSource> = /*@__PURE__*/
+  enumDesc(file_contracts_core_coaching_v1_message_coaching_messages, 2);
 
 /**
  * @generated from enum contracts.core.coaching.v1.message.RoadmapPhase
@@ -677,5 +840,5 @@ export enum RoadmapPhase {
  * Describes the enum contracts.core.coaching.v1.message.RoadmapPhase.
  */
 export const RoadmapPhaseSchema: GenEnum<RoadmapPhase> = /*@__PURE__*/
-  enumDesc(file_contracts_core_coaching_v1_message_coaching_messages, 2);
+  enumDesc(file_contracts_core_coaching_v1_message_coaching_messages, 3);
 

@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/core/nutrition/v1/message/nutrition_messages.proto.
  */
 export const file_contracts_core_nutrition_v1_message_nutrition_messages: GenFile = /*@__PURE__*/
-  fileDesc("Cjxjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZS9udXRyaXRpb25fbWVzc2FnZXMucHJvdG8SI2NvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlIkYKBk1hY3JvcxIVCg1wcm90ZWluX2dyYW1zGAEgASgCEhIKCmNhcmJfZ3JhbXMYAiABKAISEQoJZmF0X2dyYW1zGAMgASgCIp0BCgpNZWFsT3B0aW9uEhEKCW1lYWxfbmFtZRgBIAEoCRISCgpwcmljZV90aWVyGAIgASgJEhAKCGNhbG9yaWVzGAMgASgCEg8KB3Byb3RlaW4YBCABKAISDQoFY2FyYnMYBSABKAISCwoDZmF0GAYgASgCEhMKC2Rlc2NyaXB0aW9uGAcgASgJEhQKDHJlY2lwZV9zdGVwcxgIIAMoCSKRAgoKRGFpbHlNZWFscxJCCglicmVha2Zhc3QYASADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBWx1bmNoGAIgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbhI/CgZkaW5uZXIYAyADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBXNuYWNrGAQgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbiImChNHZXRUb2RheU1lbnVSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkirAEKFEdldFRvZGF5TWVudVJlc3BvbnNlEhcKD3RhcmdldF9jYWxvcmllcxgBIAEoAhI7CgZtYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSPgoFbWVhbHMYAyABKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5EYWlseU1lYWxzIpkBCg5Mb2dNZWFsUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIkgKD0xvZ01lYWxSZXNwb25zZRITCgttZWFsX2xvZ19pZBgBIAEoCRIPCgdzdWNjZXNzGAIgASgIEg8KB21lc3NhZ2UYAyABKAkimgEKC01lYWxMb2dJdGVtEhMKC21lYWxfbG9nX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIlMKGkdldE51dHJpdGlvbkhpc3RvcnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSEgoKc3RhcnRfZGF0ZRgCIAEoCRIQCghlbmRfZGF0ZRgDIAEoCSJeChtHZXROdXRyaXRpb25IaXN0b3J5UmVzcG9uc2USPwoFbWVhbHMYASADKAsyMC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsTG9nSXRlbSItChpHZXROdXRyaXRpb25TdW1tYXJ5UmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJItsBChtHZXROdXRyaXRpb25TdW1tYXJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEkIKDXRhcmdldF9tYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSGQoRY29uc3VtZWRfY2Fsb3JpZXMYAyABKAISRAoPY29uc3VtZWRfbWFjcm9zGAQgASgLMisuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWFjcm9zQm1aa2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvbnV0cml0aW9uL3YxL21lc3NhZ2U7bnV0cml0aW9udjFtZXNzYWdlYgZwcm90bzM");
+  fileDesc("Cjxjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZS9udXRyaXRpb25fbWVzc2FnZXMucHJvdG8SI2NvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlIkYKBk1hY3JvcxIVCg1wcm90ZWluX2dyYW1zGAEgASgCEhIKCmNhcmJfZ3JhbXMYAiABKAISEQoJZmF0X2dyYW1zGAMgASgCIp0BCgpNZWFsT3B0aW9uEhEKCW1lYWxfbmFtZRgBIAEoCRISCgpwcmljZV90aWVyGAIgASgJEhAKCGNhbG9yaWVzGAMgASgCEg8KB3Byb3RlaW4YBCABKAISDQoFY2FyYnMYBSABKAISCwoDZmF0GAYgASgCEhMKC2Rlc2NyaXB0aW9uGAcgASgJEhQKDHJlY2lwZV9zdGVwcxgIIAMoCSKRAgoKRGFpbHlNZWFscxJCCglicmVha2Zhc3QYASADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBWx1bmNoGAIgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbhI/CgZkaW5uZXIYAyADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBXNuYWNrGAQgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbiImChNHZXRUb2RheU1lbnVSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkirAEKFEdldFRvZGF5TWVudVJlc3BvbnNlEhcKD3RhcmdldF9jYWxvcmllcxgBIAEoAhI7CgZtYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSPgoFbWVhbHMYAyABKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5EYWlseU1lYWxzIpkBCg5Mb2dNZWFsUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIkgKD0xvZ01lYWxSZXNwb25zZRITCgttZWFsX2xvZ19pZBgBIAEoCRIPCgdzdWNjZXNzGAIgASgIEg8KB21lc3NhZ2UYAyABKAkimgEKC01lYWxMb2dJdGVtEhMKC21lYWxfbG9nX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIlMKGkdldE51dHJpdGlvbkhpc3RvcnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSEgoKc3RhcnRfZGF0ZRgCIAEoCRIQCghlbmRfZGF0ZRgDIAEoCSJeChtHZXROdXRyaXRpb25IaXN0b3J5UmVzcG9uc2USPwoFbWVhbHMYASADKAsyMC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsTG9nSXRlbSItChpHZXROdXRyaXRpb25TdW1tYXJ5UmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJItsBChtHZXROdXRyaXRpb25TdW1tYXJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEkIKDXRhcmdldF9tYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSGQoRY29uc3VtZWRfY2Fsb3JpZXMYAyABKAISRAoPY29uc3VtZWRfbWFjcm9zGAQgASgLMisuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWFjcm9zIlIKIFJlY2FsaWJyYXRlUGxhbldpdGhQYW50cnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSHQoVYXZhaWxhYmxlX2luZ3JlZGllbnRzGAIgAygJIsoBCiFSZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEjsKBm1hY3JvcxgCIAEoCzIrLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLk1hY3JvcxI+CgVtZWFscxgDIAEoCzIvLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkRhaWx5TWVhbHMSDwoHbWVzc2FnZRgEIAEoCSL7AQoVQ3JlYXRlRm9vZEl0ZW1SZXF1ZXN0EgwKBG5hbWUYASABKAkSEAoIY2F0ZWdvcnkYAiABKAkSGQoRY2Fsb3JpZXNfcGVyXzEwMGcYAyABKAISGAoQcHJvdGVpbl9wZXJfMTAwZxgEIAEoAhIWCg5jYXJic19wZXJfMTAwZxgFIAEoAhIUCgxmYXRfcGVyXzEwMGcYBiABKAISFQoNYWxsZXJnZW5fdGFncxgHIAMoCRIWCg5wcm90ZWluX3NvdXJjZRgIIAEoCRITCgtjYXJiX3NvdXJjZRgJIAEoCRIbChNpc19udXRpZm9vZF9wcm9kdWN0GAogASgIIk8KFkNyZWF0ZUZvb2RJdGVtUmVzcG9uc2USFAoMZm9vZF9pdGVtX2lkGAEgASgJEg4KBnN0YXR1cxgCIAEoCRIPCgdtZXNzYWdlGAMgASgJIi4KFkFwcHJvdmVGb29kSXRlbVJlcXVlc3QSFAoMZm9vZF9pdGVtX2lkGAEgASgJImEKF0FwcHJvdmVGb29kSXRlbVJlc3BvbnNlEhQKDGZvb2RfaXRlbV9pZBgBIAEoCRIOCgZzdGF0dXMYAiABKAkSDwoHc3VjY2VzcxgDIAEoCBIPCgdtZXNzYWdlGAQgASgJIm8KFEltcHJvdmVtZW50QXJlYVByb3RvEgwKBGFyZWEYASABKAkSEwoLY3VycmVudF9hdmcYAiABKAISDgoGdGFyZ2V0GAMgASgCEhIKCnN1Z2dlc3Rpb24YBCABKAkSEAoIcHJpb3JpdHkYBSABKAkiZwobUmVjb21tZW5kZWRBZGp1c3RtZW50c1Byb3RvEhYKDmNhbG9yaWVzX2RlbHRhGAEgASgCEhsKE3Byb3RlaW5fcmF0aW9fZGVsdGEYAiABKAISEwoLZm9jdXNfZm9vZHMYAyADKAkiVAoaR2V0TnV0cml0aW9uSW5zaWdodFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIRCglnb2FsX3R5cGUYAiABKAkSEgoKcmFuZ2VfZGF5cxgDIAEoBSKnAgobR2V0TnV0cml0aW9uSW5zaWdodFJlc3BvbnNlEhUKDW92ZXJhbGxfc2NvcmUYASABKAUSDwoHc3VtbWFyeRgCIAEoCRIRCglzdHJlbmd0aHMYAyADKAkSVAoRaW1wcm92ZW1lbnRfYXJlYXMYBCADKAsyOS5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5JbXByb3ZlbWVudEFyZWFQcm90bxIUCgx3ZWVrbHlfdHJlbmQYBSABKAkSYQoXcmVjb21tZW5kZWRfYWRqdXN0bWVudHMYBiABKAsyQC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5SZWNvbW1lbmRlZEFkanVzdG1lbnRzUHJvdG9CbVprZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZTtudXRyaXRpb252MW1lc3NhZ2ViBnByb3RvMw");
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.Macros
@@ -398,4 +398,339 @@ export type GetNutritionSummaryResponse = Message<"contracts.core.nutrition.v1.m
  */
 export const GetNutritionSummaryResponseSchema: GenMessage<GetNutritionSummaryResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 11);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.RecalibratePlanWithPantryRequest
+ */
+export type RecalibratePlanWithPantryRequest = Message<"contracts.core.nutrition.v1.message.RecalibratePlanWithPantryRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: repeated string available_ingredients = 2;
+   */
+  availableIngredients: string[];
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.RecalibratePlanWithPantryRequest.
+ * Use `create(RecalibratePlanWithPantryRequestSchema)` to create a new message.
+ */
+export const RecalibratePlanWithPantryRequestSchema: GenMessage<RecalibratePlanWithPantryRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 12);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.RecalibratePlanWithPantryResponse
+ */
+export type RecalibratePlanWithPantryResponse = Message<"contracts.core.nutrition.v1.message.RecalibratePlanWithPantryResponse"> & {
+  /**
+   * @generated from field: float target_calories = 1;
+   */
+  targetCalories: number;
+
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.Macros macros = 2;
+   */
+  macros?: Macros | undefined;
+
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.DailyMeals meals = 3;
+   */
+  meals?: DailyMeals | undefined;
+
+  /**
+   * @generated from field: string message = 4;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.RecalibratePlanWithPantryResponse.
+ * Use `create(RecalibratePlanWithPantryResponseSchema)` to create a new message.
+ */
+export const RecalibratePlanWithPantryResponseSchema: GenMessage<RecalibratePlanWithPantryResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 13);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.CreateFoodItemRequest
+ */
+export type CreateFoodItemRequest = Message<"contracts.core.nutrition.v1.message.CreateFoodItemRequest"> & {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * PROTEIN, CARB, VEGGIE, FAT, NUTIFOOD
+   *
+   * @generated from field: string category = 2;
+   */
+  category: string;
+
+  /**
+   * @generated from field: float calories_per_100g = 3;
+   */
+  caloriesPer100g: number;
+
+  /**
+   * @generated from field: float protein_per_100g = 4;
+   */
+  proteinPer100g: number;
+
+  /**
+   * @generated from field: float carbs_per_100g = 5;
+   */
+  carbsPer100g: number;
+
+  /**
+   * @generated from field: float fat_per_100g = 6;
+   */
+  fatPer100g: number;
+
+  /**
+   * @generated from field: repeated string allergen_tags = 7;
+   */
+  allergenTags: string[];
+
+  /**
+   * @generated from field: string protein_source = 8;
+   */
+  proteinSource: string;
+
+  /**
+   * @generated from field: string carb_source = 9;
+   */
+  carbSource: string;
+
+  /**
+   * @generated from field: bool is_nutifood_product = 10;
+   */
+  isNutifoodProduct: boolean;
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.CreateFoodItemRequest.
+ * Use `create(CreateFoodItemRequestSchema)` to create a new message.
+ */
+export const CreateFoodItemRequestSchema: GenMessage<CreateFoodItemRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 14);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.CreateFoodItemResponse
+ */
+export type CreateFoodItemResponse = Message<"contracts.core.nutrition.v1.message.CreateFoodItemResponse"> & {
+  /**
+   * @generated from field: string food_item_id = 1;
+   */
+  foodItemId: string;
+
+  /**
+   * @generated from field: string status = 2;
+   */
+  status: string;
+
+  /**
+   * @generated from field: string message = 3;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.CreateFoodItemResponse.
+ * Use `create(CreateFoodItemResponseSchema)` to create a new message.
+ */
+export const CreateFoodItemResponseSchema: GenMessage<CreateFoodItemResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 15);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.ApproveFoodItemRequest
+ */
+export type ApproveFoodItemRequest = Message<"contracts.core.nutrition.v1.message.ApproveFoodItemRequest"> & {
+  /**
+   * @generated from field: string food_item_id = 1;
+   */
+  foodItemId: string;
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.ApproveFoodItemRequest.
+ * Use `create(ApproveFoodItemRequestSchema)` to create a new message.
+ */
+export const ApproveFoodItemRequestSchema: GenMessage<ApproveFoodItemRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 16);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.ApproveFoodItemResponse
+ */
+export type ApproveFoodItemResponse = Message<"contracts.core.nutrition.v1.message.ApproveFoodItemResponse"> & {
+  /**
+   * @generated from field: string food_item_id = 1;
+   */
+  foodItemId: string;
+
+  /**
+   * @generated from field: string status = 2;
+   */
+  status: string;
+
+  /**
+   * @generated from field: bool success = 3;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 4;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.ApproveFoodItemResponse.
+ * Use `create(ApproveFoodItemResponseSchema)` to create a new message.
+ */
+export const ApproveFoodItemResponseSchema: GenMessage<ApproveFoodItemResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 17);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.ImprovementAreaProto
+ */
+export type ImprovementAreaProto = Message<"contracts.core.nutrition.v1.message.ImprovementAreaProto"> & {
+  /**
+   * @generated from field: string area = 1;
+   */
+  area: string;
+
+  /**
+   * @generated from field: float current_avg = 2;
+   */
+  currentAvg: number;
+
+  /**
+   * @generated from field: float target = 3;
+   */
+  target: number;
+
+  /**
+   * @generated from field: string suggestion = 4;
+   */
+  suggestion: string;
+
+  /**
+   * "HIGH", "MEDIUM", "LOW"
+   *
+   * @generated from field: string priority = 5;
+   */
+  priority: string;
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.ImprovementAreaProto.
+ * Use `create(ImprovementAreaProtoSchema)` to create a new message.
+ */
+export const ImprovementAreaProtoSchema: GenMessage<ImprovementAreaProto> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 18);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto
+ */
+export type RecommendedAdjustmentsProto = Message<"contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto"> & {
+  /**
+   * @generated from field: float calories_delta = 1;
+   */
+  caloriesDelta: number;
+
+  /**
+   * @generated from field: float protein_ratio_delta = 2;
+   */
+  proteinRatioDelta: number;
+
+  /**
+   * @generated from field: repeated string focus_foods = 3;
+   */
+  focusFoods: string[];
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto.
+ * Use `create(RecommendedAdjustmentsProtoSchema)` to create a new message.
+ */
+export const RecommendedAdjustmentsProtoSchema: GenMessage<RecommendedAdjustmentsProto> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 19);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.GetNutritionInsightRequest
+ */
+export type GetNutritionInsightRequest = Message<"contracts.core.nutrition.v1.message.GetNutritionInsightRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+
+  /**
+   * "WEIGHT_LOSS", "MUSCLE_GAIN", "MAINTENANCE"
+   *
+   * @generated from field: string goal_type = 2;
+   */
+  goalType: string;
+
+  /**
+   * số ngày phân tích, mặc định 7
+   *
+   * @generated from field: int32 range_days = 3;
+   */
+  rangeDays: number;
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.GetNutritionInsightRequest.
+ * Use `create(GetNutritionInsightRequestSchema)` to create a new message.
+ */
+export const GetNutritionInsightRequestSchema: GenMessage<GetNutritionInsightRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 20);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.GetNutritionInsightResponse
+ */
+export type GetNutritionInsightResponse = Message<"contracts.core.nutrition.v1.message.GetNutritionInsightResponse"> & {
+  /**
+   * @generated from field: int32 overall_score = 1;
+   */
+  overallScore: number;
+
+  /**
+   * @generated from field: string summary = 2;
+   */
+  summary: string;
+
+  /**
+   * @generated from field: repeated string strengths = 3;
+   */
+  strengths: string[];
+
+  /**
+   * @generated from field: repeated contracts.core.nutrition.v1.message.ImprovementAreaProto improvement_areas = 4;
+   */
+  improvementAreas: ImprovementAreaProto[];
+
+  /**
+   * "IMPROVING", "DECLINING", "STABLE"
+   *
+   * @generated from field: string weekly_trend = 5;
+   */
+  weeklyTrend: string;
+
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto recommended_adjustments = 6;
+   */
+  recommendedAdjustments?: RecommendedAdjustmentsProto | undefined;
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.GetNutritionInsightResponse.
+ * Use `create(GetNutritionInsightResponseSchema)` to create a new message.
+ */
+export const GetNutritionInsightResponseSchema: GenMessage<GetNutritionInsightResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 21);
 
