@@ -4484,3 +4484,38 @@ body:has(.live-screen) {
   font-size: 1rem;
   color: var(--color-text);
 }
+
+.live-coach {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Label style per DESIGN.md: body face at 750, not the display face. */
+.live-coach__label {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.live-coach__text {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--color-text);
+  margin-top: var(--space-1);
+}
+
+/* The fade tells the user there is more below without stealing vertical space. */
+.live-screen__coach[data-scrollable="true"] {
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    #000 calc(100% - 32px),
+    color-mix(in srgb, #000 12%, transparent) 100%
+  );
+}
