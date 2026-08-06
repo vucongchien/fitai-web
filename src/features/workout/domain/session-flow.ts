@@ -27,6 +27,8 @@ export type SessionStep = {
   exercise: LiveExercise;
   /** 1-based position of this exercise inside its phase. */
   exercisePosition: number;
+  /** 1-based position of this exercise across the whole session, all phases combined. */
+  sessionPosition: number;
   /** 1-based set number for this exercise. */
   setNumber: number;
   isLastSetOfExercise: boolean;
@@ -43,13 +45,20 @@ export function exercisesOfPhase(plan: LiveSessionPlan, phase: SessionPhase): Li
   return plan.mainExercises;
 }
 
+/** How many exercises the session contains in total — the "of 8" in "Exercise 2 of 8". */
+export function totalExerciseCount(plan: LiveSessionPlan): number {
+  return flattenPlan(plan).length;
+}
+
 /** One step per prescribed set, in execution order. */
 export function buildTimeline(plan: LiveSessionPlan): SessionStep[] {
   const steps: SessionStep[] = [];
+  let sessionPosition = 0;
 
   for (const phase of PHASE_ORDER) {
     const exercises = exercisesOfPhase(plan, phase);
     exercises.forEach((exercise, exerciseIndex) => {
+      sessionPosition += 1;
       const sets = Math.max(1, exercise.targetSets);
       for (let setNumber = 1; setNumber <= sets; setNumber += 1) {
         steps.push({
@@ -57,6 +66,7 @@ export function buildTimeline(plan: LiveSessionPlan): SessionStep[] {
           phase,
           exercise,
           exercisePosition: exerciseIndex + 1,
+          sessionPosition,
           setNumber,
           isLastSetOfExercise: setNumber === sets,
         });
