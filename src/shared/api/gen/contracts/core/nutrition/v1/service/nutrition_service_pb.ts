@@ -4,16 +4,41 @@
 
 import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+
 import { file_google_api_annotations } from "../../../../../google/api/annotations_pb";
 import { file_protoc_gen_openapiv2_options_annotations } from "../../../../../protoc-gen-openapiv2/options/annotations_pb";
-import type { ApproveFoodItemRequestSchema, ApproveFoodItemResponseSchema, CreateFoodItemRequestSchema, CreateFoodItemResponseSchema, GetNutritionHistoryRequestSchema, GetNutritionHistoryResponseSchema, GetNutritionInsightRequestSchema, GetNutritionInsightResponseSchema, GetNutritionSummaryRequestSchema, GetNutritionSummaryResponseSchema, GetTodayMenuRequestSchema, GetTodayMenuResponseSchema, LogMealRequestSchema, LogMealResponseSchema, RecalibratePlanWithPantryRequestSchema, RecalibratePlanWithPantryResponseSchema } from "../message/nutrition_messages_pb";
+import type {
+  ApproveFoodItemRequestSchema,
+  ApproveFoodItemResponseSchema,
+  CreateFoodItemRequestSchema,
+  CreateFoodItemResponseSchema,
+  GetNutritionHistoryRequestSchema,
+  GetNutritionHistoryResponseSchema,
+  GetNutritionInsightRequestSchema,
+  GetNutritionInsightResponseSchema,
+  GetNutritionSummaryRequestSchema,
+  GetNutritionSummaryResponseSchema,
+  GetTodayMenuRequestSchema,
+  GetTodayMenuResponseSchema,
+  LogMealRequestSchema,
+  LogMealResponseSchema,
+  RecalibratePlanWithPantryRequestSchema,
+  RecalibratePlanWithPantryResponseSchema,
+} from "../message/nutrition_messages_pb";
 import { file_contracts_core_nutrition_v1_message_nutrition_messages } from "../message/nutrition_messages_pb";
 
 /**
  * Describes the file contracts/core/nutrition/v1/service/nutrition_service.proto.
  */
-export const file_contracts_core_nutrition_v1_service_nutrition_service: GenFile = /*@__PURE__*/
-  fileDesc("Cjtjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvc2VydmljZS9udXRyaXRpb25fc2VydmljZS5wcm90bxIjY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLnNlcnZpY2Uy9QwKEE51dHJpdGlvblNlcnZpY2UStAEKDEdldFRvZGF5TWVudRI4LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkdldFRvZGF5TWVudVJlcXVlc3QaOS5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5HZXRUb2RheU1lbnVSZXNwb25zZSIvgtPkkwIpEicvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9udXRyaXRpb24vdG9kYXkSqAEKB0xvZ01lYWwSMy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5Mb2dNZWFsUmVxdWVzdBo0LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkxvZ01lYWxSZXNwb25zZSIygtPkkwIsOgEqIicvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9udXRyaXRpb24vbWVhbHMSywEKE0dldE51dHJpdGlvbkhpc3RvcnkSPy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5HZXROdXRyaXRpb25IaXN0b3J5UmVxdWVzdBpALmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkdldE51dHJpdGlvbkhpc3RvcnlSZXNwb25zZSIxgtPkkwIrEikvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9udXRyaXRpb24vaGlzdG9yeRLLAQoTR2V0TnV0cml0aW9uU3VtbWFyeRI/LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkdldE51dHJpdGlvblN1bW1hcnlSZXF1ZXN0GkAuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuR2V0TnV0cml0aW9uU3VtbWFyeVJlc3BvbnNlIjGC0+STAisSKS9hcGkvdjEvdXNlcnMve3VzZXJfaWR9L251dHJpdGlvbi9zdW1tYXJ5EusBChlSZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5EkUuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuUmVjYWxpYnJhdGVQbGFuV2l0aFBhbnRyeVJlcXVlc3QaRi5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5SZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5UmVzcG9uc2UiP4LT5JMCOToBKiI0L2FwaS92MS91c2Vycy97dXNlcl9pZH0vbnV0cml0aW9uL3JlY2FsaWJyYXRlLXBhbnRyeRKyAQoOQ3JlYXRlRm9vZEl0ZW0SOi5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5DcmVhdGVGb29kSXRlbVJlcXVlc3QaOy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5DcmVhdGVGb29kSXRlbVJlc3BvbnNlIieC0+STAiE6ASoiHC9hcGkvdjEvbnV0cml0aW9uL2Zvb2QtaXRlbXMSuAIKE0dldE51dHJpdGlvbkluc2lnaHQSPy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5HZXROdXRyaXRpb25JbnNpZ2h0UmVxdWVzdBpALmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkdldE51dHJpdGlvbkluc2lnaHRSZXNwb25zZSKdAZJBaRIUQUkgTnV0cml0aW9uIEluc2lnaHQaUVBow6JuIHTDrWNoIGzhu4tjaCBz4butIGRpbmggZMaw4buhbmcgdsOgIMSRxrBhIHJhIGjGsOG7m25nIGPhuqNpIHRoaeG7h24gdOG7qyBBSYLT5JMCKxIpL2FwaS92MS91c2Vycy97dXNlcl9pZH0vbnV0cml0aW9uL2luc2lnaHQahAGSQYABChBOdXRyaXRpb24gLyBVc2VyEmxBUEkgZMOgbmggY2hvIG5nxrDhu51pIGTDuW5nIHRyYSBj4bupdSB0aOG7sWMgxJHGoW4sIGdoaSBuaOG6rXQga8O9IMSDbiB14buRbmcgdsOgIHBow6JuIHTDrWNoIGRpbmggZMaw4buhbmcyywIKFUFkbWluTnV0cml0aW9uU2VydmljZRLPAQoPQXBwcm92ZUZvb2RJdGVtEjsuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuQXBwcm92ZUZvb2RJdGVtUmVxdWVzdBo8LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkFwcHJvdmVGb29kSXRlbVJlc3BvbnNlIkGC0+STAjsaOS9hcGkvdjEvYWRtaW4vbnV0cml0aW9uL2Zvb2QtaXRlbXMve2Zvb2RfaXRlbV9pZH0vYXBwcm92ZRpgkkFdChFOdXRyaXRpb24gLyBBZG1pbhJIQVBJIGTDoG5oIGNobyBBZG1pbiBxdeG6o24gbMO9IHbDoCBwaMOqIGR1eeG7h3QgZGFuaCBt4bulYyB0aOG7sWMgcGjhuqltQsECWmtnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL251dHJpdGlvbi92MS9zZXJ2aWNlO251dHJpdGlvbnYxc2VydmljZZJB0AESaQoXQUkgTnV0cml0aW9uIEVuZ2luZSBBUEkSSUFQSSB0w61uaCB0b8OhbiBjYWxvL21hY3JvcyB2w6AgxJHhu4EgeHXhuqV0IHRo4buxYyDEkcahbiBjw6EgbmjDom4gaMOzYS4yAzEuMFpRCk8KCkJlYXJlckF1dGgSQQgCEixCZWFyZXIgYWNjZXNzIHRva2VuIChGb3JtYXQ6IEJlYXJlciA8dG9rZW4+KRoNQXV0aG9yaXphdGlvbiACYhAKDgoKQmVhcmVyQXV0aBIAYgZwcm90bzM", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_core_nutrition_v1_message_nutrition_messages]);
+export const file_contracts_core_nutrition_v1_service_nutrition_service: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Cjtjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvc2VydmljZS9udXRyaXRpb25fc2VydmljZS5wcm90bxIjY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLnNlcnZpY2Uy9QwKEE51dHJpdGlvblNlcnZpY2UStAEKDEdldFRvZGF5TWVudRI4LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkdldFRvZGF5TWVudVJlcXVlc3QaOS5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5HZXRUb2RheU1lbnVSZXNwb25zZSIvgtPkkwIpEicvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9udXRyaXRpb24vdG9kYXkSqAEKB0xvZ01lYWwSMy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5Mb2dNZWFsUmVxdWVzdBo0LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkxvZ01lYWxSZXNwb25zZSIygtPkkwIsOgEqIicvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9udXRyaXRpb24vbWVhbHMSywEKE0dldE51dHJpdGlvbkhpc3RvcnkSPy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5HZXROdXRyaXRpb25IaXN0b3J5UmVxdWVzdBpALmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkdldE51dHJpdGlvbkhpc3RvcnlSZXNwb25zZSIxgtPkkwIrEikvYXBpL3YxL3VzZXJzL3t1c2VyX2lkfS9udXRyaXRpb24vaGlzdG9yeRLLAQoTR2V0TnV0cml0aW9uU3VtbWFyeRI/LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkdldE51dHJpdGlvblN1bW1hcnlSZXF1ZXN0GkAuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuR2V0TnV0cml0aW9uU3VtbWFyeVJlc3BvbnNlIjGC0+STAisSKS9hcGkvdjEvdXNlcnMve3VzZXJfaWR9L251dHJpdGlvbi9zdW1tYXJ5EusBChlSZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5EkUuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuUmVjYWxpYnJhdGVQbGFuV2l0aFBhbnRyeVJlcXVlc3QaRi5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5SZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5UmVzcG9uc2UiP4LT5JMCOToBKiI0L2FwaS92MS91c2Vycy97dXNlcl9pZH0vbnV0cml0aW9uL3JlY2FsaWJyYXRlLXBhbnRyeRKyAQoOQ3JlYXRlRm9vZEl0ZW0SOi5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5DcmVhdGVGb29kSXRlbVJlcXVlc3QaOy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5DcmVhdGVGb29kSXRlbVJlc3BvbnNlIieC0+STAiE6ASoiHC9hcGkvdjEvbnV0cml0aW9uL2Zvb2QtaXRlbXMSuAIKE0dldE51dHJpdGlvbkluc2lnaHQSPy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5HZXROdXRyaXRpb25JbnNpZ2h0UmVxdWVzdBpALmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkdldE51dHJpdGlvbkluc2lnaHRSZXNwb25zZSKdAZJBaRIUQUkgTnV0cml0aW9uIEluc2lnaHQaUVBow6JuIHTDrWNoIGzhu4tjaCBz4butIGRpbmggZMaw4buhbmcgdsOgIMSRxrBhIHJhIGjGsOG7m25nIGPhuqNpIHRoaeG7h24gdOG7qyBBSYLT5JMCKxIpL2FwaS92MS91c2Vycy97dXNlcl9pZH0vbnV0cml0aW9uL2luc2lnaHQahAGSQYABChBOdXRyaXRpb24gLyBVc2VyEmxBUEkgZMOgbmggY2hvIG5nxrDhu51pIGTDuW5nIHRyYSBj4bupdSB0aOG7sWMgxJHGoW4sIGdoaSBuaOG6rXQga8O9IMSDbiB14buRbmcgdsOgIHBow6JuIHTDrWNoIGRpbmggZMaw4buhbmcyywIKFUFkbWluTnV0cml0aW9uU2VydmljZRLPAQoPQXBwcm92ZUZvb2RJdGVtEjsuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuQXBwcm92ZUZvb2RJdGVtUmVxdWVzdBo8LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkFwcHJvdmVGb29kSXRlbVJlc3BvbnNlIkGC0+STAjsaOS9hcGkvdjEvYWRtaW4vbnV0cml0aW9uL2Zvb2QtaXRlbXMve2Zvb2RfaXRlbV9pZH0vYXBwcm92ZRpgkkFdChFOdXRyaXRpb24gLyBBZG1pbhJIQVBJIGTDoG5oIGNobyBBZG1pbiBxdeG6o24gbMO9IHbDoCBwaMOqIGR1eeG7h3QgZGFuaCBt4bulYyB0aOG7sWMgcGjhuqltQsECWmtnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL251dHJpdGlvbi92MS9zZXJ2aWNlO251dHJpdGlvbnYxc2VydmljZZJB0AESaQoXQUkgTnV0cml0aW9uIEVuZ2luZSBBUEkSSUFQSSB0w61uaCB0b8OhbiBjYWxvL21hY3JvcyB2w6AgxJHhu4EgeHXhuqV0IHRo4buxYyDEkcahbiBjw6EgbmjDom4gaMOzYS4yAzEuMFpRCk8KCkJlYXJlckF1dGgSQQgCEixCZWFyZXIgYWNjZXNzIHRva2VuIChGb3JtYXQ6IEJlYXJlciA8dG9rZW4+KRoNQXV0aG9yaXphdGlvbiACYhAKDgoKQmVhcmVyQXV0aBIAYgZwcm90bzM",
+    [
+      file_google_api_annotations,
+      file_protoc_gen_openapiv2_options_annotations,
+      file_contracts_core_nutrition_v1_message_nutrition_messages,
+    ],
+  );
 
 /**
  * @generated from service contracts.core.nutrition.v1.service.NutritionService
@@ -28,7 +53,7 @@ export const NutritionService: GenService<{
     methodKind: "unary";
     input: typeof GetTodayMenuRequestSchema;
     output: typeof GetTodayMenuResponseSchema;
-  },
+  };
   /**
    * Ghi chép bữa ăn thực tế đã tiêu thụ
    *
@@ -38,7 +63,7 @@ export const NutritionService: GenService<{
     methodKind: "unary";
     input: typeof LogMealRequestSchema;
     output: typeof LogMealResponseSchema;
-  },
+  };
   /**
    * Lấy lịch sử log bữa ăn theo dải ngày
    *
@@ -48,7 +73,7 @@ export const NutritionService: GenService<{
     methodKind: "unary";
     input: typeof GetNutritionHistoryRequestSchema;
     output: typeof GetNutritionHistoryResponseSchema;
-  },
+  };
   /**
    * Lấy tổng quan lượng Calo/Macros hấp thụ trong ngày hôm nay so với chỉ tiêu
    *
@@ -58,7 +83,7 @@ export const NutritionService: GenService<{
     methodKind: "unary";
     input: typeof GetNutritionSummaryRequestSchema;
     output: typeof GetNutritionSummaryResponseSchema;
-  },
+  };
   /**
    * Tái hiệu chỉnh thực đơn động theo nguyên liệu có sẵn trong tủ lạnh (BR-NU-06)
    *
@@ -68,7 +93,7 @@ export const NutritionService: GenService<{
     methodKind: "unary";
     input: typeof RecalibratePlanWithPantryRequestSchema;
     output: typeof RecalibratePlanWithPantryResponseSchema;
-  },
+  };
   /**
    * Đăng ký thực phẩm mới vào danh mục (Dành cho đối tác / sản phẩm NutiFood)
    *
@@ -78,7 +103,7 @@ export const NutritionService: GenService<{
     methodKind: "unary";
     input: typeof CreateFoodItemRequestSchema;
     output: typeof CreateFoodItemResponseSchema;
-  },
+  };
   /**
    * Lấy insight AI phân tích xu hướng dinh dưỡng và hướng cải thiện cá nhân hóa
    *
@@ -88,9 +113,8 @@ export const NutritionService: GenService<{
     methodKind: "unary";
     input: typeof GetNutritionInsightRequestSchema;
     output: typeof GetNutritionInsightResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_contracts_core_nutrition_v1_service_nutrition_service, 0);
+  };
+}> /*@__PURE__*/ = serviceDesc(file_contracts_core_nutrition_v1_service_nutrition_service, 0);
 
 /**
  * Service dành riêng cho Admin quản lý danh mục thực phẩm
@@ -107,7 +131,5 @@ export const AdminNutritionService: GenService<{
     methodKind: "unary";
     input: typeof ApproveFoodItemRequestSchema;
     output: typeof ApproveFoodItemResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_contracts_core_nutrition_v1_service_nutrition_service, 1);
-
+  };
+}> /*@__PURE__*/ = serviceDesc(file_contracts_core_nutrition_v1_service_nutrition_service, 1);

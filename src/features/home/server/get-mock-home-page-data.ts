@@ -54,18 +54,22 @@ export function getMockHomePageData(): HomePageData {
       },
     ],
 
+    // Training volume and sets already read on the metric grid, so evidence carries the
+    // readings that appear nowhere else. Average RPE is available on session completion
+    // (`CompleteWorkoutSessionResponse.average_rpe`) but not on `WorkoutSessionSummary`,
+    // so it stays a single-session figure rather than a weekly trend.
     evidenceItems: [
-      {
-        id: "training-volume",
-        icon: "dumbbell",
-        value: "8,460 kg",
-        label: "Training volume this week",
-      },
       {
         id: "avg-rpe",
         icon: "shield-check",
         value: "6.4 RPE",
-        label: "Controlled average effort",
+        label: "Average effort, last session",
+      },
+      {
+        id: "avg-form",
+        icon: "zap",
+        value: "88%",
+        label: "Average form score, last session",
       },
     ],
 
@@ -74,6 +78,9 @@ export function getMockHomePageData(): HomePageData {
       targetKcal: 2050,
     },
 
+    // Every action points at a route that exists. Logging a weight or a meal is a mutation
+    // and has no screen yet, so those two lead to the places that read the same data
+    // rather than to a dead URL.
     quickActions: [
       {
         id: "extra-workout",
@@ -83,16 +90,16 @@ export function getMockHomePageData(): HomePageData {
         colorVariant: "blue",
       },
       {
-        id: "log-weight",
-        label: "Log weight",
-        href: "/progress/weight",
-        icon: "scale",
+        id: "four-week-plan",
+        label: "Full schedule",
+        href: "/schedule",
+        icon: "dumbbell",
         colorVariant: "green",
       },
       {
-        id: "log-meal",
-        label: "Log meal",
-        href: "/nutrition/log",
+        id: "todays-menu",
+        label: "Today's menu",
+        href: "/nutrition/lunch",
         icon: "utensils",
         colorVariant: "coral",
       },

@@ -2,47 +2,50 @@
 // @generated from file contracts/core/workout_execution/v1/event/workout_session_started.proto (package contracts.core.workout_execution.v1.event, syntax proto3)
 /* eslint-disable */
 
+import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/workout_execution/v1/event/workout_session_started.proto.
  */
-export const file_contracts_core_workout_execution_v1_event_workout_session_started: GenFile = /*@__PURE__*/
-  fileDesc("Ckdjb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9ldmVudC93b3Jrb3V0X3Nlc3Npb25fc3RhcnRlZC5wcm90bxIpY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEuZXZlbnQifQoVV29ya291dFNlc3Npb25TdGFydGVkEhIKCnNlc3Npb25faWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRIPCgdwbGFuX2lkGAMgASgJEi4KCnN0YXJ0ZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQnhadmdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvd29ya291dF9leGVjdXRpb24vdjEvZXZlbnQ7d29ya291dGV4ZWN1dGlvbnYxZXZlbnRiBnByb3RvMw", [file_google_protobuf_timestamp]);
+export const file_contracts_core_workout_execution_v1_event_workout_session_started: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Ckdjb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9ldmVudC93b3Jrb3V0X3Nlc3Npb25fc3RhcnRlZC5wcm90bxIpY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEuZXZlbnQifQoVV29ya291dFNlc3Npb25TdGFydGVkEhIKCnNlc3Npb25faWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRIPCgdwbGFuX2lkGAMgASgJEi4KCnN0YXJ0ZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQnhadmdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvd29ya291dF9leGVjdXRpb24vdjEvZXZlbnQ7d29ya291dGV4ZWN1dGlvbnYxZXZlbnRiBnByb3RvMw",
+    [file_google_protobuf_timestamp],
+  );
 
 /**
  * @generated from message contracts.core.workout_execution.v1.event.WorkoutSessionStarted
  */
-export type WorkoutSessionStarted = Message<"contracts.core.workout_execution.v1.event.WorkoutSessionStarted"> & {
-  /**
-   * @generated from field: string session_id = 1;
-   */
-  sessionId: string;
+export type WorkoutSessionStarted =
+  Message<"contracts.core.workout_execution.v1.event.WorkoutSessionStarted"> & {
+    /**
+     * @generated from field: string session_id = 1;
+     */
+    sessionId: string;
 
-  /**
-   * @generated from field: string user_id = 2;
-   */
-  userId: string;
+    /**
+     * @generated from field: string user_id = 2;
+     */
+    userId: string;
 
-  /**
-   * @generated from field: string plan_id = 3;
-   */
-  planId: string;
+    /**
+     * @generated from field: string plan_id = 3;
+     */
+    planId: string;
 
-  /**
-   * @generated from field: google.protobuf.Timestamp started_at = 4;
-   */
-  startedAt?: Timestamp | undefined;
-};
+    /**
+     * @generated from field: google.protobuf.Timestamp started_at = 4;
+     */
+    startedAt?: Timestamp | undefined;
+  };
 
 /**
  * Describes the message contracts.core.workout_execution.v1.event.WorkoutSessionStarted.
  * Use `create(WorkoutSessionStartedSchema)` to create a new message.
  */
-export const WorkoutSessionStartedSchema: GenMessage<WorkoutSessionStarted> = /*@__PURE__*/
+export const WorkoutSessionStartedSchema: GenMessage<WorkoutSessionStarted> /*@__PURE__*/ =
   messageDesc(file_contracts_core_workout_execution_v1_event_workout_session_started, 0);
-

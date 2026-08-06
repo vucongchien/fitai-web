@@ -1,9 +1,9 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { SessionReport } from "@/features/workout/model/live-session.types";
+import type { LiveExercise, SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
-import { SetTimer } from "@/features/workout/ui/live/set-timer";
+import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
 import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
 
 describe("WorkoutSummaryView Component", () => {
@@ -21,6 +21,7 @@ describe("WorkoutSummaryView Component", () => {
       estimatedCalories: 250,
       hasUnverifiedSets: false,
       personalRecords: [{ exerciseId: "ex_1", name: "Barbell Squat", oneRepMaxKg: 100 }],
+      recentAvgVolumeKg: 1200,
       sessionId,
       totalSets: 6,
       totalVolumeKg: 1500,
@@ -31,10 +32,56 @@ describe("WorkoutSummaryView Component", () => {
     render(<WorkoutSummaryView sessionId={sessionId} />);
 
     expect(screen.getByText(/session complete/i)).toBeInTheDocument();
-    expect(screen.getByText("6")).toBeInTheDocument();
+    // Time and volume are the two numbers the summary keeps; set count, RPE and
+    // form score were dropped so the page has a focus.
+    expect(screen.getByText("30 min")).toBeInTheDocument();
     expect(screen.getByText(/1,500 kg/i)).toBeInTheDocument();
-    expect(screen.getByText(/7.5 RPE/i)).toBeInTheDocument();
+    expect(screen.queryByText(/RPE/i)).not.toBeInTheDocument();
     expect(screen.getByText(/barbell squat/i)).toBeInTheDocument();
+    // 1500 vs a 1200 average is +25%.
+    expect(screen.getByText("25% more volume than your recent average.")).toBeInTheDocument();
+  });
+
+  it("offers a way back out of the summary", () => {
+    const sessionId = "session_back";
+    const report: SessionReport = {
+      averageFormScore: null,
+      averageRpe: null,
+      durationMin: 20,
+      estimatedCalories: 100,
+      hasUnverifiedSets: false,
+      personalRecords: [],
+      recentAvgVolumeKg: 0,
+      sessionId,
+      totalSets: 2,
+      totalVolumeKg: 400,
+    };
+    sessionStorage.setItem(reportStorageKey(sessionId), JSON.stringify(report));
+
+    render(<WorkoutSummaryView sessionId={sessionId} />);
+
+    expect(screen.getByRole("link", { name: "Back to home" })).toHaveAttribute("href", "/home");
+  });
+
+  it("omits the comparison when there is no history to compare against", () => {
+    const sessionId = "session_first";
+    const report: SessionReport = {
+      averageFormScore: null,
+      averageRpe: null,
+      durationMin: 20,
+      estimatedCalories: 100,
+      hasUnverifiedSets: false,
+      personalRecords: [],
+      recentAvgVolumeKg: 0,
+      sessionId,
+      totalSets: 2,
+      totalVolumeKg: 400,
+    };
+    sessionStorage.setItem(reportStorageKey(sessionId), JSON.stringify(report));
+
+    render(<WorkoutSummaryView sessionId={sessionId} />);
+
+    expect(screen.queryByText(/recent average/i)).not.toBeInTheDocument();
   });
 
   it("renders Error State cleanly when sessionStorage has no data (no fake 2160kg report)", () => {
@@ -46,47 +93,59 @@ describe("WorkoutSummaryView Component", () => {
   });
 });
 
-describe("SetTimer Component", () => {
+// The old `SetTimer` offered a "Restart" control because its "+10s" label was
+// ambiguous. The redesigned footer replaces both with two explicitly named
+// controls — "Done" and "Add 10 seconds" — and no restart at all, so the same
+// concern is now asserted against the screen that replaced it.
+describe("ActiveExerciseScreen set controls", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it("renders Restart button with RotateCcw icon instead of confusing +10s label", () => {
-    const mockExercise = {
-      exerciseId: "ex_bench",
-      name: "Bench Press",
-      phase: "main" as const,
-      equipmentId: "eq_bench",
-      targetSets: 3,
-      targetReps: 10,
-      durationSeconds: 0,
-      targetWeightKg: 60,
-      isWeighted: true,
-      restSetSec: 60,
-      restExerciseSec: 90,
-      targetRpe: 8,
-      notes: "Control tempo",
-      formCues: [],
+  it("names the footer controls explicitly and offers no restart", () => {
+    const mockExercise: LiveExercise = {
+      breathingCue: "Exhale as you press.",
       commonMistakes: [],
+      durationSeconds: 0,
+      equipmentId: "eq_bench",
+      exerciseId: "ex_bench",
+      formCues: [],
       hasAiSupported: false,
+      instructions: "",
+      isWeighted: true,
+      name: "Bench Press",
+      notes: "Control tempo",
+      phase: "main",
+      restExerciseSec: 90,
+      restSetSec: 60,
+      targetReps: 10,
+      targetRpe: 8,
+      targetSets: 3,
+      targetWeightKg: 60,
     };
 
-    const handleRestart = vi.fn();
-    const handleFinish = vi.fn();
-    const handleStart = vi.fn();
-
     render(
-      <SetTimer
+      <ActiveExerciseScreen
+        cameraActive={false}
+        currentSet={1}
         exercise={mockExercise}
-        onFinish={handleFinish}
-        onRestart={handleRestart}
-        onStart={handleStart}
-        running={true}
+        onAddTime={vi.fn()}
+        onBack={vi.fn()}
+        onDone={vi.fn()}
+        onOpenGuide={vi.fn()}
+        onReportPain={vi.fn()}
+        onToggleFullscreen={vi.fn()}
+        onToggleVoice={vi.fn()}
         secondsLeft={0}
+        totalSets={3}
+        voiceOn={false}
       />,
     );
 
-    const restartBtn = screen.getByRole("button", { name: /restart/i });
-    expect(restartBtn).toBeInTheDocument();
+    // This set is rep-based with no camera counting, so there is no clock and
+    // nothing to extend: one confirm control, and still no restart.
+    expect(screen.getByRole("button", { name: "Complete this set" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add 10 seconds" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /restart/i })).not.toBeInTheDocument();
   });
 });

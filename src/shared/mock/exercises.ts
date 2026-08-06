@@ -18,6 +18,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
       "Lower until the upper arms are roughly parallel to the surface.",
     ],
     commonMistakes: ["Letting the hips sag", "Flaring the elbows past 60°"],
+    breathingCue: "Inhale as you lower, exhale as you press away.",
   },
   {
     id: "ex-goblet-squat",
@@ -33,6 +34,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Front-loaded squat that teaches upright posture and full-depth mechanics.",
     formCues: ["Sit between your heels.", "Keep the weight tight to the chest."],
     commonMistakes: ["Knees collapsing inward", "Heels lifting off the floor"],
+    breathingCue: "Breathe in at the top, brace, then exhale on the way up.",
   },
   {
     id: "ex-supported-row",
@@ -48,6 +50,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Chest-supported row that isolates the mid-back without spinal loading.",
     formCues: ["Pause briefly when the elbow reaches your side.", "Keep the neck long."],
     commonMistakes: ["Shrugging the shoulders", "Yanking with the biceps"],
+    breathingCue: "Exhale as you pull the elbow back, inhale on the return.",
   },
   {
     id: "ex-half-kneeling-press",
@@ -63,6 +66,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Overhead press with locked-in trunk and hip stability.",
     formCues: ["Ribs stacked over hips.", "Squeeze the back glute to stay tall."],
     commonMistakes: ["Overextending the lower back"],
+    breathingCue: "Inhale to brace, exhale as you press the weight overhead.",
   },
   {
     id: "ex-dead-bug",
@@ -78,6 +82,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Anti-extension core drill that keeps the ribs from flaring under load.",
     formCues: ["Stop the range before the lower back lifts.", "Exhale as you extend."],
     commonMistakes: ["Rushing the tempo"],
+    breathingCue: "Exhale as you extend the arm and leg, inhale as you reset.",
   },
   {
     id: "ex-romanian-deadlift",
@@ -93,6 +98,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Hip-hinge pattern that trains the posterior chain with a controlled eccentric.",
     formCues: ["Push the hips back before the knees bend.", "Keep the bar close to the shins."],
     commonMistakes: ["Rounding the mid-back"],
+    breathingCue: "Inhale as you hinge back, exhale as you drive the hips through.",
   },
   {
     id: "ex-walking-lunge",
@@ -108,6 +114,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Alternating-leg pattern that builds single-leg strength and balance.",
     formCues: ["Long stride, upright torso.", "Rear knee brushes the floor."],
     commonMistakes: ["Front knee caving inward"],
+    breathingCue: "Inhale stepping forward, exhale as you drive back up.",
   },
   {
     id: "ex-band-pull-apart",
@@ -123,6 +130,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Small-movement corrective for rear-delt and scapular stability.",
     formCues: ["Squeeze the shoulder blades together at end range."],
     commonMistakes: ["Shrugging the shoulders"],
+    breathingCue: "Exhale as you pull the band apart, inhale on the return.",
   },
   {
     id: "ex-hip-airplane",
@@ -138,6 +146,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Single-leg balance drill that rotates the trunk over a fixed hip.",
     formCues: ["Move slowly. Length before rotation."],
     commonMistakes: ["Locking the standing knee"],
+    breathingCue: "Breathe steadily and keep the exhale slow through the rotation.",
   },
   {
     id: "ex-farmer-carry",
@@ -153,6 +162,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "A loaded walk that reinforces posture and grip in a single exposure.",
     formCues: ["Stand tall. Ribs down. Steady breathing."],
     commonMistakes: ["Leaning to the loaded side"],
+    breathingCue: "Keep your breathing steady and braced throughout the carry.",
   },
   {
     id: "ex-glute-bridge",
@@ -168,6 +178,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Hip-extension pattern that wakes up the glutes without spinal load.",
     formCues: ["Drive through the heels.", "Squeeze at the top for one full breath."],
     commonMistakes: ["Hyperextending the lower back"],
+    breathingCue: "Exhale as you drive the hips up, inhale as you lower.",
   },
   {
     id: "ex-plank",
@@ -183,6 +194,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Isometric anti-extension hold that teaches full-body tension.",
     formCues: ["Ribs stacked, glutes on."],
     commonMistakes: ["Sagging hips"],
+    breathingCue: "Breathe slowly and consistently throughout the exercise.",
   },
   {
     id: "ex-reverse-fly",
@@ -198,6 +210,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Isolated rear-delt work to balance a chest-heavy training week.",
     formCues: ["Lead with the elbows.", "Pause at the top."],
     commonMistakes: ["Using the lower back to swing"],
+    breathingCue: "Exhale as you lift the arms, inhale as you lower.",
   },
   {
     id: "ex-step-up",
@@ -213,6 +226,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Simple single-leg press with a stable base — great for beginners.",
     formCues: ["Drive through the mid-foot.", "No pushing off the trailing leg."],
     commonMistakes: ["Bouncing the back leg"],
+    breathingCue: "Exhale as you step up, inhale as you lower back down.",
   },
   {
     id: "ex-chin-up",
@@ -228,6 +242,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Bodyweight pull that builds a strong lat and biceps together.",
     formCues: ["Chest to the bar.", "Pause briefly at the top."],
     commonMistakes: ["Kipping through the range"],
+    breathingCue: "Exhale as you pull your chin to the bar, inhale on the way down.",
   },
   {
     id: "ex-kettlebell-swing",
@@ -243,6 +258,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Explosive hip-hinge that trains power and conditioning at once.",
     formCues: ["Hinge, don't squat.", "Snap the hips at the top."],
     commonMistakes: ["Lifting with the arms"],
+    breathingCue: "Exhale sharply at the top of each swing, inhale as it drops.",
   },
   {
     id: "ex-worlds-greatest-stretch",
@@ -258,6 +274,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "A three-part flow that opens hips, thoracic spine and shoulders quickly.",
     formCues: ["Move slowly through each position."],
     commonMistakes: ["Rushing between segments"],
+    breathingCue: "Breathe slowly and consistently throughout the exercise.",
   },
   {
     id: "ex-cable-face-pull",
@@ -273,6 +290,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "High-rep shoulder health work that reinforces external rotation.",
     formCues: ["Pull to the ears, not the chin."],
     commonMistakes: ["Overloading — this is a small movement"],
+    breathingCue: "Exhale as you pull to your ears, inhale on the release.",
   },
   {
     id: "ex-ffe-split-squat",
@@ -288,6 +306,7 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "Deep single-leg squat variation that emphasises quad recruitment.",
     formCues: ["Vertical shin. Long torso."],
     commonMistakes: ["Losing balance forward"],
+    breathingCue: "Inhale as you lower, exhale as you drive back up.",
   },
   {
     id: "ex-seated-cable-row",
@@ -303,5 +322,6 @@ export const MOCK_EXERCISES: ExerciseSummary[] = [
     instructions: "A staple horizontal pull to build mid-back thickness safely.",
     formCues: ["Pull to the belly button, not the chest."],
     commonMistakes: ["Rocking the torso"],
+    breathingCue: "Exhale as you pull the handle in, inhale as you extend.",
   },
 ];

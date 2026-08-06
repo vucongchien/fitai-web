@@ -38,6 +38,13 @@ export function InstructionsSheet({
             </section>
           ) : null}
 
+          {exercise.breathingCue ? (
+            <section className="detail-section">
+              <h3>Breathing</h3>
+              <p className="detail-body">{exercise.breathingCue}</p>
+            </section>
+          ) : null}
+
           {exercise.formCues.length > 0 ? (
             <section className="detail-section">
               <h3>Form cues</h3>

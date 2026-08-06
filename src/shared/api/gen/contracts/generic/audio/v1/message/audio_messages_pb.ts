@@ -2,73 +2,76 @@
 // @generated from file contracts/generic/audio/v1/message/audio_messages.proto (package contracts.generic.audio.v1.message, syntax proto3)
 /* eslint-disable */
 
+import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
-import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/generic/audio/v1/message/audio_messages.proto.
  */
-export const file_contracts_generic_audio_v1_message_audio_messages: GenFile = /*@__PURE__*/
-  fileDesc("Cjdjb250cmFjdHMvZ2VuZXJpYy9hdWRpby92MS9tZXNzYWdlL2F1ZGlvX21lc3NhZ2VzLnByb3RvEiJjb250cmFjdHMuZ2VuZXJpYy5hdWRpby52MS5tZXNzYWdlIn0KGlJlcXVlc3RBdWRpb0R1Y2tpbmdSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSHQoVdGFyZ2V0X3ZvbHVtZV9wZXJjZW50GAIgASgCEhMKC2R1cmF0aW9uX21zGAMgASgFEhcKD2FsZXJ0X2F1ZGlvX3VybBgEIAEoCSI+ChtSZXF1ZXN0QXVkaW9EdWNraW5nUmVzcG9uc2USDgoGc3RhdHVzGAEgASgJEg8KB21lc3NhZ2UYAiABKAlCaFpmZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvZ2VuZXJpYy9hdWRpby92MS9tZXNzYWdlO2F1ZGlvdjFtZXNzYWdlYgZwcm90bzM");
+export const file_contracts_generic_audio_v1_message_audio_messages: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Cjdjb250cmFjdHMvZ2VuZXJpYy9hdWRpby92MS9tZXNzYWdlL2F1ZGlvX21lc3NhZ2VzLnByb3RvEiJjb250cmFjdHMuZ2VuZXJpYy5hdWRpby52MS5tZXNzYWdlIn0KGlJlcXVlc3RBdWRpb0R1Y2tpbmdSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSHQoVdGFyZ2V0X3ZvbHVtZV9wZXJjZW50GAIgASgCEhMKC2R1cmF0aW9uX21zGAMgASgFEhcKD2FsZXJ0X2F1ZGlvX3VybBgEIAEoCSI+ChtSZXF1ZXN0QXVkaW9EdWNraW5nUmVzcG9uc2USDgoGc3RhdHVzGAEgASgJEg8KB21lc3NhZ2UYAiABKAlCaFpmZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvZ2VuZXJpYy9hdWRpby92MS9tZXNzYWdlO2F1ZGlvdjFtZXNzYWdlYgZwcm90bzM",
+  );
 
 /**
  * @generated from message contracts.generic.audio.v1.message.RequestAudioDuckingRequest
  */
-export type RequestAudioDuckingRequest = Message<"contracts.generic.audio.v1.message.RequestAudioDuckingRequest"> & {
-  /**
-   * @generated from field: string session_id = 1;
-   */
-  sessionId: string;
+export type RequestAudioDuckingRequest =
+  Message<"contracts.generic.audio.v1.message.RequestAudioDuckingRequest"> & {
+    /**
+     * @generated from field: string session_id = 1;
+     */
+    sessionId: string;
 
-  /**
-   * Ví dụ: 20% âm lượng nhạc nền
-   *
-   * @generated from field: float target_volume_percent = 2;
-   */
-  targetVolumePercent: number;
+    /**
+     * Ví dụ: 20% âm lượng nhạc nền
+     *
+     * @generated from field: float target_volume_percent = 2;
+     */
+    targetVolumePercent: number;
 
-  /**
-   * Thời gian giảm âm lượng (mili giây)
-   *
-   * @generated from field: int32 duration_ms = 3;
-   */
-  durationMs: number;
+    /**
+     * Thời gian giảm âm lượng (mili giây)
+     *
+     * @generated from field: int32 duration_ms = 3;
+     */
+    durationMs: number;
 
-  /**
-   * File âm thanh cảnh báo cần phát xen kẽ
-   *
-   * @generated from field: string alert_audio_url = 4;
-   */
-  alertAudioUrl: string;
-};
+    /**
+     * File âm thanh cảnh báo cần phát xen kẽ
+     *
+     * @generated from field: string alert_audio_url = 4;
+     */
+    alertAudioUrl: string;
+  };
 
 /**
  * Describes the message contracts.generic.audio.v1.message.RequestAudioDuckingRequest.
  * Use `create(RequestAudioDuckingRequestSchema)` to create a new message.
  */
-export const RequestAudioDuckingRequestSchema: GenMessage<RequestAudioDuckingRequest> = /*@__PURE__*/
+export const RequestAudioDuckingRequestSchema: GenMessage<RequestAudioDuckingRequest> /*@__PURE__*/ =
   messageDesc(file_contracts_generic_audio_v1_message_audio_messages, 0);
 
 /**
  * @generated from message contracts.generic.audio.v1.message.RequestAudioDuckingResponse
  */
-export type RequestAudioDuckingResponse = Message<"contracts.generic.audio.v1.message.RequestAudioDuckingResponse"> & {
-  /**
-   * @generated from field: string status = 1;
-   */
-  status: string;
+export type RequestAudioDuckingResponse =
+  Message<"contracts.generic.audio.v1.message.RequestAudioDuckingResponse"> & {
+    /**
+     * @generated from field: string status = 1;
+     */
+    status: string;
 
-  /**
-   * @generated from field: string message = 2;
-   */
-  message: string;
-};
+    /**
+     * @generated from field: string message = 2;
+     */
+    message: string;
+  };
 
 /**
  * Describes the message contracts.generic.audio.v1.message.RequestAudioDuckingResponse.
  * Use `create(RequestAudioDuckingResponseSchema)` to create a new message.
  */
-export const RequestAudioDuckingResponseSchema: GenMessage<RequestAudioDuckingResponse> = /*@__PURE__*/
+export const RequestAudioDuckingResponseSchema: GenMessage<RequestAudioDuckingResponse> /*@__PURE__*/ =
   messageDesc(file_contracts_generic_audio_v1_message_audio_messages, 1);
-

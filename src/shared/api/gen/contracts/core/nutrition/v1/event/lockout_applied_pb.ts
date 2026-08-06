@@ -2,15 +2,17 @@
 // @generated from file contracts/core/nutrition/v1/event/lockout_applied.proto (package contracts.core.nutrition.v1.event, syntax proto3)
 /* eslint-disable */
 
+import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
-import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/nutrition/v1/event/lockout_applied.proto.
  */
-export const file_contracts_core_nutrition_v1_event_lockout_applied: GenFile = /*@__PURE__*/
-  fileDesc("Cjdjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbG9ja291dF9hcHBsaWVkLnByb3RvEiFjb250cmFjdHMuY29yZS5udXRyaXRpb24udjEuZXZlbnQiXAoOTG9ja291dEFwcGxpZWQSDwoHdXNlcl9pZBgBIAEoCRIRCglpdGVtX3R5cGUYAiABKAkSEQoJaXRlbV9uYW1lGAMgASgJEhMKC3VubG9ja2VkX2F0GAQgASgJQmlaZ2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvbnV0cml0aW9uL3YxL2V2ZW50O251dHJpdGlvbnYxZXZlbnRiBnByb3RvMw");
+export const file_contracts_core_nutrition_v1_event_lockout_applied: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Cjdjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbG9ja291dF9hcHBsaWVkLnByb3RvEiFjb250cmFjdHMuY29yZS5udXRyaXRpb24udjEuZXZlbnQiXAoOTG9ja291dEFwcGxpZWQSDwoHdXNlcl9pZBgBIAEoCRIRCglpdGVtX3R5cGUYAiABKAkSEQoJaXRlbV9uYW1lGAMgASgJEhMKC3VubG9ja2VkX2F0GAQgASgJQmlaZ2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvbnV0cml0aW9uL3YxL2V2ZW50O251dHJpdGlvbnYxZXZlbnRiBnByb3RvMw",
+  );
 
 /**
  * @generated from message contracts.core.nutrition.v1.event.LockoutApplied
@@ -41,6 +43,7 @@ export type LockoutApplied = Message<"contracts.core.nutrition.v1.event.LockoutA
  * Describes the message contracts.core.nutrition.v1.event.LockoutApplied.
  * Use `create(LockoutAppliedSchema)` to create a new message.
  */
-export const LockoutAppliedSchema: GenMessage<LockoutApplied> = /*@__PURE__*/
-  messageDesc(file_contracts_core_nutrition_v1_event_lockout_applied, 0);
-
+export const LockoutAppliedSchema: GenMessage<LockoutApplied> /*@__PURE__*/ = messageDesc(
+  file_contracts_core_nutrition_v1_event_lockout_applied,
+  0,
+);

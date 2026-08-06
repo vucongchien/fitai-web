@@ -1,13 +1,13 @@
 "use client";
 
-import { Home, Route, Salad, UserRound } from "lucide-react";
+import { Dumbbell, Home, Salad, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const destinations = [
   { href: "/home", label: "Today", icon: Home },
   { href: "/nutrition", label: "Nutrition", icon: Salad },
-  { href: "/roadmap", label: "Roadmap", icon: Route },
+  { href: "/roadmap", label: "Workout", icon: Dumbbell },
   { href: "/profile", label: "Profile", icon: UserRound },
 ] as const;
 

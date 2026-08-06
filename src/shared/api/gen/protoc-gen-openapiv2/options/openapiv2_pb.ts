@@ -2,17 +2,19 @@
 // @generated from file protoc-gen-openapiv2/options/openapiv2.proto (package grpc.gateway.protoc_gen_openapiv2.options, syntax proto3)
 /* eslint-disable */
 
+import type { Message } from "@bufbuild/protobuf";
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Value } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_struct } from "@bufbuild/protobuf/wkt";
-import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file protoc-gen-openapiv2/options/openapiv2.proto.
  */
-export const file_protoc_gen_openapiv2_options_openapiv2: GenFile = /*@__PURE__*/
-  fileDesc("Cixwcm90b2MtZ2VuLW9wZW5hcGl2Mi9vcHRpb25zL29wZW5hcGl2Mi5wcm90bxIpZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMilQcKB1N3YWdnZXISDwoHc3dhZ2dlchgBIAEoCRI9CgRpbmZvGAIgASgLMi8uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuSW5mbxIMCgRob3N0GAMgASgJEhEKCWJhc2VfcGF0aBgEIAEoCRJCCgdzY2hlbWVzGAUgAygOMjEuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2NoZW1lEhAKCGNvbnN1bWVzGAYgAygJEhAKCHByb2R1Y2VzGAcgAygJElQKCXJlc3BvbnNlcxgKIAMoCzJBLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlN3YWdnZXIuUmVzcG9uc2VzRW50cnkSXAoUc2VjdXJpdHlfZGVmaW5pdGlvbnMYCyABKAsyPi5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eURlZmluaXRpb25zElAKCHNlY3VyaXR5GAwgAygLMj4uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2VjdXJpdHlSZXF1aXJlbWVudBI8CgR0YWdzGA0gAygLMi4uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuVGFnElcKDWV4dGVybmFsX2RvY3MYDiABKAsyQC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5FeHRlcm5hbERvY3VtZW50YXRpb24SVgoKZXh0ZW5zaW9ucxgPIAMoCzJCLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlN3YWdnZXIuRXh0ZW5zaW9uc0VudHJ5GmUKDlJlc3BvbnNlc0VudHJ5EgsKA2tleRgBIAEoCRJCCgV2YWx1ZRgCIAEoCzIzLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlJlc3BvbnNlOgI4ARpJCg9FeHRlbnNpb25zRW50cnkSCwoDa2V5GAEgASgJEiUKBXZhbHVlGAIgASgLMhYuZ29vZ2xlLnByb3RvYnVmLlZhbHVlOgI4AUoECAgQCUoECAkQCiKxBgoJT3BlcmF0aW9uEgwKBHRhZ3MYASADKAkSDwoHc3VtbWFyeRgCIAEoCRITCgtkZXNjcmlwdGlvbhgDIAEoCRJXCg1leHRlcm5hbF9kb2NzGAQgASgLMkAuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuRXh0ZXJuYWxEb2N1bWVudGF0aW9uEhQKDG9wZXJhdGlvbl9pZBgFIAEoCRIQCghjb25zdW1lcxgGIAMoCRIQCghwcm9kdWNlcxgHIAMoCRJWCglyZXNwb25zZXMYCSADKAsyQy5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5PcGVyYXRpb24uUmVzcG9uc2VzRW50cnkSQgoHc2NoZW1lcxgKIAMoDjIxLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlNjaGVtZRISCgpkZXByZWNhdGVkGAsgASgIElAKCHNlY3VyaXR5GAwgAygLMj4uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2VjdXJpdHlSZXF1aXJlbWVudBJYCgpleHRlbnNpb25zGA0gAygLMkQuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuT3BlcmF0aW9uLkV4dGVuc2lvbnNFbnRyeRJJCgpwYXJhbWV0ZXJzGA4gASgLMjUuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuUGFyYW1ldGVycxplCg5SZXNwb25zZXNFbnRyeRILCgNrZXkYASABKAkSQgoFdmFsdWUYAiABKAsyMy5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5SZXNwb25zZToCOAEaSQoPRXh0ZW5zaW9uc0VudHJ5EgsKA2tleRgBIAEoCRIlCgV2YWx1ZRgCIAEoCzIWLmdvb2dsZS5wcm90b2J1Zi5WYWx1ZToCOAFKBAgIEAkiWQoKUGFyYW1ldGVycxJLCgdoZWFkZXJzGAEgAygLMjouZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuSGVhZGVyUGFyYW1ldGVyIvgBCg9IZWFkZXJQYXJhbWV0ZXISDAoEbmFtZRgBIAEoCRITCgtkZXNjcmlwdGlvbhgCIAEoCRJNCgR0eXBlGAMgASgOMj8uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuSGVhZGVyUGFyYW1ldGVyLlR5cGUSDgoGZm9ybWF0GAQgASgJEhAKCHJlcXVpcmVkGAUgASgIIkUKBFR5cGUSCwoHVU5LTk9XThAAEgoKBlNUUklORxABEgoKBk5VTUJFUhACEgsKB0lOVEVHRVIQAxILCgdCT09MRUFOEARKBAgGEAdKBAgHEAgiqwEKBkhlYWRlchITCgtkZXNjcmlwdGlvbhgBIAEoCRIMCgR0eXBlGAIgASgJEg4KBmZvcm1hdBgDIAEoCRIPCgdkZWZhdWx0GAYgASgJEg8KB3BhdHRlcm4YDSABKAlKBAgEEAVKBAgFEAZKBAgHEAhKBAgIEAlKBAgJEApKBAgKEAtKBAgLEAxKBAgMEA1KBAgOEA9KBAgPEBBKBAgQEBFKBAgREBJKBAgSEBMiwgQKCFJlc3BvbnNlEhMKC2Rlc2NyaXB0aW9uGAEgASgJEkEKBnNjaGVtYRgCIAEoCzIxLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlNjaGVtYRJRCgdoZWFkZXJzGAMgAygLMkAuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuUmVzcG9uc2UuSGVhZGVyc0VudHJ5ElMKCGV4YW1wbGVzGAQgAygLMkEuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuUmVzcG9uc2UuRXhhbXBsZXNFbnRyeRJXCgpleHRlbnNpb25zGAUgAygLMkMuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuUmVzcG9uc2UuRXh0ZW5zaW9uc0VudHJ5GmEKDEhlYWRlcnNFbnRyeRILCgNrZXkYASABKAkSQAoFdmFsdWUYAiABKAsyMS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5IZWFkZXI6AjgBGi8KDUV4YW1wbGVzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ARpJCg9FeHRlbnNpb25zRW50cnkSCwoDa2V5GAEgASgJEiUKBXZhbHVlGAIgASgLMhYuZ29vZ2xlLnByb3RvYnVmLlZhbHVlOgI4ASL/AgoESW5mbxINCgV0aXRsZRgBIAEoCRITCgtkZXNjcmlwdGlvbhgCIAEoCRIYChB0ZXJtc19vZl9zZXJ2aWNlGAMgASgJEkMKB2NvbnRhY3QYBCABKAsyMi5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5Db250YWN0EkMKB2xpY2Vuc2UYBSABKAsyMi5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5MaWNlbnNlEg8KB3ZlcnNpb24YBiABKAkSUwoKZXh0ZW5zaW9ucxgHIAMoCzI/LmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLkluZm8uRXh0ZW5zaW9uc0VudHJ5GkkKD0V4dGVuc2lvbnNFbnRyeRILCgNrZXkYASABKAkSJQoFdmFsdWUYAiABKAsyFi5nb29nbGUucHJvdG9idWYuVmFsdWU6AjgBIjMKB0NvbnRhY3QSDAoEbmFtZRgBIAEoCRILCgN1cmwYAiABKAkSDQoFZW1haWwYAyABKAkiJAoHTGljZW5zZRIMCgRuYW1lGAEgASgJEgsKA3VybBgCIAEoCSI5ChVFeHRlcm5hbERvY3VtZW50YXRpb24SEwoLZGVzY3JpcHRpb24YASABKAkSCwoDdXJsGAIgASgJIu4BCgZTY2hlbWESSgoLanNvbl9zY2hlbWEYASABKAsyNS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5KU09OU2NoZW1hEhUKDWRpc2NyaW1pbmF0b3IYAiABKAkSEQoJcmVhZF9vbmx5GAMgASgIElcKDWV4dGVybmFsX2RvY3MYBSABKAsyQC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5FeHRlcm5hbERvY3VtZW50YXRpb24SDwoHZXhhbXBsZRgGIAEoCUoECAQQBSKDAwoKRW51bVNjaGVtYRITCgtkZXNjcmlwdGlvbhgBIAEoCRIPCgdkZWZhdWx0GAIgASgJEg0KBXRpdGxlGAMgASgJEhAKCHJlcXVpcmVkGAQgASgIEhEKCXJlYWRfb25seRgFIAEoCBJXCg1leHRlcm5hbF9kb2NzGAYgASgLMkAuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuRXh0ZXJuYWxEb2N1bWVudGF0aW9uEg8KB2V4YW1wbGUYByABKAkSCwoDcmVmGAggASgJElkKCmV4dGVuc2lvbnMYCSADKAsyRS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5FbnVtU2NoZW1hLkV4dGVuc2lvbnNFbnRyeRpJCg9FeHRlbnNpb25zRW50cnkSCwoDa2V5GAEgASgJEiUKBXZhbHVlGAIgASgLMhYuZ29vZ2xlLnByb3RvYnVmLlZhbHVlOgI4ASK2CAoKSlNPTlNjaGVtYRILCgNyZWYYAyABKAkSDQoFdGl0bGUYBSABKAkSEwoLZGVzY3JpcHRpb24YBiABKAkSDwoHZGVmYXVsdBgHIAEoCRIRCglyZWFkX29ubHkYCCABKAgSDwoHZXhhbXBsZRgJIAEoCRITCgttdWx0aXBsZV9vZhgKIAEoARIPCgdtYXhpbXVtGAsgASgBEhkKEWV4Y2x1c2l2ZV9tYXhpbXVtGAwgASgIEg8KB21pbmltdW0YDSABKAESGQoRZXhjbHVzaXZlX21pbmltdW0YDiABKAgSEgoKbWF4X2xlbmd0aBgPIAEoBBISCgptaW5fbGVuZ3RoGBAgASgEEg8KB3BhdHRlcm4YESABKAkSEQoJbWF4X2l0ZW1zGBQgASgEEhEKCW1pbl9pdGVtcxgVIAEoBBIUCgx1bmlxdWVfaXRlbXMYFiABKAgSFgoObWF4X3Byb3BlcnRpZXMYGCABKAQSFgoObWluX3Byb3BlcnRpZXMYGSABKAQSEAoIcmVxdWlyZWQYGiADKAkSDQoFYXJyYXkYIiADKAkSWQoEdHlwZRgjIAMoDjJLLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLkpTT05TY2hlbWEuSlNPTlNjaGVtYVNpbXBsZVR5cGVzEg4KBmZvcm1hdBgkIAEoCRIMCgRlbnVtGC4gAygJEmYKE2ZpZWxkX2NvbmZpZ3VyYXRpb24Y6QcgASgLMkguZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuSlNPTlNjaGVtYS5GaWVsZENvbmZpZ3VyYXRpb24SWQoKZXh0ZW5zaW9ucxgwIAMoCzJFLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLkpTT05TY2hlbWEuRXh0ZW5zaW9uc0VudHJ5GkEKEkZpZWxkQ29uZmlndXJhdGlvbhIXCg9wYXRoX3BhcmFtX25hbWUYLyABKAkSEgoKZGVwcmVjYXRlZBgxIAEoCBpJCg9FeHRlbnNpb25zRW50cnkSCwoDa2V5GAEgASgJEiUKBXZhbHVlGAIgASgLMhYuZ29vZ2xlLnByb3RvYnVmLlZhbHVlOgI4ASJ3ChVKU09OU2NoZW1hU2ltcGxlVHlwZXMSCwoHVU5LTk9XThAAEgkKBUFSUkFZEAESCwoHQk9PTEVBThACEgsKB0lOVEVHRVIQAxIICgROVUxMEAQSCgoGTlVNQkVSEAUSCgoGT0JKRUNUEAYSCgoGU1RSSU5HEAdKBAgBEAJKBAgCEANKBAgEEAVKBAgSEBNKBAgTEBRKBAgXEBhKBAgbEBxKBAgcEB1KBAgdEB5KBAgeECJKBAglECpKBAgqECtKBAgrEC4ioAIKA1RhZxIMCgRuYW1lGAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJElcKDWV4dGVybmFsX2RvY3MYAyABKAsyQC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5FeHRlcm5hbERvY3VtZW50YXRpb24SUgoKZXh0ZW5zaW9ucxgEIAMoCzI+LmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlRhZy5FeHRlbnNpb25zRW50cnkaSQoPRXh0ZW5zaW9uc0VudHJ5EgsKA2tleRgBIAEoCRIlCgV2YWx1ZRgCIAEoCzIWLmdvb2dsZS5wcm90b2J1Zi5WYWx1ZToCOAEi4QEKE1NlY3VyaXR5RGVmaW5pdGlvbnMSXgoIc2VjdXJpdHkYASADKAsyTC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eURlZmluaXRpb25zLlNlY3VyaXR5RW50cnkaagoNU2VjdXJpdHlFbnRyeRILCgNrZXkYASABKAkSSAoFdmFsdWUYAiABKAsyOS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eVNjaGVtZToCOAEioAYKDlNlY3VyaXR5U2NoZW1lEkwKBHR5cGUYASABKA4yPi5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eVNjaGVtZS5UeXBlEhMKC2Rlc2NyaXB0aW9uGAIgASgJEgwKBG5hbWUYAyABKAkSSAoCaW4YBCABKA4yPC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eVNjaGVtZS5JbhJMCgRmbG93GAUgASgOMj4uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2VjdXJpdHlTY2hlbWUuRmxvdxIZChFhdXRob3JpemF0aW9uX3VybBgGIAEoCRIRCgl0b2tlbl91cmwYByABKAkSQQoGc2NvcGVzGAggASgLMjEuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2NvcGVzEl0KCmV4dGVuc2lvbnMYCSADKAsySS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eVNjaGVtZS5FeHRlbnNpb25zRW50cnkaSQoPRXh0ZW5zaW9uc0VudHJ5EgsKA2tleRgBIAEoCRIlCgV2YWx1ZRgCIAEoCzIWLmdvb2dsZS5wcm90b2J1Zi5WYWx1ZToCOAEiSwoEVHlwZRIQCgxUWVBFX0lOVkFMSUQQABIOCgpUWVBFX0JBU0lDEAESEAoMVFlQRV9BUElfS0VZEAISDwoLVFlQRV9PQVVUSDIQAyIxCgJJbhIOCgpJTl9JTlZBTElEEAASDAoISU5fUVVFUlkQARINCglJTl9IRUFERVIQAiJqCgRGbG93EhAKDEZMT1dfSU5WQUxJRBAAEhEKDUZMT1dfSU1QTElDSVQQARIRCg1GTE9XX1BBU1NXT1JEEAISFAoQRkxPV19BUFBMSUNBVElPThADEhQKEEZMT1dfQUNDRVNTX0NPREUQBCLNAgoTU2VjdXJpdHlSZXF1aXJlbWVudBJ1ChRzZWN1cml0eV9yZXF1aXJlbWVudBgBIAMoCzJXLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlNlY3VyaXR5UmVxdWlyZW1lbnQuU2VjdXJpdHlSZXF1aXJlbWVudEVudHJ5GikKGFNlY3VyaXR5UmVxdWlyZW1lbnRWYWx1ZRINCgVzY29wZRgBIAMoCRqTAQoYU2VjdXJpdHlSZXF1aXJlbWVudEVudHJ5EgsKA2tleRgBIAEoCRJmCgV2YWx1ZRgCIAEoCzJXLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlNlY3VyaXR5UmVxdWlyZW1lbnQuU2VjdXJpdHlSZXF1aXJlbWVudFZhbHVlOgI4ASKDAQoGU2NvcGVzEksKBXNjb3BlGAEgAygLMjwuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2NvcGVzLlNjb3BlRW50cnkaLAoKU2NvcGVFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBKjsKBlNjaGVtZRILCgdVTktOT1dOEAASCAoESFRUUBABEgkKBUhUVFBTEAISBgoCV1MQAxIHCgNXU1MQBEJIWkZnaXRodWIuY29tL2dycGMtZWNvc3lzdGVtL2dycGMtZ2F0ZXdheS92Mi9wcm90b2MtZ2VuLW9wZW5hcGl2Mi9vcHRpb25zYgZwcm90bzM", [file_google_protobuf_struct]);
+export const file_protoc_gen_openapiv2_options_openapiv2: GenFile /*@__PURE__*/ = fileDesc(
+  "Cixwcm90b2MtZ2VuLW9wZW5hcGl2Mi9vcHRpb25zL29wZW5hcGl2Mi5wcm90bxIpZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMilQcKB1N3YWdnZXISDwoHc3dhZ2dlchgBIAEoCRI9CgRpbmZvGAIgASgLMi8uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuSW5mbxIMCgRob3N0GAMgASgJEhEKCWJhc2VfcGF0aBgEIAEoCRJCCgdzY2hlbWVzGAUgAygOMjEuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2NoZW1lEhAKCGNvbnN1bWVzGAYgAygJEhAKCHByb2R1Y2VzGAcgAygJElQKCXJlc3BvbnNlcxgKIAMoCzJBLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlN3YWdnZXIuUmVzcG9uc2VzRW50cnkSXAoUc2VjdXJpdHlfZGVmaW5pdGlvbnMYCyABKAsyPi5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eURlZmluaXRpb25zElAKCHNlY3VyaXR5GAwgAygLMj4uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2VjdXJpdHlSZXF1aXJlbWVudBI8CgR0YWdzGA0gAygLMi4uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuVGFnElcKDWV4dGVybmFsX2RvY3MYDiABKAsyQC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5FeHRlcm5hbERvY3VtZW50YXRpb24SVgoKZXh0ZW5zaW9ucxgPIAMoCzJCLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlN3YWdnZXIuRXh0ZW5zaW9uc0VudHJ5GmUKDlJlc3BvbnNlc0VudHJ5EgsKA2tleRgBIAEoCRJCCgV2YWx1ZRgCIAEoCzIzLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlJlc3BvbnNlOgI4ARpJCg9FeHRlbnNpb25zRW50cnkSCwoDa2V5GAEgASgJEiUKBXZhbHVlGAIgASgLMhYuZ29vZ2xlLnByb3RvYnVmLlZhbHVlOgI4AUoECAgQCUoECAkQCiKxBgoJT3BlcmF0aW9uEgwKBHRhZ3MYASADKAkSDwoHc3VtbWFyeRgCIAEoCRITCgtkZXNjcmlwdGlvbhgDIAEoCRJXCg1leHRlcm5hbF9kb2NzGAQgASgLMkAuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuRXh0ZXJuYWxEb2N1bWVudGF0aW9uEhQKDG9wZXJhdGlvbl9pZBgFIAEoCRIQCghjb25zdW1lcxgGIAMoCRIQCghwcm9kdWNlcxgHIAMoCRJWCglyZXNwb25zZXMYCSADKAsyQy5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5PcGVyYXRpb24uUmVzcG9uc2VzRW50cnkSQgoHc2NoZW1lcxgKIAMoDjIxLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlNjaGVtZRISCgpkZXByZWNhdGVkGAsgASgIElAKCHNlY3VyaXR5GAwgAygLMj4uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2VjdXJpdHlSZXF1aXJlbWVudBJYCgpleHRlbnNpb25zGA0gAygLMkQuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuT3BlcmF0aW9uLkV4dGVuc2lvbnNFbnRyeRJJCgpwYXJhbWV0ZXJzGA4gASgLMjUuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuUGFyYW1ldGVycxplCg5SZXNwb25zZXNFbnRyeRILCgNrZXkYASABKAkSQgoFdmFsdWUYAiABKAsyMy5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5SZXNwb25zZToCOAEaSQoPRXh0ZW5zaW9uc0VudHJ5EgsKA2tleRgBIAEoCRIlCgV2YWx1ZRgCIAEoCzIWLmdvb2dsZS5wcm90b2J1Zi5WYWx1ZToCOAFKBAgIEAkiWQoKUGFyYW1ldGVycxJLCgdoZWFkZXJzGAEgAygLMjouZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuSGVhZGVyUGFyYW1ldGVyIvgBCg9IZWFkZXJQYXJhbWV0ZXISDAoEbmFtZRgBIAEoCRITCgtkZXNjcmlwdGlvbhgCIAEoCRJNCgR0eXBlGAMgASgOMj8uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuSGVhZGVyUGFyYW1ldGVyLlR5cGUSDgoGZm9ybWF0GAQgASgJEhAKCHJlcXVpcmVkGAUgASgIIkUKBFR5cGUSCwoHVU5LTk9XThAAEgoKBlNUUklORxABEgoKBk5VTUJFUhACEgsKB0lOVEVHRVIQAxILCgdCT09MRUFOEARKBAgGEAdKBAgHEAgiqwEKBkhlYWRlchITCgtkZXNjcmlwdGlvbhgBIAEoCRIMCgR0eXBlGAIgASgJEg4KBmZvcm1hdBgDIAEoCRIPCgdkZWZhdWx0GAYgASgJEg8KB3BhdHRlcm4YDSABKAlKBAgEEAVKBAgFEAZKBAgHEAhKBAgIEAlKBAgJEApKBAgKEAtKBAgLEAxKBAgMEA1KBAgOEA9KBAgPEBBKBAgQEBFKBAgREBJKBAgSEBMiwgQKCFJlc3BvbnNlEhMKC2Rlc2NyaXB0aW9uGAEgASgJEkEKBnNjaGVtYRgCIAEoCzIxLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlNjaGVtYRJRCgdoZWFkZXJzGAMgAygLMkAuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuUmVzcG9uc2UuSGVhZGVyc0VudHJ5ElMKCGV4YW1wbGVzGAQgAygLMkEuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuUmVzcG9uc2UuRXhhbXBsZXNFbnRyeRJXCgpleHRlbnNpb25zGAUgAygLMkMuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuUmVzcG9uc2UuRXh0ZW5zaW9uc0VudHJ5GmEKDEhlYWRlcnNFbnRyeRILCgNrZXkYASABKAkSQAoFdmFsdWUYAiABKAsyMS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5IZWFkZXI6AjgBGi8KDUV4YW1wbGVzRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ARpJCg9FeHRlbnNpb25zRW50cnkSCwoDa2V5GAEgASgJEiUKBXZhbHVlGAIgASgLMhYuZ29vZ2xlLnByb3RvYnVmLlZhbHVlOgI4ASL/AgoESW5mbxINCgV0aXRsZRgBIAEoCRITCgtkZXNjcmlwdGlvbhgCIAEoCRIYChB0ZXJtc19vZl9zZXJ2aWNlGAMgASgJEkMKB2NvbnRhY3QYBCABKAsyMi5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5Db250YWN0EkMKB2xpY2Vuc2UYBSABKAsyMi5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5MaWNlbnNlEg8KB3ZlcnNpb24YBiABKAkSUwoKZXh0ZW5zaW9ucxgHIAMoCzI/LmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLkluZm8uRXh0ZW5zaW9uc0VudHJ5GkkKD0V4dGVuc2lvbnNFbnRyeRILCgNrZXkYASABKAkSJQoFdmFsdWUYAiABKAsyFi5nb29nbGUucHJvdG9idWYuVmFsdWU6AjgBIjMKB0NvbnRhY3QSDAoEbmFtZRgBIAEoCRILCgN1cmwYAiABKAkSDQoFZW1haWwYAyABKAkiJAoHTGljZW5zZRIMCgRuYW1lGAEgASgJEgsKA3VybBgCIAEoCSI5ChVFeHRlcm5hbERvY3VtZW50YXRpb24SEwoLZGVzY3JpcHRpb24YASABKAkSCwoDdXJsGAIgASgJIu4BCgZTY2hlbWESSgoLanNvbl9zY2hlbWEYASABKAsyNS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5KU09OU2NoZW1hEhUKDWRpc2NyaW1pbmF0b3IYAiABKAkSEQoJcmVhZF9vbmx5GAMgASgIElcKDWV4dGVybmFsX2RvY3MYBSABKAsyQC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5FeHRlcm5hbERvY3VtZW50YXRpb24SDwoHZXhhbXBsZRgGIAEoCUoECAQQBSKDAwoKRW51bVNjaGVtYRITCgtkZXNjcmlwdGlvbhgBIAEoCRIPCgdkZWZhdWx0GAIgASgJEg0KBXRpdGxlGAMgASgJEhAKCHJlcXVpcmVkGAQgASgIEhEKCXJlYWRfb25seRgFIAEoCBJXCg1leHRlcm5hbF9kb2NzGAYgASgLMkAuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuRXh0ZXJuYWxEb2N1bWVudGF0aW9uEg8KB2V4YW1wbGUYByABKAkSCwoDcmVmGAggASgJElkKCmV4dGVuc2lvbnMYCSADKAsyRS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5FbnVtU2NoZW1hLkV4dGVuc2lvbnNFbnRyeRpJCg9FeHRlbnNpb25zRW50cnkSCwoDa2V5GAEgASgJEiUKBXZhbHVlGAIgASgLMhYuZ29vZ2xlLnByb3RvYnVmLlZhbHVlOgI4ASK2CAoKSlNPTlNjaGVtYRILCgNyZWYYAyABKAkSDQoFdGl0bGUYBSABKAkSEwoLZGVzY3JpcHRpb24YBiABKAkSDwoHZGVmYXVsdBgHIAEoCRIRCglyZWFkX29ubHkYCCABKAgSDwoHZXhhbXBsZRgJIAEoCRITCgttdWx0aXBsZV9vZhgKIAEoARIPCgdtYXhpbXVtGAsgASgBEhkKEWV4Y2x1c2l2ZV9tYXhpbXVtGAwgASgIEg8KB21pbmltdW0YDSABKAESGQoRZXhjbHVzaXZlX21pbmltdW0YDiABKAgSEgoKbWF4X2xlbmd0aBgPIAEoBBISCgptaW5fbGVuZ3RoGBAgASgEEg8KB3BhdHRlcm4YESABKAkSEQoJbWF4X2l0ZW1zGBQgASgEEhEKCW1pbl9pdGVtcxgVIAEoBBIUCgx1bmlxdWVfaXRlbXMYFiABKAgSFgoObWF4X3Byb3BlcnRpZXMYGCABKAQSFgoObWluX3Byb3BlcnRpZXMYGSABKAQSEAoIcmVxdWlyZWQYGiADKAkSDQoFYXJyYXkYIiADKAkSWQoEdHlwZRgjIAMoDjJLLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLkpTT05TY2hlbWEuSlNPTlNjaGVtYVNpbXBsZVR5cGVzEg4KBmZvcm1hdBgkIAEoCRIMCgRlbnVtGC4gAygJEmYKE2ZpZWxkX2NvbmZpZ3VyYXRpb24Y6QcgASgLMkguZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuSlNPTlNjaGVtYS5GaWVsZENvbmZpZ3VyYXRpb24SWQoKZXh0ZW5zaW9ucxgwIAMoCzJFLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLkpTT05TY2hlbWEuRXh0ZW5zaW9uc0VudHJ5GkEKEkZpZWxkQ29uZmlndXJhdGlvbhIXCg9wYXRoX3BhcmFtX25hbWUYLyABKAkSEgoKZGVwcmVjYXRlZBgxIAEoCBpJCg9FeHRlbnNpb25zRW50cnkSCwoDa2V5GAEgASgJEiUKBXZhbHVlGAIgASgLMhYuZ29vZ2xlLnByb3RvYnVmLlZhbHVlOgI4ASJ3ChVKU09OU2NoZW1hU2ltcGxlVHlwZXMSCwoHVU5LTk9XThAAEgkKBUFSUkFZEAESCwoHQk9PTEVBThACEgsKB0lOVEVHRVIQAxIICgROVUxMEAQSCgoGTlVNQkVSEAUSCgoGT0JKRUNUEAYSCgoGU1RSSU5HEAdKBAgBEAJKBAgCEANKBAgEEAVKBAgSEBNKBAgTEBRKBAgXEBhKBAgbEBxKBAgcEB1KBAgdEB5KBAgeECJKBAglECpKBAgqECtKBAgrEC4ioAIKA1RhZxIMCgRuYW1lGAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJElcKDWV4dGVybmFsX2RvY3MYAyABKAsyQC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5FeHRlcm5hbERvY3VtZW50YXRpb24SUgoKZXh0ZW5zaW9ucxgEIAMoCzI+LmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlRhZy5FeHRlbnNpb25zRW50cnkaSQoPRXh0ZW5zaW9uc0VudHJ5EgsKA2tleRgBIAEoCRIlCgV2YWx1ZRgCIAEoCzIWLmdvb2dsZS5wcm90b2J1Zi5WYWx1ZToCOAEi4QEKE1NlY3VyaXR5RGVmaW5pdGlvbnMSXgoIc2VjdXJpdHkYASADKAsyTC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eURlZmluaXRpb25zLlNlY3VyaXR5RW50cnkaagoNU2VjdXJpdHlFbnRyeRILCgNrZXkYASABKAkSSAoFdmFsdWUYAiABKAsyOS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eVNjaGVtZToCOAEioAYKDlNlY3VyaXR5U2NoZW1lEkwKBHR5cGUYASABKA4yPi5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eVNjaGVtZS5UeXBlEhMKC2Rlc2NyaXB0aW9uGAIgASgJEgwKBG5hbWUYAyABKAkSSAoCaW4YBCABKA4yPC5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eVNjaGVtZS5JbhJMCgRmbG93GAUgASgOMj4uZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2VjdXJpdHlTY2hlbWUuRmxvdxIZChFhdXRob3JpemF0aW9uX3VybBgGIAEoCRIRCgl0b2tlbl91cmwYByABKAkSQQoGc2NvcGVzGAggASgLMjEuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2NvcGVzEl0KCmV4dGVuc2lvbnMYCSADKAsySS5ncnBjLmdhdGV3YXkucHJvdG9jX2dlbl9vcGVuYXBpdjIub3B0aW9ucy5TZWN1cml0eVNjaGVtZS5FeHRlbnNpb25zRW50cnkaSQoPRXh0ZW5zaW9uc0VudHJ5EgsKA2tleRgBIAEoCRIlCgV2YWx1ZRgCIAEoCzIWLmdvb2dsZS5wcm90b2J1Zi5WYWx1ZToCOAEiSwoEVHlwZRIQCgxUWVBFX0lOVkFMSUQQABIOCgpUWVBFX0JBU0lDEAESEAoMVFlQRV9BUElfS0VZEAISDwoLVFlQRV9PQVVUSDIQAyIxCgJJbhIOCgpJTl9JTlZBTElEEAASDAoISU5fUVVFUlkQARINCglJTl9IRUFERVIQAiJqCgRGbG93EhAKDEZMT1dfSU5WQUxJRBAAEhEKDUZMT1dfSU1QTElDSVQQARIRCg1GTE9XX1BBU1NXT1JEEAISFAoQRkxPV19BUFBMSUNBVElPThADEhQKEEZMT1dfQUNDRVNTX0NPREUQBCLNAgoTU2VjdXJpdHlSZXF1aXJlbWVudBJ1ChRzZWN1cml0eV9yZXF1aXJlbWVudBgBIAMoCzJXLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlNlY3VyaXR5UmVxdWlyZW1lbnQuU2VjdXJpdHlSZXF1aXJlbWVudEVudHJ5GikKGFNlY3VyaXR5UmVxdWlyZW1lbnRWYWx1ZRINCgVzY29wZRgBIAMoCRqTAQoYU2VjdXJpdHlSZXF1aXJlbWVudEVudHJ5EgsKA2tleRgBIAEoCRJmCgV2YWx1ZRgCIAEoCzJXLmdycGMuZ2F0ZXdheS5wcm90b2NfZ2VuX29wZW5hcGl2Mi5vcHRpb25zLlNlY3VyaXR5UmVxdWlyZW1lbnQuU2VjdXJpdHlSZXF1aXJlbWVudFZhbHVlOgI4ASKDAQoGU2NvcGVzEksKBXNjb3BlGAEgAygLMjwuZ3JwYy5nYXRld2F5LnByb3RvY19nZW5fb3BlbmFwaXYyLm9wdGlvbnMuU2NvcGVzLlNjb3BlRW50cnkaLAoKU2NvcGVFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBKjsKBlNjaGVtZRILCgdVTktOT1dOEAASCAoESFRUUBABEgkKBUhUVFBTEAISBgoCV1MQAxIHCgNXU1MQBEJIWkZnaXRodWIuY29tL2dycGMtZWNvc3lzdGVtL2dycGMtZ2F0ZXdheS92Mi9wcm90b2MtZ2VuLW9wZW5hcGl2Mi9vcHRpb25zYgZwcm90bzM",
+  [file_google_protobuf_struct],
+);
 
 /**
  * `Swagger` is a representation of OpenAPI v2 specification's Swagger object.
@@ -168,8 +170,10 @@ export type Swagger = Message<"grpc.gateway.protoc_gen_openapiv2.options.Swagger
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Swagger.
  * Use `create(SwaggerSchema)` to create a new message.
  */
-export const SwaggerSchema: GenMessage<Swagger> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 0);
+export const SwaggerSchema: GenMessage<Swagger> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  0,
+);
 
 /**
  * `Operation` is a representation of OpenAPI v2 specification's Operation object.
@@ -319,8 +323,10 @@ export type Operation = Message<"grpc.gateway.protoc_gen_openapiv2.options.Opera
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Operation.
  * Use `create(OperationSchema)` to create a new message.
  */
-export const OperationSchema: GenMessage<Operation> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 1);
+export const OperationSchema: GenMessage<Operation> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  1,
+);
 
 /**
  * `Parameters` is a representation of OpenAPI v2 specification's parameters object.
@@ -345,8 +351,10 @@ export type Parameters = Message<"grpc.gateway.protoc_gen_openapiv2.options.Para
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Parameters.
  * Use `create(ParametersSchema)` to create a new message.
  */
-export const ParametersSchema: GenMessage<Parameters> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 2);
+export const ParametersSchema: GenMessage<Parameters> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  2,
+);
 
 /**
  * `HeaderParameter` a HTTP header parameter.
@@ -354,50 +362,53 @@ export const ParametersSchema: GenMessage<Parameters> = /*@__PURE__*/
  *
  * @generated from message grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter
  */
-export type HeaderParameter = Message<"grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter"> & {
-  /**
-   * `Name` is the header name.
-   *
-   * @generated from field: string name = 1;
-   */
-  name: string;
+export type HeaderParameter =
+  Message<"grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter"> & {
+    /**
+     * `Name` is the header name.
+     *
+     * @generated from field: string name = 1;
+     */
+    name: string;
 
-  /**
-   * `Description` is a short description of the header.
-   *
-   * @generated from field: string description = 2;
-   */
-  description: string;
+    /**
+     * `Description` is a short description of the header.
+     *
+     * @generated from field: string description = 2;
+     */
+    description: string;
 
-  /**
-   * `Type` is the type of the object. The value MUST be one of "string", "number", "integer", or "boolean". The "array" type is not supported.
-   * See: https://swagger.io/specification/v2/#parameterType.
-   *
-   * @generated from field: grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.Type type = 3;
-   */
-  type: HeaderParameter_Type;
+    /**
+     * `Type` is the type of the object. The value MUST be one of "string", "number", "integer", or "boolean". The "array" type is not supported.
+     * See: https://swagger.io/specification/v2/#parameterType.
+     *
+     * @generated from field: grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.Type type = 3;
+     */
+    type: HeaderParameter_Type;
 
-  /**
-   * `Format` The extending format for the previously mentioned type.
-   *
-   * @generated from field: string format = 4;
-   */
-  format: string;
+    /**
+     * `Format` The extending format for the previously mentioned type.
+     *
+     * @generated from field: string format = 4;
+     */
+    format: string;
 
-  /**
-   * `Required` indicates if the header is optional
-   *
-   * @generated from field: bool required = 5;
-   */
-  required: boolean;
-};
+    /**
+     * `Required` indicates if the header is optional
+     *
+     * @generated from field: bool required = 5;
+     */
+    required: boolean;
+  };
 
 /**
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.
  * Use `create(HeaderParameterSchema)` to create a new message.
  */
-export const HeaderParameterSchema: GenMessage<HeaderParameter> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 3);
+export const HeaderParameterSchema: GenMessage<HeaderParameter> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  3,
+);
 
 /**
  * `Type` is a supported HTTP header type.
@@ -435,8 +446,11 @@ export enum HeaderParameter_Type {
 /**
  * Describes the enum grpc.gateway.protoc_gen_openapiv2.options.HeaderParameter.Type.
  */
-export const HeaderParameter_TypeSchema: GenEnum<HeaderParameter_Type> = /*@__PURE__*/
-  enumDesc(file_protoc_gen_openapiv2_options_openapiv2, 3, 0);
+export const HeaderParameter_TypeSchema: GenEnum<HeaderParameter_Type> /*@__PURE__*/ = enumDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  3,
+  0,
+);
 
 /**
  * `Header` is a representation of OpenAPI v2 specification's Header object.
@@ -489,8 +503,10 @@ export type Header = Message<"grpc.gateway.protoc_gen_openapiv2.options.Header">
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Header.
  * Use `create(HeaderSchema)` to create a new message.
  */
-export const HeaderSchema: GenMessage<Header> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 4);
+export const HeaderSchema: GenMessage<Header> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  4,
+);
 
 /**
  * `Response` is a representation of OpenAPI v2 specification's Response object.
@@ -548,8 +564,10 @@ export type Response = Message<"grpc.gateway.protoc_gen_openapiv2.options.Respon
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Response.
  * Use `create(ResponseSchema)` to create a new message.
  */
-export const ResponseSchema: GenMessage<Response> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 5);
+export const ResponseSchema: GenMessage<Response> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  5,
+);
 
 /**
  * `Info` is a representation of OpenAPI v2 specification's Info object.
@@ -638,8 +656,10 @@ export type Info = Message<"grpc.gateway.protoc_gen_openapiv2.options.Info"> & {
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Info.
  * Use `create(InfoSchema)` to create a new message.
  */
-export const InfoSchema: GenMessage<Info> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 6);
+export const InfoSchema: GenMessage<Info> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  6,
+);
 
 /**
  * `Contact` is a representation of OpenAPI v2 specification's Contact object.
@@ -693,8 +713,10 @@ export type Contact = Message<"grpc.gateway.protoc_gen_openapiv2.options.Contact
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Contact.
  * Use `create(ContactSchema)` to create a new message.
  */
-export const ContactSchema: GenMessage<Contact> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 7);
+export const ContactSchema: GenMessage<Contact> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  7,
+);
 
 /**
  * `License` is a representation of OpenAPI v2 specification's License object.
@@ -738,8 +760,10 @@ export type License = Message<"grpc.gateway.protoc_gen_openapiv2.options.License
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.License.
  * Use `create(LicenseSchema)` to create a new message.
  */
-export const LicenseSchema: GenMessage<License> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 8);
+export const LicenseSchema: GenMessage<License> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  8,
+);
 
 /**
  * `ExternalDocumentation` is a representation of OpenAPI v2 specification's
@@ -761,29 +785,30 @@ export const LicenseSchema: GenMessage<License> = /*@__PURE__*/
  *
  * @generated from message grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation
  */
-export type ExternalDocumentation = Message<"grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation"> & {
-  /**
-   * A short description of the target documentation. GFM syntax can be used for
-   * rich text representation.
-   *
-   * @generated from field: string description = 1;
-   */
-  description: string;
+export type ExternalDocumentation =
+  Message<"grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation"> & {
+    /**
+     * A short description of the target documentation. GFM syntax can be used for
+     * rich text representation.
+     *
+     * @generated from field: string description = 1;
+     */
+    description: string;
 
-  /**
-   * The URL for the target documentation. Value MUST be in the format
-   * of a URL.
-   *
-   * @generated from field: string url = 2;
-   */
-  url: string;
-};
+    /**
+     * The URL for the target documentation. Value MUST be in the format
+     * of a URL.
+     *
+     * @generated from field: string url = 2;
+     */
+    url: string;
+  };
 
 /**
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.ExternalDocumentation.
  * Use `create(ExternalDocumentationSchema)` to create a new message.
  */
-export const ExternalDocumentationSchema: GenMessage<ExternalDocumentation> = /*@__PURE__*/
+export const ExternalDocumentationSchema: GenMessage<ExternalDocumentation> /*@__PURE__*/ =
   messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 9);
 
 /**
@@ -842,8 +867,10 @@ export type Schema = Message<"grpc.gateway.protoc_gen_openapiv2.options.Schema">
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Schema.
  * Use `create(SchemaSchema)` to create a new message.
  */
-export const SchemaSchema: GenMessage<Schema> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 10);
+export const SchemaSchema: GenMessage<Schema> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  10,
+);
 
 /**
  * `EnumSchema` is subset of fields from the OpenAPI v2 specification's Schema object.
@@ -932,8 +959,10 @@ export type EnumSchema = Message<"grpc.gateway.protoc_gen_openapiv2.options.Enum
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.EnumSchema.
  * Use `create(EnumSchemaSchema)` to create a new message.
  */
-export const EnumSchemaSchema: GenMessage<EnumSchema> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 11);
+export const EnumSchemaSchema: GenMessage<EnumSchema> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  11,
+);
 
 /**
  * `JSONSchema` represents properties from JSON Schema taken, and as used, in
@@ -1136,8 +1165,10 @@ export type JSONSchema = Message<"grpc.gateway.protoc_gen_openapiv2.options.JSON
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.
  * Use `create(JSONSchemaSchema)` to create a new message.
  */
-export const JSONSchemaSchema: GenMessage<JSONSchema> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 12);
+export const JSONSchemaSchema: GenMessage<JSONSchema> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  12,
+);
 
 /**
  * 'FieldConfiguration' provides additional field level properties used when generating the OpenAPI v2 file.
@@ -1145,31 +1176,32 @@ export const JSONSchemaSchema: GenMessage<JSONSchema> = /*@__PURE__*/
  *
  * @generated from message grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.FieldConfiguration
  */
-export type JSONSchema_FieldConfiguration = Message<"grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.FieldConfiguration"> & {
-  /**
-   * Alternative parameter name when used as path parameter. If set, this will
-   * be used as the complete parameter name when this field is used as a path
-   * parameter. Use this to avoid having auto generated path parameter names
-   * for overlapping paths.
-   *
-   * @generated from field: string path_param_name = 47;
-   */
-  pathParamName: string;
+export type JSONSchema_FieldConfiguration =
+  Message<"grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.FieldConfiguration"> & {
+    /**
+     * Alternative parameter name when used as path parameter. If set, this will
+     * be used as the complete parameter name when this field is used as a path
+     * parameter. Use this to avoid having auto generated path parameter names
+     * for overlapping paths.
+     *
+     * @generated from field: string path_param_name = 47;
+     */
+    pathParamName: string;
 
-  /**
-   * Declares this field to be deprecated. Allows for the generated OpenAPI
-   * parameter to be marked as deprecated without affecting the proto field.
-   *
-   * @generated from field: bool deprecated = 49;
-   */
-  deprecated: boolean;
-};
+    /**
+     * Declares this field to be deprecated. Allows for the generated OpenAPI
+     * parameter to be marked as deprecated without affecting the proto field.
+     *
+     * @generated from field: bool deprecated = 49;
+     */
+    deprecated: boolean;
+  };
 
 /**
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.FieldConfiguration.
  * Use `create(JSONSchema_FieldConfigurationSchema)` to create a new message.
  */
-export const JSONSchema_FieldConfigurationSchema: GenMessage<JSONSchema_FieldConfiguration> = /*@__PURE__*/
+export const JSONSchema_FieldConfigurationSchema: GenMessage<JSONSchema_FieldConfiguration> /*@__PURE__*/ =
   messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 12, 0);
 
 /**
@@ -1220,7 +1252,7 @@ export enum JSONSchema_JSONSchemaSimpleTypes {
 /**
  * Describes the enum grpc.gateway.protoc_gen_openapiv2.options.JSONSchema.JSONSchemaSimpleTypes.
  */
-export const JSONSchema_JSONSchemaSimpleTypesSchema: GenEnum<JSONSchema_JSONSchemaSimpleTypes> = /*@__PURE__*/
+export const JSONSchema_JSONSchemaSimpleTypesSchema: GenEnum<JSONSchema_JSONSchemaSimpleTypes> /*@__PURE__*/ =
   enumDesc(file_protoc_gen_openapiv2_options_openapiv2, 12, 0);
 
 /**
@@ -1270,8 +1302,10 @@ export type Tag = Message<"grpc.gateway.protoc_gen_openapiv2.options.Tag"> & {
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Tag.
  * Use `create(TagSchema)` to create a new message.
  */
-export const TagSchema: GenMessage<Tag> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 13);
+export const TagSchema: GenMessage<Tag> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  13,
+);
 
 /**
  * `SecurityDefinitions` is a representation of OpenAPI v2 specification's
@@ -1285,22 +1319,25 @@ export const TagSchema: GenMessage<Tag> = /*@__PURE__*/
  *
  * @generated from message grpc.gateway.protoc_gen_openapiv2.options.SecurityDefinitions
  */
-export type SecurityDefinitions = Message<"grpc.gateway.protoc_gen_openapiv2.options.SecurityDefinitions"> & {
-  /**
-   * A single security scheme definition, mapping a "name" to the scheme it
-   * defines.
-   *
-   * @generated from field: map<string, grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme> security = 1;
-   */
-  security: { [key: string]: SecurityScheme };
-};
+export type SecurityDefinitions =
+  Message<"grpc.gateway.protoc_gen_openapiv2.options.SecurityDefinitions"> & {
+    /**
+     * A single security scheme definition, mapping a "name" to the scheme it
+     * defines.
+     *
+     * @generated from field: map<string, grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme> security = 1;
+     */
+    security: { [key: string]: SecurityScheme };
+  };
 
 /**
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.SecurityDefinitions.
  * Use `create(SecurityDefinitionsSchema)` to create a new message.
  */
-export const SecurityDefinitionsSchema: GenMessage<SecurityDefinitions> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 14);
+export const SecurityDefinitionsSchema: GenMessage<SecurityDefinitions> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  14,
+);
 
 /**
  * `SecurityScheme` is a representation of OpenAPI v2 specification's
@@ -1397,8 +1434,10 @@ export type SecurityScheme = Message<"grpc.gateway.protoc_gen_openapiv2.options.
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.
  * Use `create(SecuritySchemeSchema)` to create a new message.
  */
-export const SecuritySchemeSchema: GenMessage<SecurityScheme> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 15);
+export const SecuritySchemeSchema: GenMessage<SecurityScheme> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  15,
+);
 
 /**
  * The type of the security scheme. Valid values are "basic",
@@ -1431,8 +1470,11 @@ export enum SecurityScheme_Type {
 /**
  * Describes the enum grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.Type.
  */
-export const SecurityScheme_TypeSchema: GenEnum<SecurityScheme_Type> = /*@__PURE__*/
-  enumDesc(file_protoc_gen_openapiv2_options_openapiv2, 15, 0);
+export const SecurityScheme_TypeSchema: GenEnum<SecurityScheme_Type> /*@__PURE__*/ = enumDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  15,
+  0,
+);
 
 /**
  * The location of the API key. Valid values are "query" or "header".
@@ -1459,8 +1501,11 @@ export enum SecurityScheme_In {
 /**
  * Describes the enum grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.In.
  */
-export const SecurityScheme_InSchema: GenEnum<SecurityScheme_In> = /*@__PURE__*/
-  enumDesc(file_protoc_gen_openapiv2_options_openapiv2, 15, 1);
+export const SecurityScheme_InSchema: GenEnum<SecurityScheme_In> /*@__PURE__*/ = enumDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  15,
+  1,
+);
 
 /**
  * The flow used by the OAuth2 security scheme. Valid values are
@@ -1498,8 +1543,11 @@ export enum SecurityScheme_Flow {
 /**
  * Describes the enum grpc.gateway.protoc_gen_openapiv2.options.SecurityScheme.Flow.
  */
-export const SecurityScheme_FlowSchema: GenEnum<SecurityScheme_Flow> = /*@__PURE__*/
-  enumDesc(file_protoc_gen_openapiv2_options_openapiv2, 15, 2);
+export const SecurityScheme_FlowSchema: GenEnum<SecurityScheme_Flow> /*@__PURE__*/ = enumDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  15,
+  2,
+);
 
 /**
  * `SecurityRequirement` is a representation of OpenAPI v2 specification's
@@ -1516,24 +1564,27 @@ export const SecurityScheme_FlowSchema: GenEnum<SecurityScheme_Flow> = /*@__PURE
  *
  * @generated from message grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement
  */
-export type SecurityRequirement = Message<"grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement"> & {
-  /**
-   * Each name must correspond to a security scheme which is declared in
-   * the Security Definitions. If the security scheme is of type "oauth2",
-   * then the value is a list of scope names required for the execution.
-   * For other security scheme types, the array MUST be empty.
-   *
-   * @generated from field: map<string, grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementValue> security_requirement = 1;
-   */
-  securityRequirement: { [key: string]: SecurityRequirement_SecurityRequirementValue };
-};
+export type SecurityRequirement =
+  Message<"grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement"> & {
+    /**
+     * Each name must correspond to a security scheme which is declared in
+     * the Security Definitions. If the security scheme is of type "oauth2",
+     * then the value is a list of scope names required for the execution.
+     * For other security scheme types, the array MUST be empty.
+     *
+     * @generated from field: map<string, grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementValue> security_requirement = 1;
+     */
+    securityRequirement: { [key: string]: SecurityRequirement_SecurityRequirementValue };
+  };
 
 /**
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.
  * Use `create(SecurityRequirementSchema)` to create a new message.
  */
-export const SecurityRequirementSchema: GenMessage<SecurityRequirement> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 16);
+export const SecurityRequirementSchema: GenMessage<SecurityRequirement> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  16,
+);
 
 /**
  * If the security scheme is of type "oauth2", then the value is a list of
@@ -1542,18 +1593,19 @@ export const SecurityRequirementSchema: GenMessage<SecurityRequirement> = /*@__P
  *
  * @generated from message grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementValue
  */
-export type SecurityRequirement_SecurityRequirementValue = Message<"grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementValue"> & {
-  /**
-   * @generated from field: repeated string scope = 1;
-   */
-  scope: string[];
-};
+export type SecurityRequirement_SecurityRequirementValue =
+  Message<"grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementValue"> & {
+    /**
+     * @generated from field: repeated string scope = 1;
+     */
+    scope: string[];
+  };
 
 /**
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.SecurityRequirement.SecurityRequirementValue.
  * Use `create(SecurityRequirement_SecurityRequirementValueSchema)` to create a new message.
  */
-export const SecurityRequirement_SecurityRequirementValueSchema: GenMessage<SecurityRequirement_SecurityRequirementValue> = /*@__PURE__*/
+export const SecurityRequirement_SecurityRequirementValueSchema: GenMessage<SecurityRequirement_SecurityRequirementValue> /*@__PURE__*/ =
   messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 16, 0);
 
 /**
@@ -1579,8 +1631,10 @@ export type Scopes = Message<"grpc.gateway.protoc_gen_openapiv2.options.Scopes">
  * Describes the message grpc.gateway.protoc_gen_openapiv2.options.Scopes.
  * Use `create(ScopesSchema)` to create a new message.
  */
-export const ScopesSchema: GenMessage<Scopes> = /*@__PURE__*/
-  messageDesc(file_protoc_gen_openapiv2_options_openapiv2, 17);
+export const ScopesSchema: GenMessage<Scopes> /*@__PURE__*/ = messageDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  17,
+);
 
 /**
  * Scheme describes the schemes supported by the OpenAPI Swagger
@@ -1618,6 +1672,7 @@ export enum Scheme {
 /**
  * Describes the enum grpc.gateway.protoc_gen_openapiv2.options.Scheme.
  */
-export const SchemeSchema: GenEnum<Scheme> = /*@__PURE__*/
-  enumDesc(file_protoc_gen_openapiv2_options_openapiv2, 0);
-
+export const SchemeSchema: GenEnum<Scheme> /*@__PURE__*/ = enumDesc(
+  file_protoc_gen_openapiv2_options_openapiv2,
+  0,
+);

@@ -16,15 +16,16 @@
 // @generated from file google/type/date.proto (package google.type, syntax proto3)
 /* eslint-disable */
 
+import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
-import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file google/type/date.proto.
  */
-export const file_google_type_date: GenFile = /*@__PURE__*/
-  fileDesc("ChZnb29nbGUvdHlwZS9kYXRlLnByb3RvEgtnb29nbGUudHlwZSIwCgREYXRlEgwKBHllYXIYASABKAUSDQoFbW9udGgYAiABKAUSCwoDZGF5GAMgASgFQloKD2NvbS5nb29nbGUudHlwZUIJRGF0ZVByb3RvUAFaNGdvb2dsZS5nb2xhbmcub3JnL2dlbnByb3RvL2dvb2dsZWFwaXMvdHlwZS9kYXRlO2RhdGWiAgNHVFBiBnByb3RvMw");
+export const file_google_type_date: GenFile /*@__PURE__*/ = fileDesc(
+  "ChZnb29nbGUvdHlwZS9kYXRlLnByb3RvEgtnb29nbGUudHlwZSIwCgREYXRlEgwKBHllYXIYASABKAUSDQoFbW9udGgYAiABKAUSCwoDZGF5GAMgASgFQloKD2NvbS5nb29nbGUudHlwZUIJRGF0ZVByb3RvUAFaNGdvb2dsZS5nb2xhbmcub3JnL2dlbnByb3RvL2dvb2dsZWFwaXMvdHlwZS9kYXRlO2RhdGWiAgNHVFBiBnByb3RvMw",
+);
 
 /**
  * Represents a whole or partial calendar date, such as a birthday. The time of
@@ -77,6 +78,4 @@ export type Date = Message<"google.type.Date"> & {
  * Describes the message google.type.Date.
  * Use `create(DateSchema)` to create a new message.
  */
-export const DateSchema: GenMessage<Date> = /*@__PURE__*/
-  messageDesc(file_google_type_date, 0);
-
+export const DateSchema: GenMessage<Date> /*@__PURE__*/ = messageDesc(file_google_type_date, 0);

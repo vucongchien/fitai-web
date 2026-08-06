@@ -49,7 +49,11 @@ type State = {
   stepIndex: number;
   startedAt: number;
   setEndsAt: number | null;
+  /** Full length of the set currently running, so the ring has a denominator. */
+  setTotalSec: number;
   restEndsAt: number | null;
+  /** Full length of the rest currently running, so the ring has a denominator. */
+  restTotalSec: number;
   loggedSets: SetLogDraft[];
   skippedPhases: SessionPhase[];
   /** Phases whose intro card has been dismissed, so it shows once. */
@@ -63,6 +67,7 @@ type Action =
   | { type: "skip-phase" }
   | { type: "skip-exercise" }
   | { type: "start-set"; durationSeconds: number }
+  | { type: "add-set-time"; seconds: number }
   | { type: "finish-set"; review: SetReview }
   | { type: "cancel-review" }
   | { type: "save-set"; set: SetLogDraft; restSeconds: number }
@@ -134,6 +139,7 @@ function reducer(state: State, action: Action, context: Context): State {
         ...state,
         status: "working",
         setEndsAt: action.durationSeconds > 0 ? Date.now() + action.durationSeconds * 1000 : null,
+        setTotalSec: action.durationSeconds,
       };
 
     case "finish-set":
@@ -153,6 +159,7 @@ function reducer(state: State, action: Action, context: Context): State {
           stepIndex: nextIndex,
           setEndsAt: null,
           restEndsAt: Date.now() + action.restSeconds * 1000,
+          restTotalSec: action.restSeconds,
         };
       }
       return arriveAt(withSet, timeline, nextIndex);
@@ -165,6 +172,18 @@ function reducer(state: State, action: Action, context: Context): State {
       return {
         ...state,
         restEndsAt: Math.max(state.restEndsAt ?? Date.now(), Date.now()) + action.seconds * 1000,
+        restTotalSec: state.restTotalSec + action.seconds,
+      };
+
+    case "add-set-time":
+      // Only meaningful for a timed hold; a rep-based set has no clock to extend.
+      if (state.setEndsAt === null) return state;
+      return {
+        ...state,
+        setEndsAt: Math.max(state.setEndsAt, Date.now()) + action.seconds * 1000,
+        // The ring divides by this, so it has to grow with the clock or the arc
+        // would pin at full while the numerals kept ticking.
+        setTotalSec: state.setTotalSec + action.seconds,
       };
 
     case "mark-synced": {
@@ -219,7 +238,9 @@ export function useLiveSession(plan: LiveSessionPlan) {
       stepIndex: 0,
       startedAt: Date.now(),
       setEndsAt: null,
+      setTotalSec: 0,
       restEndsAt: null,
+      restTotalSec: 0,
       loggedSets: [],
       skippedPhases: [],
       introSeen: [],
@@ -348,6 +369,10 @@ export function useLiveSession(plan: LiveSessionPlan) {
   const cancelReview = useCallback(() => dispatch({ type: "cancel-review" }), []);
   const endRest = useCallback(() => dispatch({ type: "end-rest" }), []);
   const addRest = useCallback((seconds: number) => dispatch({ type: "add-rest", seconds }), []);
+  const addSetTime = useCallback(
+    (seconds: number) => dispatch({ type: "add-set-time", seconds }),
+    [],
+  );
   const completeSession = useCallback(() => dispatch({ type: "complete" }), []);
 
   const saveSet = useCallback(
@@ -372,7 +397,9 @@ export function useLiveSession(plan: LiveSessionPlan) {
     pendingSyncCount: pending.length,
     progress: progressRatio(state.loggedSets.length, timeline),
     restLeft,
+    restTotal: state.restTotalSec,
     setLeft,
+    setTotal: state.setTotalSec,
     elapsedSec,
     elapsedMin,
     duration,
@@ -387,6 +414,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
       saveSet,
       endRest,
       addRest,
+      addSetTime,
       completeSession,
       clearDraft,
     },

@@ -1,31 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { exercisesOfPhase, PHASE_LABEL } from "@/features/workout/domain/session-flow";
+import { shouldCalibrate } from "@/features/workout/domain/calibration-gate";
+import { totalExerciseCount } from "@/features/workout/domain/session-flow";
+import { loadRatio, sessionVolumeKg } from "@/features/workout/domain/training-load";
 import type { LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useAudioCoach } from "@/features/workout/model/use-audio-coach";
 import { useCameraStream } from "@/features/workout/model/use-camera-stream";
 import { useLiveSession } from "@/features/workout/model/use-live-session";
 import { useLiveWorkoutEffects } from "@/features/workout/model/use-live-workout-effects";
 import { useMotionEngine } from "@/features/workout/model/use-motion-engine";
-import { ExerciseStage } from "@/features/workout/ui/live/exercise-stage";
+import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
+import { CalibrationView } from "@/features/workout/ui/live/calibration-view";
+import { CameraStage } from "@/features/workout/ui/live/camera-stage";
+import { DemoVideoOverlay } from "@/features/workout/ui/live/demo-video-overlay";
+import type { EndDialogVariant } from "@/features/workout/ui/live/end-session-dialog";
+import { EndSessionDialog } from "@/features/workout/ui/live/end-session-dialog";
 import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
-import { MusicSheet } from "@/features/workout/ui/live/music-sheet";
-import { SessionShell } from "@/features/workout/ui/live/session-shell";
-import { VideoGuideOverlay } from "@/features/workout/ui/live/video-guide-overlay";
+import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
+import { RestScreen } from "@/features/workout/ui/live/rest-screen";
 import { toast } from "@/shared/ui/toast";
 
-type SheetName = "music" | "instructions" | null;
+/** Seconds the "+" button adds — same amount on both screens. */
+const ADD_SECONDS = 10;
+
+function toggleFullscreen() {
+  if (typeof document === "undefined") return;
+  if (document.fullscreenElement) {
+    void document.exitFullscreen();
+    return;
+  }
+  void document.documentElement.requestFullscreen?.().catch(() => {
+    // iOS Safari has no Fullscreen API on the document element. The screen is
+    // already chrome-free, so failing quietly is the right outcome.
+  });
+}
 
 export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const session = useLiveSession(plan);
   const audio = useAudioCoach(plan.playlists);
   const camera = useCameraStream();
 
-  const [watching, setWatching] = useState(false);
   const [listening, setListening] = useState(false);
-  const [sheet, setSheet] = useState<SheetName>(null);
+  const [cameraOn, setCameraOn] = useState(true);
+  const [guideOpen, setGuideOpen] = useState(false);
+  const [endOpen, setEndOpen] = useState(false);
+  const [painOpen, setPainOpen] = useState(false);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   const motion = useMotionEngine({
     onFallback: (reason) => {
@@ -41,74 +63,205 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   const workoutEffects = useLiveWorkoutEffects({ audio, camera, motion, plan, session });
   const {
+    abortSession,
     cameraBranch,
     exercise,
     finishSet,
     finishSession,
     online,
+    setManualForSet,
+    spec,
     startSet,
     step,
-    videoExpanded,
-    setVideoExpanded,
   } = workoutEffects;
+
+  // Back always asks first — mid-set or mid-rest, no exceptions. Leaving a
+  // running session is not something a single stray tap should be able to do,
+  // and the dialog is where the user chooses between finishing (which saves and
+  // shows the summary) and stopping early.
+  const onBack = useCallback(() => setEndOpen(true), []);
+  const onToggleVoice = useCallback(() => setListening((value) => !value), []);
+
+  // An AI set is only ready to run once the engine has loaded and the framing
+  // check passes. Starting before that would race `motion.prepare()` and count
+  // reps against a model that is not there yet.
+  const sessionStatus = session.status;
+  const cameraActive = cameraBranch && cameraOn;
+  const cameraReady =
+    !motion.preparing && motion.kind !== null && Boolean(motion.calibration?.ready);
+  const needsCalibration = shouldCalibrate({
+    cameraBranch,
+    cameraOn,
+    cameraReady,
+    status: sessionStatus,
+  });
+
+  // The redesigned screens have no "start set" control: arriving at a step *is*
+  // the intent to work. Without this the hold clock never runs, `+10s` has no
+  // clock to extend and the camera never begins counting reps.
+  useEffect(() => {
+    if (sessionStatus === "ready" && !needsCalibration) startSet(listening);
+  }, [listening, needsCalibration, sessionStatus, startSet]);
+
+  // These three notices lived in the deleted `SessionShell`. The screens are
+  // fixed-height with no room for a banner row, so they speak as toasts — but
+  // they must still speak: the protection note is a post-injury safety message
+  // (ux-flow-spec §6.7, BR-AC-09), not decoration.
+  useEffect(() => {
+    if (!online) toast.info("Offline Mode: You're offline. Sets are saved locally.");
+  }, [online]);
+
+  const durationWarning =
+    session.duration === "long" || session.duration === "very-long"
+      ? "This session has run long. Want to wrap it up?"
+      : null;
+  useEffect(() => {
+    if (durationWarning) toast.info(`Session Duration: ${durationWarning}`);
+  }, [durationWarning]);
+
+  const protectionNote = plan.protectionNote;
+  useEffect(() => {
+    if (protectionNote) toast.info(`${protectionNote.title}: ${protectionNote.description}`);
+  }, [protectionNote]);
 
   if (!step || !exercise) {
     return (
-      <main className="live-workout__empty">
+      <main className="live-screen live-screen--empty">
         <h1>Wrapping up…</h1>
       </main>
     );
   }
 
-  const phaseExercises = exercisesOfPhase(plan, step.phase);
-  const totalSets = Math.max(1, exercise.targetSets);
+  // `session.step` already points at the *next* step while resting, so
+  // `cameraBranch` and `exercise` describe the upcoming exercise on both screens.
+  const cameraStage = cameraActive ? (
+    <CameraStage
+      alert={Boolean(motion.lastError)}
+      onFlip={camera.flip}
+      pose={motion.pose}
+      state={camera.state}
+      videoRef={camera.videoRef}
+    />
+  ) : null;
+  const onToggleCamera = cameraBranch ? () => setCameraOn((value) => !value) : undefined;
+
+  // The confirmation behind the Back button. With nothing logged there is no
+  // session worth saving, so the dialog offers to cancel instead of "finish".
+  const loggedSets = session.loggedSets;
+  const volumeKg = sessionVolumeKg(loggedSets);
+  const endVariant: EndDialogVariant = loggedSets.length === 0 ? "empty" : "complete";
+  const endDialog = endOpen ? (
+    <EndSessionDialog
+      loadRatio={loadRatio(volumeKg, plan.recentAvgVolumeKg)}
+      onAbort={(reason) => {
+        setEndOpen(false);
+        void abortSession(reason);
+      }}
+      onClose={() => setEndOpen(false)}
+      onFinish={(confirmOverload) => {
+        setEndOpen(false);
+        void finishSession(confirmOverload);
+      }}
+      totalSets={loggedSets.length}
+      variant={endVariant}
+    />
+  ) : null;
+
+  // Pain is reportable from either screen, so the dialog lives here rather than
+  // inside one of them.
+  const painDialog = painOpen ? (
+    <PainReportDialog
+      onDismiss={() => setPainOpen(false)}
+      onStop={(note) => {
+        setPainOpen(false);
+        void abortSession("pain", note);
+      }}
+    />
+  ) : null;
+
+  if (session.status === "resting") {
+    const next = session.step;
+    if (!next) return null;
+
+    return (
+      <>
+        <RestScreen
+          exerciseNumber={next.sessionPosition}
+          nextExercise={next.exercise}
+          onAddTime={() => session.actions.addRest(ADD_SECONDS)}
+          onBack={onBack}
+          onReportPain={() => setPainOpen(true)}
+          onSkipRest={session.actions.endRest}
+          onToggleFullscreen={toggleFullscreen}
+          onToggleVoice={onToggleVoice}
+          secondsLeft={session.restLeft}
+          totalExercises={totalExerciseCount(plan)}
+          totalSeconds={session.restTotal}
+          voiceOn={listening}
+          workoutTitle={plan.title}
+        />
+        {painDialog}
+        {endDialog}
+      </>
+    );
+  }
 
   return (
-    <SessionShell
-      durationWarning={
-        session.duration === "long" || session.duration === "very-long"
-          ? "This session has run long. Want to wrap it up?"
-          : null
-      }
-      elapsedSec={session.elapsedSec}
-      onEnd={() => void finishSession(true)}
-      online={online}
-      pendingSyncCount={session.pendingSyncCount}
-      phaseLabel={PHASE_LABEL[step.phase]}
-      progress={session.progress}
-      protectionNote={plan.protectionNote}
-      stepLabel={`Exercise ${step.exercisePosition} of ${phaseExercises.length} · set ${step.setNumber}/${totalSets}`}
-    >
-      <ExerciseStage
-        audio={audio}
-        camera={camera}
-        cameraBranch={cameraBranch}
+    <>
+      <ActiveExerciseScreen
+        cameraActive={cameraActive}
+        cameraSlot={cameraStage}
+        currentSet={step.setNumber}
         exercise={exercise}
-        finishSet={() => finishSet(listening)}
-        listening={listening}
-        motion={motion}
-        onOpenInstructions={() => setSheet("instructions")}
-        onOpenMusic={() => setSheet("music")}
-        onRestartSet={() => startSet(listening)}
-        session={session}
-        setListening={setListening}
-        setWatching={setWatching}
-        watching={watching}
+        onAddTime={() => session.actions.addSetTime(ADD_SECONDS)}
+        onBack={onBack}
+        onDone={() => finishSet(listening)}
+        onOpenGuide={() => setGuideOpen(true)}
+        onReportPain={() => setPainOpen(true)}
+        onToggleCamera={onToggleCamera}
+        onToggleFullscreen={toggleFullscreen}
+        onToggleVoice={onToggleVoice}
+        onWatchVideo={exercise.videoUrl ? () => setVideoOpen(true) : undefined}
+        repCount={cameraActive ? motion.repCount : undefined}
+        secondsLeft={session.setLeft}
+        setTotalSeconds={session.setTotal}
+        totalSets={Math.max(1, exercise.targetSets)}
+        voiceOn={listening}
       />
 
-      {watching ? (
-        <VideoGuideOverlay
-          exercise={exercise}
-          expanded={videoExpanded}
-          onClose={() => setWatching(false)}
-          onToggleExpanded={() => setVideoExpanded((v) => !v)}
+      {/*
+        Framing check before an AI set — ux-flow-spec §5.3. It covers the active
+        screen rather than replacing it: `CameraStage` owns the <video> element
+        that `motion.prepare()` and the calibration loop read from, so unmounting
+        the screen would deadlock the check it is trying to run. `shouldCalibrate`
+        keeps it strictly pre-set, so it can never cover a running one. Manual
+        logging is one tap away, so the camera can never trap the user here.
+      */}
+      {needsCalibration ? (
+        <CalibrationView
+          calibration={motion.calibration}
+          cameraState={camera.state}
+          onRetryPermission={() => void camera.start()}
+          onUseManual={() => setManualForSet(true)}
+          recommendedAngle={spec?.recommendedCameraAngle ?? ""}
         />
       ) : null}
 
-      {sheet === "instructions" ? (
-        <InstructionsSheet exercise={exercise} onClose={() => setSheet(null)} />
+      {guideOpen ? (
+        <InstructionsSheet exercise={exercise} onClose={() => setGuideOpen(false)} />
       ) : null}
-      {sheet === "music" ? <MusicSheet audio={audio} onClose={() => setSheet(null)} /> : null}
-    </SessionShell>
+
+      {videoOpen && exercise.videoUrl ? (
+        <DemoVideoOverlay
+          name={exercise.name}
+          onClose={() => setVideoOpen(false)}
+          posterUrl={exercise.thumbnailUrl}
+          videoUrl={exercise.videoUrl}
+        />
+      ) : null}
+
+      {painDialog}
+      {endDialog}
+    </>
   );
 }

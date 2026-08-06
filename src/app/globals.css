@@ -1140,61 +1140,6 @@ a.week-route__row:hover {
   border: 1px solid color-mix(in srgb, var(--color-effort) 30%, transparent);
 }
 
-.roadmap-phase {
-  flex: 0 0 auto;
-  padding: 0.55rem 0.7rem;
-  color: var(--color-action-pressed);
-  background: var(--color-action-soft);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 750;
-}
-
-.week-selector {
-  display: grid;
-  margin: 2rem -1.25rem 0;
-  padding: 0 1.25rem 1rem;
-  grid-auto-columns: minmax(8.5rem, 1fr);
-  grid-auto-flow: column;
-  gap: 0.6rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.week-selector::-webkit-scrollbar {
-  display: none;
-}
-
-.week-selector__item {
-  display: flex;
-  min-height: 4.5rem;
-  padding: 0.8rem;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.5rem;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-input);
-  cursor: pointer;
-  flex-direction: column;
-  text-align: left;
-}
-
-.week-selector__item[data-state="active"] {
-  color: var(--color-text);
-  background: var(--color-action-soft);
-  border-color: var(--color-action);
-}
-
-.week-selector__item[data-state="complete"] .data-value {
-  color: var(--color-recovery-strong);
-}
-
-.week-selector__item strong {
-  font-size: 0.82rem;
-}
-
 .roadmap-layout {
   display: grid;
 }
@@ -1695,14 +1640,12 @@ a.week-route__row:hover {
 }
 
 .workout-prep-page,
-.live-workout,
 .summary-page {
   min-height: 100dvh;
   background: var(--color-surface);
 }
 
-.workout-prep-header,
-.live-workout__header {
+.workout-prep-header {
   display: grid;
   min-height: 4.5rem;
   padding: max(0.75rem, env(safe-area-inset-top)) 1.25rem 0.75rem;
@@ -1725,8 +1668,7 @@ a.week-route__row:hover {
   justify-self: start;
 }
 
-.workout-prep-header > span,
-.live-workout__phase {
+.workout-prep-header > span {
   color: var(--color-text-muted);
   font-size: 0.72rem;
   font-weight: 700;
@@ -1895,77 +1837,9 @@ a.week-route__row:hover {
   margin: 0 auto;
 }
 
-.live-workout {
-  display: flex;
-  min-height: 100dvh;
-  flex-direction: column;
-}
-
-.live-workout__header {
-  position: relative;
-}
-
 .workout-close {
   color: var(--color-text);
   justify-self: end;
-}
-
-.network-notice {
-  display: flex;
-  padding: 0.75rem 1.25rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  color: var(--color-warning-text);
-  background: var(--color-effort-soft);
-  font-size: 0.78rem;
-  line-height: 1.35;
-}
-
-.live-workout__main {
-  width: min(100%, 44rem);
-  margin: 0 auto;
-  padding: 1rem 1.25rem 8rem;
-  flex: 1;
-}
-
-.workout-progress {
-  height: 0.25rem;
-  overflow: hidden;
-  background: var(--color-surface-subtle);
-  border-radius: var(--radius-round);
-}
-
-.workout-progress span {
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: var(--color-effort);
-  border-radius: inherit;
-  transform-origin: left;
-  transition: transform var(--duration-state) var(--ease-out);
-}
-
-.exercise-stage {
-  padding: 1rem 0;
-}
-
-.exercise-stage__heading h1 {
-  max-width: 13ch;
-  margin: 0.5rem 0 0.75rem;
-  font-family: var(--font-display);
-  font-size: clamp(2.35rem, 11vw, 4rem);
-  font-variation-settings: "wdth" 86;
-  font-weight: 680;
-  letter-spacing: -0.035em;
-  line-height: 0.98;
-}
-
-.exercise-stage__heading > p:last-child {
-  max-width: 34rem;
-  margin: 0;
-  color: var(--color-text-muted);
-  line-height: 1.5;
 }
 
 .set-composer {
@@ -2209,6 +2083,76 @@ a.week-route__row:hover {
   margin: 0;
   font-size: 1.05rem;
   font-weight: 600;
+}
+
+/* The two headline numbers sit side by side rather than stacked in a list —
+   with only two of them, a row reads as "the session" at a glance. */
+.summary-stats--pair {
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  border-top: 0;
+}
+
+.summary-stats--pair div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-bottom: 0;
+  border-radius: var(--radius-surface);
+  background: var(--color-surface-subtle);
+}
+
+.summary-stats--pair dt {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.summary-stats--pair dd {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-text);
+}
+
+/* Back sits above the completion mark, aligned to the gutter. */
+.summary-back {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-left: -0.75rem;
+  border-radius: var(--radius-round);
+  color: var(--color-text);
+}
+
+/* Progress against the recent average. Tone follows direction, but "down" is
+   deliberately neutral, not a warning — a lighter session is often the plan. */
+.summary-compare {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-surface);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.summary-compare[data-direction="up"] {
+  background: var(--color-recovery-soft);
+  color: var(--color-recovery-ink);
 }
 
 .summary-highlight {
@@ -4109,16 +4053,6 @@ a.week-route__row:hover {
     padding-top: 1.75rem;
   }
 
-  .week-selector {
-    margin-right: 0;
-    margin-left: 0;
-    padding-right: 0;
-    padding-left: 0;
-    grid-auto-flow: initial;
-    grid-template-columns: repeat(4, 1fr);
-    overflow: visible;
-  }
-
   .roadmap-layout {
     grid-template-columns: minmax(0, 1.5fr) minmax(17rem, 0.75fr);
     gap: 3rem;
@@ -4285,6 +4219,20 @@ a.week-route__row:hover {
   }
 }
 
+/* Dialogs, unlike sheets, sit in the middle of the screen.
+   `.live-sheet` is a bottom sheet (`align-items: flex-end`) — the right shape
+   for a picker you pull up and push down, the wrong one for a question that
+   interrupts. A centred panel reads as "answer this to continue", and it also
+   keeps the actions clear of the home indicator. */
+.live-sheet--dialog {
+  align-items: center;
+  padding: var(--space-5);
+  /* The dialog is taller than the viewport on small phones once the keyboard is
+     up (the pain dialog has a textarea), so the overlay itself scrolls. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .live-sheet__panel {
   width: 100%;
   max-width: 24rem;
@@ -4342,281 +4290,1833 @@ a.week-route__row:hover {
   }
 }
 
-/* Pure BEM CSS for Live Workout Stage & Elements */
-.live-workout {
+/* ---------------------------------------------------------------------------
+   Live workout screens — fixed-height, mobile-first.
+   The document never scrolls; only .live-screen__coach does.
+
+   Media leads: it is the demonstration, so it takes the largest share of the
+   screen and every other row is sized against what it leaves.
+
+   Height budget at 390x844 with a 156px ring and a 34px home indicator:
+     header 48 + media 300 + meta 40 + footer 156 + footer lift 24
+     + 4 gaps (44) + padding (12) + safe area (34) = 658
+     leaving ~185px for the coaching panel — two or three paragraphs before it
+     scrolls, which is the read a mid-set glance can actually take in.
+   Media is still the shock absorber: its clamp shrinks first on short screens.
+   --------------------------------------------------------------------------- */
+
+.live-screen {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  /* The single column MUST be declared as minmax(0, 1fr).
+     An implicit grid column is auto-sized, i.e. max-content: the column grew to
+     the widest row's intrinsic width (~399px, set by the header's title plus
+     four action buttons) inside a 350px content box, so every row overflowed the
+     right edge and got clipped by `overflow: hidden`. Mobile-first means the
+     column is bounded by the viewport and the content adapts to it. */
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 100dvh;
   max-height: 100dvh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
+  background: var(--color-canvas);
+  /* DESIGN.md: 20px mobile gutters. */
+  padding-inline: var(--space-5);
+  /* The footer sits well clear of the bottom edge, not just past the home
+     indicator: the ring is the screen's focal point, and a focal point pinned
+     to the last few pixels of the viewport reads as cut off. */
+  padding-bottom: calc(var(--space-12) + env(safe-area-inset-bottom, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  gap: var(--space-3);
+}
+
+.live-screen__header {
+  display: grid;
+  /* 48px matches .workout-close (3rem) — PRODUCT.md's mobile touch floor.
+     minmax(0, 1fr) rather than 1fr: the title column must be allowed to shrink
+     below its text width, or the header forces the whole screen wider. */
+  grid-template-columns: 3rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 3rem;
+  min-width: 0;
+}
+
+.live-screen__title {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-screen__actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* Four utilities plus a Back button do not fit 390px at 3rem each. These are
+   icon targets in a fixed row, so they narrow to 2.5rem while keeping the full
+   3rem height — the touch target stays at PRODUCT.md's floor in the axis that
+   the thumb actually misses on. */
+.live-screen__actions > .workout-close {
+  width: 2.5rem;
+  height: 3rem;
+  border-radius: var(--radius-input);
+}
+
+/* The pain control is a safety affordance, so it reads apart from the
+   utilities beside it rather than hiding among them. */
+.live-screen__actions > .workout-close[data-tone="alert"] {
+  color: var(--color-danger);
+}
+
+/* The demonstration is what the user is actually looking at, so it gets the
+   biggest block on the screen. 38dvh is roughly a third of the viewport — a
+   4:3-ish window at 390px wide — and the clamp lets it give ground first on
+   short screens so the coaching text never collapses to nothing. */
+.live-screen__media {
   position: relative;
-  background: var(--color-background, #ffffff);
+  height: clamp(200px, 38dvh, 340px);
+  border-radius: var(--radius-hero);
+  overflow: hidden;
+  background: var(--color-surface-subtle);
 }
 
-.live-workout__main {
-  flex: 1;
+.live-screen__coach {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* Room for the 3px-offset global focus ring, which .live-screen clips. */
+  padding-inline: 3px;
+  margin-inline: -3px;
+}
+
+.live-screen__footer {
+  display: grid;
+  /* minmax(0, 1fr) so the flanking columns can shrink; plain 1fr refuses to go
+     below its content width and widens the whole screen. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  /* Breathing room between the scrolling text and the controls, so the ring
+     reads as a deliberate focal point rather than the end of the list. */
+  padding-top: var(--space-2);
+}
+
+/* Rest variant: header, media, centered info, ring block, auto-transition note. */
+.live-screen--rest {
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+}
+
+body:has(.live-screen) {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.live-media__video,
+.live-media__poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.live-media__fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+/* The floating controls over the media — watch-video and AI camera. Solid
+   surfaces, never a translucent scrim: DESIGN.md rules out glassmorphism. */
+.live-media__controls {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.live-media__control {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: var(--radius-round);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-state) var(--ease-standard),
+    color var(--duration-state) var(--ease-standard),
+    transform var(--duration-press) var(--ease-standard);
+}
+
+.live-media__control:active {
+  transform: scale(0.985);
+}
+
+/* Relay Blue, matching the ring and the Done button: on the live screens these
+   three are one system — "this set is tracked / finish it" — so they share one
+   hue rather than competing. Scoped to .live-media__camera, so the accent
+   choices on every other screen are untouched. */
+.live-media__camera {
+  color: var(--color-action);
+}
+
+.live-media__camera[aria-pressed="true"] {
+  background: var(--color-action);
+  color: var(--color-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-media__control {
+    transition: none;
+  }
+
+  .live-media__control:active {
+    transform: none;
+  }
+}
+
+/* Two rows under the media:
+     name .................. 1 / 3 Sets
+     target
+   The name and the set counter are the pair you check at a glance; the
+   prescription gets its own line so a long name cannot squeeze it out. */
+.live-meta {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
-  padding: 0.5rem 1rem;
+  gap: var(--space-1);
+  min-width: 0;
 }
 
-.exercise-stage {
+.live-meta__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+/* An exercise name — display face is correct here. */
+.live-meta__name {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Values that change in place: data face, tabular. */
+.live-meta__target {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+/* No gap: the separator string carries its own spaces (see the component). */
+.live-meta__sets {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  white-space: pre;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* The set you are on is the number that matters; the total is context. Blue,
+   matching the ring and Done — the live screen leads with one accent. */
+.live-meta__sets-current {
+  font-size: 1.375rem;
+  line-height: 1;
+  color: var(--color-action);
+}
+
+.live-meta__sets-total {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.live-coach {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.live-coach__text {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* The opening line is the actual instruction; later paragraphs are refinement,
+   so the first one carries full contrast and the rest sit back. */
+.live-coach__text:first-child {
+  color: var(--color-text);
+}
+
+/* The fade tells the user there is more below without stealing vertical space. */
+.live-screen__coach[data-scrollable="true"] {
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0,
+    #000 calc(100% - 32px),
+    color-mix(in srgb, #000 12%, transparent) 100%
+  );
+}
+
+.countdown-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(7rem, 32vw, 9.75rem);
+  aspect-ratio: 1;
+}
+
+.countdown-ring__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Start the arc at twelve o'clock and deplete clockwise. */
+  transform: rotate(-90deg);
+}
+
+.countdown-ring__track {
+  stroke: var(--color-surface-subtle);
+}
+
+.countdown-ring__arc {
+  /* Matches the one-second tick so the arc sweeps instead of hitching. */
+  transition: stroke-dashoffset 1s linear;
+}
+
+.countdown-ring[data-tone="effort"] .countdown-ring__arc {
+  stroke: var(--color-effort);
+}
+
+.countdown-ring[data-tone="recovery"] .countdown-ring__arc {
+  stroke: var(--color-recovery);
+}
+
+/* The live active screen's instrument: the app's primary blue, shared with the
+   Done button and the camera toggle beside it. */
+.countdown-ring[data-tone="action"] .countdown-ring__arc {
+  stroke: var(--color-action);
+}
+
+.countdown-ring__value {
+  position: relative;
+  /* Stay inside the track: the arc's inner diameter less the stroke. */
+  max-width: 82%;
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(1.5rem, 7vw, 2.125rem);
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  /* A clock is one token. `overflow-wrap: anywhere` used to break "00:20" into
+     "00:2 / 0" across two lines the moment the box got tight, which is the one
+     thing a countdown must never do. */
+  white-space: nowrap;
+  color: var(--color-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countdown-ring__arc {
+    transition: none;
+  }
+}
+
+/* Both flanking controls are neutral. The ring arc is the screen's one accent,
+   so tinting these would break the One Leader Rule. */
+/* Icon and label on ONE line — stacked, they read as two separate controls and
+   waste the vertical space the ring needs. */
+.live-timerbar__side {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-width: 4rem;
+  min-height: 3rem;
+  padding: var(--space-2) var(--space-3);
+  white-space: nowrap;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-state) var(--ease-standard),
+    background-color var(--duration-state) var(--ease-standard),
+    transform var(--duration-press) var(--ease-standard);
+}
+
+/* Done is the primary action of the set: filled, in the same hue as the ring
+   arc it sits beside. Right-hand side, under the thumb. Same footprint as the
+   neutral side button so the footer stays symmetric around the ring. */
+.live-timerbar__done {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  justify-self: end;
+  min-width: 4.5rem;
+  min-height: 3rem;
+  padding: var(--space-2) var(--space-3);
+  white-space: nowrap;
+  border: none;
+  border-radius: var(--radius-input);
+  /* The app's primary action colour — Relay Blue, 5.3:1 against white. */
+  background: var(--color-action);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  color: var(--color-surface);
+  cursor: pointer;
+  box-shadow: var(--shadow-float);
+  transition:
+    background-color var(--duration-state) var(--ease-standard),
+    transform var(--duration-press) var(--ease-standard);
+}
+
+.live-timerbar__done:active {
+  transform: scale(0.985);
+}
+
+/* An untimed set has no clock and nothing to count, so the footer is one large
+   target: "I have finished this set". Sized like the ring it replaces, so the
+   screen's rhythm does not jump between a timed and an untimed exercise. */
+.live-screen__footer--confirm {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+
+.live-timerbar__confirm {
+  display: grid;
+  place-items: center;
+  width: clamp(5rem, 22vw, 6.5rem);
+  aspect-ratio: 1;
+  border: none;
+  border-radius: var(--radius-round);
+  background: var(--color-action);
+  color: var(--color-surface);
+  cursor: pointer;
+  box-shadow: var(--shadow-float);
+  transition: transform var(--duration-press) var(--ease-standard);
+}
+
+.live-timerbar__confirm:active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-timerbar__confirm {
+    transition: none;
+  }
+
+  .live-timerbar__confirm:active {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-timerbar__done {
+    transition: none;
+  }
+
+  .live-timerbar__done:active {
+    transform: none;
+  }
+}
+
+.live-timerbar__side:hover {
+  border-color: var(--color-border-strong);
+}
+
+.live-timerbar__side:active {
+  transform: scale(0.985);
+}
+
+.live-timerbar__side:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.live-screen__footer > .live-timerbar__side:first-child {
+  justify-self: start;
+}
+
+.live-screen__footer > .live-timerbar__side:last-child {
+  justify-self: end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-timerbar__side {
+    transition: none;
+  }
+
+  .live-timerbar__side:active {
+    transform: none;
+  }
+}
+
+.live-next {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  max-width: 26rem;
-  margin: 0 auto;
-  flex: 1;
-  height: 100%;
-}
-
-.exercise-stage__heading {
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 0;
   text-align: center;
 }
 
-.exercise-stage__heading h1 {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-text);
-  margin-top: 0.25rem;
-  line-height: 1.2;
-}
-
-.exercise-stage__heading p {
-  font-size: 0.8rem;
+/* Neutral, not tinted: Field Green is this screen's one accent and it belongs
+   to the ring. A blue pill here would put two leaders on one screen. */
+.live-next__badge {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
   color: var(--color-text-muted);
-  margin-top: 0.25rem;
-}
-
-.exercise-stage__tools {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.guide-toggles {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.guide-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
   font-size: 0.75rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The position within the session, in the recovery hue this screen already
+   leads with on the ring — one accent, used twice, not a second colour. */
+.live-next__count {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  color: var(--color-recovery);
+}
+
+/* The hero of this screen. Display face, capped at DESIGN.md's 2.5rem mobile
+   ceiling, tracking at the -0.035em the display style specifies. */
+.live-next__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 7.5vw, 2.25rem);
+  font-weight: 680;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  color: var(--color-text);
+}
+
+.live-next__prescription {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.live-next__progress {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.live-rest {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding-top: var(--space-2);
+}
+
+/* Both action buttons are the same size — the spec asks for symmetry. */
+.live-rest > .live-timerbar__side:first-child {
+  justify-self: start;
+}
+
+.live-rest > .live-timerbar__side:last-child {
+  justify-self: end;
+}
+
+/* The ring is a direct grid child now that its duplicate label is gone. */
+.live-rest > .countdown-ring {
+  justify-self: center;
+}
+
+.live-rest__note {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  padding-top: var(--space-3);
+}
+
+.live-screen--empty {
+  display: grid;
+  place-items: center;
+  grid-template-rows: none;
+}
+
+/* The end-session dialog panel. Same construction as .pain-dialog so the two
+   confirmations behind the Back button look like one family. */
+.end-dialog {
+  width: 100%;
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-hero);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
+  text-align: center;
+}
+
+.end-dialog__mark {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-round);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+}
+
+.end-dialog__mark--warn {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.end-dialog h2 {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+
+.end-dialog > p {
+  margin-top: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.end-dialog > .ui-button {
+  width: 100%;
+  margin-top: var(--space-5);
+}
+
+.end-dialog > .text-action {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-2);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* The reason picker: one tappable row per reason, left-aligned to read as a
+   list of choices rather than a row of buttons. */
+.end-dialog__reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  text-align: left;
+}
+
+.end-dialog__reasons button {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color var(--duration-state) var(--ease-standard);
+}
+
+.end-dialog__reasons button[data-active] {
+  border-color: var(--color-text);
+}
+
+.end-dialog__reasons strong {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.end-dialog__reasons span {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.end-dialog__note {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-input);
+  background: var(--color-surface-subtle);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  text-align: left;
+  color: var(--color-text);
+}
+
+/* The third, least-likely choice in the end dialog: available, not advertised. */
+.end-dialog__quiet {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-2);
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
   font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.end-dialog__quiet:hover {
+  color: var(--color-danger);
+}
+
+/* ---------------------------------------------------------------------------
+   Demo video, played large over the live screen.
+   --------------------------------------------------------------------------- */
+
+.demo-video {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  /* Opaque enough to kill the busy screen behind it without being a scrim over
+     content the user still needs — they are looking at the clip, nothing else. */
+  background: rgb(0 0 0 / 82%);
+}
+
+.demo-video__panel {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+}
+
+.demo-video__player {
+  display: block;
+  width: 100%;
+  max-height: 78dvh;
+  border-radius: var(--radius-hero);
+  background: #000;
+}
+
+.demo-video__close {
+  position: absolute;
+  top: calc(-1 * var(--space-12));
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: var(--radius-round);
   background: var(--color-surface);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.guide-toggle[data-active="true"] {
-  background: var(--color-action);
-  color: white;
+/* ---------------------------------------------------------------------------
+   Pain report — the one interruption that must cost no thought at all.
+   --------------------------------------------------------------------------- */
+
+.pain-dialog {
+  width: 100%;
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-hero);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
+  text-align: center;
+}
+
+.pain-dialog__mark {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-round);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.pain-dialog__title {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+
+.pain-dialog__body {
+  margin-top: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Left-aligned: this is a form, and centred labels over a text field read as
+   decoration rather than instruction. */
+.pain-dialog__field {
+  margin-top: var(--space-5);
+  text-align: left;
+}
+
+.pain-dialog__field label {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.pain-dialog__field textarea {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-canvas);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--color-text);
+  resize: none;
+}
+
+.pain-dialog__field textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.pain-dialog__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.pain-dialog__actions > .ui-button {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+   Pain-stop screen. No stats by design — see pain-stop-view.tsx.
+   --------------------------------------------------------------------------- */
+
+.pain-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 26rem;
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-5) calc(var(--space-8) + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+}
+
+.pain-stop__mark {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  margin-bottom: var(--space-5);
+  border-radius: var(--radius-round);
+  /* Recovery green, not danger red: the message is "this was the right call",
+     and alarming the user about their own good decision would be perverse. */
+  background: var(--color-recovery-soft);
+  color: var(--color-recovery-strong);
+}
+
+.pain-stop__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 7vw, 2.25rem);
+  font-weight: 680;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  color: var(--color-text);
+}
+
+.pain-stop__body {
+  margin-top: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+  color: var(--color-text-muted);
+}
+
+.pain-stop__care {
+  width: 100%;
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  border-radius: var(--radius-hero);
+  background: var(--color-surface-subtle);
+  list-style: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.pain-stop__note {
+  margin-top: var(--space-5);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.pain-stop__actions {
+  width: 100%;
+  margin-top: var(--space-6);
+}
+
+.pain-stop__actions > a {
+  width: 100%;
+}
+
+/*
+ * Framing check for an AI set (ux-flow-spec §5.3). It sits over the active
+ * screen so the camera preview stays mounted and visible while the user lines
+ * themselves up; the panel is anchored low, clear of the circular preview.
+ */
+.calibration {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  /* Solid, not a scrim. DESIGN.md rules out translucent layers over media, and
+     the framing check reads better as its own step than as a floating panel. */
+  background: var(--color-canvas);
+  padding: var(--space-5);
+  padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+}
+
+.calibration__panel {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 24rem;
+  background: var(--color-surface);
+  border-radius: var(--radius-hero);
+  box-shadow: var(--shadow-float);
+  padding: var(--space-4);
+}
+
+.calibration__hint {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.calibration__checks {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.calibration__checks li {
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.calibration__checks li[data-ok] {
+  color: var(--color-text);
+}
+
+.calibration__actions {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: center;
+}
+
+/* No start button lives here — the set starts itself, and this says so. */
+.calibration__status {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* == Home overview ========================================================= */
+
+/* == Charts ================================================================ */
+
+.chart-frame {
+  position: relative;
+  width: 100%;
+}
+
+.chart-frame svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.chart-frame text {
+  fill: var(--color-text-muted);
+  font-family: var(--font-data);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-empty {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.chart-empty__baseline {
+  width: 100%;
+  border-top: 1px dashed var(--color-border);
+}
+
+.chart-empty p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+/* == Progress ring ========================================================= */
+
+.progress-ring {
+  display: grid;
+  position: relative;
+  width: min(13.5rem, 56vw);
+  place-items: center;
+}
+
+.progress-ring svg {
+  width: 100%;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.progress-ring circle {
+  fill: none;
+  stroke-width: 10;
+}
+
+.progress-ring__track {
+  stroke: var(--color-surface-subtle);
+}
+
+.progress-ring__value {
+  stroke: var(--color-action);
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--duration-route) var(--ease-out);
+}
+
+.progress-ring--effort .progress-ring__value {
+  stroke: var(--color-effort);
+}
+
+.progress-ring--recovery .progress-ring__value {
+  stroke: var(--color-recovery-strong);
+}
+
+.progress-ring__icon {
+  display: grid;
+  position: absolute;
+  width: 4.9rem;
+  height: 4.9rem;
+  color: var(--color-action);
+  background: var(--color-action-soft);
+  border-radius: var(--radius-round);
+  place-items: center;
+}
+
+.progress-ring--effort .progress-ring__icon {
+  color: var(--color-effort);
+  background: var(--color-effort-soft);
+}
+
+.progress-ring--recovery .progress-ring__icon {
+  color: var(--color-recovery-strong);
+  background: var(--color-recovery-soft);
+}
+
+/* == Metric hero =========================================================== */
+
+.metric-hero {
+  display: grid;
+  padding-bottom: 1.75rem;
+  gap: 0;
+  justify-items: center;
+}
+
+.metric-hero__date {
+  margin: 1.25rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.metric-hero__value {
+  display: flex;
+  margin: 0.4rem 0 0;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.metric-hero__value strong {
+  font-family: var(--font-display);
+  font-size: clamp(2.3rem, 12vw, 3rem);
+  font-variant-numeric: tabular-nums;
+  font-variation-settings: "wdth" 92;
+  font-weight: 680;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.metric-hero__unit {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.metric-hero__note {
+  max-width: 28ch;
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.hero-stats {
+  display: grid;
+  width: 100%;
+  margin: 1.6rem 0 0;
+  padding: 1.25rem 0 0;
+  gap: 0;
+  border-top: 1px solid var(--color-border);
+  grid-template-columns: repeat(3, 1fr);
+  list-style: none;
+}
+
+.hero-stats__item {
+  display: grid;
+  padding: 0 0.5rem;
+  gap: 0.3rem;
+  justify-items: center;
+  border-left: 1px solid var(--color-border);
+}
+
+.hero-stats__item:first-child {
+  border-left: 0;
+}
+
+.hero-stats__icon {
+  color: var(--color-text-muted);
+}
+
+/*
+ * These readings are re-rendered per range rather than ticking in place, so the display
+ * face reads better here than the mono data face. Tabular numerals stay, so the columns
+ * still line up across the three cells.
+ */
+.hero-stats__item strong {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-variant-numeric: tabular-nums;
+  font-variation-settings: "wdth" 96;
+  font-weight: 680;
+  letter-spacing: -0.025em;
+  line-height: 1;
+}
+
+.hero-stats__label {
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* == Chart legend ========================================================== */
+
+.chart-figure {
+  margin: 0;
+}
+
+.chart-legend {
+  display: flex;
+  margin-top: 0.75rem;
+  align-items: center;
+  gap: 1.1rem;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.chart-legend__series,
+.chart-legend__reference {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chart-legend__series::before,
+.chart-legend__reference::before {
+  width: 1.1rem;
+  height: 0;
+  border-top: 2.5px solid var(--color-action);
+  content: "";
+}
+
+.chart-legend__reference::before {
+  border-top: 1.5px dashed var(--color-border-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-ring__value {
+    transition: none;
+  }
+}
+
+@media (min-width: 48rem) {
+  .hero-stats {
+    max-width: 30rem;
+  }
+}
+
+/* == Meal timeline ========================================================= */
+
+.meal-timeline {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  list-style: none;
+}
+
+.meal-timeline__slot {
+  position: relative;
+  padding: 1rem 0 1rem 2.35rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.meal-timeline__slot:first-child {
+  border-top: 0;
+  padding-top: 0.25rem;
+}
+
+/* Continuous rail joining the slot markers. */
+.meal-timeline__slot::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0.6rem;
+  border-left: 1px solid var(--color-border);
+  content: "";
+}
+
+.meal-timeline__slot:first-child::before {
+  top: 1.5rem;
+}
+
+.meal-timeline__slot:last-child::before {
+  bottom: auto;
+  height: 1.35rem;
+}
+
+.meal-timeline__marker {
+  display: grid;
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-round);
+  place-items: center;
+}
+
+.meal-timeline__slot:first-child .meal-timeline__marker {
+  top: 0.25rem;
+}
+
+.meal-timeline__slot[data-state="logged"] .meal-timeline__marker {
+  color: var(--color-surface);
+  background: var(--color-recovery-strong);
+  border-color: var(--color-recovery-strong);
+}
+
+.meal-timeline__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.meal-timeline__head strong {
+  font-size: 1rem;
+}
+
+.meal-timeline__pending {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.meal-timeline__meals {
+  display: grid;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  gap: 0.45rem;
+  list-style: none;
+}
+
+.meal-timeline__meals li {
+  display: grid;
+  gap: 0.75rem;
+  align-items: baseline;
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+  grid-template-columns: 3.2rem 1fr auto;
+}
+
+.meal-timeline__name {
+  color: var(--color-text);
+}
+
+.nutrition-skeleton {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: center;
+}
+
+.nutrition-skeleton__dial {
+  width: min(13.5rem, 56vw);
+  aspect-ratio: 1;
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-round);
+}
+
+.nutrition-skeleton__line {
+  width: min(22rem, 80%);
+  height: 1.1rem;
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-input);
+}
+
+/* == Weekly goals ========================================================== */
+
+/* == Four-week schedule ==================================================== */
+
+.roadmap-view__schedule {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.schedule-weeks {
+  display: grid;
+  gap: 0;
+}
+
+.schedule-week:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* The active week leads; the rest recede without becoming unreadable. */
+.schedule-week:not([data-state="active"]) .content-section__header h2 {
+  color: var(--color-text-muted);
+}
+
+.schedule-week__state {
+  font-weight: 750;
+}
+
+.schedule-week[data-state="active"] .schedule-week__state {
+  color: var(--color-action);
+}
+
+.schedule-week[data-state="complete"] .schedule-week__state {
+  color: var(--color-recovery-strong);
+}
+
+.schedule-week__empty {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+@media (min-width: 48rem) {
+  .roadmap-view__schedule {
+    width: auto;
+    min-width: 16rem;
+  }
+}
+
+.chart-frame--effort rect {
+  fill: var(--color-effort);
+}
+
+/* == Meal detail =========================================================== */
+
+.meal-page__back {
+  display: inline-flex;
+  margin-bottom: 0.65rem;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.meal-page__back:hover {
+  color: var(--color-action);
+}
+
+.meal-logged {
+  display: grid;
+  padding: 1rem 1.1rem;
+  gap: 0.4rem 0.85rem;
+  align-items: start;
+  background: var(--color-recovery-soft);
+  border-radius: var(--radius-surface);
+  grid-template-columns: auto 1fr;
+}
+
+/* The total sits under the list rather than beside it: at 390px a third column squeezes
+   the meal name into two lines. */
+.meal-logged__total {
+  color: var(--color-recovery-ink);
+  font-size: 1.1rem;
+  font-weight: 700;
+  grid-column: 2;
+}
+
+.meal-logged__mark {
+  display: grid;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--color-surface);
+  background: var(--color-recovery-strong);
+  border-radius: var(--radius-round);
+  place-items: center;
+}
+
+.meal-logged__list {
+  display: grid;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  gap: 0.35rem;
+  list-style: none;
+}
+
+/* Direct children only: the recipe steps nested inside must not inherit this grid, or each
+   step is squeezed into the 1fr column and reads as a narrow vertical strip. */
+.meal-logged__list > li {
+  display: grid;
+  gap: 0.7rem 0.7rem;
+  align-items: baseline;
+  color: var(--color-recovery-ink);
+  font-size: 0.86rem;
+  grid-template-columns: 3.2rem 1fr auto;
+}
+
+.meal-logged__name {
+  font-weight: 700;
+}
+
+.meal-empty {
+  max-width: 42ch;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.meal-choices {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 1rem;
+  list-style: none;
+}
+
+.meal-choice {
+  padding: 1.15rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-surface);
+}
+
+.meal-choice__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.meal-choice__head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-variation-settings: "wdth" 94;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.meal-choice__tier {
+  padding: 0.2rem 0.5rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-round);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.meal-choice__tier[data-tier="low"] {
+  color: var(--color-recovery-ink);
+  background: var(--color-recovery-soft);
+}
+
+.meal-choice__tier[data-tier="high"] {
+  color: var(--color-effort-ink);
+  background: var(--color-effort-soft);
+}
+
+.meal-choice__description {
+  max-width: 52ch;
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.meal-macros {
+  display: grid;
+  margin: 0.9rem 0 0;
+  padding: 0.85rem 0 0;
+  gap: 0.5rem;
+  border-top: 1px solid var(--color-border);
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.meal-macros dt {
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.meal-macros dd {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.meal-recipe {
+  margin-top: 0.9rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.meal-recipe summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.85rem;
+  color: var(--color-action);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.meal-recipe summary::-webkit-details-marker {
+  display: none;
+}
+
+.meal-recipe__count {
+  color: var(--color-text-muted);
+  font-size: 0.76rem;
+  font-weight: 400;
+}
+
+.meal-recipe__steps {
+  display: grid;
+  margin: 0.85rem 0 0;
+  padding-left: 1.35rem;
+  gap: 0.6rem;
+}
+
+.meal-recipe__steps li {
+  color: var(--color-text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.meal-recipe__steps li::marker {
+  color: var(--color-text-muted);
+  font-family: var(--font-data);
+  font-size: 0.82rem;
+}
+
+.meal-choice__no-recipe {
+  margin: 0.85rem 0 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.meal-skeleton {
+  display: grid;
+  gap: 1rem;
+}
+
+.meal-skeleton__row {
+  height: 7rem;
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius-surface);
+}
+
+@media (min-width: 30rem) {
+  .meal-choices {
+    gap: 1.1rem;
+  }
+}
+
+/* The recipe disclosure spans the logged row's three columns. */
+.meal-logged__list .meal-recipe {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--color-recovery);
+}
+
+.meal-logged__list .meal-recipe summary {
+  color: var(--color-recovery-strong);
+}
+
+.meal-logged__list .meal-recipe__steps li {
+  color: var(--color-recovery-ink);
+}
+
+/* == Log a meal ============================================================ */
+
+.log-meal {
+  width: 100%;
+  margin-top: 0.9rem;
+}
+
+.log-meal--done {
+  display: flex;
+  margin: 0.9rem 0 0;
+  padding-top: 0.85rem;
+  align-items: center;
+  gap: 0.4rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-recovery-strong);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.log-form {
+  display: grid;
+  padding: 1.15rem;
+  gap: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-surface);
+}
+
+.log-form__field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.log-form__field label {
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.log-form__unit {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.log-form__field input {
+  min-height: 3rem;
+  padding: 0.6rem 0.75rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.log-form__field input:focus-visible {
   border-color: var(--color-action);
 }
 
-.music-mini {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  font-size: 0.75rem;
-  font-weight: 600;
+.log-form__field input::placeholder {
+  color: var(--color-text-muted);
 }
 
-.music-mini__label {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: none;
-  border: none;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.music-mini__buttons {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  border-left: 1px solid var(--color-border);
-  padding-left: 0.35rem;
-}
-
-.music-mini__buttons button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.1rem;
-}
-
-.set-stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  flex: 1;
-  height: 100%;
-}
-
-.set-stage__header {
-  text-align: center;
-}
-
-.set-stage__header h1 {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-text);
+.log-form__error {
   margin: 0;
-  line-height: 1.25;
+  padding: 0.7rem 0.85rem;
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  border-radius: var(--radius-input);
+  font-size: 0.86rem;
+  line-height: 1.4;
 }
 
-.set-stage__goal {
-  display: inline-block;
-  margin-top: 0.35rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-subtle);
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.set-stage__circle {
-  width: 13rem;
-  height: 13rem;
-  border-radius: 50%;
-  background: var(--color-surface-subtle);
-  border: 4px solid var(--color-surface);
-  box-shadow: var(--shadow-surface);
+.log-open {
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.set-stage__label {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: var(--color-action);
-  opacity: 0.7;
-}
-
-.set-stage__timer {
-  text-align: center;
-}
-
-.set-stage__timer strong {
-  font-size: 3.25rem;
-  font-weight: 800;
-  font-family: monospace;
-  color: var(--color-text);
-}
-
-.set-stage__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   width: 100%;
-}
-
-.set-stage__actions button {
-  flex: 1;
-  border-radius: 1rem;
+  min-height: 3rem;
   padding: 0.75rem 1rem;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-action);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
-.set-stage__skip {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
+.log-open:hover {
+  border-color: var(--color-action);
+  background: var(--color-action-soft);
 }
 
-.rest-view {
+.log-form__grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.log-form__more {
+  color: var(--color-action);
+  background: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  justify-self: start;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.log-form__actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  width: 100%;
+  gap: 0.6rem;
+}
+
+.log-form__actions .ui-button {
   flex: 1;
-  margin: auto 0;
 }
 
-.rest-view__card {
-  width: 100%;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  text-align: center;
+@media (min-width: 30rem) {
+  .log-form__actions .ui-button {
+    flex: 0 0 auto;
+    min-width: 9rem;
+  }
 }
 
-.rest-view__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #059669;
+.log-meal__form {
+  display: contents;
 }
 
-.rest-view__card strong {
-  display: block;
-  font-size: 3.25rem;
-  font-weight: 800;
-  font-family: monospace;
-  color: #047857;
-  margin-top: 0.25rem;
-}
-
-.rest-view__actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.rest-view__actions .ui-button--primary {
-  width: 100%;
-  border-radius: 1rem;
-  padding: 0.85rem 1.25rem;
-  font-size: 0.875rem;
-}
-
-.rest-view__actions .ui-button--primary .ui-button__label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.rest-view__add {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
+.log-meal__error {
+  margin: 0.6rem 0 0;
+  color: var(--color-danger);
+  font-size: 0.82rem;
+  line-height: 1.4;
 }

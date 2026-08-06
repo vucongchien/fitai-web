@@ -37,6 +37,7 @@ describe("WorkoutSummaryView", () => {
       personalRecords: [
         { exerciseId: "bench_press", name: "Barbell Bench Press", oneRepMaxKg: 100 },
       ],
+      recentAvgVolumeKg: 3000,
       sessionId: "session_test_1",
       totalSets: 8,
       totalVolumeKg: 3200,
@@ -47,12 +48,15 @@ describe("WorkoutSummaryView", () => {
     render(<WorkoutSummaryView sessionId="session_test_1" />);
 
     expect(await screen.findByText("Session complete.")).toBeInTheDocument();
-    expect(screen.getByText("8")).toBeInTheDocument();
+    expect(screen.getByText("35 min")).toBeInTheDocument();
     expect(screen.getByText("3,200 kg")).toBeInTheDocument();
-    expect(screen.getByText("7.2 RPE")).toBeInTheDocument();
-    expect(screen.getByText("Form Score: 88%")).toBeInTheDocument();
-    expect(screen.getByText("New Personal Records!")).toBeInTheDocument();
-    expect(screen.getByText("Barbell Bench Press (100 kg 1RM)")).toBeInTheDocument();
+    expect(screen.getByText("New record")).toBeInTheDocument();
+    expect(screen.getByText("Barbell Bench Press — 100 kg")).toBeInTheDocument();
+
+    // Dropped deliberately: RPE is self-reported, the form score needs a caveat
+    // to be honest, and neither is what the user opened this page for.
+    expect(screen.queryByText("7.2 RPE")).not.toBeInTheDocument();
+    expect(screen.queryByText("Form Score: 88%")).not.toBeInTheDocument();
   });
 
   it("shows unavailable state when no report in sessionStorage", async () => {

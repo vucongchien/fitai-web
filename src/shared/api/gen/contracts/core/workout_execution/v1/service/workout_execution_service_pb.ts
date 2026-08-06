@@ -4,16 +4,59 @@
 
 import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+
 import { file_google_api_annotations } from "../../../../../google/api/annotations_pb";
 import { file_protoc_gen_openapiv2_options_annotations } from "../../../../../protoc-gen-openapiv2/options/annotations_pb";
-import type { AbortWorkoutSessionRequestSchema, AbortWorkoutSessionResponseSchema, AdminGetPersonalRecordsRequestSchema, AdminGetPersonalRecordsResponseSchema, AdminGetWorkoutHistoryRequestSchema, AdminGetWorkoutHistoryResponseSchema, CompleteWorkoutSessionRequestSchema, CompleteWorkoutSessionResponseSchema, DeleteMotionSpecificationRequestSchema, DeleteMotionSpecificationResponseSchema, GetMotionSpecificationRequestSchema, GetMotionSpecificationResponseSchema, GetPersonalRecordsRequestSchema, GetPersonalRecordsResponseSchema, GetPresignedUploadURLRequestSchema, GetPresignedUploadURLResponseSchema, GetWorkoutHistoryRequestSchema, GetWorkoutHistoryResponseSchema, GetWorkoutSessionErrorsRequestSchema, GetWorkoutSessionErrorsResponseSchema, ListMotionSpecificationsRequestSchema, ListMotionSpecificationsResponseSchema, LogWorkoutSetRequestSchema, LogWorkoutSetResponseSchema, PatchMotionSpecificationAssetRequestSchema, PatchMotionSpecificationAssetResponseSchema, StartScheduledWorkoutSessionRequestSchema, StartScheduledWorkoutSessionResponseSchema, StartWorkoutSessionRequestSchema, StartWorkoutSessionResponseSchema, SyncWorkoutLogsRequestSchema, SyncWorkoutLogsResponseSchema, UpdateMotionSpecificationRequestSchema, UpdateMotionSpecificationResponseSchema } from "../message/workout_execution_messages_pb";
+import type {
+  AbortWorkoutSessionRequestSchema,
+  AbortWorkoutSessionResponseSchema,
+  AdminGetPersonalRecordsRequestSchema,
+  AdminGetPersonalRecordsResponseSchema,
+  AdminGetWorkoutHistoryRequestSchema,
+  AdminGetWorkoutHistoryResponseSchema,
+  CompleteWorkoutSessionRequestSchema,
+  CompleteWorkoutSessionResponseSchema,
+  DeleteMotionSpecificationRequestSchema,
+  DeleteMotionSpecificationResponseSchema,
+  GetMotionSpecificationRequestSchema,
+  GetMotionSpecificationResponseSchema,
+  GetPersonalRecordsRequestSchema,
+  GetPersonalRecordsResponseSchema,
+  GetPresignedUploadURLRequestSchema,
+  GetPresignedUploadURLResponseSchema,
+  GetWorkoutHistoryRequestSchema,
+  GetWorkoutHistoryResponseSchema,
+  GetWorkoutSessionErrorsRequestSchema,
+  GetWorkoutSessionErrorsResponseSchema,
+  ListMotionSpecificationsRequestSchema,
+  ListMotionSpecificationsResponseSchema,
+  LogWorkoutSetRequestSchema,
+  LogWorkoutSetResponseSchema,
+  PatchMotionSpecificationAssetRequestSchema,
+  PatchMotionSpecificationAssetResponseSchema,
+  StartScheduledWorkoutSessionRequestSchema,
+  StartScheduledWorkoutSessionResponseSchema,
+  StartWorkoutSessionRequestSchema,
+  StartWorkoutSessionResponseSchema,
+  SyncWorkoutLogsRequestSchema,
+  SyncWorkoutLogsResponseSchema,
+  UpdateMotionSpecificationRequestSchema,
+  UpdateMotionSpecificationResponseSchema,
+} from "../message/workout_execution_messages_pb";
 import { file_contracts_core_workout_execution_v1_message_workout_execution_messages } from "../message/workout_execution_messages_pb";
 
 /**
  * Describes the file contracts/core/workout_execution/v1/service/workout_execution_service.proto.
  */
-export const file_contracts_core_workout_execution_v1_service_workout_execution_service: GenFile = /*@__PURE__*/
-  fileDesc("Cktjb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9zZXJ2aWNlL3dvcmtvdXRfZXhlY3V0aW9uX3NlcnZpY2UucHJvdG8SK2NvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLnNlcnZpY2UyyxIKF1dvcmtvdXRFeGVjdXRpb25TZXJ2aWNlEtUBChNTdGFydFdvcmtvdXRTZXNzaW9uEkcuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5TdGFydFdvcmtvdXRTZXNzaW9uUmVxdWVzdBpILmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuU3RhcnRXb3Jrb3V0U2Vzc2lvblJlc3BvbnNlIiuC0+STAiU6ASoiIC9hcGkvdjEvZXhlY3V0aW9uL3Nlc3Npb25zL3N0YXJ0Ev0BChxTdGFydFNjaGVkdWxlZFdvcmtvdXRTZXNzaW9uElAuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5TdGFydFNjaGVkdWxlZFdvcmtvdXRTZXNzaW9uUmVxdWVzdBpRLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuU3RhcnRTY2hlZHVsZWRXb3Jrb3V0U2Vzc2lvblJlc3BvbnNlIjiC0+STAjI6ASoiLS9hcGkvdjEvZXhlY3V0aW9uL3Nlc3Npb25zL3tzZXNzaW9uX2lkfS9zdGFydBLPAQoNTG9nV29ya291dFNldBJBLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuTG9nV29ya291dFNldFJlcXVlc3QaQi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkxvZ1dvcmtvdXRTZXRSZXNwb25zZSI3gtPkkwIxOgEqIiwvYXBpL3YxL2V4ZWN1dGlvbi9zZXNzaW9ucy97c2Vzc2lvbl9pZH0vc2V0cxLiAQoTQWJvcnRXb3Jrb3V0U2Vzc2lvbhJHLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuQWJvcnRXb3Jrb3V0U2Vzc2lvblJlcXVlc3QaSC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkFib3J0V29ya291dFNlc3Npb25SZXNwb25zZSI4gtPkkwIyOgEqIi0vYXBpL3YxL2V4ZWN1dGlvbi9zZXNzaW9ucy97c2Vzc2lvbl9pZH0vYWJvcnQS7gEKFkNvbXBsZXRlV29ya291dFNlc3Npb24SSi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkNvbXBsZXRlV29ya291dFNlc3Npb25SZXF1ZXN0GksuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5Db21wbGV0ZVdvcmtvdXRTZXNzaW9uUmVzcG9uc2UiO4LT5JMCNToBKiIwL2FwaS92MS9leGVjdXRpb24vc2Vzc2lvbnMve3Nlc3Npb25faWR9L2NvbXBsZXRlEtUBCg9TeW5jV29ya291dExvZ3MSQy5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlN5bmNXb3Jrb3V0TG9nc1JlcXVlc3QaRC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlN5bmNXb3Jrb3V0TG9nc1Jlc3BvbnNlIjeC0+STAjE6ASoiLC9hcGkvdjEvZXhlY3V0aW9uL3Nlc3Npb25zL3tzZXNzaW9uX2lkfS9sb2dzEvUBChZHZXRNb3Rpb25TcGVjaWZpY2F0aW9uEkouY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRNb3Rpb25TcGVjaWZpY2F0aW9uUmVxdWVzdBpLLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0TW90aW9uU3BlY2lmaWNhdGlvblJlc3BvbnNlIkKSQQJiAILT5JMCNxI1L2FwaS92MS9leGVjdXRpb24vZXhlcmNpc2VzL3tleGVyY2lzZV9pZH0vbW90aW9uLXNwZWMSxAEKEkdldFBlcnNvbmFsUmVjb3JkcxJGLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0UGVyc29uYWxSZWNvcmRzUmVxdWVzdBpHLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0UGVyc29uYWxSZWNvcmRzUmVzcG9uc2UiHYLT5JMCFxIVL2FwaS92MS9leGVjdXRpb24vcHJzEuwBChdHZXRXb3Jrb3V0U2Vzc2lvbkVycm9ycxJLLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0V29ya291dFNlc3Npb25FcnJvcnNSZXF1ZXN0GkwuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRXb3Jrb3V0U2Vzc2lvbkVycm9yc1Jlc3BvbnNlIjaC0+STAjASLi9hcGkvdjEvZXhlY3V0aW9uL3Nlc3Npb25zL3tzZXNzaW9uX2lkfS9lcnJvcnMSxQEKEUdldFdvcmtvdXRIaXN0b3J5EkUuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRXb3Jrb3V0SGlzdG9yeVJlcXVlc3QaRi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkdldFdvcmtvdXRIaXN0b3J5UmVzcG9uc2UiIYLT5JMCGxIZL2FwaS92MS9leGVjdXRpb24vaGlzdG9yeRpikkFfChhXb3Jrb3V0IEV4ZWN1dGlvbiAvIFVzZXISQ0FQSSBkw6BuaCBjaG8gbmfGsOG7nWkgZMO5bmcgdGjhu7FjIHRoaSB2w6AgbMawdSB24bq/dCBideG7lWkgdOG6rXAyyw4KHEFkbWluV29ya291dEV4ZWN1dGlvblNlcnZpY2US6QEKF0FkbWluR2V0UGVyc29uYWxSZWNvcmRzEksuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5BZG1pbkdldFBlcnNvbmFsUmVjb3Jkc1JlcXVlc3QaTC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkFkbWluR2V0UGVyc29uYWxSZWNvcmRzUmVzcG9uc2UiM4LT5JMCLRIrL2FwaS92MS9hZG1pbi9leGVjdXRpb24vdXNlcnMve3VzZXJfaWR9L3BycxLqAQoWQWRtaW5HZXRXb3Jrb3V0SGlzdG9yeRJKLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuQWRtaW5HZXRXb3Jrb3V0SGlzdG9yeVJlcXVlc3QaSy5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkFkbWluR2V0V29ya291dEhpc3RvcnlSZXNwb25zZSI3gtPkkwIxEi8vYXBpL3YxL2FkbWluL2V4ZWN1dGlvbi91c2Vycy97dXNlcl9pZH0vaGlzdG9yeRL0AQoVR2V0UHJlc2lnbmVkVXBsb2FkVVJMEkkuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRQcmVzaWduZWRVcGxvYWRVUkxSZXF1ZXN0GkouY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRQcmVzaWduZWRVcGxvYWRVUkxSZXNwb25zZSJEgtPkkwI+OgEqIjkvYXBpL3YxL2FkbWluL2V4ZWN1dGlvbi9tb3Rpb24tc3BlY3MvcHJlc2lnbmVkLXVwbG9hZC11cmwS+QEKGVVwZGF0ZU1vdGlvblNwZWNpZmljYXRpb24STS5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlVwZGF0ZU1vdGlvblNwZWNpZmljYXRpb25SZXF1ZXN0Gk4uY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5VcGRhdGVNb3Rpb25TcGVjaWZpY2F0aW9uUmVzcG9uc2UiPYLT5JMCNzoBKhoyL2FwaS92MS9hZG1pbi9leGVjdXRpb24vbW90aW9uLXNwZWNzL3tleGVyY2lzZV9pZH0SjAIKHVBhdGNoTW90aW9uU3BlY2lmaWNhdGlvbkFzc2V0ElEuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5QYXRjaE1vdGlvblNwZWNpZmljYXRpb25Bc3NldFJlcXVlc3QaUi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlBhdGNoTW90aW9uU3BlY2lmaWNhdGlvbkFzc2V0UmVzcG9uc2UiRILT5JMCPjoBKjI5L2FwaS92MS9hZG1pbi9leGVjdXRpb24vbW90aW9uLXNwZWNzL3tleGVyY2lzZV9pZH0vYXNzZXRzEvYBChlEZWxldGVNb3Rpb25TcGVjaWZpY2F0aW9uEk0uY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5EZWxldGVNb3Rpb25TcGVjaWZpY2F0aW9uUmVxdWVzdBpOLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuRGVsZXRlTW90aW9uU3BlY2lmaWNhdGlvblJlc3BvbnNlIjqC0+STAjQqMi9hcGkvdjEvYWRtaW4vZXhlY3V0aW9uL21vdGlvbi1zcGVjcy97ZXhlcmNpc2VfaWR9EuUBChhMaXN0TW90aW9uU3BlY2lmaWNhdGlvbnMSTC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkxpc3RNb3Rpb25TcGVjaWZpY2F0aW9uc1JlcXVlc3QaTS5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkxpc3RNb3Rpb25TcGVjaWZpY2F0aW9uc1Jlc3BvbnNlIiyC0+STAiYSJC9hcGkvdjEvYWRtaW4vZXhlY3V0aW9uL21vdGlvbi1zcGVjcxpvkkFsChlXb3Jrb3V0IEV4ZWN1dGlvbiAvIEFkbWluEk9BUEkgZMOgbmggY2hvIEFkbWluL0NvYWNoIHRyYSBj4bupdSBk4buvIGxp4buHdSB04bqtcCBsdXnhu4duIGPhu6dhIGjhu41jIHZpw6puQpQCWnpnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL3dvcmtvdXRfZXhlY3V0aW9uL3YxL3NlcnZpY2U7d29ya291dGV4ZWN1dGlvbnYxc2VydmljZZJBlAESkQEKI0FJIFdvcmtvdXQgRXhlY3V0aW9uICYgVHJhY2tpbmcgQVBJEmVBUEkgdGjhu7FjIHRoaSBideG7lWkgdOG6rXAsIHRyYWNraW5nIGNhbWVyYSDEkeG6v20gcmVwIGNo4bqlbSDEkWnhu4NtIEFJIHbDoCBsxrB1IHRy4buvIGzhu4tjaCBz4butLjIDMS4wYgZwcm90bzM", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_core_workout_execution_v1_message_workout_execution_messages]);
+export const file_contracts_core_workout_execution_v1_service_workout_execution_service: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Cktjb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9zZXJ2aWNlL3dvcmtvdXRfZXhlY3V0aW9uX3NlcnZpY2UucHJvdG8SK2NvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLnNlcnZpY2UyyxIKF1dvcmtvdXRFeGVjdXRpb25TZXJ2aWNlEtUBChNTdGFydFdvcmtvdXRTZXNzaW9uEkcuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5TdGFydFdvcmtvdXRTZXNzaW9uUmVxdWVzdBpILmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuU3RhcnRXb3Jrb3V0U2Vzc2lvblJlc3BvbnNlIiuC0+STAiU6ASoiIC9hcGkvdjEvZXhlY3V0aW9uL3Nlc3Npb25zL3N0YXJ0Ev0BChxTdGFydFNjaGVkdWxlZFdvcmtvdXRTZXNzaW9uElAuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5TdGFydFNjaGVkdWxlZFdvcmtvdXRTZXNzaW9uUmVxdWVzdBpRLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuU3RhcnRTY2hlZHVsZWRXb3Jrb3V0U2Vzc2lvblJlc3BvbnNlIjiC0+STAjI6ASoiLS9hcGkvdjEvZXhlY3V0aW9uL3Nlc3Npb25zL3tzZXNzaW9uX2lkfS9zdGFydBLPAQoNTG9nV29ya291dFNldBJBLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuTG9nV29ya291dFNldFJlcXVlc3QaQi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkxvZ1dvcmtvdXRTZXRSZXNwb25zZSI3gtPkkwIxOgEqIiwvYXBpL3YxL2V4ZWN1dGlvbi9zZXNzaW9ucy97c2Vzc2lvbl9pZH0vc2V0cxLiAQoTQWJvcnRXb3Jrb3V0U2Vzc2lvbhJHLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuQWJvcnRXb3Jrb3V0U2Vzc2lvblJlcXVlc3QaSC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkFib3J0V29ya291dFNlc3Npb25SZXNwb25zZSI4gtPkkwIyOgEqIi0vYXBpL3YxL2V4ZWN1dGlvbi9zZXNzaW9ucy97c2Vzc2lvbl9pZH0vYWJvcnQS7gEKFkNvbXBsZXRlV29ya291dFNlc3Npb24SSi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkNvbXBsZXRlV29ya291dFNlc3Npb25SZXF1ZXN0GksuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5Db21wbGV0ZVdvcmtvdXRTZXNzaW9uUmVzcG9uc2UiO4LT5JMCNToBKiIwL2FwaS92MS9leGVjdXRpb24vc2Vzc2lvbnMve3Nlc3Npb25faWR9L2NvbXBsZXRlEtUBCg9TeW5jV29ya291dExvZ3MSQy5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlN5bmNXb3Jrb3V0TG9nc1JlcXVlc3QaRC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlN5bmNXb3Jrb3V0TG9nc1Jlc3BvbnNlIjeC0+STAjE6ASoiLC9hcGkvdjEvZXhlY3V0aW9uL3Nlc3Npb25zL3tzZXNzaW9uX2lkfS9sb2dzEvUBChZHZXRNb3Rpb25TcGVjaWZpY2F0aW9uEkouY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRNb3Rpb25TcGVjaWZpY2F0aW9uUmVxdWVzdBpLLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0TW90aW9uU3BlY2lmaWNhdGlvblJlc3BvbnNlIkKSQQJiAILT5JMCNxI1L2FwaS92MS9leGVjdXRpb24vZXhlcmNpc2VzL3tleGVyY2lzZV9pZH0vbW90aW9uLXNwZWMSxAEKEkdldFBlcnNvbmFsUmVjb3JkcxJGLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0UGVyc29uYWxSZWNvcmRzUmVxdWVzdBpHLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0UGVyc29uYWxSZWNvcmRzUmVzcG9uc2UiHYLT5JMCFxIVL2FwaS92MS9leGVjdXRpb24vcHJzEuwBChdHZXRXb3Jrb3V0U2Vzc2lvbkVycm9ycxJLLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0V29ya291dFNlc3Npb25FcnJvcnNSZXF1ZXN0GkwuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRXb3Jrb3V0U2Vzc2lvbkVycm9yc1Jlc3BvbnNlIjaC0+STAjASLi9hcGkvdjEvZXhlY3V0aW9uL3Nlc3Npb25zL3tzZXNzaW9uX2lkfS9lcnJvcnMSxQEKEUdldFdvcmtvdXRIaXN0b3J5EkUuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRXb3Jrb3V0SGlzdG9yeVJlcXVlc3QaRi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkdldFdvcmtvdXRIaXN0b3J5UmVzcG9uc2UiIYLT5JMCGxIZL2FwaS92MS9leGVjdXRpb24vaGlzdG9yeRpikkFfChhXb3Jrb3V0IEV4ZWN1dGlvbiAvIFVzZXISQ0FQSSBkw6BuaCBjaG8gbmfGsOG7nWkgZMO5bmcgdGjhu7FjIHRoaSB2w6AgbMawdSB24bq/dCBideG7lWkgdOG6rXAyyw4KHEFkbWluV29ya291dEV4ZWN1dGlvblNlcnZpY2US6QEKF0FkbWluR2V0UGVyc29uYWxSZWNvcmRzEksuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5BZG1pbkdldFBlcnNvbmFsUmVjb3Jkc1JlcXVlc3QaTC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkFkbWluR2V0UGVyc29uYWxSZWNvcmRzUmVzcG9uc2UiM4LT5JMCLRIrL2FwaS92MS9hZG1pbi9leGVjdXRpb24vdXNlcnMve3VzZXJfaWR9L3BycxLqAQoWQWRtaW5HZXRXb3Jrb3V0SGlzdG9yeRJKLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuQWRtaW5HZXRXb3Jrb3V0SGlzdG9yeVJlcXVlc3QaSy5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkFkbWluR2V0V29ya291dEhpc3RvcnlSZXNwb25zZSI3gtPkkwIxEi8vYXBpL3YxL2FkbWluL2V4ZWN1dGlvbi91c2Vycy97dXNlcl9pZH0vaGlzdG9yeRL0AQoVR2V0UHJlc2lnbmVkVXBsb2FkVVJMEkkuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRQcmVzaWduZWRVcGxvYWRVUkxSZXF1ZXN0GkouY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRQcmVzaWduZWRVcGxvYWRVUkxSZXNwb25zZSJEgtPkkwI+OgEqIjkvYXBpL3YxL2FkbWluL2V4ZWN1dGlvbi9tb3Rpb24tc3BlY3MvcHJlc2lnbmVkLXVwbG9hZC11cmwS+QEKGVVwZGF0ZU1vdGlvblNwZWNpZmljYXRpb24STS5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlVwZGF0ZU1vdGlvblNwZWNpZmljYXRpb25SZXF1ZXN0Gk4uY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5VcGRhdGVNb3Rpb25TcGVjaWZpY2F0aW9uUmVzcG9uc2UiPYLT5JMCNzoBKhoyL2FwaS92MS9hZG1pbi9leGVjdXRpb24vbW90aW9uLXNwZWNzL3tleGVyY2lzZV9pZH0SjAIKHVBhdGNoTW90aW9uU3BlY2lmaWNhdGlvbkFzc2V0ElEuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5QYXRjaE1vdGlvblNwZWNpZmljYXRpb25Bc3NldFJlcXVlc3QaUi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlBhdGNoTW90aW9uU3BlY2lmaWNhdGlvbkFzc2V0UmVzcG9uc2UiRILT5JMCPjoBKjI5L2FwaS92MS9hZG1pbi9leGVjdXRpb24vbW90aW9uLXNwZWNzL3tleGVyY2lzZV9pZH0vYXNzZXRzEvYBChlEZWxldGVNb3Rpb25TcGVjaWZpY2F0aW9uEk0uY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5EZWxldGVNb3Rpb25TcGVjaWZpY2F0aW9uUmVxdWVzdBpOLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuRGVsZXRlTW90aW9uU3BlY2lmaWNhdGlvblJlc3BvbnNlIjqC0+STAjQqMi9hcGkvdjEvYWRtaW4vZXhlY3V0aW9uL21vdGlvbi1zcGVjcy97ZXhlcmNpc2VfaWR9EuUBChhMaXN0TW90aW9uU3BlY2lmaWNhdGlvbnMSTC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkxpc3RNb3Rpb25TcGVjaWZpY2F0aW9uc1JlcXVlc3QaTS5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkxpc3RNb3Rpb25TcGVjaWZpY2F0aW9uc1Jlc3BvbnNlIiyC0+STAiYSJC9hcGkvdjEvYWRtaW4vZXhlY3V0aW9uL21vdGlvbi1zcGVjcxpvkkFsChlXb3Jrb3V0IEV4ZWN1dGlvbiAvIEFkbWluEk9BUEkgZMOgbmggY2hvIEFkbWluL0NvYWNoIHRyYSBj4bupdSBk4buvIGxp4buHdSB04bqtcCBsdXnhu4duIGPhu6dhIGjhu41jIHZpw6puQpQCWnpnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL3dvcmtvdXRfZXhlY3V0aW9uL3YxL3NlcnZpY2U7d29ya291dGV4ZWN1dGlvbnYxc2VydmljZZJBlAESkQEKI0FJIFdvcmtvdXQgRXhlY3V0aW9uICYgVHJhY2tpbmcgQVBJEmVBUEkgdGjhu7FjIHRoaSBideG7lWkgdOG6rXAsIHRyYWNraW5nIGNhbWVyYSDEkeG6v20gcmVwIGNo4bqlbSDEkWnhu4NtIEFJIHbDoCBsxrB1IHRy4buvIGzhu4tjaCBz4butLjIDMS4wYgZwcm90bzM",
+    [
+      file_google_api_annotations,
+      file_protoc_gen_openapiv2_options_annotations,
+      file_contracts_core_workout_execution_v1_message_workout_execution_messages,
+    ],
+  );
 
 /**
  * @generated from service contracts.core.workout_execution.v1.service.WorkoutExecutionService
@@ -28,7 +71,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof StartWorkoutSessionRequestSchema;
     output: typeof StartWorkoutSessionResponseSchema;
-  },
+  };
   /**
    * Kích hoạt bắt đầu một buổi tập đã được lên lịch trước
    *
@@ -38,7 +81,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof StartScheduledWorkoutSessionRequestSchema;
     output: typeof StartScheduledWorkoutSessionResponseSchema;
-  },
+  };
   /**
    * Lưu kết quả của một set tập kèm tracking AI
    *
@@ -48,7 +91,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof LogWorkoutSetRequestSchema;
     output: typeof LogWorkoutSetResponseSchema;
-  },
+  };
   /**
    * Hủy/Dừng đột xuất buổi tập (Anomalous Session)
    *
@@ -58,7 +101,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof AbortWorkoutSessionRequestSchema;
     output: typeof AbortWorkoutSessionResponseSchema;
-  },
+  };
   /**
    * Kết thúc buổi tập và xuất báo cáo
    *
@@ -68,7 +111,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof CompleteWorkoutSessionRequestSchema;
     output: typeof CompleteWorkoutSessionResponseSchema;
-  },
+  };
   /**
    * Đồng bộ batch log lỗi và reps trong quá trình tập
    *
@@ -78,7 +121,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof SyncWorkoutLogsRequestSchema;
     output: typeof SyncWorkoutLogsResponseSchema;
-  },
+  };
   /**
    * Lấy cấu hình thuật toán và kịch bản thoại AI cho một bài tập
    *
@@ -88,7 +131,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof GetMotionSpecificationRequestSchema;
     output: typeof GetMotionSpecificationResponseSchema;
-  },
+  };
   /**
    * Lấy danh sách kỷ lục cá nhân (1RM) của người dùng đang đăng nhập
    *
@@ -98,7 +141,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof GetPersonalRecordsRequestSchema;
     output: typeof GetPersonalRecordsResponseSchema;
-  },
+  };
   /**
    * Lấy danh sách chi tiết các lỗi sai tư thế trong một buổi tập chỉ định
    *
@@ -108,7 +151,7 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof GetWorkoutSessionErrorsRequestSchema;
     output: typeof GetWorkoutSessionErrorsResponseSchema;
-  },
+  };
   /**
    * Lấy lịch sử các buổi tập của người dùng đang đăng nhập
    *
@@ -118,9 +161,11 @@ export const WorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof GetWorkoutHistoryRequestSchema;
     output: typeof GetWorkoutHistoryResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_contracts_core_workout_execution_v1_service_workout_execution_service, 0);
+  };
+}> /*@__PURE__*/ = serviceDesc(
+  file_contracts_core_workout_execution_v1_service_workout_execution_service,
+  0,
+);
 
 /**
  * Service dành riêng cho Admin và HLV (Coach) tra cứu thông tin học viên / người dùng khác
@@ -137,7 +182,7 @@ export const AdminWorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof AdminGetPersonalRecordsRequestSchema;
     output: typeof AdminGetPersonalRecordsResponseSchema;
-  },
+  };
   /**
    * Admin/HLV lấy lịch sử các buổi tập của một người dùng chỉ định
    *
@@ -147,7 +192,7 @@ export const AdminWorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof AdminGetWorkoutHistoryRequestSchema;
     output: typeof AdminGetWorkoutHistoryResponseSchema;
-  },
+  };
   /**
    * Admin xin Presigned Upload URL để Client đẩy trực tiếp file ONNX hoặc rules JSON lên Cloud Storage / Supabase Storage
    *
@@ -157,7 +202,7 @@ export const AdminWorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof GetPresignedUploadURLRequestSchema;
     output: typeof GetPresignedUploadURLResponseSchema;
-  },
+  };
   /**
    * Admin cập nhật cấu hình MotionSpecification (URL file ONNX, file rule, dialogue engine)
    *
@@ -167,7 +212,7 @@ export const AdminWorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof UpdateMotionSpecificationRequestSchema;
     output: typeof UpdateMotionSpecificationResponseSchema;
-  },
+  };
   /**
    * Admin chỉnh sửa từng phần (Partial Patching) các file luật tư thế hoặc kịch bản giọng nói lưu trên S3
    *
@@ -177,7 +222,7 @@ export const AdminWorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof PatchMotionSpecificationAssetRequestSchema;
     output: typeof PatchMotionSpecificationAssetResponseSchema;
-  },
+  };
   /**
    * Admin xóa cấu hình MotionSpecification của một bài tập
    *
@@ -187,7 +232,7 @@ export const AdminWorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof DeleteMotionSpecificationRequestSchema;
     output: typeof DeleteMotionSpecificationResponseSchema;
-  },
+  };
   /**
    * Admin lấy danh sách phân trang các MotionSpecification
    *
@@ -197,7 +242,8 @@ export const AdminWorkoutExecutionService: GenService<{
     methodKind: "unary";
     input: typeof ListMotionSpecificationsRequestSchema;
     output: typeof ListMotionSpecificationsResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_contracts_core_workout_execution_v1_service_workout_execution_service, 1);
-
+  };
+}> /*@__PURE__*/ = serviceDesc(
+  file_contracts_core_workout_execution_v1_service_workout_execution_service,
+  1,
+);

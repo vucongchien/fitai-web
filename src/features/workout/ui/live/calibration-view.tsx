@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Check, MoveHorizontal, Sun } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 import type { CameraState } from "@/features/workout/model/use-camera-stream";
 import type { CalibrationStatus } from "@/features/workout/model/use-motion-engine";
@@ -11,31 +12,57 @@ import { Button } from "@/shared/ui/button";
  * for, with plain "step back / step closer" feedback rather than a number.
  * Assumption-01: 1.5–2 m from the camera, enough light.
  *
+ * There is deliberately no "Start the set" button. The orchestrator starts the
+ * set the moment the framing check passes, which is the same moment this view
+ * closes — so a start control could only ever render disabled. Instead the view
+ * says what it is waiting for.
+ *
  * It never traps the user: manual logging is one tap away at all times.
  */
 export function CalibrationView({
   calibration,
   cameraState,
   onRetryPermission,
-  onStart,
   onUseManual,
   recommendedAngle,
 }: {
   calibration: CalibrationStatus | null;
   cameraState: CameraState;
   recommendedAngle: string;
-  onStart: () => void;
   onUseManual: () => void;
   onRetryPermission: () => void;
 }) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // A full-viewport blocking layer has to behave like one: focus moves in on
+  // mount, comes back out on unmount, and the screen underneath is unreachable
+  // while it is up. Without this, Done, +10s, the header buttons and the
+  // tabbable coaching panel all stayed keyboard-reachable behind the overlay.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    panelRef.current?.focus();
+
+    // `inert` is the whole focus trap in one attribute. Browsers without it
+    // (pre-2023 Safari/Firefox) ignore the attribute and keep the old
+    // behaviour — a degraded overlay, not a broken one.
+    const background = document.querySelector(".live-screen");
+    const supportsInert = typeof HTMLElement !== "undefined" && "inert" in HTMLElement.prototype;
+    if (supportsInert) background?.setAttribute("inert", "");
+
+    return () => {
+      if (supportsInert) background?.removeAttribute("inert");
+      previouslyFocused?.focus?.();
+    };
+  }, []);
+
   const blocked = cameraState === "denied" || cameraState === "unavailable";
   const distanceOk = calibration?.distance === "ok";
   const lightOk = calibration?.lighting === "ok";
   const ready = Boolean(calibration?.ready);
 
   return (
-    <div className="calibration">
-      <div className="calibration__panel">
+    <div aria-label="Camera check" aria-modal="true" className="calibration" role="dialog">
+      <div className="calibration__panel" ref={panelRef} tabIndex={-1}>
         <p className="utility-label">Camera check</p>
         <p className="calibration__hint" aria-live="polite">
           {blocked
@@ -71,7 +98,10 @@ export function CalibrationView({
         <div className="calibration__actions">
           {blocked ? (
             <>
-              <Button onClick={onUseManual} size="large">
+              {/* Secondary, not solid Relay Blue: DESIGN.md reserves Blue for
+                  navigation, focus and planning, and neither live screen may
+                  carry a second accent. */}
+              <Button onClick={onUseManual} size="large" variant="secondary">
                 Log this set by hand
                 <ArrowRight aria-hidden="true" size={18} />
               </Button>
@@ -83,13 +113,13 @@ export function CalibrationView({
             </>
           ) : (
             <>
-              <Button disabled={!ready} onClick={onStart} size="large">
-                {ready ? "Start the set" : "Line yourself up"}
+              <p aria-live="polite" className="calibration__status">
+                {ready ? "Starting the set…" : "The set starts on its own once you are lined up."}
+              </p>
+              <Button onClick={onUseManual} size="large" variant="secondary">
+                Skip the camera for this set
                 <ArrowRight aria-hidden="true" size={18} />
               </Button>
-              <button className="text-action" onClick={onUseManual} type="button">
-                Skip the camera for this set
-              </button>
             </>
           )}
         </div>

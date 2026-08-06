@@ -24,10 +24,17 @@ test("home leads into a manual workout and summary", async ({ page }) => {
   await page.getByRole("link", { name: "Begin session" }).click();
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("heading", { name: "Incline push-up" })).toBeVisible();
-  await page.getByRole("button", { name: "Log set" }).click();
-  await expect(page.getByText("Recovery", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Done" }).click();
+  await expect(page.getByText("Rest Time Remaining", { exact: true })).toBeVisible();
 
-  await page.getByRole("button", { name: "End session" }).click();
+  // Back is navigation, not a guillotine: it must ask before it ends the
+  // session, because ending it clears the resume draft irreversibly.
+  await page.getByRole("button", { name: "Back" }).click();
+  const endDialog = page.getByRole("dialog", { name: "Workout completed" });
+  await expect(endDialog).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Session complete." })).toBeHidden();
+
+  await endDialog.getByRole("button", { name: "Next Challenge" }).click();
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("heading", { name: "Session complete." })).toBeVisible();
 });

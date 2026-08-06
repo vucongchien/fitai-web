@@ -2,14 +2,29 @@ import { Suspense } from "react";
 
 import { getRoadmapPageData } from "@/features/roadmap/server/get-roadmap-page-data";
 import { RoadmapView } from "@/features/roadmap/ui/roadmap-view";
+import { getWorkoutStatsData } from "@/features/workout-stats/server/get-workout-stats-data";
+import { WorkoutStatsPanel } from "@/features/workout-stats/ui/workout-stats-panel";
 import { PageTransition } from "@/shared/ui/page-transition";
-import { TripleLane } from "@/shared/ui/triple-lane";
 
-export const metadata = { title: "Roadmap" };
+export const metadata = { title: "Workout" };
+
+async function WorkoutStatsContent() {
+  const data = await getWorkoutStatsData();
+  return <WorkoutStatsPanel data={data} />;
+}
 
 async function RoadmapContent() {
   const data = await getRoadmapPageData();
   return <RoadmapView data={data} />;
+}
+
+function StatsSkeleton() {
+  return (
+    <div aria-busy="true" aria-label="Loading workout statistics" className="nutrition-skeleton">
+      <div className="nutrition-skeleton__dial" />
+      <div className="nutrition-skeleton__line" />
+    </div>
+  );
 }
 
 function RoadmapSkeleton() {
@@ -26,12 +41,14 @@ export default function RoadmapPage() {
     <PageTransition className="page roadmap-page">
       <header className="page-heading">
         <div>
-          <h1>Your four-week route</h1>
-          <p>The plan builds gradually, then gives your body room to absorb the work.</p>
+          <h1>Workout</h1>
+          <p>What you have completed, and what the four-week route holds next.</p>
         </div>
       </header>
 
-      <TripleLane active="plan" labelled morph />
+      <Suspense fallback={<StatsSkeleton />}>
+        <WorkoutStatsContent />
+      </Suspense>
 
       <Suspense fallback={<RoadmapSkeleton />}>
         <RoadmapContent />

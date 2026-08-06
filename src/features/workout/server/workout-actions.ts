@@ -147,11 +147,15 @@ export async function syncWorkoutLogs(
 export async function abortWorkoutSession(
   sessionId: string,
   reason: AbortReason,
+  /** The user's own words about what happened. Optional by design — someone in
+   *  pain must never be blocked on typing an explanation. */
+  note?: string,
 ): Promise<{ abortedAt: number }> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
   void reason;
+  void note;
   if (!hasBackend) return { abortedAt: Date.now() };
-  // TODO: return createClient(WorkoutExecutionService, ...).abortWorkoutSession({ sessionId, reason });
+  // TODO: return createClient(WorkoutExecutionService, ...).abortWorkoutSession({ sessionId, reason, note });
   void sessionId;
   return { abortedAt: Date.now() };
 }

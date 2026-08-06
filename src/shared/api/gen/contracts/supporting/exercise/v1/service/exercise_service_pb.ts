@@ -4,16 +4,81 @@
 
 import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+
 import { file_google_api_annotations } from "../../../../../google/api/annotations_pb";
 import { file_protoc_gen_openapiv2_options_annotations } from "../../../../../protoc-gen-openapiv2/options/annotations_pb";
-import type { ApproveExerciseRequestSchema, ApproveExerciseResponseSchema, CreateBodyPartRequestSchema, CreateBodyPartResponseSchema, CreateEquipmentRequestSchema, CreateEquipmentResponseSchema, CreateExerciseRequestSchema, CreateExerciseResponseSchema, CreateMuscleRequestSchema, CreateMuscleResponseSchema, CreateTagRequestSchema, CreateTagResponseSchema, DeleteBodyPartRequestSchema, DeleteBodyPartResponseSchema, DeleteEquipmentRequestSchema, DeleteEquipmentResponseSchema, DeleteExerciseRequestSchema, DeleteExerciseResponseSchema, DeleteMuscleRequestSchema, DeleteMuscleResponseSchema, DeleteTagRequestSchema, DeleteTagResponseSchema, GetBodyPartRequestSchema, GetBodyPartResponseSchema, GetCatalogMetadataRequestSchema, GetCatalogMetadataResponseSchema, GetEquipmentRequestSchema, GetEquipmentResponseSchema, GetExerciseRequestSchema, GetExerciseResponseSchema, GetMuscleRequestSchema, GetMuscleResponseSchema, GetTagRequestSchema, GetTagResponseSchema, ListBodyPartsRequestSchema, ListBodyPartsResponseSchema, ListEquipmentsRequestSchema, ListEquipmentsResponseSchema, ListMusclesRequestSchema, ListMusclesResponseSchema, ListTagsRequestSchema, ListTagsResponseSchema, SearchExercisesRequestSchema, SearchExercisesResponseSchema, SubmitExerciseForApprovalRequestSchema, SubmitExerciseForApprovalResponseSchema, UpdateBodyPartRequestSchema, UpdateBodyPartResponseSchema, UpdateEquipmentRequestSchema, UpdateEquipmentResponseSchema, UpdateExerciseRequestSchema, UpdateExerciseResponseSchema, UpdateMuscleRequestSchema, UpdateMuscleResponseSchema, UpdateTagRequestSchema, UpdateTagResponseSchema } from "../message/exercise_messages_pb";
+import type {
+  ApproveExerciseRequestSchema,
+  ApproveExerciseResponseSchema,
+  CreateBodyPartRequestSchema,
+  CreateBodyPartResponseSchema,
+  CreateEquipmentRequestSchema,
+  CreateEquipmentResponseSchema,
+  CreateExerciseRequestSchema,
+  CreateExerciseResponseSchema,
+  CreateMuscleRequestSchema,
+  CreateMuscleResponseSchema,
+  CreateTagRequestSchema,
+  CreateTagResponseSchema,
+  DeleteBodyPartRequestSchema,
+  DeleteBodyPartResponseSchema,
+  DeleteEquipmentRequestSchema,
+  DeleteEquipmentResponseSchema,
+  DeleteExerciseRequestSchema,
+  DeleteExerciseResponseSchema,
+  DeleteMuscleRequestSchema,
+  DeleteMuscleResponseSchema,
+  DeleteTagRequestSchema,
+  DeleteTagResponseSchema,
+  GetBodyPartRequestSchema,
+  GetBodyPartResponseSchema,
+  GetCatalogMetadataRequestSchema,
+  GetCatalogMetadataResponseSchema,
+  GetEquipmentRequestSchema,
+  GetEquipmentResponseSchema,
+  GetExerciseRequestSchema,
+  GetExerciseResponseSchema,
+  GetMuscleRequestSchema,
+  GetMuscleResponseSchema,
+  GetTagRequestSchema,
+  GetTagResponseSchema,
+  ListBodyPartsRequestSchema,
+  ListBodyPartsResponseSchema,
+  ListEquipmentsRequestSchema,
+  ListEquipmentsResponseSchema,
+  ListMusclesRequestSchema,
+  ListMusclesResponseSchema,
+  ListTagsRequestSchema,
+  ListTagsResponseSchema,
+  SearchExercisesRequestSchema,
+  SearchExercisesResponseSchema,
+  SubmitExerciseForApprovalRequestSchema,
+  SubmitExerciseForApprovalResponseSchema,
+  UpdateBodyPartRequestSchema,
+  UpdateBodyPartResponseSchema,
+  UpdateEquipmentRequestSchema,
+  UpdateEquipmentResponseSchema,
+  UpdateExerciseRequestSchema,
+  UpdateExerciseResponseSchema,
+  UpdateMuscleRequestSchema,
+  UpdateMuscleResponseSchema,
+  UpdateTagRequestSchema,
+  UpdateTagResponseSchema,
+} from "../message/exercise_messages_pb";
 import { file_contracts_supporting_exercise_v1_message_exercise_messages } from "../message/exercise_messages_pb";
 
 /**
  * Describes the file contracts/supporting/exercise/v1/service/exercise_service.proto.
  */
-export const file_contracts_supporting_exercise_v1_service_exercise_service: GenFile = /*@__PURE__*/
-  fileDesc("Cj9jb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9zZXJ2aWNlL2V4ZXJjaXNlX3NlcnZpY2UucHJvdG8SKGNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLnNlcnZpY2Uy8icKD0V4ZXJjaXNlU2VydmljZRK4AQoPU2VhcmNoRXhlcmNpc2VzEkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5TZWFyY2hFeGVyY2lzZXNSZXF1ZXN0GkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5TZWFyY2hFeGVyY2lzZXNSZXNwb25zZSIggtPkkwIaEhgvYXBpL3YxL2V4ZXJjaXNlcy9zZWFyY2gSwwEKEkdldENhdGFsb2dNZXRhZGF0YRJDLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0Q2F0YWxvZ01ldGFkYXRhUmVxdWVzdBpELmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0Q2F0YWxvZ01ldGFkYXRhUmVzcG9uc2UiIoLT5JMCHBIaL2FwaS92MS9leGVyY2lzZXMvbWV0YWRhdGESqgEKC0dldEV4ZXJjaXNlEjwuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5HZXRFeGVyY2lzZVJlcXVlc3QaPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkdldEV4ZXJjaXNlUmVzcG9uc2UiHoLT5JMCGBIWL2FwaS92MS9leGVyY2lzZXMve2lkfRK3AQoOQ3JlYXRlRXhlcmNpc2USPy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkNyZWF0ZUV4ZXJjaXNlUmVxdWVzdBpALmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQ3JlYXRlRXhlcmNpc2VSZXNwb25zZSIigtPkkwIcOgEqIhcvYXBpL3YxL2FkbWluL2V4ZXJjaXNlcxK8AQoOVXBkYXRlRXhlcmNpc2USPy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlVwZGF0ZUV4ZXJjaXNlUmVxdWVzdBpALmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVXBkYXRlRXhlcmNpc2VSZXNwb25zZSIngtPkkwIhOgEqGhwvYXBpL3YxL2FkbWluL2V4ZXJjaXNlcy97aWR9EuQBChlTdWJtaXRFeGVyY2lzZUZvckFwcHJvdmFsEkouY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5TdWJtaXRFeGVyY2lzZUZvckFwcHJvdmFsUmVxdWVzdBpLLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuU3VibWl0RXhlcmNpc2VGb3JBcHByb3ZhbFJlc3BvbnNlIi6C0+STAig6ASoiIy9hcGkvdjEvYWRtaW4vZXhlcmNpc2VzL3tpZH0vc3VibWl0EscBCg9BcHByb3ZlRXhlcmNpc2USQC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkFwcHJvdmVFeGVyY2lzZVJlcXVlc3QaQS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkFwcHJvdmVFeGVyY2lzZVJlc3BvbnNlIi+C0+STAik6ASoiJC9hcGkvdjEvYWRtaW4vZXhlcmNpc2VzL3tpZH0vYXBwcm92ZRK5AQoORGVsZXRlRXhlcmNpc2USPy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkRlbGV0ZUV4ZXJjaXNlUmVxdWVzdBpALmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRGVsZXRlRXhlcmNpc2VSZXNwb25zZSIkgtPkkwIeKhwvYXBpL3YxL2FkbWluL2V4ZXJjaXNlcy97aWR9ErgBCg5DcmVhdGVCb2R5UGFydBI/LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQ3JlYXRlQm9keVBhcnRSZXF1ZXN0GkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5DcmVhdGVCb2R5UGFydFJlc3BvbnNlIiOC0+STAh06ASoiGC9hcGkvdjEvYWRtaW4vYm9keS1wYXJ0cxKrAQoLR2V0Qm9keVBhcnQSPC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkdldEJvZHlQYXJ0UmVxdWVzdBo9LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0Qm9keVBhcnRSZXNwb25zZSIfgtPkkwIZEhcvYXBpL3YxL2JvZHktcGFydHMve2lkfRKsAQoNTGlzdEJvZHlQYXJ0cxI+LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTGlzdEJvZHlQYXJ0c1JlcXVlc3QaPy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkxpc3RCb2R5UGFydHNSZXNwb25zZSIagtPkkwIUEhIvYXBpL3YxL2JvZHktcGFydHMSvQEKDlVwZGF0ZUJvZHlQYXJ0Ej8uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5VcGRhdGVCb2R5UGFydFJlcXVlc3QaQC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlVwZGF0ZUJvZHlQYXJ0UmVzcG9uc2UiKILT5JMCIjoBKhodL2FwaS92MS9hZG1pbi9ib2R5LXBhcnRzL3tpZH0SugEKDkRlbGV0ZUJvZHlQYXJ0Ej8uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5EZWxldGVCb2R5UGFydFJlcXVlc3QaQC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkRlbGV0ZUJvZHlQYXJ0UmVzcG9uc2UiJYLT5JMCHyodL2FwaS92MS9hZG1pbi9ib2R5LXBhcnRzL3tpZH0SuwEKD0NyZWF0ZUVxdWlwbWVudBJALmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQ3JlYXRlRXF1aXBtZW50UmVxdWVzdBpBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQ3JlYXRlRXF1aXBtZW50UmVzcG9uc2UiI4LT5JMCHToBKiIYL2FwaS92MS9hZG1pbi9lcXVpcG1lbnRzEq4BCgxHZXRFcXVpcG1lbnQSPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkdldEVxdWlwbWVudFJlcXVlc3QaPi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkdldEVxdWlwbWVudFJlc3BvbnNlIh+C0+STAhkSFy9hcGkvdjEvZXF1aXBtZW50cy97aWR9Eq8BCg5MaXN0RXF1aXBtZW50cxI/LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTGlzdEVxdWlwbWVudHNSZXF1ZXN0GkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5MaXN0RXF1aXBtZW50c1Jlc3BvbnNlIhqC0+STAhQSEi9hcGkvdjEvZXF1aXBtZW50cxLAAQoPVXBkYXRlRXF1aXBtZW50EkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5VcGRhdGVFcXVpcG1lbnRSZXF1ZXN0GkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5VcGRhdGVFcXVpcG1lbnRSZXNwb25zZSIogtPkkwIiOgEqGh0vYXBpL3YxL2FkbWluL2VxdWlwbWVudHMve2lkfRK9AQoPRGVsZXRlRXF1aXBtZW50EkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5EZWxldGVFcXVpcG1lbnRSZXF1ZXN0GkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5EZWxldGVFcXVpcG1lbnRSZXNwb25zZSIlgtPkkwIfKh0vYXBpL3YxL2FkbWluL2VxdWlwbWVudHMve2lkfRKvAQoMQ3JlYXRlTXVzY2xlEj0uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5DcmVhdGVNdXNjbGVSZXF1ZXN0Gj4uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5DcmVhdGVNdXNjbGVSZXNwb25zZSIggtPkkwIaOgEqIhUvYXBpL3YxL2FkbWluL211c2NsZXMSogEKCUdldE11c2NsZRI6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0TXVzY2xlUmVxdWVzdBo7LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0TXVzY2xlUmVzcG9uc2UiHILT5JMCFhIUL2FwaS92MS9tdXNjbGVzL3tpZH0SowEKC0xpc3RNdXNjbGVzEjwuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5MaXN0TXVzY2xlc1JlcXVlc3QaPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkxpc3RNdXNjbGVzUmVzcG9uc2UiF4LT5JMCERIPL2FwaS92MS9tdXNjbGVzErQBCgxVcGRhdGVNdXNjbGUSPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlVwZGF0ZU11c2NsZVJlcXVlc3QaPi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlVwZGF0ZU11c2NsZVJlc3BvbnNlIiWC0+STAh86ASoaGi9hcGkvdjEvYWRtaW4vbXVzY2xlcy97aWR9ErEBCgxEZWxldGVNdXNjbGUSPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkRlbGV0ZU11c2NsZVJlcXVlc3QaPi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkRlbGV0ZU11c2NsZVJlc3BvbnNlIiKC0+STAhwqGi9hcGkvdjEvYWRtaW4vbXVzY2xlcy97aWR9EqMBCglDcmVhdGVUYWcSOi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkNyZWF0ZVRhZ1JlcXVlc3QaOy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkNyZWF0ZVRhZ1Jlc3BvbnNlIh2C0+STAhc6ASoiEi9hcGkvdjEvYWRtaW4vdGFncxKWAQoGR2V0VGFnEjcuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5HZXRUYWdSZXF1ZXN0GjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5HZXRUYWdSZXNwb25zZSIZgtPkkwITEhEvYXBpL3YxL3RhZ3Mve2lkfRKXAQoITGlzdFRhZ3MSOS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkxpc3RUYWdzUmVxdWVzdBo6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTGlzdFRhZ3NSZXNwb25zZSIUgtPkkwIOEgwvYXBpL3YxL3RhZ3MSqAEKCVVwZGF0ZVRhZxI6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVXBkYXRlVGFnUmVxdWVzdBo7LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVXBkYXRlVGFnUmVzcG9uc2UiIoLT5JMCHDoBKhoXL2FwaS92MS9hZG1pbi90YWdzL3tpZH0SpQEKCURlbGV0ZVRhZxI6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRGVsZXRlVGFnUmVxdWVzdBo7LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRGVsZXRlVGFnUmVzcG9uc2UiH4LT5JMCGSoXL2FwaS92MS9hZG1pbi90YWdzL3tpZH1CwwJab2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvZXhlcmNpc2UvdjEvc2VydmljZTtleGVyY2lzZXYxc2VydmljZZJBzgESZwoURXhlcmNpc2UgQ2F0YWxvZyBBUEkSSkFQSSBxdeG6o24gbMO9IHRoxrAgdmnhu4duIGLDoGkgdOG6rXAgdsOgIGx14buTbmcgcGjDqiBkdXnhu4d0IGLDoGkgdOG6rXAuMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_supporting_exercise_v1_message_exercise_messages]);
+export const file_contracts_supporting_exercise_v1_service_exercise_service: GenFile /*@__PURE__*/ =
+  fileDesc(
+    "Cj9jb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9zZXJ2aWNlL2V4ZXJjaXNlX3NlcnZpY2UucHJvdG8SKGNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLnNlcnZpY2Uy8icKD0V4ZXJjaXNlU2VydmljZRK4AQoPU2VhcmNoRXhlcmNpc2VzEkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5TZWFyY2hFeGVyY2lzZXNSZXF1ZXN0GkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5TZWFyY2hFeGVyY2lzZXNSZXNwb25zZSIggtPkkwIaEhgvYXBpL3YxL2V4ZXJjaXNlcy9zZWFyY2gSwwEKEkdldENhdGFsb2dNZXRhZGF0YRJDLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0Q2F0YWxvZ01ldGFkYXRhUmVxdWVzdBpELmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0Q2F0YWxvZ01ldGFkYXRhUmVzcG9uc2UiIoLT5JMCHBIaL2FwaS92MS9leGVyY2lzZXMvbWV0YWRhdGESqgEKC0dldEV4ZXJjaXNlEjwuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5HZXRFeGVyY2lzZVJlcXVlc3QaPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkdldEV4ZXJjaXNlUmVzcG9uc2UiHoLT5JMCGBIWL2FwaS92MS9leGVyY2lzZXMve2lkfRK3AQoOQ3JlYXRlRXhlcmNpc2USPy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkNyZWF0ZUV4ZXJjaXNlUmVxdWVzdBpALmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQ3JlYXRlRXhlcmNpc2VSZXNwb25zZSIigtPkkwIcOgEqIhcvYXBpL3YxL2FkbWluL2V4ZXJjaXNlcxK8AQoOVXBkYXRlRXhlcmNpc2USPy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlVwZGF0ZUV4ZXJjaXNlUmVxdWVzdBpALmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVXBkYXRlRXhlcmNpc2VSZXNwb25zZSIngtPkkwIhOgEqGhwvYXBpL3YxL2FkbWluL2V4ZXJjaXNlcy97aWR9EuQBChlTdWJtaXRFeGVyY2lzZUZvckFwcHJvdmFsEkouY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5TdWJtaXRFeGVyY2lzZUZvckFwcHJvdmFsUmVxdWVzdBpLLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuU3VibWl0RXhlcmNpc2VGb3JBcHByb3ZhbFJlc3BvbnNlIi6C0+STAig6ASoiIy9hcGkvdjEvYWRtaW4vZXhlcmNpc2VzL3tpZH0vc3VibWl0EscBCg9BcHByb3ZlRXhlcmNpc2USQC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkFwcHJvdmVFeGVyY2lzZVJlcXVlc3QaQS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkFwcHJvdmVFeGVyY2lzZVJlc3BvbnNlIi+C0+STAik6ASoiJC9hcGkvdjEvYWRtaW4vZXhlcmNpc2VzL3tpZH0vYXBwcm92ZRK5AQoORGVsZXRlRXhlcmNpc2USPy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkRlbGV0ZUV4ZXJjaXNlUmVxdWVzdBpALmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRGVsZXRlRXhlcmNpc2VSZXNwb25zZSIkgtPkkwIeKhwvYXBpL3YxL2FkbWluL2V4ZXJjaXNlcy97aWR9ErgBCg5DcmVhdGVCb2R5UGFydBI/LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQ3JlYXRlQm9keVBhcnRSZXF1ZXN0GkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5DcmVhdGVCb2R5UGFydFJlc3BvbnNlIiOC0+STAh06ASoiGC9hcGkvdjEvYWRtaW4vYm9keS1wYXJ0cxKrAQoLR2V0Qm9keVBhcnQSPC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkdldEJvZHlQYXJ0UmVxdWVzdBo9LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0Qm9keVBhcnRSZXNwb25zZSIfgtPkkwIZEhcvYXBpL3YxL2JvZHktcGFydHMve2lkfRKsAQoNTGlzdEJvZHlQYXJ0cxI+LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTGlzdEJvZHlQYXJ0c1JlcXVlc3QaPy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkxpc3RCb2R5UGFydHNSZXNwb25zZSIagtPkkwIUEhIvYXBpL3YxL2JvZHktcGFydHMSvQEKDlVwZGF0ZUJvZHlQYXJ0Ej8uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5VcGRhdGVCb2R5UGFydFJlcXVlc3QaQC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlVwZGF0ZUJvZHlQYXJ0UmVzcG9uc2UiKILT5JMCIjoBKhodL2FwaS92MS9hZG1pbi9ib2R5LXBhcnRzL3tpZH0SugEKDkRlbGV0ZUJvZHlQYXJ0Ej8uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5EZWxldGVCb2R5UGFydFJlcXVlc3QaQC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkRlbGV0ZUJvZHlQYXJ0UmVzcG9uc2UiJYLT5JMCHyodL2FwaS92MS9hZG1pbi9ib2R5LXBhcnRzL3tpZH0SuwEKD0NyZWF0ZUVxdWlwbWVudBJALmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQ3JlYXRlRXF1aXBtZW50UmVxdWVzdBpBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQ3JlYXRlRXF1aXBtZW50UmVzcG9uc2UiI4LT5JMCHToBKiIYL2FwaS92MS9hZG1pbi9lcXVpcG1lbnRzEq4BCgxHZXRFcXVpcG1lbnQSPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkdldEVxdWlwbWVudFJlcXVlc3QaPi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkdldEVxdWlwbWVudFJlc3BvbnNlIh+C0+STAhkSFy9hcGkvdjEvZXF1aXBtZW50cy97aWR9Eq8BCg5MaXN0RXF1aXBtZW50cxI/LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTGlzdEVxdWlwbWVudHNSZXF1ZXN0GkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5MaXN0RXF1aXBtZW50c1Jlc3BvbnNlIhqC0+STAhQSEi9hcGkvdjEvZXF1aXBtZW50cxLAAQoPVXBkYXRlRXF1aXBtZW50EkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5VcGRhdGVFcXVpcG1lbnRSZXF1ZXN0GkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5VcGRhdGVFcXVpcG1lbnRSZXNwb25zZSIogtPkkwIiOgEqGh0vYXBpL3YxL2FkbWluL2VxdWlwbWVudHMve2lkfRK9AQoPRGVsZXRlRXF1aXBtZW50EkAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5EZWxldGVFcXVpcG1lbnRSZXF1ZXN0GkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5EZWxldGVFcXVpcG1lbnRSZXNwb25zZSIlgtPkkwIfKh0vYXBpL3YxL2FkbWluL2VxdWlwbWVudHMve2lkfRKvAQoMQ3JlYXRlTXVzY2xlEj0uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5DcmVhdGVNdXNjbGVSZXF1ZXN0Gj4uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5DcmVhdGVNdXNjbGVSZXNwb25zZSIggtPkkwIaOgEqIhUvYXBpL3YxL2FkbWluL211c2NsZXMSogEKCUdldE11c2NsZRI6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0TXVzY2xlUmVxdWVzdBo7LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuR2V0TXVzY2xlUmVzcG9uc2UiHILT5JMCFhIUL2FwaS92MS9tdXNjbGVzL3tpZH0SowEKC0xpc3RNdXNjbGVzEjwuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5MaXN0TXVzY2xlc1JlcXVlc3QaPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkxpc3RNdXNjbGVzUmVzcG9uc2UiF4LT5JMCERIPL2FwaS92MS9tdXNjbGVzErQBCgxVcGRhdGVNdXNjbGUSPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlVwZGF0ZU11c2NsZVJlcXVlc3QaPi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlVwZGF0ZU11c2NsZVJlc3BvbnNlIiWC0+STAh86ASoaGi9hcGkvdjEvYWRtaW4vbXVzY2xlcy97aWR9ErEBCgxEZWxldGVNdXNjbGUSPS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkRlbGV0ZU11c2NsZVJlcXVlc3QaPi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkRlbGV0ZU11c2NsZVJlc3BvbnNlIiKC0+STAhwqGi9hcGkvdjEvYWRtaW4vbXVzY2xlcy97aWR9EqMBCglDcmVhdGVUYWcSOi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkNyZWF0ZVRhZ1JlcXVlc3QaOy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkNyZWF0ZVRhZ1Jlc3BvbnNlIh2C0+STAhc6ASoiEi9hcGkvdjEvYWRtaW4vdGFncxKWAQoGR2V0VGFnEjcuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5HZXRUYWdSZXF1ZXN0GjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5HZXRUYWdSZXNwb25zZSIZgtPkkwITEhEvYXBpL3YxL3RhZ3Mve2lkfRKXAQoITGlzdFRhZ3MSOS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkxpc3RUYWdzUmVxdWVzdBo6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTGlzdFRhZ3NSZXNwb25zZSIUgtPkkwIOEgwvYXBpL3YxL3RhZ3MSqAEKCVVwZGF0ZVRhZxI6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVXBkYXRlVGFnUmVxdWVzdBo7LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVXBkYXRlVGFnUmVzcG9uc2UiIoLT5JMCHDoBKhoXL2FwaS92MS9hZG1pbi90YWdzL3tpZH0SpQEKCURlbGV0ZVRhZxI6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRGVsZXRlVGFnUmVxdWVzdBo7LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRGVsZXRlVGFnUmVzcG9uc2UiH4LT5JMCGSoXL2FwaS92MS9hZG1pbi90YWdzL3tpZH1CwwJab2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvZXhlcmNpc2UvdjEvc2VydmljZTtleGVyY2lzZXYxc2VydmljZZJBzgESZwoURXhlcmNpc2UgQ2F0YWxvZyBBUEkSSkFQSSBxdeG6o24gbMO9IHRoxrAgdmnhu4duIGLDoGkgdOG6rXAgdsOgIGx14buTbmcgcGjDqiBkdXnhu4d0IGLDoGkgdOG6rXAuMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z",
+    [
+      file_google_api_annotations,
+      file_protoc_gen_openapiv2_options_annotations,
+      file_contracts_supporting_exercise_v1_message_exercise_messages,
+    ],
+  );
 
 /**
  * @generated from service contracts.supporting.exercise.v1.service.ExerciseService
@@ -28,7 +93,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof SearchExercisesRequestSchema;
     output: typeof SearchExercisesResponseSchema;
-  },
+  };
   /**
    * Lấy toàn bộ danh mục metadata (BodyParts, Equipments, Muscles, Tags)
    *
@@ -38,7 +103,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof GetCatalogMetadataRequestSchema;
     output: typeof GetCatalogMetadataResponseSchema;
-  },
+  };
   /**
    * Lấy chi tiết một bài tập
    *
@@ -48,7 +113,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof GetExerciseRequestSchema;
     output: typeof GetExerciseResponseSchema;
-  },
+  };
   /**
    * API dành cho Admin CRUD
    *
@@ -58,7 +123,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof CreateExerciseRequestSchema;
     output: typeof CreateExerciseResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.UpdateExercise
    */
@@ -66,7 +131,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof UpdateExerciseRequestSchema;
     output: typeof UpdateExerciseResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.SubmitExerciseForApproval
    */
@@ -74,7 +139,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof SubmitExerciseForApprovalRequestSchema;
     output: typeof SubmitExerciseForApprovalResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.ApproveExercise
    */
@@ -82,7 +147,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof ApproveExerciseRequestSchema;
     output: typeof ApproveExerciseResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.DeleteExercise
    */
@@ -90,7 +155,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof DeleteExerciseRequestSchema;
     output: typeof DeleteExerciseResponseSchema;
-  },
+  };
   /**
    * BodyPart CRUD operations
    *
@@ -100,7 +165,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof CreateBodyPartRequestSchema;
     output: typeof CreateBodyPartResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.GetBodyPart
    */
@@ -108,7 +173,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof GetBodyPartRequestSchema;
     output: typeof GetBodyPartResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.ListBodyParts
    */
@@ -116,7 +181,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof ListBodyPartsRequestSchema;
     output: typeof ListBodyPartsResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.UpdateBodyPart
    */
@@ -124,7 +189,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof UpdateBodyPartRequestSchema;
     output: typeof UpdateBodyPartResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.DeleteBodyPart
    */
@@ -132,7 +197,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof DeleteBodyPartRequestSchema;
     output: typeof DeleteBodyPartResponseSchema;
-  },
+  };
   /**
    * Equipment CRUD operations
    *
@@ -142,7 +207,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof CreateEquipmentRequestSchema;
     output: typeof CreateEquipmentResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.GetEquipment
    */
@@ -150,7 +215,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof GetEquipmentRequestSchema;
     output: typeof GetEquipmentResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.ListEquipments
    */
@@ -158,7 +223,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof ListEquipmentsRequestSchema;
     output: typeof ListEquipmentsResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.UpdateEquipment
    */
@@ -166,7 +231,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof UpdateEquipmentRequestSchema;
     output: typeof UpdateEquipmentResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.DeleteEquipment
    */
@@ -174,7 +239,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof DeleteEquipmentRequestSchema;
     output: typeof DeleteEquipmentResponseSchema;
-  },
+  };
   /**
    * Muscle CRUD operations
    *
@@ -184,7 +249,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof CreateMuscleRequestSchema;
     output: typeof CreateMuscleResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.GetMuscle
    */
@@ -192,7 +257,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof GetMuscleRequestSchema;
     output: typeof GetMuscleResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.ListMuscles
    */
@@ -200,7 +265,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof ListMusclesRequestSchema;
     output: typeof ListMusclesResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.UpdateMuscle
    */
@@ -208,7 +273,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof UpdateMuscleRequestSchema;
     output: typeof UpdateMuscleResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.DeleteMuscle
    */
@@ -216,7 +281,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof DeleteMuscleRequestSchema;
     output: typeof DeleteMuscleResponseSchema;
-  },
+  };
   /**
    * Tag CRUD operations
    *
@@ -226,7 +291,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof CreateTagRequestSchema;
     output: typeof CreateTagResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.GetTag
    */
@@ -234,7 +299,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof GetTagRequestSchema;
     output: typeof GetTagResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.ListTags
    */
@@ -242,7 +307,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof ListTagsRequestSchema;
     output: typeof ListTagsResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.UpdateTag
    */
@@ -250,7 +315,7 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof UpdateTagRequestSchema;
     output: typeof UpdateTagResponseSchema;
-  },
+  };
   /**
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.DeleteTag
    */
@@ -258,7 +323,5 @@ export const ExerciseService: GenService<{
     methodKind: "unary";
     input: typeof DeleteTagRequestSchema;
     output: typeof DeleteTagResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_contracts_supporting_exercise_v1_service_exercise_service, 0);
-
+  };
+}> /*@__PURE__*/ = serviceDesc(file_contracts_supporting_exercise_v1_service_exercise_service, 0);

@@ -66,6 +66,7 @@ function toLiveExercise(seed: PrescriptionSeed): LiveExercise {
     instructions: source.instructions,
     formCues: source.formCues ?? [],
     commonMistakes: source.commonMistakes ?? [],
+    breathingCue: source.breathingCue,
     videoUrl: source.videoUrl,
     thumbnailUrl: source.thumbnailUrl,
     hasAiSupported: source.hasAiSupported,
