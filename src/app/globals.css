@@ -4631,3 +4631,96 @@ body:has(.live-screen) {
     transform: none;
   }
 }
+
+.live-next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 0;
+  text-align: center;
+}
+
+/* Neutral, not tinted: Field Green is this screen's one accent and it belongs
+   to the ring. A blue pill here would put two leaders on one screen. */
+.live-next__badge {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-round);
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The hero of this screen. Display face, capped at DESIGN.md's 2.5rem mobile
+   ceiling, tracking at the -0.035em the display style specifies. */
+.live-next__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 7.5vw, 2.25rem);
+  font-weight: 680;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  color: var(--color-text);
+}
+
+.live-next__prescription {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.live-next__progress {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.live-rest {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Both action buttons are the same size — the spec asks for symmetry. */
+.live-rest > .live-timerbar__side:first-child {
+  justify-self: start;
+}
+
+.live-rest > .live-timerbar__side:last-child {
+  justify-self: end;
+}
+
+.live-rest__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: center;
+}
+
+.live-rest__label {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.live-rest__note {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  padding-top: var(--space-2);
+}
