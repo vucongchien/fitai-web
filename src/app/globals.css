@@ -4386,3 +4386,64 @@ body:has(.live-screen) {
   overflow: hidden;
   overscroll-behavior: none;
 }
+
+.live-media__video,
+.live-media__poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.live-media__fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+/* The one floating element on these screens: it genuinely sits above the media.
+   Solid surface, never a translucent scrim — DESIGN.md rules out glassmorphism. */
+.live-media__camera {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: var(--radius-round);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-state) var(--ease-standard),
+    color var(--duration-state) var(--ease-standard),
+    transform var(--duration-press) var(--ease-standard);
+}
+
+.live-media__camera:active {
+  transform: scale(0.985);
+}
+
+/* Blue, not Coral: this is an interaction affordance, not effort state. */
+.live-media__camera[aria-pressed="true"] {
+  background: var(--color-action);
+  color: var(--ref-clear-white);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-media__camera {
+    transition: none;
+  }
+
+  .live-media__camera:active {
+    transform: none;
+  }
+}
