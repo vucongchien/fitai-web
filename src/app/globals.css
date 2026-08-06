@@ -4568,3 +4568,55 @@ body:has(.live-screen) {
     transition: none;
   }
 }
+
+/* Both flanking controls are neutral. The ring arc is the screen's one accent,
+   so tinting these would break the One Leader Rule. */
+.live-timerbar__side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-width: 4rem;
+  min-height: 3.5rem;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-state) var(--ease-standard),
+    background-color var(--duration-state) var(--ease-standard),
+    transform var(--duration-press) var(--ease-standard);
+}
+
+.live-timerbar__side:hover {
+  border-color: var(--color-border-strong);
+}
+
+.live-timerbar__side:active {
+  transform: scale(0.985);
+}
+
+.live-screen__footer > .live-timerbar__side:first-child {
+  justify-self: start;
+}
+
+.live-screen__footer > .live-timerbar__side:last-child {
+  justify-self: end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-timerbar__side {
+    transition: none;
+  }
+
+  .live-timerbar__side:active {
+    transform: none;
+  }
+}
