@@ -49,6 +49,8 @@ type State = {
   stepIndex: number;
   startedAt: number;
   setEndsAt: number | null;
+  /** Full length of the set currently running, so the ring has a denominator. */
+  setTotalSec: number;
   restEndsAt: number | null;
   /** Full length of the rest currently running, so the ring has a denominator. */
   restTotalSec: number;
@@ -137,6 +139,7 @@ function reducer(state: State, action: Action, context: Context): State {
         ...state,
         status: "working",
         setEndsAt: action.durationSeconds > 0 ? Date.now() + action.durationSeconds * 1000 : null,
+        setTotalSec: action.durationSeconds,
       };
 
     case "finish-set":
@@ -178,6 +181,9 @@ function reducer(state: State, action: Action, context: Context): State {
       return {
         ...state,
         setEndsAt: Math.max(state.setEndsAt, Date.now()) + action.seconds * 1000,
+        // The ring divides by this, so it has to grow with the clock or the arc
+        // would pin at full while the numerals kept ticking.
+        setTotalSec: state.setTotalSec + action.seconds,
       };
 
     case "mark-synced": {
@@ -232,6 +238,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
       stepIndex: 0,
       startedAt: Date.now(),
       setEndsAt: null,
+      setTotalSec: 0,
       restEndsAt: null,
       restTotalSec: 0,
       loggedSets: [],
@@ -392,6 +399,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
     restLeft,
     restTotal: state.restTotalSec,
     setLeft,
+    setTotal: state.setTotalSec,
     elapsedSec,
     elapsedMin,
     duration,

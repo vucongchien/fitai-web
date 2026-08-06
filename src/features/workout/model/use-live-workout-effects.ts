@@ -41,7 +41,6 @@ export function useLiveWorkoutEffects({
   const router = useRouter();
   const [online, setOnline] = useState(true);
   const [manualForSet, setManualForSet] = useState(false);
-  const [videoExpanded, setVideoExpanded] = useState(false);
   const [finishing, setFinishing] = useState(false);
 
   const elapsedSecRef = useRef(session.elapsedSec);
@@ -74,7 +73,6 @@ export function useLiveWorkoutEffects({
   const exerciseId = exercise?.exerciseId ?? null;
   useEffect(() => {
     setManualForSet(false);
-    setVideoExpanded(false);
   }, [exerciseId]);
 
   // --- Camera lifecycle ---
@@ -133,7 +131,7 @@ export function useLiveWorkoutEffects({
         motion.startSet();
       }
     },
-    [audio, cameraBranch, exercise, motion, playCueByCode, session.actions],
+    [cameraBranch, exercise, motion, playCueByCode, session.actions],
   );
 
   const finishSet = useCallback(
@@ -279,9 +277,7 @@ export function useLiveWorkoutEffects({
     spec,
     startSet,
     step,
-    videoExpanded,
     setManualForSet,
-    setVideoExpanded,
     finishSession,
   };
 }

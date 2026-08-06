@@ -33,6 +33,7 @@ export function ActiveExerciseScreen({
   onToggleVoice,
   repCount,
   secondsLeft,
+  setTotalSeconds = 0,
   totalSets,
   voiceOn,
 }: {
@@ -40,6 +41,12 @@ export function ActiveExerciseScreen({
   currentSet: number;
   totalSets: number;
   secondsLeft: number;
+  /**
+   * Full length of the running set — the ring's denominator. It grows with
+   * "+10s", which `exercise.durationSeconds` cannot. 0 means the set has not
+   * started yet, so the prescription stands in.
+   */
+  setTotalSeconds?: number;
   repCount?: number;
   cameraActive: boolean;
   onToggleCamera?: () => void;
@@ -95,9 +102,11 @@ export function ActiveExerciseScreen({
       ? `${repCount} / ${exercise.targetReps}`
       : "—";
 
+  const setTotal = setTotalSeconds > 0 ? setTotalSeconds : exercise.durationSeconds;
+
   const progress = timed
-    ? exercise.durationSeconds > 0
-      ? Math.max(0, secondsLeft) / exercise.durationSeconds
+    ? setTotal > 0
+      ? Math.max(0, secondsLeft) / setTotal
       : null
     : tracking
       ? repCount! / exercise.targetReps
