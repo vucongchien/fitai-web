@@ -1695,14 +1695,12 @@ a.week-route__row:hover {
 }
 
 .workout-prep-page,
-.live-workout,
 .summary-page {
   min-height: 100dvh;
   background: var(--color-surface);
 }
 
-.workout-prep-header,
-.live-workout__header {
+.workout-prep-header {
   display: grid;
   min-height: 4.5rem;
   padding: max(0.75rem, env(safe-area-inset-top)) 1.25rem 0.75rem;
@@ -1725,8 +1723,7 @@ a.week-route__row:hover {
   justify-self: start;
 }
 
-.workout-prep-header > span,
-.live-workout__phase {
+.workout-prep-header > span {
   color: var(--color-text-muted);
   font-size: 0.72rem;
   font-weight: 700;
@@ -1895,16 +1892,6 @@ a.week-route__row:hover {
   margin: 0 auto;
 }
 
-.live-workout {
-  display: flex;
-  min-height: 100dvh;
-  flex-direction: column;
-}
-
-.live-workout__header {
-  position: relative;
-}
-
 .workout-close {
   color: var(--color-text);
   justify-self: end;
@@ -1922,13 +1909,6 @@ a.week-route__row:hover {
   line-height: 1.35;
 }
 
-.live-workout__main {
-  width: min(100%, 44rem);
-  margin: 0 auto;
-  padding: 1rem 1.25rem 8rem;
-  flex: 1;
-}
-
 .workout-progress {
   height: 0.25rem;
   overflow: hidden;
@@ -1944,28 +1924,6 @@ a.week-route__row:hover {
   border-radius: inherit;
   transform-origin: left;
   transition: transform var(--duration-state) var(--ease-out);
-}
-
-.exercise-stage {
-  padding: 1rem 0;
-}
-
-.exercise-stage__heading h1 {
-  max-width: 13ch;
-  margin: 0.5rem 0 0.75rem;
-  font-family: var(--font-display);
-  font-size: clamp(2.35rem, 11vw, 4rem);
-  font-variation-settings: "wdth" 86;
-  font-weight: 680;
-  letter-spacing: -0.035em;
-  line-height: 0.98;
-}
-
-.exercise-stage__heading > p:last-child {
-  max-width: 34rem;
-  margin: 0;
-  color: var(--color-text-muted);
-  line-height: 1.5;
 }
 
 .set-composer {
@@ -4342,281 +4300,89 @@ a.week-route__row:hover {
   }
 }
 
-/* Pure BEM CSS for Live Workout Stage & Elements */
-.live-workout {
+/* ---------------------------------------------------------------------------
+   Live workout screens — fixed-height, mobile-first.
+   The document never scrolls; only .live-screen__coach does.
+
+   Height budget at 390x844 with a 156px ring and a 34px home indicator:
+     header 48 + media 200 + meta 44 + footer 156 + note 0
+     + 4 gaps (48) + padding (12) + safe area (34) = 542
+     leaving ~300px for the coaching panel. At 375x667 it still clears ~180px.
+   Media is the shock absorber — shrink it before anything else.
+   --------------------------------------------------------------------------- */
+
+.live-screen {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   height: 100dvh;
   max-height: 100dvh;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
+  background: var(--color-canvas);
+  /* DESIGN.md: 20px mobile gutters. */
+  padding-inline: var(--space-5);
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  gap: var(--space-3);
+}
+
+.live-screen__header {
+  display: grid;
+  /* 48px matches .workout-close (3rem) — PRODUCT.md's mobile touch floor. */
+  grid-template-columns: 3rem 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 3rem;
+}
+
+.live-screen__title {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-screen__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.live-screen__media {
   position: relative;
-  background: var(--color-background, #ffffff);
-}
-
-.live-workout__main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  height: clamp(140px, 24dvh, 220px);
+  border-radius: var(--radius-hero);
   overflow: hidden;
-  padding: 0.5rem 1rem;
-}
-
-.exercise-stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  max-width: 26rem;
-  margin: 0 auto;
-  flex: 1;
-  height: 100%;
-}
-
-.exercise-stage__heading {
-  text-align: center;
-}
-
-.exercise-stage__heading h1 {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-text);
-  margin-top: 0.25rem;
-  line-height: 1.2;
-}
-
-.exercise-stage__heading p {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  margin-top: 0.25rem;
-}
-
-.exercise-stage__tools {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.guide-toggles {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.guide-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.guide-toggle[data-active="true"] {
-  background: var(--color-action);
-  color: white;
-  border-color: var(--color-action);
-}
-
-.music-mini {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.music-mini__label {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: none;
-  border: none;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.music-mini__buttons {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  border-left: 1px solid var(--color-border);
-  padding-left: 0.35rem;
-}
-
-.music-mini__buttons button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.1rem;
-}
-
-.set-stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  flex: 1;
-  height: 100%;
-}
-
-.set-stage__header {
-  text-align: center;
-}
-
-.set-stage__header h1 {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-text);
-  margin: 0;
-  line-height: 1.25;
-}
-
-.set-stage__goal {
-  display: inline-block;
-  margin-top: 0.35rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: var(--radius-pill);
   background: var(--color-surface-subtle);
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  font-weight: 700;
 }
 
-.set-stage__circle {
-  width: 13rem;
-  height: 13rem;
-  border-radius: 50%;
-  background: var(--color-surface-subtle);
-  border: 4px solid var(--color-surface);
-  box-shadow: var(--shadow-surface);
-  display: flex;
+.live-screen__coach {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* Room for the 3px-offset global focus ring, which .live-screen clips. */
+  padding-inline: 3px;
+  margin-inline: -3px;
+}
+
+.live-screen__footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: center;
+  gap: var(--space-2);
 }
 
-.set-stage__label {
-  font-size: 2.25rem;
-  font-weight: 800;
-  color: var(--color-action);
-  opacity: 0.7;
+/* Rest variant: header, media, centered info, ring block, auto-transition note. */
+.live-screen--rest {
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
 }
 
-.set-stage__timer {
-  text-align: center;
-}
-
-.set-stage__timer strong {
-  font-size: 3.25rem;
-  font-weight: 800;
-  font-family: monospace;
-  color: var(--color-text);
-}
-
-.set-stage__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.set-stage__actions button {
-  flex: 1;
-  border-radius: 1rem;
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-}
-
-.set-stage__skip {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.rest-view {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  width: 100%;
-  flex: 1;
-  margin: auto 0;
-}
-
-.rest-view__card {
-  width: 100%;
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  text-align: center;
-}
-
-.rest-view__label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #059669;
-}
-
-.rest-view__card strong {
-  display: block;
-  font-size: 3.25rem;
-  font-weight: 800;
-  font-family: monospace;
-  color: #047857;
-  margin-top: 0.25rem;
-}
-
-.rest-view__actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.rest-view__actions .ui-button--primary {
-  width: 100%;
-  border-radius: 1rem;
-  padding: 0.85rem 1.25rem;
-  font-size: 0.875rem;
-}
-
-.rest-view__actions .ui-button--primary .ui-button__label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.rest-view__add {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
+body:has(.live-screen) {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
