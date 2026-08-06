@@ -49,7 +49,8 @@ describe("toPriceTier", () => {
 
 describe("adaptMealDetailPageData", () => {
   it("picks the requested slot's options and rounds them for display", () => {
-    const data = adaptMealDetailPageData(menu, getMockMealRows(), "breakfast", MOCK_TODAY);
+    // Nothing is logged, so the option stays in the suggestions.
+    const data = adaptMealDetailPageData(menu, [], "breakfast", MOCK_TODAY);
 
     expect(data.choices).toHaveLength(1);
     expect(data.choices[0]?.name).toBe("Lean beef pho");
@@ -58,14 +59,47 @@ describe("adaptMealDetailPageData", () => {
   });
 
   it("carries the recipe steps through in order", () => {
-    const data = adaptMealDetailPageData(menu, getMockMealRows(), "breakfast", MOCK_TODAY);
+    const data = adaptMealDetailPageData(menu, [], "breakfast", MOCK_TODAY);
 
     expect(data.choices[0]?.recipeSteps).toEqual(["Simmer the bones.", "Blanch the noodles."]);
   });
 
   it("keeps an empty recipe empty rather than inventing steps", () => {
-    const data = adaptMealDetailPageData(menu, getMockMealRows(), "snack", MOCK_TODAY);
+    const data = adaptMealDetailPageData(menu, [], "snack", MOCK_TODAY);
     expect(data.choices[0]?.recipeSteps).toEqual([]);
+  });
+
+  it("does not offer a dish that was already eaten", () => {
+    // The mock logs "Lean beef pho" for breakfast, which is the slot's only option.
+    const data = adaptMealDetailPageData(menu, getMockMealRows(), "breakfast", MOCK_TODAY);
+
+    expect(data.loggedMeals.map((meal) => meal.name)).toEqual(["Lean beef pho"]);
+    expect(data.choices).toEqual([]);
+  });
+
+  it("moves the eaten dish's recipe onto the logged row rather than losing it", () => {
+    const data = adaptMealDetailPageData(menu, getMockMealRows(), "breakfast", MOCK_TODAY);
+
+    expect(data.loggedMeals[0]?.recipeSteps).toEqual(["Simmer the bones.", "Blanch the noodles."]);
+  });
+
+  it("matches dish names case-insensitively and ignoring surrounding space", () => {
+    const rows = getMockMealRows().map((row) =>
+      row.mealType === "BREAKFAST" ? { ...row, mealName: "  lean BEEF pho " } : row,
+    );
+
+    expect(adaptMealDetailPageData(menu, rows, "breakfast", MOCK_TODAY).choices).toEqual([]);
+  });
+
+  it("leaves a logged row with no recipe when the menu carries no match", () => {
+    const rows = getMockMealRows().map((row) =>
+      row.mealType === "BREAKFAST" ? { ...row, mealName: "Something off-menu" } : row,
+    );
+    const data = adaptMealDetailPageData(menu, rows, "breakfast", MOCK_TODAY);
+
+    expect(data.loggedMeals[0]?.recipeSteps).toEqual([]);
+    // The unmatched option stays available as a suggestion.
+    expect(data.choices).toHaveLength(1);
   });
 
   it("pulls today's logged rows for that slot out of the flat history", () => {

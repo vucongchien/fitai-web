@@ -4428,16 +4428,22 @@ body:has(.live-screen) {
   color: var(--color-text-muted);
 }
 
-/* The one floating element on these screens: it genuinely sits above the media.
-   Solid surface, never a translucent scrim — DESIGN.md rules out glassmorphism. */
-.live-media__camera {
+/* The floating controls over the media — watch-video and AI camera. Solid
+   surfaces, never a translucent scrim: DESIGN.md rules out glassmorphism. */
+.live-media__controls {
   position: absolute;
   top: var(--space-3);
   right: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.live-media__control {
   display: grid;
   place-items: center;
-  width: 3rem;
-  height: 3rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border: none;
   border-radius: var(--radius-round);
   background: var(--color-surface);
@@ -4450,7 +4456,7 @@ body:has(.live-screen) {
     transform var(--duration-press) var(--ease-standard);
 }
 
-.live-media__camera:active {
+.live-media__control:active {
   transform: scale(0.985);
 }
 
@@ -4468,39 +4474,44 @@ body:has(.live-screen) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .live-media__camera {
+  .live-media__control {
     transition: none;
   }
 
-  .live-media__camera:active {
+  .live-media__control:active {
     transform: none;
   }
 }
 
-/* Name+target on one baseline, set counter opposite — the two things checked
-   at a glance, on one 40px line instead of two stacked columns. */
+/* Two rows under the media:
+     name .................. 1 / 3 Sets
+     target
+   The name and the set counter are the pair you check at a glance; the
+   prescription gets its own line so a long name cannot squeeze it out. */
 .live-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.live-meta__top {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
-}
-
-.live-meta__heading {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
   min-width: 0;
-  margin: 0;
 }
 
 /* An exercise name — display face is correct here. */
 .live-meta__name {
+  margin: 0;
+  min-width: 0;
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 680;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4509,7 +4520,6 @@ body:has(.live-screen) {
 
 /* Values that change in place: data face, tabular. */
 .live-meta__target {
-  flex: none;
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
   font-size: 0.9375rem;
@@ -4636,15 +4646,18 @@ body:has(.live-screen) {
 
 /* Both flanking controls are neutral. The ring arc is the screen's one accent,
    so tinting these would break the One Leader Rule. */
+/* Icon and label on ONE line — stacked, they read as two separate controls and
+   waste the vertical space the ring needs. */
 .live-timerbar__side {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
   min-width: 4rem;
-  min-height: 3.5rem;
-  padding: var(--space-2);
+  min-height: 3rem;
+  padding: var(--space-2) var(--space-3);
+  white-space: nowrap;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-input);
   background: var(--color-surface);
@@ -4665,14 +4678,15 @@ body:has(.live-screen) {
    neutral side button so the footer stays symmetric around the ring. */
 .live-timerbar__done {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: var(--space-1);
   justify-self: end;
   min-width: 4.5rem;
-  min-height: 3.5rem;
-  padding: var(--space-2);
+  min-height: 3rem;
+  padding: var(--space-2) var(--space-3);
+  white-space: nowrap;
   border: none;
   border-radius: var(--radius-input);
   /* The app's primary action colour — Relay Blue, 5.3:1 against white. */
@@ -5757,4 +5771,20 @@ body:has(.live-screen) {
   .meal-choices {
     gap: 1.1rem;
   }
+}
+
+/* The recipe disclosure spans the logged row's three columns. */
+.meal-logged__list .meal-recipe {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--color-recovery);
+}
+
+.meal-logged__list .meal-recipe summary {
+  color: var(--color-recovery-strong);
+}
+
+.meal-logged__list .meal-recipe__steps li {
+  color: var(--color-recovery-ink);
 }

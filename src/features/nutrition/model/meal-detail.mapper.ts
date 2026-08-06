@@ -69,11 +69,20 @@ function toChoice(option: MealOptionRow, index: number): MealChoice {
   };
 }
 
+/** Loose comparison so "Lean beef pho" and "lean beef pho " count as the same dish. */
+function sameDish(left: string, right: string) {
+  return left.trim().toLowerCase() === right.trim().toLowerCase();
+}
+
 /**
  * Shapes one meal slot from `GetTodayMenu` + `GetNutritionHistory`.
  *
  * Reshape only: pick the slot's options, round for display, and pull today's logged rows
  * for that slot out of the flat history list.
+ *
+ * A dish already logged is dropped from the suggestions — `MealLogItem` and `MealOption`
+ * share no id, so the dish name is the only key the wire offers. Without this the page
+ * offers you the meal you just ate.
  */
 export function adaptMealDetailPageData(
   menu: DailyMenuRows,
@@ -82,11 +91,20 @@ export function adaptMealDetailPageData(
   today: DayKey,
 ): MealDetailPageData {
   const group = groupMealsBySlot(mealRows, today).find((entry) => entry.slot === slot);
+  const eaten = group?.meals ?? [];
+  const options = optionsForSlot(menu, slot).map(toChoice);
+
+  // Carry the matching option's recipe onto the logged row, so a dish you already ate keeps
+  // its cooking steps instead of losing them when it drops out of the suggestions.
+  const loggedMeals = eaten.map((meal) => ({
+    ...meal,
+    recipeSteps: options.find((choice) => sameDish(choice.name, meal.name))?.recipeSteps ?? [],
+  }));
 
   return {
-    choices: optionsForSlot(menu, slot).map(toChoice),
+    choices: options.filter((choice) => !eaten.some((meal) => sameDish(meal.name, choice.name))),
     loggedCalories: group?.calories ?? 0,
-    loggedMeals: group?.meals ?? [],
+    loggedMeals,
     slot,
     slotLabel: MEAL_SLOT_LABELS[slot],
   };

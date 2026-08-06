@@ -17,13 +17,19 @@ export type MealChoice = {
   recipeSteps: string[];
 };
 
+/** A logged meal, plus the menu option it matches when the menu still carries one. */
+export type LoggedMealDetail = LoggedMeal & {
+  /** Recipe steps from the matching `MealOption`, empty when the menu has no match. */
+  recipeSteps: string[];
+};
+
 export type MealDetailPageData = {
-  /** Suggested options for this slot, in the order the menu returned them. */
+  /** Suggestions for this slot, excluding anything already eaten. */
   choices: MealChoice[];
   /** Total calories logged in this slot today. */
   loggedCalories: number;
   /** What was actually eaten in this slot today. */
-  loggedMeals: LoggedMeal[];
+  loggedMeals: LoggedMealDetail[];
   slot: MealSlot;
   slotLabel: string;
 };

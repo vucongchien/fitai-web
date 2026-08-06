@@ -12,6 +12,23 @@ const PRICE_LABEL = {
   medium: "Mid cost",
 } as const;
 
+function RecipeSteps({ id, steps }: { id: string; steps: string[] }) {
+  return (
+    <details className="meal-recipe">
+      <summary>
+        How to cook it
+        <span className="meal-recipe__count data-value">{steps.length} steps</span>
+      </summary>
+      <ol className="meal-recipe__steps">
+        {steps.map((step, index) => (
+          // Steps are plain strings with no id; order is their identity.
+          <li key={`${id}-step-${index}`}>{step}</li>
+        ))}
+      </ol>
+    </details>
+  );
+}
+
 function MacroLine({ choice }: { choice: MealChoice }) {
   return (
     <dl className="meal-macros">
@@ -53,6 +70,9 @@ export function MealDetailView({ data }: MealDetailViewProps) {
                   {meal.time ? <span className="data-value">{meal.time}</span> : null}
                   <span className="meal-logged__name">{meal.name}</span>
                   <span className="data-value">{meal.calories} kcal</span>
+                  {meal.recipeSteps.length > 0 ? (
+                    <RecipeSteps id={meal.id} steps={meal.recipeSteps} />
+                  ) : null}
                 </li>
               ))}
             </ul>
@@ -71,18 +91,17 @@ export function MealDetailView({ data }: MealDetailViewProps) {
         </p>
       )}
 
-      <section className="content-section">
-        <div className="content-section__header">
-          <h2>{logged ? "Other options today" : "Today’s options"}</h2>
-          <p>
-            <span className="data-value">{data.choices.length}</span>{" "}
-            {data.choices.length === 1 ? "suggestion" : "suggestions"}
-          </p>
-        </div>
+      {/* Only rendered when a suggestion remains after excluding what was already eaten. */}
+      {data.choices.length > 0 ? (
+        <section className="content-section">
+          <div className="content-section__header">
+            <h2>{logged ? "Other options today" : "Today’s options"}</h2>
+            <p>
+              <span className="data-value">{data.choices.length}</span>{" "}
+              {data.choices.length === 1 ? "suggestion" : "suggestions"}
+            </p>
+          </div>
 
-        {data.choices.length === 0 ? (
-          <p className="meal-empty">No menu suggestions for this slot today.</p>
-        ) : (
           <ul className="meal-choices">
             {data.choices.map((choice) => (
               <li className="meal-choice" key={choice.id}>
@@ -102,28 +121,15 @@ export function MealDetailView({ data }: MealDetailViewProps) {
                 <MacroLine choice={choice} />
 
                 {choice.recipeSteps.length > 0 ? (
-                  <details className="meal-recipe">
-                    <summary>
-                      How to cook it
-                      <span className="meal-recipe__count data-value">
-                        {choice.recipeSteps.length} steps
-                      </span>
-                    </summary>
-                    <ol className="meal-recipe__steps">
-                      {choice.recipeSteps.map((step, index) => (
-                        // Steps are plain strings with no id; order is their identity.
-                        <li key={`${choice.id}-step-${index}`}>{step}</li>
-                      ))}
-                    </ol>
-                  </details>
+                  <RecipeSteps id={choice.id} steps={choice.recipeSteps} />
                 ) : (
                   <p className="meal-choice__no-recipe">No preparation needed.</p>
                 )}
               </li>
             ))}
           </ul>
-        )}
-      </section>
+        </section>
+      ) : null}
     </>
   );
 }
