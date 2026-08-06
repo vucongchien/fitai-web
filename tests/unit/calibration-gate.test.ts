@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import { shouldCalibrate } from "@/features/workout/domain/calibration-gate";
+import type { LiveStatus } from "@/features/workout/model/use-live-session";
 
-const base = { cameraBranch: true, cameraOn: true, cameraReady: false, status: "ready" };
+const base = {
+  cameraBranch: true,
+  cameraOn: true,
+  cameraReady: false,
+  status: "ready" as LiveStatus,
+};
 
 describe("shouldCalibrate", () => {
   it("never shows for an exercise without the camera branch", () => {
