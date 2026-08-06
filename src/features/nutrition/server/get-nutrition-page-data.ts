@@ -2,6 +2,7 @@ import "server-only";
 import type { NutritionPageData } from "@/features/nutrition/model/nutrition-page.types";
 
 import { getMockNutritionPageData } from "./get-mock-nutrition-data";
+import { readLocalMeals } from "./local-meal-log";
 
 // ---------------------------------------------------------------------------
 // Real gRPC adapter (uncomment khi FITAI_RPC_URL sẵn sàng)
@@ -39,7 +40,9 @@ import { getMockNutritionPageData } from "./get-mock-nutrition-data";
  */
 export async function getNutritionPageData(): Promise<NutritionPageData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) return getMockNutritionPageData();
+  // readLocalMeals touches cookies(), so this read belongs to the request rather than the
+  // prerender — a freshly logged meal shows up immediately.
+  if (!hasBackend) return getMockNutritionPageData(await readLocalMeals());
   // TODO: return getRealNutritionPageData();
-  return getMockNutritionPageData();
+  return getMockNutritionPageData(await readLocalMeals());
 }

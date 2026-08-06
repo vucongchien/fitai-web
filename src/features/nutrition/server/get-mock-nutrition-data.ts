@@ -2,6 +2,7 @@ import { adaptNutritionPageData } from "@/features/nutrition/model/nutrition-pag
 import type { NutritionPageData } from "@/features/nutrition/model/nutrition-page.types";
 import type { DayKey } from "@/shared/api/bff/aggregate/day-key";
 import type { MealLogRow } from "@/shared/api/bff/aggregate/nutrition-daily";
+import { mealsOnDay, totalMacros } from "@/shared/api/bff/aggregate/nutrition-daily";
 
 /**
  * Mock wire payloads, shaped exactly like the proto messages, then passed through the real
@@ -85,15 +86,37 @@ export function getMockMealRows(): MealLogRow[] {
   ];
 }
 
-export function getMockNutritionSummary() {
+/**
+ * Mock `GetNutritionSummaryResponse`.
+ *
+ * The consumed side is summed from today's rows rather than fixed, so a meal logged in this
+ * session moves the ring exactly as the real summary would. Targets are the plan's own
+ * figures and stay constant.
+ */
+export function getMockNutritionSummary(rows: readonly MealLogRow[]) {
+  const today = totalMacros(mealsOnDay(rows, MOCK_TODAY));
+
   return {
-    consumedCalories: 1420,
-    consumedMacros: { carbGrams: 137, fatGrams: 45, proteinGrams: 104 },
+    consumedCalories: today.calories,
+    consumedMacros: {
+      carbGrams: today.carbs,
+      fatGrams: today.fat,
+      proteinGrams: today.protein,
+    },
     targetCalories: 2050,
     targetMacros: { carbGrams: 232, fatGrams: 68, proteinGrams: 150 },
   };
 }
 
-export function getMockNutritionPageData(): NutritionPageData {
-  return adaptNutritionPageData(getMockNutritionSummary(), getMockMealRows(), MOCK_TODAY);
+/**
+ * The seeded rows plus anything logged this session, so the log flow is observable end to
+ * end without a backend.
+ */
+export function withLocalMeals(local: readonly MealLogRow[]): MealLogRow[] {
+  return [...getMockMealRows(), ...local];
+}
+
+export function getMockNutritionPageData(local: readonly MealLogRow[]): NutritionPageData {
+  const rows = withLocalMeals(local);
+  return adaptNutritionPageData(getMockNutritionSummary(rows), rows, MOCK_TODAY);
 }

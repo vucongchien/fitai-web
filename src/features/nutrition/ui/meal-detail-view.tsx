@@ -1,6 +1,8 @@
 import { Check } from "lucide-react";
 
 import type { MealChoice, MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";
+import { LogMealButton } from "@/features/nutrition/ui/log-meal-button";
+import { LogMealForm } from "@/features/nutrition/ui/log-meal-form";
 
 type MealDetailViewProps = {
   data: MealDetailPageData;
@@ -125,11 +127,28 @@ export function MealDetailView({ data }: MealDetailViewProps) {
                 ) : (
                   <p className="meal-choice__no-recipe">No preparation needed.</p>
                 )}
+
+                <LogMealButton
+                  calories={choice.calories}
+                  carbs={choice.carbs}
+                  fat={choice.fat}
+                  mealName={choice.name}
+                  protein={choice.protein}
+                  slot={data.slot}
+                />
               </li>
             ))}
           </ul>
         </section>
       ) : null}
+
+      <section className="content-section">
+        <div className="content-section__header">
+          <h2>Log something else</h2>
+          <p>For a meal that is not on today&rsquo;s menu</p>
+        </div>
+        <LogMealForm slot={data.slot} slotLabel={data.slotLabel} />
+      </section>
     </>
   );
 }

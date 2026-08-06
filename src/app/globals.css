@@ -4219,6 +4219,20 @@ a.week-route__row:hover {
   }
 }
 
+/* Dialogs, unlike sheets, sit in the middle of the screen.
+   `.live-sheet` is a bottom sheet (`align-items: flex-end`) — the right shape
+   for a picker you pull up and push down, the wrong one for a question that
+   interrupts. A centred panel reads as "answer this to continue", and it also
+   keeps the actions clear of the home indicator. */
+.live-sheet--dialog {
+  align-items: center;
+  padding: var(--space-5);
+  /* The dialog is taller than the viewport on small phones once the keyboard is
+     up (the pain dialog has a textarea), so the overlay itself scrolls. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .live-sheet__panel {
   width: 100%;
   max-width: 24rem;
@@ -4880,6 +4894,183 @@ body:has(.live-screen) {
   display: grid;
   place-items: center;
   grid-template-rows: none;
+}
+
+/* The end-session dialog panel. Same construction as .pain-dialog so the two
+   confirmations behind the Back button look like one family. */
+.end-dialog {
+  width: 100%;
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-hero);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
+  text-align: center;
+}
+
+.end-dialog__mark {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-round);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+}
+
+.end-dialog__mark--warn {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.end-dialog h2 {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+
+.end-dialog > p {
+  margin-top: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.end-dialog > .ui-button {
+  width: 100%;
+  margin-top: var(--space-5);
+}
+
+.end-dialog > .text-action {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-2);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* The reason picker: one tappable row per reason, left-aligned to read as a
+   list of choices rather than a row of buttons. */
+.end-dialog__reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+  text-align: left;
+}
+
+.end-dialog__reasons button {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color var(--duration-state) var(--ease-standard);
+}
+
+.end-dialog__reasons button[data-active] {
+  border-color: var(--color-text);
+}
+
+.end-dialog__reasons strong {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.end-dialog__reasons span {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+.end-dialog__note {
+  margin-top: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-input);
+  background: var(--color-surface-subtle);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  text-align: left;
+  color: var(--color-text);
+}
+
+/* The third, least-likely choice in the end dialog: available, not advertised. */
+.end-dialog__quiet {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-2);
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.end-dialog__quiet:hover {
+  color: var(--color-danger);
+}
+
+/* ---------------------------------------------------------------------------
+   Demo video, played large over the live screen.
+   --------------------------------------------------------------------------- */
+
+.demo-video {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  /* Opaque enough to kill the busy screen behind it without being a scrim over
+     content the user still needs — they are looking at the clip, nothing else. */
+  background: rgb(0 0 0 / 82%);
+}
+
+.demo-video__panel {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+}
+
+.demo-video__player {
+  display: block;
+  width: 100%;
+  max-height: 78dvh;
+  border-radius: var(--radius-hero);
+  background: #000;
+}
+
+.demo-video__close {
+  position: absolute;
+  top: calc(-1 * var(--space-12));
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: var(--radius-round);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
 }
 
 /* ---------------------------------------------------------------------------
@@ -5787,4 +5978,143 @@ body:has(.live-screen) {
 
 .meal-logged__list .meal-recipe__steps li {
   color: var(--color-recovery-ink);
+}
+
+/* == Log a meal ============================================================ */
+
+.log-meal {
+  width: 100%;
+  margin-top: 0.9rem;
+}
+
+.log-meal--done {
+  display: flex;
+  margin: 0.9rem 0 0;
+  padding-top: 0.85rem;
+  align-items: center;
+  gap: 0.4rem;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-recovery-strong);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.log-form {
+  display: grid;
+  padding: 1.15rem;
+  gap: 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-surface);
+}
+
+.log-form__field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.log-form__field label {
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.log-form__unit {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.log-form__field input {
+  min-height: 3rem;
+  padding: 0.6rem 0.75rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+.log-form__field input:focus-visible {
+  border-color: var(--color-action);
+}
+
+.log-form__field input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.log-form__error {
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  border-radius: var(--radius-input);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.log-open {
+  display: flex;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-action);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.log-open:hover {
+  border-color: var(--color-action);
+  background: var(--color-action-soft);
+}
+
+.log-form__grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.log-form__more {
+  color: var(--color-action);
+  background: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  justify-self: start;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.log-form__actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.log-form__actions .ui-button {
+  flex: 1;
+}
+
+@media (min-width: 30rem) {
+  .log-form__actions .ui-button {
+    flex: 0 0 auto;
+    min-width: 9rem;
+  }
+}
+
+.log-meal__form {
+  display: contents;
+}
+
+.log-meal__error {
+  margin: 0.6rem 0 0;
+  color: var(--color-danger);
+  font-size: 0.82rem;
+  line-height: 1.4;
 }

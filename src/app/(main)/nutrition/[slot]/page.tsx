@@ -51,21 +51,30 @@ function MealSkeleton() {
   );
 }
 
-export default async function MealDetailPage({ params }: { params: Promise<{ slot: string }> }) {
-  const { slot } = await params;
+async function MealHeading({ paramsPromise }: { paramsPromise: Promise<{ slot: string }> }) {
+  const { slot } = await paramsPromise;
   const resolved = SLOT_BY_SLUG[slot];
   if (!resolved) notFound();
 
+  return <h1>{MEAL_SLOT_LABELS[resolved]}</h1>;
+}
+
+/**
+ * `params` is awaited inside the Suspense children rather than here: under Cache Components
+ * awaiting it in the page body makes the whole route block, so the promise is forwarded down.
+ */
+export default function MealDetailPage({ params }: { params: Promise<{ slot: string }> }) {
   return (
     <PageTransition className="page meal-page">
-      {/* Static shell: the slot name is known from the route, so it paints immediately. */}
       <header className="page-heading">
         <div>
           <Link className="meal-page__back" href="/nutrition" transitionTypes={["nav-back"]}>
             <ArrowLeft aria-hidden="true" size={16} />
             Nutrition
           </Link>
-          <h1>{MEAL_SLOT_LABELS[resolved]}</h1>
+          <Suspense fallback={<h1>Meal</h1>}>
+            <MealHeading paramsPromise={params} />
+          </Suspense>
         </div>
       </header>
 
