@@ -3,6 +3,19 @@
 import { AlertCircle, Inbox, Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useRef } from "react";
 
+/**
+ * Placeholder rows shown before the first page arrives. They carry no domain
+ * identity, so they get fixed synthetic keys from a module-scope constant
+ * rather than an array index.
+ */
+const SKELETON_ROW_KEYS = [
+  "skeleton-row-1",
+  "skeleton-row-2",
+  "skeleton-row-3",
+  "skeleton-row-4",
+  "skeleton-row-5",
+];
+
 export type Column<T> = {
   header: string;
   cell: (item: T) => React.ReactNode;
@@ -72,8 +85,8 @@ export function AdminTable<T>({
           {/* Header */}
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-semibold text-xs uppercase tracking-wider">
-              {columns.map((col, idx) => (
-                <th key={idx} className={`py-3.5 px-4 ${col.className || ""}`}>
+              {columns.map((col) => (
+                <th key={col.header} className={`py-3.5 px-4 ${col.className || ""}`}>
                   {col.header}
                 </th>
               ))}
@@ -85,10 +98,10 @@ export function AdminTable<T>({
             {/* First Page Loading State */}
             {isLoading &&
               data.length === 0 &&
-              Array.from({ length: 5 }).map((_, rIdx) => (
-                <tr key={rIdx} className="animate-pulse">
-                  {columns.map((col, cIdx) => (
-                    <td key={cIdx} className={`py-4 px-4 ${col.className || ""}`}>
+              SKELETON_ROW_KEYS.map((rowKey) => (
+                <tr key={rowKey} className="animate-pulse" aria-hidden="true">
+                  {columns.map((col) => (
+                    <td key={col.header} className={`py-4 px-4 ${col.className || ""}`}>
                       <div className="h-4 bg-slate-200 rounded-md w-3/4" />
                     </td>
                   ))}
@@ -106,8 +119,8 @@ export function AdminTable<T>({
                     onRowClick ? "cursor-pointer hover:bg-indigo-50/40" : "hover:bg-slate-50"
                   }`}
                 >
-                  {columns.map((col, cIdx) => (
-                    <td key={cIdx} className={`py-3.5 px-4 ${col.className || ""}`}>
+                  {columns.map((col) => (
+                    <td key={col.header} className={`py-3.5 px-4 ${col.className || ""}`}>
                       {col.cell(item)}
                     </td>
                   ))}

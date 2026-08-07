@@ -8,6 +8,12 @@ import type {
 } from "@/features/admin/domain/admin-types";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
 
+/**
+ * Shared empty default so the optional option lists keep a stable identity
+ * across renders instead of being re-created as fresh array literals.
+ */
+const NO_OPTIONS: { id: string; name: string }[] = [];
+
 export type ExerciseFiltersProps = {
   filters: ExerciseAdminFilters;
   onChange: (filters: ExerciseAdminFilters) => void;
@@ -20,8 +26,8 @@ export function ExerciseFilters({
   filters,
   onChange,
   onReset,
-  bodyParts = [],
-  equipments = [],
+  bodyParts = NO_OPTIONS,
+  equipments = NO_OPTIONS,
 }: ExerciseFiltersProps) {
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xs">
