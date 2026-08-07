@@ -1,11 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import type { MouseEventHandler } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import { Button } from "@/shared/ui/button";
 
 describe("Button", () => {
   it("exposes its loading state and prevents duplicate actions", () => {
-    const onClick = vi.fn();
+    const onClick = vi.fn<MouseEventHandler<HTMLButtonElement>>();
     render(
       <Button loading onClick={onClick}>
         Save changes

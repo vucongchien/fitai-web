@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockCookieSet = vi.fn();
+import type { createAuthCookieOptions } from "@/shared/auth/cookies";
+
+const mockCookieSet =
+  vi.fn<
+    (name: string, value: string, options: ReturnType<typeof createAuthCookieOptions>) => void
+  >();
 
 vi.mock("next/server", () => {
   class FakeNextResponse {

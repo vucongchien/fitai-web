@@ -1,7 +1,24 @@
+import { create } from "@bufbuild/protobuf";
+import type { Client, Transport } from "@connectrpc/connect";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockCookieSet = vi.fn();
-const mockCookieDelete = vi.fn();
+import {
+  GetOAuthLoginURLResponseSchema,
+  LoginWithOAuthResponseSchema,
+} from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
+import type { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
+import { GetProfileResponseSchema } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
+import type { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
+import type { createAuthCookieOptions } from "@/shared/auth/cookies";
+
+type AuthClient = Client<typeof AuthService>;
+type ProfileClient = Client<typeof ProfileService>;
+
+const mockCookieSet =
+  vi.fn<
+    (name: string, value: string, options: ReturnType<typeof createAuthCookieOptions>) => void
+  >();
+const mockCookieDelete = vi.fn<(name: string) => void>();
 
 vi.mock("next/server", () => {
   class FakeNextResponse {
@@ -23,14 +40,15 @@ vi.mock("next/server", () => {
   return { NextResponse: FakeNextResponse };
 });
 
-const mockGetCookie = vi.fn();
+/** `(await cookies()).get(name)`. The routes only ever read `.value`. */
+const mockGetCookie = vi.fn<(name: string) => { value: string } | undefined>();
 vi.mock("next/headers", () => ({
   cookies: () => Promise.resolve({ get: mockGetCookie }),
 }));
 
-const mockGetOAuthLoginURL = vi.fn();
-const mockLoginWithOAuth = vi.fn();
-const mockGetProfile = vi.fn();
+const mockGetOAuthLoginURL = vi.fn<AuthClient["getOAuthLoginURL"]>();
+const mockLoginWithOAuth = vi.fn<AuthClient["loginWithOAuth"]>();
+const mockGetProfile = vi.fn<ProfileClient["getProfile"]>();
 
 vi.mock("@connectrpc/connect", () => ({
   createClient: (_service: unknown, _transport: unknown) => ({
@@ -41,7 +59,8 @@ vi.mock("@connectrpc/connect", () => ({
 }));
 
 vi.mock("@/shared/api/server/transport", () => ({
-  createServerTransport: vi.fn(() => ({})),
+  // `createClient` is mocked too, so the transport is never actually used.
+  createServerTransport: vi.fn<() => Transport>(() => ({}) as Transport),
 }));
 
 vi.mock("@/shared/auth/cookies", () => ({
@@ -91,7 +110,9 @@ describe("/api/auth/oauth/[provider] (BFF entry route)", () => {
 
   it("307 redirects to OAuth URL and sets state cookie", async () => {
     const fakeLoginUrl = "https://accounts.google.com/o/oauth2/auth?state=abc123";
-    mockGetOAuthLoginURL.mockResolvedValue({ loginUrl: fakeLoginUrl });
+    mockGetOAuthLoginURL.mockResolvedValue(
+      create(GetOAuthLoginURLResponseSchema, { loginUrl: fakeLoginUrl }),
+    );
 
     const { GET } = await import("@/app/api/auth/oauth/[provider]/route");
     const res = await GET(makeRequest(`${ORIGIN}/api/auth/oauth/google`), {
@@ -119,7 +140,9 @@ describe("/api/auth/oauth/[provider] (BFF entry route)", () => {
 
   it("accepts facebook as a valid provider", async () => {
     const fakeLoginUrl = "https://www.facebook.com/v12.0/dialog/oauth?state=xyz";
-    mockGetOAuthLoginURL.mockResolvedValue({ loginUrl: fakeLoginUrl });
+    mockGetOAuthLoginURL.mockResolvedValue(
+      create(GetOAuthLoginURLResponseSchema, { loginUrl: fakeLoginUrl }),
+    );
 
     const { GET } = await import("@/app/api/auth/oauth/[provider]/route");
     const res = await GET(makeRequest(`${ORIGIN}/api/auth/oauth/facebook`), {
@@ -131,9 +154,11 @@ describe("/api/auth/oauth/[provider] (BFF entry route)", () => {
   });
 
   it("sets fitai_oauth_popup cookie when popup=1", async () => {
-    mockGetOAuthLoginURL.mockResolvedValue({
-      loginUrl: "https://accounts.google.com/o/oauth2/auth?state=abc123",
-    });
+    mockGetOAuthLoginURL.mockResolvedValue(
+      create(GetOAuthLoginURLResponseSchema, {
+        loginUrl: "https://accounts.google.com/o/oauth2/auth?state=abc123",
+      }),
+    );
 
     const { GET } = await import("@/app/api/auth/oauth/[provider]/route");
     const res = await GET(makeRequest(`${ORIGIN}/api/auth/oauth/google?popup=1`), {
@@ -200,8 +225,14 @@ describe("/auth/callback/[provider] (callback route)", () => {
 
   it("redirects to /onboarding when profile completion is low (<80)", async () => {
     mockGetCookie.mockReturnValue({ value: STATE });
-    mockLoginWithOAuth.mockResolvedValue({ accessToken: "t", refreshToken: "r", userId: "user_1" });
-    mockGetProfile.mockResolvedValue({ completionRate: 30 });
+    mockLoginWithOAuth.mockResolvedValue(
+      create(LoginWithOAuthResponseSchema, {
+        accessToken: "t",
+        refreshToken: "r",
+        userId: "user_1",
+      }),
+    );
+    mockGetProfile.mockResolvedValue(create(GetProfileResponseSchema, { completionRate: 30 }));
 
     const { GET } = await import("@/app/auth/callback/[provider]/route");
     const res = await GET(
@@ -215,8 +246,14 @@ describe("/auth/callback/[provider] (callback route)", () => {
 
   it("redirects to /planning when profile completion ≥80 but no active roadmap", async () => {
     mockGetCookie.mockReturnValue({ value: STATE });
-    mockLoginWithOAuth.mockResolvedValue({ accessToken: "t", refreshToken: "r", userId: "user_1" });
-    mockGetProfile.mockResolvedValue({ completionRate: 85 });
+    mockLoginWithOAuth.mockResolvedValue(
+      create(LoginWithOAuthResponseSchema, {
+        accessToken: "t",
+        refreshToken: "r",
+        userId: "user_1",
+      }),
+    );
+    mockGetProfile.mockResolvedValue(create(GetProfileResponseSchema, { completionRate: 85 }));
 
     const { GET } = await import("@/app/auth/callback/[provider]/route");
     const res = await GET(
@@ -230,8 +267,14 @@ describe("/auth/callback/[provider] (callback route)", () => {
 
   it("sets all three auth cookies on success", async () => {
     mockGetCookie.mockReturnValue({ value: STATE });
-    mockLoginWithOAuth.mockResolvedValue({ accessToken: "t", refreshToken: "r", userId: "user_1" });
-    mockGetProfile.mockResolvedValue({ completionRate: 30 });
+    mockLoginWithOAuth.mockResolvedValue(
+      create(LoginWithOAuthResponseSchema, {
+        accessToken: "t",
+        refreshToken: "r",
+        userId: "user_1",
+      }),
+    );
+    mockGetProfile.mockResolvedValue(create(GetProfileResponseSchema, { completionRate: 30 }));
 
     const { GET } = await import("@/app/auth/callback/[provider]/route");
     await GET(makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`), {
@@ -261,7 +304,13 @@ describe("/auth/callback/[provider] (callback route)", () => {
 
   it("falls back to /onboarding when Profile API throws", async () => {
     mockGetCookie.mockReturnValue({ value: STATE });
-    mockLoginWithOAuth.mockResolvedValue({ accessToken: "t", refreshToken: "r", userId: "user_1" });
+    mockLoginWithOAuth.mockResolvedValue(
+      create(LoginWithOAuthResponseSchema, {
+        accessToken: "t",
+        refreshToken: "r",
+        userId: "user_1",
+      }),
+    );
     mockGetProfile.mockRejectedValue(new Error("profile unavailable"));
 
     const { GET } = await import("@/app/auth/callback/[provider]/route");

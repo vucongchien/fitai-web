@@ -27,6 +27,15 @@ function plan(day: number, status: number, id = `s-${day}-${status}`): SessionPl
   };
 }
 
+function at(iso: string, totalVolume: number): SessionHistoryRow {
+  return {
+    date: { seconds: Math.floor(Date.parse(iso) / 1000) },
+    sessionId: iso,
+    totalSets: 10,
+    totalVolume,
+  };
+}
+
 describe("toAdherence", () => {
   it("computes an integer percentage", () => {
     expect(toAdherence(9, 12)).toEqual({ completed: 9, percentage: 75, scheduled: 12 });
@@ -182,15 +191,6 @@ describe("prescribed minutes", () => {
 });
 
 describe("weeklyVolumeSeries", () => {
-  function at(iso: string, totalVolume: number): SessionHistoryRow {
-    return {
-      date: { seconds: Math.floor(Date.parse(iso) / 1000) },
-      sessionId: iso,
-      totalSets: 10,
-      totalVolume,
-    };
-  }
-
   it("buckets sessions into ISO weeks starting Monday, oldest first", () => {
     // Mon 3 Aug 2026 and Wed 5 Aug are the same week; Mon 27 Jul is the week before.
     const rows = [

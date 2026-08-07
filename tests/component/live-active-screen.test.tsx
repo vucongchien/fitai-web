@@ -1,8 +1,11 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
+
+type ActiveScreenProps = ComponentProps<typeof ActiveExerciseScreen>;
 
 afterEach(cleanup);
 
@@ -34,14 +37,14 @@ const baseProps = {
   cameraActive: false,
   currentSet: 1,
   exercise: makeExercise(),
-  onAddTime: vi.fn(),
-  onBack: vi.fn(),
-  onDone: vi.fn(),
-  onOpenGuide: vi.fn(),
-  onReportPain: vi.fn(),
-  onToggleCamera: vi.fn(),
-  onToggleFullscreen: vi.fn(),
-  onToggleVoice: vi.fn(),
+  onAddTime: vi.fn<ActiveScreenProps["onAddTime"]>(),
+  onBack: vi.fn<ActiveScreenProps["onBack"]>(),
+  onDone: vi.fn<ActiveScreenProps["onDone"]>(),
+  onOpenGuide: vi.fn<ActiveScreenProps["onOpenGuide"]>(),
+  onReportPain: vi.fn<ActiveScreenProps["onReportPain"]>(),
+  onToggleCamera: vi.fn<NonNullable<ActiveScreenProps["onToggleCamera"]>>(),
+  onToggleFullscreen: vi.fn<ActiveScreenProps["onToggleFullscreen"]>(),
+  onToggleVoice: vi.fn<ActiveScreenProps["onToggleVoice"]>(),
   secondsLeft: 30,
   totalSets: 3,
   voiceOn: false,
@@ -131,7 +134,7 @@ describe("ActiveExerciseScreen", () => {
 
   // A safety control must be present and must not be the one the header drops.
   it("offers the pain report from the header", () => {
-    const onReportPain = vi.fn();
+    const onReportPain = vi.fn<ActiveScreenProps["onReportPain"]>();
     render(<ActiveExerciseScreen {...baseProps} onReportPain={onReportPain} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
@@ -157,7 +160,7 @@ describe("ActiveExerciseScreen", () => {
   });
 
   it("wires the Done button", () => {
-    const onDone = vi.fn();
+    const onDone = vi.fn<ActiveScreenProps["onDone"]>();
     render(<ActiveExerciseScreen {...baseProps} onDone={onDone} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Done" }));

@@ -1,13 +1,21 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
+
+type PainReportProps = ComponentProps<typeof PainReportDialog>;
 
 afterEach(cleanup);
 
 describe("PainReportDialog", () => {
   it("asks one question and offers both answers", () => {
-    render(<PainReportDialog onDismiss={vi.fn()} onStop={vi.fn()} />);
+    render(
+      <PainReportDialog
+        onDismiss={vi.fn<PainReportProps["onDismiss"]>()}
+        onStop={vi.fn<PainReportProps["onStop"]>()}
+      />,
+    );
 
     expect(screen.getByRole("dialog", { name: "Stop the workout?" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Yes, stop now" })).toBeInTheDocument();
@@ -16,8 +24,8 @@ describe("PainReportDialog", () => {
 
   // The whole point: someone in pain must never be blocked on typing.
   it("stops with an empty note when the user explains nothing", () => {
-    const onStop = vi.fn();
-    render(<PainReportDialog onDismiss={vi.fn()} onStop={onStop} />);
+    const onStop = vi.fn<PainReportProps["onStop"]>();
+    render(<PainReportDialog onDismiss={vi.fn<PainReportProps["onDismiss"]>()} onStop={onStop} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Yes, stop now" }));
 
@@ -25,8 +33,8 @@ describe("PainReportDialog", () => {
   });
 
   it("passes the note along when the user does explain", () => {
-    const onStop = vi.fn();
-    render(<PainReportDialog onDismiss={vi.fn()} onStop={onStop} />);
+    const onStop = vi.fn<PainReportProps["onStop"]>();
+    render(<PainReportDialog onDismiss={vi.fn<PainReportProps["onDismiss"]>()} onStop={onStop} />);
 
     fireEvent.change(screen.getByLabelText(/what hurts/i), {
       target: { value: "  sharp pain in left knee  " },
@@ -37,8 +45,8 @@ describe("PainReportDialog", () => {
   });
 
   it("keeps training when the user says no", () => {
-    const onDismiss = vi.fn();
-    const onStop = vi.fn();
+    const onDismiss = vi.fn<PainReportProps["onDismiss"]>();
+    const onStop = vi.fn<PainReportProps["onStop"]>();
     render(<PainReportDialog onDismiss={onDismiss} onStop={onStop} />);
 
     fireEvent.click(screen.getByRole("button", { name: "No, keep training" }));
@@ -48,8 +56,8 @@ describe("PainReportDialog", () => {
   });
 
   it("closes on Escape, so a mis-tap costs nothing", () => {
-    const onDismiss = vi.fn();
-    render(<PainReportDialog onDismiss={onDismiss} onStop={vi.fn()} />);
+    const onDismiss = vi.fn<PainReportProps["onDismiss"]>();
+    render(<PainReportDialog onDismiss={onDismiss} onStop={vi.fn<PainReportProps["onStop"]>()} />);
 
     fireEvent.keyDown(document, { key: "Escape" });
 
@@ -57,7 +65,12 @@ describe("PainReportDialog", () => {
   });
 
   it("focuses the stop button, the reason the dialog was opened", () => {
-    render(<PainReportDialog onDismiss={vi.fn()} onStop={vi.fn()} />);
+    render(
+      <PainReportDialog
+        onDismiss={vi.fn<PainReportProps["onDismiss"]>()}
+        onStop={vi.fn<PainReportProps["onStop"]>()}
+      />,
+    );
 
     expect(screen.getByRole("button", { name: "Yes, stop now" })).toHaveFocus();
   });

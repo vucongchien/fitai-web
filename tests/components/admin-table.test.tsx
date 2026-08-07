@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import type { Column } from "@/features/admin/ui/admin-table";
+import type { AdminTableProps, Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 
 type TestItem = {
@@ -9,25 +9,29 @@ type TestItem = {
   name: string;
 };
 
+const columns: Column<TestItem>[] = [
+  {
+    header: "ID",
+    cell: (item) => item.id,
+  },
+  {
+    header: "Name",
+    cell: (item) => item.name,
+  },
+];
+
+const twoRows: TestItem[] = [
+  { id: "1", name: "Item One" },
+  { id: "2", name: "Item Two" },
+];
+
+const noRows: TestItem[] = [];
+
+const keyExtractor = (item: TestItem) => item.id;
+
 describe("AdminTable Component (Light Theme & English)", () => {
-  const columns: Column<TestItem>[] = [
-    {
-      header: "ID",
-      cell: (item) => item.id,
-    },
-    {
-      header: "Name",
-      cell: (item) => item.name,
-    },
-  ];
-
   it("should render table columns and data rows", () => {
-    const data: TestItem[] = [
-      { id: "1", name: "Item One" },
-      { id: "2", name: "Item Two" },
-    ];
-
-    render(<AdminTable columns={columns} data={data} keyExtractor={(item) => item.id} />);
+    render(<AdminTable columns={columns} data={twoRows} keyExtractor={keyExtractor} />);
 
     expect(screen.getByText("ID")).toBeInTheDocument();
     expect(screen.getByText("Name")).toBeInTheDocument();
@@ -39,8 +43,8 @@ describe("AdminTable Component (Light Theme & English)", () => {
     render(
       <AdminTable
         columns={columns}
-        data={[]}
-        keyExtractor={(item) => item.id}
+        data={noRows}
+        keyExtractor={keyExtractor}
         isLoading={false}
         emptyTitle="No test data available"
       />,
@@ -50,12 +54,12 @@ describe("AdminTable Component (Light Theme & English)", () => {
   });
 
   it("should display Error State when error occurs", () => {
-    const handleRetry = vi.fn();
+    const handleRetry = vi.fn<NonNullable<AdminTableProps<TestItem>["onRetry"]>>();
     render(
       <AdminTable
         columns={columns}
-        data={[]}
-        keyExtractor={(item) => item.id}
+        data={noRows}
+        keyExtractor={keyExtractor}
         error={new Error("Server connection timeout")}
         onRetry={handleRetry}
       />,

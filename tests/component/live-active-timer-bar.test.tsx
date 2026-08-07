@@ -1,7 +1,10 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ActiveTimerBar } from "@/features/workout/ui/live/active-timer-bar";
+
+type TimerBarProps = ComponentProps<typeof ActiveTimerBar>;
 
 afterEach(cleanup);
 
@@ -16,14 +19,24 @@ const timedProps = {
 
 describe("ActiveTimerBar", () => {
   it("shows the timer as the dominant element", () => {
-    render(<ActiveTimerBar {...timedProps} onAddTime={vi.fn()} onDone={vi.fn()} />);
+    render(
+      <ActiveTimerBar
+        {...timedProps}
+        onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+        onDone={vi.fn<TimerBarProps["onDone"]>()}
+      />,
+    );
 
     expect(screen.getByText("00:30")).toBeInTheDocument();
   });
 
   it("offers +10s on the left and Done on the right", () => {
     const { container } = render(
-      <ActiveTimerBar {...timedProps} onAddTime={vi.fn()} onDone={vi.fn()} />,
+      <ActiveTimerBar
+        {...timedProps}
+        onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+        onDone={vi.fn<TimerBarProps["onDone"]>()}
+      />,
     );
 
     const buttons = [...container.querySelectorAll("button")].map((b) =>
@@ -33,14 +46,20 @@ describe("ActiveTimerBar", () => {
   });
 
   it("never offers a skip control", () => {
-    render(<ActiveTimerBar {...timedProps} onAddTime={vi.fn()} onDone={vi.fn()} />);
+    render(
+      <ActiveTimerBar
+        {...timedProps}
+        onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+        onDone={vi.fn<TimerBarProps["onDone"]>()}
+      />,
+    );
 
     expect(screen.queryByRole("button", { name: /skip/i })).not.toBeInTheDocument();
   });
 
   it("wires both handlers", () => {
-    const onDone = vi.fn();
-    const onAddTime = vi.fn();
+    const onDone = vi.fn<TimerBarProps["onDone"]>();
+    const onAddTime = vi.fn<TimerBarProps["onAddTime"]>();
     render(<ActiveTimerBar {...timedProps} onAddTime={onAddTime} onDone={onDone} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
@@ -51,7 +70,13 @@ describe("ActiveTimerBar", () => {
   });
 
   it("names the timer for assistive tech without announcing every tick", () => {
-    render(<ActiveTimerBar {...timedProps} onAddTime={vi.fn()} onDone={vi.fn()} />);
+    render(
+      <ActiveTimerBar
+        {...timedProps}
+        onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+        onDone={vi.fn<TimerBarProps["onDone"]>()}
+      />,
+    );
 
     const timer = screen.getByRole("timer", { name: "Time remaining in this set" });
     expect(timer).toBeInTheDocument();
@@ -63,8 +88,8 @@ describe("ActiveTimerBar", () => {
       <ActiveTimerBar
         {...timedProps}
         display="00:15"
-        onAddTime={vi.fn()}
-        onDone={vi.fn()}
+        onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+        onDone={vi.fn<TimerBarProps["onDone"]>()}
         progress={0.5}
       />,
     );
@@ -79,8 +104,8 @@ describe("ActiveTimerBar", () => {
       <ActiveTimerBar
         {...timedProps}
         display="0 / 10"
-        onAddTime={vi.fn()}
-        onDone={vi.fn()}
+        onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+        onDone={vi.fn<TimerBarProps["onDone"]>()}
         progress={null}
       />,
     );
@@ -97,8 +122,8 @@ describe("ActiveTimerBar", () => {
         display="4 / 10"
         hasInstrument
         label="Reps completed in this set"
-        onAddTime={vi.fn()}
-        onDone={vi.fn()}
+        onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+        onDone={vi.fn<TimerBarProps["onDone"]>()}
         progress={0.4}
         timed={false}
       />,
@@ -120,7 +145,13 @@ describe("ActiveTimerBar", () => {
     };
 
     it("collapses to a single confirm control", () => {
-      render(<ActiveTimerBar {...untrackedProps} onAddTime={vi.fn()} onDone={vi.fn()} />);
+      render(
+        <ActiveTimerBar
+          {...untrackedProps}
+          onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+          onDone={vi.fn<TimerBarProps["onDone"]>()}
+        />,
+      );
 
       expect(screen.getByRole("button", { name: "Complete this set" })).toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "Add 10 seconds" })).not.toBeInTheDocument();
@@ -128,8 +159,14 @@ describe("ActiveTimerBar", () => {
     });
 
     it("finishes the set when confirmed", () => {
-      const onDone = vi.fn();
-      render(<ActiveTimerBar {...untrackedProps} onAddTime={vi.fn()} onDone={onDone} />);
+      const onDone = vi.fn<TimerBarProps["onDone"]>();
+      render(
+        <ActiveTimerBar
+          {...untrackedProps}
+          onAddTime={vi.fn<TimerBarProps["onAddTime"]>()}
+          onDone={onDone}
+        />,
+      );
 
       fireEvent.click(screen.getByRole("button", { name: "Complete this set" }));
 

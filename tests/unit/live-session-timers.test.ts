@@ -3,9 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { LiveExercise, LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useLiveSession } from "@/features/workout/model/use-live-session";
+import type { syncWorkoutLogs } from "@/features/workout/server/workout-actions";
 
 vi.mock("@/features/workout/server/workout-actions", () => ({
-  syncWorkoutLogs: vi.fn(async () => undefined),
+  syncWorkoutLogs: vi.fn<typeof syncWorkoutLogs>(async () => ({ syncedSetNumbers: [] })),
 }));
 
 function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {

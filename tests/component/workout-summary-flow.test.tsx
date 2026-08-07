@@ -1,10 +1,34 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { LiveExercise, SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
 import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
+
+type ActiveScreenProps = ComponentProps<typeof ActiveExerciseScreen>;
+
+const mockExercise: LiveExercise = {
+  breathingCue: "Exhale as you press.",
+  commonMistakes: [],
+  durationSeconds: 0,
+  equipmentId: "eq_bench",
+  exerciseId: "ex_bench",
+  formCues: [],
+  hasAiSupported: false,
+  instructions: "",
+  isWeighted: true,
+  name: "Bench Press",
+  notes: "Control tempo",
+  phase: "main",
+  restExerciseSec: 90,
+  restSetSec: 60,
+  targetReps: 10,
+  targetRpe: 8,
+  targetSets: 3,
+  targetWeightKg: 60,
+};
 
 describe("WorkoutSummaryView Component", () => {
   afterEach(() => {
@@ -103,39 +127,18 @@ describe("ActiveExerciseScreen set controls", () => {
   });
 
   it("names the footer controls explicitly and offers no restart", () => {
-    const mockExercise: LiveExercise = {
-      breathingCue: "Exhale as you press.",
-      commonMistakes: [],
-      durationSeconds: 0,
-      equipmentId: "eq_bench",
-      exerciseId: "ex_bench",
-      formCues: [],
-      hasAiSupported: false,
-      instructions: "",
-      isWeighted: true,
-      name: "Bench Press",
-      notes: "Control tempo",
-      phase: "main",
-      restExerciseSec: 90,
-      restSetSec: 60,
-      targetReps: 10,
-      targetRpe: 8,
-      targetSets: 3,
-      targetWeightKg: 60,
-    };
-
     render(
       <ActiveExerciseScreen
         cameraActive={false}
         currentSet={1}
         exercise={mockExercise}
-        onAddTime={vi.fn()}
-        onBack={vi.fn()}
-        onDone={vi.fn()}
-        onOpenGuide={vi.fn()}
-        onReportPain={vi.fn()}
-        onToggleFullscreen={vi.fn()}
-        onToggleVoice={vi.fn()}
+        onAddTime={vi.fn<ActiveScreenProps["onAddTime"]>()}
+        onBack={vi.fn<ActiveScreenProps["onBack"]>()}
+        onDone={vi.fn<ActiveScreenProps["onDone"]>()}
+        onOpenGuide={vi.fn<ActiveScreenProps["onOpenGuide"]>()}
+        onReportPain={vi.fn<ActiveScreenProps["onReportPain"]>()}
+        onToggleFullscreen={vi.fn<ActiveScreenProps["onToggleFullscreen"]>()}
+        onToggleVoice={vi.fn<ActiveScreenProps["onToggleVoice"]>()}
         secondsLeft={0}
         totalSets={3}
         voiceOn={false}

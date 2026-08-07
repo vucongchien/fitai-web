@@ -1,7 +1,47 @@
+import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
 // iPhone 14-ish viewport — the smallest target the spec cares about.
 test.use({ viewport: { height: 844, width: 390 } });
+
+// Guards DESIGN.md's One Leader Rule: the active screen spends its entire
+// accent budget on the ring arc. Any second Coral element is a regression —
+// and Relay Blue is not an accent on either screen at all.
+//
+// The walk covers the whole `body`, not `.live-screen *`: fixed overlays
+// (the framing check, the end-session dialog) are siblings of the screen, and
+// scoping the old version inside it is exactly why a solid-blue camera button
+// and a scrim went unseen.
+const countElementsUsing = (page: Page, token: string, skip: string[]) =>
+  page.evaluate(
+    ({ skipProps, tokenName }) => {
+      const raw = getComputedStyle(document.documentElement).getPropertyValue(tokenName).trim();
+      const probe = document.createElement("span");
+      probe.style.color = raw;
+      document.body.appendChild(probe);
+      const target = getComputedStyle(probe).color;
+      probe.remove();
+
+      const props = [
+        "backgroundColor",
+        "color",
+        "stroke",
+        "fill",
+        "outlineColor",
+        "borderTopColor",
+        "borderRightColor",
+        "borderBottomColor",
+        "borderLeftColor",
+        "textDecorationColor",
+      ].filter((prop) => !skipProps.includes(prop));
+
+      return [...document.querySelectorAll<HTMLElement>("body *")].filter((el) => {
+        const style = getComputedStyle(el) as unknown as Record<string, string>;
+        return props.some((prop) => style[prop] === target);
+      }).length;
+    },
+    { skipProps: skip, tokenName: token },
+  );
 
 test.describe("live workout layout", () => {
   test("the active screen fits the viewport without page scroll", async ({ page }) => {
@@ -44,49 +84,6 @@ test.describe("live workout layout", () => {
     expect(box).not.toBeNull();
     expect(box!.y + box!.height).toBeLessThan(viewportHeight);
   });
-
-  // Guards DESIGN.md's One Leader Rule: the active screen spends its entire
-  // accent budget on the ring arc. Any second Coral element is a regression —
-  // and Relay Blue is not an accent on either screen at all.
-  //
-  // The walk covers the whole `body`, not `.live-screen *`: fixed overlays
-  // (the framing check, the end-session dialog) are siblings of the screen, and
-  // scoping the old version inside it is exactly why a solid-blue camera button
-  // and a scrim went unseen.
-  const countElementsUsing = (
-    page: import("@playwright/test").Page,
-    token: string,
-    skip: string[],
-  ) =>
-    page.evaluate(
-      ({ skipProps, tokenName }) => {
-        const raw = getComputedStyle(document.documentElement).getPropertyValue(tokenName).trim();
-        const probe = document.createElement("span");
-        probe.style.color = raw;
-        document.body.appendChild(probe);
-        const target = getComputedStyle(probe).color;
-        probe.remove();
-
-        const props = [
-          "backgroundColor",
-          "color",
-          "stroke",
-          "fill",
-          "outlineColor",
-          "borderTopColor",
-          "borderRightColor",
-          "borderBottomColor",
-          "borderLeftColor",
-          "textDecorationColor",
-        ].filter((prop) => !skipProps.includes(prop));
-
-        return [...document.querySelectorAll<HTMLElement>("body *")].filter((el) => {
-          const style = getComputedStyle(el) as unknown as Record<string, string>;
-          return props.some((prop) => style[prop] === target);
-        }).length;
-      },
-      { skipProps: skip, tokenName: token },
-    );
 
   test("the ring is the screen's only Sprint Coral", async ({ page }) => {
     await page.goto("/workouts/live/demo-session");

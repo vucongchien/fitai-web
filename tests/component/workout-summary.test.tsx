@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import type { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -8,7 +9,7 @@ import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-v
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
-    push: vi.fn(),
+    push: vi.fn<ReturnType<typeof useRouter>["push"]>(),
   }),
 }));
 

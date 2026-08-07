@@ -1,8 +1,13 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ExerciseMedia } from "@/features/workout/ui/live/exercise-media";
+
+type ExerciseMediaProps = ComponentProps<typeof ExerciseMedia>;
+/** `useReducedMotion` only ever subscribes to the "change" event. */
+type MediaQueryListen = (type: "change", listener: (event: MediaQueryListEvent) => void) => void;
 
 afterEach(() => {
   cleanup();
@@ -62,14 +67,22 @@ describe("ExerciseMedia", () => {
   });
 
   it("shows the camera button for AI-supported exercises", () => {
-    render(<ExerciseMedia exercise={makeExercise()} onOpenCamera={vi.fn()} />);
+    render(
+      <ExerciseMedia
+        exercise={makeExercise()}
+        onOpenCamera={vi.fn<NonNullable<ExerciseMediaProps["onOpenCamera"]>>()}
+      />,
+    );
 
     expect(screen.getByRole("button", { name: "Open AI camera" })).toBeInTheDocument();
   });
 
   it("hides the camera button when the exercise has no AI support", () => {
     render(
-      <ExerciseMedia exercise={makeExercise({ hasAiSupported: false })} onOpenCamera={vi.fn()} />,
+      <ExerciseMedia
+        exercise={makeExercise({ hasAiSupported: false })}
+        onOpenCamera={vi.fn<NonNullable<ExerciseMediaProps["onOpenCamera"]>>()}
+      />,
     );
 
     expect(screen.queryByRole("button", { name: "Open AI camera" })).not.toBeInTheDocument();
@@ -92,17 +105,17 @@ describe("ExerciseMedia", () => {
   });
 
   it("pauses the demo clip instead of looping it when the OS asks for reduced motion", () => {
-    const pause = vi.fn();
-    const play = vi.fn().mockResolvedValue(undefined);
+    const pause = vi.fn<HTMLMediaElement["pause"]>();
+    const play = vi.fn<HTMLMediaElement["play"]>().mockResolvedValue(undefined);
     vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(pause);
     vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(play);
     vi.stubGlobal(
       "matchMedia",
-      vi.fn().mockReturnValue({
+      vi.fn<Window["matchMedia"]>().mockReturnValue({
         matches: true,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }),
+        addEventListener: vi.fn<MediaQueryListen>(),
+        removeEventListener: vi.fn<MediaQueryListen>(),
+      } as unknown as MediaQueryList),
     );
 
     render(<ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />);
@@ -112,15 +125,15 @@ describe("ExerciseMedia", () => {
   });
 
   it("plays the demo clip when motion is fine", () => {
-    const play = vi.fn().mockResolvedValue(undefined);
+    const play = vi.fn<HTMLMediaElement["play"]>().mockResolvedValue(undefined);
     vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(play);
     vi.stubGlobal(
       "matchMedia",
-      vi.fn().mockReturnValue({
+      vi.fn<Window["matchMedia"]>().mockReturnValue({
         matches: false,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }),
+        addEventListener: vi.fn<MediaQueryListen>(),
+        removeEventListener: vi.fn<MediaQueryListen>(),
+      } as unknown as MediaQueryList),
     );
 
     render(<ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />);
