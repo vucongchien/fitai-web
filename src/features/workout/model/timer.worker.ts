@@ -19,7 +19,7 @@ let timer: ReturnType<typeof setInterval> | null = null;
 
 export type TimerRequest = { type: "start"; intervalMs: number } | { type: "stop" };
 
-scope.onmessage = (message: MessageEvent<TimerRequest>) => {
+scope.addEventListener("message", (message: MessageEvent<TimerRequest>) => {
   if (timer !== null) {
     clearInterval(timer);
     timer = null;
@@ -27,4 +27,4 @@ scope.onmessage = (message: MessageEvent<TimerRequest>) => {
   if (message.data.type === "start") {
     timer = setInterval(() => scope.postMessage({ type: "tick" }), message.data.intervalMs);
   }
-};
+});

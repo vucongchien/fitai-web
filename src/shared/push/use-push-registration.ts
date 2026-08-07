@@ -78,9 +78,10 @@ export function usePushRegistration() {
     // ever appears to fix it. Re-registering an unchanged token is a cheap no-op
     // on the backend side.
     let cancelled = false;
-    void mintAndRegister().then((next) => {
+    void (async () => {
+      const next = await mintAndRegister();
       if (!cancelled) setStatus(next);
-    });
+    })();
     return () => {
       cancelled = true;
     };

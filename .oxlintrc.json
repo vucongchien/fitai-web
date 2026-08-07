@@ -1,0 +1,45 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "eslint",
+    "typescript",
+    "react",
+    "react-perf",
+    "nextjs",
+    "jsx-a11y",
+    "import",
+    "promise",
+    "node",
+    "unicorn",
+    "oxc"
+  ],
+  "ignorePatterns": [".claude/", ".next/", "src/shared/api/gen/"],
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+
+    "nextjs/google-font-display": "error",
+    "nextjs/google-font-preconnect": "error",
+    "nextjs/next-script-for-ga": "error",
+    "nextjs/no-async-client-component": "error",
+    "nextjs/no-head-element": "error",
+    "nextjs/no-img-element": "warn",
+
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/no-self-import": "error",
+
+    "unicorn/require-post-message-target-origin": "off",
+
+    "react/react-in-jsx-scope": "off",
+    "import/no-unassigned-import": "off",
+
+    "react-perf/jsx-no-new-function-as-prop": "off",
+    "react-perf/jsx-no-new-array-as-prop": "off",
+    "react-perf/jsx-no-new-object-as-prop": "off"
+  }
+}

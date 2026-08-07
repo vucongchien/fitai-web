@@ -231,7 +231,7 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
   }
 }
 
-scope.onmessage = async (message: MessageEvent<InferenceRequest>) => {
+scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>) => {
   const request = message.data;
   switch (request.type) {
     case "init":
@@ -274,4 +274,4 @@ scope.onmessage = async (message: MessageEvent<InferenceRequest>) => {
       post({ telemetry: summarise(accumulator), type: "telemetry" });
       return;
   }
-};
+});
