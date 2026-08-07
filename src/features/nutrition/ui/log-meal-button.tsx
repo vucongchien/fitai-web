@@ -3,17 +3,18 @@
 import { Check, Plus } from "lucide-react";
 import { useActionState } from "react";
 
-import { logMealAction, type LogMealState } from "@/features/nutrition/server/nutrition-actions";
+import { logMealAction } from '@/features/nutrition/server/nutrition-actions';
+import type { LogMealState } from '@/features/nutrition/server/nutrition-actions';
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 
-type LogMealButtonProps = {
+interface LogMealButtonProps {
   calories: number;
   carbs: number;
   fat: number;
   mealName: string;
   protein: number;
   slot: MealSlot;
-};
+}
 
 const INITIAL: LogMealState = { status: "idle" };
 

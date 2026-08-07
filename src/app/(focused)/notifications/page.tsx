@@ -9,14 +9,14 @@ import { HeaderActions } from "@/shared/ui/header-actions";
 import { PullToRefresh } from "@/shared/ui/pull-to-refresh";
 import { NAV_BACK } from "@/shared/ui/transition-types";
 
-type NotificationItem = {
+interface NotificationItem {
   id: string;
   icon: "coach" | "pr" | "plan";
   title: string;
   body: string;
   time: string;
   read: boolean;
-};
+}
 
 const ITEMS: NotificationItem[] = [
   {
@@ -53,7 +53,7 @@ const ICON = {
 
 export default function NotificationsPage() {
   return (
-    <PullToRefresh>
+    <PullToRefresh activePath="/notifications">
       <div className="focused-page">
         <header className="focused-header">
           <Link
@@ -79,7 +79,11 @@ export default function NotificationsPage() {
             {ITEMS.map((item) => {
               const Icon = ICON[item.icon];
               return (
-                <li className="notification-item" data-unread={!item.read || undefined} key={item.id}>
+                <li
+                  className="notification-item"
+                  data-unread={!item.read || undefined}
+                  key={item.id}
+                >
                   <span className="notification-item__icon" aria-hidden="true">
                     <Icon size={18} />
                   </span>

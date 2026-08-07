@@ -14,17 +14,10 @@
  * or Worker support degrades to hand logging rather than a blank screen.
  */
 
-import {
-  EMPTY_TELEMETRY,
-  type MotionEngine,
-  type MotionEngineContext,
-  type MotionEventHandler,
-  type SetTelemetry,
-} from "@/features/workout/domain/motion-engine";
-import {
-  type InferenceRequest,
-  isInferenceResponse,
-} from "@/features/workout/model/inference-protocol";
+import { EMPTY_TELEMETRY } from '@/features/workout/domain/motion-engine';
+import type { MotionEngine, MotionEngineContext, MotionEventHandler, SetTelemetry } from '@/features/workout/domain/motion-engine';
+import { isInferenceResponse } from '@/features/workout/model/inference-protocol';
+import type { InferenceRequest } from '@/features/workout/model/inference-protocol';
 
 /** Where scripts/copy-ort-assets.mjs puts the ORT runtime. */
 const WASM_PATHS = "/ort/";
@@ -54,12 +47,12 @@ export class WorkerMotionEngine implements MotionEngine {
   private telemetryTimer: number | null = null;
 
   async prepare(context: MotionEngineContext): Promise<void> {
-    if (!context.video) throw new Error("WorkerMotionEngine needs a video element");
-    if (!context.spec) throw new Error("WorkerMotionEngine needs a motion specification");
-    if (!supportsInferenceWorker()) throw new Error("This browser cannot run pose tracking");
+    if (!context.video) {throw new Error("WorkerMotionEngine needs a video element");}
+    if (!context.spec) {throw new Error("WorkerMotionEngine needs a motion specification");}
+    if (!supportsInferenceWorker()) {throw new Error("This browser cannot run pose tracking");}
 
     this.video = context.video;
-    const spec = context.spec;
+    const {spec} = context;
     const worker = new Worker(
       new URL("@/features/workout/model/inference.worker.ts", import.meta.url),
       { name: "fitai-inference", type: "module" },
@@ -71,9 +64,9 @@ export class WorkerMotionEngine implements MotionEngine {
         worker.removeEventListener("message", onMessage);
         worker.removeEventListener("error", onError);
         if (error) {
-          // prepare() rejects here and the caller never gets a handle to this
-          // engine, so nothing would ever call dispose() — tear the worker down
-          // now or a failed model load leaks a thread per attempt.
+          // Prepare() rejects here and the caller never gets a handle to this
+          // Engine, so nothing would ever call dispose() — tear the worker down
+          // Now or a failed model load leaks a thread per attempt.
           worker.terminate();
           this.worker = null;
           reject(new Error(error));
@@ -82,9 +75,9 @@ export class WorkerMotionEngine implements MotionEngine {
         }
       };
       const onMessage = (message: MessageEvent) => {
-        if (!isInferenceResponse(message.data)) return;
-        if (message.data.type === "ready") settle();
-        if (message.data.type === "init-failed") settle(message.data.message);
+        if (!isInferenceResponse(message.data)) {return;}
+        if (message.data.type === "ready") {settle();}
+        if (message.data.type === "init-failed") {settle(message.data.message);}
       };
       const onError = () => settle("Pose worker failed to start");
 
@@ -94,7 +87,7 @@ export class WorkerMotionEngine implements MotionEngine {
     });
 
     // Only now attach the long-lived listener, so the init handshake above is
-    // not competing with it for the `ready` message.
+    // Not competing with it for the `ready` message.
     worker.addEventListener("message", this.handleMessage);
   }
 
@@ -117,9 +110,9 @@ export class WorkerMotionEngine implements MotionEngine {
 
   async stopSet(): Promise<SetTelemetry> {
     this.stopLoop();
-    if (!this.worker) return EMPTY_TELEMETRY;
+    if (!this.worker) {return EMPTY_TELEMETRY;}
     // A second stopSet() before the first answers would otherwise strand the
-    // earlier promise, since telemetryResolve holds only one caller.
+    // Earlier promise, since telemetryResolve holds only one caller.
     this.settleTelemetry(EMPTY_TELEMETRY);
 
     return await new Promise<SetTelemetry>((resolve) => {
@@ -147,8 +140,8 @@ export class WorkerMotionEngine implements MotionEngine {
   dispose(): void {
     this.stopLoop();
     // No `dispose` message: terminate() kills the worker before it could handle
-    // one, and tearing the thread down releases the ORT sessions and the frame
-    // buffer anyway. Posting it would only read as if it did something.
+    // One, and tearing the thread down releases the ORT sessions and the frame
+    // Buffer anyway. Posting it would only read as if it did something.
     this.worker?.removeEventListener("message", this.handleMessage);
     this.worker?.terminate();
     this.worker = null;
@@ -159,33 +152,37 @@ export class WorkerMotionEngine implements MotionEngine {
   }
 
   private handleMessage = (message: MessageEvent): void => {
-    if (!isInferenceResponse(message.data)) return;
+    if (!isInferenceResponse(message.data)) {return;}
     const response = message.data;
     switch (response.type) {
-      case "event":
+      case "event": {
         this.onEvent?.(response.event);
         break;
-      case "frame-done":
+      }
+      case "frame-done": {
         this.pending = false;
         break;
-      case "telemetry":
+      }
+      case "telemetry": {
         this.settleTelemetry(response.telemetry);
         break;
-      default:
+      }
+      default: {
         break;
+      }
     }
   };
 
   private send(request: InferenceRequest): void {
-    if (request.type === "frame") this.worker?.postMessage(request, [request.bitmap]);
-    else this.worker?.postMessage(request);
+    if (request.type === "frame") {this.worker?.postMessage(request, [request.bitmap]);}
+    else {this.worker?.postMessage(request);}
   }
 
   private startLoop(): void {
     this.stopLoop();
     this.pending = false;
     const loop = () => {
-      const video = this.video;
+      const {video} = this;
       if (!this.pending && video && video.videoWidth > 0 && video.videoHeight > 0) {
         this.pending = true;
         createImageBitmap(video).then(

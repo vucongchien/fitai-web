@@ -29,17 +29,17 @@ export function PainReportDialog({
   const actionsRef = useRef<HTMLDivElement>(null);
 
   // Escape is the reflex for "I didn't mean to open this", and while in pain the
-  // user should not have to find a specific button to get back to the session.
+  // User should not have to find a specific button to get back to the session.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onDismiss();
+      if (event.key === "Escape") {onDismiss();}
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [onDismiss]);
 
   // Focus lands on "Yes, stop" — the reason this dialog exists. It is not
-  // destructive in the data sense: the safe outcome here is stopping.
+  // Destructive in the data sense: the safe outcome here is stopping.
   useEffect(() => {
     actionsRef.current?.querySelector("button")?.focus();
   }, []);

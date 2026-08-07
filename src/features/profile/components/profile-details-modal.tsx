@@ -42,7 +42,7 @@ export function ProfileDetailsModal({
   profile,
   onSaveProfile,
 }: ProfileDetailsModalProps) {
-  if (!activeModal) return null;
+  if (!activeModal) {return null;}
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-xs p-0 sm:p-4 transition-opacity">
@@ -336,7 +336,7 @@ function GoalsForm({
 
   const toggleGoal = (item: string) => {
     if (goals.includes(item)) {
-      if (goals.length > 1) setGoals(goals.filter((i) => i !== item));
+      if (goals.length > 1) {setGoals(goals.filter((i) => i !== item));}
     } else {
       setGoals([...goals, item]);
     }
@@ -494,7 +494,7 @@ function EquipmentForm({
 
   const toggleEquipment = (item: string) => {
     if (equipment.includes(item)) {
-      if (equipment.length > 1) setEquipment(equipment.filter((i) => i !== item));
+      if (equipment.length > 1) {setEquipment(equipment.filter((i) => i !== item));}
     } else {
       setEquipment([...equipment, item]);
     }
@@ -579,8 +579,8 @@ function PersonalInfoForm({
   const [coachStyle, setCoachStyle] = useState(profile.settings.coachStyle || "Motivational");
 
   const toggleTime = (t: string) => {
-    if (times.includes(t)) setTimes(times.filter((x) => x !== t));
-    else setTimes([...times, t]);
+    if (times.includes(t)) {setTimes(times.filter((x) => x !== t));}
+    else {setTimes([...times, t]);}
   };
 
   const handleSave = async () => {
@@ -755,7 +755,7 @@ function InjuryHistoryForm({
   const [confirmRecoverId, setConfirmRecoverId] = useState<string | null>(null);
 
   const handleSubmitInjury = async () => {
-    if (!newInjury.notes) return;
+    if (!newInjury.notes) {return;}
 
     const res = await reportInjuryServerAction({
       muscleGroup: newInjury.muscleGroup,
@@ -779,7 +779,7 @@ function InjuryHistoryForm({
   };
 
   const handleRecover = async () => {
-    if (!confirmRecoverId) return;
+    if (!confirmRecoverId) {return;}
 
     await recoverInjuryServerAction(confirmRecoverId);
 
@@ -909,25 +909,25 @@ function InjuryHistoryForm({
             <div
               key={injury.id}
               className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                !injury.isRecovered
-                  ? "bg-rose-50/40 border-rose-100"
-                  : "bg-neutral-50/60 border-neutral-200 opacity-60"
+                injury.isRecovered
+                  ? "bg-neutral-50/60 border-neutral-200 opacity-60"
+                  : "bg-rose-50/40 border-rose-100"
               }`}
             >
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span
                     className={`text-sm font-bold ${
-                      !injury.isRecovered ? "text-rose-900" : "text-neutral-500 line-through"
+                      injury.isRecovered ? "text-neutral-500 line-through" : "text-rose-900"
                     }`}
                   >
                     {injury.muscleGroup}
                   </span>
                   <span
                     className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                      !injury.isRecovered
-                        ? "bg-rose-100 text-rose-700"
-                        : "bg-neutral-200 text-neutral-600"
+                      injury.isRecovered
+                        ? "bg-neutral-200 text-neutral-600"
+                        : "bg-rose-100 text-rose-700"
                     }`}
                   >
                     {injury.severity}
@@ -935,7 +935,7 @@ function InjuryHistoryForm({
                 </div>
                 <p
                   className={`text-xs ${
-                    !injury.isRecovered ? "text-rose-700" : "text-neutral-400 line-through"
+                    injury.isRecovered ? "text-neutral-400 line-through" : "text-rose-700"
                   }`}
                 >
                   {injury.notes}
@@ -976,7 +976,7 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
   const [sent, setSent] = useState(false);
 
   const handleSubmit = () => {
-    if (!feedback) return;
+    if (!feedback) {return;}
     setSent(true);
     setTimeout(() => {
       onClose();

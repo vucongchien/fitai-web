@@ -1,29 +1,30 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import { toast as sonnerToast } from "sonner";
 
 export type ToastType = "info" | "success" | "error";
 
-export type ToastAction = {
+export interface ToastAction {
   label: string;
   onClick: () => void;
-};
+}
 
-export type ToastItem = {
+export interface ToastItem {
   id: string;
   message: string;
   type?: ToastType;
   durationMs?: number;
   action?: ToastAction;
   exiting?: boolean;
-};
+}
 
-type ToastContextValue = {
+interface ToastContextValue {
   toasts: ToastItem[];
   showToast: (toast: Omit<ToastItem, "id" | "exiting">) => string;
   dismissToast: (id: string) => void;
-};
+}
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
@@ -68,6 +69,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 export function useToast() {
   const context = useContext(ToastContext);
-  if (!context) throw new Error("useToast must be used within a ToastProvider");
+  if (!context) {throw new Error("useToast must be used within a ToastProvider");}
   return context;
 }

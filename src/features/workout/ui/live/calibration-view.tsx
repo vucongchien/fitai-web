@@ -35,22 +35,22 @@ export function CalibrationView({
   const panelRef = useRef<HTMLDivElement>(null);
 
   // A full-viewport blocking layer has to behave like one: focus moves in on
-  // mount, comes back out on unmount, and the screen underneath is unreachable
-  // while it is up. Without this, Done, +10s, the header buttons and the
-  // tabbable coaching panel all stayed keyboard-reachable behind the overlay.
+  // Mount, comes back out on unmount, and the screen underneath is unreachable
+  // While it is up. Without this, Done, +10s, the header buttons and the
+  // Tabbable coaching panel all stayed keyboard-reachable behind the overlay.
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
     panelRef.current?.focus();
 
     // `inert` is the whole focus trap in one attribute. Browsers without it
     // (pre-2023 Safari/Firefox) ignore the attribute and keep the old
-    // behaviour — a degraded overlay, not a broken one.
+    // Behaviour — a degraded overlay, not a broken one.
     const background = document.querySelector(".live-screen");
     const supportsInert = typeof HTMLElement !== "undefined" && "inert" in HTMLElement.prototype;
-    if (supportsInert) background?.setAttribute("inert", "");
+    if (supportsInert) {background?.setAttribute("inert", "");}
 
     return () => {
-      if (supportsInert) background?.removeAttribute("inert");
+      if (supportsInert) {background?.removeAttribute("inert");}
       previouslyFocused?.focus?.();
     };
   }, []);
@@ -70,7 +70,7 @@ export function CalibrationView({
             : (calibration?.hint ?? "Getting the camera ready…")}
         </p>
 
-        {!blocked ? (
+        {blocked ? null : (
           <ul className="calibration__checks">
             <li data-ok={distanceOk || undefined}>
               {distanceOk ? (
@@ -93,7 +93,7 @@ export function CalibrationView({
               Best angle: {recommendedAngle}
             </li>
           </ul>
-        ) : null}
+        )}
 
         <div className="calibration__actions">
           {blocked ? (

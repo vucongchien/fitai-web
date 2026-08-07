@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, it, expect } from "vitest";
 
 import {
   averageFormScore,
@@ -42,13 +42,13 @@ describe("training load", () => {
   });
 
   it("flags load above 250% of the recent average (BR-WL-02)", () => {
-    expect(isAnomalousLoad(2600, 1000)).toBe(true);
-    expect(isAnomalousLoad(2500, 1000)).toBe(false);
-    expect(isAnomalousLoad(900, 1000)).toBe(false);
+    expect(isAnomalousLoad(2600, 1000)).toBeTruthy();
+    expect(isAnomalousLoad(2500, 1000)).toBeFalsy();
+    expect(isAnomalousLoad(900, 1000)).toBeFalsy();
   });
 
   it("never flags an anomaly without a usable baseline", () => {
-    expect(isAnomalousLoad(5000, 0)).toBe(false);
+    expect(isAnomalousLoad(5000, 0)).toBeFalsy();
   });
 
   it("estimates 1RM with Epley and ignores bodyweight sets", () => {
@@ -58,9 +58,9 @@ describe("training load", () => {
   });
 
   it("recognises a personal record only when it beats the stored best", () => {
-    expect(isNewPersonalRecord(133, 120)).toBe(true);
-    expect(isNewPersonalRecord(120, 120)).toBe(false);
-    expect(isNewPersonalRecord(0, 0)).toBe(false);
+    expect(isNewPersonalRecord(133, 120)).toBeTruthy();
+    expect(isNewPersonalRecord(120, 120)).toBeFalsy();
+    expect(isNewPersonalRecord(0, 0)).toBeFalsy();
   });
 
   it("lists exercises that set a new record today", () => {
@@ -71,7 +71,7 @@ describe("training load", () => {
       ],
       { row: 30, push: 100 },
     );
-    expect(records.map((record) => record.exerciseId)).toEqual(["row"]);
+    expect(records.map((record) => record.exerciseId)).toStrictEqual(["row"]);
   });
 
   it("averages RPE over scored sets only, and returns null when all are N/A", () => {

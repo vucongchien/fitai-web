@@ -9,35 +9,42 @@ import type { OnboardingValues } from "../domain/onboarding-schema";
 
 function mapGoalToProto(goal: string): string[] {
   switch (goal) {
-    case "build-muscle":
+    case "build-muscle": {
       return ["BUILD_MUSCLE"];
-    case "fat-loss":
+    }
+    case "fat-loss": {
       return ["FAT_LOSS"];
-    default:
+    }
+    default: {
       return ["BUILD_MUSCLE"];
+    }
   }
 }
 
 function mapExperienceToProto(exp: string): string {
   switch (exp) {
-    case "beginner":
+    case "beginner": {
       return "BEGINNER";
-    case "intermediate":
+    }
+    case "intermediate": {
       return "INTERMEDIATE";
-    case "advanced":
+    }
+    case "advanced": {
       return "ADVANCED";
-    default:
+    }
+    default: {
       return "INTERMEDIATE";
+    }
   }
 }
 
 function mapEquipmentToProto(equipmentList: string[]): string[] {
   return equipmentList.map((item) => {
     const upper = item.toUpperCase();
-    if (upper.includes("FULL GYM") || upper.includes("CABLE")) return "FULL_GYM";
-    if (upper.includes("DUMBBELL")) return "DUMBBELL_ONLY";
-    if (upper.includes("BARBELL")) return "BARBELL";
-    if (upper.includes("BAND")) return "RESISTANCE_BAND";
+    if (upper.includes("FULL GYM") || upper.includes("CABLE")) {return "FULL_GYM";}
+    if (upper.includes("DUMBBELL")) {return "DUMBBELL_ONLY";}
+    if (upper.includes("BARBELL")) {return "BARBELL";}
+    if (upper.includes("BAND")) {return "RESISTANCE_BAND";}
     return "BODYWEIGHT";
   });
 }
@@ -45,16 +52,20 @@ function mapEquipmentToProto(equipmentList: string[]): string[] {
 function mapCoachStyleToProto(style: string): string {
   switch (style) {
     case "motivational":
-    case "calm":
+    case "calm": {
       return "MOTIVATIONAL";
+    }
     case "strict":
-    case "direct":
+    case "direct": {
       return "STRICT";
+    }
     case "scientific":
-    case "balanced":
+    case "balanced": {
       return "SCIENTIFIC";
-    default:
+    }
+    default: {
       return "MOTIVATIONAL";
+    }
   }
 }
 
@@ -92,7 +103,7 @@ export async function saveOnboardingProfileServerAction(
       preferredMuscleGroups: values.muscleFocus.map((m) => m.toUpperCase()),
       coachStyle: mapCoachStyleToProto(values.coachStyle),
       targetWeightKg: values.targetWeightKg,
-      targetBodyFatPercent: 15.0,
+      targetBodyFatPercent: 15,
       bodyFatPercent: 18.5,
     });
 
@@ -101,8 +112,8 @@ export async function saveOnboardingProfileServerAction(
       message: res.message || "Onboarding profile saved successfully",
       aiCoachActivated: res.aiCoachActivated,
     };
-  } catch (err: any) {
-    console.error("[gRPC ProfileService.SaveHealthProfile] Error:", err?.message || err);
+  } catch (error: any) {
+    console.error("[gRPC ProfileService.SaveHealthProfile] Error:", error?.message || error);
     return {
       success: true,
       message: "Onboarding profile saved locally (gRPC fallback)",

@@ -22,7 +22,7 @@ const WIRE_MEAL_TYPE: Record<MealSlot, string> = {
   snack: "SNACK",
 };
 
-export type LocalMealInput = {
+export interface LocalMealInput {
   calories: number;
   carbs: number;
   fat: number;
@@ -30,7 +30,7 @@ export type LocalMealInput = {
   mealName: string;
   protein: number;
   slot: MealSlot;
-};
+}
 
 /** Rows are stored as a compact tuple so the cookie stays small. */
 type StoredRow = [
@@ -44,7 +44,7 @@ type StoredRow = [
 ];
 
 function decode(raw: string | undefined): StoredRow[] {
-  if (!raw) return [];
+  if (!raw) {return [];}
   try {
     const parsed: unknown = JSON.parse(raw);
     return Array.isArray(parsed) ? (parsed as StoredRow[]) : [];

@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+
 
 import { ActiveTimerBar } from "@/features/workout/ui/live/active-timer-bar";
 
@@ -17,7 +17,7 @@ const timedProps = {
   timed: true,
 };
 
-describe("ActiveTimerBar", () => {
+describe(ActiveTimerBar, () => {
   it("shows the timer as the dominant element", () => {
     render(
       <ActiveTimerBar
@@ -42,7 +42,7 @@ describe("ActiveTimerBar", () => {
     const buttons = [...container.querySelectorAll("button")].map((b) =>
       b.getAttribute("aria-label"),
     );
-    expect(buttons).toEqual(["Add 10 seconds", "Done"]);
+    expect(buttons).toStrictEqual(["Add 10 seconds", "Done"]);
   });
 
   it("never offers a skip control", () => {
@@ -65,8 +65,8 @@ describe("ActiveTimerBar", () => {
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
     fireEvent.click(screen.getByRole("button", { name: "Add 10 seconds" }));
 
-    expect(onDone).toHaveBeenCalledOnce();
-    expect(onAddTime).toHaveBeenCalledOnce();
+    expect(onDone).toHaveBeenCalledTimes(1);
+    expect(onAddTime).toHaveBeenCalledTimes(1);
   });
 
   it("names the timer for assistive tech without announcing every tick", () => {
@@ -115,7 +115,7 @@ describe("ActiveTimerBar", () => {
   });
 
   // A rep-counted set has a ring (the count) but no clock, so there is nothing
-  // for "+10s" to add to — it is absent rather than present-but-dead.
+  // For "+10s" to add to — it is absent rather than present-but-dead.
   it("drops the add-time control on a set with no running clock", () => {
     render(
       <ActiveTimerBar
@@ -170,7 +170,7 @@ describe("ActiveTimerBar", () => {
 
       fireEvent.click(screen.getByRole("button", { name: "Complete this set" }));
 
-      expect(onDone).toHaveBeenCalledOnce();
+      expect(onDone).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -2,9 +2,9 @@ import { Salad } from "lucide-react";
 
 import type { NutritionSummary as NutritionSummaryData } from "@/features/home/model/home-page.types";
 
-type NutritionSummaryProps = {
+interface NutritionSummaryProps {
   summary: NutritionSummaryData;
-};
+}
 
 export function NutritionSummary({ summary }: NutritionSummaryProps) {
   return (

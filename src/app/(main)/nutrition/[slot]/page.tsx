@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slot: str
 async function MealContent({ paramsPromise }: { paramsPromise: Promise<{ slot: string }> }) {
   const { slot } = await paramsPromise;
   const resolved = SLOT_BY_SLUG[slot];
-  if (!resolved) notFound();
+  if (!resolved) {notFound();}
 
   const data = await getMealDetailData(resolved);
   return <MealDetailView data={data} />;
@@ -55,7 +55,7 @@ function MealSkeleton() {
 async function MealHeading({ paramsPromise }: { paramsPromise: Promise<{ slot: string }> }) {
   const { slot } = await paramsPromise;
   const resolved = SLOT_BY_SLUG[slot];
-  if (!resolved) notFound();
+  if (!resolved) {notFound();}
 
   return <h1>{MEAL_SLOT_LABELS[resolved]}</h1>;
 }

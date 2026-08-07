@@ -1,18 +1,18 @@
-export type CatalogEntry = {
+export interface CatalogEntry {
   id: string;
   name: string;
-};
+}
 
 export type MuscleEntry = CatalogEntry & {
   bodyPartId: string;
 };
 
-export type CatalogMetadata = {
+export interface CatalogMetadata {
   bodyParts: CatalogEntry[];
   equipments: CatalogEntry[];
   muscles: MuscleEntry[];
   tags: CatalogEntry[];
-};
+}
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -24,7 +24,7 @@ export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
 
 export const DIFFICULTY_ORDER: Difficulty[] = ["beginner", "intermediate", "advanced"];
 
-export type ExerciseSummary = {
+export interface ExerciseSummary {
   id: string;
   name: string;
   bodyPartId: string;
@@ -43,16 +43,16 @@ export type ExerciseSummary = {
   // NOT IN CONTRACT: supporting.exercise.v1.ExerciseInfo has no breathing field yet.
   // Mock-only, same status as formCues / commonMistakes. Add to the proto before wiring gRPC.
   breathingCue?: string;
-};
+}
 
-export type ExerciseFilters = {
+export interface ExerciseFilters {
   q: string;
   bodyPartIds: string[];
   equipmentIds: string[];
   difficulty: Difficulty[];
   tagIds: string[];
   aiOnly: boolean;
-};
+}
 
 export const EMPTY_FILTERS: ExerciseFilters = {
   q: "",
@@ -104,7 +104,7 @@ export function filterExercises(
         ...exercise.secondaryMuscleIds.map((id) => muscleNameById.get(id) ?? ""),
         ...exercise.tagIds.map((id) => tagNameById.get(id) ?? ""),
       ].join(" ");
-      if (!haystack.includes(q)) return false;
+      if (!haystack.includes(q)) {return false;}
     }
     if (filters.bodyPartIds.length > 0 && !filters.bodyPartIds.includes(exercise.bodyPartId)) {
       return false;
@@ -117,9 +117,9 @@ export function filterExercises(
     }
     if (filters.tagIds.length > 0) {
       const overlap = filters.tagIds.some((id) => exercise.tagIds.includes(id));
-      if (!overlap) return false;
+      if (!overlap) {return false;}
     }
-    if (filters.aiOnly && !exercise.hasAiSupported) return false;
+    if (filters.aiOnly && !exercise.hasAiSupported) {return false;}
     return true;
   });
 }

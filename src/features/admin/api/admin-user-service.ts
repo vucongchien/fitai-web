@@ -45,7 +45,7 @@ const INITIAL_ADMIN_USERS: AdminUser[] = [
     biologicalMetrics: {
       heightCm: 182,
       weightKg: 85,
-      bodyFatPercent: 12.0,
+      bodyFatPercent: 12,
       bmi: 25.6,
     },
     experienceLevel: "Expert",
@@ -82,7 +82,7 @@ const INITIAL_ADMIN_USERS: AdminUser[] = [
       heightCm: 170,
       weightKg: 78,
       bodyFatPercent: 22.5,
-      bmi: 27.0,
+      bmi: 27,
     },
     experienceLevel: "Beginner",
     goals: ["Fat Loss", "General Fitness"],
@@ -109,7 +109,7 @@ const INITIAL_ADMIN_USERS: AdminUser[] = [
     biologicalMetrics: {
       heightCm: 162,
       weightKg: 52,
-      bodyFatPercent: 20.0,
+      bodyFatPercent: 20,
       bmi: 19.8,
     },
     experienceLevel: "Intermediate",
@@ -131,11 +131,11 @@ const INITIAL_ADMIN_USERS: AdminUser[] = [
 
 let userStore: AdminUser[] = [...INITIAL_ADMIN_USERS];
 
-export type FetchUsersParams = {
+export interface FetchUsersParams {
   cursor?: string | null;
   limit?: number;
   filters?: Partial<UserAdminFilters>;
-};
+}
 
 export async function fetchAdminUsers({
   cursor = null,
@@ -179,7 +179,7 @@ export async function fetchAdminUsers({
   const paginatedItems = result.slice(startIndex, startIndex + limit);
   const hasMore = startIndex + limit < result.length;
   const nextCursor =
-    hasMore && paginatedItems.length > 0 ? paginatedItems[paginatedItems.length - 1].userId : null;
+    hasMore && paginatedItems.length > 0 ? paginatedItems.at(-1)?.userId ?? null : null;
 
   return {
     items: paginatedItems,

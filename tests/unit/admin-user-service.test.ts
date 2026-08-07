@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+
 
 import {
   fetchAdminUsers,
@@ -6,7 +6,7 @@ import {
   toggleUserStatus,
 } from "@/features/admin/api/admin-user-service";
 
-describe("Admin User Service (Proto Schema Aligned)", () => {
+describe("admin User Service (Proto Schema Aligned)", () => {
   beforeEach(() => {
     resetUserStore();
   });
@@ -30,14 +30,14 @@ describe("Admin User Service (Proto Schema Aligned)", () => {
           u.email.toLowerCase().includes("alex") ||
           u.userId.toLowerCase().includes("alex"),
       ),
-    ).toBe(true);
+    ).toBeTruthy();
   });
 
   it("should filter users by role and status", async () => {
     const res = await fetchAdminUsers({
       filters: { role: "coach", status: "active" },
     });
-    expect(res.items.every((u) => u.role === "coach" && u.status === "active")).toBe(true);
+    expect(res.items.every((u) => u.role === "coach" && u.status === "active")).toBeTruthy();
   });
 
   it("should toggle user ban status between active and banned", async () => {
@@ -46,9 +46,9 @@ describe("Admin User Service (Proto Schema Aligned)", () => {
     const initialStatus = target.status;
 
     const toggled = await toggleUserStatus(target.userId);
-    expect(toggled.status).not.toEqual(initialStatus);
+    expect(toggled.status).not.toStrictEqual(initialStatus);
 
     const reverted = await toggleUserStatus(target.userId);
-    expect(reverted.status).toEqual(initialStatus);
+    expect(reverted.status).toStrictEqual(initialStatus);
   });
 });

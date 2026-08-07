@@ -13,16 +13,16 @@ import {
 } from "@/shared/api/bff/aggregate/nutrition-daily";
 
 /** Structural subset of `GetNutritionSummaryResponse`. */
-type NutritionSummaryLike = {
+interface NutritionSummaryLike {
   consumedCalories: number;
   consumedMacros?: { carbGrams: number; fatGrams: number; proteinGrams: number };
   targetCalories: number;
   targetMacros?: { carbGrams: number; fatGrams: number; proteinGrams: number };
-};
+}
 
 /** Mean per logged day, so a partly logged week is not read as a shortfall. */
 function perDay(total: number, loggedDays: number): number {
-  if (loggedDays <= 0) return 0;
+  if (loggedDays <= 0) {return 0;}
   return Math.round(total / loggedDays);
 }
 
@@ -39,7 +39,7 @@ const formatRangeDay = (date: Date, withMonth: boolean) =>
 export function formatRangeLabel(startKey: DayKey, endKey: DayKey): string {
   const start = new Date(`${startKey}T00:00:00Z`);
   const end = new Date(`${endKey}T00:00:00Z`);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return endKey;
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {return endKey;}
 
   const sameMonth = start.getUTCMonth() === end.getUTCMonth();
   return `${formatRangeDay(start, !sameMonth)} – ${formatRangeDay(end, true)}`;

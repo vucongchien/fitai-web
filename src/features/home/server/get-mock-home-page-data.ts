@@ -55,9 +55,9 @@ export function getMockHomePageData(): HomePageData {
     ],
 
     // Training volume and sets already read on the metric grid, so evidence carries the
-    // readings that appear nowhere else. Average RPE is available on session completion
+    // Readings that appear nowhere else. Average RPE is available on session completion
     // (`CompleteWorkoutSessionResponse.average_rpe`) but not on `WorkoutSessionSummary`,
-    // so it stays a single-session figure rather than a weekly trend.
+    // So it stays a single-session figure rather than a weekly trend.
     evidenceItems: [
       {
         id: "avg-rpe",
@@ -79,8 +79,8 @@ export function getMockHomePageData(): HomePageData {
     },
 
     // Every action points at a route that exists. Logging a weight or a meal is a mutation
-    // and has no screen yet, so those two lead to the places that read the same data
-    // rather than to a dead URL.
+    // And has no screen yet, so those two lead to the places that read the same data
+    // Rather than to a dead URL.
     quickActions: [
       {
         id: "extra-workout",

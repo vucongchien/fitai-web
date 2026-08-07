@@ -153,7 +153,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
   };
 
   const addFormCue = () => {
-    if (!newCueInput.trim()) return;
+    if (!newCueInput.trim()) {return;}
     setFormCues([...formCues, newCueInput.trim()]);
     setNewCueInput("");
   };
@@ -163,7 +163,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
   };
 
   const addCommonMistake = () => {
-    if (!newMistakeInput.trim()) return;
+    if (!newMistakeInput.trim()) {return;}
     setCommonMistakes([...commonMistakes, newMistakeInput.trim()]);
     setNewMistakeInput("");
   };

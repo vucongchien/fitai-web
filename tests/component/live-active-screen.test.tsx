@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
@@ -50,7 +50,7 @@ const baseProps = {
   voiceOn: false,
 };
 
-describe("ActiveExerciseScreen", () => {
+describe(ActiveExerciseScreen, () => {
   it("puts the exercise name in the header", () => {
     render(<ActiveExerciseScreen {...baseProps} />);
 
@@ -70,7 +70,7 @@ describe("ActiveExerciseScreen", () => {
 
     expect(screen.getByText("30 sec")).toBeInTheDocument();
     // The counter splits the current set from the total so the two can be
-    // weighted differently, so read the whole element rather than one node.
+    // Weighted differently, so read the whole element rather than one node.
     expect(container.querySelector(".live-meta__sets")?.textContent).toBe("1 / 3 Sets");
   });
 
@@ -104,7 +104,7 @@ describe("ActiveExerciseScreen", () => {
   });
 
   // No clock and no live rep count means there is no instrument to show. The
-  // footer becomes a single confirm button rather than a dead ring showing "—".
+  // Footer becomes a single confirm button rather than a dead ring showing "—".
   it("replaces the ring with a confirm button when nothing is counting reps", () => {
     const { container } = render(
       <ActiveExerciseScreen
@@ -139,7 +139,7 @@ describe("ActiveExerciseScreen", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
 
-    expect(onReportPain).toHaveBeenCalledOnce();
+    expect(onReportPain).toHaveBeenCalledTimes(1);
   });
 
   it("renders the instruction, unlabelled", () => {
@@ -165,11 +165,11 @@ describe("ActiveExerciseScreen", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
 
-    expect(onDone).toHaveBeenCalledOnce();
+    expect(onDone).toHaveBeenCalledTimes(1);
   });
 
   // The ring shows three different things. Announcing a rep count as "time
-  // remaining" is false, so the name has to follow the same branch as the value.
+  // Remaining" is false, so the name has to follow the same branch as the value.
   it("names the ring for a timed hold", () => {
     render(<ActiveExerciseScreen {...baseProps} />);
 

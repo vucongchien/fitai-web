@@ -1,5 +1,5 @@
 import { act, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+
 
 import { ToastProvider, useToast } from "@/shared/ui/toast/toast-context";
 
@@ -23,7 +23,7 @@ function TestConsumer() {
   );
 }
 
-describe("Global Toast System (ToastProvider)", () => {
+describe("global Toast System (ToastProvider)", () => {
   it("provides showToast function and manages toast queue", () => {
     render(
       <ToastProvider>

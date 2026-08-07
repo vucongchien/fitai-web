@@ -6,8 +6,8 @@ export async function getProfileData(): Promise<ProfileViewModel> {
   await new Promise((resolve) => setTimeout(resolve, 50));
 
   // Ở đây có thể gọi gRPC Client thực tế:
-  // const profileRes = await profileClient.getProfile({});
-  // const prRes = await workoutExecutionClient.getPersonalRecords({});
+  // Const profileRes = await profileClient.getProfile({});
+  // Const prRes = await workoutExecutionClient.getPersonalRecords({});
 
   const mockRawData = {
     user: {
@@ -21,9 +21,9 @@ export async function getProfileData(): Promise<ProfileViewModel> {
       userId: "usr-9901",
       weightKg: 68.5,
       heightCm: 175,
-      targetWeightKg: 65.0,
+      targetWeightKg: 65,
       bodyFatPercent: 18.5,
-      targetBodyFatPercent: 15.0,
+      targetBodyFatPercent: 15,
       experienceLevel: "INTERMEDIATE",
       goals: ["BUILD_MUSCLE", "FAT_LOSS"],
       preferredMuscleGroups: ["CHEST", "BACK", "LEGS"],
@@ -68,7 +68,7 @@ export async function getProfileData(): Promise<ProfileViewModel> {
     statsProto: {
       totalWorkouts: 48,
       activeStreakDays: 12,
-      totalCaloriesKcal: 12500,
+      totalCaloriesKcal: 12_500,
     },
     notificationProto: {
       enablePush: true,

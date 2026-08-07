@@ -14,13 +14,13 @@ import type { Difficulty } from "@/features/exercise/domain/exercise";
  */
 const NO_OPTIONS: { id: string; name: string }[] = [];
 
-export type ExerciseFiltersProps = {
+export interface ExerciseFiltersProps {
   filters: ExerciseAdminFilters;
   onChange: (filters: ExerciseAdminFilters) => void;
   onReset: () => void;
   bodyParts?: { id: string; name: string }[];
   equipments?: { id: string; name: string }[];
-};
+}
 
 export function ExerciseFilters({
   filters,

@@ -5,13 +5,13 @@ import { useEffect, useId, useState } from "react";
 
 import type { MetadataItem } from "@/features/admin/domain/admin-types";
 
-export type MetadataDialogProps = {
+export interface MetadataDialogProps {
   isOpen: boolean;
   category: MetadataItem["category"];
   item?: MetadataItem | null;
   onClose: () => void;
   onSave: (data: Omit<MetadataItem, "id">) => Promise<void>;
-};
+}
 
 export function MetadataDialog({ isOpen, category, item, onClose, onSave }: MetadataDialogProps) {
   const fieldIdBase = useId();
@@ -29,11 +29,11 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
     }
   }, [item, isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim()) {return;}
 
     setIsSubmitting(true);
     try {
@@ -92,7 +92,7 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={`e.g., Pectoralis Major, Kettlebell...`}
+              placeholder="e.g., Pectoralis Major, Kettlebell..."
               className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all"
             />
           </div>

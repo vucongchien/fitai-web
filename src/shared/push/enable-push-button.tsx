@@ -10,7 +10,7 @@ import { usePushRegistration } from "@/shared/push/use-push-registration";
 export function EnablePushButton() {
   const { enable, status } = usePushRegistration();
 
-  if (status === "granted") return null;
+  if (status === "granted") {return null;}
   if (status === "unsupported") {
     return (
       <p className="push-optin__note">Add FITAI to your home screen to get session reminders.</p>
@@ -36,8 +36,8 @@ export function EnablePushButton() {
       </button>
       {status === "failed" ? (
         // The permission prompt succeeded but the token never reached the
-        // backend. Saying nothing here would leave the user believing reminders
-        // are on, so name the state and make retrying the obvious next step.
+        // Backend. Saying nothing here would leave the user believing reminders
+        // Are on, so name the state and make retrying the obvious next step.
         <p className="push-optin__note">
           Reminders could not be set up just now. Try again in a moment.
         </p>

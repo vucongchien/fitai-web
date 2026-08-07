@@ -4,15 +4,13 @@
  * both produce identical telemetry for the review sheet and LogWorkoutSet.
  */
 
-import { EMPTY_TELEMETRY, type SetTelemetry } from "@/features/workout/domain/motion-engine";
-import {
-  createRepCounter,
-  feedRepCounter,
-  type RepCounterState,
-} from "@/features/workout/domain/pose-metrics";
+import { EMPTY_TELEMETRY } from '@/features/workout/domain/motion-engine';
+import type { SetTelemetry } from '@/features/workout/domain/motion-engine';
+import { createRepCounter, feedRepCounter } from '@/features/workout/domain/pose-metrics';
+import type { RepCounterState } from '@/features/workout/domain/pose-metrics';
 import type { RepLogEntry } from "@/features/workout/model/live-session.types";
 
-export type Accumulator = {
+export interface Accumulator {
   counter: RepCounterState;
   reps: RepLogEntry[];
   errorCodes: string[];
@@ -21,7 +19,7 @@ export type Accumulator = {
   startedAt: number;
   /** Errors seen since the last completed rep — attached to that rep. */
   pendingErrors: Set<string>;
-};
+}
 
 export function freshAccumulator(): Accumulator {
   return {
@@ -35,18 +33,18 @@ export function freshAccumulator(): Accumulator {
   };
 }
 
-export type RepEvent = {
+export interface RepEvent {
   type: "rep";
   count: number;
   romPercentage: number;
   counted: boolean;
-};
+}
 
 /** Push one ROM sample. Returns a rep event on the frame a rep closes. */
 export function feedCounter(accumulator: Accumulator, rom: number): RepEvent | null {
   const tick = feedRepCounter(accumulator.counter, rom);
   accumulator.counter = tick.state;
-  if (!tick.completedRep) return null;
+  if (!tick.completedRep) {return null;}
 
   accumulator.reps.push({
     errorCodes: [...accumulator.pendingErrors],
@@ -64,7 +62,7 @@ export function feedCounter(accumulator: Accumulator, rom: number): RepEvent | n
 }
 
 export function summarise(accumulator: Accumulator, endedAt = Date.now()): SetTelemetry {
-  if (accumulator.totalFrames === 0) return EMPTY_TELEMETRY;
+  if (accumulator.totalFrames === 0) {return EMPTY_TELEMETRY;}
   const counted = accumulator.counter.completedRoms;
   const seconds = (endedAt - accumulator.startedAt) / 1000;
   return {

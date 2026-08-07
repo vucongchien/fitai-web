@@ -1,11 +1,11 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+
 
 import { CountdownRing } from "@/features/workout/ui/live/countdown-ring";
 
 afterEach(cleanup);
 
-describe("CountdownRing", () => {
+describe(CountdownRing, () => {
   it("shows the formatted value inside the ring", () => {
     render(<CountdownRing display="00:24" label="Time remaining" progress={0.8} tone="effort" />);
 

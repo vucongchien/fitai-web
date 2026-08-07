@@ -6,9 +6,9 @@ import { MealTimeline } from "@/features/nutrition/ui/meal-timeline";
 import { MetricHero } from "@/shared/ui/charts/metric-hero";
 import { TrendLineChart } from "@/shared/ui/charts/trend-line-chart";
 
-type NutritionViewProps = {
+interface NutritionViewProps {
   data: NutritionPageData;
-};
+}
 
 const MACRO_ICONS = [Beef, Wheat, Droplet] as const;
 

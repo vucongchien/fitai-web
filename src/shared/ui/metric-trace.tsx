@@ -1,11 +1,11 @@
 import { cn } from "@/shared/lib/cn";
 
-type MetricTraceProps = {
+interface MetricTraceProps {
   label: string;
   points: number[];
   tone?: "blue" | "coral" | "green";
   value: string;
-};
+}
 
 function geometryFor(points: number[]) {
   const min = Math.min(...points);

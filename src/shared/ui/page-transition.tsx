@@ -1,12 +1,13 @@
-import { ViewTransition, type ReactNode } from "react";
+import { ViewTransition } from 'react';
+import type { ReactNode } from 'react';
 
-type PageTransitionProps = {
+interface PageTransitionProps {
   children: ReactNode;
   className?: string;
-};
+}
 
 // Named transitions are symmetric: the class applied on the way in is the one
-// applied on the way out. Hoisted so the map is allocated once, not per render.
+// Applied on the way out. Hoisted so the map is allocated once, not per render.
 const NAMED_TRANSITIONS = {
   "nav-forward": "nav-forward",
   "nav-back": "nav-back",

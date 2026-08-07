@@ -57,7 +57,7 @@ export function CameraStage({
         sourceWidth={dimensions.width}
       />
 
-      {state !== "ready" ? (
+      {state === "ready" ? null : (
         <div className="camera-stage__placeholder relative z-10 flex flex-col items-center justify-center p-4 text-center">
           <CameraOff
             aria-hidden="true"
@@ -72,7 +72,7 @@ export function CameraStage({
                 : "No camera detected."}
           </p>
         </div>
-      ) : null}
+      )}
 
       {onFlip && state === "ready" ? (
         <button

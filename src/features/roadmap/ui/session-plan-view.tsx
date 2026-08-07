@@ -16,9 +16,9 @@ import { buttonVariants } from "@/shared/ui/button";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
-type SessionPlanViewProps = {
+interface SessionPlanViewProps {
   data: SessionPlanPageData;
-};
+}
 
 const featureIconMap = {
   camera: Camera,

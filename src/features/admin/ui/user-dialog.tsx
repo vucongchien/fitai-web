@@ -15,15 +15,15 @@ import type { AdminUser } from "@/features/admin/domain/admin-types";
 import { USER_ROLE_LABEL, USER_STATUS_LABEL } from "@/features/admin/domain/admin-types";
 import { UserAvatar } from "@/features/admin/ui/user-avatar";
 
-export type UserDialogProps = {
+export interface UserDialogProps {
   isOpen: boolean;
   user?: AdminUser | null;
   onClose: () => void;
   onToggleStatus?: (userId: string) => Promise<void>;
-};
+}
 
 export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialogProps) {
-  if (!isOpen || !user) return null;
+  if (!isOpen || !user) {return null;}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150">

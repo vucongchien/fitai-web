@@ -10,7 +10,7 @@
 /** The three blocks of a session — ux-flow-spec §5.1, FR-AC-07. */
 export type SessionPhase = "warmup" | "main" | "cooldown";
 
-export type LiveExercise = {
+export interface LiveExercise {
   exerciseId: string;
   name: string;
   phase: SessionPhase;
@@ -42,38 +42,38 @@ export type LiveExercise = {
   thumbnailUrl?: string;
   /** Drives the AI camera branch — ux-flow-spec §5.3. */
   hasAiSupported: boolean;
-};
+}
 
-export type MusicTrack = {
+export interface MusicTrack {
   id: string;
   title: string;
   artist: string;
   /** Public asset path. Missing files fail silently — the session still runs. */
   url: string;
-};
+}
 
-export type Playlist = {
+export interface Playlist {
   id: string;
   name: string;
   mood: string;
   tracks: MusicTrack[];
-};
+}
 
 /** Severity ladder of DialogueEngineConfig.dialogue_map (severity_1 / severity_2). */
 export type CueSeverity = 1 | 2;
 
 /** One spoken coaching line — DialogueOption in the contract. */
-export type CoachCue = {
+export interface CoachCue {
   /** Form error code this cue answers, or a lifecycle key such as "set-start". */
   code: string;
   text: string;
   /** Pre-recorded audio file. Playback ducks the music while it runs (FR-WL-03). */
   audioUrl: string;
   severity: CueSeverity;
-};
+}
 
 /** A pose rule evaluated per frame — loaded from MotionSpec.localRulesUrl. */
-export type FormRule = {
+export interface FormRule {
   code: string;
   message: string;
   severity: CueSeverity;
@@ -81,22 +81,22 @@ export type FormRule = {
   joints: [string, string, string];
   kind: "angle-below" | "angle-above";
   thresholdDeg: number;
-};
+}
 
 /**
  * Range of motion window for the tracked joint of an exercise.
  * Direction-agnostic: a push-up flexes (start 170° → end 90°) while a press
  * extends (start 80° → end 170°), so ROM is measured as travel from start to end.
  */
-export type RomRange = {
+export interface RomRange {
   joints: [string, string, string];
   /** Joint angle at the start of the rep. */
   startDeg: number;
   /** Joint angle at the end of a full-range rep. */
   endDeg: number;
-};
+}
 
-export type MotionSpec = {
+export interface MotionSpec {
   exerciseId: string;
   /** ONNX person detector, served from S3. */
   onnxDetectorUrl: string;
@@ -110,15 +110,15 @@ export type MotionSpec = {
   cues: CoachCue[];
   /** Per-code cue cooldown in seconds so the coach does not nag. */
   cueCooldownSec: Record<string, number>;
-};
+}
 
 /** Post-injury protection banner — ux-flow-spec §6.7, BR-AC-09. */
-export type ProtectionNote = {
+export interface ProtectionNote {
   title: string;
   description: string;
-};
+}
 
-export type LiveSessionPlan = {
+export interface LiveSessionPlan {
   sessionId: string;
   sessionPlanId: string;
   title: string;
@@ -137,18 +137,18 @@ export type LiveSessionPlan = {
   personalRecords: Record<string, number>;
   /** Soft duration warning threshold in minutes — BR-WL-01 (90 for beginners). */
   durationWarnMin: number;
-};
+}
 
 export type SetSource = "manual" | "camera";
 
 /** Per-rep telemetry from the camera branch — RepLog in the contract. */
-export type RepLogEntry = {
+export interface RepLogEntry {
   repNumber: number;
   romPercentage: number;
   errorCodes: string[];
-};
+}
 
-export type SetLogDraft = {
+export interface SetLogDraft {
   exerciseId: string;
   phase: SessionPhase;
   setNumber: number;
@@ -167,12 +167,12 @@ export type SetLogDraft = {
   loggedAt: number;
   /** false while the set is still queued offline. */
   synced: boolean;
-};
+}
 
 /** Reasons offered when the user stops early — ux-flow-spec §5.6. */
 export type AbortReason = "pain" | "out-of-time" | "uncomfortable";
 
-export type SessionReport = {
+export interface SessionReport {
   sessionId: string;
   totalSets: number;
   totalVolumeKg: number;
@@ -190,7 +190,7 @@ export type SessionReport = {
    * implying a like-for-like "last time". 0 when there is no history yet.
    */
   recentAvgVolumeKg: number;
-};
+}
 
 /** Key used in sessionStorage to persist the post-session report for Summary view. */
 export function reportStorageKey(sessionId: string): string {

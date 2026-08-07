@@ -1,6 +1,6 @@
 import type { ExerciseResult } from "@/features/workout/model/workout.types";
 
-export type AdhocExercise = {
+export interface AdhocExercise {
   id: string;
   name: string;
   prescription: string;
@@ -9,7 +9,7 @@ export type AdhocExercise = {
   sets: number;
   reps: number;
   weightKg?: number;
-};
+}
 
 export function toAdhocExercise(ex: ExerciseResult, uniqueSuffix?: string): AdhocExercise {
   return {

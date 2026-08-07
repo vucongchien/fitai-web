@@ -1,5 +1,3 @@
-"use client";
-
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -8,16 +6,15 @@ import { CoachNote } from "@/features/home/ui/coach-note";
 import { EvidenceSection } from "@/features/home/ui/evidence-section";
 import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
 import { TodayTimeline } from "@/features/home/ui/today-timeline";
-import { PullToRefresh } from "@/shared/ui/pull-to-refresh";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
-type HomeViewProps = {
+interface HomeViewProps {
   data: HomePageData;
-};
+}
 
 export function HomeView({ data }: HomeViewProps) {
   return (
-    <PullToRefresh>
+    <>
       <CoachNote message={data.coachNote} />
 
       <div className="home-grid">
@@ -41,6 +38,6 @@ export function HomeView({ data }: HomeViewProps) {
       </div>
 
       <QuickActionsFab actions={data.quickActions} />
-    </PullToRefresh>
+    </>
   );
 }

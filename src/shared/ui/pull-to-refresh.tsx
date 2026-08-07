@@ -1,23 +1,30 @@
 "use client";
 
-import { Loader2, RefreshCw } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Dumbbell } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useRef, useState, type ReactNode } from "react";
 
-type PullToRefreshProps = {
+interface PullToRefreshProps {
   children: ReactNode;
   onRefresh?: () => Promise<void> | void;
   pullThreshold?: number;
   maxPullDistance?: number;
-};
+  activePath?: string;
+}
 
 export function PullToRefresh({
   children,
   onRefresh,
-  pullThreshold = 70,
-  maxPullDistance = 110,
+  pullThreshold = 75,
+  maxPullDistance = 115,
+  activePath = "/home",
 }: PullToRefreshProps) {
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Only active on the designated route (e.g. /home)
+  const isEnabled = !activePath || pathname === activePath;
+
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPulling, setIsPulling] = useState(false);
@@ -27,9 +34,8 @@ export function PullToRefresh({
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
-      if (isRefreshing) return;
+      if (!isEnabled || isRefreshing) return;
 
-      // Only enable pull-to-refresh when at the top of the container / window
       const container = containerRef.current;
       const scrollTop = container ? container.scrollTop : window.scrollY;
 
@@ -38,29 +44,28 @@ export function PullToRefresh({
         setIsPulling(true);
       }
     },
-    [isRefreshing],
+    [isEnabled, isRefreshing],
   );
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
-      if (!isPulling || isRefreshing) return;
+      if (!isEnabled || !isPulling || isRefreshing) return;
 
       const currentY = e.touches[0].clientY;
       const deltaY = currentY - startYRef.current;
 
       if (deltaY > 0) {
-        // Damped pull distance formula for smooth resistance
         const damped = Math.min(maxPullDistance, deltaY * 0.45);
         setPullDistance(damped);
       } else {
         setPullDistance(0);
       }
     },
-    [isPulling, isRefreshing, maxPullDistance],
+    [isEnabled, isPulling, isRefreshing, maxPullDistance],
   );
 
   const handleTouchEnd = useCallback(async () => {
-    if (!isPulling) return;
+    if (!isEnabled || !isPulling) return;
     setIsPulling(false);
 
     if (pullDistance >= pullThreshold && !isRefreshing) {
@@ -71,7 +76,6 @@ export function PullToRefresh({
         if (onRefresh) {
           await onRefresh();
         } else {
-          // Default refresh behaviour: revalidate Next.js route
           router.refresh();
           await new Promise((resolve) => setTimeout(resolve, 800));
         }
@@ -82,9 +86,22 @@ export function PullToRefresh({
     } else {
       setPullDistance(0);
     }
-  }, [isPulling, pullDistance, pullThreshold, isRefreshing, onRefresh, router]);
+  }, [isEnabled, isPulling, pullDistance, pullThreshold, isRefreshing, onRefresh, router]);
 
-  const progress = Math.min(1, pullDistance / pullThreshold);
+  // Progress from 0 to 1
+  const progress = Math.min(1, pullThreshold > 0 ? pullDistance / pullThreshold : 0);
+  const isReadyToTrigger = progress >= 1;
+
+  // SVG ring dimensions
+  const size = 44;
+  const strokeWidth = 3;
+  const center = size / 2;
+  const radius = center - strokeWidth;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * (1 - progress);
+
+  // Subtle content opacity reduction (down to max ~0.84 for subtle feedback)
+  const contentOpacity = isEnabled && pullDistance > 0 ? 1 - progress * 0.16 : 1;
 
   return (
     <div
@@ -95,38 +112,78 @@ export function PullToRefresh({
       ref={containerRef}
       style={{ touchAction: "pan-y", overscrollBehaviorY: "contain" }}
     >
-      {/* Pull Indicator Banner */}
-      <div
-        aria-hidden="true"
-        className="pull-to-refresh-indicator"
-        style={{
-          height: `${pullDistance}px`,
-          opacity: pullDistance > 0 || isRefreshing ? 1 : 0,
-          transition: isPulling ? "none" : "height 240ms ease, opacity 240ms ease",
-        }}
-      >
-        <div className="pull-to-refresh-indicator__icon-box">
-          {isRefreshing ? (
-            <Loader2 className="animate-spin text-primary" size={20} />
-          ) : (
-            <RefreshCw
-              className="text-muted-foreground"
-              size={18}
-              style={{
-                transform: `rotate(${progress * 180}deg)`,
-                transition: isPulling ? "none" : "transform 200ms ease",
-              }}
-            />
-          )}
-        </div>
-      </div>
+      {/* Floating Fitness-Themed Indicator Pill (ONLY THIS DROPS DOWN) */}
+      {isEnabled && (pullDistance > 0 || isRefreshing) && (
+        <div
+          aria-hidden="true"
+          className={`pull-to-refresh-indicator ${isRefreshing ? "is-refreshing" : ""} ${isReadyToTrigger ? "is-ready" : ""}`}
+          style={{
+            top: "3.75rem",
+            opacity: Math.min(1, progress * 1.4),
+            transform: `translate3d(0, ${Math.min(pullDistance, pullThreshold)}px, 0) scale(${0.75 + progress * 0.25})`,
+            transition: isPulling
+              ? "none"
+              : "transform 240ms cubic-bezier(0.25, 1, 0.5, 1), opacity 240ms ease",
+          }}
+        >
+          <div className="pull-to-refresh-indicator__badge">
+            {/* SVG Progress Ring */}
+            <svg
+              className={`pull-to-refresh-indicator__ring ${isRefreshing ? "animate-spin" : ""}`}
+              height={size}
+              width={size}
+            >
+              {/* Background Track */}
+              <circle
+                cx={center}
+                cy={center}
+                fill="none"
+                r={radius}
+                stroke="var(--color-border, rgba(0,0,0,0.1))"
+                strokeWidth={strokeWidth}
+              />
+              {/* Active Progress Ring */}
+              <circle
+                cx={center}
+                cy={center}
+                fill="none"
+                r={radius}
+                stroke={isReadyToTrigger || isRefreshing ? "var(--color-action, #4b57f2)" : "var(--color-text-muted, #8e8e93)"}
+                strokeDasharray={circumference}
+                strokeDashoffset={isRefreshing ? circumference * 0.25 : strokeDashoffset}
+                strokeLinecap="round"
+                strokeWidth={strokeWidth}
+                style={{
+                  transition: isPulling ? "none" : "stroke-dashoffset 200ms ease, stroke 200ms ease",
+                  transform: "rotate(-90deg)",
+                  transformOrigin: "50% 50%",
+                }}
+              />
+            </svg>
 
-      {/* Main Content */}
+            {/* Muscle/Dumbbell Icon */}
+            <div className="pull-to-refresh-indicator__icon-wrap">
+              <Dumbbell
+                className={`pull-to-refresh-indicator__icon ${isRefreshing ? "animate-pulse text-action" : isReadyToTrigger ? "text-action scale-110" : "text-muted"}`}
+                size={19}
+                style={{
+                  transform: isRefreshing
+                    ? undefined
+                    : `rotate(${progress * 45}deg) scale(${0.9 + progress * 0.2})`,
+                  transition: isPulling ? "none" : "transform 200ms ease, color 200ms ease",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content (STAYS 100% STATIONARY, ONLY OPACITY FADES SUBTLY) */}
       <div
         className="pull-to-refresh-content"
         style={{
-          transform: `translate3d(0, ${pullDistance}px, 0)`,
-          transition: isPulling ? "none" : "transform 240ms cubic-bezier(0.25, 1, 0.5, 1)",
+          opacity: contentOpacity,
+          transition: isPulling ? "none" : "opacity 240ms ease",
         }}
       >
         {children}

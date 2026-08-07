@@ -1,7 +1,7 @@
-type AuthCookieOptionsInput = {
+interface AuthCookieOptionsInput {
   isProduction?: boolean;
   maxAge: number;
-};
+}
 
 export function createAuthCookieOptions({
   isProduction = process.env.NODE_ENV === "production",

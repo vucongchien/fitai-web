@@ -11,30 +11,34 @@ export function calculateBMI(
   const bmi = Number((weightKg / (heightM * heightM)).toFixed(1));
 
   let category = "Normal";
-  if (bmi < 18.5) category = "Underweight";
-  else if (bmi >= 18.5 && bmi <= 24.9) category = "Normal";
-  else if (bmi >= 25 && bmi <= 29.9) category = "Overweight";
-  else category = "Obese";
+  if (bmi < 18.5) {category = "Underweight";}
+  else if (bmi >= 18.5 && bmi <= 24.9) {category = "Normal";}
+  else if (bmi >= 25 && bmi <= 29.9) {category = "Overweight";}
+  else {category = "Obese";}
 
   return { bmi, category };
 }
 
 export function calculateOneRepMax(weightKg: number, reps: number): number {
-  if (!weightKg || weightKg <= 0) return 0;
-  if (reps <= 1) return weightKg;
+  if (!weightKg || weightKg <= 0) {return 0;}
+  if (reps <= 1) {return weightKg;}
   return Math.round(weightKg * (1 + reps / 30));
 }
 
 export function translateExperienceLevel(level: string): string {
   switch (level?.toUpperCase()) {
-    case "BEGINNER":
+    case "BEGINNER": {
       return "Beginner";
-    case "INTERMEDIATE":
+    }
+    case "INTERMEDIATE": {
       return "Intermediate";
-    case "ADVANCED":
+    }
+    case "ADVANCED": {
       return "Advanced";
-    default:
+    }
+    default: {
       return level || "Intermediate";
+    }
   }
 }
 
@@ -42,81 +46,105 @@ export function translateGoal(goal: string): string {
   switch (goal?.toUpperCase()) {
     case "BUILD_MUSCLE":
     case "HYPERTROPHY":
-    case "STRENGTH":
+    case "STRENGTH": {
       return "Build Muscle";
+    }
     case "LOSE_FAT":
-    case "FAT_LOSS":
+    case "FAT_LOSS": {
       return "Lose Fat";
-    default:
+    }
+    default: {
       return goal;
+    }
   }
 }
 
 export function translateMuscleGroup(group: string): string {
   switch (group?.toUpperCase()) {
-    case "CHEST":
+    case "CHEST": {
       return "Chest";
-    case "BACK":
+    }
+    case "BACK": {
       return "Back";
+    }
     case "LEGS":
     case "QUADRICEPS":
-    case "HAMSTRINGS":
+    case "HAMSTRINGS": {
       return "Legs";
+    }
     case "SHOULDERS":
-    case "DELTOIDS":
+    case "DELTOIDS": {
       return "Shoulders";
+    }
     case "ARMS":
     case "BICEPS":
-    case "TRICEPS":
+    case "TRICEPS": {
       return "Arms";
+    }
     case "ABS":
-    case "CORE":
+    case "CORE": {
       return "Core";
-    default:
+    }
+    default: {
       return group;
+    }
   }
 }
 
 export function translateEquipment(item: string): string {
   switch (item?.toUpperCase()) {
-    case "FULL_GYM":
+    case "FULL_GYM": {
       return "Full Gym";
-    case "DUMBBELL_ONLY":
+    }
+    case "DUMBBELL_ONLY": {
       return "Dumbbells";
-    case "BARBELL":
+    }
+    case "BARBELL": {
       return "Barbell";
-    case "BODYWEIGHT":
+    }
+    case "BODYWEIGHT": {
       return "Bodyweight";
-    case "RESISTANCE_BAND":
+    }
+    case "RESISTANCE_BAND": {
       return "Resistance Band";
-    default:
+    }
+    default: {
       return item;
+    }
   }
 }
 
 export function translateCoachStyle(style: string): string {
   switch (style?.toUpperCase()) {
-    case "MOTIVATIONAL":
+    case "MOTIVATIONAL": {
       return "Motivational";
-    case "STRICT":
+    }
+    case "STRICT": {
       return "Strict";
-    case "SCIENTIFIC":
+    }
+    case "SCIENTIFIC": {
       return "Scientific";
-    default:
+    }
+    default: {
       return style || "Motivational";
+    }
   }
 }
 
 export function translateGender(gender: string): string {
   switch (gender?.toUpperCase()) {
-    case "MALE":
+    case "MALE": {
       return "Male";
-    case "FEMALE":
+    }
+    case "FEMALE": {
       return "Female";
-    case "OTHER":
+    }
+    case "OTHER": {
       return "Other";
-    default:
+    }
+    default: {
       return gender || "Not set";
+    }
   }
 }
 
@@ -161,7 +189,7 @@ export function mapRawDataToProfileViewModel(raw: {
     heightCm: height,
     bmi: bmiInfo.bmi,
     bmiCategory: bmiInfo.category,
-    targetBodyFatPercent: profile.targetBodyFatPercent || 15.0,
+    targetBodyFatPercent: profile.targetBodyFatPercent || 15,
     goals: (profile.goals || ["BUILD_MUSCLE", "FAT_LOSS"]).map(translateGoal),
     preferredMuscleGroups: (profile.preferredMuscleGroups || ["CHEST", "BACK", "LEGS"]).map(
       translateMuscleGroup,
@@ -184,12 +212,12 @@ export function mapRawDataToProfileViewModel(raw: {
     stats: {
       totalWorkouts: raw.statsProto?.totalWorkouts ?? 48,
       activeStreakDays: raw.statsProto?.activeStreakDays ?? 12,
-      totalCaloriesKcal: raw.statsProto?.totalCaloriesKcal ?? 12500,
+      totalCaloriesKcal: raw.statsProto?.totalCaloriesKcal ?? 12_500,
     },
     highlights: {
       currentWeightKg: weight,
       bodyFatPercent: profile.bodyFatPercent || 18.5,
-      targetWeightKg: profile.targetWeightKg || 65.0,
+      targetWeightKg: profile.targetWeightKg || 65,
     },
     healthMetrics,
     injuries: (profile.injuries || []).map((inj: any, idx: number) => ({

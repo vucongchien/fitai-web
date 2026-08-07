@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 import type { ProfileViewModel } from "../model/profile.types";
-import { ModalType, ProfileDetailsModal } from "./profile-details-modal";
+import type { ModalType} from "./profile-details-modal";
+import { ProfileDetailsModal } from "./profile-details-modal";
 import { ProfileHeroCard } from "./profile-hero-card";
 import { ProfileHighlightCards } from "./profile-highlight-cards";
 import { ProfileMenuList } from "./profile-menu-list";
@@ -22,19 +23,19 @@ export function ProfileContent({ profile: initialProfile }: ProfileContentProps)
       ...updatedFields,
       highlights: {
         ...prev.highlights,
-        ...(updatedFields.highlights || {}),
+        ...updatedFields.highlights,
       },
       healthMetrics: {
         ...prev.healthMetrics,
-        ...(updatedFields.healthMetrics || {}),
+        ...updatedFields.healthMetrics,
       },
       user: {
         ...prev.user,
-        ...(updatedFields.user || {}),
+        ...updatedFields.user,
       },
       settings: {
         ...prev.settings,
-        ...(updatedFields.settings || {}),
+        ...updatedFields.settings,
       },
     }));
   };

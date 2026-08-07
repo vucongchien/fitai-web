@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+
 
 import type { AdminTableProps, Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 
-type TestItem = {
+interface TestItem {
   id: string;
   name: string;
-};
+}
 
 const columns: Column<TestItem>[] = [
   {
@@ -29,7 +29,7 @@ const noRows: TestItem[] = [];
 
 const keyExtractor = (item: TestItem) => item.id;
 
-describe("AdminTable Component (Light Theme & English)", () => {
+describe("adminTable Component (Light Theme & English)", () => {
   it("should render table columns and data rows", () => {
     render(<AdminTable columns={columns} data={twoRows} keyExtractor={keyExtractor} />);
 

@@ -1,7 +1,9 @@
 "use client";
 
-import { type FirebaseApp, getApps, initializeApp } from "firebase/app";
-import { getMessaging, isSupported, type Messaging } from "firebase/messaging";
+import { getApps, initializeApp } from 'firebase/app';
+import type { FirebaseApp } from 'firebase/app';
+import { getMessaging, isSupported } from 'firebase/messaging';
+import type { Messaging } from 'firebase/messaging';
 
 /**
  * Lazily initialised Firebase app, for Cloud Messaging only.
@@ -29,7 +31,7 @@ function app(): FirebaseApp {
 
 /** Null when the browser cannot do FCM (Safari without install, private mode). */
 export async function getMessagingIfSupported(): Promise<Messaging | null> {
-  if (!isFirebaseConfigured()) return null;
-  if (!(await isSupported())) return null;
+  if (!isFirebaseConfigured()) {return null;}
+  if (!(await isSupported())) {return null;}
   return getMessaging(app());
 }

@@ -31,6 +31,6 @@ export function shouldCalibrate({
   status: LiveStatus;
 }): boolean {
   // `cameraOn` matters on its own: with the preview off there is no video to
-  // line up in, so an overlay asking the user to line up would be a dead end.
+  // Line up in, so an overlay asking the user to line up would be a dead end.
   return cameraBranch && cameraOn && status === "ready" && !cameraReady;
 }

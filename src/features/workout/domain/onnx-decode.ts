@@ -44,7 +44,7 @@ export const MODEL_IO = {
  * Omitting `out` allocates, which keeps the function pure for its unit tests.
  */
 export function normaliseFrame(frame: LetterboxedFrame, out?: Float32Array): Float32Array {
-  const data = frame.data.data;
+  const {data} = frame.data;
   const pixels = frame.data.width * frame.data.height;
   const tensor = out?.length === pixels * 3 ? out : new Float32Array(pixels * 3);
   for (let i = 0; i < pixels; i += 1) {
@@ -65,10 +65,10 @@ export function decodeSimcc(
   simccY: Float32Array,
   keypointCount: number,
   splitRatio = 2,
-): Array<{ x: number; y: number; score: number }> {
+): { x: number; y: number; score: number }[] {
   const binsX = simccX.length / keypointCount;
   const binsY = simccY.length / keypointCount;
-  const points: Array<{ x: number; y: number; score: number }> = [];
+  const points: { x: number; y: number; score: number }[] = [];
 
   for (let joint = 0; joint < keypointCount; joint += 1) {
     let bestX = 0;
@@ -106,9 +106,9 @@ export function decodeHeatmap(
   mapHeight: number,
   strideX: number,
   strideY: number,
-): Array<{ x: number; y: number; score: number }> {
+): { x: number; y: number; score: number }[] {
   const area = mapWidth * mapHeight;
-  const points: Array<{ x: number; y: number; score: number }> = [];
+  const points: { x: number; y: number; score: number }[] = [];
   for (let joint = 0; joint < keypointCount; joint += 1) {
     let best = -Infinity;
     let bestIndex = 0;

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import { buildTimeline, totalExerciseCount } from "@/features/workout/domain/session-flow";
 import type { LiveExercise, LiveSessionPlan } from "@/features/workout/model/live-session.types";
@@ -40,18 +40,18 @@ const plan = {
   warmUps: [exercise("w1", "warmup", 1)],
 } satisfies LiveSessionPlan;
 
-describe("totalExerciseCount", () => {
+describe(totalExerciseCount, () => {
   it("counts every exercise across all three phases", () => {
     expect(totalExerciseCount(plan)).toBe(4);
   });
 });
 
-describe("SessionStep.sessionPosition", () => {
+describe("sessionStep.sessionPosition", () => {
   it("numbers exercises continuously across phases, not per phase", () => {
     const timeline = buildTimeline(plan);
     const positions = timeline.map((step) => `${step.exercise.exerciseId}:${step.sessionPosition}`);
 
-    expect(positions).toEqual(["w1:1", "m1:2", "m1:2", "m2:3", "c1:4"]);
+    expect(positions).toStrictEqual(["w1:1", "m1:2", "m1:2", "m2:3", "c1:4"]);
   });
 
   it("keeps the existing phase-relative exercisePosition intact", () => {

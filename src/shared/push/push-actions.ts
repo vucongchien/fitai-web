@@ -14,11 +14,11 @@ import { createServerTransport } from "@/shared/api/server/transport";
  * the same shape as workout-actions.ts.
  */
 export async function registerDeviceToken(deviceToken: string): Promise<boolean> {
-  if (!deviceToken) return false;
+  if (!deviceToken) {return false;}
 
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("fitai_access_token")?.value;
-  if (!accessToken) return false;
+  if (!accessToken) {return false;}
 
   try {
     const client = createClient(NotificationService, createServerTransport(accessToken));
@@ -26,14 +26,14 @@ export async function registerDeviceToken(deviceToken: string): Promise<boolean>
       deviceToken,
       deviceType: "WEB",
       // TODO: the backend derives the user from the bearer token; this field is
-      // required by the contract. Matches the `userId: "TODO"` seam already in
-      // workout-actions.ts — resolve both together when a /me lookup exists.
+      // Required by the contract. Matches the `userId: "TODO"` seam already in
+      // Workout-actions.ts — resolve both together when a /me lookup exists.
       userId: "",
     });
     return response.success;
   } catch {
     // A failed registration must never block the UI: the user simply does not
-    // get push until the next attempt.
+    // Get push until the next attempt.
     return false;
   }
 }

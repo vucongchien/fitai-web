@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 
 export type EndDialogVariant = "menu" | "reason" | "overload" | "empty" | "complete";
 
-const REASONS: Array<{ id: AbortReason; label: string; blurb: string }> = [
+const REASONS: { id: AbortReason; label: string; blurb: string }[] = [
   { blurb: "Something hurts — stop now.", id: "pain", label: "Pain or discomfort" },
   { blurb: "No time left today.", id: "out-of-time", label: "Out of time" },
   { blurb: "Not feeling it — that is fine.", id: "uncomfortable", label: "Doesn't feel right" },
@@ -127,10 +127,10 @@ export function EndSessionDialog({
   }
 
   // The confirmation behind the Back button, whenever any set is logged. It used
-  // to be a celebration screen — thumbs-up, calorie estimate, "Next Challenge" —
-  // which said the same thing as the summary, less accurately. Now it just asks
-  // the question Back raises, and offers the three honest answers: save it, stop
-  // early without saving, or carry on.
+  // To be a celebration screen — thumbs-up, calorie estimate, "Next Challenge" —
+  // Which said the same thing as the summary, less accurately. Now it just asks
+  // The question Back raises, and offers the three honest answers: save it, stop
+  // Early without saving, or carry on.
   return (
     <Dialog label="Finish this session?">
       <div className="end-dialog__mark" aria-hidden="true">

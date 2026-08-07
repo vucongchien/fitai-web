@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import {
   buildTimeline,
@@ -63,7 +63,7 @@ function plan(overrides: Partial<LiveSessionPlan> = {}): LiveSessionPlan {
 
 describe("session flow", () => {
   it("orders warm-up, main work, then cooldown", () => {
-    expect(flattenPlan(plan()).map((item) => item.exerciseId)).toEqual([
+    expect(flattenPlan(plan()).map((item) => item.exerciseId)).toStrictEqual([
       "warm",
       "push",
       "row",
@@ -75,7 +75,7 @@ describe("session flow", () => {
     const timeline = buildTimeline(plan());
     // 1 warm-up set + 2 × 2 main sets + 1 cooldown set
     expect(timeline).toHaveLength(6);
-    expect(timeline.map((step) => `${step.exercise.exerciseId}#${step.setNumber}`)).toEqual([
+    expect(timeline.map((step) => `${step.exercise.exerciseId}#${step.setNumber}`)).toStrictEqual([
       "warm#1",
       "push#1",
       "push#2",
@@ -83,8 +83,8 @@ describe("session flow", () => {
       "row#2",
       "stretch#1",
     ]);
-    expect(timeline[1]!.isLastSetOfExercise).toBe(false);
-    expect(timeline[2]!.isLastSetOfExercise).toBe(true);
+    expect(timeline[1]!.isLastSetOfExercise).toBeFalsy();
+    expect(timeline[2]!.isLastSetOfExercise).toBeTruthy();
   });
 
   it("treats a zero-set prescription as one set rather than dropping it", () => {
@@ -95,7 +95,7 @@ describe("session flow", () => {
   });
 
   it("reports only the phases that have exercises", () => {
-    expect(phasesPresent(plan({ coolDowns: [] }))).toEqual(["warmup", "main"]);
+    expect(phasesPresent(plan({ coolDowns: [] }))).toStrictEqual(["warmup", "main"]);
   });
 
   it("skips a whole phase to the first step after it", () => {
@@ -113,8 +113,8 @@ describe("session flow", () => {
 
   it("rests between sets, but rests longer when the exercise changes", () => {
     const timeline = buildTimeline(plan());
-    expect(restSecondsAfter(timeline, 1)).toBe(60); // push#1 → push#2
-    expect(restSecondsAfter(timeline, 2)).toBe(90); // push#2 → row#1
+    expect(restSecondsAfter(timeline, 1)).toBe(60); // Push#1 → push#2
+    expect(restSecondsAfter(timeline, 2)).toBe(90); // Push#2 → row#1
     expect(restSecondsAfter(timeline, timeline.length - 1)).toBe(0);
   });
 

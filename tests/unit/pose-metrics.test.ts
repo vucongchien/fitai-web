@@ -1,20 +1,7 @@
-import { describe, expect, it } from "vitest";
 
-import {
-  KEYPOINT_NAMES,
-  type Keypoint,
-  type Pose,
-  calibrationDistance,
-  calibrationHint,
-  calibrationLighting,
-  createRepCounter,
-  evaluateRules,
-  feedRepCounter,
-  formScore,
-  isPoseUsable,
-  jointAngle,
-  romPercent,
-} from "@/features/workout/domain/pose-metrics";
+
+import { KEYPOINT_NAMES, calibrationDistance, calibrationHint, calibrationLighting, createRepCounter, evaluateRules, feedRepCounter, formScore, isPoseUsable, jointAngle, romPercent } from '@/features/workout/domain/pose-metrics';
+import type { Keypoint, Pose } from '@/features/workout/domain/pose-metrics';
 import type { FormRule, RomRange } from "@/features/workout/model/live-session.types";
 
 function pose(points: Partial<Record<(typeof KEYPOINT_NAMES)[number], [number, number]>>): Pose {
@@ -28,11 +15,11 @@ function pose(points: Partial<Record<(typeof KEYPOINT_NAMES)[number], [number, n
 /** Feed a whole ROM trace through a fresh counter and collect what it produced. */
 function run(roms: number[]) {
   let state = createRepCounter();
-  const completed: Array<{ counted: boolean; romPercentage: number }> = [];
+  const completed: { counted: boolean; romPercentage: number }[] = [];
   for (const rom of roms) {
     const tick = feedRepCounter(state, rom);
     state = tick.state;
-    if (tick.completedRep) completed.push(tick.completedRep);
+    if (tick.completedRep) {completed.push(tick.completedRep);}
   }
   return { state, completed };
 }
@@ -60,7 +47,7 @@ describe("joint angles", () => {
   });
 });
 
-describe("ROM", () => {
+describe("rOM", () => {
   const flexion: RomRange = {
     joints: ["left_shoulder", "left_elbow", "left_wrist"],
     startDeg: 170,
@@ -91,7 +78,7 @@ describe("rep counter (BR-CC-01)", () => {
     const { state, completed } = run([0, 30, 60, 85, 60, 30, 5]);
     expect(state.count).toBe(1);
     expect(completed).toHaveLength(1);
-    expect(completed[0]!.counted).toBe(true);
+    expect(completed[0]!.counted).toBeTruthy();
     expect(completed[0]!.romPercentage).toBe(85);
   });
 
@@ -99,7 +86,7 @@ describe("rep counter (BR-CC-01)", () => {
     const { state, completed } = run([0, 30, 55, 30, 5]);
     expect(state.count).toBe(0);
     expect(completed).toHaveLength(1);
-    expect(completed[0]!.counted).toBe(false);
+    expect(completed[0]!.counted).toBeFalsy();
   });
 
   it("does not double count jitter around the threshold", () => {
@@ -126,15 +113,15 @@ describe("form rules and score", () => {
 
   it("flags a violated rule", () => {
     const sagging = pose({ ...upright, left_hip: [140, 190] });
-    expect(evaluateRules([hipSag], sagging)).toEqual(["hip-sag"]);
+    expect(evaluateRules([hipSag], sagging)).toStrictEqual(["hip-sag"]);
   });
 
   it("stays quiet when the pose is aligned", () => {
-    expect(evaluateRules([hipSag], pose(upright))).toEqual([]);
+    expect(evaluateRules([hipSag], pose(upright))).toStrictEqual([]);
   });
 
   it("skips rules whose keypoints are missing rather than firing falsely", () => {
-    expect(evaluateRules([hipSag], pose({ left_shoulder: [100, 100] }))).toEqual([]);
+    expect(evaluateRules([hipSag], pose({ left_shoulder: [100, 100] }))).toStrictEqual([]);
   });
 
   it("scores clean full-range work near 100 and sloppy work lower", () => {
@@ -153,8 +140,8 @@ describe("form rules and score", () => {
 
 describe("calibration", () => {
   it("recognises a usable pose", () => {
-    expect(isPoseUsable(pose(upright))).toBe(true);
-    expect(isPoseUsable(pose({ left_shoulder: [1, 1] }))).toBe(false);
+    expect(isPoseUsable(pose(upright))).toBeTruthy();
+    expect(isPoseUsable(pose({ left_shoulder: [1, 1] }))).toBeFalsy();
   });
 
   it("asks the user to step closer or step back based on body coverage", () => {

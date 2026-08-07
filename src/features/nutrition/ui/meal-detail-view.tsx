@@ -4,9 +4,9 @@ import type { MealChoice, MealDetailPageData } from "@/features/nutrition/model/
 import { LogMealButton } from "@/features/nutrition/ui/log-meal-button";
 import { LogMealForm } from "@/features/nutrition/ui/log-meal-form";
 
-type MealDetailViewProps = {
+interface MealDetailViewProps {
   data: MealDetailPageData;
-};
+}
 
 const PRICE_LABEL = {
   high: "Higher cost",

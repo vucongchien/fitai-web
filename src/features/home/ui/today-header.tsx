@@ -1,9 +1,9 @@
 import { Flame } from "lucide-react";
 
-type TodayHeaderProps = {
+interface TodayHeaderProps {
   dateLabel?: string;
   streakDays?: number;
-};
+}
 
 export function TodayHeader({ dateLabel = "Today", streakDays = 4 }: TodayHeaderProps) {
   return (

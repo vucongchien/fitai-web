@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import type {
   SessionHistoryRow,
@@ -36,9 +36,9 @@ function at(iso: string, totalVolume: number): SessionHistoryRow {
   };
 }
 
-describe("toAdherence", () => {
+describe(toAdherence, () => {
   it("computes an integer percentage", () => {
-    expect(toAdherence(9, 12)).toEqual({ completed: 9, percentage: 75, scheduled: 12 });
+    expect(toAdherence(9, 12)).toStrictEqual({ completed: 9, percentage: 75, scheduled: 12 });
   });
 
   it("returns zero rather than dividing by zero", () => {
@@ -51,7 +51,7 @@ describe("toAdherence", () => {
   });
 });
 
-describe("flattenSessionPlans", () => {
+describe(flattenSessionPlans, () => {
   it("walks weekPlans -> dayPlans -> sessionPlans", () => {
     const plans = flattenSessionPlans({
       weekPlans: [
@@ -69,13 +69,13 @@ describe("flattenSessionPlans", () => {
   });
 
   it("tolerates a roadmap with no weeks, days, or sessions", () => {
-    expect(flattenSessionPlans({})).toEqual([]);
-    expect(flattenSessionPlans({ weekPlans: [{}] })).toEqual([]);
-    expect(flattenSessionPlans({ weekPlans: [{ dayPlans: [{}] }] })).toEqual([]);
+    expect(flattenSessionPlans({})).toStrictEqual([]);
+    expect(flattenSessionPlans({ weekPlans: [{}] })).toStrictEqual([]);
+    expect(flattenSessionPlans({ weekPlans: [{ dayPlans: [{}] }] })).toStrictEqual([]);
   });
 });
 
-describe("planAdherence", () => {
+describe(planAdherence, () => {
   it("counts only COMPLETED toward the numerator", () => {
     const plans = [
       plan(3, SESSION_PLAN_STATUS.COMPLETED),
@@ -85,26 +85,26 @@ describe("planAdherence", () => {
     ];
 
     // Skipped and aborted were still scheduled, so they stay in the denominator.
-    expect(planAdherence(plans)).toEqual({ completed: 1, percentage: 25, scheduled: 4 });
+    expect(planAdherence(plans)).toStrictEqual({ completed: 1, percentage: 25, scheduled: 4 });
   });
 
   it("returns zero percent for an empty plan set", () => {
-    expect(planAdherence([])).toEqual({ completed: 0, percentage: 0, scheduled: 0 });
+    expect(planAdherence([])).toStrictEqual({ completed: 0, percentage: 0, scheduled: 0 });
   });
 });
 
-describe("plansOnDay", () => {
+describe(plansOnDay, () => {
   it("filters by the roadmap's google.type.Date", () => {
     const plans = [plan(6, SESSION_PLAN_STATUS.COMPLETED), plan(7, SESSION_PLAN_STATUS.PENDING)];
     expect(plansOnDay(plans, "2026-08-06")).toHaveLength(1);
   });
 
   it("drops plans whose scheduled date is the proto default", () => {
-    expect(plansOnDay([{ sessionPlanId: "x", status: 2 }], "2026-08-06")).toEqual([]);
+    expect(plansOnDay([{ sessionPlanId: "x", status: 2 }], "2026-08-06")).toStrictEqual([]);
   });
 });
 
-describe("countActiveDays", () => {
+describe(countActiveDays, () => {
   it("counts distinct days holding a completed session", () => {
     const plans = [
       plan(4, SESSION_PLAN_STATUS.COMPLETED, "a"),
@@ -119,8 +119,8 @@ describe("countActiveDays", () => {
 describe("history rollups", () => {
   // 2026-08-06T00:00:00Z and 2026-08-01T00:00:00Z
   const rows: SessionHistoryRow[] = [
-    { date: { seconds: 1785974400 }, sessionId: "h1", totalSets: 18, totalVolume: 2400.4 },
-    { date: { seconds: 1785542400 }, sessionId: "h2", totalSets: 12, totalVolume: 1800.6 },
+    { date: { seconds: 1_785_974_400 }, sessionId: "h1", totalSets: 18, totalVolume: 2400.4 },
+    { date: { seconds: 1_785_542_400 }, sessionId: "h2", totalSets: 12, totalVolume: 1800.6 },
   ];
 
   it("filters history by the Timestamp day key", () => {
@@ -190,7 +190,7 @@ describe("prescribed minutes", () => {
   });
 });
 
-describe("weeklyVolumeSeries", () => {
+describe(weeklyVolumeSeries, () => {
   it("buckets sessions into ISO weeks starting Monday, oldest first", () => {
     // Mon 3 Aug 2026 and Wed 5 Aug are the same week; Mon 27 Jul is the week before.
     const rows = [
@@ -199,7 +199,7 @@ describe("weeklyVolumeSeries", () => {
       at("2026-08-05T12:00:00Z", 2600),
     ];
 
-    expect(weeklyVolumeSeries(rows, "2026-08-06", 2)).toEqual([
+    expect(weeklyVolumeSeries(rows, "2026-08-06", 2)).toStrictEqual([
       { volumeKg: 2000, weekStart: "2026-07-27" },
       { volumeKg: 5000, weekStart: "2026-08-03" },
     ]);
@@ -208,22 +208,22 @@ describe("weeklyVolumeSeries", () => {
   it("groups a Sunday with the Monday that opened its week", () => {
     // Sun 9 Aug belongs to the week starting Mon 3 Aug, not the next one.
     const series = weeklyVolumeSeries([at("2026-08-09T12:00:00Z", 1500)], "2026-08-09", 1);
-    expect(series).toEqual([{ volumeKg: 1500, weekStart: "2026-08-03" }]);
+    expect(series).toStrictEqual([{ volumeKg: 1500, weekStart: "2026-08-03" }]);
   });
 
   it("marks a week with no logged session as null, not zero", () => {
     const series = weeklyVolumeSeries([at("2026-08-03T12:00:00Z", 2400)], "2026-08-06", 3);
 
-    expect(series.map((week) => week.volumeKg)).toEqual([null, null, 2400]);
+    expect(series.map((week) => week.volumeKg)).toStrictEqual([null, null, 2400]);
   });
 
   it("returns an empty series for a non-positive week count", () => {
-    expect(weeklyVolumeSeries([], "2026-08-06", 0)).toEqual([]);
+    expect(weeklyVolumeSeries([], "2026-08-06", 0)).toStrictEqual([]);
   });
 
   it("ignores rows carrying no date", () => {
     expect(
       weeklyVolumeSeries([{ sessionId: "x", totalSets: 4, totalVolume: 900 }], "2026-08-06", 1),
-    ).toEqual([{ volumeKg: null, weekStart: "2026-08-03" }]);
+    ).toStrictEqual([{ volumeKg: null, weekStart: "2026-08-03" }]);
   });
 });

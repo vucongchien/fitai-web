@@ -6,14 +6,18 @@ export function mapSessionPlanStatus(
   options: { isNext: boolean },
 ): SessionStatus {
   switch (status) {
-    case SessionPlanStatus.COMPLETED:
+    case SessionPlanStatus.COMPLETED: {
       return "complete";
-    case SessionPlanStatus.SKIPPED:
+    }
+    case SessionPlanStatus.SKIPPED: {
       return "skipped";
-    case SessionPlanStatus.PENDING:
+    }
+    case SessionPlanStatus.PENDING: {
       return options.isNext ? "next" : "planned";
+    }
     case SessionPlanStatus.UNSPECIFIED:
-    default:
+    default: {
       return "planned";
+    }
   }
 }

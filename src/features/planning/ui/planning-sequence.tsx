@@ -45,7 +45,7 @@ export function PlanningSequence() {
           const complete = activeStage > index;
           return (
             <li
-              data-state={complete ? "complete" : activeStage === index ? "active" : "pending"}
+              data-state={complete ? "complete" : (activeStage === index ? "active" : "pending")}
               key={stage.label}
             >
               <span aria-hidden="true">

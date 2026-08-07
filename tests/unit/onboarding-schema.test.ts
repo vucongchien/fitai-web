@@ -1,11 +1,11 @@
-import { describe, expect, it } from "vitest";
+
 
 import {
   onboardingDefaults,
   onboardingSchema,
 } from "@/features/onboarding/domain/onboarding-schema";
 
-describe("onboardingSchema", () => {
+describe(onboardingSchema, () => {
   it("accepts a complete beginner profile with 2 goal options", () => {
     const result = onboardingSchema.safeParse({
       ...onboardingDefaults,
@@ -16,7 +16,7 @@ describe("onboardingSchema", () => {
       muscleFocus: ["Chest", "Back"],
     });
 
-    expect(result.success).toBe(true);
+    expect(result.success).toBeTruthy();
   });
 
   it("rejects invalid goal outside build-muscle or fat-loss", () => {
@@ -25,7 +25,7 @@ describe("onboardingSchema", () => {
       goal: "invalid-goal" as any,
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBeFalsy();
   });
 
   it("rejects a schedule with no available day", () => {
@@ -34,7 +34,7 @@ describe("onboardingSchema", () => {
       availableDays: [],
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBeFalsy();
     expect(result.error?.issues[0]?.message).toBe("Choose at least one training day.");
   });
 
@@ -44,6 +44,6 @@ describe("onboardingSchema", () => {
       availableDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBeFalsy();
   });
 });

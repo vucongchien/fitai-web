@@ -20,11 +20,11 @@ import { UserFilters } from "@/features/admin/ui/user-filters";
 /** Closes over nothing, so it lives at module scope with one stable identity. */
 const userKey = (user: AdminUser) => user.userId;
 
-type UserColumnHandlers = {
+interface UserColumnHandlers {
   onView: (user: AdminUser) => void;
   onToggleStatus: (userId: string) => void;
   isToggling: boolean;
-};
+}
 
 /**
  * Column definitions live at module scope so the `cell` renderers are created
@@ -172,9 +172,9 @@ export default function AdminUsersPage() {
     initialPageParam: null as string | null,
   });
 
-  const users = useMemo(() => {
-    return data?.pages.flatMap((page) => page.items) ?? [];
-  }, [data]);
+  const users = useMemo(() => 
+    data?.pages.flatMap((page) => page.items) ?? []
+  , [data]);
 
   const totalCount = data?.pages[0]?.totalCount ?? 0;
 

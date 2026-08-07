@@ -5,13 +5,13 @@ import type { TodayItemCategory, TodayTimelineItem } from "@/features/home/model
 import { cn } from "@/shared/lib/cn";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
-type TodayTimelineProps = {
+interface TodayTimelineProps {
   items: TodayTimelineItem[];
-};
+}
 
 function EventIcon({ category }: { category: TodayItemCategory }) {
-  if (category === "workout") return <Dumbbell aria-hidden="true" size={15} />;
-  if (category === "snack") return <Apple aria-hidden="true" size={15} />;
+  if (category === "workout") {return <Dumbbell aria-hidden="true" size={15} />;}
+  if (category === "snack") {return <Apple aria-hidden="true" size={15} />;}
   return <Soup aria-hidden="true" size={15} />;
 }
 

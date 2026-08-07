@@ -14,7 +14,7 @@ import type {
 
 export const PHASE_ORDER: SessionPhase[] = ["warmup", "main", "cooldown"];
 
-export type SessionStep = {
+export interface SessionStep {
   /** Index inside the timeline. */
   index: number;
   phase: SessionPhase;
@@ -26,7 +26,7 @@ export type SessionStep = {
   /** 1-based set number for this exercise. */
   setNumber: number;
   isLastSetOfExercise: boolean;
-};
+}
 
 /** Warm-ups, then main work, then cooldowns — the order the user experiences. */
 export function flattenPlan(plan: LiveSessionPlan): LiveExercise[] {
@@ -34,8 +34,8 @@ export function flattenPlan(plan: LiveSessionPlan): LiveExercise[] {
 }
 
 export function exercisesOfPhase(plan: LiveSessionPlan, phase: SessionPhase): LiveExercise[] {
-  if (phase === "warmup") return plan.warmUps;
-  if (phase === "cooldown") return plan.coolDowns;
+  if (phase === "warmup") {return plan.warmUps;}
+  if (phase === "cooldown") {return plan.coolDowns;}
   return plan.mainExercises;
 }
 
@@ -98,9 +98,9 @@ export function stepIndexAfterPhase(timeline: SessionStep[], phase: SessionPhase
 /** Index of the first step of the next exercise — the "skip this exercise" target. */
 export function stepIndexAfterExercise(timeline: SessionStep[], fromIndex: number): number {
   const current = timeline[fromIndex];
-  if (!current) return timeline.length;
+  if (!current) {return timeline.length;}
   for (let i = fromIndex + 1; i < timeline.length; i += 1) {
-    if (timeline[i]!.exercise.exerciseId !== current.exercise.exerciseId) return i;
+    if (timeline[i]!.exercise.exerciseId !== current.exercise.exerciseId) {return i;}
   }
   return timeline.length;
 }
@@ -113,7 +113,7 @@ export function stepIndexAfterExercise(timeline: SessionStep[], fromIndex: numbe
 export function restSecondsAfter(timeline: SessionStep[], index: number): number {
   const current = timeline[index];
   const next = timeline[index + 1];
-  if (!current || !next) return 0;
+  if (!current || !next) {return 0;}
   return next.exercise.exerciseId === current.exercise.exerciseId
     ? current.exercise.restSetSec
     : current.exercise.restExerciseSec;
@@ -125,7 +125,7 @@ export function isLastStep(timeline: SessionStep[], index: number): boolean {
 
 /** 0..1 — replaces the old hard-coded `exercises.length * 3` assumption. */
 export function progressRatio(completedSets: number, timeline: SessionStep[]): number {
-  if (timeline.length === 0) return 0;
+  if (timeline.length === 0) {return 0;}
   return Math.min(Math.max(completedSets / timeline.length, 0), 1);
 }
 

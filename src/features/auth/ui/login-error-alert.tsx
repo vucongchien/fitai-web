@@ -13,7 +13,7 @@ export function LoginErrorAlert() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
 
-  if (!error) return null;
+  if (!error) {return null;}
 
   const errorMessage = loginErrors[error] ?? "Sign-in did not complete. Start again to continue.";
 

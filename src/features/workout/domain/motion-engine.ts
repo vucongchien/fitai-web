@@ -40,7 +40,7 @@ export type MotionEngineEvent =
 export type MotionEngineKind = "onnx" | "simulated" | "manual";
 
 /** What a finished set produced. Feeds the review sheet and LogWorkoutSet. */
-export type SetTelemetry = {
+export interface SetTelemetry {
   reps: RepLogEntry[];
   countedReps: number;
   /** Mean ROM of counted reps, 0-100. */
@@ -49,7 +49,7 @@ export type SetTelemetry = {
   /** Share of frames with a usable skeleton — BR-CC-02. */
   validFrameRatio: number;
   secondsPerRep: number;
-};
+}
 
 export const EMPTY_TELEMETRY: SetTelemetry = {
   reps: [],
@@ -60,12 +60,12 @@ export const EMPTY_TELEMETRY: SetTelemetry = {
   secondsPerRep: 0,
 };
 
-export type MotionEngineContext = {
+export interface MotionEngineContext {
   /** Live camera feed. Absent for the manual engine. */
   video?: HTMLVideoElement | null;
   /** Null for the manual engine — an exercise without AI support has no spec. */
   spec: MotionSpec | null;
-};
+}
 
 export type MotionEventHandler = (event: MotionEngineEvent) => void;
 

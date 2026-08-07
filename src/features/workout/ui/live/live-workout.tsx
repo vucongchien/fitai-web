@@ -26,14 +26,14 @@ import { toast } from "@/shared/ui/toast";
 const ADD_SECONDS = 10;
 
 function toggleFullscreen() {
-  if (typeof document === "undefined") return;
+  if (typeof document === "undefined") {return;}
   if (document.fullscreenElement) {
     void document.exitFullscreen();
     return;
   }
   void document.documentElement.requestFullscreen?.().catch(() => {
-    // iOS Safari has no Fullscreen API on the document element. The screen is
-    // already chrome-free, so failing quietly is the right outcome.
+    // IOS Safari has no Fullscreen API on the document element. The screen is
+    // Already chrome-free, so failing quietly is the right outcome.
   });
 }
 
@@ -76,15 +76,15 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   } = workoutEffects;
 
   // Back always asks first — mid-set or mid-rest, no exceptions. Leaving a
-  // running session is not something a single stray tap should be able to do,
-  // and the dialog is where the user chooses between finishing (which saves and
-  // shows the summary) and stopping early.
+  // Running session is not something a single stray tap should be able to do,
+  // And the dialog is where the user chooses between finishing (which saves and
+  // Shows the summary) and stopping early.
   const onBack = useCallback(() => setEndOpen(true), []);
   const onToggleVoice = useCallback(() => setListening((value) => !value), []);
 
   // An AI set is only ready to run once the engine has loaded and the framing
-  // check passes. Starting before that would race `motion.prepare()` and count
-  // reps against a model that is not there yet.
+  // Check passes. Starting before that would race `motion.prepare()` and count
+  // Reps against a model that is not there yet.
   const sessionStatus = session.status;
   const cameraActive = cameraBranch && cameraOn;
   const cameraReady =
@@ -97,18 +97,18 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   });
 
   // The redesigned screens have no "start set" control: arriving at a step *is*
-  // the intent to work. Without this the hold clock never runs, `+10s` has no
-  // clock to extend and the camera never begins counting reps.
+  // The intent to work. Without this the hold clock never runs, `+10s` has no
+  // Clock to extend and the camera never begins counting reps.
   useEffect(() => {
-    if (sessionStatus === "ready" && !needsCalibration) startSet(listening);
+    if (sessionStatus === "ready" && !needsCalibration) {startSet(listening);}
   }, [listening, needsCalibration, sessionStatus, startSet]);
 
   // These three notices lived in the deleted `SessionShell`. The screens are
-  // fixed-height with no room for a banner row, so they speak as toasts — but
-  // they must still speak: the protection note is a post-injury safety message
+  // Fixed-height with no room for a banner row, so they speak as toasts — but
+  // They must still speak: the protection note is a post-injury safety message
   // (ux-flow-spec §6.7, BR-AC-09), not decoration.
   useEffect(() => {
-    if (!online) toast.info("Offline Mode: You're offline. Sets are saved locally.");
+    if (!online) {toast.info("Offline Mode: You're offline. Sets are saved locally.");}
   }, [online]);
 
   const durationWarning =
@@ -116,12 +116,12 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       ? "This session has run long. Want to wrap it up?"
       : null;
   useEffect(() => {
-    if (durationWarning) toast.info(`Session Duration: ${durationWarning}`);
+    if (durationWarning) {toast.info(`Session Duration: ${durationWarning}`);}
   }, [durationWarning]);
 
-  const protectionNote = plan.protectionNote;
+  const {protectionNote} = plan;
   useEffect(() => {
-    if (protectionNote) toast.info(`${protectionNote.title}: ${protectionNote.description}`);
+    if (protectionNote) {toast.info(`${protectionNote.title}: ${protectionNote.description}`);}
   }, [protectionNote]);
 
   if (!step || !exercise) {
@@ -146,8 +146,8 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const onToggleCamera = cameraBranch ? () => setCameraOn((value) => !value) : undefined;
 
   // The confirmation behind the Back button. With nothing logged there is no
-  // session worth saving, so the dialog offers to cancel instead of "finish".
-  const loggedSets = session.loggedSets;
+  // Session worth saving, so the dialog offers to cancel instead of "finish".
+  const {loggedSets} = session;
   const volumeKg = sessionVolumeKg(loggedSets);
   const endVariant: EndDialogVariant = loggedSets.length === 0 ? "empty" : "complete";
   const endDialog = endOpen ? (
@@ -168,7 +168,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   ) : null;
 
   // Pain is reportable from either screen, so the dialog lives here rather than
-  // inside one of them.
+  // Inside one of them.
   const painDialog = painOpen ? (
     <PainReportDialog
       onDismiss={() => setPainOpen(false)}
@@ -181,7 +181,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   if (session.status === "resting") {
     const next = session.step;
-    if (!next) return null;
+    if (!next) {return null;}
 
     return (
       <>

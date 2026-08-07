@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import {
   clockLabel,
@@ -13,15 +13,15 @@ import {
 describe("day-key normalization", () => {
   it("converts google.protobuf.Timestamp to a day key", () => {
     // 2026-08-06T04:00:00Z
-    expect(dayKeyFromTimestamp({ seconds: 1785988800 })).toBe("2026-08-06");
+    expect(dayKeyFromTimestamp({ seconds: 1_785_988_800 })).toBe("2026-08-06");
   });
 
   it("accepts bigint seconds from protoc-gen-es", () => {
-    expect(dayKeyFromTimestamp({ seconds: 1785988800n })).toBe("2026-08-06");
+    expect(dayKeyFromTimestamp({ seconds: 1_785_988_800n })).toBe("2026-08-06");
   });
 
   it("returns null for a missing timestamp", () => {
-    expect(dayKeyFromTimestamp(undefined)).toBeNull();
+    expect(dayKeyFromTimestamp()).toBeNull();
   });
 
   it("converts google.type.Date to a day key with zero padding", () => {
@@ -42,7 +42,7 @@ describe("day-key normalization", () => {
 
   it("returns null for empty logged_at", () => {
     expect(dayKeyFromLoggedAt("")).toBeNull();
-    expect(dayKeyFromLoggedAt(undefined)).toBeNull();
+    expect(dayKeyFromLoggedAt()).toBeNull();
   });
 
   it("orders meals by minutes of day and sorts unparseable values last", () => {
@@ -56,15 +56,15 @@ describe("day-key normalization", () => {
   });
 
   it("builds an inclusive trailing range, oldest first", () => {
-    expect(dayKeyRange("2026-08-06", 3)).toEqual(["2026-08-04", "2026-08-05", "2026-08-06"]);
+    expect(dayKeyRange("2026-08-06", 3)).toStrictEqual(["2026-08-04", "2026-08-05", "2026-08-06"]);
   });
 
   it("crosses a month boundary correctly", () => {
-    expect(dayKeyRange("2026-08-02", 3)).toEqual(["2026-07-31", "2026-08-01", "2026-08-02"]);
+    expect(dayKeyRange("2026-08-02", 3)).toStrictEqual(["2026-07-31", "2026-08-01", "2026-08-02"]);
   });
 
   it("returns an empty range for a non-positive length", () => {
-    expect(dayKeyRange("2026-08-06", 0)).toEqual([]);
+    expect(dayKeyRange("2026-08-06", 0)).toStrictEqual([]);
   });
 
   it("labels weekdays", () => {

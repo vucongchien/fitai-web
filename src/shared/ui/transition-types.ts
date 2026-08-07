@@ -1,6 +1,6 @@
 // Shared `transitionTypes` tuples for `next/link`.
 // Hoisted to module scope so every link reuses one array instead of allocating
-// a fresh literal on each render.
+// A fresh literal on each render.
 
 /** Pushing deeper into a stack: detail pages, "start" actions. */
 export const NAV_FORWARD: string[] = ["nav-forward"];

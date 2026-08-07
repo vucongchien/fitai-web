@@ -18,11 +18,11 @@ export function setVolumeKg(set: Pick<SetLogDraft, "actualReps" | "weightKg">): 
   return reps * weight;
 }
 
-export function sessionVolumeKg(sets: Array<Pick<SetLogDraft, "actualReps" | "weightKg">>): number {
+export function sessionVolumeKg(sets: Pick<SetLogDraft, "actualReps" | "weightKg">[]): number {
   return sets.reduce((total, set) => total + setVolumeKg(set), 0);
 }
 
-export function totalReps(sets: Array<Pick<SetLogDraft, "actualReps">>): number {
+export function totalReps(sets: Pick<SetLogDraft, "actualReps">[]): number {
   return sets.reduce((total, set) => total + Math.max(0, set.actualReps), 0);
 }
 
@@ -31,18 +31,18 @@ export function totalReps(sets: Array<Pick<SetLogDraft, "actualReps">>): number 
  * bodyweight-only history where volume is 0) — we never block on a zero divisor.
  */
 export function isAnomalousLoad(currentVolumeKg: number, recentAvgVolumeKg: number): boolean {
-  if (recentAvgVolumeKg <= 0) return false;
+  if (recentAvgVolumeKg <= 0) {return false;}
   return currentVolumeKg > recentAvgVolumeKg * ANOMALOUS_LOAD_RATIO;
 }
 
 export function loadRatio(currentVolumeKg: number, recentAvgVolumeKg: number): number {
-  if (recentAvgVolumeKg <= 0) return 0;
+  if (recentAvgVolumeKg <= 0) {return 0;}
   return currentVolumeKg / recentAvgVolumeKg;
 }
 
 /** Epley: 1RM = w × (1 + reps / 30). Returns 0 for bodyweight or empty sets. */
 export function epley1RM(weightKg: number, reps: number): number {
-  if (weightKg <= 0 || reps <= 0) return 0;
+  if (weightKg <= 0 || reps <= 0) {return 0;}
   return weightKg * (1 + reps / 30);
 }
 
@@ -51,8 +51,8 @@ export function bestOneRepMaxByExercise(sets: SetLogDraft[]): Record<string, num
   const best: Record<string, number> = {};
   for (const set of sets) {
     const estimate = epley1RM(set.weightKg, set.actualReps);
-    if (estimate <= 0) continue;
-    if (estimate > (best[set.exerciseId] ?? 0)) best[set.exerciseId] = estimate;
+    if (estimate <= 0) {continue;}
+    if (estimate > (best[set.exerciseId] ?? 0)) {best[set.exerciseId] = estimate;}
   }
   return best;
 }
@@ -61,7 +61,7 @@ export function bestOneRepMaxByExercise(sets: SetLogDraft[]): Record<string, num
 const PR_EPSILON_KG = 0.01;
 
 export function isNewPersonalRecord(estimatedOneRepMax: number, previousBest: number): boolean {
-  if (estimatedOneRepMax <= 0) return false;
+  if (estimatedOneRepMax <= 0) {return false;}
   return estimatedOneRepMax > previousBest + PR_EPSILON_KG;
 }
 
@@ -69,7 +69,7 @@ export function isNewPersonalRecord(estimatedOneRepMax: number, previousBest: nu
 export function findNewPersonalRecords(
   sets: SetLogDraft[],
   previousBests: Record<string, number>,
-): Array<{ exerciseId: string; oneRepMaxKg: number }> {
+): { exerciseId: string; oneRepMaxKg: number }[] {
   return Object.entries(bestOneRepMaxByExercise(sets))
     .filter(([exerciseId, estimate]) =>
       isNewPersonalRecord(estimate, previousBests[exerciseId] ?? 0),
@@ -79,14 +79,14 @@ export function findNewPersonalRecords(
 
 export function averageRpe(sets: SetLogDraft[]): number | null {
   const scored = sets.filter((set) => typeof set.rpe === "number");
-  if (scored.length === 0) return null;
+  if (scored.length === 0) {return null;}
   return scored.reduce((total, set) => total + (set.rpe ?? 0), 0) / scored.length;
 }
 
 /** BR-WL-03: only camera sets carry a Form Score; manual sets stay N/A. */
 export function averageFormScore(sets: SetLogDraft[]): number | null {
   const scored = sets.filter((set) => typeof set.formScore === "number");
-  if (scored.length === 0) return null;
+  if (scored.length === 0) {return null;}
   return scored.reduce((total, set) => total + (set.formScore ?? 0), 0) / scored.length;
 }
 

@@ -2,15 +2,15 @@ import type { LucideIcon } from "lucide-react";
 
 export type WeekState = "complete" | "active" | "planned";
 
-export type WeekSummary = {
+export interface WeekSummary {
   number: number;
   label: string;
   state: WeekState;
-};
+}
 
 export type SessionStatus = "complete" | "next" | "planned" | "rest" | "skipped";
 
-export type SessionSummary = {
+export interface SessionSummary {
   id: string;
   day: string;
   date: string;
@@ -20,64 +20,64 @@ export type SessionSummary = {
   targetRpe: number;
   muscles: string[];
   status: SessionStatus;
-};
+}
 
-export type ContextItem = {
+export interface ContextItem {
   id: string;
   Icon: LucideIcon;
   title: string;
   description: string;
-};
+}
 
-export type RoadmapPageData = {
+export interface RoadmapPageData {
   activeWeek: number;
   weeks: WeekSummary[];
   currentWeekSessions: SessionSummary[];
   currentWeekLabel: string;
   currentWeekDateRange: string;
   contextItems: ContextItem[];
-};
+}
 
 /** One week of the full four-week schedule. */
-export type ScheduleWeek = {
+export interface ScheduleWeek {
   dateRange: string;
   label: string;
   number: number;
   sessions: SessionSummary[];
   state: WeekState;
-};
+}
 
-export type SchedulePageData = {
+export interface SchedulePageData {
   activeWeek: number;
   weeks: ScheduleWeek[];
-};
+}
 
 // ---------------------------------------------------------------------------
 // Session Plan types
 // ---------------------------------------------------------------------------
 
-export type PrescribedExercise = {
+export interface PrescribedExercise {
   exerciseId: string;
   name: string;
   prescription: string;
   rest: string;
   notes: string;
-};
+}
 
-export type ReadinessNote = {
+export interface ReadinessNote {
   variant: "safe" | "warning";
   title: string;
   description: string;
-};
+}
 
-export type FeatureNote = {
+export interface FeatureNote {
   id: string;
   icon: "camera" | "zap" | "info";
   title: string;
   description: string;
-};
+}
 
-export type SessionPlanPageData = {
+export interface SessionPlanPageData {
   sessionPlanId: string;
   title: string;
   day: string;
@@ -90,4 +90,4 @@ export type SessionPlanPageData = {
   featureNotes: FeatureNote[];
   preSessionChecks: string[];
   startWorkoutHref: string;
-};
+}

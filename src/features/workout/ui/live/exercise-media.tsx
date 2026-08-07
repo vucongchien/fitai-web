@@ -7,9 +7,9 @@ import { useEffect, useRef, useState } from "react";
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 
 function readReducedMotion(): boolean {
-  // jsdom does not implement matchMedia, and neither do very old browsers.
+  // Jsdom does not implement matchMedia, and neither do very old browsers.
   // Absent the query we assume motion is fine — the loop is the guidance.
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return false;
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {return false;}
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
@@ -24,7 +24,7 @@ function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(readReducedMotion);
 
   useEffect(() => {
-    if (typeof window.matchMedia !== "function") return;
+    if (typeof window.matchMedia !== "function") {return;}
 
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
@@ -52,14 +52,14 @@ export function ExerciseMedia({
   const reducedMotion = useReducedMotion();
   const showCameraButton = Boolean(onOpenCamera) && exercise.hasAiSupported;
   // No clip means no button: an affordance that opens nothing is worse than
-  // its absence. The demo assets are not seeded in the mock data yet, so this
-  // is the honest branch rather than a dead control on every exercise.
+  // Its absence. The demo assets are not seeded in the mock data yet, so this
+  // Is the honest branch rather than a dead control on every exercise.
   const showVideoButton = Boolean(onWatchVideo) && Boolean(exercise.videoUrl) && !cameraActive;
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {return;}
     if (reducedMotion) {
       video.pause();
       // Show the first frame rather than wherever it happened to stop.
@@ -67,9 +67,9 @@ export function ExerciseMedia({
       return;
     }
     // Muted playback is always permitted by autoplay policy; a rejection here
-    // just means no clip, which the poster already covers. jsdom's play() is
-    // unimplemented and returns undefined rather than a promise, so guard the
-    // shape before chaining .catch.
+    // Just means no clip, which the poster already covers. jsdom's play() is
+    // Unimplemented and returns undefined rather than a promise, so guard the
+    // Shape before chaining .catch.
     const playResult = video.play();
     if (playResult && typeof playResult.catch === "function") {
       void playResult.catch(() => {});
@@ -83,7 +83,7 @@ export function ExerciseMedia({
       ) : exercise.videoUrl ? (
         <video
           // The demo loop is the guidance itself, so it plays on sight — but a
-          // user who asked the OS for less motion gets the poster frame instead.
+          // User who asked the OS for less motion gets the poster frame instead.
           // Playback is driven imperatively in the effect above, not via autoPlay.
           ref={videoRef}
           className="live-media__video"

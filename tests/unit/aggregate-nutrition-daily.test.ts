@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import type { MealLogRow } from "@/shared/api/bff/aggregate/nutrition-daily";
 import {
@@ -31,7 +31,7 @@ const rows: MealLogRow[] = [
   row({ calories: 700, loggedAt: "2026-08-05T19:00:00Z", mealName: "Salmon", mealType: "DINNER" }),
 ];
 
-describe("toMealSlot", () => {
+describe(toMealSlot, () => {
   it("normalizes the proto's bare string values", () => {
     expect(toMealSlot("BREAKFAST")).toBe("breakfast");
     expect(toMealSlot("lunch")).toBe("lunch");
@@ -44,7 +44,7 @@ describe("toMealSlot", () => {
   });
 });
 
-describe("countMeals", () => {
+describe(countMeals, () => {
   it("counts only rows logged on the given day", () => {
     expect(countMeals(rows, "2026-08-06")).toBe(3);
     expect(countMeals(rows, "2026-08-05")).toBe(1);
@@ -55,10 +55,10 @@ describe("countMeals", () => {
   });
 });
 
-describe("groupMealsBySlot", () => {
+describe(groupMealsBySlot, () => {
   it("always returns all four slots so each can render its own empty state", () => {
     const groups = groupMealsBySlot(rows, "2026-08-06");
-    expect(groups.map((group) => group.slot)).toEqual(["breakfast", "lunch", "dinner", "snack"]);
+    expect(groups.map((group) => group.slot)).toStrictEqual(["breakfast", "lunch", "dinner", "snack"]);
   });
 
   it("sums calories per slot and keeps the day's rows only", () => {
@@ -78,7 +78,7 @@ describe("groupMealsBySlot", () => {
     ];
     const snack = groupMealsBySlot(sameSlot, "2026-08-06").find((group) => group.slot === "snack");
 
-    expect(snack?.meals.map((meal) => meal.name)).toEqual(["Early", "Late"]);
+    expect(snack?.meals.map((meal) => meal.name)).toStrictEqual(["Early", "Late"]);
   });
 
   it("exposes a clock label per meal", () => {
@@ -89,11 +89,11 @@ describe("groupMealsBySlot", () => {
   });
 });
 
-describe("dailyCalorieSeries", () => {
+describe(dailyCalorieSeries, () => {
   it("buckets calories by day across the window, oldest first", () => {
     const series = dailyCalorieSeries(rows, "2026-08-06", 3);
 
-    expect(series).toEqual([
+    expect(series).toStrictEqual([
       { calories: null, key: "2026-08-04" },
       { calories: 700, key: "2026-08-05" },
       { calories: 1220, key: "2026-08-06" },
@@ -102,11 +102,11 @@ describe("dailyCalorieSeries", () => {
 
   it("marks an unlogged day as null rather than a measured zero", () => {
     const series = dailyCalorieSeries([], "2026-08-06", 2);
-    expect(series.every((point) => point.calories === null)).toBe(true);
+    expect(series.every((point) => point.calories === null)).toBeTruthy();
   });
 });
 
-describe("averageDailyProtein", () => {
+describe(averageDailyProtein, () => {
   it("averages across days that have logs, not across the whole window", () => {
     // 2026-08-06 has 3 rows x 30g = 90g; 2026-08-05 has 1 row x 30g = 30g.
     // Two logged days -> (90 + 30) / 2 = 60.
@@ -122,7 +122,7 @@ describe("averageDailyProtein", () => {
   });
 });
 
-describe("countLoggedDays", () => {
+describe(countLoggedDays, () => {
   it("counts distinct days with at least one meal", () => {
     expect(countLoggedDays(rows, "2026-08-06", 7)).toBe(2);
   });

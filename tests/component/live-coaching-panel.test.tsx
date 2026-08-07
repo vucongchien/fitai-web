@@ -1,5 +1,5 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { CoachingPanel } from "@/features/workout/ui/live/coaching-panel";
@@ -33,7 +33,7 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   };
 }
 
-describe("CoachingPanel", () => {
+describe(CoachingPanel, () => {
   it("renders the instruction itself, with no label above it", () => {
     render(<CoachingPanel exercise={makeExercise()} />);
 
@@ -54,7 +54,7 @@ describe("CoachingPanel", () => {
   });
 
   // The other three cues moved to the exercise guide sheet: a running set is
-  // read at a glance, and four labelled blocks is not a glance.
+  // Read at a glance, and four labelled blocks is not a glance.
   it("leaves form cues, breathing and mistakes to the guide sheet", () => {
     render(<CoachingPanel exercise={makeExercise()} />);
 
@@ -138,7 +138,7 @@ describe("CoachingPanel", () => {
   });
 
   it("still renders when the browser has no ResizeObserver", () => {
-    vi.stubGlobal("ResizeObserver", undefined);
+    vi.stubGlobal("ResizeObserver");
 
     expect(() => render(<CoachingPanel exercise={makeExercise()} />)).not.toThrow();
   });

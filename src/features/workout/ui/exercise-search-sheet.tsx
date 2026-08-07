@@ -7,11 +7,11 @@ import type { ExerciseResult } from "@/features/workout/model/workout.types";
 import { searchExercises } from "@/features/workout/server/workout-actions";
 import { useDebounce } from "@/shared/lib/use-debounce";
 
-type ExerciseSearchSheetProps = {
+interface ExerciseSearchSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onAddExercise: (exercise: ExerciseResult) => void;
-};
+}
 
 export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: ExerciseSearchSheetProps) {
   const [query, setQuery] = useState("");
@@ -22,7 +22,7 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
 
   // Search via Server Action khi debouncedQuery thay đổi (250ms delay chống lãng phí network request & server compute)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {return;}
 
     let isCurrent = true;
 
@@ -58,7 +58,7 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   return (
     <div className="bottom-search-sheet-container">
@@ -100,7 +100,7 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
             <p aria-live="polite" className="bottom-search-sheet__empty">
               Searching...
             </p>
-          ) : results.length === 0 ? (
+          ) : (results.length === 0 ? (
             <p className="bottom-search-sheet__empty">No matching movements found.</p>
           ) : (
             results.map((item) => (
@@ -125,7 +125,7 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
                 </button>
               </div>
             ))
-          )}
+          ))}
         </div>
       </div>
     </div>

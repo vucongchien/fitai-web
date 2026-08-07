@@ -3,16 +3,16 @@
 import { Sparkles, X } from "lucide-react";
 import { useCallback, useState } from "react";
 
-type CoachNoteProps = {
+interface CoachNoteProps {
   message?: string | null;
   type?: "info" | "recovery" | "warning";
-};
+}
 
 export function CoachNote({ message, type = "recovery" }: CoachNoteProps) {
   const [dismissed, setDismissed] = useState(false);
   const dismiss = useCallback(() => setDismissed(true), []);
 
-  if (!message || dismissed) return null;
+  if (!message || dismissed) {return null;}
 
   return (
     <output className="coach-note-banner" data-type={type}>

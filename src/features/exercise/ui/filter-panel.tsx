@@ -2,17 +2,10 @@
 
 import { X } from "lucide-react";
 
-import {
-  type CatalogEntry,
-  type CatalogMetadata,
-  countActiveFilters,
-  DIFFICULTY_LABEL,
-  DIFFICULTY_ORDER,
-  type Difficulty,
-  type ExerciseFilters,
-} from "@/features/exercise/domain/exercise";
+import { countActiveFilters, DIFFICULTY_LABEL, DIFFICULTY_ORDER } from '@/features/exercise/domain/exercise';
+import type { CatalogEntry, CatalogMetadata, Difficulty, ExerciseFilters } from '@/features/exercise/domain/exercise';
 
-type FilterPanelProps = {
+interface FilterPanelProps {
   open: boolean;
   filters: ExerciseFilters;
   catalog: CatalogMetadata;
@@ -20,7 +13,7 @@ type FilterPanelProps = {
   onChange: (next: ExerciseFilters) => void;
   onClear: () => void;
   onClose: () => void;
-};
+}
 
 export function FilterPanel({
   open,
@@ -47,7 +40,7 @@ export function FilterPanel({
     onChange({ ...filters, difficulty: next });
   };
 
-  if (!open) return null;
+  if (!open) {return null;}
 
   return (
     <div className="filter-sheet">
@@ -150,12 +143,12 @@ export function FilterPanel({
   );
 }
 
-type ChipGroupProps = {
+interface ChipGroupProps {
   label: string;
   entries: CatalogEntry[];
   activeIds: string[];
   onToggle: (id: string) => void;
-};
+}
 
 function ChipGroup({ label, entries, activeIds, onToggle }: ChipGroupProps) {
   return (

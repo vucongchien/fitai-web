@@ -34,7 +34,7 @@ export function useCameraStream() {
   const stop = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
-    if (videoRef.current) videoRef.current.srcObject = null;
+    if (videoRef.current) {videoRef.current.srcObject = null;}
     setState("idle");
   }, []);
 
@@ -64,7 +64,7 @@ export function useCameraStream() {
       if (video) {
         video.srcObject = stream;
         video.muted = true;
-        await video.play().catch(() => undefined);
+        await video.play().catch(() => {});
       }
       setState("ready");
       return true;
@@ -84,7 +84,7 @@ export function useCameraStream() {
   useEffect(() => stop, [stop]);
 
   // Memoised so callers can safely put the controller in an effect's dependency
-  // array. A fresh object literal here re-ran those effects on every render.
+  // Array. A fresh object literal here re-ran those effects on every render.
   return useMemo(
     () => ({ state, facingMode, videoRef, start, stop, flip }),
     [facingMode, flip, start, state, stop],

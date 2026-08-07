@@ -1,16 +1,12 @@
-import {
-  type CatalogMetadata,
-  type ExerciseFilters,
-  type ExerciseSummary,
-  filterExercises,
-} from "@/features/exercise/domain/exercise";
+import { filterExercises } from '@/features/exercise/domain/exercise';
+import type { CatalogMetadata, ExerciseFilters, ExerciseSummary } from '@/features/exercise/domain/exercise';
 import { MOCK_CATALOG, MOCK_EXERCISES } from "@/shared/mock";
 
-export type ExerciseSearchRepository = {
+export interface ExerciseSearchRepository {
   search(filters: ExerciseFilters): Promise<ExerciseSummary[]>;
   getCatalog(): Promise<CatalogMetadata>;
   getById(id: string): Promise<ExerciseSummary | null>;
-};
+}
 
 export const mockExerciseSearchRepository: ExerciseSearchRepository = {
   async search(filters) {

@@ -8,7 +8,7 @@ import type { Difficulty } from "@/features/exercise/domain/exercise";
 
 export type ExerciseDialogMode = "create" | "edit" | "view";
 
-type MetadataOption = { id: string; name: string };
+interface MetadataOption { id: string; name: string }
 
 /**
  * Fallback catalogs live at module scope so they keep a stable identity across
@@ -42,7 +42,7 @@ const DEFAULT_MUSCLES: MetadataOption[] = [
   { id: "ms-triceps", name: "Cơ tay sau" },
 ];
 
-export type ExerciseDialogProps = {
+export interface ExerciseDialogProps {
   isOpen: boolean;
   mode: ExerciseDialogMode;
   exercise?: AdminExercise | null;
@@ -51,7 +51,7 @@ export type ExerciseDialogProps = {
   bodyParts?: { id: string; name: string }[];
   equipments?: { id: string; name: string }[];
   muscles?: { id: string; name: string }[];
-};
+}
 
 export function ExerciseDialog({
   isOpen,
@@ -107,11 +107,11 @@ export function ExerciseDialog({
     }
   }, [exercise, mode, bodyParts, equipments, muscles, isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!onSave || mode === "view") return;
+    if (!onSave || mode === "view") {return;}
 
     setIsSubmitting(true);
     try {

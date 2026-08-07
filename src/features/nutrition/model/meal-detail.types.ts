@@ -4,7 +4,7 @@ import type { LoggedMeal, MealSlot } from "@/shared/api/bff/aggregate/nutrition-
 export type PriceTier = "high" | "low" | "medium";
 
 /** One suggested option for a slot, from `GetTodayMenuResponse.meals`. */
-export type MealChoice = {
+export interface MealChoice {
   calories: number;
   carbs: number;
   description: string;
@@ -15,7 +15,7 @@ export type MealChoice = {
   protein: number;
   /** `MealOption.recipe_steps` — how to actually cook it. */
   recipeSteps: string[];
-};
+}
 
 /** A logged meal, plus the menu option it matches when the menu still carries one. */
 export type LoggedMealDetail = LoggedMeal & {
@@ -23,7 +23,7 @@ export type LoggedMealDetail = LoggedMeal & {
   recipeSteps: string[];
 };
 
-export type MealDetailPageData = {
+export interface MealDetailPageData {
   /** Suggestions for this slot, excluding anything already eaten. */
   choices: MealChoice[];
   /** Total calories logged in this slot today. */
@@ -32,4 +32,4 @@ export type MealDetailPageData = {
   loggedMeals: LoggedMealDetail[];
   slot: MealSlot;
   slotLabel: string;
-};
+}

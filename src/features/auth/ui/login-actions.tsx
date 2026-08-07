@@ -25,7 +25,7 @@ export function openOAuthPopup(provider: OAuthProvider) {
 }
 
 // Dev-only shortcut styling and handlers: constant, so they live at module
-// scope rather than being rebuilt on every render.
+// Scope rather than being rebuilt on every render.
 const DEV_PANEL_STYLE = {
   marginTop: "1rem",
   paddingTop: "1rem",
@@ -46,16 +46,16 @@ export function LoginActions() {
 
   const continueWith = useCallback(
     (provider: OAuthProvider) => {
-      if (pending) return;
+      if (pending) {return;}
       setPending(true);
 
       const popup = openOAuthPopup(provider);
-      if (!popup) return;
+      if (!popup) {return;}
 
       let cleanedUp = false;
 
       const cleanup = () => {
-        if (cleanedUp) return;
+        if (cleanedUp) {return;}
         cleanedUp = true;
         clearInterval(pollClosed);
         setPending(false);
@@ -63,7 +63,7 @@ export function LoginActions() {
 
       const onMessage = (event: MessageEvent<OAuthMessage>) => {
         if (event.origin && event.origin !== "null" && event.origin !== window.location.origin)
-          return;
+          {return;}
         if (event.data?.type === "OAUTH_COMPLETE") {
           window.removeEventListener("message", onMessage);
           try {

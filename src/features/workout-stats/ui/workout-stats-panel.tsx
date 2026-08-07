@@ -5,9 +5,9 @@ import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-st
 import { MetricHero } from "@/shared/ui/charts/metric-hero";
 import { VolumeBarChart } from "@/shared/ui/charts/volume-bar-chart";
 
-type WorkoutStatsPanelProps = {
+interface WorkoutStatsPanelProps {
   data: WorkoutStatsData;
-};
+}
 
 export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
   const { adherence } = data;

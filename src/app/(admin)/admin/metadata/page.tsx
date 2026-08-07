@@ -13,11 +13,11 @@ import {
 import type { MetadataItem } from "@/features/admin/domain/admin-types";
 import { MetadataDialog } from "@/features/admin/ui/metadata-dialog";
 
-type MetadataTab = {
+interface MetadataTab {
   category: MetadataItem["category"];
   label: string;
   icon: LucideIcon;
-};
+}
 
 /** Static tab definitions — no closure over props or state, so module scope. */
 const TABS: MetadataTab[] = [
@@ -36,8 +36,8 @@ export default function AdminMetadataPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MetadataItem | null>(null);
 
-  // useCallback keyed on activeTab, so the effect below can depend on the
-  // function itself without re-fetching on every render.
+  // UseCallback keyed on activeTab, so the effect below can depend on the
+  // Function itself without re-fetching on every render.
   const loadMetadata = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -132,7 +132,7 @@ export default function AdminMetadataPage() {
         <div className="py-12 text-center text-xs text-slate-400 font-semibold">
           Loading catalog metadata...
         </div>
-      ) : items.length === 0 ? (
+      ) : (items.length === 0 ? (
         <div className="py-12 text-center text-xs text-slate-400 font-medium bg-white border border-slate-200 rounded-2xl">
           No items found in this category. Click Add to create one.
         </div>
@@ -169,7 +169,7 @@ export default function AdminMetadataPage() {
             </div>
           ))}
         </div>
-      )}
+      ))}
 
       {/* Add / Edit Metadata Dialog */}
       <MetadataDialog

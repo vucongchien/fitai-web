@@ -11,7 +11,7 @@ import { SessionHeader } from "@/features/workout/ui/live/session-header";
 
 /** "10 Reps" or "30 Seconds" — title-cased, matching the rest-screen copy. */
 function prescriptionLabel(exercise: LiveExercise): string {
-  if (exercise.durationSeconds > 0) return `${exercise.durationSeconds} Seconds`;
+  if (exercise.durationSeconds > 0) {return `${exercise.durationSeconds} Seconds`;}
   return `${exercise.targetReps} Reps`;
 }
 

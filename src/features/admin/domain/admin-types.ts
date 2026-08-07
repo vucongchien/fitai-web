@@ -57,22 +57,22 @@ export const USER_STATUS_LABEL: Record<AdminUserStatus, string> = {
   banned: "Banned",
 };
 
-export type BiologicalMetrics = {
+export interface BiologicalMetrics {
   heightCm: number;
   weightKg: number;
   bodyFatPercent?: number;
   bmi?: number;
-};
+}
 
-export type InjuryRecord = {
+export interface InjuryRecord {
   id: string;
   type: string;
   affectedArea: string;
   reportedAt: string;
   isRecovered: boolean;
-};
+}
 
-export type AdminUser = {
+export interface AdminUser {
   userId: string;
   email: string;
   displayName: string;
@@ -95,15 +95,15 @@ export type AdminUser = {
   createdAt: string;
   updatedAt: string;
   lastActiveAt: string;
-};
+}
 
-export type ExerciseAdminFilters = {
+export interface ExerciseAdminFilters {
   q: string;
   status: AdminExerciseStatus | "all";
   bodyPartId: string;
   equipmentId: string;
   difficulty: Difficulty | "all";
-};
+}
 
 export const DEFAULT_EXERCISE_ADMIN_FILTERS: ExerciseAdminFilters = {
   q: "",
@@ -113,11 +113,11 @@ export const DEFAULT_EXERCISE_ADMIN_FILTERS: ExerciseAdminFilters = {
   difficulty: "all",
 };
 
-export type UserAdminFilters = {
+export interface UserAdminFilters {
   q: string;
   role: AdminUserRole | "all";
   status: AdminUserStatus | "all";
-};
+}
 
 export const DEFAULT_USER_ADMIN_FILTERS: UserAdminFilters = {
   q: "",
@@ -125,15 +125,15 @@ export const DEFAULT_USER_ADMIN_FILTERS: UserAdminFilters = {
   status: "all",
 };
 
-export type MetadataItem = {
+export interface MetadataItem {
   id: string;
   name: string;
   category: "bodyPart" | "equipment" | "muscle" | "tag";
   description?: string;
-};
+}
 
-export type PaginatedResponse<T> = {
+export interface PaginatedResponse<T> {
   items: T[];
   nextCursor: string | null;
   totalCount: number;
-};
+}

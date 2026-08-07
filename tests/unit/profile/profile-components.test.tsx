@@ -1,15 +1,15 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+
 
 import { ProfileContent } from "../../../src/features/profile/components/profile-content";
 import { mapRawDataToProfileViewModel } from "../../../src/features/profile/model/profile.mapper";
 
-describe("Profile UI Components", () => {
+describe("profile UI Components", () => {
   const mockProfileData = mapRawDataToProfileViewModel({
     user: { name: "Emma Nguyen", level: 10 },
-    profileProto: { weightKg: 68.5, heightCm: 175, targetWeightKg: 65.0, bodyFatPercent: 18.5 },
+    profileProto: { weightKg: 68.5, heightCm: 175, targetWeightKg: 65, bodyFatPercent: 18.5 },
     prListProto: [{ exerciseName: "Barbell Deadlift", weight: 140, reps: 1, oneRepMax: 140 }],
-    statsProto: { totalWorkouts: 48, activeStreakDays: 12, totalCaloriesKcal: 12500 },
+    statsProto: { totalWorkouts: 48, activeStreakDays: 12, totalCaloriesKcal: 12_500 },
   });
 
   it("renders user profile hero card with English labels", () => {

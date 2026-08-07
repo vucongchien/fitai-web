@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+
 import {
   elapsedSeconds,
   formatCountdown,
@@ -8,7 +9,7 @@ import {
   useTicker,
 } from "@/features/workout/model/use-session-timer";
 
-describe("useTicker", () => {
+describe(useTicker, () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -18,7 +19,7 @@ describe("useTicker", () => {
 
   it("returns a timestamp immediately, before any tick arrives", () => {
     const { result } = renderHook(() => useTicker(true));
-    expect(typeof result.current).toBe("number");
+    expect(result.current).toBeTypeOf("number");
     expect(result.current).toBeGreaterThan(0);
   });
 

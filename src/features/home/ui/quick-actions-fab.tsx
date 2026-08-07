@@ -6,9 +6,9 @@ import { useCallback, useState } from "react";
 
 import type { QuickAction } from "@/features/home/model/home-page.types";
 
-type QuickActionsFabProps = {
+interface QuickActionsFabProps {
   actions: QuickAction[];
-};
+}
 
 const iconMap = {
   dumbbell: Dumbbell,

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import type { DailyMenuRows } from "@/features/nutrition/model/meal-detail.mapper";
 import {
@@ -34,7 +34,7 @@ const menu: DailyMenuRows = {
   ],
 };
 
-describe("toPriceTier", () => {
+describe(toPriceTier, () => {
   it("normalizes the proto's bare string values", () => {
     expect(toPriceTier("LOW")).toBe("low");
     expect(toPriceTier(" medium ")).toBe("medium");
@@ -47,7 +47,7 @@ describe("toPriceTier", () => {
   });
 });
 
-describe("adaptMealDetailPageData", () => {
+describe(adaptMealDetailPageData, () => {
   it("picks the requested slot's options and rounds them for display", () => {
     // Nothing is logged, so the option stays in the suggestions.
     const data = adaptMealDetailPageData(menu, [], "breakfast", MOCK_TODAY);
@@ -61,26 +61,26 @@ describe("adaptMealDetailPageData", () => {
   it("carries the recipe steps through in order", () => {
     const data = adaptMealDetailPageData(menu, [], "breakfast", MOCK_TODAY);
 
-    expect(data.choices[0]?.recipeSteps).toEqual(["Simmer the bones.", "Blanch the noodles."]);
+    expect(data.choices[0]?.recipeSteps).toStrictEqual(["Simmer the bones.", "Blanch the noodles."]);
   });
 
   it("keeps an empty recipe empty rather than inventing steps", () => {
     const data = adaptMealDetailPageData(menu, [], "snack", MOCK_TODAY);
-    expect(data.choices[0]?.recipeSteps).toEqual([]);
+    expect(data.choices[0]?.recipeSteps).toStrictEqual([]);
   });
 
   it("does not offer a dish that was already eaten", () => {
     // The mock logs "Lean beef pho" for breakfast, which is the slot's only option.
     const data = adaptMealDetailPageData(menu, getMockMealRows(), "breakfast", MOCK_TODAY);
 
-    expect(data.loggedMeals.map((meal) => meal.name)).toEqual(["Lean beef pho"]);
-    expect(data.choices).toEqual([]);
+    expect(data.loggedMeals.map((meal) => meal.name)).toStrictEqual(["Lean beef pho"]);
+    expect(data.choices).toStrictEqual([]);
   });
 
   it("moves the eaten dish's recipe onto the logged row rather than losing it", () => {
     const data = adaptMealDetailPageData(menu, getMockMealRows(), "breakfast", MOCK_TODAY);
 
-    expect(data.loggedMeals[0]?.recipeSteps).toEqual(["Simmer the bones.", "Blanch the noodles."]);
+    expect(data.loggedMeals[0]?.recipeSteps).toStrictEqual(["Simmer the bones.", "Blanch the noodles."]);
   });
 
   it("matches dish names case-insensitively and ignoring surrounding space", () => {
@@ -88,7 +88,7 @@ describe("adaptMealDetailPageData", () => {
       row.mealType === "BREAKFAST" ? { ...row, mealName: "  lean BEEF pho " } : row,
     );
 
-    expect(adaptMealDetailPageData(menu, rows, "breakfast", MOCK_TODAY).choices).toEqual([]);
+    expect(adaptMealDetailPageData(menu, rows, "breakfast", MOCK_TODAY).choices).toStrictEqual([]);
   });
 
   it("leaves a logged row with no recipe when the menu carries no match", () => {
@@ -97,7 +97,7 @@ describe("adaptMealDetailPageData", () => {
     );
     const data = adaptMealDetailPageData(menu, rows, "breakfast", MOCK_TODAY);
 
-    expect(data.loggedMeals[0]?.recipeSteps).toEqual([]);
+    expect(data.loggedMeals[0]?.recipeSteps).toStrictEqual([]);
     // The unmatched option stays available as a suggestion.
     expect(data.choices).toHaveLength(1);
   });
@@ -105,7 +105,7 @@ describe("adaptMealDetailPageData", () => {
   it("pulls today's logged rows for that slot out of the flat history", () => {
     const data = adaptMealDetailPageData(menu, getMockMealRows(), "breakfast", MOCK_TODAY);
 
-    expect(data.loggedMeals.map((meal) => meal.name)).toEqual(["Lean beef pho"]);
+    expect(data.loggedMeals.map((meal) => meal.name)).toStrictEqual(["Lean beef pho"]);
     expect(data.loggedCalories).toBe(420);
   });
 
@@ -120,10 +120,10 @@ describe("adaptMealDetailPageData", () => {
   it("reports an empty slot without inventing a reading", () => {
     const data = adaptMealDetailPageData(menu, getMockMealRows(), "dinner", MOCK_TODAY);
 
-    expect(data.loggedMeals).toEqual([]);
+    expect(data.loggedMeals).toStrictEqual([]);
     expect(data.loggedCalories).toBe(0);
     // The mock menu defines no dinner options.
-    expect(data.choices).toEqual([]);
+    expect(data.choices).toStrictEqual([]);
   });
 
   it("labels the slot for the heading", () => {

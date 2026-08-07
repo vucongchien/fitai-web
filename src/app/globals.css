@@ -214,7 +214,10 @@ button {
 }
 
 .app-header,
-.focused-header {
+.focused-header,
+.login-header,
+.setup-header,
+.workout-prep-header {
   position: sticky;
   z-index: 30;
   top: 0;
@@ -224,10 +227,25 @@ button {
   padding: env(safe-area-inset-top) 1rem 0;
   align-items: center;
   gap: 0.5rem;
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  background: var(--color-surface, #ffffff);
   border-bottom: 1px solid color-mix(in srgb, var(--color-border) 62%, transparent);
-  backdrop-filter: blur(12px);
   view-transition-name: app-header;
+}
+
+.app-header::before,
+.focused-header::before,
+.login-header::before,
+.setup-header::before,
+.workout-prep-header::before {
+  position: absolute;
+  top: -200px;
+  right: 0;
+  left: 0;
+  height: 200px;
+  background: var(--color-surface, #ffffff);
+  content: "";
+  grid-column: 1 / -1;
+  pointer-events: none;
 }
 
 .app-header {
@@ -2691,13 +2709,14 @@ a.week-route__row:hover {
 .focused-shell {
   display: block;
   min-height: 100dvh;
-  background: var(--color-surface);
+  background: var(--color-surface, #ffffff);
 }
 
 .focused-page {
   display: flex;
   min-height: 100dvh;
   flex-direction: column;
+  background: var(--color-surface, #ffffff);
 }
 
 .focused-header__back {
@@ -6171,26 +6190,48 @@ body:has(.live-screen) {
 }
 
 .pull-to-refresh-indicator {
-  position: absolute;
-  top: 0;
+  position: fixed;
   right: 0;
   left: 0;
-  z-index: 40;
+  z-index: 45;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
 }
 
-.pull-to-refresh-indicator__icon-box {
+.pull-to-refresh-indicator__badge {
+  position: relative;
   display: grid;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 3rem;
+  height: 3rem;
   place-items: center;
-  background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #e5e7eb);
-  border-radius: 9999px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  color: var(--color-action, #4b57f2);
+  background: color-mix(in srgb, var(--color-surface, #ffffff) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border, #e5e7eb) 75%, transparent);
+  border-radius: 50%;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow var(--duration-state) ease, border-color var(--duration-state) ease;
 }
 
+.pull-to-refresh-indicator.is-ready .pull-to-refresh-indicator__badge {
+  border-color: var(--color-action);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--color-action) 35%, transparent);
+}
+
+.pull-to-refresh-indicator__ring {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+.pull-to-refresh-indicator__icon-wrap {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+}
+
+.pull-to-refresh-indicator__icon {
+  transition: transform 200ms ease, color 200ms ease;
+}

@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+
 
 import { TripleLane } from "@/shared/ui/triple-lane";
 
-describe("TripleLane", () => {
+describe(TripleLane, () => {
   it("provides a text alternative when it carries meaning", () => {
     render(<TripleLane active="plan" labelled />);
 

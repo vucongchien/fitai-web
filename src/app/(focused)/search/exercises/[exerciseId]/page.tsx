@@ -16,7 +16,7 @@ async function ExerciseDetailContent({ exerciseId }: { exerciseId: string }) {
     exerciseSearchRepository.getCatalog(),
   ]);
 
-  if (!exercise) notFound();
+  if (!exercise) {notFound();}
 
   return <ExerciseDetail exercise={exercise} catalog={catalog} />;
 }

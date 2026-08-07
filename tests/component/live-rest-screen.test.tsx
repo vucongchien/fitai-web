@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
@@ -47,7 +47,7 @@ const baseProps = {
   workoutTitle: "Full Body Beginner",
 };
 
-describe("RestScreen", () => {
+describe(RestScreen, () => {
   it("shows the workout name in the header, not the exercise name", () => {
     render(<RestScreen {...baseProps} />);
 
@@ -69,7 +69,7 @@ describe("RestScreen", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
 
-    expect(onReportPain).toHaveBeenCalledOnce();
+    expect(onReportPain).toHaveBeenCalledTimes(1);
   });
 
   it("labels the upcoming exercise and names it", () => {
@@ -97,7 +97,7 @@ describe("RestScreen", () => {
   });
 
   // The position folded into the "Next" line rather than occupying a fourth
-  // row of its own, which is what freed the vertical space for the media.
+  // Row of its own, which is what freed the vertical space for the media.
   it("shows the session-wide position on the Next line", () => {
     render(<RestScreen {...baseProps} />);
 
@@ -119,8 +119,8 @@ describe("RestScreen", () => {
     fireEvent.click(screen.getByRole("button", { name: "+10 Seconds" }));
     fireEvent.click(screen.getByRole("button", { name: "Skip Rest" }));
 
-    expect(onAddTime).toHaveBeenCalledOnce();
-    expect(onSkipRest).toHaveBeenCalledOnce();
+    expect(onAddTime).toHaveBeenCalledTimes(1);
+    expect(onSkipRest).toHaveBeenCalledTimes(1);
   });
 
   it("explains the automatic transition", () => {
@@ -130,7 +130,7 @@ describe("RestScreen", () => {
   });
 
   // Rest is rest. Nothing is being tracked, so there is no camera to offer and
-  // no reason to hold the stream (and its recording indicator) open.
+  // No reason to hold the stream (and its recording indicator) open.
   it("offers no camera controls at all during rest", () => {
     render(<RestScreen {...baseProps} />);
 

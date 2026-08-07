@@ -34,8 +34,8 @@ export async function updateProfileServerAction(
     });
 
     return { success: res.success, message: res.message || "Profile updated successfully" };
-  } catch (err: any) {
-    console.error("[gRPC ProfileService.UpdateProfile] Error:", err?.message || err);
+  } catch (error: any) {
+    console.error("[gRPC ProfileService.UpdateProfile] Error:", error?.message || error);
     return { success: true, message: "Saved locally (gRPC fallback)" };
   }
 }
@@ -59,8 +59,8 @@ export async function reportInjuryServerAction(injury: {
     });
 
     return { success: res.success, injuryId: res.injuryId, message: res.message };
-  } catch (err: any) {
-    console.error("[gRPC ProfileService.ReportInjury] Error:", err?.message || err);
+  } catch (error: any) {
+    console.error("[gRPC ProfileService.ReportInjury] Error:", error?.message || error);
     return { success: true, injuryId: `inj-${Date.now()}`, message: "Reported (gRPC fallback)" };
   }
 }
@@ -77,8 +77,8 @@ export async function recoverInjuryServerAction(
 
     const res = await client.recoverInjury({ injuryId });
     return { success: res.success, message: res.message };
-  } catch (err: any) {
-    console.error("[gRPC ProfileService.RecoverInjury] Error:", err?.message || err);
+  } catch (error: any) {
+    console.error("[gRPC ProfileService.RecoverInjury] Error:", error?.message || error);
     return { success: true, message: "Recovered (gRPC fallback)" };
   }
 }

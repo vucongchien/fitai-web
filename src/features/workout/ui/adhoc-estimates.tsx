@@ -1,10 +1,10 @@
 import { Clock3, Gauge } from "lucide-react";
 
-type AdhocEstimatesProps = {
+interface AdhocEstimatesProps {
   estimatedDuration: number;
   exerciseCount: number;
   targetRpe: number;
-};
+}
 
 export function AdhocEstimates({
   estimatedDuration,

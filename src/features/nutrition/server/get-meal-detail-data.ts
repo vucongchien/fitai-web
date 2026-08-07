@@ -1,8 +1,6 @@
 import "server-only";
-import {
-  adaptMealDetailPageData,
-  type DailyMenuRows,
-} from "@/features/nutrition/model/meal-detail.mapper";
+import { adaptMealDetailPageData } from '@/features/nutrition/model/meal-detail.mapper';
+import type { DailyMenuRows } from '@/features/nutrition/model/meal-detail.mapper';
 import type { MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 
@@ -133,7 +131,7 @@ function getMockDailyMenu(): DailyMenuRows {
  *   - NutritionService.getNutritionHistory → what was actually logged in that slot today
  */
 export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageData> {
-  // readLocalMeals touches cookies(), so this read belongs to the request.
+  // ReadLocalMeals touches cookies(), so this read belongs to the request.
   const rows = withLocalMeals(await readLocalMeals());
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
 
@@ -142,6 +140,6 @@ export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageD
   }
 
   // TODO: fetch getTodayMenu + getNutritionHistory in parallel and pass the live payloads
-  // through adaptMealDetailPageData, exactly as the mock branch above does.
+  // Through adaptMealDetailPageData, exactly as the mock branch above does.
   return adaptMealDetailPageData(getMockDailyMenu(), rows, slot, MOCK_TODAY);
 }

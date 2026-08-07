@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 
 import {
   GetOAuthLoginURLResponseSchema,
@@ -20,7 +20,7 @@ const mockCookieSet =
   >();
 const mockCookieDelete = vi.fn<(name: string) => void>();
 
-vi.mock("next/server", () => {
+vi.mock<typeof import('next/server')>(import('next/server'), () => {
   class FakeNextResponse {
     status: number;
     headers: Headers;
@@ -42,7 +42,7 @@ vi.mock("next/server", () => {
 
 /** `(await cookies()).get(name)`. The routes only ever read `.value`. */
 const mockGetCookie = vi.fn<(name: string) => { value: string } | undefined>();
-vi.mock("next/headers", () => ({
+vi.mock<typeof import('next/headers')>(import('next/headers'), () => ({
   cookies: () => Promise.resolve({ get: mockGetCookie }),
 }));
 
@@ -50,7 +50,7 @@ const mockGetOAuthLoginURL = vi.fn<AuthClient["getOAuthLoginURL"]>();
 const mockLoginWithOAuth = vi.fn<AuthClient["loginWithOAuth"]>();
 const mockGetProfile = vi.fn<ProfileClient["getProfile"]>();
 
-vi.mock("@connectrpc/connect", () => ({
+vi.mock<typeof import('@connectrpc/connect')>(import('@connectrpc/connect'), () => ({
   createClient: (_service: unknown, _transport: unknown) => ({
     getOAuthLoginURL: mockGetOAuthLoginURL,
     loginWithOAuth: mockLoginWithOAuth,
@@ -58,12 +58,12 @@ vi.mock("@connectrpc/connect", () => ({
   }),
 }));
 
-vi.mock("@/shared/api/server/transport", () => ({
+vi.mock<typeof import('@/shared/api/server/transport')>(import('@/shared/api/server/transport'), () => ({
   // `createClient` is mocked too, so the transport is never actually used.
   createServerTransport: vi.fn<() => Transport>(() => ({}) as Transport),
 }));
 
-vi.mock("@/shared/auth/cookies", () => ({
+vi.mock<typeof import('@/shared/auth/cookies')>(import('@/shared/auth/cookies'), () => ({
   createAuthCookieOptions: ({ maxAge }: { maxAge: number }) => ({
     httpOnly: true,
     maxAge,
@@ -212,7 +212,7 @@ describe("/auth/callback/[provider] (callback route)", () => {
   });
 
   it("redirects to invalid_state when state cookie is absent", async () => {
-    mockGetCookie.mockReturnValue(undefined);
+    mockGetCookie.mockReturnValue();
     const { GET } = await import("@/app/auth/callback/[provider]/route");
     const res = await GET(
       makeRequest(`${ORIGIN}/auth/callback/google?code=${CODE}&state=${STATE}`),

@@ -3,9 +3,9 @@ import Link from "next/link";
 
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
-type HeaderActionsProps = {
+interface HeaderActionsProps {
   hasNotifications?: boolean;
-};
+}
 
 export function HeaderActions({ hasNotifications = true }: HeaderActionsProps) {
   return (

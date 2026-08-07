@@ -1,6 +1,6 @@
 export type SessionStatus = "complete" | "next" | "planned" | "rest" | "skipped";
 
-export type SessionSummary = {
+export interface SessionSummary {
   id: string;
   day: string;
   date: string;
@@ -10,11 +10,11 @@ export type SessionSummary = {
   targetRpe: number;
   muscles: string[];
   status: SessionStatus;
-};
+}
 
 export type TodayItemCategory = "meal" | "snack" | "workout";
 
-export type TodayTimelineItem = {
+export interface TodayTimelineItem {
   id: string;
   time: string;
   title: string;
@@ -22,7 +22,7 @@ export type TodayTimelineItem = {
   category: TodayItemCategory;
   status: SessionStatus;
   href?: string;
-};
+}
 
 export const activeRoadmap = {
   id: "roadmap-august",

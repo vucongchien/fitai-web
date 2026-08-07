@@ -26,49 +26,55 @@ export function toAppError(reason: unknown): AppError {
   const traceId = error.metadata.get("x-trace-id") ?? undefined;
 
   switch (error.code) {
-    case Code.Unauthenticated:
+    case Code.Unauthenticated: {
       return new AppError(
         "Your session has expired. Sign in again to continue.",
         "auth",
         false,
         traceId,
       );
-    case Code.InvalidArgument:
+    }
+    case Code.InvalidArgument: {
       return new AppError(
         error.rawMessage || "Check the highlighted details and try again.",
         "validation",
         false,
         traceId,
       );
-    case Code.NotFound:
+    }
+    case Code.NotFound: {
       return new AppError(
         "That training record is no longer available.",
         "not-found",
         false,
         traceId,
       );
+    }
     case Code.AlreadyExists:
-    case Code.Aborted:
+    case Code.Aborted: {
       return new AppError(
         "The request conflicts with a newer training update.",
         "conflict",
         false,
         traceId,
       );
+    }
     case Code.Unavailable:
-    case Code.DeadlineExceeded:
+    case Code.DeadlineExceeded: {
       return new AppError(
         "FITAI cannot reach the training service right now.",
         "unavailable",
         true,
         traceId,
       );
-    default:
+    }
+    default: {
       return new AppError(
         "The request did not finish. Try again when your connection is stable.",
         "unknown",
         false,
         traceId,
       );
+    }
   }
 }

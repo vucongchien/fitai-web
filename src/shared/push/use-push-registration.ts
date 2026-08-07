@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getMessagingIfSupported } from "@/shared/push/firebase-app";
 import { registerDeviceToken } from "@/shared/push/push-actions";
 
-export type PushSupport = { supported: boolean; reason: string | null };
+export interface PushSupport { supported: boolean; reason: string | null }
 
 /**
  * Why push is or is not possible here. Split out from the hook so it is testable
@@ -36,21 +36,21 @@ export type PushStatus = "idle" | "asking" | "granted" | "denied" | "unsupported
  */
 async function mintAndRegister(): Promise<PushStatus> {
   const messaging = await getMessagingIfSupported();
-  if (!messaging) return "unsupported";
+  if (!messaging) {return "unsupported";}
 
   // Register our own SW and hand it to FCM, rather than letting the SDK look
-  // for /firebase-messaging-sw.js. One service worker, one push handler.
+  // For /firebase-messaging-sw.js. One service worker, one push handler.
   const registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
   const token = await getToken(messaging, {
     serviceWorkerRegistration: registration,
     vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
   }).catch(() => null);
 
-  if (!token) return "failed";
+  if (!token) {return "failed";}
 
   // The backend is the thing that decides whether push actually works. Reporting
   // "granted" on a failed handoff would tell the user reminders are on while the
-  // notification service has no token to send to.
+  // Notification service has no token to send to.
   return (await registerDeviceToken(token)) ? "granted" : "failed";
 }
 
@@ -66,21 +66,21 @@ export function usePushRegistration() {
       setStatus("denied");
       return;
     }
-    if (Notification.permission !== "granted") return;
+    if (Notification.permission !== "granted") {return;}
 
     // Optimistic: permission is granted, so hide the opt-in immediately rather
-    // than flashing a button for the duration of the round trip below.
+    // Than flashing a button for the duration of the round trip below.
     setStatus("granted");
 
     // Permission survives across sessions but the token does not: FCM rotates
-    // it, and clearing site data drops it. Without this re-mint the user stays
-    // permanently opted in with a token the backend no longer has, and no UI
-    // ever appears to fix it. Re-registering an unchanged token is a cheap no-op
-    // on the backend side.
+    // It, and clearing site data drops it. Without this re-mint the user stays
+    // Permanently opted in with a token the backend no longer has, and no UI
+    // Ever appears to fix it. Re-registering an unchanged token is a cheap no-op
+    // On the backend side.
     let cancelled = false;
     void (async () => {
       const next = await mintAndRegister();
-      if (!cancelled) setStatus(next);
+      if (!cancelled) {setStatus(next);}
     })();
     return () => {
       cancelled = true;

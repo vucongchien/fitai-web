@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+
 
 import type { TodayTimelineItem } from "@/features/home/model/home-page.types";
 import { TodayTimeline } from "@/features/home/ui/today-timeline";
@@ -52,7 +52,7 @@ const mockTodayItems: TodayTimelineItem[] = [
   },
 ];
 
-describe("TodayTimeline Component", () => {
+describe("todayTimeline Component", () => {
   it("renders all 5 items including 4 meals and 1 workout session", () => {
     const { container } = render(<TodayTimeline items={mockTodayItems} />);
 

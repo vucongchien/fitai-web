@@ -10,16 +10,16 @@ import { MOCK_EXERCISES } from "@/shared/mock/exercises";
 
 const INITIAL_ADMIN_EXERCISES: AdminExercise[] = MOCK_EXERCISES.map((ex, index) => {
   let status: AdminExerciseStatus = "approved";
-  if (index % 4 === 0) status = "submittedForApproval";
-  else if (index % 5 === 0) status = "created";
-  else if (index % 9 === 0) status = "archived";
+  if (index % 4 === 0) {status = "submittedForApproval";}
+  else if (index % 5 === 0) {status = "created";}
+  else if (index % 9 === 0) {status = "archived";}
 
   return {
     ...ex,
     status,
     createdBy: index % 2 === 0 ? "admin@fitai.com" : "coach.alex@fitai.com",
-    createdAt: new Date(Date.now() - index * 86400000 * 2).toISOString(),
-    updatedAt: new Date(Date.now() - index * 86400000).toISOString(),
+    createdAt: new Date(Date.now() - index * 86_400_000 * 2).toISOString(),
+    updatedAt: new Date(Date.now() - index * 86_400_000).toISOString(),
   };
 });
 
@@ -48,11 +48,11 @@ let metadataStore: MetadataItem[] = [
   })),
 ];
 
-export type FetchExercisesParams = {
+export interface FetchExercisesParams {
   cursor?: string | null;
   limit?: number;
   filters?: Partial<ExerciseAdminFilters>;
-};
+}
 
 export async function fetchAdminExercises({
   cursor = null,
@@ -104,7 +104,7 @@ export async function fetchAdminExercises({
   const paginatedItems = result.slice(startIndex, startIndex + limit);
   const hasMore = startIndex + limit < result.length;
   const nextCursor =
-    hasMore && paginatedItems.length > 0 ? paginatedItems[paginatedItems.length - 1].id : null;
+    hasMore && paginatedItems.length > 0 ? paginatedItems.at(-1)?.id ?? null : null;
 
   return {
     items: paginatedItems,
@@ -195,13 +195,13 @@ export async function fetchMetadataList(
   category?: MetadataItem["category"],
 ): Promise<MetadataItem[]> {
   await new Promise((resolve) => setTimeout(resolve, 30));
-  if (!category) return [...metadataStore];
+  if (!category) {return [...metadataStore];}
   return metadataStore.filter((item) => item.category === category);
 }
 
 export async function createMetadataItem(item: Omit<MetadataItem, "id">): Promise<MetadataItem> {
   await new Promise((resolve) => setTimeout(resolve, 30));
-  const prefix = item.category.substring(0, 2);
+  const prefix = item.category.slice(0, 2);
   const newId = `${prefix}-${Date.now().toString(36)}`;
   const created: MetadataItem = {
     ...item,
@@ -217,7 +217,7 @@ export async function updateMetadataItem(
 ): Promise<MetadataItem> {
   await new Promise((resolve) => setTimeout(resolve, 30));
   const index = metadataStore.findIndex((m) => m.id === id);
-  if (index === -1) throw new Error(`Metadata item ${id} not found`);
+  if (index === -1) {throw new Error(`Metadata item ${id} not found`);}
   const updated = { ...metadataStore[index], ...data };
   metadataStore[index] = updated;
   return updated;

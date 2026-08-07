@@ -12,9 +12,9 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export type AdminSidebarProps = {
+export interface AdminSidebarProps {
   pendingApprovalCount?: number;
-};
+}
 
 export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
   const pathname = usePathname();

@@ -1,24 +1,25 @@
+import { expect, test } from 'vitest';
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
-// iPhone 14-ish viewport — the smallest target the spec cares about.
+// IPhone 14-ish viewport — the smallest target the spec cares about.
 test.use({ viewport: { height: 844, width: 390 } });
 
 // Guards DESIGN.md's One Leader Rule: the active screen spends its entire
-// accent budget on the ring arc. Any second Coral element is a regression —
-// and Relay Blue is not an accent on either screen at all.
+// Accent budget on the ring arc. Any second Coral element is a regression —
+// And Relay Blue is not an accent on either screen at all.
 //
 // The walk covers the whole `body`, not `.live-screen *`: fixed overlays
 // (the framing check, the end-session dialog) are siblings of the screen, and
-// scoping the old version inside it is exactly why a solid-blue camera button
-// and a scrim went unseen.
+// Scoping the old version inside it is exactly why a solid-blue camera button
+// And a scrim went unseen.
 const countElementsUsing = (page: Page, token: string, skip: string[]) =>
   page.evaluate(
     ({ skipProps, tokenName }) => {
       const raw = getComputedStyle(document.documentElement).getPropertyValue(tokenName).trim();
       const probe = document.createElement("span");
       probe.style.color = raw;
-      document.body.appendChild(probe);
+      document.body.append(probe);
       const target = getComputedStyle(probe).color;
       probe.remove();
 
@@ -67,7 +68,7 @@ test.describe("live workout layout", () => {
 
     expect(bodyCanScroll).toBe(false);
     // The panel may or may not overflow depending on copy length; if it does,
-    // the fade affordance must be on.
+    // The fade affordance must be on.
     if (canScroll) {
       await expect(panel).toHaveAttribute("data-scrollable", "true");
     }

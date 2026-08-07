@@ -1,13 +1,13 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { Salad } from "lucide-react";
-import { afterEach, describe, expect, it } from "vitest";
+
 
 import { CircularProgress, toPercentage } from "@/shared/ui/charts/circular-progress";
 
 // This project's vitest config does not enable `globals`, so RTL auto-cleanup is off.
 afterEach(cleanup);
 
-describe("toPercentage", () => {
+describe(toPercentage, () => {
   it("rounds to a whole percentage", () => {
     expect(toPercentage(1420, 2050)).toBe(69);
   });
@@ -27,7 +27,7 @@ describe("toPercentage", () => {
   });
 });
 
-describe("CircularProgress", () => {
+describe(CircularProgress, () => {
   it("carries the real reading in its accessible name, not just a percentage", () => {
     render(
       <CircularProgress

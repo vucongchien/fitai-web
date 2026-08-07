@@ -16,13 +16,13 @@ const SKELETON_ROW_KEYS = [
   "skeleton-row-5",
 ];
 
-export type Column<T> = {
+export interface Column<T> {
   header: string;
   cell: (item: T) => React.ReactNode;
   className?: string;
-};
+}
 
-export type AdminTableProps<T> = {
+export interface AdminTableProps<T> {
   columns: Column<T>[];
   data: T[];
   keyExtractor: (item: T) => string;
@@ -35,7 +35,7 @@ export type AdminTableProps<T> = {
   onRowClick?: (item: T) => void;
   emptyTitle?: string;
   emptyDescription?: string;
-};
+}
 
 export function AdminTable<T>({
   columns,
@@ -55,7 +55,7 @@ export function AdminTable<T>({
 
   // IntersectionObserver trigger fetchNextPage when sentinel is visible
   useEffect(() => {
-    if (!fetchNextPage || !hasNextPage || isFetchingNextPage || isLoading) return;
+    if (!fetchNextPage || !hasNextPage || isFetchingNextPage || isLoading) {return;}
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -101,9 +101,9 @@ export function AdminTable<T>({
               SKELETON_ROW_KEYS.map((rowKey) => (
                 <tr key={rowKey} className="animate-pulse" aria-hidden="true">
                   {columns.map((col) => (
-                    // aria-hidden on the cell as well as the row: the cell holds a
-                    // decorative bar, not data, so it should not read as an
-                    // unlabelled table cell to a screen reader.
+                    // Aria-hidden on the cell as well as the row: the cell holds a
+                    // Decorative bar, not data, so it should not read as an
+                    // Unlabelled table cell to a screen reader.
                     <td
                       aria-hidden="true"
                       className={`py-4 px-4 ${col.className || ""}`}

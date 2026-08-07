@@ -4,7 +4,7 @@ import { cn } from "@/shared/lib/cn";
 
 type CircularProgressTone = "action" | "effort" | "recovery";
 
-type CircularProgressProps = {
+interface CircularProgressProps {
   /** Accessible sentence carrying the real reading, e.g. "1,420 of 2,050 kcal logged". */
   ariaLabel: string;
   /** Sits at the centre of the ring. The value itself reads below it. */
@@ -12,13 +12,13 @@ type CircularProgressProps = {
   max: number;
   tone?: CircularProgressTone;
   value: number;
-};
+}
 
 const RADIUS = 52;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export function toPercentage(value: number, max: number) {
-  if (!Number.isFinite(value) || !Number.isFinite(max) || max <= 0) return 0;
+  if (!Number.isFinite(value) || !Number.isFinite(max) || max <= 0) {return 0;}
   return Math.max(0, Math.min(100, Math.round((value / max) * 100)));
 }
 

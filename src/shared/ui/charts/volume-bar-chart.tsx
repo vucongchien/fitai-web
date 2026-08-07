@@ -8,19 +8,19 @@ import { useMemo } from "react";
 
 import { ChartEmpty } from "@/shared/ui/charts/chart-empty";
 
-export type VolumeBar = {
+export interface VolumeBar {
   /** Axis label for the week, e.g. "W1" or "Aug 3". */
   label: string;
   /** Total kg lifted. `null` for a week with no logged session. */
   volumeKg: number | null;
-};
+}
 
-type VolumeBarChartProps = {
+interface VolumeBarChartProps {
   ariaLabel: string;
   bars: readonly VolumeBar[];
   emptyMessage?: string;
   height?: number;
-};
+}
 
 /**
  * Training volume per week — whether the load is actually going up.
@@ -58,7 +58,7 @@ export function VolumeBarChart({
     [bars],
   );
 
-  if (logged.length === 0) return <ChartEmpty height={height} message={emptyMessage} />;
+  if (logged.length === 0) {return <ChartEmpty height={height} message={emptyMessage} />;}
 
   return (
     <div className="chart-frame chart-frame--effort" style={{ height: `${height}px` }}>

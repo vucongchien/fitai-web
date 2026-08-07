@@ -18,7 +18,7 @@ export function useTicker(active: boolean, intervalMs = 500): number {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    if (!active) return;
+    if (!active) {return;}
     setNow(Date.now());
 
     if (typeof Worker === "undefined") {
@@ -26,7 +26,7 @@ export function useTicker(active: boolean, intervalMs = 500): number {
       return () => window.clearInterval(timer);
     }
 
-    const worker = new Worker(new URL("./timer.worker.ts", import.meta.url), {
+    const worker = new Worker(new URL("timer.worker.ts", import.meta.url), {
       name: "fitai-session-timer",
       type: "module",
     });
@@ -44,7 +44,7 @@ export function useTicker(active: boolean, intervalMs = 500): number {
 
 /** Whole seconds left until `endsAt`, never negative. */
 export function secondsLeft(endsAt: number | null, now: number): number {
-  if (endsAt === null) return 0;
+  if (endsAt === null) {return 0;}
   return Math.max(0, Math.ceil((endsAt - now) / 1000));
 }
 
@@ -52,7 +52,7 @@ export function elapsedSeconds(startedAt: number, now: number): number {
   return Math.max(0, Math.floor((now - startedAt) / 1000));
 }
 
-/** m:ss for countdowns and session time. */
+/** M:ss for countdowns and session time. */
 export function formatClock(totalSeconds: number): string {
   const safe = Math.max(0, Math.floor(totalSeconds));
   const minutes = Math.floor(safe / 60);
@@ -61,7 +61,7 @@ export function formatClock(totalSeconds: number): string {
 }
 
 /**
- * mm:ss for the live-workout countdown instruments, which sit in a fixed-width
+ * Mm:ss for the live-workout countdown instruments, which sit in a fixed-width
  * ring and must not reflow when the minute digit drops from 10 to 9.
  * `formatClock` stays m:ss for session totals, where padding reads as clutter.
  */

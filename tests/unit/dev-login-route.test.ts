@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 
 import type { createAuthCookieOptions } from "@/shared/auth/cookies";
 
@@ -7,7 +7,7 @@ const mockCookieSet =
     (name: string, value: string, options: ReturnType<typeof createAuthCookieOptions>) => void
   >();
 
-vi.mock("next/server", () => {
+vi.mock<typeof import('next/server')>(import('next/server'), () => {
   class FakeNextResponse {
     status: number;
     headers: Headers;
@@ -28,7 +28,7 @@ vi.mock("next/server", () => {
   return { NextResponse: FakeNextResponse };
 });
 
-vi.mock("@/shared/auth/cookies", () => ({
+vi.mock<typeof import('@/shared/auth/cookies')>(import('@/shared/auth/cookies'), () => ({
   createAuthCookieOptions: ({ maxAge }: { maxAge: number }) => ({
     httpOnly: true,
     maxAge,

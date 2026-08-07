@@ -35,7 +35,7 @@ export const KEYPOINT_NAMES = [
 export type KeypointName = (typeof KEYPOINT_NAMES)[number];
 
 /** Skeleton edges for the overlay. */
-export const SKELETON_EDGES: Array<[KeypointName, KeypointName]> = [
+export const SKELETON_EDGES: [KeypointName, KeypointName][] = [
   ["left_shoulder", "right_shoulder"],
   ["left_shoulder", "left_elbow"],
   ["left_elbow", "left_wrist"],
@@ -50,18 +50,18 @@ export const SKELETON_EDGES: Array<[KeypointName, KeypointName]> = [
   ["right_knee", "right_ankle"],
 ];
 
-export type Keypoint = {
+export interface Keypoint {
   /** Pixel coordinates in the source frame. */
   x: number;
   y: number;
   score: number;
-};
+}
 
-export type Pose = {
+export interface Pose {
   /** 17 keypoints in KEYPOINT_NAMES order. */
   keypoints: Keypoint[];
   score: number;
-};
+}
 
 /** Below this a keypoint is treated as missing. */
 export const MIN_KEYPOINT_SCORE = 0.3;
@@ -72,7 +72,7 @@ export const VALID_REP_ROM = 70;
 export function keypoint(pose: Pose, name: KeypointName): Keypoint | null {
   const index = KEYPOINT_NAMES.indexOf(name);
   const point = pose.keypoints[index];
-  if (!point || point.score < MIN_KEYPOINT_SCORE) return null;
+  if (!point || point.score < MIN_KEYPOINT_SCORE) {return null;}
   return point;
 }
 
@@ -98,7 +98,7 @@ export function jointAngle(
   const cbY = c.y - b.y;
   const abLen = Math.hypot(abX, abY);
   const cbLen = Math.hypot(cbX, cbY);
-  if (abLen === 0 || cbLen === 0) return 0;
+  if (abLen === 0 || cbLen === 0) {return 0;}
   const cosine = (abX * cbX + abY * cbY) / (abLen * cbLen);
   const clamped = Math.min(1, Math.max(-1, cosine));
   return (Math.acos(clamped) * 180) / Math.PI;
@@ -106,7 +106,7 @@ export function jointAngle(
 
 export function angleOfJoints(pose: Pose, joints: [string, string, string]): number | null {
   const [a, b, c] = joints.map((name) => keypoint(pose, name as KeypointName));
-  if (!a || !b || !c) return null;
+  if (!a || !b || !c) {return null;}
   return jointAngle(a, b, c);
 }
 
@@ -116,21 +116,21 @@ export function angleOfJoints(pose: Pose, joints: [string, string, string]): num
  */
 export function romPercent(angleDeg: number, range: RomRange): number {
   const span = range.endDeg - range.startDeg;
-  if (span === 0) return 0;
+  if (span === 0) {return 0;}
   const travelled = (angleDeg - range.startDeg) / span;
   return Math.min(100, Math.max(0, travelled * 100));
 }
 
 export type RepPhase = "extended" | "contracting" | "contracted" | "extending";
 
-export type RepCounterState = {
+export interface RepCounterState {
   phase: RepPhase;
   count: number;
   /** Deepest ROM reached in the current rep. */
   peakRom: number;
   /** ROM of every completed rep, in order. */
   completedRoms: number[];
-};
+}
 
 /** Hysteresis so jitter around the threshold does not double count. */
 const CONTRACT_ENTER_ROM = 40;
@@ -140,11 +140,11 @@ export function createRepCounter(): RepCounterState {
   return { phase: "extended", count: 0, peakRom: 0, completedRoms: [] };
 }
 
-export type RepCounterTick = {
+export interface RepCounterTick {
   state: RepCounterState;
   /** Set on the frame where a rep closes — null otherwise. */
   completedRep: { repNumber: number; romPercentage: number; counted: boolean } | null;
-};
+}
 
 /**
  * Feed one frame's ROM. A rep closes when the user comes back up past
@@ -180,15 +180,15 @@ export function evaluateRules(rules: FormRule[], pose: Pose): string[] {
   const codes: string[] = [];
   for (const rule of rules) {
     const angle = angleOfJoints(pose, rule.joints);
-    if (angle === null) continue;
+    if (angle === null) {continue;}
     const violated =
       rule.kind === "angle-below" ? angle < rule.thresholdDeg : angle > rule.thresholdDeg;
-    if (violated) codes.push(rule.code);
+    if (violated) {codes.push(rule.code);}
   }
   return codes;
 }
 
-export type FormScoreInput = {
+export interface FormScoreInput {
   /** Mean ROM of the counted reps (0-100). */
   averageRom: number;
   /** Rule violations recorded during the set. */
@@ -197,7 +197,7 @@ export type FormScoreInput = {
   repCount: number;
   /** Mean seconds per rep; outside 1.5-4s costs a little. */
   secondsPerRep?: number;
-};
+}
 
 /**
  * FR-CC-05 — Form Score 0-100 from ROM, joint alignment (rule violations) and tempo.
@@ -211,7 +211,7 @@ export function formScore(input: FormScoreInput): number {
   const alignmentPart = Math.max(0, 20 - errorsPerRep * 20);
 
   const tempo = input.secondsPerRep ?? 2.5;
-  const tempoPenalty = tempo < 1.5 ? (1.5 - tempo) * 6 : tempo > 4 ? (tempo - 4) * 3 : 0;
+  const tempoPenalty = tempo < 1.5 ? (1.5 - tempo) * 6 : (tempo > 4 ? (tempo - 4) * 3 : 0);
   const tempoPart = Math.max(0, 10 - tempoPenalty);
 
   return Math.round(Math.min(100, Math.max(0, romPart + alignmentPart + tempoPart)));
@@ -226,14 +226,14 @@ export type CalibrationLighting = "low" | "ok";
  * (Assumption-01). Outside that we ask the user to step in or out.
  */
 export function calibrationDistance(pose: Pose, frameHeight: number): CalibrationDistance {
-  if (frameHeight <= 0 || !isPoseUsable(pose)) return "unknown";
+  if (frameHeight <= 0 || !isPoseUsable(pose)) {return "unknown";}
   const visible = pose.keypoints.filter((point) => point.score >= MIN_KEYPOINT_SCORE);
-  if (visible.length < 6) return "unknown";
+  if (visible.length < 6) {return "unknown";}
   const top = Math.min(...visible.map((point) => point.y));
   const bottom = Math.max(...visible.map((point) => point.y));
   const coverage = (bottom - top) / frameHeight;
-  if (coverage < 0.55) return "too-far";
-  if (coverage > 0.85) return "too-close";
+  if (coverage < 0.55) {return "too-far";}
+  if (coverage > 0.85) {return "too-close";}
   return "ok";
 }
 
@@ -248,9 +248,9 @@ export function calibrationHint(
   distance: CalibrationDistance,
   lighting: CalibrationLighting,
 ): string {
-  if (lighting === "low") return "Too dark to track — add some light.";
-  if (distance === "too-far") return "Step closer, about two metres from the camera.";
-  if (distance === "too-close") return "Step back, about two metres from the camera.";
-  if (distance === "unknown") return "Stand where the camera can see your whole body.";
+  if (lighting === "low") {return "Too dark to track — add some light.";}
+  if (distance === "too-far") {return "Step closer, about two metres from the camera.";}
+  if (distance === "too-close") {return "Step back, about two metres from the camera.";}
+  if (distance === "unknown") {return "Stand where the camera can see your whole body.";}
   return "Framing looks good — you're ready.";
 }

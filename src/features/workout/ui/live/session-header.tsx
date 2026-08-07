@@ -3,7 +3,7 @@
 import { ArrowLeft } from "lucide-react";
 import type { ReactNode } from "react";
 
-export type HeaderAction = {
+export interface HeaderAction {
   key: string;
   /** Accessible name — icon-only buttons have no visible text. */
   label: string;
@@ -12,7 +12,7 @@ export type HeaderAction = {
   /** "alert" marks a safety control so it reads apart from the utilities. */
   tone?: "alert";
   onClick: () => void;
-};
+}
 
 export function SessionHeader({
   actions,

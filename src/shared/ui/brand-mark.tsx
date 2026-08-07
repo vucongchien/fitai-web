@@ -2,10 +2,10 @@ import Link from "next/link";
 
 import { cn } from "@/shared/lib/cn";
 
-type BrandMarkProps = {
+interface BrandMarkProps {
   className?: string;
   href?: string;
-};
+}
 
 export function BrandMark({ className, href = "/home" }: BrandMarkProps) {
   return (

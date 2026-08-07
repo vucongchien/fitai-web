@@ -10,7 +10,7 @@ export function recordServerError(error: unknown, attributes: ErrorAttributes = 
     span.recordException(normalized);
     span.setStatus({ code: SpanStatusCode.ERROR, message: normalized.message });
     for (const [key, value] of Object.entries(attributes)) {
-      if (value !== undefined) span.setAttribute(`fitai.${key}`, value);
+      if (value !== undefined) {span.setAttribute(`fitai.${key}`, value);}
     }
     return;
   }

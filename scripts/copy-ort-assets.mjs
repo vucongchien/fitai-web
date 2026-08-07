@@ -12,7 +12,7 @@ import { copyFile, mkdir, readdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const root = join(import.meta.dirname, "..");
 const from = join(root, "node_modules", "onnxruntime-web", "dist");
 const to = join(root, "public", "ort");
 

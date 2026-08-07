@@ -24,44 +24,44 @@ export const SESSION_PLAN_STATUS = {
 } as const;
 
 /** Structural subset of `PrescribedExercise`. */
-export type PrescribedExerciseRow = {
+export interface PrescribedExerciseRow {
   durationSeconds: number;
   restExerciseSec: number;
   restSetSec: number;
   targetSets: number;
-};
+}
 
 /** Structural subset of `WorkoutPrescription`. */
-export type PrescriptionRow = {
+export interface PrescriptionRow {
   coolDowns?: PrescribedExerciseRow[];
   mainExercises?: PrescribedExerciseRow[];
   warmUps?: PrescribedExerciseRow[];
-};
+}
 
 /** Structural subset of `SessionPlan`. */
-export type SessionPlanRow = {
+export interface SessionPlanRow {
   prescription?: PrescriptionRow;
   scheduledDate?: CalendarDateLike;
   sessionPlanId: string;
   slotTime?: string;
   status: number;
   targetMuscleGroups?: string[];
-};
+}
 
 /** Structural subset of `WorkoutSessionSummary`. */
-export type SessionHistoryRow = {
+export interface SessionHistoryRow {
   averageFormScore?: number;
   date?: TimestampLike;
   sessionId: string;
   totalSets: number;
   totalVolume: number;
-};
+}
 
-export type Adherence = {
+export interface Adherence {
   completed: number;
   percentage: number;
   scheduled: number;
-};
+}
 
 /** Percent complete, clamped and zero-safe. Plain counting, no weighting. */
 export function toAdherence(completed: number, scheduled: number): Adherence {
@@ -78,7 +78,7 @@ export function flattenSessionPlans(roadmap: {
 
   for (const week of roadmap.weekPlans ?? []) {
     for (const day of week.dayPlans ?? []) {
-      for (const plan of day.sessionPlans ?? []) plans.push(plan);
+      for (const plan of day.sessionPlans ?? []) {plans.push(plan);}
     }
   }
 
@@ -158,9 +158,9 @@ export function countActiveDays(
   const days = new Set<DayKey>();
 
   for (const plan of plans) {
-    if (!isCompleted(plan)) continue;
+    if (!isCompleted(plan)) {continue;}
     const key = dayKeyFromCalendarDate(plan.scheduledDate);
-    if (key && window.has(key)) days.add(key);
+    if (key && window.has(key)) {days.add(key);}
   }
 
   return days.size;
@@ -183,19 +183,19 @@ export function sumVolume(rows: readonly SessionHistoryRow[]): number {
   return Math.round(rows.reduce((total, row) => total + row.totalVolume, 0));
 }
 
-export type WeeklyVolume = {
+export interface WeeklyVolume {
   /** Total kg lifted in the week. `null` when no session was logged. */
   volumeKg: number | null;
   /** Monday of the week, as a day key. */
   weekStart: DayKey;
-};
+}
 
 /** Monday of the ISO week containing `key`. */
 function weekStartKey(key: DayKey): DayKey | null {
   const date = new Date(`${key}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) return null;
+  if (Number.isNaN(date.getTime())) {return null;}
 
-  // getUTCDay: Sunday is 0, so shift it to the end of the week.
+  // GetUTCDay: Sunday is 0, so shift it to the end of the week.
   const offset = (date.getUTCDay() + 6) % 7;
   date.setUTCDate(date.getUTCDate() - offset);
   return toDayKey(date);
@@ -214,13 +214,13 @@ export function weeklyVolumeSeries(
   weeks: number,
 ): WeeklyVolume[] {
   const thisWeek = weekStartKey(endKey);
-  if (!thisWeek || weeks <= 0) return [];
+  if (!thisWeek || weeks <= 0) {return [];}
 
   const byWeek = new Map<DayKey, number>();
   for (const row of rows) {
     const day = dayKeyFromTimestamp(row.date);
     const start = day ? weekStartKey(day) : null;
-    if (!start) continue;
+    if (!start) {continue;}
     byWeek.set(start, (byWeek.get(start) ?? 0) + row.totalVolume);
   }
 
@@ -229,7 +229,7 @@ export function weeklyVolumeSeries(
     const start = new Date(`${thisWeek}T00:00:00Z`);
     start.setUTCDate(start.getUTCDate() - back * 7);
     const key = toDayKey(start);
-    if (!key) continue;
+    if (!key) {continue;}
 
     const total = byWeek.get(key);
     series.push({ volumeKg: total === undefined ? null : Math.round(total), weekStart: key });

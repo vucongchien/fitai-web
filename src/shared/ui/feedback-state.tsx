@@ -1,13 +1,13 @@
 import { AlertTriangle, ArrowRight, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
-type FeedbackStateProps = {
+interface FeedbackStateProps {
   actionHref?: string;
   actionLabel?: string;
   description: string;
   tone?: "empty" | "error";
   title: string;
-};
+}
 
 export function FeedbackState({
   actionHref,

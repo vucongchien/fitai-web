@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+
 
 import { getMockMealRows, MOCK_TODAY } from "@/features/nutrition/server/get-mock-nutrition-data";
 import { MealTimeline } from "@/features/nutrition/ui/meal-timeline";
@@ -8,7 +8,7 @@ import { groupMealsBySlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 // This project's vitest config does not enable `globals`, so RTL auto-cleanup is off.
 afterEach(cleanup);
 
-describe("MealTimeline", () => {
+describe(MealTimeline, () => {
   const slots = groupMealsBySlot(getMockMealRows(), MOCK_TODAY);
 
   it("renders all four slots so the day reads as a complete plan", () => {

@@ -1,4 +1,4 @@
-export type ExerciseResult = {
+export interface ExerciseResult {
   id: string;
   name: string;
   /** From ExerciseInfo.equipment_id */
@@ -11,14 +11,14 @@ export type ExerciseResult = {
   rest: string;
   /** From ExerciseInfo.instructions */
   note: string;
-};
+}
 
-export type AdhocConfig = {
+export interface AdhocConfig {
   targetRpe: number;
   defaultExercises: ExerciseResult[];
-};
+}
 
-export type AiRecommendResult = {
+export interface AiRecommendResult {
   exercises: Array<{
     id: string;
     name: string;
@@ -29,4 +29,4 @@ export type AiRecommendResult = {
     reps: number;
     weightKg?: number;
   }>;
-};
+}

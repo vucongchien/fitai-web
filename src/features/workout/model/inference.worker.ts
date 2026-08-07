@@ -25,24 +25,10 @@ import {
   MODEL_IO,
   normaliseFrame,
 } from "@/features/workout/domain/onnx-decode";
-import {
-  angleOfJoints,
-  calibrationDistance,
-  calibrationHint,
-  calibrationLighting,
-  evaluateRules,
-  isPoseUsable,
-  KEYPOINT_NAMES,
-  type Keypoint,
-  type Pose,
-  romPercent,
-} from "@/features/workout/domain/pose-metrics";
-import {
-  type Accumulator,
-  feedCounter,
-  freshAccumulator,
-  summarise,
-} from "@/features/workout/domain/set-telemetry";
+import { angleOfJoints, calibrationDistance, calibrationHint, calibrationLighting, evaluateRules, isPoseUsable, KEYPOINT_NAMES, romPercent } from '@/features/workout/domain/pose-metrics';
+import type { Keypoint, Pose } from '@/features/workout/domain/pose-metrics';
+import { feedCounter, freshAccumulator, summarise } from '@/features/workout/domain/set-telemetry';
+import type { Accumulator } from '@/features/workout/domain/set-telemetry';
 import type {
   InferenceMode,
   InferenceRequest,
@@ -84,9 +70,9 @@ async function fetchModel(url: string): Promise<ArrayBuffer> {
     try {
       const cache = await caches.open(MODEL_CACHE);
       const hit = await cache.match(url);
-      if (hit) return await hit.arrayBuffer();
+      if (hit) {return await hit.arrayBuffer();}
       const response = await fetch(url);
-      if (!response.ok) throw new Error(`Model fetch failed: ${response.status}`);
+      if (!response.ok) {throw new Error(`Model fetch failed: ${response.status}`);}
       await cache.put(url, response.clone());
       return await response.arrayBuffer();
     } catch {
@@ -94,7 +80,7 @@ async function fetchModel(url: string): Promise<ArrayBuffer> {
     }
   }
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`Model fetch failed: ${response.status}`);
+  if (!response.ok) {throw new Error(`Model fetch failed: ${response.status}`);}
   return await response.arrayBuffer();
 }
 
@@ -108,8 +94,8 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
   ort = await import("onnxruntime-web");
   ort.env.wasm.wasmPaths = wasmPaths;
   // Single-threaded: the app does not set COOP/COEP, so SharedArrayBuffer — and
-  // therefore WASM threading — is unavailable. Asking for more threads than the
-  // environment allows makes ORT warn on every session create.
+  // Therefore WASM threading — is unavailable. Asking for more threads than the
+  // Environment allows makes ORT warn on every session create.
   ort.env.wasm.numThreads = 1;
 
   const options = { executionProviders: executionProviders() };
@@ -117,24 +103,24 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
   sampler = new BitmapSampler(MODEL_IO.inputWidth, MODEL_IO.inputHeight);
 
   // `spec.onnxDetectorUrl` is deliberately NOT fetched. The old engine downloaded
-  // the person detector and built a session for it, but its runDetector() was a
-  // stub that returned null — so every session paid a multi-megabyte download and
-  // an ORT session allocation for a model that never ran once.
+  // The person detector and built a session for it, but its runDetector() was a
+  // Stub that returned null — so every session paid a multi-megabyte download and
+  // An ORT session allocation for a model that never ran once.
   //
   // Without it the pose model sees the whole frame, which is fine while the
-  // athlete fills most of it (Assumption-01).
+  // Athlete fills most of it (Assumption-01).
   //
   // TODO(model): when the detector export is published, fetch it here, run it in
-  // inferPose, and crop to its box before the pose pass. Add the fetch back at
-  // the same time — not before.
+  // InferPose, and crop to its box before the pose pass. Add the fetch back at
+  // The same time — not before.
 }
 
 async function inferPose(frame: LetterboxedFrame): Promise<Pose | null> {
-  if (!ort || !poseSession) return null;
+  if (!ort || !poseSession) {return null;}
 
   // Reuse one 576KB buffer for the whole session rather than allocating per
-  // frame. inferPose is never re-entered — the main thread keeps exactly one
-  // frame in flight — so a single scratch buffer is safe.
+  // Frame. inferPose is never re-entered — the main thread keeps exactly one
+  // Frame in flight — so a single scratch buffer is safe.
   inputBuffer ??= new Float32Array(MODEL_IO.inputWidth * MODEL_IO.inputHeight * 3);
   const input = normaliseFrame(frame, inputBuffer);
   const tensor = new ort.Tensor("float32", input, [
@@ -149,7 +135,7 @@ async function inferPose(frame: LetterboxedFrame): Promise<Pose | null> {
   const simccX = xName ? output[xName] : undefined;
   const simccY = yName ? output[yName] : undefined;
 
-  let decoded: Array<{ x: number; y: number; score: number }>;
+  let decoded: { x: number; y: number; score: number }[];
   if (simccX && simccY) {
     decoded = decodeSimcc(
       simccX.data as Float32Array,
@@ -159,8 +145,8 @@ async function inferPose(frame: LetterboxedFrame): Promise<Pose | null> {
   } else {
     // Heatmap export: [1, K, H, W].
     const single = Object.values(output)[0];
-    if (!single) return null;
-    const dims = single.dims;
+    if (!single) {return null;}
+    const {dims} = single;
     const mapHeight = Number(dims[2] ?? 64);
     const mapWidth = Number(dims[3] ?? 48);
     decoded = decodeHeatmap(
@@ -196,7 +182,7 @@ async function runCalibration(frame: LetterboxedFrame): Promise<void> {
 }
 
 async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
-  if (!spec) return;
+  if (!spec) {return;}
   accumulator.totalFrames += 1;
 
   if (calibrationLighting(meanBrightness(frame.data)) === "low") {
@@ -211,7 +197,7 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
   darkFrames = 0;
   const pose = await inferPose(frame).catch(() => null);
   emit({ pose, type: "pose" });
-  if (!pose || !isPoseUsable(pose)) return;
+  if (!pose || !isPoseUsable(pose)) {return;}
 
   accumulator.validFrames += 1;
 
@@ -227,14 +213,14 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
   const angle = angleOfJoints(pose, spec.romRange.joints);
   if (angle !== null) {
     const tick = feedCounter(accumulator, romPercent(angle, spec.romRange));
-    if (tick) emit(tick);
+    if (tick) {emit(tick);}
   }
 }
 
 scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>) => {
   const request = message.data;
   switch (request.type) {
-    case "init":
+    case "init": {
       try {
         await init(request.spec, request.wasmPaths);
         post({ type: "ready" });
@@ -245,33 +231,36 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
         });
       }
       return;
+    }
 
-    case "mode":
+    case "mode": {
       mode = request.mode;
       if (request.mode === "set") {
         accumulator = freshAccumulator();
         darkFrames = 0;
       }
       return;
+    }
 
     case "frame": {
       const frame = sampler?.grab(request.bitmap) ?? null;
       if (frame) {
-        if (mode === "calibration") await runCalibration(frame);
-        else if (mode === "set") await runSetFrame(frame);
+        if (mode === "calibration") {await runCalibration(frame);}
+        else if (mode === "set") {await runSetFrame(frame);}
       } else {
-        // grab() already closed the bitmap; nothing to release here.
+        // Grab() already closed the bitmap; nothing to release here.
         request.bitmap.close?.();
       }
       // Always acknowledge, including on the error paths above — the main thread
-      // is blocked on this and would otherwise stop sending frames entirely.
+      // Is blocked on this and would otherwise stop sending frames entirely.
       post({ type: "frame-done" });
       return;
     }
 
-    case "stop-set":
+    case "stop-set": {
       mode = "idle";
       post({ telemetry: summarise(accumulator), type: "telemetry" });
       return;
+    }
   }
 });

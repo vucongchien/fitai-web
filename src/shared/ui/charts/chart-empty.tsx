@@ -1,7 +1,7 @@
-type ChartEmptyProps = {
+interface ChartEmptyProps {
   height: number;
   message: string;
-};
+}
 
 /**
  * Holds a chart's footprint when nothing is logged. A flat baseline reads as absent data;

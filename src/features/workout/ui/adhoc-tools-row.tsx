@@ -2,11 +2,11 @@
 
 import { Plus, Sparkles } from "lucide-react";
 
-type AdhocToolsRowProps = {
+interface AdhocToolsRowProps {
   aiLoading: boolean;
   onOpenSearch: () => void;
   onAiRecommend: () => void;
-};
+}
 
 export function AdhocToolsRow({ aiLoading, onOpenSearch, onAiRecommend }: AdhocToolsRowProps) {
   return (

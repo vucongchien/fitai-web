@@ -2,7 +2,7 @@ import { toast as sonnerToast } from "sonner";
 
 import type { ToastAction, ToastType } from "./toast-context";
 
-type ToastOpts = { durationMs?: number; action?: ToastAction };
+interface ToastOpts { durationMs?: number; action?: ToastAction }
 
 export const toast = {
   show: (message: string, opts?: ToastOpts & { type?: ToastType }): string => {
@@ -12,8 +12,8 @@ export const toast = {
       ? { label: opts.action.label, onClick: opts.action.onClick }
       : undefined;
 
-    if (type === "success") return String(sonnerToast.success(message, { duration, action }));
-    if (type === "error") return String(sonnerToast.error(message, { duration, action }));
+    if (type === "success") {return String(sonnerToast.success(message, { duration, action }));}
+    if (type === "error") {return String(sonnerToast.error(message, { duration, action }));}
     return String(sonnerToast.info(message, { duration, action }));
   },
   info: (message: string, opts?: ToastOpts): string => {

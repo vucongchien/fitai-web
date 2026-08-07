@@ -1,7 +1,8 @@
 "use client";
 
+import type {
+  DragEndEvent} from "@dnd-kit/core";
 import {
-  DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   TouchSensor,
@@ -12,7 +13,8 @@ import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 
-import { AdhocExercise, toAdhocExercise } from "@/features/workout/model/adhoc-types";
+import type { AdhocExercise} from "@/features/workout/model/adhoc-types";
+import { toAdhocExercise } from "@/features/workout/model/adhoc-types";
 import type { ExerciseResult } from "@/features/workout/model/workout.types";
 import {
   beginWorkoutSession,
@@ -73,7 +75,7 @@ export function useAdhocWorkout() {
     (id: string) => {
       setExerciseList((prev) => {
         const index = prev.findIndex((item) => item.id === id);
-        if (index === -1) return prev;
+        if (index === -1) {return prev;}
 
         const itemToDelete = prev[index]!;
 
@@ -117,7 +119,7 @@ export function useAdhocWorkout() {
 
   const handleSaveEdit = useCallback(
     (updated: { sets: number; reps: number; rest: string; weightKg?: number }) => {
-      if (!editingExercise) return;
+      if (!editingExercise) {return;}
       setExerciseList((prev) =>
         prev.map((item) =>
           item.id === editingExercise.id

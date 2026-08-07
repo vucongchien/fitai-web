@@ -22,8 +22,8 @@ export async function register() {
     try {
       sdk.start();
       console.log("[Instrumentation] OpenTelemetry SDK initialized successfully.");
-    } catch (err) {
-      console.error("[Instrumentation] Failed to initialize OpenTelemetry SDK:", err);
+    } catch (error) {
+      console.error("[Instrumentation] Failed to initialize OpenTelemetry SDK:", error);
     }
   }
 }

@@ -2,9 +2,9 @@ import { Check, Plus } from "lucide-react";
 
 import type { MealSlotGroup } from "@/shared/api/bff/aggregate/nutrition-daily";
 
-type MealTimelineProps = {
+interface MealTimelineProps {
   slots: MealSlotGroup[];
-};
+}
 
 export function MealTimeline({ slots }: MealTimelineProps) {
   return (

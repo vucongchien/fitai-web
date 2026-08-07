@@ -26,11 +26,11 @@ const DEFAULT_WEIGHT_KG: Record<string, number> = {
 
 function findExercise(id: string): ExerciseSummary {
   const exercise = MOCK_EXERCISES.find((entry) => entry.id === id);
-  if (!exercise) throw new Error(`Mock exercise not found: ${id}`);
+  if (!exercise) {throw new Error(`Mock exercise not found: ${id}`);}
   return exercise;
 }
 
-type PrescriptionSeed = {
+interface PrescriptionSeed {
   id: string;
   phase: SessionPhase;
   sets: number;
@@ -42,7 +42,7 @@ type PrescriptionSeed = {
   restExerciseSec?: number;
   targetRpe: number;
   notes: string;
-};
+}
 
 function toLiveExercise(seed: PrescriptionSeed): LiveExercise {
   const source = findExercise(seed.id);
@@ -135,7 +135,7 @@ const COOL_DOWN_SEEDS: PrescriptionSeed[] = [
 
 // ---------------------------------------------------------------------------
 // Music — mock playlists. Files live in public/audio/music/; a missing file
-// fails silently in the player so the session is never blocked by an asset.
+// Fails silently in the player so the session is never blocked by an asset.
 // ---------------------------------------------------------------------------
 
 const MOCK_PLAYLISTS: Playlist[] = [
@@ -196,8 +196,8 @@ const MOCK_PLAYLISTS: Playlist[] = [
 // Motion specifications — one per AI-supported exercise.
 //
 // The ONNX URLs point at S3 in production (GetMotionSpecification). Locally they
-// resolve to /models/... which is normally absent, so resolveMotionEngine falls
-// back to the simulated engine. See model/inference.worker.ts.
+// Resolve to /models/... which is normally absent, so resolveMotionEngine falls
+// Back to the simulated engine. See model/inference.worker.ts.
 // ---------------------------------------------------------------------------
 
 const LIFECYCLE_CUES: CoachCue[] = [

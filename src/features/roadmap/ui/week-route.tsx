@@ -6,10 +6,10 @@ import type { SessionSummary } from "@/features/roadmap/model/roadmap-page.types
 import { cn } from "@/shared/lib/cn";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
-type WeekRouteProps = {
+interface WeekRouteProps {
   morphNextSession?: boolean;
   sessions: SessionSummary[];
-};
+}
 
 const statusLabel = {
   complete: "Completed",
@@ -20,10 +20,10 @@ const statusLabel = {
 } as const;
 
 function StatusIcon({ status }: { status: SessionSummary["status"] }) {
-  if (status === "complete") return <Check aria-hidden="true" size={15} />;
-  if (status === "rest") return <Moon aria-hidden="true" size={14} />;
-  if (status === "skipped") return <SkipForward aria-hidden="true" size={14} />;
-  if (status === "next") return <Play aria-hidden="true" size={14} />;
+  if (status === "complete") {return <Check aria-hidden="true" size={15} />;}
+  if (status === "rest") {return <Moon aria-hidden="true" size={14} />;}
+  if (status === "skipped") {return <SkipForward aria-hidden="true" size={14} />;}
+  if (status === "next") {return <Play aria-hidden="true" size={14} />;}
   return <span aria-hidden="true" className="week-route__planned-dot" />;
 }
 
@@ -56,9 +56,9 @@ export function WeekRoute({ morphNextSession = true, sessions }: WeekRouteProps)
                 {statusLabel[session.status]} · {session.time}
               </span>
             </div>
-            {session.status !== "rest" ? (
+            {session.status === "rest" ? null : (
               <ChevronRight aria-hidden="true" className="week-route__chevron" size={18} />
-            ) : null}
+            )}
           </>
         );
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import {
   calculateBMI,
@@ -12,8 +12,8 @@ import {
   translateMuscleGroup,
 } from "../../../src/features/profile/model/profile.mapper";
 
-describe("Profile Mapper", () => {
-  describe("calculateBMI", () => {
+describe("profile Mapper", () => {
+  describe(calculateBMI, () => {
     it("calculates BMI accurately for 175cm height and 68.5kg weight", () => {
       const result = calculateBMI(68.5, 175);
       expect(result.bmi).toBe(22.4);
@@ -27,7 +27,7 @@ describe("Profile Mapper", () => {
     });
   });
 
-  describe("calculateOneRepMax", () => {
+  describe(calculateOneRepMax, () => {
     it("calculates 1RM using Epley formula", () => {
       const result = calculateOneRepMax(100, 10);
       expect(result).toBe(133);
@@ -38,7 +38,7 @@ describe("Profile Mapper", () => {
     });
   });
 
-  describe("Translations", () => {
+  describe("translations", () => {
     it("translates experience level to English", () => {
       expect(translateExperienceLevel("BEGINNER")).toBe("Beginner");
       expect(translateExperienceLevel("INTERMEDIATE")).toBe("Intermediate");
@@ -72,7 +72,7 @@ describe("Profile Mapper", () => {
     });
   });
 
-  describe("mapRawDataToProfileViewModel", () => {
+  describe(mapRawDataToProfileViewModel, () => {
     it("converts empty data into safe default ViewModel", () => {
       const vm = mapRawDataToProfileViewModel({});
       expect(vm.user.name).toBe("Emma Nguyen");
@@ -108,7 +108,7 @@ describe("Profile Mapper", () => {
             oneRepMax: 116,
           },
         ],
-        statsProto: { totalWorkouts: 120, activeStreakDays: 30, totalCaloriesKcal: 45000 },
+        statsProto: { totalWorkouts: 120, activeStreakDays: 30, totalCaloriesKcal: 45_000 },
       });
 
       expect(vm.user.name).toBe("Alexander");

@@ -16,15 +16,15 @@ export async function GET(request: Request, context: { params: Promise<{ provide
   const isPopup = searchParams.get("popup") === "1";
 
   function fail(code: string): NextResponse {
-    if (isPopup) return buildErrorPopupHtml(code, origin);
+    if (isPopup) {return buildErrorPopupHtml(code, origin);}
     return NextResponse.redirect(new URL(`/login?error=${code}`, origin));
   }
 
-  if (!VALID_PROVIDERS.has(provider)) return fail("invalid_provider");
+  if (!VALID_PROVIDERS.has(provider)) {return fail("invalid_provider");}
 
   if (!process.env.FITAI_RPC_URL) {
     console.warn("[oauth/start] FITAI_RPC_URL not set");
-    if (isPopup) return buildPopupHtml("/onboarding", origin);
+    if (isPopup) {return buildPopupHtml("/onboarding", origin);}
 
     return NextResponse.redirect(new URL("/onboarding", origin));
   }
@@ -57,7 +57,7 @@ export async function GET(request: Request, context: { params: Promise<{ provide
   } catch (error) {
     console.error(`[oauth/start] provider=${provider}`, error);
     if (process.env.NODE_ENV === "development") {
-      if (isPopup) return buildPopupHtml("/onboarding", origin);
+      if (isPopup) {return buildPopupHtml("/onboarding", origin);}
       return NextResponse.redirect(new URL("/onboarding", origin));
     }
     return fail("callback_failed");

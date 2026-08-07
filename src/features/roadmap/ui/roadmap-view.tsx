@@ -5,9 +5,9 @@ import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.type
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
-type RoadmapViewProps = {
+interface RoadmapViewProps {
   data: RoadmapPageData;
-};
+}
 
 export function RoadmapView({ data }: RoadmapViewProps) {
   return (

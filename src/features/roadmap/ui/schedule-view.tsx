@@ -1,9 +1,9 @@
 import type { SchedulePageData } from "@/features/roadmap/model/roadmap-page.types";
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
 
-type ScheduleViewProps = {
+interface ScheduleViewProps {
   data: SchedulePageData;
-};
+}
 
 const STATE_LABEL = {
   active: "In progress",

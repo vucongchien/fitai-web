@@ -7,12 +7,12 @@ import { getMockRoadmapPageData } from "./get-mock-roadmap-data";
 // Real gRPC adapter (uncomment khi FITAI_RPC_URL sẵn sàng)
 // ---------------------------------------------------------------------------
 
-// async function getRealRoadmapPageData(): Promise<RoadmapPageData> {
-//   const cookieStore = await cookies();
-//   const token = cookieStore.get("fitai_access_token")?.value;
-//   const client = createClient(CoachingService, createServerTransport(token));
-//   const res = await client.getActiveRoadmap({ userId: "TODO: from session" });
-//   return adaptRoadmapPageData(res);
+// Async function getRealRoadmapPageData(): Promise<RoadmapPageData> {
+//   Const cookieStore = await cookies();
+//   Const token = cookieStore.get("fitai_access_token")?.value;
+//   Const client = createClient(CoachingService, createServerTransport(token));
+//   Const res = await client.getActiveRoadmap({ userId: "TODO: from session" });
+//   Return adaptRoadmapPageData(res);
 // }
 
 // ---------------------------------------------------------------------------
@@ -26,7 +26,7 @@ import { getMockRoadmapPageData } from "./get-mock-roadmap-data";
  */
 export async function getRoadmapPageData(): Promise<RoadmapPageData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) return getMockRoadmapPageData();
+  if (!hasBackend) {return getMockRoadmapPageData();}
   // TODO: return getRealRoadmapPageData();
   return getMockRoadmapPageData();
 }

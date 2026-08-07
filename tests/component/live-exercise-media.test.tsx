@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ExerciseMedia } from "@/features/workout/ui/live/exercise-media";
@@ -37,7 +37,7 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   };
 }
 
-describe("ExerciseMedia", () => {
+describe(ExerciseMedia, () => {
   it("plays the demo video when the exercise has one", () => {
     const { container } = render(
       <ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />,
@@ -106,7 +106,7 @@ describe("ExerciseMedia", () => {
 
   it("pauses the demo clip instead of looping it when the OS asks for reduced motion", () => {
     const pause = vi.fn<HTMLMediaElement["pause"]>();
-    const play = vi.fn<HTMLMediaElement["play"]>().mockResolvedValue(undefined);
+    const play = vi.fn<HTMLMediaElement["play"]>().mockResolvedValue();
     vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(pause);
     vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(play);
     vi.stubGlobal(
@@ -120,12 +120,12 @@ describe("ExerciseMedia", () => {
 
     render(<ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />);
 
-    expect(pause).toHaveBeenCalled();
+    expect(pause).toHaveBeenCalledWith();
     expect(play).not.toHaveBeenCalled();
   });
 
   it("plays the demo clip when motion is fine", () => {
-    const play = vi.fn<HTMLMediaElement["play"]>().mockResolvedValue(undefined);
+    const play = vi.fn<HTMLMediaElement["play"]>().mockResolvedValue();
     vi.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(play);
     vi.stubGlobal(
       "matchMedia",
@@ -138,6 +138,6 @@ describe("ExerciseMedia", () => {
 
     render(<ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />);
 
-    expect(play).toHaveBeenCalled();
+    expect(play).toHaveBeenCalledWith();
   });
 });

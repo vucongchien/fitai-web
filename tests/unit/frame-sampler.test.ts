@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+
 
 import { letterboxLayout, toSourceCoords } from "@/features/workout/domain/frame-sampler";
 
-describe("letterboxLayout", () => {
+describe(letterboxLayout, () => {
   it("pads on the x axis when the source is taller than the target", () => {
     // 480x640 source into a 192x256 box: both axes scale by 0.4, no padding.
     const layout = letterboxLayout(480, 640, 192, 256);
@@ -13,7 +13,7 @@ describe("letterboxLayout", () => {
 
   it("pads on the y axis when the source is wider than the target", () => {
     // 640x480 into 192x256: scale is limited by width (0.3), so 256-144=112 of
-    // vertical padding, split evenly.
+    // Vertical padding, split evenly.
     const layout = letterboxLayout(640, 480, 192, 256);
     expect(layout.scale).toBeCloseTo(0.3);
     expect(layout.drawWidth).toBeCloseTo(192);

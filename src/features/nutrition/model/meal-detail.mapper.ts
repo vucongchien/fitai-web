@@ -8,7 +8,7 @@ import type { MealLogRow, MealSlot } from "@/shared/api/bff/aggregate/nutrition-
 import { groupMealsBySlot, MEAL_SLOT_LABELS } from "@/shared/api/bff/aggregate/nutrition-daily";
 
 /** Structural subset of `MealOption`. */
-export type MealOptionRow = {
+export interface MealOptionRow {
   calories: number;
   carbs: number;
   description: string;
@@ -17,40 +17,48 @@ export type MealOptionRow = {
   priceTier: string;
   protein: number;
   recipeSteps: string[];
-};
+}
 
 /** Structural subset of `GetTodayMenuResponse.meals` (`DailyMeals`). */
-export type DailyMenuRows = {
+export interface DailyMenuRows {
   breakfast?: MealOptionRow[];
   dinner?: MealOptionRow[];
   lunch?: MealOptionRow[];
   snack?: MealOptionRow[];
-};
+}
 
 /** `MealOption.price_tier` is a bare string; normalize defensively. */
 export function toPriceTier(raw: string): PriceTier | null {
   switch (raw.trim().toUpperCase()) {
-    case "LOW":
+    case "LOW": {
       return "low";
-    case "MEDIUM":
+    }
+    case "MEDIUM": {
       return "medium";
-    case "HIGH":
+    }
+    case "HIGH": {
       return "high";
-    default:
+    }
+    default: {
       return null;
+    }
   }
 }
 
 function optionsForSlot(menu: DailyMenuRows, slot: MealSlot): MealOptionRow[] {
   switch (slot) {
-    case "breakfast":
+    case "breakfast": {
       return menu.breakfast ?? [];
-    case "lunch":
+    }
+    case "lunch": {
       return menu.lunch ?? [];
-    case "dinner":
+    }
+    case "dinner": {
       return menu.dinner ?? [];
-    case "snack":
+    }
+    case "snack": {
       return menu.snack ?? [];
+    }
   }
 }
 
@@ -95,7 +103,7 @@ export function adaptMealDetailPageData(
   const options = optionsForSlot(menu, slot).map(toChoice);
 
   // Carry the matching option's recipe onto the logged row, so a dish you already ate keeps
-  // its cooking steps instead of losing them when it drops out of the suggestions.
+  // Its cooking steps instead of losing them when it drops out of the suggestions.
   const loggedMeals = eaten.map((meal) => ({
     ...meal,
     recipeSteps: options.find((choice) => sameDish(choice.name, meal.name))?.recipeSteps ?? [],

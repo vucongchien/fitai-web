@@ -2,13 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  EMPTY_TELEMETRY,
-  type MotionEngine,
-  type MotionEngineEvent,
-  type MotionEngineKind,
-  type SetTelemetry,
-} from "@/features/workout/domain/motion-engine";
+import { EMPTY_TELEMETRY } from '@/features/workout/domain/motion-engine';
+import type { MotionEngine, MotionEngineEvent, MotionEngineKind, SetTelemetry } from '@/features/workout/domain/motion-engine';
 import type {
   CalibrationDistance,
   CalibrationLighting,
@@ -17,21 +12,21 @@ import type {
 import { resolveMotionEngine } from "@/features/workout/domain/resolve-motion-engine";
 import type { CueSeverity, MotionSpec } from "@/features/workout/model/live-session.types";
 
-export type CalibrationStatus = {
+export interface CalibrationStatus {
   distance: CalibrationDistance;
   lighting: CalibrationLighting;
   hint: string;
   ready: boolean;
-};
+}
 
-export type MotionEngineOptions = {
+export interface MotionEngineOptions {
   /** Called on every detected form error, already carrying the cue copy. */
   onFormError?: (error: { code: string; message: string; severity: CueSeverity }) => void;
   /** Tracking gave up (dark room, floor exercise) — hand over to manual logging. */
   onFallback?: (reason: string) => void;
   /** Called when a rep closes, counted or not. */
   onRep?: (rep: { count: number; romPercentage: number; counted: boolean }) => void;
-};
+}
 
 /**
  * Owns the motion engine lifecycle for the current exercise: which engine, model
@@ -52,7 +47,7 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
 
   const onEvent = useCallback((event: MotionEngineEvent) => {
     switch (event.type) {
-      case "calibration":
+      case "calibration": {
         setCalibration({
           distance: event.distance,
           hint: event.hint,
@@ -60,25 +55,32 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
           ready: event.ready,
         });
         break;
-      case "pose":
+      }
+      case "pose": {
         setPose(event.pose);
         break;
-      case "rep":
+      }
+      case "rep": {
         if (event.counted) setRepCount(event.count);
         handlers.current.onRep?.(event);
         break;
-      case "form-error":
+      }
+      case "form-error": {
         setLastError(event.message);
         handlers.current.onFormError?.(event);
         break;
-      case "fallback":
+      }
+      case "fallback": {
         handlers.current.onFallback?.(event.reason);
         break;
-      case "blocked":
+      }
+      case "blocked": {
         setError(event.reason);
         break;
-      default:
+      }
+      default: {
         break;
+      }
     }
   }, []);
 
@@ -104,8 +106,8 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
         engineRef.current = engine;
         setKind(engine.kind);
         return engine.kind;
-      } catch (cause) {
-        setError(cause instanceof Error ? cause.message : "Motion engine unavailable");
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Motion engine unavailable");
         const fallback = await resolveMotionEngine(null);
         engineRef.current = fallback;
         setKind(fallback.kind);
@@ -131,9 +133,9 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
     engineRef.current?.startSet(onEvent);
   }, [onEvent]);
 
-  const stopSet = useCallback(async (): Promise<SetTelemetry> => {
-    return (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY;
-  }, []);
+  const stopSet = useCallback(async (): Promise<SetTelemetry> => 
+    (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY
+  , []);
 
   useEffect(() => dispose, [dispose]);
 

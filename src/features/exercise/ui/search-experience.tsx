@@ -5,26 +5,17 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
-import {
-  type CatalogMetadata,
-  countActiveFilters,
-  DIFFICULTY_ORDER,
-  type Difficulty,
-  EMPTY_FILTERS,
-  type ExerciseFilters,
-  type ExerciseSummary,
-  filterExercises,
-  sortExercises,
-} from "@/features/exercise/domain/exercise";
+import { countActiveFilters, DIFFICULTY_ORDER, EMPTY_FILTERS, filterExercises, sortExercises } from '@/features/exercise/domain/exercise';
+import type { CatalogMetadata, Difficulty, ExerciseFilters, ExerciseSummary } from '@/features/exercise/domain/exercise';
 import { ExerciseCard } from "@/features/exercise/ui/exercise-card";
 import { FilterPanel } from "@/features/exercise/ui/filter-panel";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { NAV_BACK } from "@/shared/ui/transition-types";
 
-type SearchExperienceProps = {
+interface SearchExperienceProps {
   exercises: ExerciseSummary[];
   catalog: CatalogMetadata;
-};
+}
 
 function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): ExerciseFilters {
   const bodyPartIds = params
@@ -49,12 +40,12 @@ function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): Exerci
 
 function toSearchString(filters: ExerciseFilters): string {
   const params = new URLSearchParams();
-  if (filters.q) params.set("q", filters.q);
-  for (const id of filters.bodyPartIds) params.append("body", id);
-  for (const id of filters.equipmentIds) params.append("equipment", id);
-  for (const id of filters.tagIds) params.append("tag", id);
-  for (const level of filters.difficulty) params.append("level", level);
-  if (filters.aiOnly) params.set("ai", "1");
+  if (filters.q) {params.set("q", filters.q);}
+  for (const id of filters.bodyPartIds) {params.append("body", id);}
+  for (const id of filters.equipmentIds) {params.append("equipment", id);}
+  for (const id of filters.tagIds) {params.append("tag", id);}
+  for (const level of filters.difficulty) {params.append("level", level);}
+  if (filters.aiOnly) {params.set("ai", "1");}
   return params.toString();
 }
 

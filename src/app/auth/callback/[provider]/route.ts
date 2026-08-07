@@ -12,7 +12,7 @@ import { resolveEntryRoute } from "@/shared/auth/route-decision";
 const VALID_PROVIDERS = new Set(["google", "facebook"]);
 
 async function resolvePostLoginRoute(accessToken: string, userId: string): Promise<string> {
-  if (!process.env.FITAI_RPC_URL) return "/onboarding";
+  if (!process.env.FITAI_RPC_URL) {return "/onboarding";}
 
   try {
     const client = createClient(ProfileService, createServerTransport(accessToken));
@@ -39,11 +39,11 @@ export async function GET(request: Request, context: { params: Promise<{ provide
   const state = new URL(request.url).searchParams.get("state");
 
   function fail(errorCode: string): NextResponse {
-    if (isPopup) return buildErrorPopupHtml(errorCode, origin);
+    if (isPopup) {return buildErrorPopupHtml(errorCode, origin);}
     return NextResponse.redirect(new URL(`/login?error=${errorCode}`, origin));
   }
 
-  if (!VALID_PROVIDERS.has(provider)) return fail("invalid_provider");
+  if (!VALID_PROVIDERS.has(provider)) {return fail("invalid_provider");}
   if (!code || !state) {
     console.warn(`[oauth/callback] missing code/state provider=${provider}`);
     return fail("missing_code");

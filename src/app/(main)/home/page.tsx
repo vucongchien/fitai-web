@@ -15,7 +15,7 @@ async function HomeContent() {
 function HomeSkeleton() {
   return (
     <div aria-label="Loading home content" className="home-skeleton">
-      <div className="skeleton-box h-12 w-1/2 mb-4 rounded-[10px] bg-[var(--color-surface-hover,#eee)]" />
+      <div className="skeleton-box mb-4 h-12 w-1/2 rounded-[10px] bg-[var(--color-surface-hover,#eee)]" />
       <div className="skeleton-box h-60 w-full rounded-[14px] bg-[var(--color-surface-hover,#eee)]" />
     </div>
   );

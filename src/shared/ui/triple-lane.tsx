@@ -2,13 +2,13 @@ import { ViewTransition } from "react";
 
 import { cn } from "@/shared/lib/cn";
 
-type TripleLaneProps = {
+interface TripleLaneProps {
   active?: "plan" | "move" | "recover" | "all";
   className?: string;
   compact?: boolean;
   labelled?: boolean;
   morph?: boolean;
-};
+}
 
 export function TripleLane({
   active = "all",
@@ -58,7 +58,7 @@ export function TripleLane({
     </div>
   );
 
-  if (!morph || !ViewTransition) return lane;
+  if (!morph || !ViewTransition) {return lane;}
 
   return (
     <ViewTransition default="none" name="triple-lane" share="triple-lane-morph">

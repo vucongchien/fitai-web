@@ -2,15 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
-import {
-  buildTimeline,
-  progressRatio,
-  restSecondsAfter,
-  type SessionStep,
-  stepIndexAfterExercise,
-  stepIndexAfterPhase,
-} from "@/features/workout/domain/session-flow";
-import { type DurationState, durationState } from "@/features/workout/domain/session-guards";
+import { buildTimeline, progressRatio, restSecondsAfter, stepIndexAfterExercise, stepIndexAfterPhase } from '@/features/workout/domain/session-flow';
+import type { SessionStep } from '@/features/workout/domain/session-flow';
+import { durationState } from '@/features/workout/domain/session-guards';
+import type { DurationState } from '@/features/workout/domain/session-guards';
 import type {
   LiveSessionPlan,
   SessionPhase,
@@ -33,7 +28,7 @@ import { syncWorkoutLogs } from "@/features/workout/server/workout-actions";
 export type LiveStatus = "phase-intro" | "ready" | "working" | "reviewing" | "resting" | "complete";
 
 /** Auto-filled numbers handed to the review sheet. */
-export type SetReview = {
+export interface SetReview {
   source: SetSource;
   reps: number;
   weightKg: number;
@@ -41,9 +36,9 @@ export type SetReview = {
   repLogs: SetLogDraft["reps"];
   validFrameRatio: number | null;
   cameraAngle: string;
-};
+}
 
-type State = {
+interface State {
   status: LiveStatus;
   /** Index into the timeline. While resting it already points at the next step. */
   stepIndex: number;
@@ -59,7 +54,7 @@ type State = {
   /** Phases whose intro card has been dismissed, so it shows once. */
   introSeen: SessionPhase[];
   review: SetReview | null;
-};
+}
 
 type Action =
   | { type: "restore"; state: Partial<State> }
@@ -73,10 +68,10 @@ type Action =
   | { type: "save-set"; set: SetLogDraft; restSeconds: number }
   | { type: "end-rest" }
   | { type: "add-rest"; seconds: number }
-  | { type: "mark-synced"; setNumbers: Array<{ exerciseId: string; setNumber: number }> }
+  | { type: "mark-synced"; setNumbers: { exerciseId: string; setNumber: number }[] }
   | { type: "complete" };
 
-type Context = { timeline: SessionStep[] };
+interface Context { timeline: SessionStep[] }
 
 function arriveAt(state: State, timeline: SessionStep[], index: number): State {
   const step = timeline[index];
@@ -105,11 +100,12 @@ function reducer(state: State, action: Action, context: Context): State {
   const step = timeline[state.stepIndex];
 
   switch (action.type) {
-    case "restore":
+    case "restore": {
       return { ...state, ...action.state };
+    }
 
     case "begin-phase": {
-      if (!step) return state;
+      if (!step) {return state;}
       const introSeen = state.introSeen.includes(step.phase)
         ? state.introSeen
         : [...state.introSeen, step.phase];
@@ -117,7 +113,7 @@ function reducer(state: State, action: Action, context: Context): State {
     }
 
     case "skip-phase": {
-      if (!step) return state;
+      if (!step) {return state;}
       const skippedPhases = state.skippedPhases.includes(step.phase)
         ? state.skippedPhases
         : [...state.skippedPhases, step.phase];
@@ -131,22 +127,26 @@ function reducer(state: State, action: Action, context: Context): State {
       );
     }
 
-    case "skip-exercise":
+    case "skip-exercise": {
       return arriveAt(state, timeline, stepIndexAfterExercise(timeline, state.stepIndex));
+    }
 
-    case "start-set":
+    case "start-set": {
       return {
         ...state,
         status: "working",
         setEndsAt: action.durationSeconds > 0 ? Date.now() + action.durationSeconds * 1000 : null,
         setTotalSec: action.durationSeconds,
       };
+    }
 
-    case "finish-set":
+    case "finish-set": {
       return { ...state, status: "reviewing", setEndsAt: null, review: action.review };
+    }
 
-    case "cancel-review":
+    case "cancel-review": {
       return { ...state, status: "ready", review: null };
+    }
 
     case "save-set": {
       const loggedSets = [...state.loggedSets, action.set];
@@ -165,17 +165,19 @@ function reducer(state: State, action: Action, context: Context): State {
       return arriveAt(withSet, timeline, nextIndex);
     }
 
-    case "end-rest":
+    case "end-rest": {
       return arriveAt(state, timeline, state.stepIndex);
+    }
 
-    case "add-rest":
+    case "add-rest": {
       return {
         ...state,
         restEndsAt: Math.max(state.restEndsAt ?? Date.now(), Date.now()) + action.seconds * 1000,
         restTotalSec: state.restTotalSec + action.seconds,
       };
+    }
 
-    case "add-set-time":
+    case "add-set-time": {
       // Only meaningful for a timed hold; a rep-based set has no clock to extend.
       if (state.setEndsAt === null) return state;
       return {
@@ -185,6 +187,7 @@ function reducer(state: State, action: Action, context: Context): State {
         // would pin at full while the numerals kept ticking.
         setTotalSec: state.setTotalSec + action.seconds,
       };
+    }
 
     case "mark-synced": {
       const keys = new Set(action.setNumbers.map((item) => `${item.exerciseId}#${item.setNumber}`));
@@ -196,11 +199,13 @@ function reducer(state: State, action: Action, context: Context): State {
       };
     }
 
-    case "complete":
+    case "complete": {
       return { ...state, status: "complete", restEndsAt: null, setEndsAt: null };
+    }
 
-    default:
+    default: {
       return state;
+    }
   }
 }
 
@@ -218,9 +223,9 @@ type PersistedDraft = Pick<
 function readDraft(sessionId: string): PersistedDraft | null {
   try {
     const raw = sessionStorage.getItem(draftKey(sessionId));
-    if (!raw) return null;
+    if (!raw) {return null;}
     const parsed = JSON.parse(raw) as PersistedDraft;
-    if (!Array.isArray(parsed.loggedSets)) return null;
+    if (!Array.isArray(parsed.loggedSets)) {return null;}
     return parsed;
   } catch {
     return null;
@@ -251,10 +256,10 @@ export function useLiveSession(plan: LiveSessionPlan) {
   // Restore an interrupted session.
   const restored = useRef(false);
   useEffect(() => {
-    if (restored.current) return;
+    if (restored.current) {return;}
     restored.current = true;
     const draft = readDraft(plan.sessionId);
-    if (!draft || draft.stepIndex >= timeline.length) return;
+    if (!draft || draft.stepIndex >= timeline.length) {return;}
     dispatch({
       type: "restore",
       state: {
@@ -293,7 +298,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
     try {
       sessionStorage.removeItem(draftKey(plan.sessionId));
     } catch {
-      // ignore
+      // Ignore
     }
   }, [plan.sessionId]);
 
@@ -308,7 +313,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
   const duration: DurationState = durationState(elapsedMin);
 
   // Rest that runs out moves on by itself — the user should not have to tap to
-  // leave a finished countdown.
+  // Leave a finished countdown.
   useEffect(() => {
     if (state.status === "resting" && state.restEndsAt !== null && restLeft === 0) {
       dispatch({ type: "end-rest" });
@@ -317,13 +322,13 @@ export function useLiveSession(plan: LiveSessionPlan) {
 
   // --- offline queue ------------------------------------------------------
   // Sets are always kept locally first; the network is a best effort. This is
-  // why logging is never blocked while offline.
+  // Why logging is never blocked while offline.
   const syncing = useRef(false);
   const pending = useMemo(() => state.loggedSets.filter((set) => !set.synced), [state.loggedSets]);
 
   const flush = useCallback(async () => {
-    if (syncing.current || pending.length === 0) return;
-    if (typeof navigator !== "undefined" && !navigator.onLine) return;
+    if (syncing.current || pending.length === 0) {return;}
+    if (typeof navigator !== "undefined" && !navigator.onLine) {return;}
     syncing.current = true;
     try {
       await syncWorkoutLogs(plan.sessionId, pending);

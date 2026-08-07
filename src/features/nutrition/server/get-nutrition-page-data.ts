@@ -8,23 +8,23 @@ import { readLocalMeals } from "./local-meal-log";
 // Real gRPC adapter (uncomment khi FITAI_RPC_URL sẵn sàng)
 // ---------------------------------------------------------------------------
 
-// async function getRealNutritionPageData(): Promise<NutritionPageData> {
-//   const cookieStore = await cookies();
-//   const token = cookieStore.get("fitai_access_token")?.value;
-//   const transport = createServerTransport(token);
-//   const client = createClient(NutritionService, transport);
-//   const today = toDayKey(new Date());
+// Async function getRealNutritionPageData(): Promise<NutritionPageData> {
+//   Const cookieStore = await cookies();
+//   Const token = cookieStore.get("fitai_access_token")?.value;
+//   Const transport = createServerTransport(token);
+//   Const client = createClient(NutritionService, transport);
+//   Const today = toDayKey(new Date());
 //
-//   const [summary, history] = await Promise.all([
-//     client.getNutritionSummary({ userId: "TODO: from session" }),
-//     client.getNutritionHistory({
-//       endDate: today,
-//       startDate: dayKeyRange(today, 7)[0],
-//       userId: "TODO: from session",
+//   Const [summary, history] = await Promise.all([
+//     Client.getNutritionSummary({ userId: "TODO: from session" }),
+//     Client.getNutritionHistory({
+//       EndDate: today,
+//       StartDate: dayKeyRange(today, 7)[0],
+//       UserId: "TODO: from session",
 //     }),
 //   ]);
 //
-//   return adaptNutritionPageData(summary, history.meals, today);
+//   Return adaptNutritionPageData(summary, history.meals, today);
 // }
 
 // ---------------------------------------------------------------------------
@@ -40,9 +40,9 @@ import { readLocalMeals } from "./local-meal-log";
  */
 export async function getNutritionPageData(): Promise<NutritionPageData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  // readLocalMeals touches cookies(), so this read belongs to the request rather than the
-  // prerender — a freshly logged meal shows up immediately.
-  if (!hasBackend) return getMockNutritionPageData(await readLocalMeals());
+  // ReadLocalMeals touches cookies(), so this read belongs to the request rather than the
+  // Prerender — a freshly logged meal shows up immediately.
+  if (!hasBackend) {return getMockNutritionPageData(await readLocalMeals());}
   // TODO: return getRealNutritionPageData();
   return getMockNutritionPageData(await readLocalMeals());
 }

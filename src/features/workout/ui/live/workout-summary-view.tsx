@@ -108,11 +108,11 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
           <section className="summary-compare" data-direction={comparison.direction}>
             {comparison.direction === "up" ? (
               <TrendingUp aria-hidden="true" size={20} />
-            ) : comparison.direction === "down" ? (
+            ) : (comparison.direction === "down" ? (
               <TrendingDown aria-hidden="true" size={20} />
             ) : (
               <Minus aria-hidden="true" size={20} />
-            )}
+            ))}
             <p>{comparison.text}</p>
           </section>
         ) : null}
@@ -150,7 +150,7 @@ function volumeComparison(
   volumeKg: number,
   recentAvgKg: number,
 ): { direction: "up" | "down" | "level"; text: string } | null {
-  if (recentAvgKg <= 0 || volumeKg <= 0) return null;
+  if (recentAvgKg <= 0 || volumeKg <= 0) {return null;}
 
   const deltaPct = Math.round((volumeKg / recentAvgKg - 1) * 100);
 

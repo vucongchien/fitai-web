@@ -12,7 +12,7 @@ import type { DayKey } from "./day-key";
 import { clockLabel, dayKeyFromLoggedAt, dayKeyRange, minutesOfDay } from "./day-key";
 
 /** Structural subset of `MealLogItem`, so callers may pass proto messages directly. */
-export type MealLogRow = {
+export interface MealLogRow {
   calories: number;
   carbs: number;
   fat: number;
@@ -21,7 +21,7 @@ export type MealLogRow = {
   mealName: string;
   mealType: string;
   protein: number;
-};
+}
 
 export type MealSlot = "breakfast" | "lunch" | "dinner" | "snack";
 
@@ -34,39 +34,44 @@ export const MEAL_SLOT_LABELS: Record<MealSlot, string> = {
   snack: "Snacks",
 };
 
-export type LoggedMeal = {
+export interface LoggedMeal {
   calories: number;
   id: string;
   name: string;
   time: string | null;
-};
+}
 
-export type MealSlotGroup = {
+export interface MealSlotGroup {
   calories: number;
   label: string;
   meals: LoggedMeal[];
   slot: MealSlot;
-};
+}
 
-export type DailyCalories = {
+export interface DailyCalories {
   calories: number | null;
   key: DayKey;
-};
+}
 
 /** `LogMealRequest.meal_type` is a bare string ("BREAKFAST", …); normalize defensively. */
 export function toMealSlot(mealType: string): MealSlot | null {
   switch (mealType.trim().toUpperCase()) {
-    case "BREAKFAST":
+    case "BREAKFAST": {
       return "breakfast";
-    case "LUNCH":
+    }
+    case "LUNCH": {
       return "lunch";
-    case "DINNER":
+    }
+    case "DINNER": {
       return "dinner";
+    }
     case "SNACK":
-    case "SNACKS":
+    case "SNACKS": {
       return "snack";
-    default:
+    }
+    default: {
       return null;
+    }
   }
 }
 
@@ -123,7 +128,7 @@ export function dailyCalorieSeries(
 
   for (const row of rows) {
     const key = dayKeyFromLoggedAt(row.loggedAt);
-    if (!key) continue;
+    if (!key) {continue;}
     byDay.set(key, (byDay.get(key) ?? 0) + row.calories);
   }
 
@@ -142,7 +147,7 @@ export function averageDailyCalories(
   const series = dailyCalorieSeries(rows, endKey, length).filter(
     (point) => point.calories !== null,
   );
-  if (series.length === 0) return null;
+  if (series.length === 0) {return null;}
   return Math.round(sum(series.map((point) => point.calories ?? 0)) / series.length);
 }
 
@@ -157,11 +162,11 @@ export function averageDailyProtein(
 
   for (const row of rows) {
     const key = dayKeyFromLoggedAt(row.loggedAt);
-    if (!key || !window.has(key)) continue;
+    if (!key || !window.has(key)) {continue;}
     byDay.set(key, (byDay.get(key) ?? 0) + row.protein);
   }
 
-  if (byDay.size === 0) return null;
+  if (byDay.size === 0) {return null;}
   return Math.round(sum([...byDay.values()]) / byDay.size);
 }
 
@@ -212,7 +217,7 @@ export function countLoggedDays(
 
   for (const row of rows) {
     const key = dayKeyFromLoggedAt(row.loggedAt);
-    if (key && window.has(key)) days.add(key);
+    if (key && window.has(key)) {days.add(key);}
   }
 
   return days.size;

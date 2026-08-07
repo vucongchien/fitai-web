@@ -7,29 +7,29 @@ import { getMockWorkoutStatsData } from "./get-mock-workout-stats";
 // Real gRPC adapter (uncomment khi FITAI_RPC_URL sẵn sàng)
 // ---------------------------------------------------------------------------
 
-// async function getRealWorkoutStatsData(): Promise<WorkoutStatsData> {
-//   const cookieStore = await cookies();
-//   const token = cookieStore.get("fitai_access_token")?.value;
-//   const transport = createServerTransport(token);
-//   const today = toDayKey(new Date());
+// Async function getRealWorkoutStatsData(): Promise<WorkoutStatsData> {
+//   Const cookieStore = await cookies();
+//   Const token = cookieStore.get("fitai_access_token")?.value;
+//   Const transport = createServerTransport(token);
+//   Const today = toDayKey(new Date());
 //
-//   const [roadmap, history, nutrition] = await Promise.all([
-//     createClient(CoachingService, transport).getActiveRoadmap({ userId: "TODO: from session" }),
+//   Const [roadmap, history, nutrition] = await Promise.all([
+//     CreateClient(CoachingService, transport).getActiveRoadmap({ userId: "TODO: from session" }),
 //     // GetWorkoutHistory paginates by limit/offset only — it has no date filter — so the
 //     // window is applied client-side after over-fetching.
-//     createClient(WorkoutExecutionService, transport).getWorkoutHistory({ limit: 60, offset: 0 }),
-//     createClient(NutritionService, transport).getNutritionHistory({
-//       endDate: today,
-//       startDate: dayKeyRange(today, 7)[0],
-//       userId: "TODO: from session",
+//     CreateClient(WorkoutExecutionService, transport).getWorkoutHistory({ limit: 60, offset: 0 }),
+//     CreateClient(NutritionService, transport).getNutritionHistory({
+//       EndDate: today,
+//       StartDate: dayKeyRange(today, 7)[0],
+//       UserId: "TODO: from session",
 //     }),
 //   ]);
 //
-//   return adaptWorkoutStatsData(
-//     flattenSessionPlans(roadmap.roadmap ?? {}),
-//     history.sessions,
-//     nutrition.meals,
-//     today,
+//   Return adaptWorkoutStatsData(
+//     FlattenSessionPlans(roadmap.roadmap ?? {}),
+//     History.sessions,
+//     Nutrition.meals,
+//     Today,
 //   );
 // }
 
@@ -49,7 +49,7 @@ import { getMockWorkoutStatsData } from "./get-mock-workout-stats";
  */
 export async function getWorkoutStatsData(): Promise<WorkoutStatsData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) return getMockWorkoutStatsData();
+  if (!hasBackend) {return getMockWorkoutStatsData();}
   // TODO: return getRealWorkoutStatsData();
   return getMockWorkoutStatsData();
 }

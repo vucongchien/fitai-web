@@ -8,11 +8,11 @@ import type {
   UserAdminFilters,
 } from "@/features/admin/domain/admin-types";
 
-export type UserFiltersProps = {
+export interface UserFiltersProps {
   filters: UserAdminFilters;
   onChange: (filters: UserAdminFilters) => void;
   onReset: () => void;
-};
+}
 
 export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
   return (

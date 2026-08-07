@@ -25,7 +25,7 @@ export function DemoVideoOverlay({
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") {onClose();}
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -40,7 +40,7 @@ export function DemoVideoOverlay({
       <div className="demo-video__panel">
         <video
           // Controls on: this one is for studying the movement, so scrubbing back
-          // over the hard part is the whole point.
+          // Over the hard part is the whole point.
           autoPlay
           className="demo-video__player"
           controls

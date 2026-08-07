@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { expect, test } from "@playwright/test";
 
 test("login opens the guided onboarding flow", async ({ page }) => {
@@ -31,7 +32,7 @@ test("home leads into a manual workout and summary", async ({ page }) => {
   await expect(page.getByRole("timer", { name: /Rest time remaining/i })).toBeVisible();
 
   // Back is navigation, not a guillotine: it must ask before it ends the
-  // session, because ending it clears the resume draft irreversibly.
+  // Session, because ending it clears the resume draft irreversibly.
   await page.getByRole("button", { name: "Back" }).click();
   const endDialog = page.getByRole("dialog", { name: "Finish this session?" });
   await expect(endDialog).toBeVisible();

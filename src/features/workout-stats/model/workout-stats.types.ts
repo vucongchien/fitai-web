@@ -1,6 +1,6 @@
 import type { Adherence } from "@/shared/api/bff/aggregate/workout-adherence";
 
-export type WorkoutStatsData = {
+export interface WorkoutStatsData {
   adherence: Adherence;
   /** Context line under the ring, e.g. "31 July – 6 August". */
   dateLabel: string;
@@ -15,4 +15,4 @@ export type WorkoutStatsData = {
    * `volumeKg` is null for a week with no logged session.
    */
   volumeTrend: { label: string; volumeKg: number | null }[];
-};
+}

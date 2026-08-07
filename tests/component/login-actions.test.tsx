@@ -12,7 +12,7 @@
 
 import { cleanup, fireEvent, render, screen, act } from "@testing-library/react";
 import type { Mock } from "vitest";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 
 import { LoginActions } from "@/features/auth/ui/login-actions";
 
@@ -25,7 +25,7 @@ function makePopupStub(closed = false): Window {
   } as unknown as Window;
 }
 
-describe("LoginActions", () => {
+describe(LoginActions, () => {
   let mockWindowOpen: ReturnType<typeof vi.spyOn>;
   let mockLocationAssign: Mock<Location["assign"]>;
   let capturedMessageHandler: ((e: MessageEvent) => void) | null = null;
@@ -102,7 +102,7 @@ describe("LoginActions", () => {
   // ─── Popup blocked fallback ──────────────────────────────────────────────────
 
   it("falls back to window.location.assign when popup is blocked", () => {
-    mockWindowOpen.mockReturnValue(null); // simula popup blocker
+    mockWindowOpen.mockReturnValue(null); // Simula popup blocker
 
     render(<LoginActions />);
     fireEvent.click(screen.getByRole("button", { name: /Continue with Google/i }));
@@ -225,7 +225,7 @@ describe("LoginActions", () => {
     // Second click is blocked by disabled state
     fireEvent.click(googleButton);
 
-    expect(mockWindowOpen).toHaveBeenCalledTimes(1);
+    expect(mockWindowOpen).toHaveBeenCalledOnce();
   });
 
   // ─── Dev Mode Shortcuts ───────────────────────────────────────────────────────

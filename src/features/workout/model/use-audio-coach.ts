@@ -35,7 +35,7 @@ function writeStored(key: string, value: string): void {
   try {
     localStorage.setItem(key, value);
   } catch {
-    // ignore
+    // Ignore
   }
 }
 
@@ -76,11 +76,11 @@ export function useAudioCoach(playlists: Playlist[]) {
 
   useEffect(() => {
     volumeRef.current = volume;
-    if (musicRef.current && !cuePlaying.current) musicRef.current.volume = volume;
+    if (musicRef.current && !cuePlaying.current) {musicRef.current.volume = volume;}
   }, [volume]);
 
   const ensureMusicElement = useCallback((): HTMLAudioElement => {
-    if (musicRef.current) return musicRef.current;
+    if (musicRef.current) {return musicRef.current;}
     const element = new Audio();
     element.preload = "auto";
     element.volume = volumeRef.current;
@@ -92,10 +92,10 @@ export function useAudioCoach(playlists: Playlist[]) {
   /** Load and play the current track. Safe to call repeatedly. */
   const startTrack = useCallback(
     (nextTrack: MusicTrack | null) => {
-      if (!nextTrack) return;
+      if (!nextTrack) {return;}
       const element = ensureMusicElement();
       const url = new URL(nextTrack.url, window.location.origin).toString();
-      if (element.src !== url) element.src = url;
+      if (element.src !== url) {element.src = url;}
       element.volume = cuePlaying.current ? volumeRef.current * DUCK_FACTOR : volumeRef.current;
       void element.play().then(
         () => setIsPlaying(true),
@@ -110,19 +110,19 @@ export function useAudioCoach(playlists: Playlist[]) {
   );
 
   const next = useCallback(() => {
-    if (!playlist || playlist.tracks.length === 0) return;
+    if (!playlist || playlist.tracks.length === 0) {return;}
     setTrackIndex((current) => (current + 1) % playlist.tracks.length);
   }, [playlist]);
 
   const previous = useCallback(() => {
-    if (!playlist || playlist.tracks.length === 0) return;
+    if (!playlist || playlist.tracks.length === 0) {return;}
     setTrackIndex((current) => (current - 1 + playlist.tracks.length) % playlist.tracks.length);
   }, [playlist]);
 
   // Advance the playlist when a track ends so music runs for the whole session.
   useEffect(() => {
     const element = musicRef.current;
-    if (!element) return;
+    if (!element) {return;}
     const onEnded = () => next();
     element.addEventListener("ended", onEnded);
     return () => element.removeEventListener("ended", onEnded);
@@ -130,12 +130,12 @@ export function useAudioCoach(playlists: Playlist[]) {
 
   // Follow track changes while playing.
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying) {return;}
     startTrack(track);
   }, [isPlaying, startTrack, track]);
 
   const play = useCallback(() => {
-    if (!track) return;
+    if (!track) {return;}
     startTrack(track);
   }, [startTrack, track]);
 
@@ -145,8 +145,8 @@ export function useAudioCoach(playlists: Playlist[]) {
   }, []);
 
   const toggle = useCallback(() => {
-    if (isPlaying) pause();
-    else play();
+    if (isPlaying) {pause();}
+    else {play();}
   }, [isPlaying, pause, play]);
 
   const selectPlaylist = useCallback(
@@ -172,7 +172,7 @@ export function useAudioCoach(playlists: Playlist[]) {
 
   const duckMusic = useCallback((ducked: boolean) => {
     const element = musicRef.current;
-    if (!element) return;
+    if (!element) {return;}
     const target = ducked ? volumeRef.current * DUCK_FACTOR : volumeRef.current;
     // Short ramp so the dip does not click.
     const steps = 4;
@@ -181,12 +181,12 @@ export function useAudioCoach(playlists: Playlist[]) {
     const timer = window.setInterval(() => {
       step += 1;
       element.volume = from + ((target - from) * step) / steps;
-      if (step >= steps) window.clearInterval(timer);
+      if (step >= steps) {window.clearInterval(timer);}
     }, DUCK_FADE_MS / steps);
   }, []);
 
   const drainCueQueue = useCallback(() => {
-    if (cuePlaying.current) return;
+    if (cuePlaying.current) {return;}
     const cue = cueQueue.current.shift();
     if (!cue) {
       duckMusic(false);
@@ -230,12 +230,12 @@ export function useAudioCoach(playlists: Playlist[]) {
     (cue: CoachCue, cooldownSec = 0) => {
       const last = lastCueAt.current[cue.code] ?? 0;
       const now = Date.now();
-      if (cooldownSec > 0 && now - last < cooldownSec * 1000) return;
+      if (cooldownSec > 0 && now - last < cooldownSec * 1000) {return;}
       lastCueAt.current[cue.code] = now;
 
       // A severe correction jumps the queue — FR-CC-04 wants it inside 500ms.
-      if (cue.severity === 2) cueQueue.current.unshift(cue);
-      else cueQueue.current.push(cue);
+      if (cue.severity === 2) {cueQueue.current.unshift(cue);}
+      else {cueQueue.current.push(cue);}
       drainCueQueue();
     },
     [drainCueQueue],

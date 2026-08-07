@@ -8,14 +8,14 @@ import { useMemo } from "react";
 
 import { ChartEmpty } from "@/shared/ui/charts/chart-empty";
 
-export type TrendPoint = {
+export interface TrendPoint {
   /** Category label on the x axis, e.g. "Mon" or "08-06". */
   label: string;
   /** `null` marks a day with nothing logged, so it reads as absent rather than zero. */
   value: number | null;
-};
+}
 
-type TrendLineChartProps = {
+interface TrendLineChartProps {
   ariaLabel: string;
   emptyMessage?: string;
   height?: number;
@@ -23,7 +23,7 @@ type TrendLineChartProps = {
   /** Horizontal target line, drawn behind the series. */
   reference?: { label: string; value: number };
   yLabel?: string;
-};
+}
 
 /**
  * Wraps `@tanstack/react-charts` so the pre-1.0 API stays in one place.
@@ -43,7 +43,7 @@ export function TrendLineChart({
     const series = "var(--color-action)";
 
     // Every category is passed so the axis keeps all its ticks; the marks' y channels
-    // accept null, so a day with nothing logged leaves a gap instead of dropping to zero.
+    // Accept null, so a day with nothing logged leaves a gap instead of dropping to zero.
     const marks = [
       areaY(points, { fill: series, fillOpacity: 0.1, x: "label", y: "value" }),
       lineY(points, { stroke: series, strokeWidth: 2.5, x: "label", y: "value" }),

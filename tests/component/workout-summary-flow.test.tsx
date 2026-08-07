@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+
 
 import type { LiveExercise, SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
@@ -30,7 +30,7 @@ const mockExercise: LiveExercise = {
   targetWeightKg: 60,
 };
 
-describe("WorkoutSummaryView Component", () => {
+describe("workoutSummaryView Component", () => {
   afterEach(() => {
     cleanup();
     sessionStorage.clear();
@@ -57,7 +57,7 @@ describe("WorkoutSummaryView Component", () => {
 
     expect(screen.getByText(/session complete/i)).toBeInTheDocument();
     // Time and volume are the two numbers the summary keeps; set count, RPE and
-    // form score were dropped so the page has a focus.
+    // Form score were dropped so the page has a focus.
     expect(screen.getByText("30 min")).toBeInTheDocument();
     expect(screen.getByText(/1,500 kg/i)).toBeInTheDocument();
     expect(screen.queryByText(/RPE/i)).not.toBeInTheDocument();
@@ -118,10 +118,10 @@ describe("WorkoutSummaryView Component", () => {
 });
 
 // The old `SetTimer` offered a "Restart" control because its "+10s" label was
-// ambiguous. The redesigned footer replaces both with two explicitly named
-// controls — "Done" and "Add 10 seconds" — and no restart at all, so the same
-// concern is now asserted against the screen that replaced it.
-describe("ActiveExerciseScreen set controls", () => {
+// Ambiguous. The redesigned footer replaces both with two explicitly named
+// Controls — "Done" and "Add 10 seconds" — and no restart at all, so the same
+// Concern is now asserted against the screen that replaced it.
+describe("activeExerciseScreen set controls", () => {
   afterEach(() => {
     cleanup();
   });
@@ -146,7 +146,7 @@ describe("ActiveExerciseScreen set controls", () => {
     );
 
     // This set is rep-based with no camera counting, so there is no clock and
-    // nothing to extend: one confirm control, and still no restart.
+    // Nothing to extend: one confirm control, and still no restart.
     expect(screen.getByRole("button", { name: "Complete this set" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Add 10 seconds" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /restart/i })).not.toBeInTheDocument();

@@ -36,7 +36,7 @@ export function AdhocWorkoutBuilder() {
   } = useAdhocWorkout();
 
   // `SortableContext` re-derives its internal ordering whenever `items` changes
-  // identity, so a fresh array on every render defeats its own memoisation.
+  // Identity, so a fresh array on every render defeats its own memoisation.
   const sortableIds = useMemo(() => exerciseList.map((item) => item.id), [exerciseList]);
 
   return (

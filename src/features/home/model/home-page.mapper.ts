@@ -1,8 +1,8 @@
 import type { HomePageData, NutritionSummary, TodayTimelineItem } from "./home-page.types";
 
 // TODO: replace `unknown` with generated proto response types when backend is ready
-// import type { GetActiveRoadmapResponse } from "@/shared/api/gen/...";
-// import type { GetNutritionSummaryResponse } from "@/shared/api/gen/...";
+// Import type { GetActiveRoadmapResponse } from "@/shared/api/gen/...";
+// Import type { GetNutritionSummaryResponse } from "@/shared/api/gen/...";
 
 export function adaptTodayTimeline(_roadmapRes: unknown): TodayTimelineItem[] {
   // TODO: map roadmapRes.currentWeek.sessions → TodayTimelineItem[]

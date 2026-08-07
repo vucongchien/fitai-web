@@ -2,13 +2,13 @@ import type { LucideIcon } from "lucide-react";
 
 import { CircularProgress } from "@/shared/ui/charts/circular-progress";
 
-export type HeroStat = {
+export interface HeroStat {
   Icon: LucideIcon;
   label: string;
   value: string;
-};
+}
 
-type MetricHeroProps = {
+interface MetricHeroProps {
   ariaLabel: string;
   /** Context line above the value, e.g. "Thursday 6 August" or "3 – 9 August". */
   dateLabel: string;
@@ -22,7 +22,7 @@ type MetricHeroProps = {
   value: number;
   valueText: string;
   unit?: string;
-};
+}
 
 /**
  * Ring, date, headline value and a divided stat strip.

@@ -26,14 +26,14 @@ import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
 /** Closes over nothing, so it lives at module scope with one stable identity. */
 const exerciseKey = (exercise: AdminExercise) => exercise.id;
 
-type ExerciseColumnHandlers = {
+interface ExerciseColumnHandlers {
   onApprove: (id: string) => void;
   onArchive: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (event: React.MouseEvent, exercise: AdminExercise) => void;
   isApproving: boolean;
   isArchiving: boolean;
-};
+}
 
 /**
  * Column definitions live at module scope so the `cell` renderers are created
@@ -186,9 +186,9 @@ export default function AdminExercisesPage() {
     initialPageParam: null as string | null,
   });
 
-  const exercises = useMemo(() => {
-    return data?.pages.flatMap((page) => page.items) ?? [];
-  }, [data]);
+  const exercises = useMemo(() => 
+    data?.pages.flatMap((page) => page.items) ?? []
+  , [data]);
 
   const totalCount = data?.pages[0]?.totalCount ?? 0;
 

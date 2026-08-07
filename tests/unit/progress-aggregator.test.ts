@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import {
   calculateAdherencePercentage,
@@ -24,7 +24,7 @@ describe("progress-aggregator", () => {
   it("returns top PRs sorted by date", () => {
     const stats = getMockProgressStats();
     const topPRs = getTopPersonalRecords(stats.personalRecords, 2);
-    expect(topPRs.length).toBe(2);
+    expect(topPRs).toHaveLength(2);
     expect(topPRs[0].exerciseName).toBe("Dumbbell Bench Press"); // Aug 5
     expect(topPRs[1].exerciseName).toBe("Goblet Squat"); // Aug 3
   });
