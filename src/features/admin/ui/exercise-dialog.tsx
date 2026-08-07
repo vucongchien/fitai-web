@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Dumbbell, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import type { AdminExercise, AdminExerciseStatus } from "@/features/admin/domain/admin-types";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
@@ -49,6 +49,7 @@ export function ExerciseDialog({
     { id: "ms-triceps", name: "Cơ tay sau" },
   ],
 }: ExerciseDialogProps) {
+  const fieldIdBase = useId();
   const [formData, setFormData] = useState<Partial<AdminExercise>>({
     name: "",
     bodyPartId: bodyParts[0]?.id || "",
@@ -158,8 +159,11 @@ export function ExerciseDialog({
           {/* Row 1: Name & Status */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Tên bài tập *</label>
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-1`}>
+                Tên bài tập *
+              </label>
               <input
+                id={`${fieldIdBase}-1`}
                 type="text"
                 required
                 disabled={isReadOnly}
@@ -171,8 +175,11 @@ export function ExerciseDialog({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Trạng thái (Status)</label>
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-2`}>
+                Trạng thái (Status)
+              </label>
               <select
+                id={`${fieldIdBase}-2`}
                 disabled={isReadOnly}
                 value={formData.status || "created"}
                 onChange={(e) =>
@@ -191,8 +198,11 @@ export function ExerciseDialog({
           {/* Row 2: BodyPart, Equipment, Muscle, Difficulty */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Nhóm cơ chính *</label>
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-3`}>
+                Nhóm cơ chính *
+              </label>
               <select
+                id={`${fieldIdBase}-3`}
                 disabled={isReadOnly}
                 value={formData.bodyPartId || ""}
                 onChange={(e) => setFormData({ ...formData, bodyPartId: e.target.value })}
@@ -207,8 +217,11 @@ export function ExerciseDialog({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Dụng cụ *</label>
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-4`}>
+                Dụng cụ *
+              </label>
               <select
+                id={`${fieldIdBase}-4`}
                 disabled={isReadOnly}
                 value={formData.equipmentId || ""}
                 onChange={(e) => setFormData({ ...formData, equipmentId: e.target.value })}
@@ -223,8 +236,11 @@ export function ExerciseDialog({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Cơ mục tiêu *</label>
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-5`}>
+                Cơ mục tiêu *
+              </label>
               <select
+                id={`${fieldIdBase}-5`}
                 disabled={isReadOnly}
                 value={formData.targetMuscleId || ""}
                 onChange={(e) => setFormData({ ...formData, targetMuscleId: e.target.value })}
@@ -239,8 +255,11 @@ export function ExerciseDialog({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Độ khó *</label>
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-6`}>
+                Độ khó *
+              </label>
               <select
+                id={`${fieldIdBase}-6`}
                 disabled={isReadOnly}
                 value={formData.difficulty || "beginner"}
                 onChange={(e) =>
@@ -258,10 +277,11 @@ export function ExerciseDialog({
           {/* Row 3: Rest Seconds & AI Support */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-7`}>
                 Thời gian nghỉ mặc định (Giây)
               </label>
               <input
+                id={`${fieldIdBase}-7`}
                 type="number"
                 disabled={isReadOnly}
                 value={formData.defaultRestSeconds ?? 60}
@@ -288,8 +308,11 @@ export function ExerciseDialog({
 
           {/* Instructions */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-zinc-300">Hướng dẫn thực hiện</label>
+            <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-8`}>
+              Hướng dẫn thực hiện
+            </label>
             <textarea
+              id={`${fieldIdBase}-8`}
               rows={3}
               disabled={isReadOnly}
               value={formData.instructions || ""}
@@ -302,10 +325,11 @@ export function ExerciseDialog({
           {/* Form Cues & Common Mistakes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-9`}>
                 Gợi ý kỹ thuật (Form Cues - 1 câu/dòng)
               </label>
               <textarea
+                id={`${fieldIdBase}-9`}
                 rows={3}
                 disabled={isReadOnly}
                 value={formCuesText}
@@ -316,10 +340,11 @@ export function ExerciseDialog({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">
+              <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-10`}>
                 Lỗi thường gặp (1 câu/dòng)
               </label>
               <textarea
+                id={`${fieldIdBase}-10`}
                 rows={3}
                 disabled={isReadOnly}
                 value={commonMistakesText}

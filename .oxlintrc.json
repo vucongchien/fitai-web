@@ -11,6 +11,10 @@
     "promise",
     "node",
     "unicorn",
+    "jsdoc",
+    "jest",
+    "vitest",
+    "vue",
     "oxc"
   ],
   "ignorePatterns": [".claude/", ".next/", "src/shared/api/gen/"],
@@ -31,15 +35,6 @@
 
     "import/no-cycle": "error",
     "import/no-duplicates": "error",
-    "import/no-self-import": "error",
-
-    "unicorn/require-post-message-target-origin": "off",
-
-    "react/react-in-jsx-scope": "off",
-    "import/no-unassigned-import": "off",
-
-    "react-perf/jsx-no-new-function-as-prop": "off",
-    "react-perf/jsx-no-new-array-as-prop": "off",
-    "react-perf/jsx-no-new-object-as-prop": "off"
+    "import/no-self-import": "error"
   }
 }
