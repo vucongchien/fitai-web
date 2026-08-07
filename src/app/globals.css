@@ -3956,6 +3956,8 @@ a.week-route__row:hover {
 }
 
 /* Edit Modal Backdrop */
+/* Positioning shell only — the dimming moved to __scrim, which is a real button
+   so the click-to-dismiss affordance is keyboard reachable. */
 .exercise-edit-modal-backdrop {
   position: fixed;
   z-index: 110;
@@ -3963,11 +3965,21 @@ a.week-route__row:hover {
   display: grid;
   padding: 1.25rem;
   place-items: center;
+}
+
+.exercise-edit-modal__scrim {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
   background: color-mix(in srgb, var(--color-text) 30%, transparent);
   backdrop-filter: blur(4px);
+  cursor: default;
 }
 
 .exercise-edit-modal {
+  position: relative;
+  z-index: 1;
   width: min(100%, 26rem);
   padding: 1.25rem;
   background: var(--color-surface);

@@ -13,6 +13,7 @@ import {
 
 import type { AdminUser } from "@/features/admin/domain/admin-types";
 import { USER_ROLE_LABEL, USER_STATUS_LABEL } from "@/features/admin/domain/admin-types";
+import { UserAvatar } from "@/features/admin/ui/user-avatar";
 
 export type UserDialogProps = {
   isOpen: boolean;
@@ -52,15 +53,7 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
           {/* User Hero Summary */}
           <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
             <div className="size-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white font-bold text-2xl flex items-center justify-center shadow-md overflow-hidden shrink-0">
-              {user.avatarUrl ? (
-                <img
-                  src={user.avatarUrl}
-                  alt={user.displayName}
-                  className="size-full object-cover"
-                />
-              ) : (
-                user.displayName.charAt(0).toUpperCase()
-              )}
+              <UserAvatar alt={user.displayName} size={64} src={user.avatarUrl} />
             </div>
             <div className="flex-1 min-w-0 space-y-1">
               <h3 className="text-base font-bold text-slate-900 truncate">{user.displayName}</h3>

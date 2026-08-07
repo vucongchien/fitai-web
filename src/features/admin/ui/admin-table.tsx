@@ -101,7 +101,14 @@ export function AdminTable<T>({
               SKELETON_ROW_KEYS.map((rowKey) => (
                 <tr key={rowKey} className="animate-pulse" aria-hidden="true">
                   {columns.map((col) => (
-                    <td key={col.header} className={`py-4 px-4 ${col.className || ""}`}>
+                    // aria-hidden on the cell as well as the row: the cell holds a
+                    // decorative bar, not data, so it should not read as an
+                    // unlabelled table cell to a screen reader.
+                    <td
+                      aria-hidden="true"
+                      className={`py-4 px-4 ${col.className || ""}`}
+                      key={col.header}
+                    >
                       <div className="h-4 bg-slate-200 rounded-md w-3/4" />
                     </td>
                   ))}

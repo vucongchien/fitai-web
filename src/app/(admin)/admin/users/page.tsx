@@ -13,6 +13,7 @@ import {
 } from "@/features/admin/domain/admin-types";
 import type { Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
+import { UserAvatar } from "@/features/admin/ui/user-avatar";
 import { UserDialog } from "@/features/admin/ui/user-dialog";
 import { UserFilters } from "@/features/admin/ui/user-filters";
 
@@ -41,11 +42,7 @@ function buildUserColumns({
       cell: (u) => (
         <div className="flex items-center gap-3">
           <div className="size-9 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 overflow-hidden shadow-xs">
-            {u.avatarUrl ? (
-              <img src={u.avatarUrl} alt={u.displayName} className="size-full object-cover" />
-            ) : (
-              u.displayName.charAt(0).toUpperCase()
-            )}
+            <UserAvatar alt={u.displayName} size={36} src={u.avatarUrl} />
           </div>
           <div className="min-w-0">
             <h4 className="font-bold text-slate-900 text-sm truncate">{u.displayName}</h4>
