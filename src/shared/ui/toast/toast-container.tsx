@@ -16,18 +16,17 @@ export function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div aria-label="Notifications" aria-live="polite" className="toast-stack" role="region">
+    <section aria-label="Notifications" aria-live="polite" className="toast-stack">
       {toasts.map((toast) => {
         const type = toast.type ?? "info";
         const Icon = typeIcon[type];
 
         return (
-          <div
+          <output
             className="toast-item"
             data-exiting={toast.exiting ? "true" : undefined}
             data-type={type}
             key={toast.id}
-            role="status"
           >
             <span aria-hidden="true" className={`toast-type-icon toast-type-icon--${type}`}>
               <Icon size={16} />
@@ -56,9 +55,9 @@ export function ToastContainer() {
             >
               <X size={14} />
             </button>
-          </div>
+          </output>
         );
       })}
-    </div>
+    </section>
   );
 }

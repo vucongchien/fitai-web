@@ -526,6 +526,7 @@ button {
 
 .lane-skeleton {
   position: relative;
+  display: block;
   width: 100%;
   height: 0.5rem;
   overflow: hidden;
@@ -2947,10 +2948,26 @@ a.week-route__row:hover {
   align-items: flex-end;
 }
 
+.filter-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
 .filter-sheet__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   width: 100%;
+  max-width: none;
   max-height: 90dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   background: var(--color-surface);
   border-top-left-radius: var(--radius-hero);
   border-top-right-radius: var(--radius-hero);

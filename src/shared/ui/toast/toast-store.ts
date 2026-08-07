@@ -14,26 +14,26 @@ type ShowFn = (toast: {
 }) => string;
 type DismissFn = (id: string) => void;
 
-let _show: ShowFn | null = null;
-let _dismiss: DismissFn | null = null;
+let showImpl: ShowFn | null = null;
+let dismissImpl: DismissFn | null = null;
 
-export function _register(show: ShowFn | null, dismiss: DismissFn | null) {
-  _show = show;
-  _dismiss = dismiss;
+export function registerToastImpl(show: ShowFn | null, dismiss: DismissFn | null) {
+  showImpl = show;
+  dismissImpl = dismiss;
 }
 
 type ToastOpts = { durationMs?: number; action?: ToastAction };
 
 export const toast = {
   show: (message: string, opts?: ToastOpts & { type?: ToastType }): string =>
-    _show?.({ message, ...opts }) ?? "",
+    showImpl?.({ message, ...opts }) ?? "",
   info: (message: string, opts?: ToastOpts): string =>
-    _show?.({ message, type: "info", ...opts }) ?? "",
+    showImpl?.({ message, type: "info", ...opts }) ?? "",
   success: (message: string, opts?: ToastOpts): string =>
-    _show?.({ message, type: "success", ...opts }) ?? "",
+    showImpl?.({ message, type: "success", ...opts }) ?? "",
   error: (message: string, opts?: ToastOpts): string =>
-    _show?.({ message, type: "error", ...opts }) ?? "",
+    showImpl?.({ message, type: "error", ...opts }) ?? "",
   dismiss: (id: string): void => {
-    _dismiss?.(id);
+    dismissImpl?.(id);
   },
 };

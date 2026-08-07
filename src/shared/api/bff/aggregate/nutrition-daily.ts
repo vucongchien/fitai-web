@@ -94,7 +94,7 @@ export function groupMealsBySlot(rows: readonly MealLogRow[], key: DayKey): Meal
   return MEAL_SLOTS.map((slot) => {
     const slotRows = onDay
       .filter((row) => toMealSlot(row.mealType) === slot)
-      .sort((left, right) => minutesOfDay(left.loggedAt) - minutesOfDay(right.loggedAt));
+      .toSorted((left, right) => minutesOfDay(left.loggedAt) - minutesOfDay(right.loggedAt));
 
     return {
       calories: Math.round(sum(slotRows.map((row) => row.calories))),

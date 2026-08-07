@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { _register } from "./toast-store";
+import { registerToastImpl } from "./toast-store";
 
 export type ToastType = "info" | "success" | "error";
 
@@ -62,8 +62,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   // Register imperative API on mount so toast.success() etc. work outside React
   useEffect(() => {
-    _register(showToast, dismissToast);
-    return () => _register(null, null);
+    registerToastImpl(showToast, dismissToast);
+    return () => registerToastImpl(null, null);
   }, [showToast, dismissToast]);
 
   // A fresh object here would re-render every consumer on every provider render,
