@@ -1,10 +1,13 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { LiveExercise, SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
 import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
+
+type ActiveScreenProps = ComponentProps<typeof ActiveExerciseScreen>;
 
 describe("WorkoutSummaryView Component", () => {
   afterEach(() => {
@@ -129,13 +132,13 @@ describe("ActiveExerciseScreen set controls", () => {
         cameraActive={false}
         currentSet={1}
         exercise={mockExercise}
-        onAddTime={vi.fn()}
-        onBack={vi.fn()}
-        onDone={vi.fn()}
-        onOpenGuide={vi.fn()}
-        onReportPain={vi.fn()}
-        onToggleFullscreen={vi.fn()}
-        onToggleVoice={vi.fn()}
+        onAddTime={vi.fn<ActiveScreenProps["onAddTime"]>()}
+        onBack={vi.fn<ActiveScreenProps["onBack"]>()}
+        onDone={vi.fn<ActiveScreenProps["onDone"]>()}
+        onOpenGuide={vi.fn<ActiveScreenProps["onOpenGuide"]>()}
+        onReportPain={vi.fn<ActiveScreenProps["onReportPain"]>()}
+        onToggleFullscreen={vi.fn<ActiveScreenProps["onToggleFullscreen"]>()}
+        onToggleVoice={vi.fn<ActiveScreenProps["onToggleVoice"]>()}
         secondsLeft={0}
         totalSets={3}
         voiceOn={false}
