@@ -3165,6 +3165,19 @@ a.week-route__row:hover {
 }
 
 /* Notifications */
+/* Push opt-in sits inside .page-hero, between the title and the lede, so both
+   its states need the same top gap the lede already uses. */
+.push-optin__button {
+  margin: 0.75rem 0 0;
+}
+
+.push-optin__note {
+  margin: 0.75rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 .notification-list {
   margin: 1rem 0 0;
   padding: 0;
