@@ -19,10 +19,13 @@ export function SortableAdhocItem({ exercise, index, onEdit, onDelete }: Sortabl
     id: exercise.id,
   });
 
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  const style: React.CSSProperties = React.useMemo(
+    () => ({
+      transform: CSS.Transform.toString(transform),
+      transition,
+    }),
+    [transform, transition],
+  );
 
   const hasWeight = exercise.weightKg !== undefined && exercise.weightKg > 0;
 
