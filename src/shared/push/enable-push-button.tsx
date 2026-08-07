@@ -25,13 +25,23 @@ export function EnablePushButton() {
   }
 
   return (
-    <button
-      className="secondary-button push-optin__button"
-      disabled={status === "asking"}
-      onClick={() => void enable()}
-      type="button"
-    >
-      {status === "asking" ? "Enabling…" : "Turn on reminders"}
-    </button>
+    <>
+      <button
+        className="secondary-button push-optin__button"
+        disabled={status === "asking"}
+        onClick={() => void enable()}
+        type="button"
+      >
+        {status === "asking" ? "Enabling…" : "Turn on reminders"}
+      </button>
+      {status === "failed" ? (
+        // The permission prompt succeeded but the token never reached the
+        // backend. Saying nothing here would leave the user believing reminders
+        // are on, so name the state and make retrying the obvious next step.
+        <p className="push-optin__note">
+          Reminders could not be set up just now. Try again in a moment.
+        </p>
+      ) : null}
+    </>
   );
 }

@@ -63,12 +63,13 @@ const scope = self as unknown as DedicatedWorkerGlobalScope;
 
 let ort: OrtModule | null = null;
 let poseSession: OrtSession | null = null;
-let detectorSession: OrtSession | null = null;
 let sampler: BitmapSampler | null = null;
 let spec: MotionSpec | null = null;
 let mode: InferenceMode = "idle";
 let accumulator: Accumulator = freshAccumulator();
 let darkFrames = 0;
+/** Scratch tensor reused across frames — see inferPose. */
+let inputBuffer: Float32Array | null = null;
 
 function post(response: InferenceResponse): void {
   scope.postMessage(response);
@@ -112,28 +113,30 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
   ort.env.wasm.numThreads = 1;
 
   const options = { executionProviders: executionProviders() };
-  const [poseModel, detectorModel] = await Promise.all([
-    fetchModel(next.onnxSkeletonUrl),
-    fetchModel(next.onnxDetectorUrl).catch(() => null),
-  ]);
-
-  poseSession = await ort.InferenceSession.create(poseModel, options);
-  // The detector is optional: without it the pose model runs on the whole frame,
-  // which is fine while the athlete fills most of it (Assumption-01).
-  //
-  // TODO(model): once the detector export is published, run it here and crop to
-  // its box before the pose pass. The session is loaded and released already; the
-  // only missing piece is the box → crop wiring in inferPose.
-  if (detectorModel) {
-    detectorSession = await ort.InferenceSession.create(detectorModel, options).catch(() => null);
-  }
+  poseSession = await ort.InferenceSession.create(await fetchModel(next.onnxSkeletonUrl), options);
   sampler = new BitmapSampler(MODEL_IO.inputWidth, MODEL_IO.inputHeight);
+
+  // `spec.onnxDetectorUrl` is deliberately NOT fetched. The old engine downloaded
+  // the person detector and built a session for it, but its runDetector() was a
+  // stub that returned null — so every session paid a multi-megabyte download and
+  // an ORT session allocation for a model that never ran once.
+  //
+  // Without it the pose model sees the whole frame, which is fine while the
+  // athlete fills most of it (Assumption-01).
+  //
+  // TODO(model): when the detector export is published, fetch it here, run it in
+  // inferPose, and crop to its box before the pose pass. Add the fetch back at
+  // the same time — not before.
 }
 
 async function inferPose(frame: LetterboxedFrame): Promise<Pose | null> {
   if (!ort || !poseSession) return null;
 
-  const input = normaliseFrame(frame);
+  // Reuse one 576KB buffer for the whole session rather than allocating per
+  // frame. inferPose is never re-entered — the main thread keeps exactly one
+  // frame in flight — so a single scratch buffer is safe.
+  inputBuffer ??= new Float32Array(MODEL_IO.inputWidth * MODEL_IO.inputHeight * 3);
+  const input = normaliseFrame(frame, inputBuffer);
   const tensor = new ort.Tensor("float32", input, [
     1,
     3,
@@ -228,16 +231,6 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
   }
 }
 
-function dispose(): void {
-  mode = "idle";
-  sampler?.dispose();
-  sampler = null;
-  void poseSession?.release?.();
-  void detectorSession?.release?.();
-  poseSession = null;
-  detectorSession = null;
-}
-
 scope.onmessage = async (message: MessageEvent<InferenceRequest>) => {
   const request = message.data;
   switch (request.type) {
@@ -279,10 +272,6 @@ scope.onmessage = async (message: MessageEvent<InferenceRequest>) => {
     case "stop-set":
       mode = "idle";
       post({ telemetry: summarise(accumulator), type: "telemetry" });
-      return;
-
-    case "dispose":
-      dispose();
       return;
   }
 };

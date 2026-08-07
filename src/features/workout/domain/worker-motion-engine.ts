@@ -29,6 +29,9 @@ import {
 /** Where scripts/copy-ort-assets.mjs puts the ORT runtime. */
 const WASM_PATHS = "/ort/";
 
+/** How long stopSet() waits for the worker before giving up on telemetry. */
+const TELEMETRY_TIMEOUT_MS = 2000;
+
 export function supportsInferenceWorker(): boolean {
   return (
     typeof Worker !== "undefined" &&
@@ -48,6 +51,7 @@ export class WorkerMotionEngine implements MotionEngine {
   /** True while the worker still owes us a `frame-done`. */
   private pending = false;
   private telemetryResolve: ((telemetry: SetTelemetry) => void) | null = null;
+  private telemetryTimer: number | null = null;
 
   async prepare(context: MotionEngineContext): Promise<void> {
     if (!context.video) throw new Error("WorkerMotionEngine needs a video element");
@@ -114,28 +118,44 @@ export class WorkerMotionEngine implements MotionEngine {
   async stopSet(): Promise<SetTelemetry> {
     this.stopLoop();
     if (!this.worker) return EMPTY_TELEMETRY;
+    // A second stopSet() before the first answers would otherwise strand the
+    // earlier promise, since telemetryResolve holds only one caller.
+    this.settleTelemetry(EMPTY_TELEMETRY);
+
     return await new Promise<SetTelemetry>((resolve) => {
       this.telemetryResolve = resolve;
       this.send({ type: "stop-set" });
       // A worker that has died would hang the set review forever.
-      window.setTimeout(() => {
-        if (this.telemetryResolve) {
-          this.telemetryResolve = null;
-          resolve(EMPTY_TELEMETRY);
-        }
-      }, 2000);
+      this.telemetryTimer = window.setTimeout(
+        () => this.settleTelemetry(EMPTY_TELEMETRY),
+        TELEMETRY_TIMEOUT_MS,
+      );
     });
+  }
+
+  /** Resolves the pending stopSet() caller, if any, and clears its timeout. */
+  private settleTelemetry(telemetry: SetTelemetry): void {
+    if (this.telemetryTimer !== null) {
+      window.clearTimeout(this.telemetryTimer);
+      this.telemetryTimer = null;
+    }
+    const resolve = this.telemetryResolve;
+    this.telemetryResolve = null;
+    resolve?.(telemetry);
   }
 
   dispose(): void {
     this.stopLoop();
-    this.send({ type: "dispose" });
+    // No `dispose` message: terminate() kills the worker before it could handle
+    // one, and tearing the thread down releases the ORT sessions and the frame
+    // buffer anyway. Posting it would only read as if it did something.
     this.worker?.removeEventListener("message", this.handleMessage);
     this.worker?.terminate();
     this.worker = null;
     this.video = null;
     this.onEvent = null;
-    this.telemetryResolve = null;
+    // Unblocks anyone awaiting stopSet() when the session is torn down mid-set.
+    this.settleTelemetry(EMPTY_TELEMETRY);
   }
 
   private handleMessage = (message: MessageEvent): void => {
@@ -149,8 +169,7 @@ export class WorkerMotionEngine implements MotionEngine {
         this.pending = false;
         break;
       case "telemetry":
-        this.telemetryResolve?.(response.telemetry);
-        this.telemetryResolve = null;
+        this.settleTelemetry(response.telemetry);
         break;
       default:
         break;

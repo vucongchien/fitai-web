@@ -22,8 +22,11 @@ export type InferenceRequest =
   | { type: "mode"; mode: InferenceMode }
   | { type: "frame"; bitmap: ImageBitmap }
   /** Stop tracking and reply with a `telemetry` response. */
-  | { type: "stop-set" }
-  | { type: "dispose" };
+  | { type: "stop-set" };
+
+// There is no `dispose` message on purpose: WorkerMotionEngine.dispose() calls
+// terminate(), which kills the thread before it could handle one and releases the
+// ORT sessions with it.
 
 export type InferenceResponse =
   | { type: "ready" }

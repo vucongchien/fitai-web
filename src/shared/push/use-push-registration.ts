@@ -26,7 +26,33 @@ export function pushSupport(): PushSupport {
   return { reason: null, supported: true };
 }
 
-export type PushStatus = "idle" | "asking" | "granted" | "denied" | "unsupported";
+export type PushStatus = "idle" | "asking" | "granted" | "denied" | "unsupported" | "failed";
+
+/**
+ * Mints an FCM registration token and hands it to the backend.
+ *
+ * Assumes permission is already granted — callers must check first, because
+ * getToken() silently returns null rather than prompting.
+ */
+async function mintAndRegister(): Promise<PushStatus> {
+  const messaging = await getMessagingIfSupported();
+  if (!messaging) return "unsupported";
+
+  // Register our own SW and hand it to FCM, rather than letting the SDK look
+  // for /firebase-messaging-sw.js. One service worker, one push handler.
+  const registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+  const token = await getToken(messaging, {
+    serviceWorkerRegistration: registration,
+    vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+  }).catch(() => null);
+
+  if (!token) return "failed";
+
+  // The backend is the thing that decides whether push actually works. Reporting
+  // "granted" on a failed handoff would tell the user reminders are on while the
+  // notification service has no token to send to.
+  return (await registerDeviceToken(token)) ? "granted" : "failed";
+}
 
 export function usePushRegistration() {
   const [status, setStatus] = useState<PushStatus>("idle");
@@ -36,8 +62,28 @@ export function usePushRegistration() {
       setStatus("unsupported");
       return;
     }
-    if (Notification.permission === "granted") setStatus("granted");
-    if (Notification.permission === "denied") setStatus("denied");
+    if (Notification.permission === "denied") {
+      setStatus("denied");
+      return;
+    }
+    if (Notification.permission !== "granted") return;
+
+    // Optimistic: permission is granted, so hide the opt-in immediately rather
+    // than flashing a button for the duration of the round trip below.
+    setStatus("granted");
+
+    // Permission survives across sessions but the token does not: FCM rotates
+    // it, and clearing site data drops it. Without this re-mint the user stays
+    // permanently opted in with a token the backend no longer has, and no UI
+    // ever appears to fix it. Re-registering an unchanged token is a cheap no-op
+    // on the backend side.
+    let cancelled = false;
+    void mintAndRegister().then((next) => {
+      if (!cancelled) setStatus(next);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const enable = useCallback(async () => {
@@ -54,27 +100,7 @@ export function usePushRegistration() {
       return;
     }
 
-    const messaging = await getMessagingIfSupported();
-    if (!messaging) {
-      setStatus("unsupported");
-      return;
-    }
-
-    // Register our own SW and hand it to FCM, rather than letting the SDK look
-    // for /firebase-messaging-sw.js. One service worker, one push handler.
-    const registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
-    const token = await getToken(messaging, {
-      serviceWorkerRegistration: registration,
-      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-    }).catch(() => null);
-
-    if (!token) {
-      setStatus("denied");
-      return;
-    }
-
-    await registerDeviceToken(token);
-    setStatus("granted");
+    setStatus(await mintAndRegister());
   }, []);
 
   return { enable, status };

@@ -34,10 +34,19 @@ export const MODEL_IO = {
   detectorSize: 320,
 };
 
-export function normaliseFrame(frame: LetterboxedFrame): Float32Array {
+/**
+ * Packs a frame into a planar CHW float tensor with ImageNet normalisation.
+ *
+ * `out` lets the caller supply a scratch buffer. At 192×256 the tensor is 576KB,
+ * so allocating one per frame throws ~17MB/s of garbage at the collector during a
+ * tracked set — enough GC pressure to show up as jitter in the rep counter. The
+ * worker keeps a single buffer alive for the whole session and passes it here.
+ * Omitting `out` allocates, which keeps the function pure for its unit tests.
+ */
+export function normaliseFrame(frame: LetterboxedFrame, out?: Float32Array): Float32Array {
   const data = frame.data.data;
   const pixels = frame.data.width * frame.data.height;
-  const tensor = new Float32Array(pixels * 3);
+  const tensor = out?.length === pixels * 3 ? out : new Float32Array(pixels * 3);
   for (let i = 0; i < pixels; i += 1) {
     const offset = i * 4;
     tensor[i] = (data[offset]! - MODEL_IO.mean[0]) / MODEL_IO.std[0];
