@@ -17,6 +17,41 @@ export type LetterboxedFrame = {
   sourceHeight: number;
 };
 
+export type LetterboxLayout = {
+  scale: number;
+  padX: number;
+  padY: number;
+  drawWidth: number;
+  drawHeight: number;
+};
+
+/**
+ * Aspect-preserving fit of a source frame into a destination box, centred.
+ * Shared by FrameSampler (main thread, <video>) and BitmapSampler (worker,
+ * ImageBitmap) so a keypoint decoded in the worker maps back to source pixels
+ * with exactly the same maths on both sides.
+ */
+export function letterboxLayout(
+  sourceWidth: number,
+  sourceHeight: number,
+  destWidth: number,
+  destHeight: number,
+): LetterboxLayout {
+  if (sourceWidth <= 0 || sourceHeight <= 0) {
+    return { drawHeight: 0, drawWidth: 0, padX: 0, padY: 0, scale: 0 };
+  }
+  const scale = Math.min(destWidth / sourceWidth, destHeight / sourceHeight);
+  const drawWidth = sourceWidth * scale;
+  const drawHeight = sourceHeight * scale;
+  return {
+    drawHeight,
+    drawWidth,
+    padX: (destWidth - drawWidth) / 2,
+    padY: (destHeight - drawHeight) / 2,
+    scale,
+  };
+}
+
 export class FrameSampler {
   private canvas: HTMLCanvasElement | null = null;
   private context: CanvasRenderingContext2D | null = null;
@@ -42,11 +77,12 @@ export class FrameSampler {
     const context = this.context;
     if (!context) return null;
 
-    const scale = Math.min(this.width / sourceWidth, this.height / sourceHeight);
-    const drawWidth = sourceWidth * scale;
-    const drawHeight = sourceHeight * scale;
-    const padX = (this.width - drawWidth) / 2;
-    const padY = (this.height - drawHeight) / 2;
+    const { drawHeight, drawWidth, padX, padY, scale } = letterboxLayout(
+      sourceWidth,
+      sourceHeight,
+      this.width,
+      this.height,
+    );
 
     context.fillStyle = "#000";
     context.fillRect(0, 0, this.width, this.height);

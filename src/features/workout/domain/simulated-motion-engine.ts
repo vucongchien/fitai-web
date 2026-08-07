@@ -157,7 +157,7 @@ export class SimulatedMotionEngine implements MotionEngine {
     }, 100);
   }
 
-  stopSet(): SetTelemetry {
+  async stopSet(): Promise<SetTelemetry> {
     this.tracking = false;
     this.stopLoop();
     return summarise(this.accumulator);
