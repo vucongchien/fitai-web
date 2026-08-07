@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useActionState, useId, useState } from "react";
+import { useActionState, useCallback, useId, useState } from "react";
 
 import { logMealAction, type LogMealState } from "@/features/nutrition/server/nutrition-actions";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
@@ -26,10 +26,14 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
   const [state, formAction, pending] = useActionState(logMealAction, INITIAL);
   const formId = useId();
 
+  const openForm = useCallback(() => setOpen(true), []);
+  const closeForm = useCallback(() => setOpen(false), []);
+  const showMacros = useCallback(() => setMacrosOpen(true), []);
+
   // Collapse once the write has landed; the logged row above carries the confirmation.
   if (!open || state.status === "saved") {
     return (
-      <button className="log-open" onClick={() => setOpen(true)} type="button">
+      <button className="log-open" onClick={openForm} type="button">
         <ChevronDown aria-hidden="true" size={16} />
         Log something not on the menu
       </button>
@@ -92,7 +96,7 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
           ))}
         </div>
       ) : (
-        <button className="log-form__more" onClick={() => setMacrosOpen(true)} type="button">
+        <button className="log-form__more" onClick={showMacros} type="button">
           Add protein, carbs and fat
         </button>
       )}
@@ -114,7 +118,7 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
         <button
           className="ui-button ui-button--quiet ui-button--medium"
           disabled={pending}
-          onClick={() => setOpen(false)}
+          onClick={closeForm}
           type="button"
         >
           <span className="ui-button__label">Cancel</span>
