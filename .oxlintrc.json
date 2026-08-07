@@ -35,6 +35,12 @@
 
     "import/no-cycle": "error",
     "import/no-duplicates": "error",
-    "import/no-self-import": "error"
+    "import/no-self-import": "error",
+
+    // React 19 + Next.js compile JSX with the automatic runtime, so `React` does
+    // not need to be in scope — 105 of this repo's 106 JSX files never import it
+    // and the build is green. The rule targets the legacy React.createElement
+    // transform; satisfying it would mean adding an unused import to every file.
+    "react/react-in-jsx-scope": "off"
   }
 }
