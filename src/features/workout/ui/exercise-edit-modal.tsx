@@ -80,6 +80,7 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
                 max={15}
                 min={1}
                 onChange={(e) => setSets(Math.max(1, Number(e.target.value) || 1))}
+                onInvalid={(e) => e.preventDefault()}
                 type="number"
                 value={sets}
               />
@@ -92,6 +93,7 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
                 max={100}
                 min={1}
                 onChange={(e) => setReps(Math.max(1, Number(e.target.value) || 1))}
+                onInvalid={(e) => e.preventDefault()}
                 type="number"
                 value={reps}
               />
@@ -104,6 +106,7 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
                   className="edit-field__input"
                   min={0}
                   onChange={(e) => setWeightKg(Math.max(0, Number(e.target.value) || 0))}
+                  onInvalid={(e) => e.preventDefault()}
                   placeholder="e.g. 14"
                   type="number"
                   value={weightKg ?? ""}

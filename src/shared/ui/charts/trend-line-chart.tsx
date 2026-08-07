@@ -22,6 +22,7 @@ interface TrendLineChartProps {
   points: readonly TrendPoint[];
   /** Horizontal target line, drawn behind the series. */
   reference?: { label: string; value: number };
+  tone?: "action" | "effort" | "recovery";
   yLabel?: string;
 }
 
@@ -35,12 +36,18 @@ export function TrendLineChart({
   height = 200,
   points,
   reference,
+  tone = "action",
   yLabel,
 }: TrendLineChartProps) {
   const logged = points.filter((point) => point.value !== null);
 
   const definition = useMemo(() => {
-    const series = "var(--color-action)";
+    const series =
+      tone === "recovery"
+        ? "var(--color-recovery)"
+        : tone === "effort"
+          ? "var(--color-effort)"
+          : "var(--color-action)";
 
     // Every category is passed so the axis keeps all its ticks; the marks' y channels
     // Accept null, so a day with nothing logged leaves a gap instead of dropping to zero.

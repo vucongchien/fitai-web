@@ -28,6 +28,7 @@ export function NutritionView({ data }: NutritionViewProps) {
           label: `${macro.label} / day`,
           value: `${macro.gramsPerDay.toLocaleString()} g`,
         }))}
+        tone="recovery"
         unit="kcal"
         value={average ?? 0}
         valueText={average === null ? "—" : average.toLocaleString()}
@@ -48,6 +49,7 @@ export function NutritionView({ data }: NutritionViewProps) {
             value: day.calories,
           }))}
           reference={{ label: "Target", value: data.caloriesTargetPerDay }}
+          tone="recovery"
           yLabel="kcal"
         />
       </section>

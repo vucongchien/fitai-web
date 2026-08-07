@@ -199,6 +199,7 @@ export function OnboardingFlow() {
                   <input
                     inputMode="numeric"
                     type="number"
+                    onInvalid={(e) => e.preventDefault()}
                     {...register("heightCm", { valueAsNumber: true })}
                   />
                   <span>cm</span>
@@ -212,6 +213,7 @@ export function OnboardingFlow() {
                     inputMode="decimal"
                     step="0.1"
                     type="number"
+                    onInvalid={(e) => e.preventDefault()}
                     {...register("weightKg", { valueAsNumber: true })}
                   />
                   <span>kg</span>
@@ -225,6 +227,7 @@ export function OnboardingFlow() {
                     inputMode="decimal"
                     step="0.1"
                     type="number"
+                    onInvalid={(e) => e.preventDefault()}
                     {...register("targetWeightKg", { valueAsNumber: true })}
                   />
                   <span>kg</span>

@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 
+import { AppHeader } from "@/shared/ui/app-header";
 import { BottomNavigation } from "@/shared/ui/bottom-navigation";
-import { BrandMark } from "@/shared/ui/brand-mark";
-import { HeaderActions } from "@/shared/ui/header-actions";
 import { PullToRefresh } from "@/shared/ui/pull-to-refresh";
 
 interface AppShellProps {
@@ -13,12 +12,7 @@ export function AppShell({ children }: AppShellProps) {
   return (
     <div className="app-shell">
       <PullToRefresh activePath="/home">
-        <header className="app-header">
-          <BrandMark />
-          <span className="app-header__phase">Week 2</span>
-          <span aria-hidden="true" className="app-header__spacer" />
-          <HeaderActions />
-        </header>
+        <AppHeader />
         <main className="app-shell__main">{children}</main>
       </PullToRefresh>
       <BottomNavigation />

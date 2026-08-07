@@ -1,4 +1,4 @@
-import { CalendarClock, Check, Timer, Weight } from "lucide-react";
+import { Check, Dumbbell, Timer, Weight } from "lucide-react";
 
 import { formatVolume } from "@/features/workout-stats/model/workout-stats.mapper";
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
@@ -18,7 +18,7 @@ export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
       <MetricHero
         ariaLabel={`${adherence.scheduled} sessions planned this week, ${adherence.completed} completed`}
         dateLabel={data.dateLabel}
-        Icon={CalendarClock}
+        Icon={Dumbbell}
         max={adherence.scheduled}
         stats={[
           { Icon: Check, label: "Completed", value: String(adherence.completed) },
@@ -29,7 +29,7 @@ export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
           },
           { Icon: Weight, label: "Volume", value: formatVolume(data.volumeKg) },
         ]}
-        tone="effort"
+        tone="action"
         unit={adherence.scheduled === 1 ? "session" : "sessions"}
         value={adherence.completed}
         valueText={String(adherence.scheduled)}

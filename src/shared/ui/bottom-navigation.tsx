@@ -19,7 +19,10 @@ export function BottomNavigation() {
   return (
     <nav aria-label="Primary navigation" className="bottom-navigation">
       {destinations.map(({ href, icon: Icon, label }) => {
-        const active = pathname === href || pathname.startsWith(`${href}/`);
+        const active =
+          pathname === href ||
+          pathname.startsWith(`${href}/`) ||
+          (href === "/roadmap" && (pathname === "/schedule" || pathname.startsWith("/schedule/")));
 
         return (
           <Link

@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, ChefHat, Flame, Sparkles, Utensils } from "lucide-react";
 
 import type { MealChoice, MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";
 import { LogMealButton } from "@/features/nutrition/ui/log-meal-button";
@@ -15,38 +15,67 @@ const PRICE_LABEL = {
 } as const;
 
 function RecipeSteps({ id, steps }: { id: string; steps: string[] }) {
+  const hasSteps = steps && steps.length > 0;
+
   return (
-    <details className="meal-recipe">
-      <summary>
-        How to cook it
-        <span className="meal-recipe__count data-value">{steps.length} steps</span>
+    <details className="meal-recipe" open={hasSteps}>
+      <summary className="meal-recipe__summary">
+        <span className="meal-recipe__summary-title">
+          <ChefHat size={14} aria-hidden="true" /> How to cook it
+        </span>
+        {hasSteps ? (
+          <span className="meal-recipe__count">{steps.length} steps</span>
+        ) : (
+          <span className="meal-recipe__count">Quick prep</span>
+        )}
       </summary>
-      <ol className="meal-recipe__steps">
-        {steps.map((step, index) => (
-          // Steps are plain strings with no id; order is their identity.
-          <li key={`${id}-step-${index}`}>{step}</li>
-        ))}
-      </ol>
+
+      {hasSteps ? (
+        <ol className="meal-recipe__steps">
+          {steps.map((step, index) => (
+            <li key={`${id}-step-${index}`}>
+              <span className="meal-recipe__step-num">{index + 1}</span>
+              <span className="meal-recipe__step-text">{step}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <ol className="meal-recipe__steps">
+          <li>
+            <span className="meal-recipe__step-num">1</span>
+            <span className="meal-recipe__step-text">Prepare ingredients and portion to your target serving size.</span>
+          </li>
+          <li>
+            <span className="meal-recipe__step-num">2</span>
+            <span className="meal-recipe__step-text">Cook or assemble to your preferred method.</span>
+          </li>
+          <li>
+            <span className="meal-recipe__step-num">3</span>
+            <span className="meal-recipe__step-text">Serve fresh and log any macro adjustments if needed.</span>
+          </li>
+        </ol>
+      )}
     </details>
   );
 }
 
+
 function MacroLine({ choice }: { choice: MealChoice }) {
   return (
     <dl className="meal-macros">
-      <div>
+      <div className="meal-macro meal-macro--calories">
         <dt>Calories</dt>
         <dd className="data-value">{choice.calories.toLocaleString()} kcal</dd>
       </div>
-      <div>
+      <div className="meal-macro meal-macro--protein">
         <dt>Protein</dt>
         <dd className="data-value">{choice.protein} g</dd>
       </div>
-      <div>
+      <div className="meal-macro meal-macro--carbs">
         <dt>Carbs</dt>
         <dd className="data-value">{choice.carbs} g</dd>
       </div>
-      <div>
+      <div className="meal-macro meal-macro--fat">
         <dt>Fat</dt>
         <dd className="data-value">{choice.fat} g</dd>
       </div>
@@ -61,43 +90,58 @@ export function MealDetailView({ data }: MealDetailViewProps) {
     <>
       {logged ? (
         <section className="meal-logged">
-          <span aria-hidden="true" className="meal-logged__mark">
-            <Check size={15} />
-          </span>
-          <div>
-            <span className="utility-label">Logged today</span>
-            <ul className="meal-logged__list">
-              {data.loggedMeals.map((meal) => (
-                <li key={meal.id} className="divide-y divide-coral-tint-200">
-                  {meal.time ? <span className="data-value">{meal.time}</span> : null}
-                  <span className="meal-logged__name">{meal.name}</span>
-                  <span className="data-value">{meal.calories} kcal</span>
-                  {meal.recipeSteps.length > 0 ? (
-                    <RecipeSteps id={meal.id} steps={meal.recipeSteps} />
-                  ) : null}
-                </li>
-              ))}
-            </ul>
+          <div className="meal-logged__header">
+            <div className="meal-logged__header-title">
+              <span aria-hidden="true" className="meal-logged__mark">
+                <Check size={14} />
+              </span>
+              <span className="utility-label">LOGGED TODAY</span>
+            </div>
+            {data.loggedMeals.length > 1 ? (
+              <span className="meal-logged__total-badge data-value">
+                <Flame size={13} /> {data.loggedCalories} kcal total
+              </span>
+            ) : null}
           </div>
-          {/* The per-meal figure already says it when there is only one row. */}
-          {data.loggedMeals.length > 1 ? (
-            <strong className="meal-logged__total data-value">
-              {data.loggedCalories} kcal total
-            </strong>
-          ) : null}
+
+          <ul className="meal-logged__list">
+            {data.loggedMeals.map((meal) => (
+              <li key={meal.id} className="meal-logged__item">
+                <div className="meal-logged__row">
+                  <div className="meal-logged__meta">
+                    {meal.time ? (
+                      <span className="meal-logged__time">
+                        {meal.time}
+                      </span>
+                    ) : null}
+                    <span className="meal-logged__name">{meal.name}</span>
+                  </div>
+                  <span className="meal-logged__calories">
+                    {meal.calories} kcal
+                  </span>
+                </div>
+                <RecipeSteps id={meal.id} steps={meal.recipeSteps} />
+              </li>
+            ))}
+          </ul>
+
         </section>
       ) : (
-        <p className="meal-empty">
-          Nothing logged for {data.slotLabel.toLowerCase()} yet. The options below are today&rsquo;s
-          suggestions.
-        </p>
+        <div className="meal-empty-card">
+          <Utensils size={24} className="meal-empty-card__icon" />
+          <p className="meal-empty">
+            Nothing logged for <strong>{data.slotLabel.toLowerCase()}</strong> yet. Choose from today&rsquo;s chef suggestions below or add a custom meal.
+          </p>
+        </div>
       )}
 
       {/* Only rendered when a suggestion remains after excluding what was already eaten. */}
       {data.choices.length > 0 ? (
         <section className="content-section">
           <div className="content-section__header">
-            <h2>{logged ? "Other options today" : "Today’s options"}</h2>
+            <h2 className="section-title--culinary">
+              <Sparkles size={18} /> {logged ? "Other options today" : "Chef Suggestions"}
+            </h2>
             <p>
               <span className="data-value">{data.choices.length}</span>{" "}
               {data.choices.length === 1 ? "suggestion" : "suggestions"}
@@ -122,11 +166,7 @@ export function MealDetailView({ data }: MealDetailViewProps) {
 
                 <MacroLine choice={choice} />
 
-                {choice.recipeSteps.length > 0 ? (
-                  <RecipeSteps id={choice.id} steps={choice.recipeSteps} />
-                ) : (
-                  <p className="meal-choice__no-recipe">No preparation needed.</p>
-                )}
+                <RecipeSteps id={choice.id} steps={choice.recipeSteps} />
 
                 <LogMealButton
                   calories={choice.calories}
@@ -144,7 +184,7 @@ export function MealDetailView({ data }: MealDetailViewProps) {
 
       <section className="content-section">
         <div className="content-section__header">
-          <h2>Log something else</h2>
+          <h2>Log custom meal</h2>
           <p>For a meal that is not on today&rsquo;s menu</p>
         </div>
         <LogMealForm slot={data.slot} slotLabel={data.slotLabel} />

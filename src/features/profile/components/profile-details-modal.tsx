@@ -244,6 +244,7 @@ function BodyMetricsForm({
             type="number"
             step="0.1"
             value={data.currentWeightKg}
+            onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, currentWeightKg: e.target.value })}
             className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
           />
@@ -254,6 +255,7 @@ function BodyMetricsForm({
             type="number"
             step="0.1"
             value={data.targetWeightKg}
+            onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, targetWeightKg: e.target.value })}
             className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
           />
@@ -263,6 +265,7 @@ function BodyMetricsForm({
           <input
             type="number"
             value={data.heightCm}
+            onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, heightCm: e.target.value })}
             className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
           />
@@ -273,6 +276,7 @@ function BodyMetricsForm({
             type="number"
             step="0.1"
             value={data.bodyFatPercent}
+            onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, bodyFatPercent: e.target.value })}
             className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
           />
@@ -283,6 +287,7 @@ function BodyMetricsForm({
             type="number"
             step="0.1"
             value={data.targetBodyFatPercent}
+            onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, targetBodyFatPercent: e.target.value })}
             className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
           />

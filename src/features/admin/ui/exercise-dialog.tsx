@@ -5,6 +5,7 @@ import { useEffect, useId, useState } from "react";
 
 import type { AdminExercise, AdminExerciseStatus } from "@/features/admin/domain/admin-types";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
+import { toast } from "@/shared/ui/toast";
 
 export type ExerciseDialogMode = "create" | "edit" | "view";
 
@@ -119,6 +120,10 @@ export function ExerciseDialog({
     if (!onSave || mode === "view") {
       return;
     }
+    if (!formData.name?.trim()) {
+      toast.error("Please enter an exercise title");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -174,6 +179,7 @@ export function ExerciseDialog({
         {/* Modal Body (Scrollable Large Modal) */}
         <form
           id="exercise-form"
+          noValidate
           onSubmit={handleSubmit}
           className="flex-1 overflow-y-auto p-6 space-y-5"
         >
@@ -186,7 +192,6 @@ export function ExerciseDialog({
               <input
                 id={`${fieldIdBase}-1`}
                 type="text"
-                required
                 disabled={isReadOnly}
                 value={formData.name || ""}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}

@@ -30,6 +30,10 @@
 | `component/quick-actions-fab.test.tsx`   | Renders closed by default, opens menu on click, toggles aria-expanded, renders correct number of items from BFF props                                                    |
 | `component/progress-bento-grid.test.tsx` | Renders 4 UI states: Loading skeleton, Error state with retry, Empty state with encouragement, and Success Bento grid                                                    |
 | `component/profile-setup.test.tsx`       | Tests Availability Scheduler, Equipment array multi-select, and Injury constraints manager in Profile                                                                    |
+| `component/log-meal-form.test.tsx`      | Tests collapsed trigger, opening input form, expanding macros (Protein/Carbs/Fat), and cancelling                                                                        |
+| `component/meal-detail-view.test.tsx`   | Tests rendering logged meal details, suggestions list, and log something else form section                                                                               |
+| `component/workout-stats-panel.test.tsx` | Tests rendering WorkoutStatsPanel with action tone (blue) and Dumbbell icon                                                                                              |
+| `component/nutrition-view.test.tsx`     | Tests rendering NutritionView with recovery tone (green)                                                                                                                 |
 
 ## End-to-end coverage
 

@@ -6,6 +6,7 @@ import { useActionState, useCallback, useId, useRef, useState } from "react";
 import { logMealAction } from "@/features/nutrition/server/nutrition-actions";
 import type { LogMealState } from "@/features/nutrition/server/nutrition-actions";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
+import { toast } from "@/shared/ui/toast";
 
 interface LogMealFormProps {
   slot: MealSlot;
@@ -25,17 +26,10 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
   const nameRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [macrosOpen, setMacrosOpen] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [state, formAction, pending] = useActionState(logMealAction, INITIAL);
   const formId = useId();
 
-  /**
-   * Move focus into the first field when the disclosure opens.
-   *
-   * The button that had focus unmounts on the same tick, so without this the
-   * focus ring lands back on <body> and keyboard users lose their place. Doing it
-   * here rather than with `autoFocus` keeps the behaviour but scopes it to the
-   * open transition — `autoFocus` would also steal focus on a full page load.
-   */
   const openForm = useCallback(() => {
     setOpen(true);
     requestAnimationFrame(() => nameRef.current?.focus());
@@ -43,18 +37,30 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
   const closeForm = useCallback(() => setOpen(false), []);
   const showMacros = useCallback(() => setMacrosOpen(true), []);
 
+  const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
+    const mealName = nameRef.current?.value.trim();
+    if (!mealName) {
+      e.preventDefault();
+      setValidationError("Please enter a meal name");
+      toast.error("Please enter a meal name");
+      nameRef.current?.focus();
+    } else {
+      setValidationError(null);
+    }
+  }, []);
+
   // Collapse once the write has landed; the logged row above carries the confirmation.
   if (!open || state.status === "saved") {
     return (
       <button className="log-open" onClick={openForm} type="button">
         <ChevronDown aria-hidden="true" size={16} />
-        Log something not on the menu
+        Log custom meal
       </button>
     );
   }
 
   return (
-    <form action={formAction} className="log-form">
+    <form action={formAction} className="log-form" noValidate onSubmit={handleSubmit}>
       <input name="slot" type="hidden" value={slot} />
 
       <div className="log-form__field">
@@ -65,9 +71,17 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
           name="mealName"
           ref={nameRef}
           placeholder={`Your own ${slotLabel.toLowerCase()}`}
-          required
+          onChange={() => {
+            if (validationError) setValidationError(null);
+          }}
           type="text"
+          className={validationError ? "log-form__input--error" : undefined}
         />
+        {validationError ? (
+          <p className="log-form__field-error" role="alert">
+            {validationError}
+          </p>
+        ) : null}
       </div>
 
       <div className="log-form__field">
@@ -79,6 +93,7 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
           inputMode="numeric"
           min={0}
           name="calories"
+          onInvalid={(e) => e.preventDefault()}
           placeholder="0"
           type="number"
         />
@@ -102,6 +117,7 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
                 inputMode="numeric"
                 min={0}
                 name={key}
+                onInvalid={(e) => e.preventDefault()}
                 placeholder="0"
                 type="number"
               />

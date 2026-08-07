@@ -20,6 +20,7 @@ import type {
 } from "@/features/admin/domain/admin-types";
 import { EXERCISE_STATUS_LABEL, EXERCISE_STATUS_STYLE } from "@/features/admin/domain/admin-types";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
+import { toast } from "@/shared/ui/toast";
 
 export default function AdminExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const fieldIdBase = useId();
@@ -110,6 +111,10 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) {
+      toast.error("Please enter an exercise title");
+      return;
+    }
     setIsSaving(true);
     try {
       const updated = await updateExercise(id, {
@@ -127,7 +132,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
         tagIds,
       });
       setExercise(updated);
-      alert("Exercise updated successfully!");
+      toast.success("Exercise updated successfully!");
     } finally {
       setIsSaving(false);
     }
@@ -184,7 +189,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
   const statusStyle = EXERCISE_STATUS_STYLE[status];
 
   return (
-    <form onSubmit={handleSave} className="space-y-6">
+    <form noValidate onSubmit={handleSave} className="space-y-6">
       {/* Top Header & Breadcrumb */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
@@ -267,7 +272,6 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
                 <input
                   id={`${fieldIdBase}-1`}
                   type="text"
-                  required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all"

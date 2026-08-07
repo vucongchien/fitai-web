@@ -1,5 +1,3 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -8,7 +6,6 @@ import { MealDetailView } from "@/features/nutrition/ui/meal-detail-view";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { MEAL_SLOT_LABELS } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { PageTransition } from "@/shared/ui/page-transition";
-import { NAV_BACK } from "@/shared/ui/transition-types";
 
 /**
  * Slugs the app links to, mapped onto the four wire slots. The timeline distinguishes a
@@ -76,10 +73,6 @@ export default function MealDetailPage({ params }: { params: Promise<{ slot: str
     <PageTransition className="page meal-page">
       <header className="page-heading">
         <div>
-          <Link className="meal-page__back" href="/nutrition" transitionTypes={NAV_BACK}>
-            <ArrowLeft aria-hidden="true" size={16} />
-            Nutrition
-          </Link>
           <Suspense fallback={HEADING_FALLBACK}>
             <MealHeading paramsPromise={params} />
           </Suspense>

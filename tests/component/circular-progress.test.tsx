@@ -78,4 +78,16 @@ describe(CircularProgress, () => {
     expect(container.textContent).not.toContain("69");
     expect(container.textContent).not.toContain("%");
   });
+
+  it("applies the requested tone modifier class", () => {
+    const { container: recoveryContainer } = render(
+      <CircularProgress ariaLabel="Food" Icon={Salad} max={100} tone="recovery" value={50} />,
+    );
+    expect(recoveryContainer.firstElementChild).toHaveClass("progress-ring--recovery");
+
+    const { container: actionContainer } = render(
+      <CircularProgress ariaLabel="Workout" Icon={Salad} max={100} tone="action" value={50} />,
+    );
+    expect(actionContainer.firstElementChild).toHaveClass("progress-ring--action");
+  });
 });

@@ -4,6 +4,7 @@ import { Check, FolderTree, X } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 
 import type { MetadataItem } from "@/features/admin/domain/admin-types";
+import { toast } from "@/shared/ui/toast";
 
 export interface MetadataDialogProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
+      toast.error("Please enter a category name");
       return;
     }
 
@@ -85,7 +87,7 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
         </div>
 
         {/* Body Form */}
-        <form id="metadata-form" onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form id="metadata-form" noValidate onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-1`}>
               Name *
@@ -93,7 +95,6 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
             <input
               id={`${fieldIdBase}-1`}
               type="text"
-              required
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Pectoralis Major, Kettlebell..."
