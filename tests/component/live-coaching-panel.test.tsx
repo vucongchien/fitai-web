@@ -109,8 +109,8 @@ describe("CoachingPanel", () => {
 
   it("re-measures when the panel is resized, not only when it is scrolled", () => {
     let trigger: (() => void) | null = null;
-    const observe = vi.fn();
-    const disconnect = vi.fn();
+    const observe = vi.fn<ResizeObserver["observe"]>();
+    const disconnect = vi.fn<ResizeObserver["disconnect"]>();
     vi.stubGlobal(
       "ResizeObserver",
       class {
@@ -119,7 +119,7 @@ describe("CoachingPanel", () => {
         }
         observe = observe;
         disconnect = disconnect;
-        unobserve = vi.fn();
+        unobserve = vi.fn<ResizeObserver["unobserve"]>();
       },
     );
 

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import type { Column } from "@/features/admin/ui/admin-table";
+import type { AdminTableProps, Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 
 type TestItem = {
@@ -50,7 +50,7 @@ describe("AdminTable Component (Light Theme & English)", () => {
   });
 
   it("should display Error State when error occurs", () => {
-    const handleRetry = vi.fn();
+    const handleRetry = vi.fn<NonNullable<AdminTableProps<TestItem>["onRetry"]>>();
     render(
       <AdminTable
         columns={columns}
