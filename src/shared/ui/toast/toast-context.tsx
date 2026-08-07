@@ -4,13 +4,11 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
-
-import { registerToastImpl } from "./toast-store";
+import { toast as sonnerToast } from "sonner";
 
 export type ToastType = "info" | "success" | "error";
 
@@ -40,35 +38,33 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const dismissToast = useCallback((id: string) => {
-    setToasts((prev) => prev.map((t) => (t.id === id && !t.exiting ? { ...t, exiting: true } : t)));
-    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 220);
+    sonnerToast.dismiss(id);
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const showToast = useCallback(
-    (toast: Omit<ToastItem, "id" | "exiting">) => {
-      const id = `toast_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-      const item: ToastItem = { id, durationMs: 4000, type: "info", ...toast };
+  const showToast = useCallback((item: Omit<ToastItem, "id" | "exiting">) => {
+    const type = item.type ?? "info";
+    const duration = item.durationMs;
+    const action = item.action
+      ? { label: item.action.label, onClick: item.action.onClick }
+      : undefined;
 
-      setToasts((prev) => [...prev, item]);
+    let id: string | number;
+    if (type === "success") {
+      id = sonnerToast.success(item.message, { duration, action });
+    } else if (type === "error") {
+      id = sonnerToast.error(item.message, { duration, action });
+    } else {
+      id = sonnerToast.info(item.message, { duration, action });
+    }
 
-      if (item.durationMs && item.durationMs > 0) {
-        setTimeout(() => dismissToast(id), item.durationMs);
-      }
+    const toastId = String(id);
+    const newToast: ToastItem = { ...item, id: toastId };
+    setToasts((prev) => [...prev, newToast]);
 
-      return id;
-    },
-    [dismissToast],
-  );
+    return toastId;
+  }, []);
 
-  // Register imperative API on mount so toast.success() etc. work outside React
-  useEffect(() => {
-    registerToastImpl(showToast, dismissToast);
-    return () => registerToastImpl(null, null);
-  }, [showToast, dismissToast]);
-
-  // A fresh object here would re-render every consumer on every provider render,
-  // and the provider wraps the whole app. showToast/dismissToast are already
-  // stable, so the value only changes when the toast list actually does.
   const value = useMemo(
     () => ({ dismissToast, showToast, toasts }),
     [dismissToast, showToast, toasts],

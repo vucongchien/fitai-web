@@ -2,16 +2,15 @@
 // @generated from file contracts/generic/auth/v1/message/auth_messages.proto (package contracts.generic.auth.v1.message, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/generic/auth/v1/message/auth_messages.proto.
  */
-export const file_contracts_generic_auth_v1_message_auth_messages: GenFile /*@__PURE__*/ = fileDesc(
-  "CjVjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL21lc3NhZ2UvYXV0aF9tZXNzYWdlcy5wcm90bxIhY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlIk0KDUxvZ2luUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSDwoHdXNlcl9pZBgDIAEoCSIsChNSZWZyZXNoVG9rZW5SZXF1ZXN0EhUKDXJlZnJlc2hfdG9rZW4YASABKAkiQwoUUmVmcmVzaFRva2VuUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkiJgoNTG9nb3V0UmVxdWVzdBIVCg1yZWZyZXNoX3Rva2VuGAEgASgJIjIKDkxvZ291dFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSJBChdHZXRPQXV0aExvZ2luVVJMUmVxdWVzdBIQCghwcm92aWRlchgBIAEoCRIUCgxyZWRpcmVjdF91cmkYAiABKAkiLQoYR2V0T0F1dGhMb2dpblVSTFJlc3BvbnNlEhEKCWxvZ2luX3VybBgBIAEoCSITChFSb3RhdGVLZXlzUmVxdWVzdCIlChJSb3RhdGVLZXlzUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCSIQCg5HZXRKV0tTUmVxdWVzdCJSCgZKV0tLZXkSCwoDa3R5GAEgASgJEgsKA3VzZRgCIAEoCRILCgNhbGcYAyABKAkSCwoDa2lkGAQgASgJEgkKAW4YBSABKAkSCQoBZRgGIAEoCSJKCg9HZXRKV0tTUmVzcG9uc2USNwoEa2V5cxgBIAMoCzIpLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5KV0tLZXkiXAoVTG9naW5XaXRoT0F1dGhSZXF1ZXN0EhAKCHByb3ZpZGVyGAEgASgJEgwKBGNvZGUYAiABKAkSFAoMcmVkaXJlY3RfdXJpGAMgASgJEg0KBXN0YXRlGAQgASgJIlYKFkxvZ2luV2l0aE9BdXRoUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSDwoHdXNlcl9pZBgDIAEoCUJmWmRnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL2F1dGgvdjEvbWVzc2FnZTthdXRodjFtZXNzYWdlYgZwcm90bzM",
-);
+export const file_contracts_generic_auth_v1_message_auth_messages: GenFile = /*@__PURE__*/
+  fileDesc("CjVjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL21lc3NhZ2UvYXV0aF9tZXNzYWdlcy5wcm90bxIhY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlIk0KDUxvZ2luUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSDwoHdXNlcl9pZBgDIAEoCSIsChNSZWZyZXNoVG9rZW5SZXF1ZXN0EhUKDXJlZnJlc2hfdG9rZW4YASABKAkiQwoUUmVmcmVzaFRva2VuUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkiJgoNTG9nb3V0UmVxdWVzdBIVCg1yZWZyZXNoX3Rva2VuGAEgASgJIjIKDkxvZ291dFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSJBChdHZXRPQXV0aExvZ2luVVJMUmVxdWVzdBIQCghwcm92aWRlchgBIAEoCRIUCgxyZWRpcmVjdF91cmkYAiABKAkiLQoYR2V0T0F1dGhMb2dpblVSTFJlc3BvbnNlEhEKCWxvZ2luX3VybBgBIAEoCSITChFSb3RhdGVLZXlzUmVxdWVzdCIlChJSb3RhdGVLZXlzUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCSIQCg5HZXRKV0tTUmVxdWVzdCJSCgZKV0tLZXkSCwoDa3R5GAEgASgJEgsKA3VzZRgCIAEoCRILCgNhbGcYAyABKAkSCwoDa2lkGAQgASgJEgkKAW4YBSABKAkSCQoBZRgGIAEoCSJKCg9HZXRKV0tTUmVzcG9uc2USNwoEa2V5cxgBIAMoCzIpLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5KV0tLZXkiXAoVTG9naW5XaXRoT0F1dGhSZXF1ZXN0EhAKCHByb3ZpZGVyGAEgASgJEgwKBGNvZGUYAiABKAkSFAoMcmVkaXJlY3RfdXJpGAMgASgJEg0KBXN0YXRlGAQgASgJIlYKFkxvZ2luV2l0aE9BdXRoUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSDwoHdXNlcl9pZBgDIAEoCUJmWmRnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL2F1dGgvdjEvbWVzc2FnZTthdXRodjFtZXNzYWdlYgZwcm90bzM");
 
 /**
  * @generated from message contracts.generic.auth.v1.message.LoginResponse
@@ -37,52 +36,46 @@ export type LoginResponse = Message<"contracts.generic.auth.v1.message.LoginResp
  * Describes the message contracts.generic.auth.v1.message.LoginResponse.
  * Use `create(LoginResponseSchema)` to create a new message.
  */
-export const LoginResponseSchema: GenMessage<LoginResponse> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  0,
-);
+export const LoginResponseSchema: GenMessage<LoginResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 0);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.RefreshTokenRequest
  */
-export type RefreshTokenRequest =
-  Message<"contracts.generic.auth.v1.message.RefreshTokenRequest"> & {
-    /**
-     * @generated from field: string refresh_token = 1;
-     */
-    refreshToken: string;
-  };
+export type RefreshTokenRequest = Message<"contracts.generic.auth.v1.message.RefreshTokenRequest"> & {
+  /**
+   * @generated from field: string refresh_token = 1;
+   */
+  refreshToken: string;
+};
 
 /**
  * Describes the message contracts.generic.auth.v1.message.RefreshTokenRequest.
  * Use `create(RefreshTokenRequestSchema)` to create a new message.
  */
-export const RefreshTokenRequestSchema: GenMessage<RefreshTokenRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  1,
-);
+export const RefreshTokenRequestSchema: GenMessage<RefreshTokenRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 1);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.RefreshTokenResponse
  */
-export type RefreshTokenResponse =
-  Message<"contracts.generic.auth.v1.message.RefreshTokenResponse"> & {
-    /**
-     * @generated from field: string access_token = 1;
-     */
-    accessToken: string;
+export type RefreshTokenResponse = Message<"contracts.generic.auth.v1.message.RefreshTokenResponse"> & {
+  /**
+   * @generated from field: string access_token = 1;
+   */
+  accessToken: string;
 
-    /**
-     * @generated from field: string refresh_token = 2;
-     */
-    refreshToken: string;
-  };
+  /**
+   * @generated from field: string refresh_token = 2;
+   */
+  refreshToken: string;
+};
 
 /**
  * Describes the message contracts.generic.auth.v1.message.RefreshTokenResponse.
  * Use `create(RefreshTokenResponseSchema)` to create a new message.
  */
-export const RefreshTokenResponseSchema: GenMessage<RefreshTokenResponse> /*@__PURE__*/ =
+export const RefreshTokenResponseSchema: GenMessage<RefreshTokenResponse> = /*@__PURE__*/
   messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 2);
 
 /**
@@ -99,10 +92,8 @@ export type LogoutRequest = Message<"contracts.generic.auth.v1.message.LogoutReq
  * Describes the message contracts.generic.auth.v1.message.LogoutRequest.
  * Use `create(LogoutRequestSchema)` to create a new message.
  */
-export const LogoutRequestSchema: GenMessage<LogoutRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  3,
-);
+export const LogoutRequestSchema: GenMessage<LogoutRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 3);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.LogoutResponse
@@ -123,69 +114,64 @@ export type LogoutResponse = Message<"contracts.generic.auth.v1.message.LogoutRe
  * Describes the message contracts.generic.auth.v1.message.LogoutResponse.
  * Use `create(LogoutResponseSchema)` to create a new message.
  */
-export const LogoutResponseSchema: GenMessage<LogoutResponse> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  4,
-);
+export const LogoutResponseSchema: GenMessage<LogoutResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 4);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.GetOAuthLoginURLRequest
  */
-export type GetOAuthLoginURLRequest =
-  Message<"contracts.generic.auth.v1.message.GetOAuthLoginURLRequest"> & {
-    /**
-     * "google" or "facebook"
-     *
-     * @generated from field: string provider = 1;
-     */
-    provider: string;
+export type GetOAuthLoginURLRequest = Message<"contracts.generic.auth.v1.message.GetOAuthLoginURLRequest"> & {
+  /**
+   * "google" or "facebook"
+   *
+   * @generated from field: string provider = 1;
+   */
+  provider: string;
 
-    /**
-     * Optional Frontend override callback URL
-     *
-     * @generated from field: string redirect_uri = 2;
-     */
-    redirectUri: string;
-  };
+  /**
+   * Optional Frontend override callback URL
+   *
+   * @generated from field: string redirect_uri = 2;
+   */
+  redirectUri: string;
+};
 
 /**
  * Describes the message contracts.generic.auth.v1.message.GetOAuthLoginURLRequest.
  * Use `create(GetOAuthLoginURLRequestSchema)` to create a new message.
  */
-export const GetOAuthLoginURLRequestSchema: GenMessage<GetOAuthLoginURLRequest> /*@__PURE__*/ =
+export const GetOAuthLoginURLRequestSchema: GenMessage<GetOAuthLoginURLRequest> = /*@__PURE__*/
   messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 5);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.GetOAuthLoginURLResponse
  */
-export type GetOAuthLoginURLResponse =
-  Message<"contracts.generic.auth.v1.message.GetOAuthLoginURLResponse"> & {
-    /**
-     * @generated from field: string login_url = 1;
-     */
-    loginUrl: string;
-  };
+export type GetOAuthLoginURLResponse = Message<"contracts.generic.auth.v1.message.GetOAuthLoginURLResponse"> & {
+  /**
+   * @generated from field: string login_url = 1;
+   */
+  loginUrl: string;
+};
 
 /**
  * Describes the message contracts.generic.auth.v1.message.GetOAuthLoginURLResponse.
  * Use `create(GetOAuthLoginURLResponseSchema)` to create a new message.
  */
-export const GetOAuthLoginURLResponseSchema: GenMessage<GetOAuthLoginURLResponse> /*@__PURE__*/ =
+export const GetOAuthLoginURLResponseSchema: GenMessage<GetOAuthLoginURLResponse> = /*@__PURE__*/
   messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 6);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.RotateKeysRequest
  */
-export type RotateKeysRequest = Message<"contracts.generic.auth.v1.message.RotateKeysRequest"> & {};
+export type RotateKeysRequest = Message<"contracts.generic.auth.v1.message.RotateKeysRequest"> & {
+};
 
 /**
  * Describes the message contracts.generic.auth.v1.message.RotateKeysRequest.
  * Use `create(RotateKeysRequestSchema)` to create a new message.
  */
-export const RotateKeysRequestSchema: GenMessage<RotateKeysRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  7,
-);
+export const RotateKeysRequestSchema: GenMessage<RotateKeysRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 7);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.RotateKeysResponse
@@ -201,24 +187,21 @@ export type RotateKeysResponse = Message<"contracts.generic.auth.v1.message.Rota
  * Describes the message contracts.generic.auth.v1.message.RotateKeysResponse.
  * Use `create(RotateKeysResponseSchema)` to create a new message.
  */
-export const RotateKeysResponseSchema: GenMessage<RotateKeysResponse> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  8,
-);
+export const RotateKeysResponseSchema: GenMessage<RotateKeysResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 8);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.GetJWKSRequest
  */
-export type GetJWKSRequest = Message<"contracts.generic.auth.v1.message.GetJWKSRequest"> & {};
+export type GetJWKSRequest = Message<"contracts.generic.auth.v1.message.GetJWKSRequest"> & {
+};
 
 /**
  * Describes the message contracts.generic.auth.v1.message.GetJWKSRequest.
  * Use `create(GetJWKSRequestSchema)` to create a new message.
  */
-export const GetJWKSRequestSchema: GenMessage<GetJWKSRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  9,
-);
+export const GetJWKSRequestSchema: GenMessage<GetJWKSRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 9);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.JWKKey
@@ -269,10 +252,8 @@ export type JWKKey = Message<"contracts.generic.auth.v1.message.JWKKey"> & {
  * Describes the message contracts.generic.auth.v1.message.JWKKey.
  * Use `create(JWKKeySchema)` to create a new message.
  */
-export const JWKKeySchema: GenMessage<JWKKey> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  10,
-);
+export const JWKKeySchema: GenMessage<JWKKey> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 10);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.GetJWKSResponse
@@ -288,72 +269,69 @@ export type GetJWKSResponse = Message<"contracts.generic.auth.v1.message.GetJWKS
  * Describes the message contracts.generic.auth.v1.message.GetJWKSResponse.
  * Use `create(GetJWKSResponseSchema)` to create a new message.
  */
-export const GetJWKSResponseSchema: GenMessage<GetJWKSResponse> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_message_auth_messages,
-  11,
-);
+export const GetJWKSResponseSchema: GenMessage<GetJWKSResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 11);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.LoginWithOAuthRequest
  */
-export type LoginWithOAuthRequest =
-  Message<"contracts.generic.auth.v1.message.LoginWithOAuthRequest"> & {
-    /**
-     * "google" or "facebook"
-     *
-     * @generated from field: string provider = 1;
-     */
-    provider: string;
+export type LoginWithOAuthRequest = Message<"contracts.generic.auth.v1.message.LoginWithOAuthRequest"> & {
+  /**
+   * "google" or "facebook"
+   *
+   * @generated from field: string provider = 1;
+   */
+  provider: string;
 
-    /**
-     * @generated from field: string code = 2;
-     */
-    code: string;
+  /**
+   * @generated from field: string code = 2;
+   */
+  code: string;
 
-    /**
-     * The redirect URL used during the initial request
-     *
-     * @generated from field: string redirect_uri = 3;
-     */
-    redirectUri: string;
+  /**
+   * The redirect URL used during the initial request
+   *
+   * @generated from field: string redirect_uri = 3;
+   */
+  redirectUri: string;
 
-    /**
-     * @generated from field: string state = 4;
-     */
-    state: string;
-  };
+  /**
+   * @generated from field: string state = 4;
+   */
+  state: string;
+};
 
 /**
  * Describes the message contracts.generic.auth.v1.message.LoginWithOAuthRequest.
  * Use `create(LoginWithOAuthRequestSchema)` to create a new message.
  */
-export const LoginWithOAuthRequestSchema: GenMessage<LoginWithOAuthRequest> /*@__PURE__*/ =
+export const LoginWithOAuthRequestSchema: GenMessage<LoginWithOAuthRequest> = /*@__PURE__*/
   messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 12);
 
 /**
  * @generated from message contracts.generic.auth.v1.message.LoginWithOAuthResponse
  */
-export type LoginWithOAuthResponse =
-  Message<"contracts.generic.auth.v1.message.LoginWithOAuthResponse"> & {
-    /**
-     * @generated from field: string access_token = 1;
-     */
-    accessToken: string;
+export type LoginWithOAuthResponse = Message<"contracts.generic.auth.v1.message.LoginWithOAuthResponse"> & {
+  /**
+   * @generated from field: string access_token = 1;
+   */
+  accessToken: string;
 
-    /**
-     * @generated from field: string refresh_token = 2;
-     */
-    refreshToken: string;
+  /**
+   * @generated from field: string refresh_token = 2;
+   */
+  refreshToken: string;
 
-    /**
-     * @generated from field: string user_id = 3;
-     */
-    userId: string;
-  };
+  /**
+   * @generated from field: string user_id = 3;
+   */
+  userId: string;
+};
 
 /**
  * Describes the message contracts.generic.auth.v1.message.LoginWithOAuthResponse.
  * Use `create(LoginWithOAuthResponseSchema)` to create a new message.
  */
-export const LoginWithOAuthResponseSchema: GenMessage<LoginWithOAuthResponse> /*@__PURE__*/ =
+export const LoginWithOAuthResponseSchema: GenMessage<LoginWithOAuthResponse> = /*@__PURE__*/
   messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 13);
+

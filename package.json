@@ -9,6 +9,7 @@
     "ort:copy": "node scripts/copy-ort-assets.mjs",
     "lint": "oxlint -f agent --nextjs-plugin .",
     "lint:fix": "oxlint -f agent --nextjs-plugin --fix .",
+    "lint:debug": "oxlint -f agent --debug=timings --nextjs-plugin .",
     "format": "oxfmt --ignore-path .oxfmtignore .",
     "format:check": "oxfmt --ignore-path .oxfmtignore --check .",
     "typecheck": "tsc --noEmit",
@@ -43,6 +44,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "7.84.0",
+    "sonner": "^2.0.7",
     "tailwind-merge": "3.6.0",
     "zod": "4.4.3"
   },

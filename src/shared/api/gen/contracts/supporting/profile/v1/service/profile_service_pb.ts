@@ -4,41 +4,16 @@
 
 import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
-
 import { file_google_api_annotations } from "../../../../../google/api/annotations_pb";
 import { file_protoc_gen_openapiv2_options_annotations } from "../../../../../protoc-gen-openapiv2/options/annotations_pb";
-import type {
-  GetBodyMetricsHistoryRequestSchema,
-  GetBodyMetricsHistoryResponseSchema,
-  GetInjuryHistoryRequestSchema,
-  GetInjuryHistoryResponseSchema,
-  GetProfileRequestSchema,
-  GetProfileResponseSchema,
-  LogPeriodicMetricsRequestSchema,
-  LogPeriodicMetricsResponseSchema,
-  RecoverInjuryRequestSchema,
-  RecoverInjuryResponseSchema,
-  ReportInjuryRequestSchema,
-  ReportInjuryResponseSchema,
-  SaveHealthProfileRequestSchema,
-  SaveHealthProfileResponseSchema,
-  UpdateProfileRequestSchema,
-  UpdateProfileResponseSchema,
-} from "../message/profile_messages_pb";
+import type { GetBodyMetricsHistoryRequestSchema, GetBodyMetricsHistoryResponseSchema, GetInjuryHistoryRequestSchema, GetInjuryHistoryResponseSchema, GetProfileRequestSchema, GetProfileResponseSchema, LogPeriodicMetricsRequestSchema, LogPeriodicMetricsResponseSchema, RecoverInjuryRequestSchema, RecoverInjuryResponseSchema, ReportInjuryRequestSchema, ReportInjuryResponseSchema, SaveHealthProfileRequestSchema, SaveHealthProfileResponseSchema, UpdateProfileRequestSchema, UpdateProfileResponseSchema } from "../message/profile_messages_pb";
 import { file_contracts_supporting_profile_v1_message_profile_messages } from "../message/profile_messages_pb";
 
 /**
  * Describes the file contracts/supporting/profile/v1/service/profile_service.proto.
  */
-export const file_contracts_supporting_profile_v1_service_profile_service: GenFile /*@__PURE__*/ =
-  fileDesc(
-    "Cj1jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL3NlcnZpY2UvcHJvZmlsZV9zZXJ2aWNlLnByb3RvEidjb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLnNlcnZpY2UyxgsKDlByb2ZpbGVTZXJ2aWNlErYBChFTYXZlSGVhbHRoUHJvZmlsZRJBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5TYXZlSGVhbHRoUHJvZmlsZVJlcXVlc3QaQi5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuU2F2ZUhlYWx0aFByb2ZpbGVSZXNwb25zZSIagtPkkwIUOgEqIg8vYXBpL3YxL3Byb2ZpbGUSngEKCkdldFByb2ZpbGUSOi5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuR2V0UHJvZmlsZVJlcXVlc3QaOy5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuR2V0UHJvZmlsZVJlc3BvbnNlIheC0+STAhESDy9hcGkvdjEvcHJvZmlsZRKqAQoNVXBkYXRlUHJvZmlsZRI9LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5VcGRhdGVQcm9maWxlUmVxdWVzdBo+LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5VcGRhdGVQcm9maWxlUmVzcG9uc2UiGoLT5JMCFDoBKhoPL2FwaS92MS9wcm9maWxlErkBChJMb2dQZXJpb2RpY01ldHJpY3MSQi5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuTG9nUGVyaW9kaWNNZXRyaWNzUmVxdWVzdBpDLmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5Mb2dQZXJpb2RpY01ldHJpY3NSZXNwb25zZSIagtPkkwIUOgEqIg8vYXBpL3YxL21ldHJpY3MSxwEKFUdldEJvZHlNZXRyaWNzSGlzdG9yeRJFLmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5HZXRCb2R5TWV0cmljc0hpc3RvcnlSZXF1ZXN0GkYuY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkdldEJvZHlNZXRyaWNzSGlzdG9yeVJlc3BvbnNlIh+C0+STAhkSFy9hcGkvdjEvbWV0cmljcy9oaXN0b3J5EqgBCgxSZXBvcnRJbmp1cnkSPC5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuUmVwb3J0SW5qdXJ5UmVxdWVzdBo9LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5SZXBvcnRJbmp1cnlSZXNwb25zZSIbgtPkkwIVOgEqIhAvYXBpL3YxL2luanVyaWVzEr8BCg1SZWNvdmVySW5qdXJ5Ej0uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLlJlY292ZXJJbmp1cnlSZXF1ZXN0Gj4uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLlJlY292ZXJJbmp1cnlSZXNwb25zZSIvgtPkkwIpOgEqIiQvYXBpL3YxL2luanVyaWVzL3tpbmp1cnlfaWR9L3JlY292ZXISuQEKEEdldEluanVyeUhpc3RvcnkSQC5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuR2V0SW5qdXJ5SGlzdG9yeVJlcXVlc3QaQS5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuR2V0SW5qdXJ5SGlzdG9yeVJlc3BvbnNlIiCC0+STAhoSGC9hcGkvdjEvaW5qdXJpZXMvaGlzdG9yeULTAlptZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL3NlcnZpY2U7cHJvZmlsZXYxc2VydmljZZJB4AESeQogVXNlciBQcm9maWxlICYgSGVhbHRoIFN0YXR1cyBBUEkSUEFQSSBxdeG6o24gbMO9IHRow7RuZyB0aW4gc+G7qWMga2jhu49lIHbDoCBjaOG6pW4gdGjGsMahbmcgY+G7p2EgbmfGsOG7nWkgZMO5bmcuMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z",
-    [
-      file_google_api_annotations,
-      file_protoc_gen_openapiv2_options_annotations,
-      file_contracts_supporting_profile_v1_message_profile_messages,
-    ],
-  );
+export const file_contracts_supporting_profile_v1_service_profile_service: GenFile = /*@__PURE__*/
+  fileDesc("Cj1jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL3NlcnZpY2UvcHJvZmlsZV9zZXJ2aWNlLnByb3RvEidjb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLnNlcnZpY2UyxgsKDlByb2ZpbGVTZXJ2aWNlErYBChFTYXZlSGVhbHRoUHJvZmlsZRJBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5TYXZlSGVhbHRoUHJvZmlsZVJlcXVlc3QaQi5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuU2F2ZUhlYWx0aFByb2ZpbGVSZXNwb25zZSIagtPkkwIUOgEqIg8vYXBpL3YxL3Byb2ZpbGUSngEKCkdldFByb2ZpbGUSOi5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuR2V0UHJvZmlsZVJlcXVlc3QaOy5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuR2V0UHJvZmlsZVJlc3BvbnNlIheC0+STAhESDy9hcGkvdjEvcHJvZmlsZRKqAQoNVXBkYXRlUHJvZmlsZRI9LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5VcGRhdGVQcm9maWxlUmVxdWVzdBo+LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5VcGRhdGVQcm9maWxlUmVzcG9uc2UiGoLT5JMCFDoBKhoPL2FwaS92MS9wcm9maWxlErkBChJMb2dQZXJpb2RpY01ldHJpY3MSQi5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuTG9nUGVyaW9kaWNNZXRyaWNzUmVxdWVzdBpDLmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5Mb2dQZXJpb2RpY01ldHJpY3NSZXNwb25zZSIagtPkkwIUOgEqIg8vYXBpL3YxL21ldHJpY3MSxwEKFUdldEJvZHlNZXRyaWNzSGlzdG9yeRJFLmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5HZXRCb2R5TWV0cmljc0hpc3RvcnlSZXF1ZXN0GkYuY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkdldEJvZHlNZXRyaWNzSGlzdG9yeVJlc3BvbnNlIh+C0+STAhkSFy9hcGkvdjEvbWV0cmljcy9oaXN0b3J5EqgBCgxSZXBvcnRJbmp1cnkSPC5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuUmVwb3J0SW5qdXJ5UmVxdWVzdBo9LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5SZXBvcnRJbmp1cnlSZXNwb25zZSIbgtPkkwIVOgEqIhAvYXBpL3YxL2luanVyaWVzEr8BCg1SZWNvdmVySW5qdXJ5Ej0uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLlJlY292ZXJJbmp1cnlSZXF1ZXN0Gj4uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLlJlY292ZXJJbmp1cnlSZXNwb25zZSIvgtPkkwIpOgEqIiQvYXBpL3YxL2luanVyaWVzL3tpbmp1cnlfaWR9L3JlY292ZXISuQEKEEdldEluanVyeUhpc3RvcnkSQC5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuR2V0SW5qdXJ5SGlzdG9yeVJlcXVlc3QaQS5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuR2V0SW5qdXJ5SGlzdG9yeVJlc3BvbnNlIiCC0+STAhoSGC9hcGkvdjEvaW5qdXJpZXMvaGlzdG9yeULTAlptZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL3NlcnZpY2U7cHJvZmlsZXYxc2VydmljZZJB4AESeQogVXNlciBQcm9maWxlICYgSGVhbHRoIFN0YXR1cyBBUEkSUEFQSSBxdeG6o24gbMO9IHRow7RuZyB0aW4gc+G7qWMga2jhu49lIHbDoCBjaOG6pW4gdGjGsMahbmcgY+G7p2EgbmfGsOG7nWkgZMO5bmcuMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_supporting_profile_v1_message_profile_messages]);
 
 /**
  * @generated from service contracts.supporting.profile.v1.service.ProfileService
@@ -53,7 +28,7 @@ export const ProfileService: GenService<{
     methodKind: "unary";
     input: typeof SaveHealthProfileRequestSchema;
     output: typeof SaveHealthProfileResponseSchema;
-  };
+  },
   /**
    * Lấy thông tin hồ sơ chi tiết của người dùng
    *
@@ -63,7 +38,7 @@ export const ProfileService: GenService<{
     methodKind: "unary";
     input: typeof GetProfileRequestSchema;
     output: typeof GetProfileResponseSchema;
-  };
+  },
   /**
    * Cập nhật thông tin hồ sơ
    *
@@ -73,7 +48,7 @@ export const ProfileService: GenService<{
     methodKind: "unary";
     input: typeof UpdateProfileRequestSchema;
     output: typeof UpdateProfileResponseSchema;
-  };
+  },
   /**
    * Cập nhật chỉ số cơ thể định kỳ (Cân nặng, Body Fat, ảnh tiến trình)
    *
@@ -83,7 +58,7 @@ export const ProfileService: GenService<{
     methodKind: "unary";
     input: typeof LogPeriodicMetricsRequestSchema;
     output: typeof LogPeriodicMetricsResponseSchema;
-  };
+  },
   /**
    * Lấy toàn bộ lịch sử chỉ số cơ thể
    *
@@ -93,7 +68,7 @@ export const ProfileService: GenService<{
     methodKind: "unary";
     input: typeof GetBodyMetricsHistoryRequestSchema;
     output: typeof GetBodyMetricsHistoryResponseSchema;
-  };
+  },
   /**
    * Báo cáo chấn thương mới gặp phải
    *
@@ -103,7 +78,7 @@ export const ProfileService: GenService<{
     methodKind: "unary";
     input: typeof ReportInjuryRequestSchema;
     output: typeof ReportInjuryResponseSchema;
-  };
+  },
   /**
    * Khai báo đã phục hồi chấn thương
    *
@@ -113,7 +88,7 @@ export const ProfileService: GenService<{
     methodKind: "unary";
     input: typeof RecoverInjuryRequestSchema;
     output: typeof RecoverInjuryResponseSchema;
-  };
+  },
   /**
    * Lấy toàn bộ lịch sử chấn thương
    *
@@ -123,5 +98,7 @@ export const ProfileService: GenService<{
     methodKind: "unary";
     input: typeof GetInjuryHistoryRequestSchema;
     output: typeof GetInjuryHistoryResponseSchema;
-  };
-}> /*@__PURE__*/ = serviceDesc(file_contracts_supporting_profile_v1_service_profile_service, 0);
+  },
+}> = /*@__PURE__*/
+  serviceDesc(file_contracts_supporting_profile_v1_service_profile_service, 0);
+

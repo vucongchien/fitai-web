@@ -2,116 +2,106 @@
 // @generated from file contracts/core/coaching/v1/message/coaching_messages.proto (package contracts.core.coaching.v1.message, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-
 import type { Date } from "../../../../../google/type/date_pb";
 import { file_google_type_date } from "../../../../../google/type/date_pb";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/coaching/v1/message/coaching_messages.proto.
  */
-export const file_contracts_core_coaching_v1_message_coaching_messages: GenFile /*@__PURE__*/ =
-  fileDesc(
-    "Cjpjb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9tZXNzYWdlL2NvYWNoaW5nX21lc3NhZ2VzLnByb3RvEiJjb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlIikKFkluaXRpYXRlUm9hZG1hcFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJXChdJbml0aWF0ZVJvYWRtYXBSZXNwb25zZRI8Cgdyb2FkbWFwGAEgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIpABChNMaXN0Um9hZG1hcHNSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSQQoGc3RhdHVzGAIgASgOMjEuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwU3RhdHVzEhEKCXBhZ2Vfc2l6ZRgDIAEoBRISCgpwYWdlX3Rva2VuGAQgASgJIm4KFExpc3RSb2FkbWFwc1Jlc3BvbnNlEj0KCHJvYWRtYXBzGAEgAygLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSI4ChFHZXRSb2FkbWFwUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhIKCnJvYWRtYXBfaWQYAiABKAkiUgoSR2V0Um9hZG1hcFJlc3BvbnNlEjwKB3JvYWRtYXAYASABKAsyKy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXAiKgoXR2V0QWN0aXZlUm9hZG1hcFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJYChhHZXRBY3RpdmVSb2FkbWFwUmVzcG9uc2USPAoHcm9hZG1hcBgBIAEoCzIrLmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUm9hZG1hcCJBChVHZXRTZXNzaW9uUGxhblJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIXCg9zZXNzaW9uX3BsYW5faWQYAiABKAkiXwoWR2V0U2Vzc2lvblBsYW5SZXNwb25zZRJFCgxzZXNzaW9uX3BsYW4YASABKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIlAKGVJlZ2VuZXJhdGVTY2hlZHVsZVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRISCgpyb2FkbWFwX2lkGAIgASgJEg4KBnJlYXNvbhgDIAEoCSJaChpSZWdlbmVyYXRlU2NoZWR1bGVSZXNwb25zZRI8Cgdyb2FkbWFwGAEgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIv8BCgdSb2FkbWFwEhIKCnJvYWRtYXBfaWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRJBCgZzdGF0dXMYAyABKA4yMS5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXBTdGF0dXMSJQoKc3RhcnRfZGF0ZRgEIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSIwoIZW5kX2RhdGUYBSABKAsyES5nb29nbGUudHlwZS5EYXRlEkAKCndlZWtfcGxhbnMYBiADKAsyLC5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLldlZWtQbGFuItYCCghXZWVrUGxhbhIUCgx3ZWVrX3BsYW5faWQYASABKAkSEgoKcm9hZG1hcF9pZBgCIAEoCRIPCgd1c2VyX2lkGAMgASgJEhMKC3dlZWtfbnVtYmVyGAQgASgFEj8KBXBoYXNlGAUgASgOMjAuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwUGhhc2USEgoKdGFyZ2V0X3JwZRgGIAEoAhIlCgpzdGFydF9kYXRlGAcgASgLMhEuZ29vZ2xlLnR5cGUuRGF0ZRIjCghlbmRfZGF0ZRgIIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSGQoRbXVzY2xlX3NwbGl0X3R5cGUYCSABKAkSPgoJZGF5X3BsYW5zGAogAygLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5EYXlQbGFuIswBCgdEYXlQbGFuEhMKC2RheV9wbGFuX2lkGAEgASgJEhQKDHdlZWtfcGxhbl9pZBgCIAEoCRISCgpyb2FkbWFwX2lkGAMgASgJEg8KB3VzZXJfaWQYBCABKAkSKQoOc2NoZWR1bGVkX2RhdGUYBSABKAsyES5nb29nbGUudHlwZS5EYXRlEkYKDXNlc3Npb25fcGxhbnMYByADKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIvQDCgtTZXNzaW9uUGxhbhIXCg9zZXNzaW9uX3BsYW5faWQYASABKAkSEwoLZGF5X3BsYW5faWQYAiABKAkSFAoMd2Vla19wbGFuX2lkGAMgASgJEhIKCnJvYWRtYXBfaWQYBCABKAkSDwoHdXNlcl9pZBgFIAEoCRIpCg5zY2hlZHVsZWRfZGF0ZRgGIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSEQoJc2xvdF90aW1lGAcgASgJEkUKBnN0YXR1cxgIIAEoDjI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU2Vzc2lvblBsYW5TdGF0dXMSHAoUdGFyZ2V0X211c2NsZV9ncm91cHMYCSADKAkSTQoMcHJlc2NyaXB0aW9uGAogASgLMjcuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Xb3Jrb3V0UHJlc2NyaXB0aW9uEhEKCXJlYXNvbmluZxgLIAEoCRIwCgxnZW5lcmF0ZWRfYXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEkUKBnNvdXJjZRgNIAEoDjI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU2Vzc2lvblBsYW5Tb3VyY2Ui+wEKE1dvcmtvdXRQcmVzY3JpcHRpb24SSAoId2FybV91cHMYASADKAsyNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlByZXNjcmliZWRFeGVyY2lzZRJOCg5tYWluX2V4ZXJjaXNlcxgCIAMoCzI2LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUHJlc2NyaWJlZEV4ZXJjaXNlEkoKCmNvb2xfZG93bnMYAyADKAsyNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlByZXNjcmliZWRFeGVyY2lzZSLvAQoSUHJlc2NyaWJlZEV4ZXJjaXNlEhMKC2V4ZXJjaXNlX2lkGAEgASgJEhUKDWV4ZXJjaXNlX25hbWUYAiABKAkSEwoLdGFyZ2V0X3NldHMYAyABKAUSEwoLdGFyZ2V0X3JlcHMYBCABKAUSFQoNdGFyZ2V0X3dlaWdodBgFIAEoAhIYChBkdXJhdGlvbl9zZWNvbmRzGAYgASgFEg0KBW5vdGVzGAcgASgJEhQKDHJlc3Rfc2V0X3NlYxgIIAEoBRIZChFyZXN0X2V4ZXJjaXNlX3NlYxgJIAEoBRISCgp0YXJnZXRfcnBlGAogASgCIkYKHUNyZWF0ZUFkaG9jU2Vzc2lvblBsYW5SZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSFAoMZXhlcmNpc2VfaWRzGAIgAygJImcKHkNyZWF0ZUFkaG9jU2Vzc2lvblBsYW5SZXNwb25zZRJFCgxzZXNzaW9uX3BsYW4YASABKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIoQBCglBZEhvY0hpbnQSEQoJZnJlZV90ZXh0GAEgASgJEhUKDW11c2NsZV9ncm91cHMYAiADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgDIAMoCRIYChBkdXJhdGlvbl9taW51dGVzGAQgASgFEhYKDmludGVuc2l0eV9oaW50GAUgASgJImoKGlN1Z2dlc3RBZEhvY1Nlc3Npb25SZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSOwoEaGludBgCIAEoCzItLmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuQWRIb2NIaW50Iq0BChtTdWdnZXN0QWRIb2NTZXNzaW9uUmVzcG9uc2USFQoNbXVzY2xlX2dyb3VwcxgBIAMoCRJNCgxwcmVzY3JpcHRpb24YAiABKAsyNy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLldvcmtvdXRQcmVzY3JpcHRpb24SEQoJcmVhc29uaW5nGAMgASgJEhUKDWVzdGltYXRlZF9ycGUYBCABKAIqaAoNUm9hZG1hcFN0YXR1cxIeChpST0FETUFQX1NUQVRVU19VTlNQRUNJRklFRBAAEhkKFVJPQURNQVBfU1RBVFVTX0FDVElWRRABEhwKGFJPQURNQVBfU1RBVFVTX0NPTVBMRVRFRBACKr4BChFTZXNzaW9uUGxhblN0YXR1cxIjCh9TRVNTSU9OX1BMQU5fU1RBVFVTX1VOU1BFQ0lGSUVEEAASHwobU0VTU0lPTl9QTEFOX1NUQVRVU19QRU5ESU5HEAESIQodU0VTU0lPTl9QTEFOX1NUQVRVU19DT01QTEVURUQQAhIfChtTRVNTSU9OX1BMQU5fU1RBVFVTX1NLSVBQRUQQAxIfChtTRVNTSU9OX1BMQU5fU1RBVFVTX0FCT1JURUQQBCqFAQoRU2Vzc2lvblBsYW5Tb3VyY2USIwofU0VTU0lPTl9QTEFOX1NPVVJDRV9VTlNQRUNJRklFRBAAEicKI1NFU1NJT05fUExBTl9TT1VSQ0VfQ09BQ0hfU0NIRURVTEVEEAESIgoeU0VTU0lPTl9QTEFOX1NPVVJDRV9VU0VSX0FESE9DEAIqmwEKDFJvYWRtYXBQaGFzZRIdChlST0FETUFQX1BIQVNFX1VOU1BFQ0lGSUVEEAASHgoaUk9BRE1BUF9QSEFTRV9BQ0NVTVVMQVRJT04QARIaChZST0FETUFQX1BIQVNFX09WRVJMT0FEEAISFgoSUk9BRE1BUF9QSEFTRV9QRUFLEAMSGAoUUk9BRE1BUF9QSEFTRV9ERUxPQUQQBEJrWmlnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL2NvYWNoaW5nL3YxL21lc3NhZ2U7Y29hY2hpbmd2MW1lc3NhZ2ViBnByb3RvMw",
-    [file_google_protobuf_timestamp, file_google_type_date],
-  );
+export const file_contracts_core_coaching_v1_message_coaching_messages: GenFile = /*@__PURE__*/
+  fileDesc("Cjpjb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9tZXNzYWdlL2NvYWNoaW5nX21lc3NhZ2VzLnByb3RvEiJjb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlIikKFkluaXRpYXRlUm9hZG1hcFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJXChdJbml0aWF0ZVJvYWRtYXBSZXNwb25zZRI8Cgdyb2FkbWFwGAEgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIpABChNMaXN0Um9hZG1hcHNSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSQQoGc3RhdHVzGAIgASgOMjEuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwU3RhdHVzEhEKCXBhZ2Vfc2l6ZRgDIAEoBRISCgpwYWdlX3Rva2VuGAQgASgJIm4KFExpc3RSb2FkbWFwc1Jlc3BvbnNlEj0KCHJvYWRtYXBzGAEgAygLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSI4ChFHZXRSb2FkbWFwUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhIKCnJvYWRtYXBfaWQYAiABKAkiUgoSR2V0Um9hZG1hcFJlc3BvbnNlEjwKB3JvYWRtYXAYASABKAsyKy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXAiKgoXR2V0QWN0aXZlUm9hZG1hcFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJYChhHZXRBY3RpdmVSb2FkbWFwUmVzcG9uc2USPAoHcm9hZG1hcBgBIAEoCzIrLmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUm9hZG1hcCJBChVHZXRTZXNzaW9uUGxhblJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIXCg9zZXNzaW9uX3BsYW5faWQYAiABKAkiXwoWR2V0U2Vzc2lvblBsYW5SZXNwb25zZRJFCgxzZXNzaW9uX3BsYW4YASABKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIlAKGVJlZ2VuZXJhdGVTY2hlZHVsZVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRISCgpyb2FkbWFwX2lkGAIgASgJEg4KBnJlYXNvbhgDIAEoCSJaChpSZWdlbmVyYXRlU2NoZWR1bGVSZXNwb25zZRI8Cgdyb2FkbWFwGAEgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIv8BCgdSb2FkbWFwEhIKCnJvYWRtYXBfaWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRJBCgZzdGF0dXMYAyABKA4yMS5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXBTdGF0dXMSJQoKc3RhcnRfZGF0ZRgEIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSIwoIZW5kX2RhdGUYBSABKAsyES5nb29nbGUudHlwZS5EYXRlEkAKCndlZWtfcGxhbnMYBiADKAsyLC5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLldlZWtQbGFuItYCCghXZWVrUGxhbhIUCgx3ZWVrX3BsYW5faWQYASABKAkSEgoKcm9hZG1hcF9pZBgCIAEoCRIPCgd1c2VyX2lkGAMgASgJEhMKC3dlZWtfbnVtYmVyGAQgASgFEj8KBXBoYXNlGAUgASgOMjAuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwUGhhc2USEgoKdGFyZ2V0X3JwZRgGIAEoAhIlCgpzdGFydF9kYXRlGAcgASgLMhEuZ29vZ2xlLnR5cGUuRGF0ZRIjCghlbmRfZGF0ZRgIIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSGQoRbXVzY2xlX3NwbGl0X3R5cGUYCSABKAkSPgoJZGF5X3BsYW5zGAogAygLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5EYXlQbGFuIswBCgdEYXlQbGFuEhMKC2RheV9wbGFuX2lkGAEgASgJEhQKDHdlZWtfcGxhbl9pZBgCIAEoCRISCgpyb2FkbWFwX2lkGAMgASgJEg8KB3VzZXJfaWQYBCABKAkSKQoOc2NoZWR1bGVkX2RhdGUYBSABKAsyES5nb29nbGUudHlwZS5EYXRlEkYKDXNlc3Npb25fcGxhbnMYByADKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIvQDCgtTZXNzaW9uUGxhbhIXCg9zZXNzaW9uX3BsYW5faWQYASABKAkSEwoLZGF5X3BsYW5faWQYAiABKAkSFAoMd2Vla19wbGFuX2lkGAMgASgJEhIKCnJvYWRtYXBfaWQYBCABKAkSDwoHdXNlcl9pZBgFIAEoCRIpCg5zY2hlZHVsZWRfZGF0ZRgGIAEoCzIRLmdvb2dsZS50eXBlLkRhdGUSEQoJc2xvdF90aW1lGAcgASgJEkUKBnN0YXR1cxgIIAEoDjI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU2Vzc2lvblBsYW5TdGF0dXMSHAoUdGFyZ2V0X211c2NsZV9ncm91cHMYCSADKAkSTQoMcHJlc2NyaXB0aW9uGAogASgLMjcuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Xb3Jrb3V0UHJlc2NyaXB0aW9uEhEKCXJlYXNvbmluZxgLIAEoCRIwCgxnZW5lcmF0ZWRfYXQYDCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEkUKBnNvdXJjZRgNIAEoDjI1LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuU2Vzc2lvblBsYW5Tb3VyY2Ui+wEKE1dvcmtvdXRQcmVzY3JpcHRpb24SSAoId2FybV91cHMYASADKAsyNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlByZXNjcmliZWRFeGVyY2lzZRJOCg5tYWluX2V4ZXJjaXNlcxgCIAMoCzI2LmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuUHJlc2NyaWJlZEV4ZXJjaXNlEkoKCmNvb2xfZG93bnMYAyADKAsyNi5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlByZXNjcmliZWRFeGVyY2lzZSLvAQoSUHJlc2NyaWJlZEV4ZXJjaXNlEhMKC2V4ZXJjaXNlX2lkGAEgASgJEhUKDWV4ZXJjaXNlX25hbWUYAiABKAkSEwoLdGFyZ2V0X3NldHMYAyABKAUSEwoLdGFyZ2V0X3JlcHMYBCABKAUSFQoNdGFyZ2V0X3dlaWdodBgFIAEoAhIYChBkdXJhdGlvbl9zZWNvbmRzGAYgASgFEg0KBW5vdGVzGAcgASgJEhQKDHJlc3Rfc2V0X3NlYxgIIAEoBRIZChFyZXN0X2V4ZXJjaXNlX3NlYxgJIAEoBRISCgp0YXJnZXRfcnBlGAogASgCIkYKHUNyZWF0ZUFkaG9jU2Vzc2lvblBsYW5SZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSFAoMZXhlcmNpc2VfaWRzGAIgAygJImcKHkNyZWF0ZUFkaG9jU2Vzc2lvblBsYW5SZXNwb25zZRJFCgxzZXNzaW9uX3BsYW4YASABKAsyLy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlNlc3Npb25QbGFuIoQBCglBZEhvY0hpbnQSEQoJZnJlZV90ZXh0GAEgASgJEhUKDW11c2NsZV9ncm91cHMYAiADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgDIAMoCRIYChBkdXJhdGlvbl9taW51dGVzGAQgASgFEhYKDmludGVuc2l0eV9oaW50GAUgASgJImoKGlN1Z2dlc3RBZEhvY1Nlc3Npb25SZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSOwoEaGludBgCIAEoCzItLmNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLm1lc3NhZ2UuQWRIb2NIaW50Iq0BChtTdWdnZXN0QWRIb2NTZXNzaW9uUmVzcG9uc2USFQoNbXVzY2xlX2dyb3VwcxgBIAMoCRJNCgxwcmVzY3JpcHRpb24YAiABKAsyNy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLldvcmtvdXRQcmVzY3JpcHRpb24SEQoJcmVhc29uaW5nGAMgASgJEhUKDWVzdGltYXRlZF9ycGUYBCABKAIqaAoNUm9hZG1hcFN0YXR1cxIeChpST0FETUFQX1NUQVRVU19VTlNQRUNJRklFRBAAEhkKFVJPQURNQVBfU1RBVFVTX0FDVElWRRABEhwKGFJPQURNQVBfU1RBVFVTX0NPTVBMRVRFRBACKr4BChFTZXNzaW9uUGxhblN0YXR1cxIjCh9TRVNTSU9OX1BMQU5fU1RBVFVTX1VOU1BFQ0lGSUVEEAASHwobU0VTU0lPTl9QTEFOX1NUQVRVU19QRU5ESU5HEAESIQodU0VTU0lPTl9QTEFOX1NUQVRVU19DT01QTEVURUQQAhIfChtTRVNTSU9OX1BMQU5fU1RBVFVTX1NLSVBQRUQQAxIfChtTRVNTSU9OX1BMQU5fU1RBVFVTX0FCT1JURUQQBCqFAQoRU2Vzc2lvblBsYW5Tb3VyY2USIwofU0VTU0lPTl9QTEFOX1NPVVJDRV9VTlNQRUNJRklFRBAAEicKI1NFU1NJT05fUExBTl9TT1VSQ0VfQ09BQ0hfU0NIRURVTEVEEAESIgoeU0VTU0lPTl9QTEFOX1NPVVJDRV9VU0VSX0FESE9DEAIqmwEKDFJvYWRtYXBQaGFzZRIdChlST0FETUFQX1BIQVNFX1VOU1BFQ0lGSUVEEAASHgoaUk9BRE1BUF9QSEFTRV9BQ0NVTVVMQVRJT04QARIaChZST0FETUFQX1BIQVNFX09WRVJMT0FEEAISFgoSUk9BRE1BUF9QSEFTRV9QRUFLEAMSGAoUUk9BRE1BUF9QSEFTRV9ERUxPQUQQBEJrWmlnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL2NvYWNoaW5nL3YxL21lc3NhZ2U7Y29hY2hpbmd2MW1lc3NhZ2ViBnByb3RvMw", [file_google_protobuf_timestamp, file_google_type_date]);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.InitiateRoadmapRequest
  */
-export type InitiateRoadmapRequest =
-  Message<"contracts.core.coaching.v1.message.InitiateRoadmapRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
-  };
+export type InitiateRoadmapRequest = Message<"contracts.core.coaching.v1.message.InitiateRoadmapRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.InitiateRoadmapRequest.
  * Use `create(InitiateRoadmapRequestSchema)` to create a new message.
  */
-export const InitiateRoadmapRequestSchema: GenMessage<InitiateRoadmapRequest> /*@__PURE__*/ =
+export const InitiateRoadmapRequestSchema: GenMessage<InitiateRoadmapRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 0);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.InitiateRoadmapResponse
  */
-export type InitiateRoadmapResponse =
-  Message<"contracts.core.coaching.v1.message.InitiateRoadmapResponse"> & {
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.Roadmap roadmap = 1;
-     */
-    roadmap?: Roadmap | undefined;
-  };
+export type InitiateRoadmapResponse = Message<"contracts.core.coaching.v1.message.InitiateRoadmapResponse"> & {
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.Roadmap roadmap = 1;
+   */
+  roadmap?: Roadmap | undefined;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.InitiateRoadmapResponse.
  * Use `create(InitiateRoadmapResponseSchema)` to create a new message.
  */
-export const InitiateRoadmapResponseSchema: GenMessage<InitiateRoadmapResponse> /*@__PURE__*/ =
+export const InitiateRoadmapResponseSchema: GenMessage<InitiateRoadmapResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 1);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.ListRoadmapsRequest
  */
-export type ListRoadmapsRequest =
-  Message<"contracts.core.coaching.v1.message.ListRoadmapsRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type ListRoadmapsRequest = Message<"contracts.core.coaching.v1.message.ListRoadmapsRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.RoadmapStatus status = 2;
-     */
-    status: RoadmapStatus;
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.RoadmapStatus status = 2;
+   */
+  status: RoadmapStatus;
 
-    /**
-     * @generated from field: int32 page_size = 3;
-     */
-    pageSize: number;
+  /**
+   * @generated from field: int32 page_size = 3;
+   */
+  pageSize: number;
 
-    /**
-     * @generated from field: string page_token = 4;
-     */
-    pageToken: string;
-  };
+  /**
+   * @generated from field: string page_token = 4;
+   */
+  pageToken: string;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.ListRoadmapsRequest.
  * Use `create(ListRoadmapsRequestSchema)` to create a new message.
  */
-export const ListRoadmapsRequestSchema: GenMessage<ListRoadmapsRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  2,
-);
+export const ListRoadmapsRequestSchema: GenMessage<ListRoadmapsRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 2);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.ListRoadmapsResponse
  */
-export type ListRoadmapsResponse =
-  Message<"contracts.core.coaching.v1.message.ListRoadmapsResponse"> & {
-    /**
-     * @generated from field: repeated contracts.core.coaching.v1.message.Roadmap roadmaps = 1;
-     */
-    roadmaps: Roadmap[];
+export type ListRoadmapsResponse = Message<"contracts.core.coaching.v1.message.ListRoadmapsResponse"> & {
+  /**
+   * @generated from field: repeated contracts.core.coaching.v1.message.Roadmap roadmaps = 1;
+   */
+  roadmaps: Roadmap[];
 
-    /**
-     * @generated from field: string next_page_token = 2;
-     */
-    nextPageToken: string;
-  };
+  /**
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken: string;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.ListRoadmapsResponse.
  * Use `create(ListRoadmapsResponseSchema)` to create a new message.
  */
-export const ListRoadmapsResponseSchema: GenMessage<ListRoadmapsResponse> /*@__PURE__*/ =
+export const ListRoadmapsResponseSchema: GenMessage<ListRoadmapsResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 3);
 
 /**
@@ -133,152 +123,141 @@ export type GetRoadmapRequest = Message<"contracts.core.coaching.v1.message.GetR
  * Describes the message contracts.core.coaching.v1.message.GetRoadmapRequest.
  * Use `create(GetRoadmapRequestSchema)` to create a new message.
  */
-export const GetRoadmapRequestSchema: GenMessage<GetRoadmapRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  4,
-);
+export const GetRoadmapRequestSchema: GenMessage<GetRoadmapRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 4);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.GetRoadmapResponse
  */
-export type GetRoadmapResponse =
-  Message<"contracts.core.coaching.v1.message.GetRoadmapResponse"> & {
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.Roadmap roadmap = 1;
-     */
-    roadmap?: Roadmap | undefined;
-  };
+export type GetRoadmapResponse = Message<"contracts.core.coaching.v1.message.GetRoadmapResponse"> & {
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.Roadmap roadmap = 1;
+   */
+  roadmap?: Roadmap | undefined;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.GetRoadmapResponse.
  * Use `create(GetRoadmapResponseSchema)` to create a new message.
  */
-export const GetRoadmapResponseSchema: GenMessage<GetRoadmapResponse> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  5,
-);
+export const GetRoadmapResponseSchema: GenMessage<GetRoadmapResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 5);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.GetActiveRoadmapRequest
  */
-export type GetActiveRoadmapRequest =
-  Message<"contracts.core.coaching.v1.message.GetActiveRoadmapRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
-  };
+export type GetActiveRoadmapRequest = Message<"contracts.core.coaching.v1.message.GetActiveRoadmapRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.GetActiveRoadmapRequest.
  * Use `create(GetActiveRoadmapRequestSchema)` to create a new message.
  */
-export const GetActiveRoadmapRequestSchema: GenMessage<GetActiveRoadmapRequest> /*@__PURE__*/ =
+export const GetActiveRoadmapRequestSchema: GenMessage<GetActiveRoadmapRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 6);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.GetActiveRoadmapResponse
  */
-export type GetActiveRoadmapResponse =
-  Message<"contracts.core.coaching.v1.message.GetActiveRoadmapResponse"> & {
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.Roadmap roadmap = 1;
-     */
-    roadmap?: Roadmap | undefined;
-  };
+export type GetActiveRoadmapResponse = Message<"contracts.core.coaching.v1.message.GetActiveRoadmapResponse"> & {
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.Roadmap roadmap = 1;
+   */
+  roadmap?: Roadmap | undefined;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.GetActiveRoadmapResponse.
  * Use `create(GetActiveRoadmapResponseSchema)` to create a new message.
  */
-export const GetActiveRoadmapResponseSchema: GenMessage<GetActiveRoadmapResponse> /*@__PURE__*/ =
+export const GetActiveRoadmapResponseSchema: GenMessage<GetActiveRoadmapResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 7);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.GetSessionPlanRequest
  */
-export type GetSessionPlanRequest =
-  Message<"contracts.core.coaching.v1.message.GetSessionPlanRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type GetSessionPlanRequest = Message<"contracts.core.coaching.v1.message.GetSessionPlanRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: string session_plan_id = 2;
-     */
-    sessionPlanId: string;
-  };
+  /**
+   * @generated from field: string session_plan_id = 2;
+   */
+  sessionPlanId: string;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.GetSessionPlanRequest.
  * Use `create(GetSessionPlanRequestSchema)` to create a new message.
  */
-export const GetSessionPlanRequestSchema: GenMessage<GetSessionPlanRequest> /*@__PURE__*/ =
+export const GetSessionPlanRequestSchema: GenMessage<GetSessionPlanRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 8);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.GetSessionPlanResponse
  */
-export type GetSessionPlanResponse =
-  Message<"contracts.core.coaching.v1.message.GetSessionPlanResponse"> & {
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.SessionPlan session_plan = 1;
-     */
-    sessionPlan?: SessionPlan | undefined;
-  };
+export type GetSessionPlanResponse = Message<"contracts.core.coaching.v1.message.GetSessionPlanResponse"> & {
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.SessionPlan session_plan = 1;
+   */
+  sessionPlan?: SessionPlan | undefined;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.GetSessionPlanResponse.
  * Use `create(GetSessionPlanResponseSchema)` to create a new message.
  */
-export const GetSessionPlanResponseSchema: GenMessage<GetSessionPlanResponse> /*@__PURE__*/ =
+export const GetSessionPlanResponseSchema: GenMessage<GetSessionPlanResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 9);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.RegenerateScheduleRequest
  */
-export type RegenerateScheduleRequest =
-  Message<"contracts.core.coaching.v1.message.RegenerateScheduleRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type RegenerateScheduleRequest = Message<"contracts.core.coaching.v1.message.RegenerateScheduleRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: string roadmap_id = 2;
-     */
-    roadmapId: string;
+  /**
+   * @generated from field: string roadmap_id = 2;
+   */
+  roadmapId: string;
 
-    /**
-     * @generated from field: string reason = 3;
-     */
-    reason: string;
-  };
+  /**
+   * @generated from field: string reason = 3;
+   */
+  reason: string;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.RegenerateScheduleRequest.
  * Use `create(RegenerateScheduleRequestSchema)` to create a new message.
  */
-export const RegenerateScheduleRequestSchema: GenMessage<RegenerateScheduleRequest> /*@__PURE__*/ =
+export const RegenerateScheduleRequestSchema: GenMessage<RegenerateScheduleRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 10);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.RegenerateScheduleResponse
  */
-export type RegenerateScheduleResponse =
-  Message<"contracts.core.coaching.v1.message.RegenerateScheduleResponse"> & {
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.Roadmap roadmap = 1;
-     */
-    roadmap?: Roadmap | undefined;
-  };
+export type RegenerateScheduleResponse = Message<"contracts.core.coaching.v1.message.RegenerateScheduleResponse"> & {
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.Roadmap roadmap = 1;
+   */
+  roadmap?: Roadmap | undefined;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.RegenerateScheduleResponse.
  * Use `create(RegenerateScheduleResponseSchema)` to create a new message.
  */
-export const RegenerateScheduleResponseSchema: GenMessage<RegenerateScheduleResponse> /*@__PURE__*/ =
+export const RegenerateScheduleResponseSchema: GenMessage<RegenerateScheduleResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 11);
 
 /**
@@ -320,10 +299,8 @@ export type Roadmap = Message<"contracts.core.coaching.v1.message.Roadmap"> & {
  * Describes the message contracts.core.coaching.v1.message.Roadmap.
  * Use `create(RoadmapSchema)` to create a new message.
  */
-export const RoadmapSchema: GenMessage<Roadmap> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  12,
-);
+export const RoadmapSchema: GenMessage<Roadmap> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 12);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.WeekPlan
@@ -384,10 +361,8 @@ export type WeekPlan = Message<"contracts.core.coaching.v1.message.WeekPlan"> & 
  * Describes the message contracts.core.coaching.v1.message.WeekPlan.
  * Use `create(WeekPlanSchema)` to create a new message.
  */
-export const WeekPlanSchema: GenMessage<WeekPlan> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  13,
-);
+export const WeekPlanSchema: GenMessage<WeekPlan> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 13);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.DayPlan
@@ -428,10 +403,8 @@ export type DayPlan = Message<"contracts.core.coaching.v1.message.DayPlan"> & {
  * Describes the message contracts.core.coaching.v1.message.DayPlan.
  * Use `create(DayPlanSchema)` to create a new message.
  */
-export const DayPlanSchema: GenMessage<DayPlan> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  14,
-);
+export const DayPlanSchema: GenMessage<DayPlan> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 14);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.SessionPlan
@@ -507,145 +480,135 @@ export type SessionPlan = Message<"contracts.core.coaching.v1.message.SessionPla
  * Describes the message contracts.core.coaching.v1.message.SessionPlan.
  * Use `create(SessionPlanSchema)` to create a new message.
  */
-export const SessionPlanSchema: GenMessage<SessionPlan> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  15,
-);
+export const SessionPlanSchema: GenMessage<SessionPlan> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 15);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.WorkoutPrescription
  */
-export type WorkoutPrescription =
-  Message<"contracts.core.coaching.v1.message.WorkoutPrescription"> & {
-    /**
-     * @generated from field: repeated contracts.core.coaching.v1.message.PrescribedExercise warm_ups = 1;
-     */
-    warmUps: PrescribedExercise[];
+export type WorkoutPrescription = Message<"contracts.core.coaching.v1.message.WorkoutPrescription"> & {
+  /**
+   * @generated from field: repeated contracts.core.coaching.v1.message.PrescribedExercise warm_ups = 1;
+   */
+  warmUps: PrescribedExercise[];
 
-    /**
-     * @generated from field: repeated contracts.core.coaching.v1.message.PrescribedExercise main_exercises = 2;
-     */
-    mainExercises: PrescribedExercise[];
+  /**
+   * @generated from field: repeated contracts.core.coaching.v1.message.PrescribedExercise main_exercises = 2;
+   */
+  mainExercises: PrescribedExercise[];
 
-    /**
-     * @generated from field: repeated contracts.core.coaching.v1.message.PrescribedExercise cool_downs = 3;
-     */
-    coolDowns: PrescribedExercise[];
-  };
+  /**
+   * @generated from field: repeated contracts.core.coaching.v1.message.PrescribedExercise cool_downs = 3;
+   */
+  coolDowns: PrescribedExercise[];
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.WorkoutPrescription.
  * Use `create(WorkoutPrescriptionSchema)` to create a new message.
  */
-export const WorkoutPrescriptionSchema: GenMessage<WorkoutPrescription> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  16,
-);
+export const WorkoutPrescriptionSchema: GenMessage<WorkoutPrescription> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 16);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.PrescribedExercise
  */
-export type PrescribedExercise =
-  Message<"contracts.core.coaching.v1.message.PrescribedExercise"> & {
-    /**
-     * @generated from field: string exercise_id = 1;
-     */
-    exerciseId: string;
+export type PrescribedExercise = Message<"contracts.core.coaching.v1.message.PrescribedExercise"> & {
+  /**
+   * @generated from field: string exercise_id = 1;
+   */
+  exerciseId: string;
 
-    /**
-     * @generated from field: string exercise_name = 2;
-     */
-    exerciseName: string;
+  /**
+   * @generated from field: string exercise_name = 2;
+   */
+  exerciseName: string;
 
-    /**
-     * @generated from field: int32 target_sets = 3;
-     */
-    targetSets: number;
+  /**
+   * @generated from field: int32 target_sets = 3;
+   */
+  targetSets: number;
 
-    /**
-     * @generated from field: int32 target_reps = 4;
-     */
-    targetReps: number;
+  /**
+   * @generated from field: int32 target_reps = 4;
+   */
+  targetReps: number;
 
-    /**
-     * @generated from field: float target_weight = 5;
-     */
-    targetWeight: number;
+  /**
+   * @generated from field: float target_weight = 5;
+   */
+  targetWeight: number;
 
-    /**
-     * @generated from field: int32 duration_seconds = 6;
-     */
-    durationSeconds: number;
+  /**
+   * @generated from field: int32 duration_seconds = 6;
+   */
+  durationSeconds: number;
 
-    /**
-     * @generated from field: string notes = 7;
-     */
-    notes: string;
+  /**
+   * @generated from field: string notes = 7;
+   */
+  notes: string;
 
-    /**
-     * @generated from field: int32 rest_set_sec = 8;
-     */
-    restSetSec: number;
+  /**
+   * @generated from field: int32 rest_set_sec = 8;
+   */
+  restSetSec: number;
 
-    /**
-     * @generated from field: int32 rest_exercise_sec = 9;
-     */
-    restExerciseSec: number;
+  /**
+   * @generated from field: int32 rest_exercise_sec = 9;
+   */
+  restExerciseSec: number;
 
-    /**
-     * @generated from field: float target_rpe = 10;
-     */
-    targetRpe: number;
-  };
+  /**
+   * @generated from field: float target_rpe = 10;
+   */
+  targetRpe: number;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.PrescribedExercise.
  * Use `create(PrescribedExerciseSchema)` to create a new message.
  */
-export const PrescribedExerciseSchema: GenMessage<PrescribedExercise> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  17,
-);
+export const PrescribedExerciseSchema: GenMessage<PrescribedExercise> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 17);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.CreateAdhocSessionPlanRequest
  */
-export type CreateAdhocSessionPlanRequest =
-  Message<"contracts.core.coaching.v1.message.CreateAdhocSessionPlanRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type CreateAdhocSessionPlanRequest = Message<"contracts.core.coaching.v1.message.CreateAdhocSessionPlanRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: repeated string exercise_ids = 2;
-     */
-    exerciseIds: string[];
-  };
+  /**
+   * @generated from field: repeated string exercise_ids = 2;
+   */
+  exerciseIds: string[];
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.CreateAdhocSessionPlanRequest.
  * Use `create(CreateAdhocSessionPlanRequestSchema)` to create a new message.
  */
-export const CreateAdhocSessionPlanRequestSchema: GenMessage<CreateAdhocSessionPlanRequest> /*@__PURE__*/ =
+export const CreateAdhocSessionPlanRequestSchema: GenMessage<CreateAdhocSessionPlanRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 18);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.CreateAdhocSessionPlanResponse
  */
-export type CreateAdhocSessionPlanResponse =
-  Message<"contracts.core.coaching.v1.message.CreateAdhocSessionPlanResponse"> & {
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.SessionPlan session_plan = 1;
-     */
-    sessionPlan?: SessionPlan | undefined;
-  };
+export type CreateAdhocSessionPlanResponse = Message<"contracts.core.coaching.v1.message.CreateAdhocSessionPlanResponse"> & {
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.SessionPlan session_plan = 1;
+   */
+  sessionPlan?: SessionPlan | undefined;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.CreateAdhocSessionPlanResponse.
  * Use `create(CreateAdhocSessionPlanResponseSchema)` to create a new message.
  */
-export const CreateAdhocSessionPlanResponseSchema: GenMessage<CreateAdhocSessionPlanResponse> /*@__PURE__*/ =
+export const CreateAdhocSessionPlanResponseSchema: GenMessage<CreateAdhocSessionPlanResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 19);
 
 /**
@@ -682,65 +645,61 @@ export type AdHocHint = Message<"contracts.core.coaching.v1.message.AdHocHint"> 
  * Describes the message contracts.core.coaching.v1.message.AdHocHint.
  * Use `create(AdHocHintSchema)` to create a new message.
  */
-export const AdHocHintSchema: GenMessage<AdHocHint> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  20,
-);
+export const AdHocHintSchema: GenMessage<AdHocHint> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 20);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.SuggestAdHocSessionRequest
  */
-export type SuggestAdHocSessionRequest =
-  Message<"contracts.core.coaching.v1.message.SuggestAdHocSessionRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type SuggestAdHocSessionRequest = Message<"contracts.core.coaching.v1.message.SuggestAdHocSessionRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.AdHocHint hint = 2;
-     */
-    hint?: AdHocHint | undefined;
-  };
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.AdHocHint hint = 2;
+   */
+  hint?: AdHocHint | undefined;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.SuggestAdHocSessionRequest.
  * Use `create(SuggestAdHocSessionRequestSchema)` to create a new message.
  */
-export const SuggestAdHocSessionRequestSchema: GenMessage<SuggestAdHocSessionRequest> /*@__PURE__*/ =
+export const SuggestAdHocSessionRequestSchema: GenMessage<SuggestAdHocSessionRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 21);
 
 /**
  * @generated from message contracts.core.coaching.v1.message.SuggestAdHocSessionResponse
  */
-export type SuggestAdHocSessionResponse =
-  Message<"contracts.core.coaching.v1.message.SuggestAdHocSessionResponse"> & {
-    /**
-     * @generated from field: repeated string muscle_groups = 1;
-     */
-    muscleGroups: string[];
+export type SuggestAdHocSessionResponse = Message<"contracts.core.coaching.v1.message.SuggestAdHocSessionResponse"> & {
+  /**
+   * @generated from field: repeated string muscle_groups = 1;
+   */
+  muscleGroups: string[];
 
-    /**
-     * @generated from field: contracts.core.coaching.v1.message.WorkoutPrescription prescription = 2;
-     */
-    prescription?: WorkoutPrescription | undefined;
+  /**
+   * @generated from field: contracts.core.coaching.v1.message.WorkoutPrescription prescription = 2;
+   */
+  prescription?: WorkoutPrescription | undefined;
 
-    /**
-     * @generated from field: string reasoning = 3;
-     */
-    reasoning: string;
+  /**
+   * @generated from field: string reasoning = 3;
+   */
+  reasoning: string;
 
-    /**
-     * @generated from field: float estimated_rpe = 4;
-     */
-    estimatedRpe: number;
-  };
+  /**
+   * @generated from field: float estimated_rpe = 4;
+   */
+  estimatedRpe: number;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.message.SuggestAdHocSessionResponse.
  * Use `create(SuggestAdHocSessionResponseSchema)` to create a new message.
  */
-export const SuggestAdHocSessionResponseSchema: GenMessage<SuggestAdHocSessionResponse> /*@__PURE__*/ =
+export const SuggestAdHocSessionResponseSchema: GenMessage<SuggestAdHocSessionResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_coaching_v1_message_coaching_messages, 22);
 
 /**
@@ -766,10 +725,8 @@ export enum RoadmapStatus {
 /**
  * Describes the enum contracts.core.coaching.v1.message.RoadmapStatus.
  */
-export const RoadmapStatusSchema: GenEnum<RoadmapStatus> /*@__PURE__*/ = enumDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  0,
-);
+export const RoadmapStatusSchema: GenEnum<RoadmapStatus> = /*@__PURE__*/
+  enumDesc(file_contracts_core_coaching_v1_message_coaching_messages, 0);
 
 /**
  * @generated from enum contracts.core.coaching.v1.message.SessionPlanStatus
@@ -812,10 +769,8 @@ export enum SessionPlanStatus {
 /**
  * Describes the enum contracts.core.coaching.v1.message.SessionPlanStatus.
  */
-export const SessionPlanStatusSchema: GenEnum<SessionPlanStatus> /*@__PURE__*/ = enumDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  1,
-);
+export const SessionPlanStatusSchema: GenEnum<SessionPlanStatus> = /*@__PURE__*/
+  enumDesc(file_contracts_core_coaching_v1_message_coaching_messages, 1);
 
 /**
  * @generated from enum contracts.core.coaching.v1.message.SessionPlanSource
@@ -840,10 +795,8 @@ export enum SessionPlanSource {
 /**
  * Describes the enum contracts.core.coaching.v1.message.SessionPlanSource.
  */
-export const SessionPlanSourceSchema: GenEnum<SessionPlanSource> /*@__PURE__*/ = enumDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  2,
-);
+export const SessionPlanSourceSchema: GenEnum<SessionPlanSource> = /*@__PURE__*/
+  enumDesc(file_contracts_core_coaching_v1_message_coaching_messages, 2);
 
 /**
  * @generated from enum contracts.core.coaching.v1.message.RoadmapPhase
@@ -886,7 +839,6 @@ export enum RoadmapPhase {
 /**
  * Describes the enum contracts.core.coaching.v1.message.RoadmapPhase.
  */
-export const RoadmapPhaseSchema: GenEnum<RoadmapPhase> /*@__PURE__*/ = enumDesc(
-  file_contracts_core_coaching_v1_message_coaching_messages,
-  3,
-);
+export const RoadmapPhaseSchema: GenEnum<RoadmapPhase> = /*@__PURE__*/
+  enumDesc(file_contracts_core_coaching_v1_message_coaching_messages, 3);
+

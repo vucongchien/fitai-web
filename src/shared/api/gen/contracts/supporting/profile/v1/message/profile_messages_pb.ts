@@ -2,17 +2,15 @@
 // @generated from file contracts/supporting/profile/v1/message/profile_messages.proto (package contracts.supporting.profile.v1.message, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/profile/v1/message/profile_messages.proto.
  */
-export const file_contracts_supporting_profile_v1_message_profile_messages: GenFile /*@__PURE__*/ =
-  fileDesc(
-    "Cj5jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL21lc3NhZ2UvcHJvZmlsZV9tZXNzYWdlcy5wcm90bxInY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlIkQKC0luanVyeUlucHV0EhQKDG11c2NsZV9ncm91cBgBIAEoCRIQCghzZXZlcml0eRgCIAEoCRINCgVub3RlcxgDIAEoCSKTAQoGSW5qdXJ5EhEKCWluanVyeV9pZBgBIAEoCRIUCgxtdXNjbGVfZ3JvdXAYAiABKAkSEAoIc2V2ZXJpdHkYAyABKAkSDQoFbm90ZXMYBCABKAkSEwoLcmVwb3J0ZWRfYXQYBSABKAkSFAoMaXNfcmVjb3ZlcmVkGAYgASgIEhQKDHJlY292ZXJlZF9hdBgHIAEoCSKLAQoOUGVyaW9kaWNNZXRyaWMSCgoCaWQYASABKAkSEQoJd2VpZ2h0X2tnGAIgASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYAyABKAISGgoScHJvZ3Jlc3NfcGhvdG9fdXJsGAQgASgJEhEKCWxvZ2dlZF9hdBgFIAEoCRIRCgloZWlnaHRfY20YBiABKAIioQMKGFNhdmVIZWFsdGhQcm9maWxlUmVxdWVzdBIRCgl3ZWlnaHRfa2cYASABKAISEQoJaGVpZ2h0X2NtGAIgASgCEhUKDWRhdGVfb2ZfYmlydGgYAyABKAkSDgoGZ2VuZGVyGAQgASgJEg0KBWdvYWxzGAUgAygJEkYKCGluanVyaWVzGAYgAygLMjQuY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeUlucHV0EhgKEGV4cGVyaWVuY2VfbGV2ZWwYByABKAkSHwoXcHJlZmVycmVkX3dvcmtvdXRfdGltZXMYCCADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgJIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgKIAMoCRITCgtjb2FjaF9zdHlsZRgLIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGAwgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GA0gASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYDiABKAIicgoZU2F2ZUhlYWx0aFByb2ZpbGVSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEhcKD2NvbXBsZXRpb25fcmF0ZRgCIAEoAhIaChJhaV9jb2FjaF9hY3RpdmF0ZWQYAyABKAgSDwoHbWVzc2FnZRgEIAEoCSIkChFHZXRQcm9maWxlUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIvUDChJHZXRQcm9maWxlUmVzcG9uc2USDwoHdXNlcl9pZBgBIAEoCRIRCgl3ZWlnaHRfa2cYAiABKAISEQoJaGVpZ2h0X2NtGAMgASgCEhUKDWRhdGVfb2ZfYmlydGgYBCABKAkSCwoDYWdlGAUgASgFEg4KBmdlbmRlchgGIAEoCRINCgVnb2FscxgHIAMoCRIYChBleHBlcmllbmNlX2xldmVsGAggASgJEh8KF3ByZWZlcnJlZF93b3Jrb3V0X3RpbWVzGAkgAygJEkEKCGluanVyaWVzGAogAygLMi8uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeRISCgpjcmVhdGVkX2F0GAsgASgJEhIKCnVwZGF0ZWRfYXQYDCABKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgNIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgOIAMoCRITCgtjb2FjaF9zdHlsZRgPIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGBAgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GBEgASgCEhcKD2NvbXBsZXRpb25fcmF0ZRgSIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GBMgASgCItUCChRVcGRhdGVQcm9maWxlUmVxdWVzdBIRCgl3ZWlnaHRfa2cYASABKAISEQoJaGVpZ2h0X2NtGAIgASgCEhUKDWRhdGVfb2ZfYmlydGgYAyABKAkSDgoGZ2VuZGVyGAQgASgJEg0KBWdvYWxzGAUgAygJEhgKEGV4cGVyaWVuY2VfbGV2ZWwYBiABKAkSHwoXcHJlZmVycmVkX3dvcmtvdXRfdGltZXMYByADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgIIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgJIAMoCRITCgtjb2FjaF9zdHlsZRgKIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGAsgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GAwgASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYDSABKAIiOQoVVXBkYXRlUHJvZmlsZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSJ3ChlMb2dQZXJpb2RpY01ldHJpY3NSZXF1ZXN0EhEKCXdlaWdodF9rZxgBIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GAIgASgCEhoKEnByb2dyZXNzX3Bob3RvX3VybBgDIAEoCRIRCgloZWlnaHRfY20YBCABKAIiowEKGkxvZ1BlcmlvZGljTWV0cmljc1Jlc3BvbnNlEg4KBmxvZ19pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEhEKCXdlaWdodF9rZxgDIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GAQgASgCEhMKC3N5bmNfc3RhdHVzGAUgASgJEg8KB21lc3NhZ2UYBiABKAkSEQoJaGVpZ2h0X2NtGAcgASgCIi8KHEdldEJvZHlNZXRyaWNzSGlzdG9yeVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJ6Ch1HZXRCb2R5TWV0cmljc0hpc3RvcnlSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEkgKB21ldHJpY3MYAiADKAsyNy5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuUGVyaW9kaWNNZXRyaWMiTAoTUmVwb3J0SW5qdXJ5UmVxdWVzdBIUCgxtdXNjbGVfZ3JvdXAYASABKAkSEAoIc2V2ZXJpdHkYAiABKAkSDQoFbm90ZXMYAyABKAkiSwoUUmVwb3J0SW5qdXJ5UmVzcG9uc2USEQoJaW5qdXJ5X2lkGAEgASgJEg8KB3N1Y2Nlc3MYAiABKAgSDwoHbWVzc2FnZRgDIAEoCSIpChRSZWNvdmVySW5qdXJ5UmVxdWVzdBIRCglpbmp1cnlfaWQYASABKAkiOQoVUmVjb3ZlckluanVyeVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSIqChdHZXRJbmp1cnlIaXN0b3J5UmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIm4KGEdldEluanVyeUhpc3RvcnlSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEkEKCGluanVyaWVzGAIgAygLMi8uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeUJvWm1naXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9zdXBwb3J0aW5nL3Byb2ZpbGUvdjEvbWVzc2FnZTtwcm9maWxldjFtZXNzYWdlYgZwcm90bzM",
-  );
+export const file_contracts_supporting_profile_v1_message_profile_messages: GenFile = /*@__PURE__*/
+  fileDesc("Cj5jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL21lc3NhZ2UvcHJvZmlsZV9tZXNzYWdlcy5wcm90bxInY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlIkQKC0luanVyeUlucHV0EhQKDG11c2NsZV9ncm91cBgBIAEoCRIQCghzZXZlcml0eRgCIAEoCRINCgVub3RlcxgDIAEoCSKTAQoGSW5qdXJ5EhEKCWluanVyeV9pZBgBIAEoCRIUCgxtdXNjbGVfZ3JvdXAYAiABKAkSEAoIc2V2ZXJpdHkYAyABKAkSDQoFbm90ZXMYBCABKAkSEwoLcmVwb3J0ZWRfYXQYBSABKAkSFAoMaXNfcmVjb3ZlcmVkGAYgASgIEhQKDHJlY292ZXJlZF9hdBgHIAEoCSKLAQoOUGVyaW9kaWNNZXRyaWMSCgoCaWQYASABKAkSEQoJd2VpZ2h0X2tnGAIgASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYAyABKAISGgoScHJvZ3Jlc3NfcGhvdG9fdXJsGAQgASgJEhEKCWxvZ2dlZF9hdBgFIAEoCRIRCgloZWlnaHRfY20YBiABKAIioQMKGFNhdmVIZWFsdGhQcm9maWxlUmVxdWVzdBIRCgl3ZWlnaHRfa2cYASABKAISEQoJaGVpZ2h0X2NtGAIgASgCEhUKDWRhdGVfb2ZfYmlydGgYAyABKAkSDgoGZ2VuZGVyGAQgASgJEg0KBWdvYWxzGAUgAygJEkYKCGluanVyaWVzGAYgAygLMjQuY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeUlucHV0EhgKEGV4cGVyaWVuY2VfbGV2ZWwYByABKAkSHwoXcHJlZmVycmVkX3dvcmtvdXRfdGltZXMYCCADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgJIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgKIAMoCRITCgtjb2FjaF9zdHlsZRgLIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGAwgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GA0gASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYDiABKAIicgoZU2F2ZUhlYWx0aFByb2ZpbGVSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEhcKD2NvbXBsZXRpb25fcmF0ZRgCIAEoAhIaChJhaV9jb2FjaF9hY3RpdmF0ZWQYAyABKAgSDwoHbWVzc2FnZRgEIAEoCSIkChFHZXRQcm9maWxlUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIvUDChJHZXRQcm9maWxlUmVzcG9uc2USDwoHdXNlcl9pZBgBIAEoCRIRCgl3ZWlnaHRfa2cYAiABKAISEQoJaGVpZ2h0X2NtGAMgASgCEhUKDWRhdGVfb2ZfYmlydGgYBCABKAkSCwoDYWdlGAUgASgFEg4KBmdlbmRlchgGIAEoCRINCgVnb2FscxgHIAMoCRIYChBleHBlcmllbmNlX2xldmVsGAggASgJEh8KF3ByZWZlcnJlZF93b3Jrb3V0X3RpbWVzGAkgAygJEkEKCGluanVyaWVzGAogAygLMi8uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeRISCgpjcmVhdGVkX2F0GAsgASgJEhIKCnVwZGF0ZWRfYXQYDCABKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgNIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgOIAMoCRITCgtjb2FjaF9zdHlsZRgPIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGBAgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GBEgASgCEhcKD2NvbXBsZXRpb25fcmF0ZRgSIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GBMgASgCItUCChRVcGRhdGVQcm9maWxlUmVxdWVzdBIRCgl3ZWlnaHRfa2cYASABKAISEQoJaGVpZ2h0X2NtGAIgASgCEhUKDWRhdGVfb2ZfYmlydGgYAyABKAkSDgoGZ2VuZGVyGAQgASgJEg0KBWdvYWxzGAUgAygJEhgKEGV4cGVyaWVuY2VfbGV2ZWwYBiABKAkSHwoXcHJlZmVycmVkX3dvcmtvdXRfdGltZXMYByADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgIIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgJIAMoCRITCgtjb2FjaF9zdHlsZRgKIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGAsgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GAwgASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYDSABKAIiOQoVVXBkYXRlUHJvZmlsZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSJ3ChlMb2dQZXJpb2RpY01ldHJpY3NSZXF1ZXN0EhEKCXdlaWdodF9rZxgBIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GAIgASgCEhoKEnByb2dyZXNzX3Bob3RvX3VybBgDIAEoCRIRCgloZWlnaHRfY20YBCABKAIiowEKGkxvZ1BlcmlvZGljTWV0cmljc1Jlc3BvbnNlEg4KBmxvZ19pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEhEKCXdlaWdodF9rZxgDIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GAQgASgCEhMKC3N5bmNfc3RhdHVzGAUgASgJEg8KB21lc3NhZ2UYBiABKAkSEQoJaGVpZ2h0X2NtGAcgASgCIi8KHEdldEJvZHlNZXRyaWNzSGlzdG9yeVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJ6Ch1HZXRCb2R5TWV0cmljc0hpc3RvcnlSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEkgKB21ldHJpY3MYAiADKAsyNy5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuUGVyaW9kaWNNZXRyaWMiTAoTUmVwb3J0SW5qdXJ5UmVxdWVzdBIUCgxtdXNjbGVfZ3JvdXAYASABKAkSEAoIc2V2ZXJpdHkYAiABKAkSDQoFbm90ZXMYAyABKAkiSwoUUmVwb3J0SW5qdXJ5UmVzcG9uc2USEQoJaW5qdXJ5X2lkGAEgASgJEg8KB3N1Y2Nlc3MYAiABKAgSDwoHbWVzc2FnZRgDIAEoCSIpChRSZWNvdmVySW5qdXJ5UmVxdWVzdBIRCglpbmp1cnlfaWQYASABKAkiOQoVUmVjb3ZlckluanVyeVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSIqChdHZXRJbmp1cnlIaXN0b3J5UmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIm4KGEdldEluanVyeUhpc3RvcnlSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEkEKCGluanVyaWVzGAIgAygLMi8uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeUJvWm1naXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9zdXBwb3J0aW5nL3Byb2ZpbGUvdjEvbWVzc2FnZTtwcm9maWxldjFtZXNzYWdlYgZwcm90bzM");
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.InjuryInput
@@ -40,10 +38,8 @@ export type InjuryInput = Message<"contracts.supporting.profile.v1.message.Injur
  * Describes the message contracts.supporting.profile.v1.message.InjuryInput.
  * Use `create(InjuryInputSchema)` to create a new message.
  */
-export const InjuryInputSchema: GenMessage<InjuryInput> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_message_profile_messages,
-  0,
-);
+export const InjuryInputSchema: GenMessage<InjuryInput> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 0);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.Injury
@@ -89,10 +85,8 @@ export type Injury = Message<"contracts.supporting.profile.v1.message.Injury"> &
  * Describes the message contracts.supporting.profile.v1.message.Injury.
  * Use `create(InjurySchema)` to create a new message.
  */
-export const InjurySchema: GenMessage<Injury> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_message_profile_messages,
-  1,
-);
+export const InjurySchema: GenMessage<Injury> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 1);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.PeriodicMetric
@@ -133,628 +127,605 @@ export type PeriodicMetric = Message<"contracts.supporting.profile.v1.message.Pe
  * Describes the message contracts.supporting.profile.v1.message.PeriodicMetric.
  * Use `create(PeriodicMetricSchema)` to create a new message.
  */
-export const PeriodicMetricSchema: GenMessage<PeriodicMetric> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_message_profile_messages,
-  2,
-);
+export const PeriodicMetricSchema: GenMessage<PeriodicMetric> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 2);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.SaveHealthProfileRequest
  */
-export type SaveHealthProfileRequest =
-  Message<"contracts.supporting.profile.v1.message.SaveHealthProfileRequest"> & {
-    /**
-     * @generated from field: float weight_kg = 1;
-     */
-    weightKg: number;
+export type SaveHealthProfileRequest = Message<"contracts.supporting.profile.v1.message.SaveHealthProfileRequest"> & {
+  /**
+   * @generated from field: float weight_kg = 1;
+   */
+  weightKg: number;
 
-    /**
-     * @generated from field: float height_cm = 2;
-     */
-    heightCm: number;
+  /**
+   * @generated from field: float height_cm = 2;
+   */
+  heightCm: number;
 
-    /**
-     * "YYYY-MM-DD" e.g. "1998-05-15"
-     *
-     * @generated from field: string date_of_birth = 3;
-     */
-    dateOfBirth: string;
+  /**
+   * "YYYY-MM-DD" e.g. "1998-05-15"
+   *
+   * @generated from field: string date_of_birth = 3;
+   */
+  dateOfBirth: string;
 
-    /**
-     * @generated from field: string gender = 4;
-     */
-    gender: string;
+  /**
+   * @generated from field: string gender = 4;
+   */
+  gender: string;
 
-    /**
-     * @generated from field: repeated string goals = 5;
-     */
-    goals: string[];
+  /**
+   * @generated from field: repeated string goals = 5;
+   */
+  goals: string[];
 
-    /**
-     * @generated from field: repeated contracts.supporting.profile.v1.message.InjuryInput injuries = 6;
-     */
-    injuries: InjuryInput[];
+  /**
+   * @generated from field: repeated contracts.supporting.profile.v1.message.InjuryInput injuries = 6;
+   */
+  injuries: InjuryInput[];
 
-    /**
-     * "BEGINNER", "INTERMEDIATE", "ADVANCED"
-     *
-     * @generated from field: string experience_level = 7;
-     */
-    experienceLevel: string;
+  /**
+   * "BEGINNER", "INTERMEDIATE", "ADVANCED"
+   *
+   * @generated from field: string experience_level = 7;
+   */
+  experienceLevel: string;
 
-    /**
-     * @generated from field: repeated string preferred_workout_times = 8;
-     */
-    preferredWorkoutTimes: string[];
+  /**
+   * @generated from field: repeated string preferred_workout_times = 8;
+   */
+  preferredWorkoutTimes: string[];
 
-    /**
-     * @generated from field: repeated string available_equipment = 9;
-     */
-    availableEquipment: string[];
+  /**
+   * @generated from field: repeated string available_equipment = 9;
+   */
+  availableEquipment: string[];
 
-    /**
-     * @generated from field: repeated string preferred_muscle_groups = 10;
-     */
-    preferredMuscleGroups: string[];
+  /**
+   * @generated from field: repeated string preferred_muscle_groups = 10;
+   */
+  preferredMuscleGroups: string[];
 
-    /**
-     * @generated from field: string coach_style = 11;
-     */
-    coachStyle: string;
+  /**
+   * @generated from field: string coach_style = 11;
+   */
+  coachStyle: string;
 
-    /**
-     * @generated from field: float target_weight_kg = 12;
-     */
-    targetWeightKg: number;
+  /**
+   * @generated from field: float target_weight_kg = 12;
+   */
+  targetWeightKg: number;
 
-    /**
-     * @generated from field: float target_body_fat_percent = 13;
-     */
-    targetBodyFatPercent: number;
+  /**
+   * @generated from field: float target_body_fat_percent = 13;
+   */
+  targetBodyFatPercent: number;
 
-    /**
-     * @generated from field: float body_fat_percent = 14;
-     */
-    bodyFatPercent: number;
-  };
+  /**
+   * @generated from field: float body_fat_percent = 14;
+   */
+  bodyFatPercent: number;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.SaveHealthProfileRequest.
  * Use `create(SaveHealthProfileRequestSchema)` to create a new message.
  */
-export const SaveHealthProfileRequestSchema: GenMessage<SaveHealthProfileRequest> /*@__PURE__*/ =
+export const SaveHealthProfileRequestSchema: GenMessage<SaveHealthProfileRequest> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 3);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.SaveHealthProfileResponse
  */
-export type SaveHealthProfileResponse =
-  Message<"contracts.supporting.profile.v1.message.SaveHealthProfileResponse"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type SaveHealthProfileResponse = Message<"contracts.supporting.profile.v1.message.SaveHealthProfileResponse"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: float completion_rate = 2;
-     */
-    completionRate: number;
+  /**
+   * @generated from field: float completion_rate = 2;
+   */
+  completionRate: number;
 
-    /**
-     * @generated from field: bool ai_coach_activated = 3;
-     */
-    aiCoachActivated: boolean;
+  /**
+   * @generated from field: bool ai_coach_activated = 3;
+   */
+  aiCoachActivated: boolean;
 
-    /**
-     * @generated from field: string message = 4;
-     */
-    message: string;
-  };
+  /**
+   * @generated from field: string message = 4;
+   */
+  message: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.SaveHealthProfileResponse.
  * Use `create(SaveHealthProfileResponseSchema)` to create a new message.
  */
-export const SaveHealthProfileResponseSchema: GenMessage<SaveHealthProfileResponse> /*@__PURE__*/ =
+export const SaveHealthProfileResponseSchema: GenMessage<SaveHealthProfileResponse> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 4);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.GetProfileRequest
  */
-export type GetProfileRequest =
-  Message<"contracts.supporting.profile.v1.message.GetProfileRequest"> & {
-    /**
-     * Option for Admin/others to query user profile; if empty, uses context user_id
-     *
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
-  };
+export type GetProfileRequest = Message<"contracts.supporting.profile.v1.message.GetProfileRequest"> & {
+  /**
+   * Option for Admin/others to query user profile; if empty, uses context user_id
+   *
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.GetProfileRequest.
  * Use `create(GetProfileRequestSchema)` to create a new message.
  */
-export const GetProfileRequestSchema: GenMessage<GetProfileRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_message_profile_messages,
-  5,
-);
+export const GetProfileRequestSchema: GenMessage<GetProfileRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 5);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.GetProfileResponse
  */
-export type GetProfileResponse =
-  Message<"contracts.supporting.profile.v1.message.GetProfileResponse"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type GetProfileResponse = Message<"contracts.supporting.profile.v1.message.GetProfileResponse"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: float weight_kg = 2;
-     */
-    weightKg: number;
+  /**
+   * @generated from field: float weight_kg = 2;
+   */
+  weightKg: number;
 
-    /**
-     * @generated from field: float height_cm = 3;
-     */
-    heightCm: number;
+  /**
+   * @generated from field: float height_cm = 3;
+   */
+  heightCm: number;
 
-    /**
-     * @generated from field: string date_of_birth = 4;
-     */
-    dateOfBirth: string;
+  /**
+   * @generated from field: string date_of_birth = 4;
+   */
+  dateOfBirth: string;
 
-    /**
-     * @generated from field: int32 age = 5;
-     */
-    age: number;
+  /**
+   * @generated from field: int32 age = 5;
+   */
+  age: number;
 
-    /**
-     * @generated from field: string gender = 6;
-     */
-    gender: string;
+  /**
+   * @generated from field: string gender = 6;
+   */
+  gender: string;
 
-    /**
-     * @generated from field: repeated string goals = 7;
-     */
-    goals: string[];
+  /**
+   * @generated from field: repeated string goals = 7;
+   */
+  goals: string[];
 
-    /**
-     * @generated from field: string experience_level = 8;
-     */
-    experienceLevel: string;
+  /**
+   * @generated from field: string experience_level = 8;
+   */
+  experienceLevel: string;
 
-    /**
-     * @generated from field: repeated string preferred_workout_times = 9;
-     */
-    preferredWorkoutTimes: string[];
+  /**
+   * @generated from field: repeated string preferred_workout_times = 9;
+   */
+  preferredWorkoutTimes: string[];
 
-    /**
-     * @generated from field: repeated contracts.supporting.profile.v1.message.Injury injuries = 10;
-     */
-    injuries: Injury[];
+  /**
+   * @generated from field: repeated contracts.supporting.profile.v1.message.Injury injuries = 10;
+   */
+  injuries: Injury[];
 
-    /**
-     * @generated from field: string created_at = 11;
-     */
-    createdAt: string;
+  /**
+   * @generated from field: string created_at = 11;
+   */
+  createdAt: string;
 
-    /**
-     * @generated from field: string updated_at = 12;
-     */
-    updatedAt: string;
+  /**
+   * @generated from field: string updated_at = 12;
+   */
+  updatedAt: string;
 
-    /**
-     * @generated from field: repeated string available_equipment = 13;
-     */
-    availableEquipment: string[];
+  /**
+   * @generated from field: repeated string available_equipment = 13;
+   */
+  availableEquipment: string[];
 
-    /**
-     * @generated from field: repeated string preferred_muscle_groups = 14;
-     */
-    preferredMuscleGroups: string[];
+  /**
+   * @generated from field: repeated string preferred_muscle_groups = 14;
+   */
+  preferredMuscleGroups: string[];
 
-    /**
-     * @generated from field: string coach_style = 15;
-     */
-    coachStyle: string;
+  /**
+   * @generated from field: string coach_style = 15;
+   */
+  coachStyle: string;
 
-    /**
-     * @generated from field: float target_weight_kg = 16;
-     */
-    targetWeightKg: number;
+  /**
+   * @generated from field: float target_weight_kg = 16;
+   */
+  targetWeightKg: number;
 
-    /**
-     * @generated from field: float target_body_fat_percent = 17;
-     */
-    targetBodyFatPercent: number;
+  /**
+   * @generated from field: float target_body_fat_percent = 17;
+   */
+  targetBodyFatPercent: number;
 
-    /**
-     * @generated from field: float completion_rate = 18;
-     */
-    completionRate: number;
+  /**
+   * @generated from field: float completion_rate = 18;
+   */
+  completionRate: number;
 
-    /**
-     * @generated from field: float body_fat_percent = 19;
-     */
-    bodyFatPercent: number;
-  };
+  /**
+   * @generated from field: float body_fat_percent = 19;
+   */
+  bodyFatPercent: number;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.GetProfileResponse.
  * Use `create(GetProfileResponseSchema)` to create a new message.
  */
-export const GetProfileResponseSchema: GenMessage<GetProfileResponse> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_message_profile_messages,
-  6,
-);
+export const GetProfileResponseSchema: GenMessage<GetProfileResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 6);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.UpdateProfileRequest
  */
-export type UpdateProfileRequest =
-  Message<"contracts.supporting.profile.v1.message.UpdateProfileRequest"> & {
-    /**
-     * @generated from field: float weight_kg = 1;
-     */
-    weightKg: number;
+export type UpdateProfileRequest = Message<"contracts.supporting.profile.v1.message.UpdateProfileRequest"> & {
+  /**
+   * @generated from field: float weight_kg = 1;
+   */
+  weightKg: number;
 
-    /**
-     * @generated from field: float height_cm = 2;
-     */
-    heightCm: number;
+  /**
+   * @generated from field: float height_cm = 2;
+   */
+  heightCm: number;
 
-    /**
-     * "YYYY-MM-DD" e.g. "1998-05-15"
-     *
-     * @generated from field: string date_of_birth = 3;
-     */
-    dateOfBirth: string;
+  /**
+   * "YYYY-MM-DD" e.g. "1998-05-15"
+   *
+   * @generated from field: string date_of_birth = 3;
+   */
+  dateOfBirth: string;
 
-    /**
-     * @generated from field: string gender = 4;
-     */
-    gender: string;
+  /**
+   * @generated from field: string gender = 4;
+   */
+  gender: string;
 
-    /**
-     * @generated from field: repeated string goals = 5;
-     */
-    goals: string[];
+  /**
+   * @generated from field: repeated string goals = 5;
+   */
+  goals: string[];
 
-    /**
-     * @generated from field: string experience_level = 6;
-     */
-    experienceLevel: string;
+  /**
+   * @generated from field: string experience_level = 6;
+   */
+  experienceLevel: string;
 
-    /**
-     * @generated from field: repeated string preferred_workout_times = 7;
-     */
-    preferredWorkoutTimes: string[];
+  /**
+   * @generated from field: repeated string preferred_workout_times = 7;
+   */
+  preferredWorkoutTimes: string[];
 
-    /**
-     * @generated from field: repeated string available_equipment = 8;
-     */
-    availableEquipment: string[];
+  /**
+   * @generated from field: repeated string available_equipment = 8;
+   */
+  availableEquipment: string[];
 
-    /**
-     * @generated from field: repeated string preferred_muscle_groups = 9;
-     */
-    preferredMuscleGroups: string[];
+  /**
+   * @generated from field: repeated string preferred_muscle_groups = 9;
+   */
+  preferredMuscleGroups: string[];
 
-    /**
-     * @generated from field: string coach_style = 10;
-     */
-    coachStyle: string;
+  /**
+   * @generated from field: string coach_style = 10;
+   */
+  coachStyle: string;
 
-    /**
-     * @generated from field: float target_weight_kg = 11;
-     */
-    targetWeightKg: number;
+  /**
+   * @generated from field: float target_weight_kg = 11;
+   */
+  targetWeightKg: number;
 
-    /**
-     * @generated from field: float target_body_fat_percent = 12;
-     */
-    targetBodyFatPercent: number;
+  /**
+   * @generated from field: float target_body_fat_percent = 12;
+   */
+  targetBodyFatPercent: number;
 
-    /**
-     * @generated from field: float body_fat_percent = 13;
-     */
-    bodyFatPercent: number;
-  };
+  /**
+   * @generated from field: float body_fat_percent = 13;
+   */
+  bodyFatPercent: number;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.UpdateProfileRequest.
  * Use `create(UpdateProfileRequestSchema)` to create a new message.
  */
-export const UpdateProfileRequestSchema: GenMessage<UpdateProfileRequest> /*@__PURE__*/ =
+export const UpdateProfileRequestSchema: GenMessage<UpdateProfileRequest> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 7);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.UpdateProfileResponse
  */
-export type UpdateProfileResponse =
-  Message<"contracts.supporting.profile.v1.message.UpdateProfileResponse"> & {
-    /**
-     * @generated from field: bool success = 1;
-     */
-    success: boolean;
+export type UpdateProfileResponse = Message<"contracts.supporting.profile.v1.message.UpdateProfileResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
 
-    /**
-     * @generated from field: string message = 2;
-     */
-    message: string;
-  };
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.UpdateProfileResponse.
  * Use `create(UpdateProfileResponseSchema)` to create a new message.
  */
-export const UpdateProfileResponseSchema: GenMessage<UpdateProfileResponse> /*@__PURE__*/ =
+export const UpdateProfileResponseSchema: GenMessage<UpdateProfileResponse> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 8);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.LogPeriodicMetricsRequest
  */
-export type LogPeriodicMetricsRequest =
-  Message<"contracts.supporting.profile.v1.message.LogPeriodicMetricsRequest"> & {
-    /**
-     * @generated from field: float weight_kg = 1;
-     */
-    weightKg: number;
+export type LogPeriodicMetricsRequest = Message<"contracts.supporting.profile.v1.message.LogPeriodicMetricsRequest"> & {
+  /**
+   * @generated from field: float weight_kg = 1;
+   */
+  weightKg: number;
 
-    /**
-     * @generated from field: float body_fat_percent = 2;
-     */
-    bodyFatPercent: number;
+  /**
+   * @generated from field: float body_fat_percent = 2;
+   */
+  bodyFatPercent: number;
 
-    /**
-     * @generated from field: string progress_photo_url = 3;
-     */
-    progressPhotoUrl: string;
+  /**
+   * @generated from field: string progress_photo_url = 3;
+   */
+  progressPhotoUrl: string;
 
-    /**
-     * @generated from field: float height_cm = 4;
-     */
-    heightCm: number;
-  };
+  /**
+   * @generated from field: float height_cm = 4;
+   */
+  heightCm: number;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.LogPeriodicMetricsRequest.
  * Use `create(LogPeriodicMetricsRequestSchema)` to create a new message.
  */
-export const LogPeriodicMetricsRequestSchema: GenMessage<LogPeriodicMetricsRequest> /*@__PURE__*/ =
+export const LogPeriodicMetricsRequestSchema: GenMessage<LogPeriodicMetricsRequest> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 9);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.LogPeriodicMetricsResponse
  */
-export type LogPeriodicMetricsResponse =
-  Message<"contracts.supporting.profile.v1.message.LogPeriodicMetricsResponse"> & {
-    /**
-     * @generated from field: string log_id = 1;
-     */
-    logId: string;
+export type LogPeriodicMetricsResponse = Message<"contracts.supporting.profile.v1.message.LogPeriodicMetricsResponse"> & {
+  /**
+   * @generated from field: string log_id = 1;
+   */
+  logId: string;
 
-    /**
-     * @generated from field: string user_id = 2;
-     */
-    userId: string;
+  /**
+   * @generated from field: string user_id = 2;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: float weight_kg = 3;
-     */
-    weightKg: number;
+  /**
+   * @generated from field: float weight_kg = 3;
+   */
+  weightKg: number;
 
-    /**
-     * @generated from field: float body_fat_percent = 4;
-     */
-    bodyFatPercent: number;
+  /**
+   * @generated from field: float body_fat_percent = 4;
+   */
+  bodyFatPercent: number;
 
-    /**
-     * @generated from field: string sync_status = 5;
-     */
-    syncStatus: string;
+  /**
+   * @generated from field: string sync_status = 5;
+   */
+  syncStatus: string;
 
-    /**
-     * @generated from field: string message = 6;
-     */
-    message: string;
+  /**
+   * @generated from field: string message = 6;
+   */
+  message: string;
 
-    /**
-     * @generated from field: float height_cm = 7;
-     */
-    heightCm: number;
-  };
+  /**
+   * @generated from field: float height_cm = 7;
+   */
+  heightCm: number;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.LogPeriodicMetricsResponse.
  * Use `create(LogPeriodicMetricsResponseSchema)` to create a new message.
  */
-export const LogPeriodicMetricsResponseSchema: GenMessage<LogPeriodicMetricsResponse> /*@__PURE__*/ =
+export const LogPeriodicMetricsResponseSchema: GenMessage<LogPeriodicMetricsResponse> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 10);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.GetBodyMetricsHistoryRequest
  */
-export type GetBodyMetricsHistoryRequest =
-  Message<"contracts.supporting.profile.v1.message.GetBodyMetricsHistoryRequest"> & {
-    /**
-     * Option for Admin/others to query history; if empty, uses context user_id
-     *
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
-  };
+export type GetBodyMetricsHistoryRequest = Message<"contracts.supporting.profile.v1.message.GetBodyMetricsHistoryRequest"> & {
+  /**
+   * Option for Admin/others to query history; if empty, uses context user_id
+   *
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.GetBodyMetricsHistoryRequest.
  * Use `create(GetBodyMetricsHistoryRequestSchema)` to create a new message.
  */
-export const GetBodyMetricsHistoryRequestSchema: GenMessage<GetBodyMetricsHistoryRequest> /*@__PURE__*/ =
+export const GetBodyMetricsHistoryRequestSchema: GenMessage<GetBodyMetricsHistoryRequest> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 11);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.GetBodyMetricsHistoryResponse
  */
-export type GetBodyMetricsHistoryResponse =
-  Message<"contracts.supporting.profile.v1.message.GetBodyMetricsHistoryResponse"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type GetBodyMetricsHistoryResponse = Message<"contracts.supporting.profile.v1.message.GetBodyMetricsHistoryResponse"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: repeated contracts.supporting.profile.v1.message.PeriodicMetric metrics = 2;
-     */
-    metrics: PeriodicMetric[];
-  };
+  /**
+   * @generated from field: repeated contracts.supporting.profile.v1.message.PeriodicMetric metrics = 2;
+   */
+  metrics: PeriodicMetric[];
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.GetBodyMetricsHistoryResponse.
  * Use `create(GetBodyMetricsHistoryResponseSchema)` to create a new message.
  */
-export const GetBodyMetricsHistoryResponseSchema: GenMessage<GetBodyMetricsHistoryResponse> /*@__PURE__*/ =
+export const GetBodyMetricsHistoryResponseSchema: GenMessage<GetBodyMetricsHistoryResponse> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 12);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.ReportInjuryRequest
  */
-export type ReportInjuryRequest =
-  Message<"contracts.supporting.profile.v1.message.ReportInjuryRequest"> & {
-    /**
-     * @generated from field: string muscle_group = 1;
-     */
-    muscleGroup: string;
+export type ReportInjuryRequest = Message<"contracts.supporting.profile.v1.message.ReportInjuryRequest"> & {
+  /**
+   * @generated from field: string muscle_group = 1;
+   */
+  muscleGroup: string;
 
-    /**
-     * @generated from field: string severity = 2;
-     */
-    severity: string;
+  /**
+   * @generated from field: string severity = 2;
+   */
+  severity: string;
 
-    /**
-     * @generated from field: string notes = 3;
-     */
-    notes: string;
-  };
+  /**
+   * @generated from field: string notes = 3;
+   */
+  notes: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.ReportInjuryRequest.
  * Use `create(ReportInjuryRequestSchema)` to create a new message.
  */
-export const ReportInjuryRequestSchema: GenMessage<ReportInjuryRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_message_profile_messages,
-  13,
-);
+export const ReportInjuryRequestSchema: GenMessage<ReportInjuryRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 13);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.ReportInjuryResponse
  */
-export type ReportInjuryResponse =
-  Message<"contracts.supporting.profile.v1.message.ReportInjuryResponse"> & {
-    /**
-     * @generated from field: string injury_id = 1;
-     */
-    injuryId: string;
+export type ReportInjuryResponse = Message<"contracts.supporting.profile.v1.message.ReportInjuryResponse"> & {
+  /**
+   * @generated from field: string injury_id = 1;
+   */
+  injuryId: string;
 
-    /**
-     * @generated from field: bool success = 2;
-     */
-    success: boolean;
+  /**
+   * @generated from field: bool success = 2;
+   */
+  success: boolean;
 
-    /**
-     * @generated from field: string message = 3;
-     */
-    message: string;
-  };
+  /**
+   * @generated from field: string message = 3;
+   */
+  message: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.ReportInjuryResponse.
  * Use `create(ReportInjuryResponseSchema)` to create a new message.
  */
-export const ReportInjuryResponseSchema: GenMessage<ReportInjuryResponse> /*@__PURE__*/ =
+export const ReportInjuryResponseSchema: GenMessage<ReportInjuryResponse> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 14);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.RecoverInjuryRequest
  */
-export type RecoverInjuryRequest =
-  Message<"contracts.supporting.profile.v1.message.RecoverInjuryRequest"> & {
-    /**
-     * @generated from field: string injury_id = 1;
-     */
-    injuryId: string;
-  };
+export type RecoverInjuryRequest = Message<"contracts.supporting.profile.v1.message.RecoverInjuryRequest"> & {
+  /**
+   * @generated from field: string injury_id = 1;
+   */
+  injuryId: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.RecoverInjuryRequest.
  * Use `create(RecoverInjuryRequestSchema)` to create a new message.
  */
-export const RecoverInjuryRequestSchema: GenMessage<RecoverInjuryRequest> /*@__PURE__*/ =
+export const RecoverInjuryRequestSchema: GenMessage<RecoverInjuryRequest> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 15);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.RecoverInjuryResponse
  */
-export type RecoverInjuryResponse =
-  Message<"contracts.supporting.profile.v1.message.RecoverInjuryResponse"> & {
-    /**
-     * @generated from field: bool success = 1;
-     */
-    success: boolean;
+export type RecoverInjuryResponse = Message<"contracts.supporting.profile.v1.message.RecoverInjuryResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
 
-    /**
-     * @generated from field: string message = 2;
-     */
-    message: string;
-  };
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.RecoverInjuryResponse.
  * Use `create(RecoverInjuryResponseSchema)` to create a new message.
  */
-export const RecoverInjuryResponseSchema: GenMessage<RecoverInjuryResponse> /*@__PURE__*/ =
+export const RecoverInjuryResponseSchema: GenMessage<RecoverInjuryResponse> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 16);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.GetInjuryHistoryRequest
  */
-export type GetInjuryHistoryRequest =
-  Message<"contracts.supporting.profile.v1.message.GetInjuryHistoryRequest"> & {
-    /**
-     * Option for Admin/others to query history; if empty, uses context user_id
-     *
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
-  };
+export type GetInjuryHistoryRequest = Message<"contracts.supporting.profile.v1.message.GetInjuryHistoryRequest"> & {
+  /**
+   * Option for Admin/others to query history; if empty, uses context user_id
+   *
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.GetInjuryHistoryRequest.
  * Use `create(GetInjuryHistoryRequestSchema)` to create a new message.
  */
-export const GetInjuryHistoryRequestSchema: GenMessage<GetInjuryHistoryRequest> /*@__PURE__*/ =
+export const GetInjuryHistoryRequestSchema: GenMessage<GetInjuryHistoryRequest> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 17);
 
 /**
  * @generated from message contracts.supporting.profile.v1.message.GetInjuryHistoryResponse
  */
-export type GetInjuryHistoryResponse =
-  Message<"contracts.supporting.profile.v1.message.GetInjuryHistoryResponse"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type GetInjuryHistoryResponse = Message<"contracts.supporting.profile.v1.message.GetInjuryHistoryResponse"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: repeated contracts.supporting.profile.v1.message.Injury injuries = 2;
-     */
-    injuries: Injury[];
-  };
+  /**
+   * @generated from field: repeated contracts.supporting.profile.v1.message.Injury injuries = 2;
+   */
+  injuries: Injury[];
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.message.GetInjuryHistoryResponse.
  * Use `create(GetInjuryHistoryResponseSchema)` to create a new message.
  */
-export const GetInjuryHistoryResponseSchema: GenMessage<GetInjuryHistoryResponse> /*@__PURE__*/ =
+export const GetInjuryHistoryResponseSchema: GenMessage<GetInjuryHistoryResponse> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 18);
+

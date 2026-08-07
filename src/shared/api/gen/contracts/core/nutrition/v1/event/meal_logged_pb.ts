@@ -2,16 +2,15 @@
 // @generated from file contracts/core/nutrition/v1/event/meal_logged.proto (package contracts.core.nutrition.v1.event, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/nutrition/v1/event/meal_logged.proto.
  */
-export const file_contracts_core_nutrition_v1_event_meal_logged: GenFile /*@__PURE__*/ = fileDesc(
-  "CjNjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbWVhbF9sb2dnZWQucHJvdG8SIWNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5ldmVudCKqAQoKTWVhbExvZ2dlZBIPCgd1c2VyX2lkGAEgASgJEhMKC21lYWxfbG9nX2lkGAIgASgJEhEKCW1lYWxfbmFtZRgDIAEoCRIRCgltZWFsX3R5cGUYBCABKAkSEAoIY2Fsb3JpZXMYBSABKAISDwoHcHJvdGVpbhgGIAEoAhINCgVjYXJicxgHIAEoAhILCgNmYXQYCCABKAISEQoJbG9nZ2VkX2F0GAkgASgJQmlaZ2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvbnV0cml0aW9uL3YxL2V2ZW50O251dHJpdGlvbnYxZXZlbnRiBnByb3RvMw",
-);
+export const file_contracts_core_nutrition_v1_event_meal_logged: GenFile = /*@__PURE__*/
+  fileDesc("CjNjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbWVhbF9sb2dnZWQucHJvdG8SIWNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5ldmVudCKqAQoKTWVhbExvZ2dlZBIPCgd1c2VyX2lkGAEgASgJEhMKC21lYWxfbG9nX2lkGAIgASgJEhEKCW1lYWxfbmFtZRgDIAEoCRIRCgltZWFsX3R5cGUYBCABKAkSEAoIY2Fsb3JpZXMYBSABKAISDwoHcHJvdGVpbhgGIAEoAhINCgVjYXJicxgHIAEoAhILCgNmYXQYCCABKAISEQoJbG9nZ2VkX2F0GAkgASgJQmlaZ2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvbnV0cml0aW9uL3YxL2V2ZW50O251dHJpdGlvbnYxZXZlbnRiBnByb3RvMw");
 
 /**
  * @generated from message contracts.core.nutrition.v1.event.MealLogged
@@ -67,7 +66,6 @@ export type MealLogged = Message<"contracts.core.nutrition.v1.event.MealLogged">
  * Describes the message contracts.core.nutrition.v1.event.MealLogged.
  * Use `create(MealLoggedSchema)` to create a new message.
  */
-export const MealLoggedSchema: GenMessage<MealLogged> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_nutrition_v1_event_meal_logged,
-  0,
-);
+export const MealLoggedSchema: GenMessage<MealLogged> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_event_meal_logged, 0);
+

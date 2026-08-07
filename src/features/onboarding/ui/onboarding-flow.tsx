@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -57,59 +57,6 @@ function ChoiceButton({
   );
 }
 
-/* Custom Dropdown UI for Onboarding */
-function CustomOnboardingDropdown({
-  value,
-  options,
-  onChange,
-}: {
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (val: string) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const selectedOption = options.find((o) => o.value === value);
-
-  return (
-    <div className="relative w-full font-body">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-11 px-3.5 flex items-center justify-between text-xs font-semibold rounded-xl bg-white border border-neutral-300 transition-colors cursor-pointer"
-        style={{ borderColor: isOpen ? "#4B57F2" : "#D1D5DB" }}
-      >
-        <span>{selectedOption ? selectedOption.label : "Select..."}</span>
-        <ChevronDown className={`h-4 w-4 text-neutral-500 transition-transform ${isOpen ? "rotate-180 text-[#4B57F2]" : ""}`} />
-      </button>
-
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 z-20" onClick={() => setIsOpen(false)} />
-          <div className="absolute left-0 right-0 top-full mt-1.5 z-30 max-h-48 overflow-y-auto rounded-xl bg-white border border-neutral-200 shadow-xl py-1">
-            {options.map((opt) => {
-              const isSelected = opt.value === value;
-              return (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => {
-                    onChange(opt.value);
-                    setIsOpen(false);
-                  }}
-                  className="w-full px-3.5 py-2.5 text-xs text-left font-medium flex items-center justify-between transition-colors cursor-pointer hover:bg-blue-50/60"
-                  style={{ color: isSelected ? "#4B57F2" : "#101214", fontWeight: isSelected ? 600 : 500 }}
-                >
-                  <span>{opt.label}</span>
-                  {isSelected && <Check className="h-3.5 w-3.5 text-[#4B57F2]" />}
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 export function OnboardingFlow() {
   const router = useRouter();

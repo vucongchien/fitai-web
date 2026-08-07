@@ -2,17 +2,15 @@
 // @generated from file contracts/supporting/profile/v1/event/injury_reported.proto (package contracts.supporting.profile.v1.event, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/profile/v1/event/injury_reported.proto.
  */
-export const file_contracts_supporting_profile_v1_event_injury_reported: GenFile /*@__PURE__*/ =
-  fileDesc(
-    "Cjtjb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L2luanVyeV9yZXBvcnRlZC5wcm90bxIlY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5ldmVudCJuCg1Jbmp1cnlEZXRhaWxzEhEKCWluanVyeV9pZBgBIAEoCRIUCgxtdXNjbGVfZ3JvdXAYAiABKAkSEAoIc2V2ZXJpdHkYAyABKAkSDQoFbm90ZXMYBCABKAkSEwoLcmVwb3J0ZWRfYXQYBSABKAkiZwoOSW5qdXJ5UmVwb3J0ZWQSDwoHdXNlcl9pZBgBIAEoCRJECgZpbmp1cnkYAiABKAsyNC5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLmV2ZW50LkluanVyeURldGFpbHNCa1ppZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50O3Byb2ZpbGV2MWV2ZW50YgZwcm90bzM",
-  );
+export const file_contracts_supporting_profile_v1_event_injury_reported: GenFile = /*@__PURE__*/
+  fileDesc("Cjtjb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L2luanVyeV9yZXBvcnRlZC5wcm90bxIlY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5ldmVudCJuCg1Jbmp1cnlEZXRhaWxzEhEKCWluanVyeV9pZBgBIAEoCRIUCgxtdXNjbGVfZ3JvdXAYAiABKAkSEAoIc2V2ZXJpdHkYAyABKAkSDQoFbm90ZXMYBCABKAkSEwoLcmVwb3J0ZWRfYXQYBSABKAkiZwoOSW5qdXJ5UmVwb3J0ZWQSDwoHdXNlcl9pZBgBIAEoCRJECgZpbmp1cnkYAiABKAsyNC5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLmV2ZW50LkluanVyeURldGFpbHNCa1ppZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50O3Byb2ZpbGV2MWV2ZW50YgZwcm90bzM");
 
 /**
  * @generated from message contracts.supporting.profile.v1.event.InjuryDetails
@@ -48,10 +46,8 @@ export type InjuryDetails = Message<"contracts.supporting.profile.v1.event.Injur
  * Describes the message contracts.supporting.profile.v1.event.InjuryDetails.
  * Use `create(InjuryDetailsSchema)` to create a new message.
  */
-export const InjuryDetailsSchema: GenMessage<InjuryDetails> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_event_injury_reported,
-  0,
-);
+export const InjuryDetailsSchema: GenMessage<InjuryDetails> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_event_injury_reported, 0);
 
 /**
  * @generated from message contracts.supporting.profile.v1.event.InjuryReported
@@ -72,7 +68,6 @@ export type InjuryReported = Message<"contracts.supporting.profile.v1.event.Inju
  * Describes the message contracts.supporting.profile.v1.event.InjuryReported.
  * Use `create(InjuryReportedSchema)` to create a new message.
  */
-export const InjuryReportedSchema: GenMessage<InjuryReported> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_event_injury_reported,
-  1,
-);
+export const InjuryReportedSchema: GenMessage<InjuryReported> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_event_injury_reported, 1);
+

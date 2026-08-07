@@ -2,17 +2,15 @@
 // @generated from file contracts/core/nutrition/v1/message/nutrition_messages.proto (package contracts.core.nutrition.v1.message, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/nutrition/v1/message/nutrition_messages.proto.
  */
-export const file_contracts_core_nutrition_v1_message_nutrition_messages: GenFile /*@__PURE__*/ =
-  fileDesc(
-    "Cjxjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZS9udXRyaXRpb25fbWVzc2FnZXMucHJvdG8SI2NvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlIkYKBk1hY3JvcxIVCg1wcm90ZWluX2dyYW1zGAEgASgCEhIKCmNhcmJfZ3JhbXMYAiABKAISEQoJZmF0X2dyYW1zGAMgASgCIp0BCgpNZWFsT3B0aW9uEhEKCW1lYWxfbmFtZRgBIAEoCRISCgpwcmljZV90aWVyGAIgASgJEhAKCGNhbG9yaWVzGAMgASgCEg8KB3Byb3RlaW4YBCABKAISDQoFY2FyYnMYBSABKAISCwoDZmF0GAYgASgCEhMKC2Rlc2NyaXB0aW9uGAcgASgJEhQKDHJlY2lwZV9zdGVwcxgIIAMoCSKRAgoKRGFpbHlNZWFscxJCCglicmVha2Zhc3QYASADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBWx1bmNoGAIgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbhI/CgZkaW5uZXIYAyADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBXNuYWNrGAQgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbiImChNHZXRUb2RheU1lbnVSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkirAEKFEdldFRvZGF5TWVudVJlc3BvbnNlEhcKD3RhcmdldF9jYWxvcmllcxgBIAEoAhI7CgZtYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSPgoFbWVhbHMYAyABKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5EYWlseU1lYWxzIpkBCg5Mb2dNZWFsUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIkgKD0xvZ01lYWxSZXNwb25zZRITCgttZWFsX2xvZ19pZBgBIAEoCRIPCgdzdWNjZXNzGAIgASgIEg8KB21lc3NhZ2UYAyABKAkimgEKC01lYWxMb2dJdGVtEhMKC21lYWxfbG9nX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIlMKGkdldE51dHJpdGlvbkhpc3RvcnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSEgoKc3RhcnRfZGF0ZRgCIAEoCRIQCghlbmRfZGF0ZRgDIAEoCSJeChtHZXROdXRyaXRpb25IaXN0b3J5UmVzcG9uc2USPwoFbWVhbHMYASADKAsyMC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsTG9nSXRlbSItChpHZXROdXRyaXRpb25TdW1tYXJ5UmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJItsBChtHZXROdXRyaXRpb25TdW1tYXJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEkIKDXRhcmdldF9tYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSGQoRY29uc3VtZWRfY2Fsb3JpZXMYAyABKAISRAoPY29uc3VtZWRfbWFjcm9zGAQgASgLMisuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWFjcm9zIlIKIFJlY2FsaWJyYXRlUGxhbldpdGhQYW50cnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSHQoVYXZhaWxhYmxlX2luZ3JlZGllbnRzGAIgAygJIsoBCiFSZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEjsKBm1hY3JvcxgCIAEoCzIrLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLk1hY3JvcxI+CgVtZWFscxgDIAEoCzIvLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkRhaWx5TWVhbHMSDwoHbWVzc2FnZRgEIAEoCSL7AQoVQ3JlYXRlRm9vZEl0ZW1SZXF1ZXN0EgwKBG5hbWUYASABKAkSEAoIY2F0ZWdvcnkYAiABKAkSGQoRY2Fsb3JpZXNfcGVyXzEwMGcYAyABKAISGAoQcHJvdGVpbl9wZXJfMTAwZxgEIAEoAhIWCg5jYXJic19wZXJfMTAwZxgFIAEoAhIUCgxmYXRfcGVyXzEwMGcYBiABKAISFQoNYWxsZXJnZW5fdGFncxgHIAMoCRIWCg5wcm90ZWluX3NvdXJjZRgIIAEoCRITCgtjYXJiX3NvdXJjZRgJIAEoCRIbChNpc19udXRpZm9vZF9wcm9kdWN0GAogASgIIk8KFkNyZWF0ZUZvb2RJdGVtUmVzcG9uc2USFAoMZm9vZF9pdGVtX2lkGAEgASgJEg4KBnN0YXR1cxgCIAEoCRIPCgdtZXNzYWdlGAMgASgJIi4KFkFwcHJvdmVGb29kSXRlbVJlcXVlc3QSFAoMZm9vZF9pdGVtX2lkGAEgASgJImEKF0FwcHJvdmVGb29kSXRlbVJlc3BvbnNlEhQKDGZvb2RfaXRlbV9pZBgBIAEoCRIOCgZzdGF0dXMYAiABKAkSDwoHc3VjY2VzcxgDIAEoCBIPCgdtZXNzYWdlGAQgASgJIm8KFEltcHJvdmVtZW50QXJlYVByb3RvEgwKBGFyZWEYASABKAkSEwoLY3VycmVudF9hdmcYAiABKAISDgoGdGFyZ2V0GAMgASgCEhIKCnN1Z2dlc3Rpb24YBCABKAkSEAoIcHJpb3JpdHkYBSABKAkiZwobUmVjb21tZW5kZWRBZGp1c3RtZW50c1Byb3RvEhYKDmNhbG9yaWVzX2RlbHRhGAEgASgCEhsKE3Byb3RlaW5fcmF0aW9fZGVsdGEYAiABKAISEwoLZm9jdXNfZm9vZHMYAyADKAkiVAoaR2V0TnV0cml0aW9uSW5zaWdodFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIRCglnb2FsX3R5cGUYAiABKAkSEgoKcmFuZ2VfZGF5cxgDIAEoBSKnAgobR2V0TnV0cml0aW9uSW5zaWdodFJlc3BvbnNlEhUKDW92ZXJhbGxfc2NvcmUYASABKAUSDwoHc3VtbWFyeRgCIAEoCRIRCglzdHJlbmd0aHMYAyADKAkSVAoRaW1wcm92ZW1lbnRfYXJlYXMYBCADKAsyOS5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5JbXByb3ZlbWVudEFyZWFQcm90bxIUCgx3ZWVrbHlfdHJlbmQYBSABKAkSYQoXcmVjb21tZW5kZWRfYWRqdXN0bWVudHMYBiABKAsyQC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5SZWNvbW1lbmRlZEFkanVzdG1lbnRzUHJvdG9CbVprZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZTtudXRyaXRpb252MW1lc3NhZ2ViBnByb3RvMw",
-  );
+export const file_contracts_core_nutrition_v1_message_nutrition_messages: GenFile = /*@__PURE__*/
+  fileDesc("Cjxjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZS9udXRyaXRpb25fbWVzc2FnZXMucHJvdG8SI2NvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlIkYKBk1hY3JvcxIVCg1wcm90ZWluX2dyYW1zGAEgASgCEhIKCmNhcmJfZ3JhbXMYAiABKAISEQoJZmF0X2dyYW1zGAMgASgCIp0BCgpNZWFsT3B0aW9uEhEKCW1lYWxfbmFtZRgBIAEoCRISCgpwcmljZV90aWVyGAIgASgJEhAKCGNhbG9yaWVzGAMgASgCEg8KB3Byb3RlaW4YBCABKAISDQoFY2FyYnMYBSABKAISCwoDZmF0GAYgASgCEhMKC2Rlc2NyaXB0aW9uGAcgASgJEhQKDHJlY2lwZV9zdGVwcxgIIAMoCSKRAgoKRGFpbHlNZWFscxJCCglicmVha2Zhc3QYASADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBWx1bmNoGAIgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbhI/CgZkaW5uZXIYAyADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBXNuYWNrGAQgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbiImChNHZXRUb2RheU1lbnVSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkirAEKFEdldFRvZGF5TWVudVJlc3BvbnNlEhcKD3RhcmdldF9jYWxvcmllcxgBIAEoAhI7CgZtYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSPgoFbWVhbHMYAyABKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5EYWlseU1lYWxzIpkBCg5Mb2dNZWFsUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIkgKD0xvZ01lYWxSZXNwb25zZRITCgttZWFsX2xvZ19pZBgBIAEoCRIPCgdzdWNjZXNzGAIgASgIEg8KB21lc3NhZ2UYAyABKAkimgEKC01lYWxMb2dJdGVtEhMKC21lYWxfbG9nX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIlMKGkdldE51dHJpdGlvbkhpc3RvcnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSEgoKc3RhcnRfZGF0ZRgCIAEoCRIQCghlbmRfZGF0ZRgDIAEoCSJeChtHZXROdXRyaXRpb25IaXN0b3J5UmVzcG9uc2USPwoFbWVhbHMYASADKAsyMC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsTG9nSXRlbSItChpHZXROdXRyaXRpb25TdW1tYXJ5UmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJItsBChtHZXROdXRyaXRpb25TdW1tYXJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEkIKDXRhcmdldF9tYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSGQoRY29uc3VtZWRfY2Fsb3JpZXMYAyABKAISRAoPY29uc3VtZWRfbWFjcm9zGAQgASgLMisuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWFjcm9zIlIKIFJlY2FsaWJyYXRlUGxhbldpdGhQYW50cnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSHQoVYXZhaWxhYmxlX2luZ3JlZGllbnRzGAIgAygJIsoBCiFSZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEjsKBm1hY3JvcxgCIAEoCzIrLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLk1hY3JvcxI+CgVtZWFscxgDIAEoCzIvLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkRhaWx5TWVhbHMSDwoHbWVzc2FnZRgEIAEoCSL7AQoVQ3JlYXRlRm9vZEl0ZW1SZXF1ZXN0EgwKBG5hbWUYASABKAkSEAoIY2F0ZWdvcnkYAiABKAkSGQoRY2Fsb3JpZXNfcGVyXzEwMGcYAyABKAISGAoQcHJvdGVpbl9wZXJfMTAwZxgEIAEoAhIWCg5jYXJic19wZXJfMTAwZxgFIAEoAhIUCgxmYXRfcGVyXzEwMGcYBiABKAISFQoNYWxsZXJnZW5fdGFncxgHIAMoCRIWCg5wcm90ZWluX3NvdXJjZRgIIAEoCRITCgtjYXJiX3NvdXJjZRgJIAEoCRIbChNpc19udXRpZm9vZF9wcm9kdWN0GAogASgIIk8KFkNyZWF0ZUZvb2RJdGVtUmVzcG9uc2USFAoMZm9vZF9pdGVtX2lkGAEgASgJEg4KBnN0YXR1cxgCIAEoCRIPCgdtZXNzYWdlGAMgASgJIi4KFkFwcHJvdmVGb29kSXRlbVJlcXVlc3QSFAoMZm9vZF9pdGVtX2lkGAEgASgJImEKF0FwcHJvdmVGb29kSXRlbVJlc3BvbnNlEhQKDGZvb2RfaXRlbV9pZBgBIAEoCRIOCgZzdGF0dXMYAiABKAkSDwoHc3VjY2VzcxgDIAEoCBIPCgdtZXNzYWdlGAQgASgJIm8KFEltcHJvdmVtZW50QXJlYVByb3RvEgwKBGFyZWEYASABKAkSEwoLY3VycmVudF9hdmcYAiABKAISDgoGdGFyZ2V0GAMgASgCEhIKCnN1Z2dlc3Rpb24YBCABKAkSEAoIcHJpb3JpdHkYBSABKAkiZwobUmVjb21tZW5kZWRBZGp1c3RtZW50c1Byb3RvEhYKDmNhbG9yaWVzX2RlbHRhGAEgASgCEhsKE3Byb3RlaW5fcmF0aW9fZGVsdGEYAiABKAISEwoLZm9jdXNfZm9vZHMYAyADKAkiVAoaR2V0TnV0cml0aW9uSW5zaWdodFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIRCglnb2FsX3R5cGUYAiABKAkSEgoKcmFuZ2VfZGF5cxgDIAEoBSKnAgobR2V0TnV0cml0aW9uSW5zaWdodFJlc3BvbnNlEhUKDW92ZXJhbGxfc2NvcmUYASABKAUSDwoHc3VtbWFyeRgCIAEoCRIRCglzdHJlbmd0aHMYAyADKAkSVAoRaW1wcm92ZW1lbnRfYXJlYXMYBCADKAsyOS5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5JbXByb3ZlbWVudEFyZWFQcm90bxIUCgx3ZWVrbHlfdHJlbmQYBSABKAkSYQoXcmVjb21tZW5kZWRfYWRqdXN0bWVudHMYBiABKAsyQC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5SZWNvbW1lbmRlZEFkanVzdG1lbnRzUHJvdG9CbVprZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZTtudXRyaXRpb252MW1lc3NhZ2ViBnByb3RvMw");
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.Macros
@@ -38,10 +36,8 @@ export type Macros = Message<"contracts.core.nutrition.v1.message.Macros"> & {
  * Describes the message contracts.core.nutrition.v1.message.Macros.
  * Use `create(MacrosSchema)` to create a new message.
  */
-export const MacrosSchema: GenMessage<Macros> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_nutrition_v1_message_nutrition_messages,
-  0,
-);
+export const MacrosSchema: GenMessage<Macros> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 0);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.MealOption
@@ -94,10 +90,8 @@ export type MealOption = Message<"contracts.core.nutrition.v1.message.MealOption
  * Describes the message contracts.core.nutrition.v1.message.MealOption.
  * Use `create(MealOptionSchema)` to create a new message.
  */
-export const MealOptionSchema: GenMessage<MealOption> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_nutrition_v1_message_nutrition_messages,
-  1,
-);
+export const MealOptionSchema: GenMessage<MealOption> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 1);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.DailyMeals
@@ -128,57 +122,51 @@ export type DailyMeals = Message<"contracts.core.nutrition.v1.message.DailyMeals
  * Describes the message contracts.core.nutrition.v1.message.DailyMeals.
  * Use `create(DailyMealsSchema)` to create a new message.
  */
-export const DailyMealsSchema: GenMessage<DailyMeals> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_nutrition_v1_message_nutrition_messages,
-  2,
-);
+export const DailyMealsSchema: GenMessage<DailyMeals> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 2);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.GetTodayMenuRequest
  */
-export type GetTodayMenuRequest =
-  Message<"contracts.core.nutrition.v1.message.GetTodayMenuRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
-  };
+export type GetTodayMenuRequest = Message<"contracts.core.nutrition.v1.message.GetTodayMenuRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.GetTodayMenuRequest.
  * Use `create(GetTodayMenuRequestSchema)` to create a new message.
  */
-export const GetTodayMenuRequestSchema: GenMessage<GetTodayMenuRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_nutrition_v1_message_nutrition_messages,
-  3,
-);
+export const GetTodayMenuRequestSchema: GenMessage<GetTodayMenuRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 3);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.GetTodayMenuResponse
  */
-export type GetTodayMenuResponse =
-  Message<"contracts.core.nutrition.v1.message.GetTodayMenuResponse"> & {
-    /**
-     * @generated from field: float target_calories = 1;
-     */
-    targetCalories: number;
+export type GetTodayMenuResponse = Message<"contracts.core.nutrition.v1.message.GetTodayMenuResponse"> & {
+  /**
+   * @generated from field: float target_calories = 1;
+   */
+  targetCalories: number;
 
-    /**
-     * @generated from field: contracts.core.nutrition.v1.message.Macros macros = 2;
-     */
-    macros?: Macros | undefined;
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.Macros macros = 2;
+   */
+  macros?: Macros | undefined;
 
-    /**
-     * @generated from field: contracts.core.nutrition.v1.message.DailyMeals meals = 3;
-     */
-    meals?: DailyMeals | undefined;
-  };
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.DailyMeals meals = 3;
+   */
+  meals?: DailyMeals | undefined;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.GetTodayMenuResponse.
  * Use `create(GetTodayMenuResponseSchema)` to create a new message.
  */
-export const GetTodayMenuResponseSchema: GenMessage<GetTodayMenuResponse> /*@__PURE__*/ =
+export const GetTodayMenuResponseSchema: GenMessage<GetTodayMenuResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 4);
 
 /**
@@ -232,10 +220,8 @@ export type LogMealRequest = Message<"contracts.core.nutrition.v1.message.LogMea
  * Describes the message contracts.core.nutrition.v1.message.LogMealRequest.
  * Use `create(LogMealRequestSchema)` to create a new message.
  */
-export const LogMealRequestSchema: GenMessage<LogMealRequest> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_nutrition_v1_message_nutrition_messages,
-  5,
-);
+export const LogMealRequestSchema: GenMessage<LogMealRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 5);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.LogMealResponse
@@ -261,10 +247,8 @@ export type LogMealResponse = Message<"contracts.core.nutrition.v1.message.LogMe
  * Describes the message contracts.core.nutrition.v1.message.LogMealResponse.
  * Use `create(LogMealResponseSchema)` to create a new message.
  */
-export const LogMealResponseSchema: GenMessage<LogMealResponse> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_nutrition_v1_message_nutrition_messages,
-  6,
-);
+export const LogMealResponseSchema: GenMessage<LogMealResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 6);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.MealLogItem
@@ -315,453 +299,438 @@ export type MealLogItem = Message<"contracts.core.nutrition.v1.message.MealLogIt
  * Describes the message contracts.core.nutrition.v1.message.MealLogItem.
  * Use `create(MealLogItemSchema)` to create a new message.
  */
-export const MealLogItemSchema: GenMessage<MealLogItem> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_nutrition_v1_message_nutrition_messages,
-  7,
-);
+export const MealLogItemSchema: GenMessage<MealLogItem> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 7);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.GetNutritionHistoryRequest
  */
-export type GetNutritionHistoryRequest =
-  Message<"contracts.core.nutrition.v1.message.GetNutritionHistoryRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type GetNutritionHistoryRequest = Message<"contracts.core.nutrition.v1.message.GetNutritionHistoryRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * YYYY-MM-DD
-     *
-     * @generated from field: string start_date = 2;
-     */
-    startDate: string;
+  /**
+   * YYYY-MM-DD
+   *
+   * @generated from field: string start_date = 2;
+   */
+  startDate: string;
 
-    /**
-     * YYYY-MM-DD
-     *
-     * @generated from field: string end_date = 3;
-     */
-    endDate: string;
-  };
+  /**
+   * YYYY-MM-DD
+   *
+   * @generated from field: string end_date = 3;
+   */
+  endDate: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.GetNutritionHistoryRequest.
  * Use `create(GetNutritionHistoryRequestSchema)` to create a new message.
  */
-export const GetNutritionHistoryRequestSchema: GenMessage<GetNutritionHistoryRequest> /*@__PURE__*/ =
+export const GetNutritionHistoryRequestSchema: GenMessage<GetNutritionHistoryRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 8);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.GetNutritionHistoryResponse
  */
-export type GetNutritionHistoryResponse =
-  Message<"contracts.core.nutrition.v1.message.GetNutritionHistoryResponse"> & {
-    /**
-     * @generated from field: repeated contracts.core.nutrition.v1.message.MealLogItem meals = 1;
-     */
-    meals: MealLogItem[];
-  };
+export type GetNutritionHistoryResponse = Message<"contracts.core.nutrition.v1.message.GetNutritionHistoryResponse"> & {
+  /**
+   * @generated from field: repeated contracts.core.nutrition.v1.message.MealLogItem meals = 1;
+   */
+  meals: MealLogItem[];
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.GetNutritionHistoryResponse.
  * Use `create(GetNutritionHistoryResponseSchema)` to create a new message.
  */
-export const GetNutritionHistoryResponseSchema: GenMessage<GetNutritionHistoryResponse> /*@__PURE__*/ =
+export const GetNutritionHistoryResponseSchema: GenMessage<GetNutritionHistoryResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 9);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.GetNutritionSummaryRequest
  */
-export type GetNutritionSummaryRequest =
-  Message<"contracts.core.nutrition.v1.message.GetNutritionSummaryRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
-  };
+export type GetNutritionSummaryRequest = Message<"contracts.core.nutrition.v1.message.GetNutritionSummaryRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.GetNutritionSummaryRequest.
  * Use `create(GetNutritionSummaryRequestSchema)` to create a new message.
  */
-export const GetNutritionSummaryRequestSchema: GenMessage<GetNutritionSummaryRequest> /*@__PURE__*/ =
+export const GetNutritionSummaryRequestSchema: GenMessage<GetNutritionSummaryRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 10);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.GetNutritionSummaryResponse
  */
-export type GetNutritionSummaryResponse =
-  Message<"contracts.core.nutrition.v1.message.GetNutritionSummaryResponse"> & {
-    /**
-     * @generated from field: float target_calories = 1;
-     */
-    targetCalories: number;
+export type GetNutritionSummaryResponse = Message<"contracts.core.nutrition.v1.message.GetNutritionSummaryResponse"> & {
+  /**
+   * @generated from field: float target_calories = 1;
+   */
+  targetCalories: number;
 
-    /**
-     * @generated from field: contracts.core.nutrition.v1.message.Macros target_macros = 2;
-     */
-    targetMacros?: Macros | undefined;
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.Macros target_macros = 2;
+   */
+  targetMacros?: Macros | undefined;
 
-    /**
-     * @generated from field: float consumed_calories = 3;
-     */
-    consumedCalories: number;
+  /**
+   * @generated from field: float consumed_calories = 3;
+   */
+  consumedCalories: number;
 
-    /**
-     * @generated from field: contracts.core.nutrition.v1.message.Macros consumed_macros = 4;
-     */
-    consumedMacros?: Macros | undefined;
-  };
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.Macros consumed_macros = 4;
+   */
+  consumedMacros?: Macros | undefined;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.GetNutritionSummaryResponse.
  * Use `create(GetNutritionSummaryResponseSchema)` to create a new message.
  */
-export const GetNutritionSummaryResponseSchema: GenMessage<GetNutritionSummaryResponse> /*@__PURE__*/ =
+export const GetNutritionSummaryResponseSchema: GenMessage<GetNutritionSummaryResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 11);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.RecalibratePlanWithPantryRequest
  */
-export type RecalibratePlanWithPantryRequest =
-  Message<"contracts.core.nutrition.v1.message.RecalibratePlanWithPantryRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type RecalibratePlanWithPantryRequest = Message<"contracts.core.nutrition.v1.message.RecalibratePlanWithPantryRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: repeated string available_ingredients = 2;
-     */
-    availableIngredients: string[];
-  };
+  /**
+   * @generated from field: repeated string available_ingredients = 2;
+   */
+  availableIngredients: string[];
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.RecalibratePlanWithPantryRequest.
  * Use `create(RecalibratePlanWithPantryRequestSchema)` to create a new message.
  */
-export const RecalibratePlanWithPantryRequestSchema: GenMessage<RecalibratePlanWithPantryRequest> /*@__PURE__*/ =
+export const RecalibratePlanWithPantryRequestSchema: GenMessage<RecalibratePlanWithPantryRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 12);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.RecalibratePlanWithPantryResponse
  */
-export type RecalibratePlanWithPantryResponse =
-  Message<"contracts.core.nutrition.v1.message.RecalibratePlanWithPantryResponse"> & {
-    /**
-     * @generated from field: float target_calories = 1;
-     */
-    targetCalories: number;
+export type RecalibratePlanWithPantryResponse = Message<"contracts.core.nutrition.v1.message.RecalibratePlanWithPantryResponse"> & {
+  /**
+   * @generated from field: float target_calories = 1;
+   */
+  targetCalories: number;
 
-    /**
-     * @generated from field: contracts.core.nutrition.v1.message.Macros macros = 2;
-     */
-    macros?: Macros | undefined;
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.Macros macros = 2;
+   */
+  macros?: Macros | undefined;
 
-    /**
-     * @generated from field: contracts.core.nutrition.v1.message.DailyMeals meals = 3;
-     */
-    meals?: DailyMeals | undefined;
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.DailyMeals meals = 3;
+   */
+  meals?: DailyMeals | undefined;
 
-    /**
-     * @generated from field: string message = 4;
-     */
-    message: string;
-  };
+  /**
+   * @generated from field: string message = 4;
+   */
+  message: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.RecalibratePlanWithPantryResponse.
  * Use `create(RecalibratePlanWithPantryResponseSchema)` to create a new message.
  */
-export const RecalibratePlanWithPantryResponseSchema: GenMessage<RecalibratePlanWithPantryResponse> /*@__PURE__*/ =
+export const RecalibratePlanWithPantryResponseSchema: GenMessage<RecalibratePlanWithPantryResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 13);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.CreateFoodItemRequest
  */
-export type CreateFoodItemRequest =
-  Message<"contracts.core.nutrition.v1.message.CreateFoodItemRequest"> & {
-    /**
-     * @generated from field: string name = 1;
-     */
-    name: string;
+export type CreateFoodItemRequest = Message<"contracts.core.nutrition.v1.message.CreateFoodItemRequest"> & {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name: string;
 
-    /**
-     * PROTEIN, CARB, VEGGIE, FAT, NUTIFOOD
-     *
-     * @generated from field: string category = 2;
-     */
-    category: string;
+  /**
+   * PROTEIN, CARB, VEGGIE, FAT, NUTIFOOD
+   *
+   * @generated from field: string category = 2;
+   */
+  category: string;
 
-    /**
-     * @generated from field: float calories_per_100g = 3;
-     */
-    caloriesPer100g: number;
+  /**
+   * @generated from field: float calories_per_100g = 3;
+   */
+  caloriesPer100g: number;
 
-    /**
-     * @generated from field: float protein_per_100g = 4;
-     */
-    proteinPer100g: number;
+  /**
+   * @generated from field: float protein_per_100g = 4;
+   */
+  proteinPer100g: number;
 
-    /**
-     * @generated from field: float carbs_per_100g = 5;
-     */
-    carbsPer100g: number;
+  /**
+   * @generated from field: float carbs_per_100g = 5;
+   */
+  carbsPer100g: number;
 
-    /**
-     * @generated from field: float fat_per_100g = 6;
-     */
-    fatPer100g: number;
+  /**
+   * @generated from field: float fat_per_100g = 6;
+   */
+  fatPer100g: number;
 
-    /**
-     * @generated from field: repeated string allergen_tags = 7;
-     */
-    allergenTags: string[];
+  /**
+   * @generated from field: repeated string allergen_tags = 7;
+   */
+  allergenTags: string[];
 
-    /**
-     * @generated from field: string protein_source = 8;
-     */
-    proteinSource: string;
+  /**
+   * @generated from field: string protein_source = 8;
+   */
+  proteinSource: string;
 
-    /**
-     * @generated from field: string carb_source = 9;
-     */
-    carbSource: string;
+  /**
+   * @generated from field: string carb_source = 9;
+   */
+  carbSource: string;
 
-    /**
-     * @generated from field: bool is_nutifood_product = 10;
-     */
-    isNutifoodProduct: boolean;
-  };
+  /**
+   * @generated from field: bool is_nutifood_product = 10;
+   */
+  isNutifoodProduct: boolean;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.CreateFoodItemRequest.
  * Use `create(CreateFoodItemRequestSchema)` to create a new message.
  */
-export const CreateFoodItemRequestSchema: GenMessage<CreateFoodItemRequest> /*@__PURE__*/ =
+export const CreateFoodItemRequestSchema: GenMessage<CreateFoodItemRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 14);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.CreateFoodItemResponse
  */
-export type CreateFoodItemResponse =
-  Message<"contracts.core.nutrition.v1.message.CreateFoodItemResponse"> & {
-    /**
-     * @generated from field: string food_item_id = 1;
-     */
-    foodItemId: string;
+export type CreateFoodItemResponse = Message<"contracts.core.nutrition.v1.message.CreateFoodItemResponse"> & {
+  /**
+   * @generated from field: string food_item_id = 1;
+   */
+  foodItemId: string;
 
-    /**
-     * @generated from field: string status = 2;
-     */
-    status: string;
+  /**
+   * @generated from field: string status = 2;
+   */
+  status: string;
 
-    /**
-     * @generated from field: string message = 3;
-     */
-    message: string;
-  };
+  /**
+   * @generated from field: string message = 3;
+   */
+  message: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.CreateFoodItemResponse.
  * Use `create(CreateFoodItemResponseSchema)` to create a new message.
  */
-export const CreateFoodItemResponseSchema: GenMessage<CreateFoodItemResponse> /*@__PURE__*/ =
+export const CreateFoodItemResponseSchema: GenMessage<CreateFoodItemResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 15);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.ApproveFoodItemRequest
  */
-export type ApproveFoodItemRequest =
-  Message<"contracts.core.nutrition.v1.message.ApproveFoodItemRequest"> & {
-    /**
-     * @generated from field: string food_item_id = 1;
-     */
-    foodItemId: string;
-  };
+export type ApproveFoodItemRequest = Message<"contracts.core.nutrition.v1.message.ApproveFoodItemRequest"> & {
+  /**
+   * @generated from field: string food_item_id = 1;
+   */
+  foodItemId: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.ApproveFoodItemRequest.
  * Use `create(ApproveFoodItemRequestSchema)` to create a new message.
  */
-export const ApproveFoodItemRequestSchema: GenMessage<ApproveFoodItemRequest> /*@__PURE__*/ =
+export const ApproveFoodItemRequestSchema: GenMessage<ApproveFoodItemRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 16);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.ApproveFoodItemResponse
  */
-export type ApproveFoodItemResponse =
-  Message<"contracts.core.nutrition.v1.message.ApproveFoodItemResponse"> & {
-    /**
-     * @generated from field: string food_item_id = 1;
-     */
-    foodItemId: string;
+export type ApproveFoodItemResponse = Message<"contracts.core.nutrition.v1.message.ApproveFoodItemResponse"> & {
+  /**
+   * @generated from field: string food_item_id = 1;
+   */
+  foodItemId: string;
 
-    /**
-     * @generated from field: string status = 2;
-     */
-    status: string;
+  /**
+   * @generated from field: string status = 2;
+   */
+  status: string;
 
-    /**
-     * @generated from field: bool success = 3;
-     */
-    success: boolean;
+  /**
+   * @generated from field: bool success = 3;
+   */
+  success: boolean;
 
-    /**
-     * @generated from field: string message = 4;
-     */
-    message: string;
-  };
+  /**
+   * @generated from field: string message = 4;
+   */
+  message: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.ApproveFoodItemResponse.
  * Use `create(ApproveFoodItemResponseSchema)` to create a new message.
  */
-export const ApproveFoodItemResponseSchema: GenMessage<ApproveFoodItemResponse> /*@__PURE__*/ =
+export const ApproveFoodItemResponseSchema: GenMessage<ApproveFoodItemResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 17);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.ImprovementAreaProto
  */
-export type ImprovementAreaProto =
-  Message<"contracts.core.nutrition.v1.message.ImprovementAreaProto"> & {
-    /**
-     * @generated from field: string area = 1;
-     */
-    area: string;
+export type ImprovementAreaProto = Message<"contracts.core.nutrition.v1.message.ImprovementAreaProto"> & {
+  /**
+   * @generated from field: string area = 1;
+   */
+  area: string;
 
-    /**
-     * @generated from field: float current_avg = 2;
-     */
-    currentAvg: number;
+  /**
+   * @generated from field: float current_avg = 2;
+   */
+  currentAvg: number;
 
-    /**
-     * @generated from field: float target = 3;
-     */
-    target: number;
+  /**
+   * @generated from field: float target = 3;
+   */
+  target: number;
 
-    /**
-     * @generated from field: string suggestion = 4;
-     */
-    suggestion: string;
+  /**
+   * @generated from field: string suggestion = 4;
+   */
+  suggestion: string;
 
-    /**
-     * "HIGH", "MEDIUM", "LOW"
-     *
-     * @generated from field: string priority = 5;
-     */
-    priority: string;
-  };
+  /**
+   * "HIGH", "MEDIUM", "LOW"
+   *
+   * @generated from field: string priority = 5;
+   */
+  priority: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.ImprovementAreaProto.
  * Use `create(ImprovementAreaProtoSchema)` to create a new message.
  */
-export const ImprovementAreaProtoSchema: GenMessage<ImprovementAreaProto> /*@__PURE__*/ =
+export const ImprovementAreaProtoSchema: GenMessage<ImprovementAreaProto> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 18);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto
  */
-export type RecommendedAdjustmentsProto =
-  Message<"contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto"> & {
-    /**
-     * @generated from field: float calories_delta = 1;
-     */
-    caloriesDelta: number;
+export type RecommendedAdjustmentsProto = Message<"contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto"> & {
+  /**
+   * @generated from field: float calories_delta = 1;
+   */
+  caloriesDelta: number;
 
-    /**
-     * @generated from field: float protein_ratio_delta = 2;
-     */
-    proteinRatioDelta: number;
+  /**
+   * @generated from field: float protein_ratio_delta = 2;
+   */
+  proteinRatioDelta: number;
 
-    /**
-     * @generated from field: repeated string focus_foods = 3;
-     */
-    focusFoods: string[];
-  };
+  /**
+   * @generated from field: repeated string focus_foods = 3;
+   */
+  focusFoods: string[];
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto.
  * Use `create(RecommendedAdjustmentsProtoSchema)` to create a new message.
  */
-export const RecommendedAdjustmentsProtoSchema: GenMessage<RecommendedAdjustmentsProto> /*@__PURE__*/ =
+export const RecommendedAdjustmentsProtoSchema: GenMessage<RecommendedAdjustmentsProto> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 19);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.GetNutritionInsightRequest
  */
-export type GetNutritionInsightRequest =
-  Message<"contracts.core.nutrition.v1.message.GetNutritionInsightRequest"> & {
-    /**
-     * @generated from field: string user_id = 1;
-     */
-    userId: string;
+export type GetNutritionInsightRequest = Message<"contracts.core.nutrition.v1.message.GetNutritionInsightRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
 
-    /**
-     * "WEIGHT_LOSS", "MUSCLE_GAIN", "MAINTENANCE"
-     *
-     * @generated from field: string goal_type = 2;
-     */
-    goalType: string;
+  /**
+   * "WEIGHT_LOSS", "MUSCLE_GAIN", "MAINTENANCE"
+   *
+   * @generated from field: string goal_type = 2;
+   */
+  goalType: string;
 
-    /**
-     * số ngày phân tích, mặc định 7
-     *
-     * @generated from field: int32 range_days = 3;
-     */
-    rangeDays: number;
-  };
+  /**
+   * số ngày phân tích, mặc định 7
+   *
+   * @generated from field: int32 range_days = 3;
+   */
+  rangeDays: number;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.GetNutritionInsightRequest.
  * Use `create(GetNutritionInsightRequestSchema)` to create a new message.
  */
-export const GetNutritionInsightRequestSchema: GenMessage<GetNutritionInsightRequest> /*@__PURE__*/ =
+export const GetNutritionInsightRequestSchema: GenMessage<GetNutritionInsightRequest> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 20);
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.GetNutritionInsightResponse
  */
-export type GetNutritionInsightResponse =
-  Message<"contracts.core.nutrition.v1.message.GetNutritionInsightResponse"> & {
-    /**
-     * @generated from field: int32 overall_score = 1;
-     */
-    overallScore: number;
+export type GetNutritionInsightResponse = Message<"contracts.core.nutrition.v1.message.GetNutritionInsightResponse"> & {
+  /**
+   * @generated from field: int32 overall_score = 1;
+   */
+  overallScore: number;
 
-    /**
-     * @generated from field: string summary = 2;
-     */
-    summary: string;
+  /**
+   * @generated from field: string summary = 2;
+   */
+  summary: string;
 
-    /**
-     * @generated from field: repeated string strengths = 3;
-     */
-    strengths: string[];
+  /**
+   * @generated from field: repeated string strengths = 3;
+   */
+  strengths: string[];
 
-    /**
-     * @generated from field: repeated contracts.core.nutrition.v1.message.ImprovementAreaProto improvement_areas = 4;
-     */
-    improvementAreas: ImprovementAreaProto[];
+  /**
+   * @generated from field: repeated contracts.core.nutrition.v1.message.ImprovementAreaProto improvement_areas = 4;
+   */
+  improvementAreas: ImprovementAreaProto[];
 
-    /**
-     * "IMPROVING", "DECLINING", "STABLE"
-     *
-     * @generated from field: string weekly_trend = 5;
-     */
-    weeklyTrend: string;
+  /**
+   * "IMPROVING", "DECLINING", "STABLE"
+   *
+   * @generated from field: string weekly_trend = 5;
+   */
+  weeklyTrend: string;
 
-    /**
-     * @generated from field: contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto recommended_adjustments = 6;
-     */
-    recommendedAdjustments?: RecommendedAdjustmentsProto | undefined;
-  };
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto recommended_adjustments = 6;
+   */
+  recommendedAdjustments?: RecommendedAdjustmentsProto | undefined;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.message.GetNutritionInsightResponse.
  * Use `create(GetNutritionInsightResponseSchema)` to create a new message.
  */
-export const GetNutritionInsightResponseSchema: GenMessage<GetNutritionInsightResponse> /*@__PURE__*/ =
+export const GetNutritionInsightResponseSchema: GenMessage<GetNutritionInsightResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 21);
+

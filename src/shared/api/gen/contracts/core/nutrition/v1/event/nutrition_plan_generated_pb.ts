@@ -2,47 +2,45 @@
 // @generated from file contracts/core/nutrition/v1/event/nutrition_plan_generated.proto (package contracts.core.nutrition.v1.event, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/nutrition/v1/event/nutrition_plan_generated.proto.
  */
-export const file_contracts_core_nutrition_v1_event_nutrition_plan_generated: GenFile /*@__PURE__*/ =
-  fileDesc(
-    "CkBjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbnV0cml0aW9uX3BsYW5fZ2VuZXJhdGVkLnByb3RvEiFjb250cmFjdHMuY29yZS5udXRyaXRpb24udjEuZXZlbnQiYAoWTnV0cml0aW9uUGxhbkdlbmVyYXRlZBIPCgdwbGFuX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSEQoJcGxhbl9kYXRlGAMgASgJEhEKCXRpbWVzdGFtcBgEIAEoCUJpWmdnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL251dHJpdGlvbi92MS9ldmVudDtudXRyaXRpb252MWV2ZW50YgZwcm90bzM",
-  );
+export const file_contracts_core_nutrition_v1_event_nutrition_plan_generated: GenFile = /*@__PURE__*/
+  fileDesc("CkBjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbnV0cml0aW9uX3BsYW5fZ2VuZXJhdGVkLnByb3RvEiFjb250cmFjdHMuY29yZS5udXRyaXRpb24udjEuZXZlbnQiYAoWTnV0cml0aW9uUGxhbkdlbmVyYXRlZBIPCgdwbGFuX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSEQoJcGxhbl9kYXRlGAMgASgJEhEKCXRpbWVzdGFtcBgEIAEoCUJpWmdnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL251dHJpdGlvbi92MS9ldmVudDtudXRyaXRpb252MWV2ZW50YgZwcm90bzM");
 
 /**
  * @generated from message contracts.core.nutrition.v1.event.NutritionPlanGenerated
  */
-export type NutritionPlanGenerated =
-  Message<"contracts.core.nutrition.v1.event.NutritionPlanGenerated"> & {
-    /**
-     * @generated from field: string plan_id = 1;
-     */
-    planId: string;
+export type NutritionPlanGenerated = Message<"contracts.core.nutrition.v1.event.NutritionPlanGenerated"> & {
+  /**
+   * @generated from field: string plan_id = 1;
+   */
+  planId: string;
 
-    /**
-     * @generated from field: string user_id = 2;
-     */
-    userId: string;
+  /**
+   * @generated from field: string user_id = 2;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: string plan_date = 3;
-     */
-    planDate: string;
+  /**
+   * @generated from field: string plan_date = 3;
+   */
+  planDate: string;
 
-    /**
-     * @generated from field: string timestamp = 4;
-     */
-    timestamp: string;
-  };
+  /**
+   * @generated from field: string timestamp = 4;
+   */
+  timestamp: string;
+};
 
 /**
  * Describes the message contracts.core.nutrition.v1.event.NutritionPlanGenerated.
  * Use `create(NutritionPlanGeneratedSchema)` to create a new message.
  */
-export const NutritionPlanGeneratedSchema: GenMessage<NutritionPlanGenerated> /*@__PURE__*/ =
+export const NutritionPlanGeneratedSchema: GenMessage<NutritionPlanGenerated> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_event_nutrition_plan_generated, 0);
+

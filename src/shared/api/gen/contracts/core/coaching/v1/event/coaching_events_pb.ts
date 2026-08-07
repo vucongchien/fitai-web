@@ -2,23 +2,19 @@
 // @generated from file contracts/core/coaching/v1/event/coaching_events.proto (package contracts.core.coaching.v1.event, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-
 import type { Roadmap } from "../message/coaching_messages_pb";
 import { file_contracts_core_coaching_v1_message_coaching_messages } from "../message/coaching_messages_pb";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/coaching/v1/event/coaching_events.proto.
  */
-export const file_contracts_core_coaching_v1_event_coaching_events: GenFile /*@__PURE__*/ =
-  fileDesc(
-    "CjZjb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9ldmVudC9jb2FjaGluZ19ldmVudHMucHJvdG8SIGNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLmV2ZW50IqcBChBSb2FkbWFwSW5pdGlhdGVkEhIKCnJvYWRtYXBfaWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRIwCgxpbml0aWF0ZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjwKB3JvYWRtYXAYBCABKAsyKy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXAitQEKD1JvYWRtYXBBZGp1c3RlZBISCgpyb2FkbWFwX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSDgoGcmVhc29uGAMgASgJEi8KC2FkanVzdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBI8Cgdyb2FkbWFwGAUgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIrQBChNTZXNzaW9uUGxhbkV4ZWN1dGVkEhcKD3Nlc3Npb25fcGxhbl9pZBgBIAEoCRISCgpyb2FkbWFwX2lkGAIgASgJEg8KB3VzZXJfaWQYAyABKAkSLwoLZXhlY3V0ZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhMKC3Nlc3Npb25fc2NyGAUgASgCEhkKEXNlc3Npb25fZGVsdGFfcnBlGAYgASgCQmdaZWdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvY29hY2hpbmcvdjEvZXZlbnQ7Y29hY2hpbmd2MWV2ZW50YgZwcm90bzM",
-    [file_google_protobuf_timestamp, file_contracts_core_coaching_v1_message_coaching_messages],
-  );
+export const file_contracts_core_coaching_v1_event_coaching_events: GenFile = /*@__PURE__*/
+  fileDesc("CjZjb250cmFjdHMvY29yZS9jb2FjaGluZy92MS9ldmVudC9jb2FjaGluZ19ldmVudHMucHJvdG8SIGNvbnRyYWN0cy5jb3JlLmNvYWNoaW5nLnYxLmV2ZW50IqcBChBSb2FkbWFwSW5pdGlhdGVkEhIKCnJvYWRtYXBfaWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRIwCgxpbml0aWF0ZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjwKB3JvYWRtYXAYBCABKAsyKy5jb250cmFjdHMuY29yZS5jb2FjaGluZy52MS5tZXNzYWdlLlJvYWRtYXAitQEKD1JvYWRtYXBBZGp1c3RlZBISCgpyb2FkbWFwX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSDgoGcmVhc29uGAMgASgJEi8KC2FkanVzdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBI8Cgdyb2FkbWFwGAUgASgLMisuY29udHJhY3RzLmNvcmUuY29hY2hpbmcudjEubWVzc2FnZS5Sb2FkbWFwIrQBChNTZXNzaW9uUGxhbkV4ZWN1dGVkEhcKD3Nlc3Npb25fcGxhbl9pZBgBIAEoCRISCgpyb2FkbWFwX2lkGAIgASgJEg8KB3VzZXJfaWQYAyABKAkSLwoLZXhlY3V0ZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhMKC3Nlc3Npb25fc2NyGAUgASgCEhkKEXNlc3Npb25fZGVsdGFfcnBlGAYgASgCQmdaZWdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvY29hY2hpbmcvdjEvZXZlbnQ7Y29hY2hpbmd2MWV2ZW50YgZwcm90bzM", [file_google_protobuf_timestamp, file_contracts_core_coaching_v1_message_coaching_messages]);
 
 /**
  * @generated from message contracts.core.coaching.v1.event.RoadmapInitiated
@@ -49,10 +45,8 @@ export type RoadmapInitiated = Message<"contracts.core.coaching.v1.event.Roadmap
  * Describes the message contracts.core.coaching.v1.event.RoadmapInitiated.
  * Use `create(RoadmapInitiatedSchema)` to create a new message.
  */
-export const RoadmapInitiatedSchema: GenMessage<RoadmapInitiated> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_event_coaching_events,
-  0,
-);
+export const RoadmapInitiatedSchema: GenMessage<RoadmapInitiated> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_event_coaching_events, 0);
 
 /**
  * @generated from message contracts.core.coaching.v1.event.RoadmapAdjusted
@@ -88,52 +82,48 @@ export type RoadmapAdjusted = Message<"contracts.core.coaching.v1.event.RoadmapA
  * Describes the message contracts.core.coaching.v1.event.RoadmapAdjusted.
  * Use `create(RoadmapAdjustedSchema)` to create a new message.
  */
-export const RoadmapAdjustedSchema: GenMessage<RoadmapAdjusted> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_event_coaching_events,
-  1,
-);
+export const RoadmapAdjustedSchema: GenMessage<RoadmapAdjusted> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_event_coaching_events, 1);
 
 /**
  * @generated from message contracts.core.coaching.v1.event.SessionPlanExecuted
  */
-export type SessionPlanExecuted =
-  Message<"contracts.core.coaching.v1.event.SessionPlanExecuted"> & {
-    /**
-     * @generated from field: string session_plan_id = 1;
-     */
-    sessionPlanId: string;
+export type SessionPlanExecuted = Message<"contracts.core.coaching.v1.event.SessionPlanExecuted"> & {
+  /**
+   * @generated from field: string session_plan_id = 1;
+   */
+  sessionPlanId: string;
 
-    /**
-     * @generated from field: string roadmap_id = 2;
-     */
-    roadmapId: string;
+  /**
+   * @generated from field: string roadmap_id = 2;
+   */
+  roadmapId: string;
 
-    /**
-     * @generated from field: string user_id = 3;
-     */
-    userId: string;
+  /**
+   * @generated from field: string user_id = 3;
+   */
+  userId: string;
 
-    /**
-     * @generated from field: google.protobuf.Timestamp executed_at = 4;
-     */
-    executedAt?: Timestamp | undefined;
+  /**
+   * @generated from field: google.protobuf.Timestamp executed_at = 4;
+   */
+  executedAt?: Timestamp | undefined;
 
-    /**
-     * @generated from field: float session_scr = 5;
-     */
-    sessionScr: number;
+  /**
+   * @generated from field: float session_scr = 5;
+   */
+  sessionScr: number;
 
-    /**
-     * @generated from field: float session_delta_rpe = 6;
-     */
-    sessionDeltaRpe: number;
-  };
+  /**
+   * @generated from field: float session_delta_rpe = 6;
+   */
+  sessionDeltaRpe: number;
+};
 
 /**
  * Describes the message contracts.core.coaching.v1.event.SessionPlanExecuted.
  * Use `create(SessionPlanExecutedSchema)` to create a new message.
  */
-export const SessionPlanExecutedSchema: GenMessage<SessionPlanExecuted> /*@__PURE__*/ = messageDesc(
-  file_contracts_core_coaching_v1_event_coaching_events,
-  2,
-);
+export const SessionPlanExecutedSchema: GenMessage<SessionPlanExecuted> = /*@__PURE__*/
+  messageDesc(file_contracts_core_coaching_v1_event_coaching_events, 2);
+

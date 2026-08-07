@@ -21,7 +21,10 @@
   "categories": {
     "correctness": "warn",
     "suspicious": "warn",
-    "perf": "warn"
+    "perf": "warn",
+    "pedantic": "warn",
+    "style": "warn",
+    "nursery": "warn"
   },
   "rules": {
     "no-unused-vars": "warn",
@@ -36,6 +39,24 @@
     "import/no-cycle": "error",
     "import/no-duplicates": "error",
     "import/no-self-import": "error",
+
+    // --- Noise Suppression for Pedantic / Style Categories --------------------
+    "import/no-named-export": "off",
+    "import/group-exports": "off",
+    "jest/require-hook": "off",
+    "vitest/require-hook": "off",
+    "eslint/sort-keys": "off",
+    "eslint/sort-imports": "off",
+    "react/jsx-max-depth": "off",
+    "eslint/no-ternary": "off",
+    "eslint/no-magic-numbers": "off",
+    "eslint/id-length": "off",
+    "unicorn/no-null": "off",
+    "eslint/func-style": "off",
+    "eslint/max-lines-per-function": "off",
+    "eslint/max-statements": "off",
+    "jsdoc/require-param": "off",
+    "jsdoc/require-returns": "off",
 
     // --- Rules turned off, each with a verified reason -----------------------
     //

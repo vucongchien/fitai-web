@@ -2,19 +2,17 @@
 // @generated from file contracts/generic/auth/v1/event/user_registered.proto (package contracts.generic.auth.v1.event, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/generic/auth/v1/event/user_registered.proto.
  */
-export const file_contracts_generic_auth_v1_event_user_registered: GenFile /*@__PURE__*/ = fileDesc(
-  "CjVjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL2V2ZW50L3VzZXJfcmVnaXN0ZXJlZC5wcm90bxIfY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5ldmVudCJ2Cg5Vc2VyUmVnaXN0ZXJlZBIPCgd1c2VyX2lkGAEgASgJEg0KBWVtYWlsGAIgASgJEhEKCWZ1bGxfbmFtZRgDIAEoCRIxCg1yZWdpc3RlcmVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEJiWmBnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL2F1dGgvdjEvZXZlbnQ7YXV0aHYxZXZlbnRiBnByb3RvMw",
-  [file_google_protobuf_timestamp],
-);
+export const file_contracts_generic_auth_v1_event_user_registered: GenFile = /*@__PURE__*/
+  fileDesc("CjVjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL2V2ZW50L3VzZXJfcmVnaXN0ZXJlZC5wcm90bxIfY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5ldmVudCJ2Cg5Vc2VyUmVnaXN0ZXJlZBIPCgd1c2VyX2lkGAEgASgJEg0KBWVtYWlsGAIgASgJEhEKCWZ1bGxfbmFtZRgDIAEoCRIxCg1yZWdpc3RlcmVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEJiWmBnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL2F1dGgvdjEvZXZlbnQ7YXV0aHYxZXZlbnRiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message contracts.generic.auth.v1.event.UserRegistered
@@ -45,7 +43,6 @@ export type UserRegistered = Message<"contracts.generic.auth.v1.event.UserRegist
  * Describes the message contracts.generic.auth.v1.event.UserRegistered.
  * Use `create(UserRegisteredSchema)` to create a new message.
  */
-export const UserRegisteredSchema: GenMessage<UserRegistered> /*@__PURE__*/ = messageDesc(
-  file_contracts_generic_auth_v1_event_user_registered,
-  0,
-);
+export const UserRegisteredSchema: GenMessage<UserRegistered> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_event_user_registered, 0);
+

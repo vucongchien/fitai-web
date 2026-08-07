@@ -2,52 +2,47 @@
 // @generated from file contracts/supporting/profile/v1/event/profile_completed.proto (package contracts.supporting.profile.v1.event, syntax proto3)
 /* eslint-disable */
 
-import type { Message } from "@bufbuild/protobuf";
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/profile/v1/event/profile_completed.proto.
  */
-export const file_contracts_supporting_profile_v1_event_profile_completed: GenFile /*@__PURE__*/ =
-  fileDesc(
-    "Cj1jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L3Byb2ZpbGVfY29tcGxldGVkLnByb3RvEiVjb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLmV2ZW50IlYKEUJpb2xvZ2ljYWxNZXRyaWNzEhEKCXdlaWdodF9rZxgBIAEoAhIRCgloZWlnaHRfY20YAiABKAISCwoDYWdlGAMgASgFEg4KBmdlbmRlchgEIAEoCSLcAQoQUHJvZmlsZUNvbXBsZXRlZBIPCgd1c2VyX2lkGAEgASgJElQKEmJpb2xvZ2ljYWxfbWV0cmljcxgCIAEoCzI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuQmlvbG9naWNhbE1ldHJpY3MSDQoFZ29hbHMYAyADKAkSGwoTcmVnaXN0ZXJlZF9pbmp1cmllcxgEIAMoCRIfChdwcmVmZXJyZWRfd29ya291dF90aW1lcxgFIAMoCRIUCgxjb21wbGV0ZWRfYXQYBiABKAlCa1ppZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50O3Byb2ZpbGV2MWV2ZW50YgZwcm90bzM",
-  );
+export const file_contracts_supporting_profile_v1_event_profile_completed: GenFile = /*@__PURE__*/
+  fileDesc("Cj1jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L3Byb2ZpbGVfY29tcGxldGVkLnByb3RvEiVjb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLmV2ZW50IlYKEUJpb2xvZ2ljYWxNZXRyaWNzEhEKCXdlaWdodF9rZxgBIAEoAhIRCgloZWlnaHRfY20YAiABKAISCwoDYWdlGAMgASgFEg4KBmdlbmRlchgEIAEoCSLcAQoQUHJvZmlsZUNvbXBsZXRlZBIPCgd1c2VyX2lkGAEgASgJElQKEmJpb2xvZ2ljYWxfbWV0cmljcxgCIAEoCzI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuQmlvbG9naWNhbE1ldHJpY3MSDQoFZ29hbHMYAyADKAkSGwoTcmVnaXN0ZXJlZF9pbmp1cmllcxgEIAMoCRIfChdwcmVmZXJyZWRfd29ya291dF90aW1lcxgFIAMoCRIUCgxjb21wbGV0ZWRfYXQYBiABKAlCa1ppZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50O3Byb2ZpbGV2MWV2ZW50YgZwcm90bzM");
 
 /**
  * @generated from message contracts.supporting.profile.v1.event.BiologicalMetrics
  */
-export type BiologicalMetrics =
-  Message<"contracts.supporting.profile.v1.event.BiologicalMetrics"> & {
-    /**
-     * @generated from field: float weight_kg = 1;
-     */
-    weightKg: number;
+export type BiologicalMetrics = Message<"contracts.supporting.profile.v1.event.BiologicalMetrics"> & {
+  /**
+   * @generated from field: float weight_kg = 1;
+   */
+  weightKg: number;
 
-    /**
-     * @generated from field: float height_cm = 2;
-     */
-    heightCm: number;
+  /**
+   * @generated from field: float height_cm = 2;
+   */
+  heightCm: number;
 
-    /**
-     * @generated from field: int32 age = 3;
-     */
-    age: number;
+  /**
+   * @generated from field: int32 age = 3;
+   */
+  age: number;
 
-    /**
-     * @generated from field: string gender = 4;
-     */
-    gender: string;
-  };
+  /**
+   * @generated from field: string gender = 4;
+   */
+  gender: string;
+};
 
 /**
  * Describes the message contracts.supporting.profile.v1.event.BiologicalMetrics.
  * Use `create(BiologicalMetricsSchema)` to create a new message.
  */
-export const BiologicalMetricsSchema: GenMessage<BiologicalMetrics> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_event_profile_completed,
-  0,
-);
+export const BiologicalMetricsSchema: GenMessage<BiologicalMetrics> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_event_profile_completed, 0);
 
 /**
  * @generated from message contracts.supporting.profile.v1.event.ProfileCompleted
@@ -88,7 +83,6 @@ export type ProfileCompleted = Message<"contracts.supporting.profile.v1.event.Pr
  * Describes the message contracts.supporting.profile.v1.event.ProfileCompleted.
  * Use `create(ProfileCompletedSchema)` to create a new message.
  */
-export const ProfileCompletedSchema: GenMessage<ProfileCompleted> /*@__PURE__*/ = messageDesc(
-  file_contracts_supporting_profile_v1_event_profile_completed,
-  1,
-);
+export const ProfileCompletedSchema: GenMessage<ProfileCompleted> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_profile_v1_event_profile_completed, 1);
+
