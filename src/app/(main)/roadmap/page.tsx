@@ -36,6 +36,9 @@ function RoadmapSkeleton() {
   );
 }
 
+const STATS_FALLBACK = <StatsSkeleton />;
+const ROADMAP_FALLBACK = <RoadmapSkeleton />;
+
 export default function RoadmapPage() {
   return (
     <PageTransition className="page roadmap-page">
@@ -46,11 +49,11 @@ export default function RoadmapPage() {
         </div>
       </header>
 
-      <Suspense fallback={<StatsSkeleton />}>
+      <Suspense fallback={STATS_FALLBACK}>
         <WorkoutStatsContent />
       </Suspense>
 
-      <Suspense fallback={<RoadmapSkeleton />}>
+      <Suspense fallback={ROADMAP_FALLBACK}>
         <RoadmapContent />
       </Suspense>
     </PageTransition>

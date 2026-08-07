@@ -4,6 +4,8 @@ import { Dumbbell, Home, Salad, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { NAV_LATERAL } from "@/shared/ui/transition-types";
+
 const destinations = [
   { href: "/home", label: "Today", icon: Home },
   { href: "/nutrition", label: "Nutrition", icon: Salad },
@@ -26,7 +28,7 @@ export function BottomNavigation() {
             data-active={active || undefined}
             href={href}
             key={href}
-            transitionTypes={["nav-lateral"]}
+            transitionTypes={NAV_LATERAL}
           >
             <Icon aria-hidden="true" size={20} strokeWidth={active ? 2.3 : 1.8} />
             <span>{label}</span>

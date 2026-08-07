@@ -13,6 +13,7 @@ import { ViewTransition } from "react";
 
 import type { SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { buttonVariants } from "@/shared/ui/button";
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
 type SessionPlanViewProps = {
@@ -117,7 +118,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
         <Link
           className={buttonVariants({ size: "large", variant: "primary" })}
           href={data.startWorkoutHref}
-          transitionTypes={["nav-forward"]}
+          transitionTypes={NAV_FORWARD}
         >
           Begin session
           <ArrowRight aria-hidden="true" size={18} />

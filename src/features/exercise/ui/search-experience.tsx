@@ -19,6 +19,7 @@ import {
 import { ExerciseCard } from "@/features/exercise/ui/exercise-card";
 import { FilterPanel } from "@/features/exercise/ui/filter-panel";
 import { EmptyState } from "@/shared/ui/empty-state";
+import { NAV_BACK } from "@/shared/ui/transition-types";
 
 type SearchExperienceProps = {
   exercises: ExerciseSummary[];
@@ -106,7 +107,7 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
           aria-label="Back"
           className="focused-header__back"
           href="/home"
-          transitionTypes={["nav-back"]}
+          transitionTypes={NAV_BACK}
         >
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>

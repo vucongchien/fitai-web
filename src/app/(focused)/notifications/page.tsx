@@ -4,6 +4,7 @@ import Link from "next/link";
 import { EnablePushButton } from "@/shared/push/enable-push-button";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
+import { NAV_BACK } from "@/shared/ui/transition-types";
 
 export const metadata = { title: "Notifications" };
 
@@ -57,7 +58,7 @@ export default function NotificationsPage() {
           aria-label="Back"
           className="focused-header__back"
           href="/home"
-          transitionTypes={["nav-back"]}
+          transitionTypes={NAV_BACK}
         >
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>

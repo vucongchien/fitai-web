@@ -20,6 +20,8 @@ function NutritionSkeleton() {
   );
 }
 
+const NUTRITION_FALLBACK = <NutritionSkeleton />;
+
 export default function NutritionPage() {
   return (
     <PageTransition className="page nutrition-page">
@@ -31,7 +33,7 @@ export default function NutritionPage() {
         </div>
       </header>
 
-      <Suspense fallback={<NutritionSkeleton />}>
+      <Suspense fallback={NUTRITION_FALLBACK}>
         <NutritionContent />
       </Suspense>
     </PageTransition>

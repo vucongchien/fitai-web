@@ -12,6 +12,8 @@ async function ScheduleContent() {
   return <ScheduleView data={data} />;
 }
 
+const SCHEDULE_FALLBACK = <LaneSkeleton />;
+
 export default function SchedulePage() {
   return (
     <PageTransition className="page schedule-page">
@@ -23,7 +25,7 @@ export default function SchedulePage() {
         </div>
       </header>
 
-      <Suspense fallback={<LaneSkeleton />}>
+      <Suspense fallback={SCHEDULE_FALLBACK}>
         <ScheduleContent />
       </Suspense>
     </PageTransition>

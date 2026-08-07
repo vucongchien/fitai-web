@@ -1,6 +1,8 @@
 import { Bell, Search } from "lucide-react";
 import Link from "next/link";
 
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
+
 type HeaderActionsProps = {
   hasNotifications?: boolean;
 };
@@ -12,7 +14,7 @@ export function HeaderActions({ hasNotifications = true }: HeaderActionsProps) {
         aria-label="Search exercises"
         className="header-actions__button"
         href="/search"
-        transitionTypes={["nav-forward"]}
+        transitionTypes={NAV_FORWARD}
       >
         <Search aria-hidden="true" size={18} strokeWidth={2} />
       </Link>
@@ -21,7 +23,7 @@ export function HeaderActions({ hasNotifications = true }: HeaderActionsProps) {
         className="header-actions__button"
         data-badge={hasNotifications || undefined}
         href="/notifications"
-        transitionTypes={["nav-forward"]}
+        transitionTypes={NAV_FORWARD}
       >
         <Bell aria-hidden="true" size={18} strokeWidth={2} />
       </Link>
