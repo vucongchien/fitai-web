@@ -7,13 +7,15 @@ import { SessionHeader } from "@/features/workout/ui/live/session-header";
 
 type SessionHeaderProps = ComponentProps<typeof SessionHeader>;
 
+const noActions: HeaderAction[] = [];
+
 afterEach(cleanup);
 
 describe("SessionHeader", () => {
   it("shows the title in the centre and a back button on the left", () => {
     render(
       <SessionHeader
-        actions={[]}
+        actions={noActions}
         onBack={vi.fn<SessionHeaderProps["onBack"]>()}
         title="Plank Hold"
       />,
@@ -25,7 +27,7 @@ describe("SessionHeader", () => {
 
   it("calls onBack when the back button is pressed", () => {
     const onBack = vi.fn<SessionHeaderProps["onBack"]>();
-    render(<SessionHeader actions={[]} onBack={onBack} title="Plank Hold" />);
+    render(<SessionHeader actions={noActions} onBack={onBack} title="Plank Hold" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
 

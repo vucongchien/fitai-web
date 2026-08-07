@@ -9,6 +9,27 @@ import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-v
 
 type ActiveScreenProps = ComponentProps<typeof ActiveExerciseScreen>;
 
+const mockExercise: LiveExercise = {
+  breathingCue: "Exhale as you press.",
+  commonMistakes: [],
+  durationSeconds: 0,
+  equipmentId: "eq_bench",
+  exerciseId: "ex_bench",
+  formCues: [],
+  hasAiSupported: false,
+  instructions: "",
+  isWeighted: true,
+  name: "Bench Press",
+  notes: "Control tempo",
+  phase: "main",
+  restExerciseSec: 90,
+  restSetSec: 60,
+  targetReps: 10,
+  targetRpe: 8,
+  targetSets: 3,
+  targetWeightKg: 60,
+};
+
 describe("WorkoutSummaryView Component", () => {
   afterEach(() => {
     cleanup();
@@ -106,27 +127,6 @@ describe("ActiveExerciseScreen set controls", () => {
   });
 
   it("names the footer controls explicitly and offers no restart", () => {
-    const mockExercise: LiveExercise = {
-      breathingCue: "Exhale as you press.",
-      commonMistakes: [],
-      durationSeconds: 0,
-      equipmentId: "eq_bench",
-      exerciseId: "ex_bench",
-      formCues: [],
-      hasAiSupported: false,
-      instructions: "",
-      isWeighted: true,
-      name: "Bench Press",
-      notes: "Control tempo",
-      phase: "main",
-      restExerciseSec: 90,
-      restSetSec: 60,
-      targetReps: 10,
-      targetRpe: 8,
-      targetSets: 3,
-      targetWeightKg: 60,
-    };
-
     render(
       <ActiveExerciseScreen
         cameraActive={false}

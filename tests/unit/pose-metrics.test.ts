@@ -25,6 +25,18 @@ function pose(points: Partial<Record<(typeof KEYPOINT_NAMES)[number], [number, n
   return { keypoints, score: 0.9 };
 }
 
+/** Feed a whole ROM trace through a fresh counter and collect what it produced. */
+function run(roms: number[]) {
+  let state = createRepCounter();
+  const completed: Array<{ counted: boolean; romPercentage: number }> = [];
+  for (const rom of roms) {
+    const tick = feedRepCounter(state, rom);
+    state = tick.state;
+    if (tick.completedRep) completed.push(tick.completedRep);
+  }
+  return { state, completed };
+}
+
 const upright = {
   left_shoulder: [100, 100] as [number, number],
   right_shoulder: [140, 100] as [number, number],
@@ -75,17 +87,6 @@ describe("ROM", () => {
 });
 
 describe("rep counter (BR-CC-01)", () => {
-  function run(roms: number[]) {
-    let state = createRepCounter();
-    const completed: Array<{ counted: boolean; romPercentage: number }> = [];
-    for (const rom of roms) {
-      const tick = feedRepCounter(state, rom);
-      state = tick.state;
-      if (tick.completedRep) completed.push(tick.completedRep);
-    }
-    return { state, completed };
-  }
-
   it("counts a rep that reaches at least 70% ROM", () => {
     const { state, completed } = run([0, 30, 60, 85, 60, 30, 5]);
     expect(state.count).toBe(1);
