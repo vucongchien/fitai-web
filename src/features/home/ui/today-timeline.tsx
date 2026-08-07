@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import type { TodayItemCategory, TodayTimelineItem } from "@/features/home/model/home-page.types";
 import { cn } from "@/shared/lib/cn";
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 type TodayTimelineProps = {
   items: TodayTimelineItem[];
@@ -41,7 +42,7 @@ export function TodayTimeline({ items }: TodayTimelineProps) {
                 aria-label={item.category === "workout" ? "Begin session" : `Chi tiết ${item.title}`}
                 className="week-route__row"
                 href={item.href}
-                transitionTypes={["nav-forward"]}
+                transitionTypes={NAV_FORWARD}
               >
                 {content}
               </Link>

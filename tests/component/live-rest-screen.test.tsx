@@ -1,8 +1,11 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
+
+type RestScreenProps = ComponentProps<typeof RestScreen>;
 
 afterEach(cleanup);
 
@@ -31,12 +34,12 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
 const baseProps = {
   exerciseNumber: 2,
   nextExercise: makeExercise(),
-  onAddTime: vi.fn(),
-  onBack: vi.fn(),
-  onReportPain: vi.fn(),
-  onSkipRest: vi.fn(),
-  onToggleFullscreen: vi.fn(),
-  onToggleVoice: vi.fn(),
+  onAddTime: vi.fn<RestScreenProps["onAddTime"]>(),
+  onBack: vi.fn<RestScreenProps["onBack"]>(),
+  onReportPain: vi.fn<RestScreenProps["onReportPain"]>(),
+  onSkipRest: vi.fn<RestScreenProps["onSkipRest"]>(),
+  onToggleFullscreen: vi.fn<RestScreenProps["onToggleFullscreen"]>(),
+  onToggleVoice: vi.fn<RestScreenProps["onToggleVoice"]>(),
   secondsLeft: 20,
   totalExercises: 8,
   totalSeconds: 45,
@@ -61,7 +64,7 @@ describe("RestScreen", () => {
 
   // Pain does not wait for the next set to begin.
   it("offers the pain report during rest too", () => {
-    const onReportPain = vi.fn();
+    const onReportPain = vi.fn<RestScreenProps["onReportPain"]>();
     render(<RestScreen {...baseProps} onReportPain={onReportPain} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
@@ -109,8 +112,8 @@ describe("RestScreen", () => {
   });
 
   it("offers +10 Seconds and Skip Rest as two equal buttons", () => {
-    const onAddTime = vi.fn();
-    const onSkipRest = vi.fn();
+    const onAddTime = vi.fn<RestScreenProps["onAddTime"]>();
+    const onSkipRest = vi.fn<RestScreenProps["onSkipRest"]>();
     render(<RestScreen {...baseProps} onAddTime={onAddTime} onSkipRest={onSkipRest} />);
 
     fireEvent.click(screen.getByRole("button", { name: "+10 Seconds" }));

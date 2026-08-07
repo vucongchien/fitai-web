@@ -8,6 +8,11 @@ import { useEffect, useState } from "react";
  * Everything time-based (set countdown, rest countdown, elapsed session time,
  * the BR-WL-01 duration thresholds) is derived from timestamps and this tick, so
  * nothing drifts when the tab is throttled or the phone sleeps.
+ *
+ * The tick comes from a Dedicated Worker so it keeps firing while the tab is
+ * backgrounded — a main-thread setInterval is throttled to ~1/minute there, which
+ * makes a rest countdown finish late. Falls back to setInterval where Worker is
+ * unavailable (jsdom under test, very old browsers).
  */
 export function useTicker(active: boolean, intervalMs = 500): number {
   const [now, setNow] = useState(() => Date.now());
@@ -15,8 +20,23 @@ export function useTicker(active: boolean, intervalMs = 500): number {
   useEffect(() => {
     if (!active) return;
     setNow(Date.now());
-    const timer = window.setInterval(() => setNow(Date.now()), intervalMs);
-    return () => window.clearInterval(timer);
+
+    if (typeof Worker === "undefined") {
+      const timer = window.setInterval(() => setNow(Date.now()), intervalMs);
+      return () => window.clearInterval(timer);
+    }
+
+    const worker = new Worker(new URL("./timer.worker.ts", import.meta.url), {
+      name: "fitai-session-timer",
+      type: "module",
+    });
+    worker.addEventListener("message", () => setNow(Date.now()));
+    worker.postMessage({ intervalMs, type: "start" });
+
+    return () => {
+      worker.postMessage({ type: "stop" });
+      worker.terminate();
+    };
   }, [active, intervalMs]);
 
   return now;

@@ -11,6 +11,7 @@
  */
 
 import { cleanup, fireEvent, render, screen, act } from "@testing-library/react";
+import type { Mock } from "vitest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LoginActions } from "@/features/auth/ui/login-actions";
@@ -20,13 +21,13 @@ import { LoginActions } from "@/features/auth/ui/login-actions";
 function makePopupStub(closed = false): Window {
   return {
     closed,
-    close: vi.fn(),
+    close: vi.fn<Window["close"]>(),
   } as unknown as Window;
 }
 
 describe("LoginActions", () => {
   let mockWindowOpen: ReturnType<typeof vi.spyOn>;
-  let mockLocationAssign: ReturnType<typeof vi.fn>;
+  let mockLocationAssign: Mock<Location["assign"]>;
   let capturedMessageHandler: ((e: MessageEvent) => void) | null = null;
   let realAddEventListener: typeof window.addEventListener;
 
@@ -38,7 +39,7 @@ describe("LoginActions", () => {
     mockWindowOpen = vi.spyOn(window, "open");
 
     // Mock location.assign (location is not writable directly, use defineProperty)
-    mockLocationAssign = vi.fn();
+    mockLocationAssign = vi.fn<Location["assign"]>();
     Object.defineProperty(window, "location", {
       configurable: true,
       value: { ...window.location, assign: mockLocationAssign, origin: "http://localhost:3000" },

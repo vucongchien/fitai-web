@@ -3,7 +3,7 @@
 import { Archive, ArrowLeft, CheckCircle2, Dumbbell, Plus, Save, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useId, useState } from "react";
 
 import {
   approveExercise,
@@ -22,6 +22,7 @@ import { EXERCISE_STATUS_LABEL, EXERCISE_STATUS_STYLE } from "@/features/admin/d
 import type { Difficulty } from "@/features/exercise/domain/exercise";
 
 export default function AdminExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const fieldIdBase = useId();
   const { id } = use(params);
   const router = useRouter();
 
@@ -256,8 +257,11 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-xs font-bold text-slate-700">Exercise Title *</label>
+                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-1`}>
+                  Exercise Title *
+                </label>
                 <input
+                  id={`${fieldIdBase}-1`}
                   type="text"
                   required
                   value={name}
@@ -267,8 +271,11 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Status</label>
+                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-2`}>
+                  Status
+                </label>
                 <select
+                  id={`${fieldIdBase}-2`}
                   value={status}
                   onChange={(e) => setStatus(e.target.value as AdminExerciseStatus)}
                   className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
@@ -281,8 +288,11 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Difficulty Level</label>
+                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-3`}>
+                  Difficulty Level
+                </label>
                 <select
+                  id={`${fieldIdBase}-3`}
                   value={difficulty}
                   onChange={(e) => setDifficulty(e.target.value as Difficulty)}
                   className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
@@ -296,8 +306,11 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Primary Body Part *</label>
+                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-4`}>
+                  Primary Body Part *
+                </label>
                 <select
+                  id={`${fieldIdBase}-4`}
                   value={bodyPartId}
                   onChange={(e) => setBodyPartId(e.target.value)}
                   className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none cursor-pointer"
@@ -311,8 +324,11 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Equipment *</label>
+                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-5`}>
+                  Equipment *
+                </label>
                 <select
+                  id={`${fieldIdBase}-5`}
                   value={equipmentId}
                   onChange={(e) => setEquipmentId(e.target.value)}
                   className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none cursor-pointer"
@@ -326,8 +342,11 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">Target Muscle *</label>
+                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-6`}>
+                  Target Muscle *
+                </label>
                 <select
+                  id={`${fieldIdBase}-6`}
                   value={targetMuscleId}
                   onChange={(e) => setTargetMuscleId(e.target.value)}
                   className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none cursor-pointer"
@@ -342,10 +361,11 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
             </div>
 
             <div className="space-y-1.5 pt-2">
-              <label className="text-xs font-bold text-slate-700">
+              <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-7`}>
                 Default Rest Time (Seconds)
               </label>
               <input
+                id={`${fieldIdBase}-7`}
                 type="number"
                 value={defaultRestSeconds}
                 onChange={(e) => setDefaultRestSeconds(Number(e.target.value))}
@@ -479,7 +499,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
                     type="button"
                     onClick={() => {
                       if (isSelected) {
-                        setTagIds(tagIds.filter((id) => id !== t.id));
+                        setTagIds(tagIds.filter((tagId) => tagId !== t.id));
                       } else {
                         setTagIds([...tagIds, t.id]);
                       }

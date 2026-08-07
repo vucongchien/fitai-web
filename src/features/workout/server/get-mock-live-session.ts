@@ -197,7 +197,7 @@ const MOCK_PLAYLISTS: Playlist[] = [
 //
 // The ONNX URLs point at S3 in production (GetMotionSpecification). Locally they
 // resolve to /models/... which is normally absent, so resolveMotionEngine falls
-// back to the simulated engine. See domain/onnx-motion-engine.ts.
+// back to the simulated engine. See model/inference.worker.ts.
 // ---------------------------------------------------------------------------
 
 const LIFECYCLE_CUES: CoachCue[] = [

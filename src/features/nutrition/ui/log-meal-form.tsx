@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useActionState, useId, useState } from "react";
+import { useActionState, useCallback, useId, useRef, useState } from "react";
 
 import { logMealAction, type LogMealState } from "@/features/nutrition/server/nutrition-actions";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
@@ -21,15 +21,31 @@ const INITIAL: LogMealState = { status: "idle" };
  * because `LogMealRequest` accepts 0 and a guessed number is worse than an honest zero.
  */
 export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
+  const nameRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [macrosOpen, setMacrosOpen] = useState(false);
   const [state, formAction, pending] = useActionState(logMealAction, INITIAL);
   const formId = useId();
 
+  /**
+   * Move focus into the first field when the disclosure opens.
+   *
+   * The button that had focus unmounts on the same tick, so without this the
+   * focus ring lands back on <body> and keyboard users lose their place. Doing it
+   * here rather than with `autoFocus` keeps the behaviour but scopes it to the
+   * open transition — `autoFocus` would also steal focus on a full page load.
+   */
+  const openForm = useCallback(() => {
+    setOpen(true);
+    requestAnimationFrame(() => nameRef.current?.focus());
+  }, []);
+  const closeForm = useCallback(() => setOpen(false), []);
+  const showMacros = useCallback(() => setMacrosOpen(true), []);
+
   // Collapse once the write has landed; the logged row above carries the confirmation.
   if (!open || state.status === "saved") {
     return (
-      <button className="log-open" onClick={() => setOpen(true)} type="button">
+      <button className="log-open" onClick={openForm} type="button">
         <ChevronDown aria-hidden="true" size={16} />
         Log something not on the menu
       </button>
@@ -44,9 +60,9 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
         <label htmlFor={`${formId}-name`}>What did you eat?</label>
         <input
           autoComplete="off"
-          autoFocus
           id={`${formId}-name`}
           name="mealName"
+          ref={nameRef}
           placeholder={`Your own ${slotLabel.toLowerCase()}`}
           required
           type="text"
@@ -92,7 +108,7 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
           ))}
         </div>
       ) : (
-        <button className="log-form__more" onClick={() => setMacrosOpen(true)} type="button">
+        <button className="log-form__more" onClick={showMacros} type="button">
           Add protein, carbs and fat
         </button>
       )}
@@ -114,7 +130,7 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
         <button
           className="ui-button ui-button--quiet ui-button--medium"
           disabled={pending}
-          onClick={() => setOpen(false)}
+          onClick={closeForm}
           type="button"
         >
           <span className="ui-button__label">Cancel</span>

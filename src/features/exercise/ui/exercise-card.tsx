@@ -2,6 +2,7 @@ import { Camera, Dumbbell } from "lucide-react";
 import Link from "next/link";
 
 import { type CatalogMetadata, type ExerciseSummary } from "@/features/exercise/domain/exercise";
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 type ExerciseCardProps = {
   exercise: ExerciseSummary;
@@ -22,7 +23,7 @@ export function ExerciseCard({ exercise, catalog }: ExerciseCardProps) {
       aria-label={`Open ${exercise.name}`}
       className="ex-card"
       href={`/search/exercises/${exercise.id}`}
-      transitionTypes={["nav-forward"]}
+      transitionTypes={NAV_FORWARD}
     >
       <div className="ex-card__thumb" aria-hidden="true">
         <Dumbbell size={36} strokeWidth={1.3} />

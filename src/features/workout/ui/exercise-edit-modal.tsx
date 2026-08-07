@@ -40,12 +40,23 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
   };
 
   return (
-    <div className="exercise-edit-modal-backdrop" onClick={onClose}>
+    <div className="exercise-edit-modal-backdrop">
+      {/*
+        The dimmed area is a real button, not a div with onClick: it is the only
+        pointer affordance for dismissing, so it needs to be reachable and
+        operable from the keyboard too. Escape is handled above; this covers the
+        click path without a stopPropagation wrapper around the dialog.
+      */}
+      <button
+        aria-label="Close editor"
+        className="exercise-edit-modal__scrim"
+        onClick={onClose}
+        type="button"
+      />
       <div
         aria-label={`Configure ${exercise.name}`}
         aria-modal="true"
         className="exercise-edit-modal"
-        onClick={(e) => e.stopPropagation()}
         role="dialog"
       >
         <div className="exercise-edit-modal__header">

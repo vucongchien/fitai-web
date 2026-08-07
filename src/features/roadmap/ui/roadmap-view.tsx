@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 type RoadmapViewProps = {
   data: RoadmapPageData;
@@ -25,7 +26,7 @@ export function RoadmapView({ data }: RoadmapViewProps) {
           <Link
             className="ui-button ui-button--secondary ui-button--medium roadmap-view__schedule"
             href="/schedule"
-            transitionTypes={["nav-forward"]}
+            transitionTypes={NAV_FORWARD}
           >
             <span className="ui-button__label">
               See all four weeks

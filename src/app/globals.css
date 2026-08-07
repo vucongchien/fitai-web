@@ -526,6 +526,7 @@ button {
 
 .lane-skeleton {
   position: relative;
+  display: block;
   width: 100%;
   height: 0.5rem;
   overflow: hidden;
@@ -2947,10 +2948,26 @@ a.week-route__row:hover {
   align-items: flex-end;
 }
 
+.filter-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
 .filter-sheet__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   width: 100%;
+  max-width: none;
   max-height: 90dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   background: var(--color-surface);
   border-top-left-radius: var(--radius-hero);
   border-top-right-radius: var(--radius-hero);
@@ -3165,6 +3182,19 @@ a.week-route__row:hover {
 }
 
 /* Notifications */
+/* Push opt-in sits inside .page-hero, between the title and the lede, so both
+   its states need the same top gap the lede already uses. */
+.push-optin__button {
+  margin: 0.75rem 0 0;
+}
+
+.push-optin__note {
+  margin: 0.75rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 .notification-list {
   margin: 1rem 0 0;
   padding: 0;
@@ -3926,6 +3956,8 @@ a.week-route__row:hover {
 }
 
 /* Edit Modal Backdrop */
+/* Positioning shell only — the dimming moved to __scrim, which is a real button
+   so the click-to-dismiss affordance is keyboard reachable. */
 .exercise-edit-modal-backdrop {
   position: fixed;
   z-index: 110;
@@ -3933,11 +3965,21 @@ a.week-route__row:hover {
   display: grid;
   padding: 1.25rem;
   place-items: center;
+}
+
+.exercise-edit-modal__scrim {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
   background: color-mix(in srgb, var(--color-text) 30%, transparent);
   backdrop-filter: blur(4px);
+  cursor: default;
 }
 
 .exercise-edit-modal {
+  position: relative;
+  z-index: 1;
   width: min(100%, 26rem);
   padding: 1.25rem;
   background: var(--color-surface);

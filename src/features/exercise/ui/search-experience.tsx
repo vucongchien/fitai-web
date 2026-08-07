@@ -19,6 +19,7 @@ import {
 import { ExerciseCard } from "@/features/exercise/ui/exercise-card";
 import { FilterPanel } from "@/features/exercise/ui/filter-panel";
 import { EmptyState } from "@/shared/ui/empty-state";
+import { NAV_BACK } from "@/shared/ui/transition-types";
 
 type SearchExperienceProps = {
   exercises: ExerciseSummary[];
@@ -92,6 +93,27 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
     [syncUrl],
   );
 
+  const setQuery = useCallback(
+    (q: string) => {
+      updateFilters({ ...filters, q });
+    },
+    [filters, updateFilters],
+  );
+
+  const clearQuery = useCallback(() => setQuery(""), [setQuery]);
+
+  /** Drops every facet but keeps what the user typed. */
+  const clearFacets = useCallback(() => {
+    updateFilters({ ...EMPTY_FILTERS, q: filters.q });
+  }, [filters.q, updateFilters]);
+
+  const resetSearch = useCallback(() => {
+    updateFilters(EMPTY_FILTERS);
+  }, [updateFilters]);
+
+  const openPanel = useCallback(() => setPanelOpen(true), []);
+  const closePanel = useCallback(() => setPanelOpen(false), []);
+
   const results = useMemo(
     () => sortExercises(filterExercises(exercises, filters, catalog), "relevance"),
     [exercises, filters, catalog],
@@ -106,7 +128,7 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
           aria-label="Back"
           className="focused-header__back"
           href="/home"
-          transitionTypes={["nav-back"]}
+          transitionTypes={NAV_BACK}
         >
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>
@@ -119,14 +141,14 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
             inputMode="search"
             placeholder="Find movements, muscles, tags"
             value={filters.q}
-            onChange={(event) => updateFilters({ ...filters, q: event.target.value })}
+            onChange={(event) => setQuery(event.target.value)}
             aria-label="Search exercises"
           />
           {filters.q ? (
             <button
               aria-label="Clear search"
               className="search-field__clear"
-              onClick={() => updateFilters({ ...filters, q: "" })}
+              onClick={clearQuery}
               type="button"
             >
               <X aria-hidden="true" size={16} />
@@ -139,7 +161,7 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
           aria-label={activeCount === 0 ? "Filters" : `Filters, ${activeCount} active`}
           className="icon-button"
           data-active={activeCount > 0 || undefined}
-          onClick={() => setPanelOpen(true)}
+          onClick={openPanel}
           type="button"
         >
           <SlidersHorizontal aria-hidden="true" size={18} strokeWidth={2} />
@@ -153,11 +175,7 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
             {results.length} of {exercises.length} movements
           </span>
           {activeCount > 0 ? (
-            <button
-              className="text-button"
-              onClick={() => updateFilters({ ...EMPTY_FILTERS, q: filters.q })}
-              type="button"
-            >
+            <button className="text-button" onClick={clearFacets} type="button">
               Reset filters
             </button>
           ) : null}
@@ -169,11 +187,7 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
             title="No movements match"
             description="Try removing a filter or broadening the search."
             action={
-              <button
-                className="secondary-button"
-                onClick={() => updateFilters(EMPTY_FILTERS)}
-                type="button"
-              >
+              <button className="secondary-button" onClick={resetSearch} type="button">
                 Reset search
               </button>
             }
@@ -195,8 +209,8 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
         catalog={catalog}
         resultCount={results.length}
         onChange={updateFilters}
-        onClear={() => updateFilters({ ...EMPTY_FILTERS, q: filters.q })}
-        onClose={() => setPanelOpen(false)}
+        onClear={clearFacets}
+        onClose={closePanel}
       />
     </div>
   );

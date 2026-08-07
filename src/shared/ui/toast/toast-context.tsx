@@ -1,8 +1,16 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
-import { _register } from "./toast-store";
+import { registerToastImpl } from "./toast-store";
 
 export type ToastType = "info" | "success" | "error";
 
@@ -54,15 +62,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   // Register imperative API on mount so toast.success() etc. work outside React
   useEffect(() => {
-    _register(showToast, dismissToast);
-    return () => _register(null, null);
+    registerToastImpl(showToast, dismissToast);
+    return () => registerToastImpl(null, null);
   }, [showToast, dismissToast]);
 
-  return (
-    <ToastContext.Provider value={{ toasts, showToast, dismissToast }}>
-      {children}
-    </ToastContext.Provider>
+  // A fresh object here would re-render every consumer on every provider render,
+  // and the provider wraps the whole app. showToast/dismissToast are already
+  // stable, so the value only changes when the toast list actually does.
+  const value = useMemo(
+    () => ({ dismissToast, showToast, toasts }),
+    [dismissToast, showToast, toasts],
   );
+
+  return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>;
 }
 
 export function useToast() {

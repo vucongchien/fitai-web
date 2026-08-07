@@ -36,6 +36,7 @@ const data = localFont({
 
 export const metadata: Metadata = {
   description: "A four-week training plan that adapts to your progress.",
+  manifest: "/manifest.webmanifest",
   title: {
     default: "FITAI",
     template: "%s · FITAI",

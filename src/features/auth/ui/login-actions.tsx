@@ -24,6 +24,22 @@ export function openOAuthPopup(provider: OAuthProvider) {
   return popup;
 }
 
+// Dev-only shortcut styling and handlers: constant, so they live at module
+// scope rather than being rebuilt on every render.
+const DEV_PANEL_STYLE = {
+  marginTop: "1rem",
+  paddingTop: "1rem",
+  borderTop: "1px dashed #ccc",
+  display: "flex",
+  flexDirection: "column" as const,
+  gap: "0.5rem",
+};
+const DEV_LABEL_STYLE = { color: "#888", fontWeight: 600 };
+const DEV_ROW_STYLE = { display: "flex", gap: "0.5rem" };
+
+const devLoginAsNew = () => window.location.assign("/api/auth/dev-login?target=new");
+const devLoginAsExisting = () => window.location.assign("/api/auth/dev-login?target=existing");
+
 export function LoginActions() {
   const [pending, setPending] = useState(false);
   const isDev = process.env.NODE_ENV === "development";
@@ -114,32 +130,13 @@ export function LoginActions() {
       </Button>
 
       {isDev && (
-        <div
-          style={{
-            marginTop: "1rem",
-            paddingTop: "1rem",
-            borderTop: "1px dashed #ccc",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.5rem",
-          }}
-        >
-          <small style={{ color: "#888", fontWeight: 600 }}>🛠️ DEV MODE SHORTCUTS</small>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <Button
-              size="medium"
-              type="button"
-              variant="secondary"
-              onClick={() => window.location.assign("/api/auth/dev-login?target=new")}
-            >
+        <div style={DEV_PANEL_STYLE}>
+          <small style={DEV_LABEL_STYLE}>🛠️ DEV MODE SHORTCUTS</small>
+          <div style={DEV_ROW_STYLE}>
+            <Button onClick={devLoginAsNew} size="medium" type="button" variant="secondary">
               ⚡ Dev: New User
             </Button>
-            <Button
-              size="medium"
-              type="button"
-              variant="secondary"
-              onClick={() => window.location.assign("/api/auth/dev-login?target=existing")}
-            >
+            <Button onClick={devLoginAsExisting} size="medium" type="button" variant="secondary">
               ⚡ Dev: Existing User
             </Button>
           </div>

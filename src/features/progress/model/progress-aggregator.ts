@@ -18,8 +18,8 @@ export function formatVolumeKg(volumeKg: number): string {
 }
 
 export function getTopPersonalRecords(records: PersonalRecord[], limit = 3): PersonalRecord[] {
-  return [...records]
-    .sort((a, b) => new Date(b.achievedAt).getTime() - new Date(a.achievedAt).getTime())
+  return records
+    .toSorted((a, b) => new Date(b.achievedAt).getTime() - new Date(a.achievedAt).getTime())
     .slice(0, limit);
 }
 

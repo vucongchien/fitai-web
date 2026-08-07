@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ArrowRight, Check, ChevronDown, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -158,6 +158,8 @@ export function OnboardingFlow() {
       : [...current, item];
     setValue(field, next, { shouldDirty: true, shouldValidate: true });
   }
+
+  const goBack = useCallback(() => setStep((current) => Math.max(0, current - 1)), []);
 
   async function continueFlow() {
     const currentFields = steps[step].fields;
@@ -501,7 +503,7 @@ export function OnboardingFlow() {
         <Button
           aria-label="Go to previous step"
           disabled={step === 0 || isSubmitting}
-          onClick={() => setStep((current) => Math.max(0, current - 1))}
+          onClick={goBack}
           size="icon"
           type="button"
           variant="secondary"

@@ -8,6 +8,9 @@ import { PageTransition } from "@/shared/ui/page-transition";
 
 export const metadata = { title: "Adhoc Workout — Custom Plan" };
 
+/** Hoisted so the array identity is stable across renders. */
+const NAV_BACK = ["nav-back"];
+
 export default function AdhocWorkoutPage() {
   return (
     <PageTransition className="workout-prep-page adhoc-workout-page">
@@ -16,7 +19,7 @@ export default function AdhocWorkoutPage() {
           aria-label="Back to home"
           className="focused-header__back"
           href="/home"
-          transitionTypes={["nav-back"]}
+          transitionTypes={NAV_BACK}
         >
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>

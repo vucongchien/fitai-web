@@ -50,15 +50,15 @@ export function FilterPanel({
   if (!open) return null;
 
   return (
-    <div
-      aria-label="Filter exercises"
-      className="filter-sheet"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-      role="dialog"
-    >
-      <div className="filter-sheet__inner">
+    <div className="filter-sheet">
+      <button
+        aria-label="Close filters"
+        className="filter-sheet__backdrop"
+        onClick={onClose}
+        type="button"
+      />
+
+      <dialog aria-label="Filter exercises" className="filter-sheet__inner" open>
         <span aria-hidden="true" className="filter-sheet__handle" />
 
         <header className="filter-sheet__head">
@@ -116,7 +116,7 @@ export function FilterPanel({
             onToggle={(id) => toggleList("tagIds", id)}
           />
 
-          <label className="switch-row">
+          <label aria-label="AI form tracking only" className="switch-row">
             <div className="switch-row__text">
               <span>AI form tracking only</span>
               <small>Show movements the camera can score.</small>
@@ -145,7 +145,7 @@ export function FilterPanel({
             Show {resultCount} {resultCount === 1 ? "result" : "results"}
           </button>
         </footer>
-      </div>
+      </dialog>
     </div>
   );
 }

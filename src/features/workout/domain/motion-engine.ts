@@ -2,7 +2,7 @@
  * Motion engine contract — the seam between the live UI and pose tracking.
  *
  * Three implementations sit behind it:
- *   - OnnxMotionEngine       real mmpose/RTMPose inference (onnx-motion-engine.ts)
+ *   - WorkerMotionEngine     real mmpose/RTMPose inference (worker-motion-engine.ts)
  *   - SimulatedMotionEngine  synthetic reps so the UI is testable without a model
  *   - ManualMotionEngine     no camera at all (the non-AI branch)
  *
@@ -78,8 +78,13 @@ export interface MotionEngine {
   stopCalibration(): void;
   /** Rep tracking for one set. */
   startSet(onEvent: MotionEventHandler): void;
-  /** Stop tracking and return what the set produced. */
-  stopSet(): SetTelemetry;
+  /**
+   * Stop tracking and return what the set produced.
+   *
+   * Async because the ONNX engine's accumulator lives in a worker — the answer
+   * is one postMessage round trip away.
+   */
+  stopSet(): Promise<SetTelemetry>;
   dispose(): void;
 }
 
@@ -93,7 +98,7 @@ export class ManualMotionEngine implements MotionEngine {
   }
   stopCalibration(): void {}
   startSet(): void {}
-  stopSet(): SetTelemetry {
+  async stopSet(): Promise<SetTelemetry> {
     return EMPTY_TELEMETRY;
   }
   dispose(): void {}

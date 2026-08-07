@@ -7,6 +7,9 @@ import { PageTransition } from "@/shared/ui/page-transition";
 
 export const metadata = { title: "Live workout" };
 
+/** Static element, hoisted so the fallback identity is stable across renders. */
+const LIVE_FALLBACK = <LaneSkeleton label="Loading your session" />;
+
 async function LiveWorkoutContent({ params }: { params: Promise<{ sessionId: string }> }) {
   const { sessionId } = await params;
   const plan = await getLiveSessionData(sessionId);
@@ -16,7 +19,7 @@ async function LiveWorkoutContent({ params }: { params: Promise<{ sessionId: str
 export default function LiveWorkoutPage({ params }: { params: Promise<{ sessionId: string }> }) {
   return (
     <PageTransition>
-      <Suspense fallback={<LaneSkeleton label="Loading your session" />}>
+      <Suspense fallback={LIVE_FALLBACK}>
         <LiveWorkoutContent params={params} />
       </Suspense>
     </PageTransition>

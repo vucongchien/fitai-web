@@ -131,8 +131,8 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
     engineRef.current?.startSet(onEvent);
   }, [onEvent]);
 
-  const stopSet = useCallback((): SetTelemetry => {
-    return engineRef.current?.stopSet() ?? EMPTY_TELEMETRY;
+  const stopSet = useCallback(async (): Promise<SetTelemetry> => {
+    return (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY;
   }, []);
 
   useEffect(() => dispose, [dispose]);

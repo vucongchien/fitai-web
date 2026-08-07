@@ -1,8 +1,10 @@
 import { ArrowLeft, Bell, Sparkles, Trophy } from "lucide-react";
 import Link from "next/link";
 
+import { EnablePushButton } from "@/shared/push/enable-push-button";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
+import { NAV_BACK } from "@/shared/ui/transition-types";
 
 export const metadata = { title: "Notifications" };
 
@@ -56,7 +58,7 @@ export default function NotificationsPage() {
           aria-label="Back"
           className="focused-header__back"
           href="/home"
-          transitionTypes={["nav-back"]}
+          transitionTypes={NAV_BACK}
         >
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>
@@ -67,6 +69,7 @@ export default function NotificationsPage() {
       <main className="focused-main">
         <header className="page-hero">
           <h1 className="page-hero__title">Notifications</h1>
+          <EnablePushButton />
           <p className="page-hero__lede">Coach messages, milestones, and plan updates.</p>
         </header>
 

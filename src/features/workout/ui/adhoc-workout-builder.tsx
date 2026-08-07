@@ -3,6 +3,7 @@
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { ArrowRight, GripVertical, Pencil, ShieldCheck, Trash2 } from "lucide-react";
+import { useMemo } from "react";
 
 import { useAdhocWorkout } from "@/features/workout/model/use-adhoc-workout";
 import { AdhocEstimates } from "@/features/workout/ui/adhoc-estimates";
@@ -34,6 +35,10 @@ export function AdhocWorkoutBuilder() {
     handleBeginSession,
   } = useAdhocWorkout();
 
+  // `SortableContext` re-derives its internal ordering whenever `items` changes
+  // identity, so a fresh array on every render defeats its own memoisation.
+  const sortableIds = useMemo(() => exerciseList.map((item) => item.id), [exerciseList]);
+
   return (
     <>
       <AdhocHero />
@@ -52,10 +57,7 @@ export function AdhocWorkoutBuilder() {
               onDragEnd={handleDragEnd}
               sensors={sensors}
             >
-              <SortableContext
-                items={exerciseList.map((item) => item.id)}
-                strategy={verticalListSortingStrategy}
-              >
+              <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
                 <ul className="adhoc-list-container">
                   {exerciseList.map((exercise, index) => (
                     <SortableAdhocItem

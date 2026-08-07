@@ -2,7 +2,7 @@
 
 import { Dumbbell, Plus, Scale, Utensils } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import type { QuickAction } from "@/features/home/model/home-page.types";
 
@@ -20,8 +20,8 @@ const iconMap = {
 export function QuickActionsFab({ actions }: QuickActionsFabProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => setIsOpen((prev) => !prev);
-  const closeMenu = () => setIsOpen(false);
+  const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
+  const closeMenu = useCallback(() => setIsOpen(false), []);
 
   return (
     <div className="home-fab-container">

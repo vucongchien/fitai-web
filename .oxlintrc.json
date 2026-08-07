@@ -1,0 +1,77 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "eslint",
+    "typescript",
+    "react",
+    "react-perf",
+    "nextjs",
+    "jsx-a11y",
+    "import",
+    "promise",
+    "node",
+    "unicorn",
+    "jsdoc",
+    "jest",
+    "vitest",
+    "vue",
+    "oxc"
+  ],
+  "ignorePatterns": [".claude/", ".next/", "src/shared/api/gen/"],
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+
+    "nextjs/google-font-display": "error",
+    "nextjs/google-font-preconnect": "error",
+    "nextjs/next-script-for-ga": "error",
+    "nextjs/no-async-client-component": "error",
+    "nextjs/no-head-element": "error",
+    "nextjs/no-img-element": "warn",
+
+    "import/no-cycle": "error",
+    "import/no-duplicates": "error",
+    "import/no-self-import": "error",
+
+    // --- Rules turned off, each with a verified reason -----------------------
+    //
+    // Everything below was measured before being switched off. Anything not
+    // listed here stays on, including rules that still have open findings.
+
+    // React 19 + Next.js compile JSX with the automatic runtime, so `React` does
+    // not need to be in scope — 105 of this repo's 106 JSX files never import it
+    // and the build is green. The rule targets the legacy React.createElement
+    // transform; satisfying it would mean adding an unused import to every file.
+    // Setting settings.react.version does not suppress it (verified).
+    "react/react-in-jsx-scope": "off",
+
+    // 115 findings that four independent passes each concluded are unfixable, or
+    // fixable only by making the code slower. They fall into three shapes:
+    // handlers inside .map() (useCallback cannot be called in a loop); onChange
+    // on controlled inputs (the dep array would hold state that changes on every
+    // keystroke, so the callback is rebuilt just as often); and handlers on plain
+    // DOM elements (no child render to skip). The codebase uses React.memo in
+    // zero places, so a stable identity prevents no re-render anywhere today.
+    // Clearing these properly means adopting memoisation top-down — a project,
+    // not a lint pass.
+    //
+    // jsx-no-new-array-as-prop and jsx-no-new-object-as-prop stay ON: they are
+    // fixable by hoisting, and they are what caught the ExerciseDialog reset bug.
+    "react-perf/jsx-no-new-function-as-prop": "off",
+
+    // Fires on `import "server-only"` and `import "@testing-library/jest-dom/vitest"`,
+    // where the side effect is the entire purpose of the import.
+    "import/no-unassigned-import": "off",
+
+    // Only Window.postMessage takes a targetOrigin:
+    //   Window: postMessage(message, targetOrigin: string, transfer?)
+    //   Worker: postMessage(message, transfer: Transferable[])
+    // Every call site here is Worker.postMessage, so "fixing" it would put a
+    // string where a Transferable[] belongs — a runtime TypeError.
+    "unicorn/require-post-message-target-origin": "off"
+  }
+}

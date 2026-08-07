@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, FolderTree, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import type { MetadataItem } from "@/features/admin/domain/admin-types";
 
@@ -14,6 +14,7 @@ export type MetadataDialogProps = {
 };
 
 export function MetadataDialog({ isOpen, category, item, onClose, onSave }: MetadataDialogProps) {
+  const fieldIdBase = useId();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,8 +83,11 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
         {/* Body Form */}
         <form id="metadata-form" onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">Name *</label>
+            <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-1`}>
+              Name *
+            </label>
             <input
+              id={`${fieldIdBase}-1`}
               type="text"
               required
               value={name}
@@ -94,8 +98,11 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">Description (Optional)</label>
+            <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-2`}>
+              Description (Optional)
+            </label>
             <textarea
+              id={`${fieldIdBase}-2`}
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}

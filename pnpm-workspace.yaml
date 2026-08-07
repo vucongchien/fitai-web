@@ -15,6 +15,11 @@ minimumReleaseAgeExclude:
 
 allowBuilds:
   "@bufbuild/buf": true
+  # Only meaningful under Firebase App Hosting, which reads FIREBASE_WEBAPP_CONFIG
+  # and calls firebase.googleapis.com during install. We pass config through
+  # NEXT_PUBLIC_FIREBASE_* instead, and dist/postinstall.{js,mjs} ship prebuilt,
+  # so skipping it keeps installs offline and deterministic.
+  "@firebase/util": false
   esbuild: true
   protobufjs: true
   sharp: true
