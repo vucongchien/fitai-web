@@ -56,7 +56,7 @@ describe("LogMealForm", () => {
     fireEvent.click(cancelBtn);
 
     expect(
-      screen.getByRole("button", { name: /log something not on the menu/i })
+      screen.getByRole("button", { name: /log custom meal/i })
     ).toBeInTheDocument();
     expect(screen.queryByLabelText(/what did you eat\?/i)).not.toBeInTheDocument();
   });

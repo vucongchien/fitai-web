@@ -21,19 +21,24 @@
 
 ## Component coverage
 
-| File                                     | Scenarios                                                                                                                                                                |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `component/button.test.tsx`              | Loading state remains accessible and prevents duplicate submission                                                                                                       |
-| `component/triple-lane.test.tsx`         | Labelled signature has a non-color text alternative                                                                                                                      |
-| `component/login-actions.test.tsx`       | Popup opens for Google/Facebook, popup-blocker fallback, OAUTH_COMPLETE navigates to dest, OAUTH_ERROR resets pending, popup closed manually resets, no duplicate clicks |
-| `component/today-timeline.test.tsx`      | Render 4 meals + 1 workout, event time format, clean sub-labels without status duplication, accessible item links                                                        |
-| `component/quick-actions-fab.test.tsx`   | Renders closed by default, opens menu on click, toggles aria-expanded, renders correct number of items from BFF props                                                    |
-| `component/progress-bento-grid.test.tsx` | Renders 4 UI states: Loading skeleton, Error state with retry, Empty state with encouragement, and Success Bento grid                                                    |
-| `component/profile-setup.test.tsx`       | Tests Availability Scheduler, Equipment array multi-select, and Injury constraints manager in Profile                                                                    |
-| `component/log-meal-form.test.tsx`      | Tests collapsed trigger, opening input form, expanding macros (Protein/Carbs/Fat), and cancelling                                                                        |
-| `component/meal-detail-view.test.tsx`   | Tests rendering logged meal details, suggestions list, and log something else form section                                                                               |
-| `component/workout-stats-panel.test.tsx` | Tests rendering WorkoutStatsPanel with action tone (blue) and Dumbbell icon                                                                                              |
-| `component/nutrition-view.test.tsx`     | Tests rendering NutritionView with recovery tone (green)                                                                                                                 |
+| File                                     | Scenarios                                                                                                                                                                                            |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `component/button.test.tsx`              | Loading state remains accessible and prevents duplicate submission                                                                                                                                   |
+| `component/triple-lane.test.tsx`         | Labelled signature has a non-color text alternative                                                                                                                                                  |
+| `component/login-actions.test.tsx`       | Popup opens for Google/Facebook, popup-blocker fallback, OAUTH_COMPLETE navigates to dest, OAUTH_ERROR resets pending, popup closed manually resets, no duplicate clicks                             |
+| `component/today-timeline.test.tsx`      | Render 4 meals + 1 workout, event time format, clean sub-labels without status duplication, accessible item links                                                                                    |
+| `component/quick-actions-fab.test.tsx`   | Renders closed by default, opens menu on click, toggles aria-expanded, renders correct number of items from BFF props, aria-controls links trigger to menu                                           |
+| `component/progress-bento-grid.test.tsx` | Renders 4 UI states: Loading skeleton, Error state with retry, Empty state with encouragement, and Success Bento grid                                                                                |
+| `component/profile-setup.test.tsx`       | Tests Availability Scheduler, Equipment array multi-select, and Injury constraints manager in Profile                                                                                                |
+| `component/log-meal-form.test.tsx`       | Tests collapsed trigger, opening input form, expanding macros (Protein/Carbs/Fat), cancelling, and validation error on empty submit                                                                  |
+| `component/meal-detail-view.test.tsx`    | Tests rendering logged meal details, suggestions list, and log something else form section                                                                                                           |
+| `component/workout-stats-panel.test.tsx` | Tests rendering WorkoutStatsPanel with action tone (blue) and Dumbbell icon                                                                                                                          |
+| `component/nutrition-view.test.tsx`      | Tests rendering NutritionView with recovery tone (green)                                                                                                                                             |
+| `component/bottom-navigation.test.tsx`   | nav landmark label, aria-current="page" on active route, no aria-current on inactive, all 4 destinations, /schedule treated as Workout active, icons aria-hidden                                    |
+| `component/app-header.test.tsx`          | header banner landmark, BrandMark on top-level, back link aria-label for /nutrition and /roadmap sub-routes, /schedule routes, ArrowLeft icon aria-hidden                                           |
+| `component/feedback-state.test.tsx`      | empty/error tones, title heading, description text, icon aria-hidden, no link without action props, action link accessible name and href, ArrowRight icon aria-hidden inside link                    |
+| `component/metric-trace.test.tsx`        | SVG has role=img with aria-label=label+value, figure+figcaption structure, visible label+value text, tone modifier class, default blue tone, line path rendered, single-point dataset without throw  |
+| `component/empty-state.test.tsx`         | output element (role=status), h3 heading, description text, no p without description, icon aria-hidden, no icon wrapper without icon prop, action slot rendered, no action container without action  |
 
 ## End-to-end coverage
 

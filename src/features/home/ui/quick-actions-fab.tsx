@@ -18,6 +18,7 @@ const iconMap = {
 } as const;
 
 export function QuickActionsFab({ actions }: QuickActionsFabProps) {
+  const menuId = "quick-actions-menu";
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
@@ -32,6 +33,7 @@ export function QuickActionsFab({ actions }: QuickActionsFabProps) {
       <div
         aria-label="Quick action options"
         className={`home-fab-menu ${isOpen ? "home-fab-menu--open" : ""}`}
+        id={menuId}
         role="menu"
       >
         {actions.map((action) => {
@@ -57,6 +59,7 @@ export function QuickActionsFab({ actions }: QuickActionsFabProps) {
 
       {/* Main Sticky Circular Action Button */}
       <button
+        aria-controls={menuId}
         aria-expanded={isOpen}
         aria-label={isOpen ? "Close quick actions" : "Open quick actions"}
         className={`home-fab-trigger ${isOpen ? "home-fab-trigger--active" : ""}`}
