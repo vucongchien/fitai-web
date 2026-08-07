@@ -23,7 +23,7 @@ function paragraphsFor(exercise: LiveExercise): string[] {
 }
 
 export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
-  const panelRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
   const [scrollable, setScrollable] = useState(false);
 
   const measure = useCallback(() => {
@@ -55,15 +55,18 @@ export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
   }, [measure]);
 
   return (
-    <div
-      // A scroll container must be reachable by keyboard, or its content is
-      // unreachable for anyone not using a pointer.
+    <section
+      // A named <section> is a landmark region on its own, so `role="region"`
+      // was redundant markup for the same semantics.
+      //
+      // `tabIndex={0}` stays deliberately: a scroll container must be reachable
+      // by keyboard, or its content is unreachable for anyone not using a
+      // pointer (WCAG 2.1.1).
       aria-label="Coaching instructions"
       className="live-screen__coach"
       data-scrollable={scrollable}
       onScroll={measure}
       ref={panelRef}
-      role="region"
       tabIndex={0}
     >
       <div className="live-coach">
@@ -73,6 +76,6 @@ export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
           </p>
         ))}
       </div>
-    </div>
+    </section>
   );
 }

@@ -30,7 +30,7 @@ export function useTicker(active: boolean, intervalMs = 500): number {
       name: "fitai-session-timer",
       type: "module",
     });
-    worker.onmessage = () => setNow(Date.now());
+    worker.addEventListener("message", () => setNow(Date.now()));
     worker.postMessage({ intervalMs, type: "start" });
 
     return () => {

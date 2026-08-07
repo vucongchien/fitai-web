@@ -10,6 +10,9 @@ import { PageTransition } from "@/shared/ui/page-transition";
 
 export const metadata = { title: "Prepare for your session" };
 
+/** Hoisted so the array identity is stable across renders. */
+const NAV_BACK = ["nav-back"];
+
 async function PrepContent({
   paramsPromise,
 }: {
@@ -29,6 +32,9 @@ function PrepSkeleton() {
   );
 }
 
+/** Static element, hoisted so the fallback identity is stable across renders. */
+const PREP_FALLBACK = <PrepSkeleton />;
+
 export default function WorkoutPreparationPage({
   params,
 }: {
@@ -41,7 +47,7 @@ export default function WorkoutPreparationPage({
           aria-label="Back to roadmap"
           className="focused-header__back"
           href="/roadmap"
-          transitionTypes={["nav-back"]}
+          transitionTypes={NAV_BACK}
         >
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>
@@ -49,7 +55,7 @@ export default function WorkoutPreparationPage({
         <HeaderActions />
       </header>
 
-      <Suspense fallback={<PrepSkeleton />}>
+      <Suspense fallback={PREP_FALLBACK}>
         <PrepContent paramsPromise={params} />
       </Suspense>
     </PageTransition>
