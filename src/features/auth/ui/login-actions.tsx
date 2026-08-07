@@ -62,7 +62,8 @@ export function LoginActions() {
       };
 
       const onMessage = (event: MessageEvent<OAuthMessage>) => {
-        if (event.origin && event.origin !== "null" && event.origin !== window.location.origin) return;
+        if (event.origin && event.origin !== "null" && event.origin !== window.location.origin)
+          return;
         if (event.data?.type === "OAUTH_COMPLETE") {
           window.removeEventListener("message", onMessage);
           try {

@@ -10,6 +10,7 @@ import {
   Target,
   User,
 } from "lucide-react";
+
 import type { ProfileViewModel } from "../model/profile.types";
 
 export type ModalType =
@@ -46,7 +47,8 @@ export function ProfileMenuList({ profile, onOpenModal }: ProfileMenuListProps) 
                 Body Metrics
               </div>
               <div className="text-xs text-[#50565C]">
-                BMI: <span className="font-mono font-semibold">{profile.healthMetrics.bmi}</span> • {profile.highlights.currentWeightKg}kg ({profile.healthMetrics.bmiCategory})
+                BMI: <span className="font-mono font-semibold">{profile.healthMetrics.bmi}</span> •{" "}
+                {profile.highlights.currentWeightKg}kg ({profile.healthMetrics.bmiCategory})
               </div>
             </div>
           </div>

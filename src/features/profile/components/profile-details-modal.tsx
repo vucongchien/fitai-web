@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   AlertTriangle,
   Check,
@@ -11,8 +10,10 @@ import {
   User,
   X,
 } from "lucide-react";
-import type { InjuryItem, ProfileViewModel } from "../model/profile.types";
+import React, { useState } from "react";
+
 import { calculateBMI } from "../model/profile.mapper";
+import type { InjuryItem, ProfileViewModel } from "../model/profile.types";
 import {
   recoverInjuryServerAction,
   reportInjuryServerAction,
@@ -117,8 +118,6 @@ function ConfirmDialog({
     </div>
   );
 }
-
-
 
 /* ==========================================
    SELECTION TILE COMPONENT
@@ -330,7 +329,9 @@ function GoalsForm({
 }) {
   const [experience, setExperience] = useState(profile.user.experienceLevel || "Intermediate");
   const [goals, setGoals] = useState<string[]>(profile.healthMetrics.goals || []);
-  const [muscles, setMuscles] = useState<string[]>(profile.healthMetrics.preferredMuscleGroups || []);
+  const [muscles, setMuscles] = useState<string[]>(
+    profile.healthMetrics.preferredMuscleGroups || [],
+  );
   const [showConfirm, setShowConfirm] = useState(false);
 
   const toggleGoal = (item: string) => {
@@ -369,7 +370,9 @@ function GoalsForm({
         </div>
         <div>
           <h2 className="text-lg font-bold text-[#101214] font-display">Training Goals</h2>
-          <p className="text-xs text-[#50565C]">Customize your focus, target muscles & experience level</p>
+          <p className="text-xs text-[#50565C]">
+            Customize your focus, target muscles & experience level
+          </p>
         </div>
       </div>
 
@@ -701,7 +704,9 @@ function PersonalInfoForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#50565C] mb-2.5">AI Coach Style</label>
+          <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
+            AI Coach Style
+          </label>
           <div className="grid grid-cols-3 gap-2.5">
             {[
               { id: "Motivational", desc: "Encouraging & energetic" },
@@ -779,14 +784,12 @@ function InjuryHistoryForm({
     await recoverInjuryServerAction(confirmRecoverId);
 
     const updated = injuries.map((i) =>
-      i.id === confirmRecoverId ? { ...i, isRecovered: true } : i
+      i.id === confirmRecoverId ? { ...i, isRecovered: true } : i,
     );
     setInjuries(updated);
     onSave({ injuries: updated });
     setConfirmRecoverId(null);
   };
-
-
 
   return (
     <>

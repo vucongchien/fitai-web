@@ -6162,3 +6162,35 @@ body:has(.live-screen) {
   font-size: 0.82rem;
   line-height: 1.4;
 }
+
+/* Pull to Refresh Component */
+.pull-to-refresh-container {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+}
+
+.pull-to-refresh-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.pull-to-refresh-indicator__icon-box {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: var(--color-action, #4b57f2);
+}
+

@@ -57,10 +57,12 @@ Expected: `On branch feat/web-workers-and-push`, working tree clean.
 `FrameSampler` needs a twin that works on an `OffscreenCanvas` inside the worker. Only the geometry is worth sharing; the drawing differs because the 2D context types differ.
 
 **Files:**
+
 - Modify: `src/features/workout/domain/frame-sampler.ts`
 - Test: `tests/unit/frame-sampler.test.ts` (create)
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: `letterboxLayout(sourceWidth, sourceHeight, destWidth, destHeight): LetterboxLayout` where `LetterboxLayout = { scale: number; padX: number; padY: number; drawWidth: number; drawHeight: number }`. Task 2's `BitmapSampler` uses it.
 
@@ -157,22 +159,22 @@ export function letterboxLayout(
 Then replace the geometry block inside `FrameSampler.grab()`. The existing lines
 
 ```ts
-    const scale = Math.min(this.width / sourceWidth, this.height / sourceHeight);
-    const drawWidth = sourceWidth * scale;
-    const drawHeight = sourceHeight * scale;
-    const padX = (this.width - drawWidth) / 2;
-    const padY = (this.height - drawHeight) / 2;
+const scale = Math.min(this.width / sourceWidth, this.height / sourceHeight);
+const drawWidth = sourceWidth * scale;
+const drawHeight = sourceHeight * scale;
+const padX = (this.width - drawWidth) / 2;
+const padY = (this.height - drawHeight) / 2;
 ```
 
 become:
 
 ```ts
-    const { drawHeight, drawWidth, padX, padY, scale } = letterboxLayout(
-      sourceWidth,
-      sourceHeight,
-      this.width,
-      this.height,
-    );
+const { drawHeight, drawWidth, padX, padY, scale } = letterboxLayout(
+  sourceWidth,
+  sourceHeight,
+  this.width,
+  this.height,
+);
 ```
 
 The rest of `grab()` is untouched.
@@ -204,11 +206,13 @@ git commit -m "[AI] refactor: extract letterboxLayout so worker and main thread 
 `normaliseFrame`, `decodeSimcc`, `decodeHeatmap` and `MODEL_IO` are pure but currently live in `onnx-motion-engine.ts`, which imports DOM types. The worker needs them without dragging in `HTMLVideoElement`.
 
 **Files:**
+
 - Create: `src/features/workout/domain/onnx-decode.ts`
 - Modify: `src/features/workout/domain/onnx-motion-engine.ts` (re-export only, so the file keeps compiling until Task 5 deletes it)
 - Test: `tests/unit/onnx-decode.test.ts` (create)
 
 **Interfaces:**
+
 - Consumes: `LetterboxedFrame` from `frame-sampler.ts`.
 - Produces: `MODEL_IO`, `normaliseFrame(frame: LetterboxedFrame): Float32Array`, `decodeSimcc(simccX, simccY, keypointCount, splitRatio?)`, `decodeHeatmap(heatmap, keypointCount, mapWidth, mapHeight, strideX, strideY)`. All consumed by Task 3's worker. `decodeSimcc`/`decodeHeatmap` both return `Array<{ x: number; y: number; score: number }>`.
 
@@ -219,7 +223,12 @@ Create `tests/unit/onnx-decode.test.ts`:
 ```ts
 import { describe, expect, it } from "vitest";
 
-import { decodeHeatmap, decodeSimcc, MODEL_IO, normaliseFrame } from "@/features/workout/domain/onnx-decode";
+import {
+  decodeHeatmap,
+  decodeSimcc,
+  MODEL_IO,
+  normaliseFrame,
+} from "@/features/workout/domain/onnx-decode";
 
 describe("decodeSimcc", () => {
   it("picks the argmax bin on each axis and divides by the split ratio", () => {
@@ -341,10 +350,12 @@ git commit -m "[AI] refactor: move ONNX tensor and keypoint decoding into a DOM-
 By default `onnxruntime-web` fetches its `.wasm`/`.mjs` runtime from a CDN, which mismatches the installed version and fails offline. Serve them from `public/ort/` instead.
 
 **Files:**
+
 - Create: `scripts/copy-ort-assets.mjs`
 - Modify: `package.json` (scripts), `.gitignore`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: `/ort/ort-wasm-simd-threaded.wasm`, `/ort/ort-wasm-simd-threaded.mjs`, `/ort/ort-wasm-simd-threaded.jsep.wasm`, `/ort/ort-wasm-simd-threaded.jsep.mjs` served as static assets. Task 4's worker sets `ort.env.wasm.wasmPaths = "/ort/"`.
 
@@ -438,12 +449,14 @@ git commit -m "[AI] build: serve onnxruntime-web wasm runtime from public/ort"
 The worker owns the ORT sessions, the pose maths and the set accumulator. It receives `ImageBitmap`s and emits the existing `MotionEngineEvent` union, so nothing upstream learns a new vocabulary.
 
 **Files:**
+
 - Create: `src/features/workout/model/inference-protocol.ts`
 - Create: `src/features/workout/model/inference.worker.ts`
 - Create: `src/features/workout/domain/bitmap-sampler.ts`
 - Test: `tests/unit/inference-protocol.test.ts` (create)
 
 **Interfaces:**
+
 - Consumes: `letterboxLayout`, `LetterboxedFrame`, `toSourceCoords` (Task 1); `MODEL_IO`, `normaliseFrame`, `decodeSimcc`, `decodeHeatmap` (Task 2); `/ort/` assets (Task 3); `pose-metrics.ts` and `set-telemetry.ts` unchanged.
 - Produces: the `InferenceRequest` / `InferenceResponse` unions and `isInferenceResponse(value): value is InferenceResponse`. Task 5's `WorkerMotionEngine` is the only consumer.
 
@@ -551,10 +564,7 @@ Create `src/features/workout/domain/bitmap-sampler.ts`:
  * rather than on the main thread. That is the whole point of the move.
  */
 
-import {
-  type LetterboxedFrame,
-  letterboxLayout,
-} from "@/features/workout/domain/frame-sampler";
+import { type LetterboxedFrame, letterboxLayout } from "@/features/workout/domain/frame-sampler";
 
 export class BitmapSampler {
   private canvas: OffscreenCanvas;
@@ -920,6 +930,7 @@ git commit -m "[AI] feat: add ONNX inference worker with one-frame-in-flight pro
 ## Task 5: `WorkerMotionEngine` — swap it in and delete the old engine
 
 **Files:**
+
 - Create: `src/features/workout/domain/worker-motion-engine.ts`
 - Delete: `src/features/workout/domain/onnx-motion-engine.ts`
 - Modify: `src/features/workout/domain/motion-engine.ts` (`stopSet` becomes async)
@@ -928,6 +939,7 @@ git commit -m "[AI] feat: add ONNX inference worker with one-frame-in-flight pro
 - Modify: `src/features/workout/model/use-motion-engine.ts` (`stopSet` becomes async)
 
 **Interfaces:**
+
 - Consumes: `InferenceRequest`/`InferenceResponse`/`isInferenceResponse` (Task 4), `FrameSampler`'s host video element, `MotionEngine` (modified below).
 - Produces: `class WorkerMotionEngine implements MotionEngine` with `readonly kind = "onnx"`. `resolveMotionEngine` returns it in place of `OnnxMotionEngine`; no UI file changes.
 
@@ -951,10 +963,10 @@ and `ManualMotionEngine`:
 Add a note above the interface member:
 
 ```ts
-  /**
-   * Async because the ONNX engine's accumulator lives in a worker — the answer
-   * is one postMessage round trip away.
-   */
+/**
+ * Async because the ONNX engine's accumulator lives in a worker — the answer
+ * is one postMessage round trip away.
+ */
 ```
 
 - [ ] **Step 2: Make `SimulatedMotionEngine.stopSet` async**
@@ -1174,7 +1186,7 @@ import { WorkerMotionEngine } from "@/features/workout/domain/worker-motion-engi
 and the return:
 
 ```ts
-  if (await isReachable(spec.onnxSkeletonUrl)) return new WorkerMotionEngine();
+if (await isReachable(spec.onnxSkeletonUrl)) return new WorkerMotionEngine();
 ```
 
 Update the doc comment's first branch to read `models reachable → WorkerMotionEngine (mmpose inference in a worker)`.
@@ -1190,9 +1202,9 @@ git rm src/features/workout/domain/onnx-motion-engine.ts
 In `src/features/workout/model/use-motion-engine.ts`, replace the `stopSet` callback:
 
 ```ts
-  const stopSet = useCallback(async (): Promise<SetTelemetry> => {
-    return (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY;
-  }, []);
+const stopSet = useCallback(async (): Promise<SetTelemetry> => {
+  return (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY;
+}, []);
 ```
 
 - [ ] **Step 7: Verify the whole suite**
@@ -1212,6 +1224,7 @@ pnpm run dev
 ```
 
 Open a live workout route with an AI-supported exercise. In DevTools:
+
 - **Sources → Threads** shows a `fitai-inference` worker.
 - **Network** shows `/ort/ort-wasm-simd-threaded*` requests, not CDN ones.
 - **Performance**, recorded for 5s during calibration: the main thread has no long tasks from inference; the worker thread does the work.
@@ -1236,11 +1249,13 @@ git commit -m "[AI] feat: run pose inference in a worker, replacing the main-thr
 `useTicker` derives everything from `Date.now()`, so it never drifts. The problem is frequency: a backgrounded tab throttles `setInterval` to roughly once a minute, so a rest countdown that ends while the screen is off does not reach zero until the user looks again. A worker timer is not throttled the same way.
 
 **Files:**
+
 - Create: `src/features/workout/model/timer.worker.ts`
 - Modify: `src/features/workout/model/use-session-timer.ts`
 - Test: `tests/unit/use-session-timer.test.ts` (create)
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: `useTicker(active: boolean, intervalMs?: number): number` — signature unchanged, so `use-live-session.ts:303` needs no edit. `secondsLeft`, `elapsedSeconds`, `formatClock`, `formatCountdown` are untouched.
 
@@ -1410,7 +1425,7 @@ Expected: PASS, 6 tests. jsdom has no `Worker`, so the fallback branch is what t
 pnpm run dev
 ```
 
-Open a live workout, start a rest period, then switch to another tab for 30 seconds and come back. The countdown must show the correct remaining time *and* have transitioned out of rest if it expired. In **Sources → Threads** a `fitai-session-timer` worker is listed while the session is running and disappears when you leave the route.
+Open a live workout, start a rest period, then switch to another tab for 30 seconds and come back. The countdown must show the correct remaining time _and_ have transitioned out of rest if it expired. In **Sources → Threads** a `fitai-session-timer` worker is listed while the session is running and disappears when you leave the route.
 
 - [ ] **Step 7: Full suite, lint, format, commit**
 
@@ -1432,6 +1447,7 @@ git commit -m "[AI] fix: drive the session tick from a worker so backgrounded re
 The backend already sends through FCM and `NotificationService.RegisterDeviceToken` is in the contract. What is missing on the web side is the Service Worker that can receive a push at all, the PWA manifest that lets iOS grant permission, and the code that mints and registers a token.
 
 **Files:**
+
 - Create: `public/sw.js`
 - Create: `public/manifest.webmanifest`
 - Create: `src/shared/push/firebase-app.ts`
@@ -1443,6 +1459,7 @@ The backend already sends through FCM and `NotificationService.RegisterDeviceTok
 - Test: `tests/unit/push-support.test.ts` (create)
 
 **Interfaces:**
+
 - Consumes: `createServerTransport` from `@/shared/api/server/transport`, `NotificationService` from the generated contracts.
 - Produces: `pushSupport(): PushSupport` where `PushSupport = { supported: boolean; reason: string | null }`; `usePushRegistration(): { status: "idle" | "asking" | "granted" | "denied" | "unsupported"; enable: () => Promise<void> }`; `registerDeviceToken(token: string): Promise<boolean>` (Server Action).
 
@@ -1825,9 +1842,7 @@ export function EnablePushButton() {
   if (status === "granted") return null;
   if (status === "unsupported") {
     return (
-      <p className="push-optin__note">
-        Add FITAI to your home screen to get session reminders.
-      </p>
+      <p className="push-optin__note">Add FITAI to your home screen to get session reminders.</p>
     );
   }
   if (status === "denied") {
@@ -1860,6 +1875,7 @@ pnpm run build && pnpm run start
 ```
 
 Service workers need a secure context; `localhost` counts. Then:
+
 - **Application → Manifest** shows FITAI with no icon errors.
 - Click "Turn on reminders" → permission prompt appears → **Application → Service Workers** lists `/sw.js` as activated and running.
 - Send a test message from Firebase console → Cloud Messaging → "Send test message", pasting the token (log it temporarily in `usePushRegistration` if needed, then remove the log). The notification appears with the tab closed, and clicking it opens `/notifications`.

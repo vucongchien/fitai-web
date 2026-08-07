@@ -1,4 +1,5 @@
 import { Dumbbell, Flame, Trophy, Zap } from "lucide-react";
+
 import type { BestPersonalRecord, ProfileQuickStats, ProfileUser } from "../model/profile.types";
 
 interface ProfileHeroCardProps {
@@ -28,9 +29,7 @@ export function ProfileHeroCard({ user, bestPr, stats }: ProfileHeroCardProps) {
       </div>
 
       {/* User Name */}
-      <h2 className="text-xl font-bold tracking-tight text-[#101214] font-display">
-        {user.name}
-      </h2>
+      <h2 className="text-xl font-bold tracking-tight text-[#101214] font-display">{user.name}</h2>
 
       {/* Sub-line: Level & Best PR */}
       <div className="mt-1 flex items-center justify-center gap-2 text-xs text-[#50565C]">

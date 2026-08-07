@@ -1,14 +1,18 @@
 "use server";
 
 import { createClient } from "@connectrpc/connect";
-import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
+
 import { createServerTransport } from "@/shared/api/connect/server-transport";
+import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
+
 import type { ProfileViewModel } from "../model/profile.types";
 
 /**
  * Server Action gọi gRPC ProfileService.UpdateProfile
  */
-export async function updateProfileServerAction(updated: Partial<ProfileViewModel>): Promise<{ success: boolean; message: string }> {
+export async function updateProfileServerAction(
+  updated: Partial<ProfileViewModel>,
+): Promise<{ success: boolean; message: string }> {
   try {
     const transport = createServerTransport();
     const client = createClient(ProfileService, transport);
@@ -64,7 +68,9 @@ export async function reportInjuryServerAction(injury: {
 /**
  * Server Action gọi gRPC ProfileService.RecoverInjury
  */
-export async function recoverInjuryServerAction(injuryId: string): Promise<{ success: boolean; message?: string }> {
+export async function recoverInjuryServerAction(
+  injuryId: string,
+): Promise<{ success: boolean; message?: string }> {
   try {
     const transport = createServerTransport();
     const client = createClient(ProfileService, transport);

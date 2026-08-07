@@ -1,8 +1,10 @@
 "use server";
 
 import { createClient } from "@connectrpc/connect";
+
 import { createServerTransport } from "@/shared/api/connect/server-transport";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
+
 import type { OnboardingValues } from "../domain/onboarding-schema";
 
 function mapGoalToProto(goal: string): string[] {
@@ -60,7 +62,7 @@ function mapCoachStyleToProto(style: string): string {
  * Server Action gọi gRPC ProfileService.SaveHealthProfile
  */
 export async function saveOnboardingProfileServerAction(
-  values: OnboardingValues
+  values: OnboardingValues,
 ): Promise<{ success: boolean; message: string; aiCoachActivated?: boolean }> {
   try {
     const transport = createServerTransport();

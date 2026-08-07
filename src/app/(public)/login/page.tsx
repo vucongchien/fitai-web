@@ -1,8 +1,8 @@
 import { ArrowDown } from "lucide-react";
 import { Suspense } from "react";
 
-import { LoginErrorAlert } from "@/features/auth/ui/login-error-alert";
 import { LoginActions } from "@/features/auth/ui/login-actions";
+import { LoginErrorAlert } from "@/features/auth/ui/login-error-alert";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { PageTransition } from "@/shared/ui/page-transition";
 import { TripleLane } from "@/shared/ui/triple-lane";
@@ -48,4 +48,3 @@ export default function LoginPage() {
     </PageTransition>
   );
 }
-

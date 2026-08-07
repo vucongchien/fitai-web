@@ -18,7 +18,10 @@ const storageKey = "fitai-onboarding-draft-v1";
 
 const steps = [
   { title: "Choose your primary goal", fields: ["goal"] },
-  { title: "Set your baseline & targets", fields: ["heightCm", "weightKg", "targetWeightKg", "gender", "experienceLevel"] },
+  {
+    title: "Set your baseline & targets",
+    fields: ["heightCm", "weightKg", "targetWeightKg", "gender", "experienceLevel"],
+  },
   { title: "Shape your week", fields: ["availableDays", "preferredTime"] },
   { title: "Choose your training setup", fields: ["equipment", "muscleFocus"] },
   { title: "Add safety constraints", fields: ["injuryStatus"] },
@@ -26,7 +29,11 @@ const steps = [
 ] as const;
 
 const goalOptions = [
-  ["build-muscle", "Build Muscle", "Focus on hypertrophy, muscle growth, and progressive overload."],
+  [
+    "build-muscle",
+    "Build Muscle",
+    "Focus on hypertrophy, muscle growth, and progressive overload.",
+  ],
   ["fat-loss", "Lose Fat", "Focus on calorie burn, high density, and lean body composition."],
 ] as const;
 
@@ -56,7 +63,6 @@ function ChoiceButton({
     </button>
   );
 }
-
 
 export function OnboardingFlow() {
   const router = useRouter();
@@ -162,7 +168,9 @@ export function OnboardingFlow() {
                 <ChoiceButton
                   active={values.goal === value}
                   key={value}
-                  onClick={() => setValue("goal", value as OnboardingValues["goal"], { shouldValidate: true })}
+                  onClick={() =>
+                    setValue("goal", value as OnboardingValues["goal"], { shouldValidate: true })
+                  }
                 >
                   <span>
                     <strong>{label}</strong>
@@ -215,7 +223,9 @@ export function OnboardingFlow() {
                   />
                   <span>kg</span>
                 </span>
-                {errors.targetWeightKg ? <small role="alert">{errors.targetWeightKg.message}</small> : null}
+                {errors.targetWeightKg ? (
+                  <small role="alert">{errors.targetWeightKg.message}</small>
+                ) : null}
               </label>
             </div>
 
@@ -335,7 +345,11 @@ export function OnboardingFlow() {
             <div className="choice-grid">
               {[
                 ["none", "No current limitation", "Continue with planned starting range."],
-                ["active", "Report pain or injury", "Specify muscle area so AI Coach adjusts prescribed exercises."],
+                [
+                  "active",
+                  "Report pain or injury",
+                  "Specify muscle area so AI Coach adjusts prescribed exercises.",
+                ],
               ].map(([value, label, description]) => (
                 <ChoiceButton
                   active={values.injuryStatus === value}
@@ -380,7 +394,9 @@ export function OnboardingFlow() {
                     );
                   })}
                 </div>
-                <label className="block text-xs font-semibold text-rose-900">Notes for AI Coach</label>
+                <label className="block text-xs font-semibold text-rose-900">
+                  Notes for AI Coach
+                </label>
                 <input
                   value={values.injuryNotes || ""}
                   onChange={(e) => setValue("injuryNotes", e.target.value)}
@@ -398,7 +414,11 @@ export function OnboardingFlow() {
             <p>This changes guidance tone, not the safety rules or training logic.</p>
             <div className="choice-grid">
               {[
-                ["motivational", "Motivational", "Encouraging prompts with positive reinforcement."],
+                [
+                  "motivational",
+                  "Motivational",
+                  "Encouraging prompts with positive reinforcement.",
+                ],
                 ["strict", "Strict", "Concise, direct prompts focused on immediate action."],
                 ["scientific", "Scientific", "Data-focused explanations with joint mechanics."],
               ].map(([value, label, description]) => (

@@ -1,10 +1,9 @@
-import type {
-  BestPersonalRecord,
-  HealthMetricsDetail,
-  ProfileViewModel,
-} from "./profile.types";
+import type { BestPersonalRecord, HealthMetricsDetail, ProfileViewModel } from "./profile.types";
 
-export function calculateBMI(weightKg: number, heightCm: number): { bmi: number; category: string } {
+export function calculateBMI(
+  weightKg: number,
+  heightCm: number,
+): { bmi: number; category: string } {
   if (!weightKg || !heightCm || heightCm <= 0) {
     return { bmi: 0, category: "No data" };
   }
@@ -146,16 +145,17 @@ export function mapRawDataToProfileViewModel(raw: {
     };
   });
 
-  const bestPr = rawPrs.length > 0
-    ? [...rawPrs].sort((a, b) => b.oneRepMax - a.oneRepMax)[0]
-    : {
-        exerciseId: "deadlift",
-        exerciseName: "Barbell Deadlift",
-        weightKg: 140,
-        reps: 1,
-        oneRepMax: 140,
-        achievedAt: "2026-08-01",
-      };
+  const bestPr =
+    rawPrs.length > 0
+      ? [...rawPrs].sort((a, b) => b.oneRepMax - a.oneRepMax)[0]
+      : {
+          exerciseId: "deadlift",
+          exerciseName: "Barbell Deadlift",
+          weightKg: 140,
+          reps: 1,
+          oneRepMax: 140,
+          achievedAt: "2026-08-01",
+        };
 
   const healthMetrics: HealthMetricsDetail = {
     heightCm: height,
@@ -164,7 +164,7 @@ export function mapRawDataToProfileViewModel(raw: {
     targetBodyFatPercent: profile.targetBodyFatPercent || 15.0,
     goals: (profile.goals || ["BUILD_MUSCLE", "FAT_LOSS"]).map(translateGoal),
     preferredMuscleGroups: (profile.preferredMuscleGroups || ["CHEST", "BACK", "LEGS"]).map(
-      translateMuscleGroup
+      translateMuscleGroup,
     ),
   };
 

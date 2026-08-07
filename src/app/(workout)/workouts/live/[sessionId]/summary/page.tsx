@@ -21,17 +21,17 @@ async function SummaryContent({
 
 function SummarySkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading workout summary" className="workout-prep-skeleton px-4 py-8">
+    <div
+      aria-busy="true"
+      aria-label="Loading workout summary"
+      className="workout-prep-skeleton px-4 py-8"
+    >
       <div className="skeleton-box h-48 w-full rounded-[14px] bg-[var(--color-surface-hover,#eee)]" />
     </div>
   );
 }
 
-export default function WorkoutSummaryPage({
-  params,
-}: {
-  params: Promise<{ sessionId: string }>;
-}) {
+export default function WorkoutSummaryPage({ params }: { params: Promise<{ sessionId: string }> }) {
   return (
     <Suspense fallback={<SummarySkeleton />}>
       <SummaryContent paramsPromise={params} />

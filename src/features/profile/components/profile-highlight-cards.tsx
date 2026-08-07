@@ -1,4 +1,5 @@
 import { Activity, Scale, Target } from "lucide-react";
+
 import type { ProfileHighlightMetrics } from "../model/profile.types";
 
 interface ProfileHighlightCardsProps {
@@ -14,7 +15,8 @@ export function ProfileHighlightCards({ highlights }: ProfileHighlightCardsProps
           <Scale className="h-3.5 w-3.5" />
         </div>
         <span className="text-sm font-bold text-[#101214] font-mono">
-          {highlights.currentWeightKg} <span className="text-[11px] font-normal text-[#50565C]">kg</span>
+          {highlights.currentWeightKg}{" "}
+          <span className="text-[11px] font-normal text-[#50565C]">kg</span>
         </span>
         <span className="mt-0.5 text-[11px] text-[#50565C]">Weight</span>
       </div>
@@ -25,7 +27,8 @@ export function ProfileHighlightCards({ highlights }: ProfileHighlightCardsProps
           <Activity className="h-3.5 w-3.5" />
         </div>
         <span className="text-sm font-bold text-[#101214] font-mono">
-          {highlights.bodyFatPercent} <span className="text-[11px] font-normal text-[#50565C]">%</span>
+          {highlights.bodyFatPercent}{" "}
+          <span className="text-[11px] font-normal text-[#50565C]">%</span>
         </span>
         <span className="mt-0.5 text-[11px] text-[#50565C]">Body Fat</span>
       </div>
@@ -36,7 +39,8 @@ export function ProfileHighlightCards({ highlights }: ProfileHighlightCardsProps
           <Target className="h-3.5 w-3.5" />
         </div>
         <span className="text-sm font-bold text-[#101214] font-mono">
-          {highlights.targetWeightKg} <span className="text-[11px] font-normal text-[#50565C]">kg</span>
+          {highlights.targetWeightKg}{" "}
+          <span className="text-[11px] font-normal text-[#50565C]">kg</span>
         </span>
         <span className="mt-0.5 text-[11px] text-[#50565C]">Target</span>
       </div>

@@ -39,7 +39,9 @@ export function TodayTimeline({ items }: TodayTimelineProps) {
           <li className={cn("week-route__item", `week-route__item--${item.status}`)} key={item.id}>
             {item.href ? (
               <Link
-                aria-label={item.category === "workout" ? "Begin session" : `Chi tiết ${item.title}`}
+                aria-label={
+                  item.category === "workout" ? "Begin session" : `Chi tiết ${item.title}`
+                }
                 className="week-route__row"
                 href={item.href}
                 transitionTypes={NAV_FORWARD}

@@ -1,3 +1,6 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 /**
  * Generates the PWA icons in public/icons/ from the Triple Lane brand marks.
  *
@@ -14,9 +17,6 @@
  * Run: node scripts/generate-pwa-icons.mjs
  */
 import { deflateSync } from "node:zlib";
-import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "public", "icons");

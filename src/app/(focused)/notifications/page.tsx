@@ -1,12 +1,13 @@
+"use client";
+
 import { ArrowLeft, Bell, Sparkles, Trophy } from "lucide-react";
 import Link from "next/link";
 
 import { EnablePushButton } from "@/shared/push/enable-push-button";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
+import { PullToRefresh } from "@/shared/ui/pull-to-refresh";
 import { NAV_BACK } from "@/shared/ui/transition-types";
-
-export const metadata = { title: "Notifications" };
 
 type NotificationItem = {
   id: string;
@@ -52,47 +53,49 @@ const ICON = {
 
 export default function NotificationsPage() {
   return (
-    <div className="focused-page">
-      <header className="focused-header">
-        <Link
-          aria-label="Back"
-          className="focused-header__back"
-          href="/home"
-          transitionTypes={NAV_BACK}
-        >
-          <ArrowLeft aria-hidden="true" size={20} />
-        </Link>
-        <BrandMark />
-        <HeaderActions hasNotifications={false} />
-      </header>
-
-      <main className="focused-main">
-        <header className="page-hero">
-          <h1 className="page-hero__title">Notifications</h1>
-          <EnablePushButton />
-          <p className="page-hero__lede">Coach messages, milestones, and plan updates.</p>
+    <PullToRefresh>
+      <div className="focused-page">
+        <header className="focused-header">
+          <Link
+            aria-label="Back"
+            className="focused-header__back"
+            href="/home"
+            transitionTypes={NAV_BACK}
+          >
+            <ArrowLeft aria-hidden="true" size={20} />
+          </Link>
+          <BrandMark />
+          <HeaderActions hasNotifications={false} />
         </header>
 
-        <ol className="notification-list">
-          {ITEMS.map((item) => {
-            const Icon = ICON[item.icon];
-            return (
-              <li className="notification-item" data-unread={!item.read || undefined} key={item.id}>
-                <span className="notification-item__icon" aria-hidden="true">
-                  <Icon size={18} />
-                </span>
-                <div className="notification-item__body">
-                  <div className="notification-item__head">
-                    <strong>{item.title}</strong>
-                    <span>{item.time}</span>
+        <main className="focused-main">
+          <header className="page-hero">
+            <h1 className="page-hero__title">Notifications</h1>
+            <EnablePushButton />
+            <p className="page-hero__lede">Coach messages, milestones, and plan updates.</p>
+          </header>
+
+          <ol className="notification-list">
+            {ITEMS.map((item) => {
+              const Icon = ICON[item.icon];
+              return (
+                <li className="notification-item" data-unread={!item.read || undefined} key={item.id}>
+                  <span className="notification-item__icon" aria-hidden="true">
+                    <Icon size={18} />
+                  </span>
+                  <div className="notification-item__body">
+                    <div className="notification-item__head">
+                      <strong>{item.title}</strong>
+                      <span>{item.time}</span>
+                    </div>
+                    <p>{item.body}</p>
                   </div>
-                  <p>{item.body}</p>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-      </main>
-    </div>
+                </li>
+              );
+            })}
+          </ol>
+        </main>
+      </div>
+    </PullToRefresh>
   );
 }

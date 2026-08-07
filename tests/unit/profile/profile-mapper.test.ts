@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import {
   calculateBMI,
   calculateOneRepMax,
@@ -99,7 +100,13 @@ describe("Profile Mapper", () => {
           coachStyle: "STRICT",
         },
         prListProto: [
-          { exerciseId: "bench", exerciseName: "Bench Press", weight: 100, reps: 5, oneRepMax: 116 },
+          {
+            exerciseId: "bench",
+            exerciseName: "Bench Press",
+            weight: 100,
+            reps: 5,
+            oneRepMax: 116,
+          },
         ],
         statsProto: { totalWorkouts: 120, activeStreakDays: 30, totalCaloriesKcal: 45000 },
       });

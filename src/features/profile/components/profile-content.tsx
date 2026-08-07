@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { ProfileViewModel } from "../model/profile.types";
 
+import type { ProfileViewModel } from "../model/profile.types";
 import { ModalType, ProfileDetailsModal } from "./profile-details-modal";
 import { ProfileHeroCard } from "./profile-hero-card";
 import { ProfileHighlightCards } from "./profile-highlight-cards";
