@@ -1,7 +1,7 @@
 "use client";
 
 import { Dumbbell, FolderTree, Layers, Pencil, Plus, Tag, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   createMetadataItem,
@@ -21,7 +21,9 @@ export default function AdminMetadataPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MetadataItem | null>(null);
 
-  const loadMetadata = async () => {
+  // useCallback keyed on activeTab, so the effect below can depend on the
+  // function itself without re-fetching on every render.
+  const loadMetadata = useCallback(async () => {
     setIsLoading(true);
     try {
       const list = await fetchMetadataList(activeTab);
@@ -29,11 +31,11 @@ export default function AdminMetadataPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activeTab]);
 
   useEffect(() => {
-    loadMetadata();
-  }, [activeTab]);
+    void loadMetadata();
+  }, [loadMetadata]);
 
   const handleOpenAdd = () => {
     setSelectedItem(null);

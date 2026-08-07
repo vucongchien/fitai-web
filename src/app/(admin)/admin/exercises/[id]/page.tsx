@@ -479,7 +479,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
                     type="button"
                     onClick={() => {
                       if (isSelected) {
-                        setTagIds(tagIds.filter((id) => id !== t.id));
+                        setTagIds(tagIds.filter((tagId) => tagId !== t.id));
                       } else {
                         setTagIds([...tagIds, t.id]);
                       }

@@ -3,7 +3,7 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Archive, CheckCircle2, Dumbbell, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import {
   approveExercise,
@@ -22,6 +22,139 @@ import type { Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 import { ExerciseFilters } from "@/features/admin/ui/exercise-filters";
 import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
+
+type ExerciseColumnHandlers = {
+  onApprove: (id: string) => void;
+  onArchive: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (event: React.MouseEvent, exercise: AdminExercise) => void;
+  isApproving: boolean;
+  isArchiving: boolean;
+};
+
+/**
+ * Column definitions live at module scope so the `cell` renderers are created
+ * once rather than on every render of the page. Defining them inline also reads
+ * to React tooling as declaring components during render.
+ */
+function buildExerciseColumns({
+  isApproving,
+  isArchiving,
+  onApprove,
+  onArchive,
+  onDelete,
+  onEdit,
+}: ExerciseColumnHandlers): Column<AdminExercise>[] {
+  return [
+    {
+      header: "Exercise Name",
+      cell: (ex) => (
+        <div className="flex items-center gap-3">
+          <div className="size-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 font-bold">
+            <Dumbbell className="size-4.5" />
+          </div>
+          <div className="min-w-0">
+            <h4 className="font-bold text-slate-900 text-sm truncate group-hover:text-indigo-600 transition-colors">
+              {ex.name}
+            </h4>
+            <p className="text-xs text-slate-500 truncate">Created by: {ex.createdBy}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Status",
+      cell: (ex) => {
+        const style = EXERCISE_STATUS_STYLE[ex.status];
+        return (
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${style.bg} ${style.text} ${style.border}`}
+          >
+            <span className="size-1.5 rounded-full bg-current" />
+            <span>{EXERCISE_STATUS_LABEL[ex.status]}</span>
+          </span>
+        );
+      },
+    },
+    {
+      header: "Difficulty",
+      cell: (ex) => (
+        <span className="text-xs text-slate-700 font-semibold capitalize">
+          {DIFFICULTY_LABEL[ex.difficulty] || ex.difficulty}
+        </span>
+      ),
+    },
+    {
+      header: "Rest Time",
+      cell: (ex) => (
+        <span className="text-xs text-slate-600 font-mono">{ex.defaultRestSeconds}s</span>
+      ),
+    },
+    {
+      header: "Quick Actions",
+      className: "text-right",
+      cell: (ex) => (
+        <div className="flex items-center justify-end gap-1.5">
+          {/* Approve Action */}
+          {(ex.status === "created" || ex.status === "submittedForApproval") && (
+            <button
+              type="button"
+              title="Approve Exercise"
+              disabled={isApproving}
+              onClick={(e) => {
+                e.stopPropagation();
+                onApprove(ex.id);
+              }}
+              className="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <CheckCircle2 className="size-3.5" />
+              <span>Approve</span>
+            </button>
+          )}
+
+          {/* Archive Action */}
+          {ex.status !== "archived" && (
+            <button
+              type="button"
+              title="Archive Exercise"
+              disabled={isArchiving}
+              onClick={(e) => {
+                e.stopPropagation();
+                onArchive(ex.id);
+              }}
+              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+            >
+              <Archive className="size-4" />
+            </button>
+          )}
+
+          {/* Edit / View Route Navigation */}
+          <button
+            type="button"
+            title="Edit Details"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(ex.id);
+            }}
+            className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
+          >
+            <Pencil className="size-4" />
+          </button>
+
+          {/* Delete Action */}
+          <button
+            type="button"
+            title="Delete Exercise"
+            onClick={(e) => onDelete(e, ex)}
+            className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+          >
+            <Trash2 className="size-4" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+}
 
 export default function AdminExercisesPage() {
   const router = useRouter();
@@ -99,123 +232,42 @@ export default function AdminExercisesPage() {
     router.push(`/admin/exercises/${created.id}`);
   };
 
-  const handleDelete = async (e: React.MouseEvent, ex: AdminExercise) => {
-    e.stopPropagation();
-    if (confirm(`Are you sure you want to delete "${ex.name}"?`)) {
-      await deleteMutation.mutateAsync(ex.id);
-    }
-  };
+  const handleDelete = useCallback(
+    async (e: React.MouseEvent, ex: AdminExercise) => {
+      e.stopPropagation();
+      if (confirm(`Are you sure you want to delete "${ex.name}"?`)) {
+        await deleteMutation.mutateAsync(ex.id);
+      }
+    },
+    [deleteMutation],
+  );
+
+  const handleApprove = useCallback((id: string) => approveMutation.mutate(id), [approveMutation]);
+
+  const handleArchive = useCallback((id: string) => archiveMutation.mutate(id), [archiveMutation]);
+
+  const handleEdit = useCallback((id: string) => router.push(`/admin/exercises/${id}`), [router]);
 
   // Table Columns Definition
-  const columns: Column<AdminExercise>[] = [
-    {
-      header: "Exercise Name",
-      cell: (ex) => (
-        <div className="flex items-center gap-3">
-          <div className="size-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 font-bold">
-            <Dumbbell className="size-4.5" />
-          </div>
-          <div className="min-w-0">
-            <h4 className="font-bold text-slate-900 text-sm truncate group-hover:text-indigo-600 transition-colors">
-              {ex.name}
-            </h4>
-            <p className="text-xs text-slate-500 truncate">Created by: {ex.createdBy}</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      header: "Status",
-      cell: (ex) => {
-        const style = EXERCISE_STATUS_STYLE[ex.status];
-        return (
-          <span
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${style.bg} ${style.text} ${style.border}`}
-          >
-            <span className="size-1.5 rounded-full bg-current" />
-            <span>{EXERCISE_STATUS_LABEL[ex.status]}</span>
-          </span>
-        );
-      },
-    },
-    {
-      header: "Difficulty",
-      cell: (ex) => (
-        <span className="text-xs text-slate-700 font-semibold capitalize">
-          {DIFFICULTY_LABEL[ex.difficulty] || ex.difficulty}
-        </span>
-      ),
-    },
-    {
-      header: "Rest Time",
-      cell: (ex) => (
-        <span className="text-xs text-slate-600 font-mono">{ex.defaultRestSeconds}s</span>
-      ),
-    },
-    {
-      header: "Quick Actions",
-      className: "text-right",
-      cell: (ex) => (
-        <div className="flex items-center justify-end gap-1.5">
-          {/* Approve Action */}
-          {(ex.status === "created" || ex.status === "submittedForApproval") && (
-            <button
-              type="button"
-              title="Approve Exercise"
-              disabled={approveMutation.isPending}
-              onClick={(e) => {
-                e.stopPropagation();
-                approveMutation.mutate(ex.id);
-              }}
-              className="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
-            >
-              <CheckCircle2 className="size-3.5" />
-              <span>Approve</span>
-            </button>
-          )}
-
-          {/* Archive Action */}
-          {ex.status !== "archived" && (
-            <button
-              type="button"
-              title="Archive Exercise"
-              disabled={archiveMutation.isPending}
-              onClick={(e) => {
-                e.stopPropagation();
-                archiveMutation.mutate(ex.id);
-              }}
-              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
-            >
-              <Archive className="size-4" />
-            </button>
-          )}
-
-          {/* Edit / View Route Navigation */}
-          <button
-            type="button"
-            title="Edit Details"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/admin/exercises/${ex.id}`);
-            }}
-            className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
-          >
-            <Pencil className="size-4" />
-          </button>
-
-          {/* Delete Action */}
-          <button
-            type="button"
-            title="Delete Exercise"
-            onClick={(e) => handleDelete(e, ex)}
-            className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
-          >
-            <Trash2 className="size-4" />
-          </button>
-        </div>
-      ),
-    },
-  ];
+  const columns = useMemo(
+    () =>
+      buildExerciseColumns({
+        isApproving: approveMutation.isPending,
+        isArchiving: archiveMutation.isPending,
+        onApprove: handleApprove,
+        onArchive: handleArchive,
+        onDelete: handleDelete,
+        onEdit: handleEdit,
+      }),
+    [
+      approveMutation.isPending,
+      archiveMutation.isPending,
+      handleApprove,
+      handleArchive,
+      handleDelete,
+      handleEdit,
+    ],
+  );
 
   return (
     <div className="space-y-6">

@@ -2,7 +2,7 @@
 
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ban, CheckCircle, Eye, Shield } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { fetchAdminUsers, toggleUserStatus } from "@/features/admin/api/admin-user-service";
 import type { AdminUser, UserAdminFilters } from "@/features/admin/domain/admin-types";
@@ -16,61 +16,23 @@ import { AdminTable } from "@/features/admin/ui/admin-table";
 import { UserDialog } from "@/features/admin/ui/user-dialog";
 import { UserFilters } from "@/features/admin/ui/user-filters";
 
-export default function AdminUsersPage() {
-  const queryClient = useQueryClient();
-  const [filters, setFilters] = useState<UserAdminFilters>(DEFAULT_USER_ADMIN_FILTERS);
+type UserColumnHandlers = {
+  onView: (user: AdminUser) => void;
+  onToggleStatus: (userId: string) => void;
+  isToggling: boolean;
+};
 
-  // Dialog State
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-
-  // TanStack Infinite Query
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useInfiniteQuery({
-    queryKey: ["admin-users", filters],
-    queryFn: ({ pageParam = null }) =>
-      fetchAdminUsers({
-        cursor: pageParam,
-        limit: 10,
-        filters,
-      }),
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
-    initialPageParam: null as string | null,
-  });
-
-  const users = useMemo(() => {
-    return data?.pages.flatMap((page) => page.items) ?? [];
-  }, [data]);
-
-  const totalCount = data?.pages[0]?.totalCount ?? 0;
-
-  // Toggle Ban / Unban Mutation
-  const toggleMutation = useMutation({
-    mutationFn: (id: string) => toggleUserStatus(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-    },
-  });
-
-  const handleOpenView = (user: AdminUser) => {
-    setSelectedUser(user);
-    setIsDialogOpen(true);
-  };
-
-  const handleToggleStatus = async (userId: string) => {
-    await toggleMutation.mutateAsync(userId);
-  };
-
-  // Table Columns Definition
-  const columns: Column<AdminUser>[] = [
+/**
+ * Column definitions live at module scope so the `cell` renderers are created
+ * once rather than on every render of the page. Defining them inline also reads
+ * to React tooling as declaring components during render.
+ */
+function buildUserColumns({
+  isToggling,
+  onToggleStatus,
+  onView,
+}: UserColumnHandlers): Column<AdminUser>[] {
+  return [
     {
       header: "Member Info",
       cell: (u) => (
@@ -140,7 +102,7 @@ export default function AdminUsersPage() {
             title="View Full Proto Profile"
             onClick={(e) => {
               e.stopPropagation();
-              handleOpenView(u);
+              onView(u);
             }}
             className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
           >
@@ -151,10 +113,10 @@ export default function AdminUsersPage() {
           <button
             type="button"
             title={u.status === "active" ? "Ban Account" : "Unban Account"}
-            disabled={toggleMutation.isPending}
+            disabled={isToggling}
             onClick={(e) => {
               e.stopPropagation();
-              handleToggleStatus(u.userId);
+              onToggleStatus(u.userId);
             }}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-bold inline-flex items-center gap-1 border transition-colors cursor-pointer ${
               u.status === "active"
@@ -178,6 +140,73 @@ export default function AdminUsersPage() {
       ),
     },
   ];
+}
+
+export default function AdminUsersPage() {
+  const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<UserAdminFilters>(DEFAULT_USER_ADMIN_FILTERS);
+
+  // Dialog State
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+
+  // TanStack Infinite Query
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["admin-users", filters],
+    queryFn: ({ pageParam = null }) =>
+      fetchAdminUsers({
+        cursor: pageParam,
+        limit: 10,
+        filters,
+      }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialPageParam: null as string | null,
+  });
+
+  const users = useMemo(() => {
+    return data?.pages.flatMap((page) => page.items) ?? [];
+  }, [data]);
+
+  const totalCount = data?.pages[0]?.totalCount ?? 0;
+
+  // Toggle Ban / Unban Mutation
+  const toggleMutation = useMutation({
+    mutationFn: (id: string) => toggleUserStatus(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+  });
+
+  const handleOpenView = useCallback((user: AdminUser) => {
+    setSelectedUser(user);
+    setIsDialogOpen(true);
+  }, []);
+
+  const handleToggleStatus = useCallback(
+    async (userId: string) => {
+      await toggleMutation.mutateAsync(userId);
+    },
+    [toggleMutation],
+  );
+
+  const columns = useMemo(
+    () =>
+      buildUserColumns({
+        isToggling: toggleMutation.isPending,
+        onToggleStatus: handleToggleStatus,
+        onView: handleOpenView,
+      }),
+    [handleOpenView, handleToggleStatus, toggleMutation.isPending],
+  );
 
   return (
     <div className="space-y-6">
