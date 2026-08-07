@@ -16,6 +16,9 @@ import { AdminTable } from "@/features/admin/ui/admin-table";
 import { UserDialog } from "@/features/admin/ui/user-dialog";
 import { UserFilters } from "@/features/admin/ui/user-filters";
 
+/** Closes over nothing, so it lives at module scope with one stable identity. */
+const userKey = (user: AdminUser) => user.userId;
+
 type UserColumnHandlers = {
   onView: (user: AdminUser) => void;
   onToggleStatus: (userId: string) => void;
@@ -191,6 +194,14 @@ export default function AdminUsersPage() {
     setIsDialogOpen(true);
   }, []);
 
+  const handleCloseDialog = useCallback(() => setIsDialogOpen(false), []);
+
+  const handleResetFilters = useCallback(() => setFilters(DEFAULT_USER_ADMIN_FILTERS), []);
+
+  const handleRetry = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
   const handleToggleStatus = useCallback(
     async (userId: string) => {
       await toggleMutation.mutateAsync(userId);
@@ -226,24 +237,20 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Filters */}
-      <UserFilters
-        filters={filters}
-        onChange={setFilters}
-        onReset={() => setFilters(DEFAULT_USER_ADMIN_FILTERS)}
-      />
+      <UserFilters filters={filters} onChange={setFilters} onReset={handleResetFilters} />
 
       {/* Table with Infinite Scroll */}
       <AdminTable
         columns={columns}
         data={users}
-        keyExtractor={(u) => u.userId}
+        keyExtractor={userKey}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
         hasNextPage={hasNextPage}
         fetchNextPage={fetchNextPage}
         error={isError ? (error as Error) : null}
-        onRetry={() => refetch()}
-        onRowClick={(u) => handleOpenView(u)}
+        onRetry={handleRetry}
+        onRowClick={handleOpenView}
         emptyTitle="No members found"
         emptyDescription="Try adjusting your search term or role/status filters."
       />
@@ -252,7 +259,7 @@ export default function AdminUsersPage() {
       <UserDialog
         isOpen={isDialogOpen}
         user={selectedUser}
-        onClose={() => setIsDialogOpen(false)}
+        onClose={handleCloseDialog}
         onToggleStatus={handleToggleStatus}
       />
     </div>

@@ -23,6 +23,9 @@ import { AdminTable } from "@/features/admin/ui/admin-table";
 import { ExerciseFilters } from "@/features/admin/ui/exercise-filters";
 import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
 
+/** Closes over nothing, so it lives at module scope with one stable identity. */
+const exerciseKey = (exercise: AdminExercise) => exercise.id;
+
 type ExerciseColumnHandlers = {
   onApprove: (id: string) => void;
   onArchive: (id: string) => void;
@@ -248,6 +251,17 @@ export default function AdminExercisesPage() {
 
   const handleEdit = useCallback((id: string) => router.push(`/admin/exercises/${id}`), [router]);
 
+  const handleResetFilters = useCallback(() => setFilters(DEFAULT_EXERCISE_ADMIN_FILTERS), []);
+
+  const handleRetry = useCallback(() => {
+    void refetch();
+  }, [refetch]);
+
+  const handleRowClick = useCallback(
+    (exercise: AdminExercise) => router.push(`/admin/exercises/${exercise.id}`),
+    [router],
+  );
+
   // Table Columns Definition
   const columns = useMemo(
     () =>
@@ -296,24 +310,20 @@ export default function AdminExercisesPage() {
       </div>
 
       {/* Filters */}
-      <ExerciseFilters
-        filters={filters}
-        onChange={setFilters}
-        onReset={() => setFilters(DEFAULT_EXERCISE_ADMIN_FILTERS)}
-      />
+      <ExerciseFilters filters={filters} onChange={setFilters} onReset={handleResetFilters} />
 
       {/* Table with Infinite Scroll */}
       <AdminTable
         columns={columns}
         data={exercises}
-        keyExtractor={(ex) => ex.id}
+        keyExtractor={exerciseKey}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
         hasNextPage={hasNextPage}
         fetchNextPage={fetchNextPage}
         error={isError ? (error as Error) : null}
-        onRetry={() => refetch()}
-        onRowClick={(ex) => router.push(`/admin/exercises/${ex.id}`)}
+        onRetry={handleRetry}
+        onRowClick={handleRowClick}
         emptyTitle="No exercises found"
         emptyDescription="Try adjusting your search query or status filters."
       />

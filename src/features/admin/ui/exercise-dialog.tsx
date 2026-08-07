@@ -8,6 +8,40 @@ import type { Difficulty } from "@/features/exercise/domain/exercise";
 
 export type ExerciseDialogMode = "create" | "edit" | "view";
 
+type MetadataOption = { id: string; name: string };
+
+/**
+ * Fallback catalogs live at module scope so they keep a stable identity across
+ * renders. As inline default values they were re-created on every render, and
+ * because they feed the reset effect's dependency array below that made the
+ * effect re-run on every render — wiping the form while the user typed.
+ */
+const DEFAULT_BODY_PARTS: MetadataOption[] = [
+  { id: "bp-chest", name: "Ngực (Chest)" },
+  { id: "bp-back", name: "Lưng (Back)" },
+  { id: "bp-legs", name: "Chân (Legs)" },
+  { id: "bp-shoulders", name: "Vai (Shoulders)" },
+  { id: "bp-arms", name: "Tay (Arms)" },
+  { id: "bp-core", name: "Bụng (Core)" },
+];
+
+const DEFAULT_EQUIPMENTS: MetadataOption[] = [
+  { id: "eq-bodyweight", name: "Bodyweight (Trọng lượng cơ thể)" },
+  { id: "eq-dumbbell", name: "Dumbbell (Tạ đơn)" },
+  { id: "eq-barbell", name: "Barbell (Tạ đòn)" },
+  { id: "eq-kettlebell", name: "Kettlebell (Tạ ấm)" },
+  { id: "eq-cable", name: "Cable (Máy kéo cáp)" },
+  { id: "eq-machine", name: "Machine (Máy tập)" },
+];
+
+const DEFAULT_MUSCLES: MetadataOption[] = [
+  { id: "ms-pectoralis-major", name: "Cơ ngực lớn" },
+  { id: "ms-latissimus-dorsi", name: "Cơ xô (Lats)" },
+  { id: "ms-quadriceps", name: "Cơ đùi trước" },
+  { id: "ms-biceps", name: "Cơ tay trước" },
+  { id: "ms-triceps", name: "Cơ tay sau" },
+];
+
 export type ExerciseDialogProps = {
   isOpen: boolean;
   mode: ExerciseDialogMode;
@@ -25,29 +59,9 @@ export function ExerciseDialog({
   exercise,
   onClose,
   onSave,
-  bodyParts = [
-    { id: "bp-chest", name: "Ngực (Chest)" },
-    { id: "bp-back", name: "Lưng (Back)" },
-    { id: "bp-legs", name: "Chân (Legs)" },
-    { id: "bp-shoulders", name: "Vai (Shoulders)" },
-    { id: "bp-arms", name: "Tay (Arms)" },
-    { id: "bp-core", name: "Bụng (Core)" },
-  ],
-  equipments = [
-    { id: "eq-bodyweight", name: "Bodyweight (Trọng lượng cơ thể)" },
-    { id: "eq-dumbbell", name: "Dumbbell (Tạ đơn)" },
-    { id: "eq-barbell", name: "Barbell (Tạ đòn)" },
-    { id: "eq-kettlebell", name: "Kettlebell (Tạ ấm)" },
-    { id: "eq-cable", name: "Cable (Máy kéo cáp)" },
-    { id: "eq-machine", name: "Machine (Máy tập)" },
-  ],
-  muscles = [
-    { id: "ms-pectoralis-major", name: "Cơ ngực lớn" },
-    { id: "ms-latissimus-dorsi", name: "Cơ xô (Lats)" },
-    { id: "ms-quadriceps", name: "Cơ đùi trước" },
-    { id: "ms-biceps", name: "Cơ tay trước" },
-    { id: "ms-triceps", name: "Cơ tay sau" },
-  ],
+  bodyParts = DEFAULT_BODY_PARTS,
+  equipments = DEFAULT_EQUIPMENTS,
+  muscles = DEFAULT_MUSCLES,
 }: ExerciseDialogProps) {
   const fieldIdBase = useId();
   const [formData, setFormData] = useState<Partial<AdminExercise>>({

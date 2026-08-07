@@ -1,5 +1,6 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import { Dumbbell, FolderTree, Layers, Pencil, Plus, Tag, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -11,6 +12,20 @@ import {
 } from "@/features/admin/api/admin-exercise-service";
 import type { MetadataItem } from "@/features/admin/domain/admin-types";
 import { MetadataDialog } from "@/features/admin/ui/metadata-dialog";
+
+type MetadataTab = {
+  category: MetadataItem["category"];
+  label: string;
+  icon: LucideIcon;
+};
+
+/** Static tab definitions — no closure over props or state, so module scope. */
+const TABS: MetadataTab[] = [
+  { category: "bodyPart", label: "Body Parts", icon: Layers },
+  { category: "equipment", label: "Equipments", icon: Dumbbell },
+  { category: "muscle", label: "Muscles", icon: FolderTree },
+  { category: "tag", label: "Tags", icon: Tag },
+];
 
 export default function AdminMetadataPage() {
   const [activeTab, setActiveTab] = useState<MetadataItem["category"]>("bodyPart");
@@ -37,10 +52,12 @@ export default function AdminMetadataPage() {
     void loadMetadata();
   }, [loadMetadata]);
 
-  const handleOpenAdd = () => {
+  const handleOpenAdd = useCallback(() => {
     setSelectedItem(null);
     setIsDialogOpen(true);
-  };
+  }, []);
+
+  const handleCloseDialog = useCallback(() => setIsDialogOpen(false), []);
 
   const handleOpenEdit = (item: MetadataItem) => {
     setSelectedItem(item);
@@ -54,21 +71,17 @@ export default function AdminMetadataPage() {
     }
   };
 
-  const handleSave = async (data: Omit<MetadataItem, "id">) => {
-    if (selectedItem) {
-      await updateMetadataItem(selectedItem.id, data);
-    } else {
-      await createMetadataItem(data);
-    }
-    loadMetadata();
-  };
-
-  const tabs: { category: MetadataItem["category"]; label: string; icon: any }[] = [
-    { category: "bodyPart", label: "Body Parts", icon: Layers },
-    { category: "equipment", label: "Equipments", icon: Dumbbell },
-    { category: "muscle", label: "Muscles", icon: FolderTree },
-    { category: "tag", label: "Tags", icon: Tag },
-  ];
+  const handleSave = useCallback(
+    async (data: Omit<MetadataItem, "id">) => {
+      if (selectedItem) {
+        await updateMetadataItem(selectedItem.id, data);
+      } else {
+        await createMetadataItem(data);
+      }
+      loadMetadata();
+    },
+    [selectedItem, loadMetadata],
+  );
 
   return (
     <div className="space-y-6">
@@ -87,13 +100,13 @@ export default function AdminMetadataPage() {
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer shrink-0"
         >
           <Plus className="size-4" />
-          <span>Add {tabs.find((t) => t.category === activeTab)?.label.slice(0, -1)}</span>
+          <span>Add {TABS.find((t) => t.category === activeTab)?.label.slice(0, -1)}</span>
         </button>
       </div>
 
       {/* Navigation Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-        {tabs.map((t) => {
+        {TABS.map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.category;
           return (
@@ -163,7 +176,7 @@ export default function AdminMetadataPage() {
         isOpen={isDialogOpen}
         category={activeTab}
         item={selectedItem}
-        onClose={() => setIsDialogOpen(false)}
+        onClose={handleCloseDialog}
         onSave={handleSave}
       />
     </div>
