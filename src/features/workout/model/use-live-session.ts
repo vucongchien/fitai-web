@@ -2,10 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 
-import { buildTimeline, progressRatio, restSecondsAfter, stepIndexAfterExercise, stepIndexAfterPhase } from '@/features/workout/domain/session-flow';
-import type { SessionStep } from '@/features/workout/domain/session-flow';
-import { durationState } from '@/features/workout/domain/session-guards';
-import type { DurationState } from '@/features/workout/domain/session-guards';
+import {
+  buildTimeline,
+  progressRatio,
+  restSecondsAfter,
+  stepIndexAfterExercise,
+  stepIndexAfterPhase,
+} from "@/features/workout/domain/session-flow";
+import type { SessionStep } from "@/features/workout/domain/session-flow";
+import { durationState } from "@/features/workout/domain/session-guards";
+import type { DurationState } from "@/features/workout/domain/session-guards";
 import type {
   LiveSessionPlan,
   SessionPhase,
@@ -71,7 +77,9 @@ type Action =
   | { type: "mark-synced"; setNumbers: { exerciseId: string; setNumber: number }[] }
   | { type: "complete" };
 
-interface Context { timeline: SessionStep[] }
+interface Context {
+  timeline: SessionStep[];
+}
 
 function arriveAt(state: State, timeline: SessionStep[], index: number): State {
   const step = timeline[index];
@@ -105,7 +113,9 @@ function reducer(state: State, action: Action, context: Context): State {
     }
 
     case "begin-phase": {
-      if (!step) {return state;}
+      if (!step) {
+        return state;
+      }
       const introSeen = state.introSeen.includes(step.phase)
         ? state.introSeen
         : [...state.introSeen, step.phase];
@@ -113,7 +123,9 @@ function reducer(state: State, action: Action, context: Context): State {
     }
 
     case "skip-phase": {
-      if (!step) {return state;}
+      if (!step) {
+        return state;
+      }
       const skippedPhases = state.skippedPhases.includes(step.phase)
         ? state.skippedPhases
         : [...state.skippedPhases, step.phase];
@@ -179,12 +191,12 @@ function reducer(state: State, action: Action, context: Context): State {
 
     case "add-set-time": {
       // Only meaningful for a timed hold; a rep-based set has no clock to extend.
-      if (state.setEndsAt === null) return state;
+      if (state.setEndsAt === null) {return state;}
       return {
         ...state,
         setEndsAt: Math.max(state.setEndsAt, Date.now()) + action.seconds * 1000,
         // The ring divides by this, so it has to grow with the clock or the arc
-        // would pin at full while the numerals kept ticking.
+        // Would pin at full while the numerals kept ticking.
         setTotalSec: state.setTotalSec + action.seconds,
       };
     }
@@ -223,9 +235,13 @@ type PersistedDraft = Pick<
 function readDraft(sessionId: string): PersistedDraft | null {
   try {
     const raw = sessionStorage.getItem(draftKey(sessionId));
-    if (!raw) {return null;}
+    if (!raw) {
+      return null;
+    }
     const parsed = JSON.parse(raw) as PersistedDraft;
-    if (!Array.isArray(parsed.loggedSets)) {return null;}
+    if (!Array.isArray(parsed.loggedSets)) {
+      return null;
+    }
     return parsed;
   } catch {
     return null;
@@ -256,10 +272,14 @@ export function useLiveSession(plan: LiveSessionPlan) {
   // Restore an interrupted session.
   const restored = useRef(false);
   useEffect(() => {
-    if (restored.current) {return;}
+    if (restored.current) {
+      return;
+    }
     restored.current = true;
     const draft = readDraft(plan.sessionId);
-    if (!draft || draft.stepIndex >= timeline.length) {return;}
+    if (!draft || draft.stepIndex >= timeline.length) {
+      return;
+    }
     dispatch({
       type: "restore",
       state: {
@@ -327,8 +347,12 @@ export function useLiveSession(plan: LiveSessionPlan) {
   const pending = useMemo(() => state.loggedSets.filter((set) => !set.synced), [state.loggedSets]);
 
   const flush = useCallback(async () => {
-    if (syncing.current || pending.length === 0) {return;}
-    if (typeof navigator !== "undefined" && !navigator.onLine) {return;}
+    if (syncing.current || pending.length === 0) {
+      return;
+    }
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      return;
+    }
     syncing.current = true;
     try {
       await syncWorkoutLogs(plan.sessionId, pending);

@@ -172,9 +172,7 @@ export default function AdminUsersPage() {
     initialPageParam: null as string | null,
   });
 
-  const users = useMemo(() => 
-    data?.pages.flatMap((page) => page.items) ?? []
-  , [data]);
+  const users = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
 
   const totalCount = data?.pages[0]?.totalCount ?? 0;
 

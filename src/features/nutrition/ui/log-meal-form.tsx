@@ -3,8 +3,8 @@
 import { ChevronDown } from "lucide-react";
 import { useActionState, useCallback, useId, useRef, useState } from "react";
 
-import { logMealAction } from '@/features/nutrition/server/nutrition-actions';
-import type { LogMealState } from '@/features/nutrition/server/nutrition-actions';
+import { logMealAction } from "@/features/nutrition/server/nutrition-actions";
+import type { LogMealState } from "@/features/nutrition/server/nutrition-actions";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 
 interface LogMealFormProps {

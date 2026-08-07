@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
-
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
 
@@ -69,7 +68,7 @@ describe(RestScreen, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
 
-    expect(onReportPain).toHaveBeenCalledTimes(1);
+    expect(onReportPain).toHaveBeenCalledOnce();
   });
 
   it("labels the upcoming exercise and names it", () => {
@@ -119,8 +118,8 @@ describe(RestScreen, () => {
     fireEvent.click(screen.getByRole("button", { name: "+10 Seconds" }));
     fireEvent.click(screen.getByRole("button", { name: "Skip Rest" }));
 
-    expect(onAddTime).toHaveBeenCalledTimes(1);
-    expect(onSkipRest).toHaveBeenCalledTimes(1);
+    expect(onAddTime).toHaveBeenCalledOnce();
+    expect(onSkipRest).toHaveBeenCalledOnce();
   });
 
   it("explains the automatic transition", () => {

@@ -1,5 +1,3 @@
-
-
 import {
   approveExercise,
   archiveExercise,
@@ -34,14 +32,14 @@ describe("admin Exercise Service", () => {
       filters: { q: "push-up" },
     });
     expect(res.items.length).toBeGreaterThan(0);
-    expect(res.items.every((ex) => ex.name.toLowerCase().includes("push-up"))).toBeTruthy();
+    expect(res.items.every((ex) => ex.name.toLowerCase().includes("push-up"))).toBe(true);
   });
 
   it("nên lọc đúng bài tập theo trạng thái (status)", async () => {
     const res = await fetchAdminExercises({
       filters: { status: "submittedForApproval" },
     });
-    expect(res.items.every((ex) => ex.status === "submittedForApproval")).toBeTruthy();
+    expect(res.items.every((ex) => ex.status === "submittedForApproval")).toBe(true);
   });
 
   it("nên duyệt (approve) bài tập chuyển từ draft/submitted sang approved", async () => {
@@ -56,7 +54,7 @@ describe("admin Exercise Service", () => {
     const refreshedList = await fetchAdminExercises({
       filters: { status: "submittedForApproval" },
     });
-    expect(refreshedList.items.some((ex) => ex.id === target.id)).toBeFalsy();
+    expect(refreshedList.items.some((ex) => ex.id === target.id)).toBe(false);
   });
 
   it("nên lưu trữ (archive) bài tập thành công", async () => {
@@ -86,7 +84,7 @@ describe("admin Exercise Service", () => {
     expect(created.status).toBe("created");
 
     const list = await fetchAdminExercises({ filters: { q: "Cable Fly" } });
-    expect(list.items.some((ex) => ex.id === created.id)).toBeTruthy();
+    expect(list.items.some((ex) => ex.id === created.id)).toBe(true);
   });
 
   it("nên cập nhật bài tập thành công", async () => {
@@ -104,9 +102,9 @@ describe("admin Exercise Service", () => {
     const target = list.items[0];
 
     const deleted = await deleteExercise(target.id);
-    expect(deleted).toBeTruthy();
+    expect(deleted).toBe(true);
 
     const refreshed = await fetchAdminExercises({ filters: { q: target.name } });
-    expect(refreshed.items.some((ex) => ex.id === target.id)).toBeFalsy();
+    expect(refreshed.items.some((ex) => ex.id === target.id)).toBe(false);
   });
 });

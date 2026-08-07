@@ -44,7 +44,7 @@ export const MODEL_IO = {
  * Omitting `out` allocates, which keeps the function pure for its unit tests.
  */
 export function normaliseFrame(frame: LetterboxedFrame, out?: Float32Array): Float32Array {
-  const {data} = frame.data;
+  const { data } = frame.data;
   const pixels = frame.data.width * frame.data.height;
   const tensor = out?.length === pixels * 3 ? out : new Float32Array(pixels * 3);
   for (let i = 0; i < pixels; i += 1) {

@@ -2,7 +2,8 @@
 
 import { Dumbbell } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 
 interface PullToRefreshProps {
   children: ReactNode;
@@ -34,7 +35,7 @@ export function PullToRefresh({
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
-      if (!isEnabled || isRefreshing) return;
+      if (!isEnabled || isRefreshing) {return;}
 
       const container = containerRef.current;
       const scrollTop = container ? container.scrollTop : window.scrollY;
@@ -49,7 +50,7 @@ export function PullToRefresh({
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
-      if (!isEnabled || !isPulling || isRefreshing) return;
+      if (!isEnabled || !isPulling || isRefreshing) {return;}
 
       const currentY = e.touches[0].clientY;
       const deltaY = currentY - startYRef.current;
@@ -65,7 +66,7 @@ export function PullToRefresh({
   );
 
   const handleTouchEnd = useCallback(async () => {
-    if (!isEnabled || !isPulling) return;
+    if (!isEnabled || !isPulling) {return;}
     setIsPulling(false);
 
     if (pullDistance >= pullThreshold && !isRefreshing) {
@@ -148,13 +149,19 @@ export function PullToRefresh({
                 cy={center}
                 fill="none"
                 r={radius}
-                stroke={isReadyToTrigger || isRefreshing ? "var(--color-action, #4b57f2)" : "var(--color-text-muted, #8e8e93)"}
+                stroke={
+                  isReadyToTrigger || isRefreshing
+                    ? "var(--color-action, #4b57f2)"
+                    : "var(--color-text-muted, #8e8e93)"
+                }
                 strokeDasharray={circumference}
                 strokeDashoffset={isRefreshing ? circumference * 0.25 : strokeDashoffset}
                 strokeLinecap="round"
                 strokeWidth={strokeWidth}
                 style={{
-                  transition: isPulling ? "none" : "stroke-dashoffset 200ms ease, stroke 200ms ease",
+                  transition: isPulling
+                    ? "none"
+                    : "stroke-dashoffset 200ms ease, stroke 200ms ease",
                   transform: "rotate(-90deg)",
                   transformOrigin: "50% 50%",
                 }}
@@ -164,7 +171,7 @@ export function PullToRefresh({
             {/* Muscle/Dumbbell Icon */}
             <div className="pull-to-refresh-indicator__icon-wrap">
               <Dumbbell
-                className={`pull-to-refresh-indicator__icon ${isRefreshing ? "animate-pulse text-action" : isReadyToTrigger ? "text-action scale-110" : "text-muted"}`}
+                className={`pull-to-refresh-indicator__icon ${isRefreshing ? "animate-pulse text-action" : (isReadyToTrigger ? "text-action scale-110" : "text-muted")}`}
                 size={19}
                 style={{
                   transform: isRefreshing

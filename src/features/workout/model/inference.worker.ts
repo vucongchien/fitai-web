@@ -25,10 +25,19 @@ import {
   MODEL_IO,
   normaliseFrame,
 } from "@/features/workout/domain/onnx-decode";
-import { angleOfJoints, calibrationDistance, calibrationHint, calibrationLighting, evaluateRules, isPoseUsable, KEYPOINT_NAMES, romPercent } from '@/features/workout/domain/pose-metrics';
-import type { Keypoint, Pose } from '@/features/workout/domain/pose-metrics';
-import { feedCounter, freshAccumulator, summarise } from '@/features/workout/domain/set-telemetry';
-import type { Accumulator } from '@/features/workout/domain/set-telemetry';
+import {
+  angleOfJoints,
+  calibrationDistance,
+  calibrationHint,
+  calibrationLighting,
+  evaluateRules,
+  isPoseUsable,
+  KEYPOINT_NAMES,
+  romPercent,
+} from "@/features/workout/domain/pose-metrics";
+import type { Keypoint, Pose } from "@/features/workout/domain/pose-metrics";
+import { feedCounter, freshAccumulator, summarise } from "@/features/workout/domain/set-telemetry";
+import type { Accumulator } from "@/features/workout/domain/set-telemetry";
 import type {
   InferenceMode,
   InferenceRequest,
@@ -70,9 +79,13 @@ async function fetchModel(url: string): Promise<ArrayBuffer> {
     try {
       const cache = await caches.open(MODEL_CACHE);
       const hit = await cache.match(url);
-      if (hit) {return await hit.arrayBuffer();}
+      if (hit) {
+        return await hit.arrayBuffer();
+      }
       const response = await fetch(url);
-      if (!response.ok) {throw new Error(`Model fetch failed: ${response.status}`);}
+      if (!response.ok) {
+        throw new Error(`Model fetch failed: ${response.status}`);
+      }
       await cache.put(url, response.clone());
       return await response.arrayBuffer();
     } catch {
@@ -80,7 +93,9 @@ async function fetchModel(url: string): Promise<ArrayBuffer> {
     }
   }
   const response = await fetch(url);
-  if (!response.ok) {throw new Error(`Model fetch failed: ${response.status}`);}
+  if (!response.ok) {
+    throw new Error(`Model fetch failed: ${response.status}`);
+  }
   return await response.arrayBuffer();
 }
 
@@ -116,7 +131,9 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
 }
 
 async function inferPose(frame: LetterboxedFrame): Promise<Pose | null> {
-  if (!ort || !poseSession) {return null;}
+  if (!ort || !poseSession) {
+    return null;
+  }
 
   // Reuse one 576KB buffer for the whole session rather than allocating per
   // Frame. inferPose is never re-entered — the main thread keeps exactly one
@@ -145,8 +162,10 @@ async function inferPose(frame: LetterboxedFrame): Promise<Pose | null> {
   } else {
     // Heatmap export: [1, K, H, W].
     const single = Object.values(output)[0];
-    if (!single) {return null;}
-    const {dims} = single;
+    if (!single) {
+      return null;
+    }
+    const { dims } = single;
     const mapHeight = Number(dims[2] ?? 64);
     const mapWidth = Number(dims[3] ?? 48);
     decoded = decodeHeatmap(
@@ -182,7 +201,9 @@ async function runCalibration(frame: LetterboxedFrame): Promise<void> {
 }
 
 async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
-  if (!spec) {return;}
+  if (!spec) {
+    return;
+  }
   accumulator.totalFrames += 1;
 
   if (calibrationLighting(meanBrightness(frame.data)) === "low") {
@@ -197,7 +218,9 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
   darkFrames = 0;
   const pose = await inferPose(frame).catch(() => null);
   emit({ pose, type: "pose" });
-  if (!pose || !isPoseUsable(pose)) {return;}
+  if (!pose || !isPoseUsable(pose)) {
+    return;
+  }
 
   accumulator.validFrames += 1;
 
@@ -213,7 +236,9 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
   const angle = angleOfJoints(pose, spec.romRange.joints);
   if (angle !== null) {
     const tick = feedCounter(accumulator, romPercent(angle, spec.romRange));
-    if (tick) {emit(tick);}
+    if (tick) {
+      emit(tick);
+    }
   }
 }
 
@@ -224,9 +249,9 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
       try {
         await init(request.spec, request.wasmPaths);
         post({ type: "ready" });
-      } catch (cause) {
+      } catch (error) {
         post({
-          message: cause instanceof Error ? cause.message : "Pose model unavailable",
+          message: error instanceof Error ? error.message : "Pose model unavailable",
           type: "init-failed",
         });
       }
@@ -245,8 +270,11 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
     case "frame": {
       const frame = sampler?.grab(request.bitmap) ?? null;
       if (frame) {
-        if (mode === "calibration") {await runCalibration(frame);}
-        else if (mode === "set") {await runSetFrame(frame);}
+        if (mode === "calibration") {
+          await runCalibration(frame);
+        } else if (mode === "set") {
+          await runSetFrame(frame);
+        }
       } else {
         // Grab() already closed the bitmap; nothing to release here.
         request.bitmap.close?.();

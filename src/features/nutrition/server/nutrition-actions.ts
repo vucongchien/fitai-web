@@ -30,7 +30,9 @@ const SLOTS: readonly MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
 
 function readNumber(form: FormData, key: string) {
   const raw = form.get(key);
-  if (typeof raw !== "string" || raw.trim() === "") {return 0;}
+  if (typeof raw !== "string" || raw.trim() === "") {
+    return 0;
+  }
   return Number(raw);
 }
 
@@ -47,7 +49,9 @@ export async function logMealAction(
 ): Promise<LogMealState> {
   const rawSlot = form.get("slot");
   const slot = SLOTS.find((candidate) => candidate === rawSlot);
-  if (!slot) {return { message: "That meal slot is not recognized.", status: "error" };}
+  if (!slot) {
+    return { message: "That meal slot is not recognized.", status: "error" };
+  }
 
   const result = await logMeal({
     calories: readNumber(form, "calories"),
@@ -83,14 +87,20 @@ function revalidateReaders(slot: MealSlot) {
 }
 
 function validate(input: LogMealInput): string | null {
-  if (!input.mealName.trim()) {return "Give the meal a name before saving it.";}
-  if (!WIRE_MEAL_TYPE[input.slot]) {return "That meal slot is not recognized.";}
+  if (!input.mealName.trim()) {
+    return "Give the meal a name before saving it.";
+  }
+  if (!WIRE_MEAL_TYPE[input.slot]) {
+    return "That meal slot is not recognized.";
+  }
 
   const numbers = [input.calories, input.protein, input.carbs, input.fat];
   if (numbers.some((value) => !Number.isFinite(value) || value < 0)) {
     return "Calories and macros must be zero or more.";
   }
-  if (input.calories > 10_000) {return "That calorie figure looks too high to be a single meal.";}
+  if (input.calories > 10_000) {
+    return "That calorie figure looks too high to be a single meal.";
+  }
 
   return null;
 }
@@ -106,7 +116,9 @@ function validate(input: LogMealInput): string | null {
  */
 export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
   const invalid = validate(input);
-  if (invalid) {return { message: invalid, ok: false };}
+  if (invalid) {
+    return { message: invalid, ok: false };
+  }
 
   const loggedAt = new Date().toISOString();
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);

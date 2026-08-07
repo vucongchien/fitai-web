@@ -1,5 +1,9 @@
-import { filterExercises } from '@/features/exercise/domain/exercise';
-import type { CatalogMetadata, ExerciseFilters, ExerciseSummary } from '@/features/exercise/domain/exercise';
+import { filterExercises } from "@/features/exercise/domain/exercise";
+import type {
+  CatalogMetadata,
+  ExerciseFilters,
+  ExerciseSummary,
+} from "@/features/exercise/domain/exercise";
 import { MOCK_CATALOG, MOCK_EXERCISES } from "@/shared/mock";
 
 export interface ExerciseSearchRepository {

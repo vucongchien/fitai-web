@@ -1,13 +1,15 @@
 import { act, renderHook } from "@testing-library/react";
 
-
 import type { LiveExercise, LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useLiveSession } from "@/features/workout/model/use-live-session";
 import type { syncWorkoutLogs } from "@/features/workout/server/workout-actions";
 
-vi.mock<typeof import('@/features/workout/server/workout-actions')>(import('@/features/workout/server/workout-actions'), () => ({
-  syncWorkoutLogs: vi.fn<typeof syncWorkoutLogs>(async () => ({ syncedSetNumbers: [] })),
-}));
+vi.mock<typeof import("@/features/workout/server/workout-actions")>(
+  import("@/features/workout/server/workout-actions"),
+  () => ({
+    syncWorkoutLogs: vi.fn<typeof syncWorkoutLogs>(async () => ({ syncedSetNumbers: [] })),
+  }),
+);
 
 function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   return {

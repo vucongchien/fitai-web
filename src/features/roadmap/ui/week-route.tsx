@@ -20,10 +20,18 @@ const statusLabel = {
 } as const;
 
 function StatusIcon({ status }: { status: SessionSummary["status"] }) {
-  if (status === "complete") {return <Check aria-hidden="true" size={15} />;}
-  if (status === "rest") {return <Moon aria-hidden="true" size={14} />;}
-  if (status === "skipped") {return <SkipForward aria-hidden="true" size={14} />;}
-  if (status === "next") {return <Play aria-hidden="true" size={14} />;}
+  if (status === "complete") {
+    return <Check aria-hidden="true" size={15} />;
+  }
+  if (status === "rest") {
+    return <Moon aria-hidden="true" size={14} />;
+  }
+  if (status === "skipped") {
+    return <SkipForward aria-hidden="true" size={14} />;
+  }
+  if (status === "next") {
+    return <Play aria-hidden="true" size={14} />;
+  }
   return <span aria-hidden="true" className="week-route__planned-dot" />;
 }
 

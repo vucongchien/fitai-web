@@ -1,5 +1,3 @@
-
-
 import type { MealLogRow } from "@/shared/api/bff/aggregate/nutrition-daily";
 import {
   averageDailyProtein,
@@ -58,7 +56,12 @@ describe(countMeals, () => {
 describe(groupMealsBySlot, () => {
   it("always returns all four slots so each can render its own empty state", () => {
     const groups = groupMealsBySlot(rows, "2026-08-06");
-    expect(groups.map((group) => group.slot)).toStrictEqual(["breakfast", "lunch", "dinner", "snack"]);
+    expect(groups.map((group) => group.slot)).toStrictEqual([
+      "breakfast",
+      "lunch",
+      "dinner",
+      "snack",
+    ]);
   });
 
   it("sums calories per slot and keeps the day's rows only", () => {
@@ -102,7 +105,7 @@ describe(dailyCalorieSeries, () => {
 
   it("marks an unlogged day as null rather than a measured zero", () => {
     const series = dailyCalorieSeries([], "2026-08-06", 2);
-    expect(series.every((point) => point.calories === null)).toBeTruthy();
+    expect(series.every((point) => point.calories === null)).toBe(true);
   });
 });
 

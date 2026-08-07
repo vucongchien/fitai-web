@@ -1,6 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
 
-
 import { ExerciseMetaRow } from "@/features/workout/ui/live/exercise-meta-row";
 
 afterEach(cleanup);

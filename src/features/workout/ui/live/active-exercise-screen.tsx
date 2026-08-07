@@ -14,7 +14,9 @@ import { SessionHeader } from "@/features/workout/ui/live/session-header";
 
 /** "30 sec" for a hold, "10 reps" (plus load when weighted) for a rep-based set. */
 function targetLabel(exercise: LiveExercise): string {
-  if (exercise.durationSeconds > 0) {return `${exercise.durationSeconds} sec`;}
+  if (exercise.durationSeconds > 0) {
+    return `${exercise.durationSeconds} sec`;
+  }
   const reps = `${exercise.targetReps} reps`;
   // The load needs a weight, not just the weighted flag: a band or bodyweight
   // Movement can be flagged weighted with 0 kg, and "· 0 kg" is noise.

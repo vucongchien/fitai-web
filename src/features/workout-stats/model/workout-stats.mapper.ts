@@ -19,14 +19,18 @@ import {
 const VOLUME_WEEKS = 4;
 
 export function formatVolume(kg: number): string {
-  if (kg >= 1000) {return `${(kg / 1000).toFixed(1).replace(/\.0$/, "")}t`;}
+  if (kg >= 1000) {
+    return `${(kg / 1000).toFixed(1).replace(/\.0$/, "")}t`;
+  }
   return `${kg.toLocaleString("en-US")} kg`;
 }
 
 /** Short axis label for a week, e.g. "Aug 3". */
 function weekLabel(weekStart: string): string {
   const date = new Date(`${weekStart}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) {return weekStart;}
+  if (Number.isNaN(date.getTime())) {
+    return weekStart;
+  }
   return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
 }
 

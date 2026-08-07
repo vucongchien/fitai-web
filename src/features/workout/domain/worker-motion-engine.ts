@@ -14,10 +14,15 @@
  * or Worker support degrades to hand logging rather than a blank screen.
  */
 
-import { EMPTY_TELEMETRY } from '@/features/workout/domain/motion-engine';
-import type { MotionEngine, MotionEngineContext, MotionEventHandler, SetTelemetry } from '@/features/workout/domain/motion-engine';
-import { isInferenceResponse } from '@/features/workout/model/inference-protocol';
-import type { InferenceRequest } from '@/features/workout/model/inference-protocol';
+import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
+import type {
+  MotionEngine,
+  MotionEngineContext,
+  MotionEventHandler,
+  SetTelemetry,
+} from "@/features/workout/domain/motion-engine";
+import { isInferenceResponse } from "@/features/workout/model/inference-protocol";
+import type { InferenceRequest } from "@/features/workout/model/inference-protocol";
 
 /** Where scripts/copy-ort-assets.mjs puts the ORT runtime. */
 const WASM_PATHS = "/ort/";
@@ -47,12 +52,18 @@ export class WorkerMotionEngine implements MotionEngine {
   private telemetryTimer: number | null = null;
 
   async prepare(context: MotionEngineContext): Promise<void> {
-    if (!context.video) {throw new Error("WorkerMotionEngine needs a video element");}
-    if (!context.spec) {throw new Error("WorkerMotionEngine needs a motion specification");}
-    if (!supportsInferenceWorker()) {throw new Error("This browser cannot run pose tracking");}
+    if (!context.video) {
+      throw new Error("WorkerMotionEngine needs a video element");
+    }
+    if (!context.spec) {
+      throw new Error("WorkerMotionEngine needs a motion specification");
+    }
+    if (!supportsInferenceWorker()) {
+      throw new Error("This browser cannot run pose tracking");
+    }
 
     this.video = context.video;
-    const {spec} = context;
+    const { spec } = context;
     const worker = new Worker(
       new URL("@/features/workout/model/inference.worker.ts", import.meta.url),
       { name: "fitai-inference", type: "module" },
@@ -75,9 +86,15 @@ export class WorkerMotionEngine implements MotionEngine {
         }
       };
       const onMessage = (message: MessageEvent) => {
-        if (!isInferenceResponse(message.data)) {return;}
-        if (message.data.type === "ready") {settle();}
-        if (message.data.type === "init-failed") {settle(message.data.message);}
+        if (!isInferenceResponse(message.data)) {
+          return;
+        }
+        if (message.data.type === "ready") {
+          settle();
+        }
+        if (message.data.type === "init-failed") {
+          settle(message.data.message);
+        }
       };
       const onError = () => settle("Pose worker failed to start");
 
@@ -110,7 +127,9 @@ export class WorkerMotionEngine implements MotionEngine {
 
   async stopSet(): Promise<SetTelemetry> {
     this.stopLoop();
-    if (!this.worker) {return EMPTY_TELEMETRY;}
+    if (!this.worker) {
+      return EMPTY_TELEMETRY;
+    }
     // A second stopSet() before the first answers would otherwise strand the
     // Earlier promise, since telemetryResolve holds only one caller.
     this.settleTelemetry(EMPTY_TELEMETRY);
@@ -152,7 +171,9 @@ export class WorkerMotionEngine implements MotionEngine {
   }
 
   private handleMessage = (message: MessageEvent): void => {
-    if (!isInferenceResponse(message.data)) {return;}
+    if (!isInferenceResponse(message.data)) {
+      return;
+    }
     const response = message.data;
     switch (response.type) {
       case "event": {
@@ -174,15 +195,18 @@ export class WorkerMotionEngine implements MotionEngine {
   };
 
   private send(request: InferenceRequest): void {
-    if (request.type === "frame") {this.worker?.postMessage(request, [request.bitmap]);}
-    else {this.worker?.postMessage(request);}
+    if (request.type === "frame") {
+      this.worker?.postMessage(request, [request.bitmap]);
+    } else {
+      this.worker?.postMessage(request);
+    }
   }
 
   private startLoop(): void {
     this.stopLoop();
     this.pending = false;
     const loop = () => {
-      const {video} = this;
+      const { video } = this;
       if (!this.pending && video && video.videoWidth > 0 && video.videoHeight > 0) {
         this.pending = true;
         createImageBitmap(video).then(

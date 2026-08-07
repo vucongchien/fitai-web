@@ -6,8 +6,11 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { onboardingDefaults, onboardingSchema } from '@/features/onboarding/domain/onboarding-schema';
-import type { OnboardingValues } from '@/features/onboarding/domain/onboarding-schema';
+import {
+  onboardingDefaults,
+  onboardingSchema,
+} from "@/features/onboarding/domain/onboarding-schema";
+import type { OnboardingValues } from "@/features/onboarding/domain/onboarding-schema";
 import { saveOnboardingProfileServerAction } from "@/features/onboarding/server/onboarding-actions";
 import { Button } from "@/shared/ui/button";
 
@@ -84,11 +87,15 @@ export function OnboardingFlow() {
 
   useEffect(() => {
     const stored = sessionStorage.getItem(storageKey);
-    if (!stored) {return;}
+    if (!stored) {
+      return;
+    }
 
     try {
       const parsed = onboardingSchema.partial().safeParse(JSON.parse(stored));
-      if (parsed.success) {reset({ ...onboardingDefaults, ...parsed.data });}
+      if (parsed.success) {
+        reset({ ...onboardingDefaults, ...parsed.data });
+      }
     } catch {
       sessionStorage.removeItem(storageKey);
     }
@@ -114,7 +121,9 @@ export function OnboardingFlow() {
   async function continueFlow() {
     const currentFields = steps[step].fields;
     const valid = await trigger([...currentFields]);
-    if (!valid) {return;}
+    if (!valid) {
+      return;
+    }
 
     if (step < steps.length - 1) {
       setStep((current) => current + 1);

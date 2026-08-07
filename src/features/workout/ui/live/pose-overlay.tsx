@@ -2,8 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
-import { KEYPOINT_NAMES, MIN_KEYPOINT_SCORE, SKELETON_EDGES } from '@/features/workout/domain/pose-metrics';
-import type { Pose } from '@/features/workout/domain/pose-metrics';
+import {
+  KEYPOINT_NAMES,
+  MIN_KEYPOINT_SCORE,
+  SKELETON_EDGES,
+} from "@/features/workout/domain/pose-metrics";
+import type { Pose } from "@/features/workout/domain/pose-metrics";
 
 /**
  * The 17-point skeleton drawn over the camera feed (FR-CC-01, FR-CC-04 visual half).
@@ -28,9 +32,13 @@ export function PoseOverlay({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) {return;}
+    if (!canvas) {
+      return;
+    }
     const context = canvas.getContext("2d");
-    if (!context) {return;}
+    if (!context) {
+      return;
+    }
 
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
@@ -42,7 +50,9 @@ export function PoseOverlay({
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, width, height);
 
-    if (!pose || sourceWidth === 0 || sourceHeight === 0) {return;}
+    if (!pose || sourceWidth === 0 || sourceHeight === 0) {
+      return;
+    }
 
     // The video is object-fit: cover, so mirror that maths here.
     const scale = Math.max(width / sourceWidth, height / sourceHeight);
@@ -61,7 +71,9 @@ export function PoseOverlay({
     for (const [from, to] of SKELETON_EDGES) {
       const a = pose.keypoints[KEYPOINT_NAMES.indexOf(from)];
       const b = pose.keypoints[KEYPOINT_NAMES.indexOf(to)];
-      if (!a || !b || a.score < MIN_KEYPOINT_SCORE || b.score < MIN_KEYPOINT_SCORE) {continue;}
+      if (!a || !b || a.score < MIN_KEYPOINT_SCORE || b.score < MIN_KEYPOINT_SCORE) {
+        continue;
+      }
       const start = project(a.x, a.y);
       const end = project(b.x, b.y);
       context.beginPath();
@@ -71,7 +83,9 @@ export function PoseOverlay({
     }
 
     for (const point of pose.keypoints) {
-      if (point.score < MIN_KEYPOINT_SCORE) {continue;}
+      if (point.score < MIN_KEYPOINT_SCORE) {
+        continue;
+      }
       const projected = project(point.x, point.y);
       context.beginPath();
       context.arc(projected.x, projected.y, 4, 0, Math.PI * 2);

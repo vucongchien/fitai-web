@@ -1,5 +1,3 @@
-
-
 import {
   countUnverifiedSets,
   durationState,
@@ -64,8 +62,8 @@ describe("session guards", () => {
   });
 
   it("asks to cancel instead of saving an empty session", () => {
-    expect(needsEmptySessionPrompt([])).toBeTruthy();
-    expect(needsEmptySessionPrompt([set()])).toBeFalsy();
+    expect(needsEmptySessionPrompt([])).toBe(true);
+    expect(needsEmptySessionPrompt([set()])).toBe(false);
   });
 
   it("stays silent about zero load for bodyweight, warm-ups and holds", () => {
@@ -83,10 +81,10 @@ describe("session guards", () => {
   });
 
   it("only calls camera sets unverified, and only below 50% tracked frames (BR-CC-02)", () => {
-    expect(isCameraVerified(set({ source: "manual", validFrameRatio: null }))).toBeTruthy();
-    expect(isCameraVerified(set({ source: "camera", validFrameRatio: 0.8 }))).toBeTruthy();
-    expect(isCameraVerified(set({ source: "camera", validFrameRatio: 0.5 }))).toBeTruthy();
-    expect(isCameraVerified(set({ source: "camera", validFrameRatio: 0.4 }))).toBeFalsy();
+    expect(isCameraVerified(set({ source: "manual", validFrameRatio: null }))).toBe(true);
+    expect(isCameraVerified(set({ source: "camera", validFrameRatio: 0.8 }))).toBe(true);
+    expect(isCameraVerified(set({ source: "camera", validFrameRatio: 0.5 }))).toBe(true);
+    expect(isCameraVerified(set({ source: "camera", validFrameRatio: 0.4 }))).toBe(false);
   });
 
   it("describes unverified sets without accusatory wording", () => {

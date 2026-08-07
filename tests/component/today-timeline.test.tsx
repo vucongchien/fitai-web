@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 
-
 import type { TodayTimelineItem } from "@/features/home/model/home-page.types";
 import { TodayTimeline } from "@/features/home/ui/today-timeline";
 

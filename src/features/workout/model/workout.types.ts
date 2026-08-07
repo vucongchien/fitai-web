@@ -19,7 +19,7 @@ export interface AdhocConfig {
 }
 
 export interface AiRecommendResult {
-  exercises: Array<{
+  exercises: {
     id: string;
     name: string;
     prescription: string;
@@ -28,5 +28,5 @@ export interface AiRecommendResult {
     sets: number;
     reps: number;
     weightKg?: number;
-  }>;
+  }[];
 }

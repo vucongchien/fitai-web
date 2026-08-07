@@ -36,12 +36,15 @@ function forbidden(message: string) {
 export async function POST(request: Request, context: { params: Promise<{ path: string[] }> }) {
   const origin = request.headers.get("origin");
   const requestOrigin = new URL(request.url).origin;
-  if (origin && origin !== requestOrigin)
-    {return forbidden("Cross-origin RPC requests are not allowed.");}
+  if (origin && origin !== requestOrigin) {
+    return forbidden("Cross-origin RPC requests are not allowed.");
+  }
 
   const { path: segments } = await context.params;
   const rpcPath = segments.join("/");
-  if (!isAllowedRpcPath(rpcPath)) {return forbidden("This RPC is not exposed through the web BFF.");}
+  if (!isAllowedRpcPath(rpcPath)) {
+    return forbidden("This RPC is not exposed through the web BFF.");
+  }
 
   const upstreamBase = process.env.FITAI_RPC_URL;
   if (!upstreamBase) {
@@ -57,7 +60,9 @@ export async function POST(request: Request, context: { params: Promise<{ path: 
   const requestHeaders = new Headers();
   for (const name of forwardedRequestHeaders) {
     const value = request.headers.get(name);
-    if (value) {requestHeaders.set(name, value);}
+    if (value) {
+      requestHeaders.set(name, value);
+    }
   }
 
   const cookieStore = await cookies();
@@ -69,7 +74,9 @@ export async function POST(request: Request, context: { params: Promise<{ path: 
     const body = await request.arrayBuffer();
     const send = (token?: string) => {
       const headers = new Headers(requestHeaders);
-      if (token) {headers.set("authorization", `Bearer ${token}`);}
+      if (token) {
+        headers.set("authorization", `Bearer ${token}`);
+      }
       return fetch(`${upstreamBase.replace(/\/$/, "")}/${rpcPath}`, {
         body,
         cache: "no-store",
@@ -103,7 +110,9 @@ export async function POST(request: Request, context: { params: Promise<{ path: 
     const responseHeaders = new Headers();
     for (const name of forwardedResponseHeaders) {
       const value = upstream.headers.get(name);
-      if (value) {responseHeaders.set(name, value);}
+      if (value) {
+        responseHeaders.set(name, value);
+      }
     }
 
     return new Response(upstream.body, {

@@ -9,9 +9,10 @@ const providers = new Set(["google", "facebook"]);
 
 export async function GET(request: Request, context: { params: Promise<{ provider: string }> }) {
   const { provider } = await context.params;
-  const {origin} = new URL(request.url);
-  if (!providers.has(provider))
-    {return NextResponse.redirect(new URL("/login?error=invalid_provider", origin));}
+  const { origin } = new URL(request.url);
+  if (!providers.has(provider)) {
+    return NextResponse.redirect(new URL("/login?error=invalid_provider", origin));
+  }
 
   if (!process.env.FITAI_RPC_URL) {
     const response = NextResponse.redirect(new URL("/onboarding", origin));

@@ -1,7 +1,17 @@
-
-
-import { KEYPOINT_NAMES, calibrationDistance, calibrationHint, calibrationLighting, createRepCounter, evaluateRules, feedRepCounter, formScore, isPoseUsable, jointAngle, romPercent } from '@/features/workout/domain/pose-metrics';
-import type { Keypoint, Pose } from '@/features/workout/domain/pose-metrics';
+import {
+  KEYPOINT_NAMES,
+  calibrationDistance,
+  calibrationHint,
+  calibrationLighting,
+  createRepCounter,
+  evaluateRules,
+  feedRepCounter,
+  formScore,
+  isPoseUsable,
+  jointAngle,
+  romPercent,
+} from "@/features/workout/domain/pose-metrics";
+import type { Keypoint, Pose } from "@/features/workout/domain/pose-metrics";
 import type { FormRule, RomRange } from "@/features/workout/model/live-session.types";
 
 function pose(points: Partial<Record<(typeof KEYPOINT_NAMES)[number], [number, number]>>): Pose {
@@ -19,7 +29,9 @@ function run(roms: number[]) {
   for (const rom of roms) {
     const tick = feedRepCounter(state, rom);
     state = tick.state;
-    if (tick.completedRep) {completed.push(tick.completedRep);}
+    if (tick.completedRep) {
+      completed.push(tick.completedRep);
+    }
   }
   return { state, completed };
 }
@@ -78,7 +90,7 @@ describe("rep counter (BR-CC-01)", () => {
     const { state, completed } = run([0, 30, 60, 85, 60, 30, 5]);
     expect(state.count).toBe(1);
     expect(completed).toHaveLength(1);
-    expect(completed[0]!.counted).toBeTruthy();
+    expect(completed[0]!.counted).toBe(true);
     expect(completed[0]!.romPercentage).toBe(85);
   });
 
@@ -86,7 +98,7 @@ describe("rep counter (BR-CC-01)", () => {
     const { state, completed } = run([0, 30, 55, 30, 5]);
     expect(state.count).toBe(0);
     expect(completed).toHaveLength(1);
-    expect(completed[0]!.counted).toBeFalsy();
+    expect(completed[0]!.counted).toBe(false);
   });
 
   it("does not double count jitter around the threshold", () => {
@@ -140,8 +152,8 @@ describe("form rules and score", () => {
 
 describe("calibration", () => {
   it("recognises a usable pose", () => {
-    expect(isPoseUsable(pose(upright))).toBeTruthy();
-    expect(isPoseUsable(pose({ left_shoulder: [1, 1] }))).toBeFalsy();
+    expect(isPoseUsable(pose(upright))).toBe(true);
+    expect(isPoseUsable(pose({ left_shoulder: [1, 1] }))).toBe(false);
   });
 
   it("asks the user to step closer or step back based on body coverage", () => {

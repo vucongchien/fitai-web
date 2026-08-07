@@ -1,5 +1,3 @@
-
-
 import type { DailyMenuRows } from "@/features/nutrition/model/meal-detail.mapper";
 import {
   adaptMealDetailPageData,
@@ -61,7 +59,10 @@ describe(adaptMealDetailPageData, () => {
   it("carries the recipe steps through in order", () => {
     const data = adaptMealDetailPageData(menu, [], "breakfast", MOCK_TODAY);
 
-    expect(data.choices[0]?.recipeSteps).toStrictEqual(["Simmer the bones.", "Blanch the noodles."]);
+    expect(data.choices[0]?.recipeSteps).toStrictEqual([
+      "Simmer the bones.",
+      "Blanch the noodles.",
+    ]);
   });
 
   it("keeps an empty recipe empty rather than inventing steps", () => {
@@ -80,7 +81,10 @@ describe(adaptMealDetailPageData, () => {
   it("moves the eaten dish's recipe onto the logged row rather than losing it", () => {
     const data = adaptMealDetailPageData(menu, getMockMealRows(), "breakfast", MOCK_TODAY);
 
-    expect(data.loggedMeals[0]?.recipeSteps).toStrictEqual(["Simmer the bones.", "Blanch the noodles."]);
+    expect(data.loggedMeals[0]?.recipeSteps).toStrictEqual([
+      "Simmer the bones.",
+      "Blanch the noodles.",
+    ]);
   });
 
   it("matches dish names case-insensitively and ignoring surrounding space", () => {

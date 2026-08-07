@@ -41,10 +41,18 @@ function mapExperienceToProto(exp: string): string {
 function mapEquipmentToProto(equipmentList: string[]): string[] {
   return equipmentList.map((item) => {
     const upper = item.toUpperCase();
-    if (upper.includes("FULL GYM") || upper.includes("CABLE")) {return "FULL_GYM";}
-    if (upper.includes("DUMBBELL")) {return "DUMBBELL_ONLY";}
-    if (upper.includes("BARBELL")) {return "BARBELL";}
-    if (upper.includes("BAND")) {return "RESISTANCE_BAND";}
+    if (upper.includes("FULL GYM") || upper.includes("CABLE")) {
+      return "FULL_GYM";
+    }
+    if (upper.includes("DUMBBELL")) {
+      return "DUMBBELL_ONLY";
+    }
+    if (upper.includes("BARBELL")) {
+      return "BARBELL";
+    }
+    if (upper.includes("BAND")) {
+      return "RESISTANCE_BAND";
+    }
     return "BODYWEIGHT";
   });
 }

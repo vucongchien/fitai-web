@@ -191,7 +191,9 @@ function getMockSchedulePageData(): SchedulePageData {
  */
 export async function getSchedulePageData(): Promise<SchedulePageData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return getMockSchedulePageData();}
+  if (!hasBackend) {
+    return getMockSchedulePageData();
+  }
   // TODO: return adaptSchedulePageData(await client.getActiveRoadmap({ userId }));
   return getMockSchedulePageData();
 }

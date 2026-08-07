@@ -26,7 +26,9 @@ const DEFAULT_WEIGHT_KG: Record<string, number> = {
 
 function findExercise(id: string): ExerciseSummary {
   const exercise = MOCK_EXERCISES.find((entry) => entry.id === id);
-  if (!exercise) {throw new Error(`Mock exercise not found: ${id}`);}
+  if (!exercise) {
+    throw new Error(`Mock exercise not found: ${id}`);
+  }
   return exercise;
 }
 

@@ -42,7 +42,9 @@ export async function getNutritionPageData(): Promise<NutritionPageData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
   // ReadLocalMeals touches cookies(), so this read belongs to the request rather than the
   // Prerender — a freshly logged meal shows up immediately.
-  if (!hasBackend) {return getMockNutritionPageData(await readLocalMeals());}
+  if (!hasBackend) {
+    return getMockNutritionPageData(await readLocalMeals());
+  }
   // TODO: return getRealNutritionPageData();
   return getMockNutritionPageData(await readLocalMeals());
 }

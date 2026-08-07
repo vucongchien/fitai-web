@@ -128,7 +128,9 @@ export function dailyCalorieSeries(
 
   for (const row of rows) {
     const key = dayKeyFromLoggedAt(row.loggedAt);
-    if (!key) {continue;}
+    if (!key) {
+      continue;
+    }
     byDay.set(key, (byDay.get(key) ?? 0) + row.calories);
   }
 
@@ -147,7 +149,9 @@ export function averageDailyCalories(
   const series = dailyCalorieSeries(rows, endKey, length).filter(
     (point) => point.calories !== null,
   );
-  if (series.length === 0) {return null;}
+  if (series.length === 0) {
+    return null;
+  }
   return Math.round(sum(series.map((point) => point.calories ?? 0)) / series.length);
 }
 
@@ -162,11 +166,15 @@ export function averageDailyProtein(
 
   for (const row of rows) {
     const key = dayKeyFromLoggedAt(row.loggedAt);
-    if (!key || !window.has(key)) {continue;}
+    if (!key || !window.has(key)) {
+      continue;
+    }
     byDay.set(key, (byDay.get(key) ?? 0) + row.protein);
   }
 
-  if (byDay.size === 0) {return null;}
+  if (byDay.size === 0) {
+    return null;
+  }
   return Math.round(sum([...byDay.values()]) / byDay.size);
 }
 
@@ -217,7 +225,9 @@ export function countLoggedDays(
 
   for (const row of rows) {
     const key = dayKeyFromLoggedAt(row.loggedAt);
-    if (key && window.has(key)) {days.add(key);}
+    if (key && window.has(key)) {
+      days.add(key);
+    }
   }
 
   return days.size;

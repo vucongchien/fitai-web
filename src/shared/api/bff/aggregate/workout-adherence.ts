@@ -78,7 +78,9 @@ export function flattenSessionPlans(roadmap: {
 
   for (const week of roadmap.weekPlans ?? []) {
     for (const day of week.dayPlans ?? []) {
-      for (const plan of day.sessionPlans ?? []) {plans.push(plan);}
+      for (const plan of day.sessionPlans ?? []) {
+        plans.push(plan);
+      }
     }
   }
 
@@ -158,9 +160,13 @@ export function countActiveDays(
   const days = new Set<DayKey>();
 
   for (const plan of plans) {
-    if (!isCompleted(plan)) {continue;}
+    if (!isCompleted(plan)) {
+      continue;
+    }
     const key = dayKeyFromCalendarDate(plan.scheduledDate);
-    if (key && window.has(key)) {days.add(key);}
+    if (key && window.has(key)) {
+      days.add(key);
+    }
   }
 
   return days.size;
@@ -193,7 +199,9 @@ export interface WeeklyVolume {
 /** Monday of the ISO week containing `key`. */
 function weekStartKey(key: DayKey): DayKey | null {
   const date = new Date(`${key}T00:00:00Z`);
-  if (Number.isNaN(date.getTime())) {return null;}
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
 
   // GetUTCDay: Sunday is 0, so shift it to the end of the week.
   const offset = (date.getUTCDay() + 6) % 7;
@@ -214,13 +222,17 @@ export function weeklyVolumeSeries(
   weeks: number,
 ): WeeklyVolume[] {
   const thisWeek = weekStartKey(endKey);
-  if (!thisWeek || weeks <= 0) {return [];}
+  if (!thisWeek || weeks <= 0) {
+    return [];
+  }
 
   const byWeek = new Map<DayKey, number>();
   for (const row of rows) {
     const day = dayKeyFromTimestamp(row.date);
     const start = day ? weekStartKey(day) : null;
-    if (!start) {continue;}
+    if (!start) {
+      continue;
+    }
     byWeek.set(start, (byWeek.get(start) ?? 0) + row.totalVolume);
   }
 
@@ -229,7 +241,9 @@ export function weeklyVolumeSeries(
     const start = new Date(`${thisWeek}T00:00:00Z`);
     start.setUTCDate(start.getUTCDate() - back * 7);
     const key = toDayKey(start);
-    if (!key) {continue;}
+    if (!key) {
+      continue;
+    }
 
     const total = byWeek.get(key);
     series.push({ volumeKg: total === undefined ? null : Math.round(total), weekStart: key });

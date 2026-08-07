@@ -10,8 +10,8 @@
  * rather than on the main thread. That is the whole point of the move.
  */
 
-import { letterboxLayout } from '@/features/workout/domain/frame-sampler';
-import type { LetterboxedFrame } from '@/features/workout/domain/frame-sampler';
+import { letterboxLayout } from "@/features/workout/domain/frame-sampler";
+import type { LetterboxedFrame } from "@/features/workout/domain/frame-sampler";
 
 export class BitmapSampler {
   private canvas: OffscreenCanvas;
@@ -27,7 +27,7 @@ export class BitmapSampler {
 
   /** Closes `bitmap` before returning — the caller must not reuse it. */
   grab(bitmap: ImageBitmap): LetterboxedFrame | null {
-    const {context} = this;
+    const { context } = this;
     const sourceWidth = bitmap.width;
     const sourceHeight = bitmap.height;
     if (!context || sourceWidth === 0 || sourceHeight === 0) {

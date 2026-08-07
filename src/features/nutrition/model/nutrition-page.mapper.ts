@@ -22,7 +22,9 @@ interface NutritionSummaryLike {
 
 /** Mean per logged day, so a partly logged week is not read as a shortfall. */
 function perDay(total: number, loggedDays: number): number {
-  if (loggedDays <= 0) {return 0;}
+  if (loggedDays <= 0) {
+    return 0;
+  }
   return Math.round(total / loggedDays);
 }
 
@@ -39,7 +41,9 @@ const formatRangeDay = (date: Date, withMonth: boolean) =>
 export function formatRangeLabel(startKey: DayKey, endKey: DayKey): string {
   const start = new Date(`${startKey}T00:00:00Z`);
   const end = new Date(`${endKey}T00:00:00Z`);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {return endKey;}
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return endKey;
+  }
 
   const sameMonth = start.getUTCMonth() === end.getUTCMonth();
   return `${formatRangeDay(start, !sameMonth)} – ${formatRangeDay(end, true)}`;

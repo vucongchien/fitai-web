@@ -1,7 +1,7 @@
 import { Camera, Dumbbell } from "lucide-react";
 import Link from "next/link";
 
-import type { CatalogMetadata, ExerciseSummary } from '@/features/exercise/domain/exercise';
+import type { CatalogMetadata, ExerciseSummary } from "@/features/exercise/domain/exercise";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 interface ExerciseCardProps {

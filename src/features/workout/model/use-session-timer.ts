@@ -18,7 +18,9 @@ export function useTicker(active: boolean, intervalMs = 500): number {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    if (!active) {return;}
+    if (!active) {
+      return;
+    }
     setNow(Date.now());
 
     if (typeof Worker === "undefined") {
@@ -44,7 +46,9 @@ export function useTicker(active: boolean, intervalMs = 500): number {
 
 /** Whole seconds left until `endsAt`, never negative. */
 export function secondsLeft(endsAt: number | null, now: number): number {
-  if (endsAt === null) {return 0;}
+  if (endsAt === null) {
+    return 0;
+  }
   return Math.max(0, Math.ceil((endsAt - now) / 1000));
 }
 

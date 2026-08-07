@@ -34,7 +34,9 @@ export function useCameraStream() {
   const stop = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
-    if (videoRef.current) {videoRef.current.srcObject = null;}
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
     setState("idle");
   }, []);
 

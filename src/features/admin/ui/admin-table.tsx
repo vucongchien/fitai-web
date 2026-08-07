@@ -55,7 +55,9 @@ export function AdminTable<T>({
 
   // IntersectionObserver trigger fetchNextPage when sentinel is visible
   useEffect(() => {
-    if (!fetchNextPage || !hasNextPage || isFetchingNextPage || isLoading) {return;}
+    if (!fetchNextPage || !hasNextPage || isFetchingNextPage || isLoading) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {

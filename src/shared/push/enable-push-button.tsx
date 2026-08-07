@@ -10,7 +10,9 @@ import { usePushRegistration } from "@/shared/push/use-push-registration";
 export function EnablePushButton() {
   const { enable, status } = usePushRegistration();
 
-  if (status === "granted") {return null;}
+  if (status === "granted") {
+    return null;
+  }
   if (status === "unsupported") {
     return (
       <p className="push-optin__note">Add FITAI to your home screen to get session reminders.</p>

@@ -1,5 +1,5 @@
-import { ViewTransition } from 'react';
-import type { ReactNode } from 'react';
+import { ViewTransition } from "react";
+import type { ReactNode } from "react";
 
 interface PageTransitionProps {
   children: ReactNode;

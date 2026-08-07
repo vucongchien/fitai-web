@@ -22,7 +22,9 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
 
   // Search via Server Action khi debouncedQuery thay đổi (250ms delay chống lãng phí network request & server compute)
   useEffect(() => {
-    if (!isOpen) {return;}
+    if (!isOpen) {
+      return;
+    }
 
     let isCurrent = true;
 
@@ -58,7 +60,9 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) {return null;}
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="bottom-search-sheet-container">

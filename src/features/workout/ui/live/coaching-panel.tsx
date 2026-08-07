@@ -28,7 +28,9 @@ export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
 
   const measure = useCallback(() => {
     const panel = panelRef.current;
-    if (!panel) {return;}
+    if (!panel) {
+      return;
+    }
     const remaining = panel.scrollHeight - panel.clientHeight - panel.scrollTop;
     setScrollable(remaining > BOTTOM_SLACK_PX);
   }, []);
@@ -44,12 +46,16 @@ export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
   // Event and no exercise change. jsdom has no ResizeObserver, so guard it.
   useEffect(() => {
     const panel = panelRef.current;
-    if (!panel || typeof ResizeObserver !== "function") {return;}
+    if (!panel || typeof ResizeObserver !== "function") {
+      return;
+    }
 
     const observer = new ResizeObserver(() => measure());
     observer.observe(panel);
     // The list grows and shrinks with the exercise; watch it too.
-    if (panel.firstElementChild) {observer.observe(panel.firstElementChild);}
+    if (panel.firstElementChild) {
+      observer.observe(panel.firstElementChild);
+    }
 
     return () => observer.disconnect();
   }, [measure]);

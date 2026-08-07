@@ -55,7 +55,9 @@ import { getMockLiveSession } from "./get-mock-live-session";
  */
 export async function getLiveSessionData(sessionId: string): Promise<LiveSessionPlan> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return getMockLiveSession(sessionId);}
+  if (!hasBackend) {
+    return getMockLiveSession(sessionId);
+  }
   // TODO: return getRealLiveSession(sessionId);
   return getMockLiveSession(sessionId);
 }

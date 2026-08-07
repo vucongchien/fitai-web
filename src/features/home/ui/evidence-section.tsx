@@ -14,7 +14,9 @@ const iconMap = {
 } as const;
 
 export function EvidenceSection({ items }: EvidenceSectionProps) {
-  if (items.length === 0) {return null;}
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <section className="content-section evidence-list">

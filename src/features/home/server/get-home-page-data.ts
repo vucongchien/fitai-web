@@ -33,7 +33,9 @@ import { getMockHomePageData } from "./get-mock-home-page-data";
  */
 export async function getHomePageData(): Promise<HomePageData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return getMockHomePageData();}
+  if (!hasBackend) {
+    return getMockHomePageData();
+  }
   // TODO: return getRealHomePageData();
   return getMockHomePageData();
 }

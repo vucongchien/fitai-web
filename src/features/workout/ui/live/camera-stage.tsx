@@ -67,9 +67,9 @@ export function CameraStage({
           <p className="text-xs font-medium text-[var(--color-text-muted,#50565c)]">
             {state === "requesting"
               ? "Waiting for camera…"
-              : state === "denied"
+              : (state === "denied"
                 ? "Camera access denied."
-                : "No camera detected."}
+                : "No camera detected.")}
           </p>
         </div>
       )}

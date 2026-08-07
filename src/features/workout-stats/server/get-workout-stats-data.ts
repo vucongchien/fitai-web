@@ -49,7 +49,9 @@ import { getMockWorkoutStatsData } from "./get-mock-workout-stats";
  */
 export async function getWorkoutStatsData(): Promise<WorkoutStatsData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return getMockWorkoutStatsData();}
+  if (!hasBackend) {
+    return getMockWorkoutStatsData();
+  }
   // TODO: return getRealWorkoutStatsData();
   return getMockWorkoutStatsData();
 }

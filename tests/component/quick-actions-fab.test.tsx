@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-
 import type { QuickAction } from "@/features/home/model/home-page.types";
 import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
 

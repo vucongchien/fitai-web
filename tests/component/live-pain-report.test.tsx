@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
-
 import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
 
 type PainReportProps = ComponentProps<typeof PainReportDialog>;
@@ -51,7 +50,7 @@ describe(PainReportDialog, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "No, keep training" }));
 
-    expect(onDismiss).toHaveBeenCalledTimes(1);
+    expect(onDismiss).toHaveBeenCalledOnce();
     expect(onStop).not.toHaveBeenCalled();
   });
 
@@ -61,7 +60,7 @@ describe(PainReportDialog, () => {
 
     fireEvent.keyDown(document, { key: "Escape" });
 
-    expect(onDismiss).toHaveBeenCalledTimes(1);
+    expect(onDismiss).toHaveBeenCalledOnce();
   });
 
   it("focuses the stop button, the reason the dialog was opened", () => {

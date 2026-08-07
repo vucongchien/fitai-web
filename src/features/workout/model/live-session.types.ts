@@ -155,9 +155,9 @@ export interface SetLogDraft {
   targetReps: number;
   actualReps: number;
   weightKg: number;
-  /** null = N/A. RPE is optional — ux-flow-spec §5.4. */
+  /** Null = N/A. RPE is optional — ux-flow-spec §5.4. */
   rpe: number | null;
-  /** null for non-AI sets — BR-WL-03 never invents a score. */
+  /** Null for non-AI sets — BR-WL-03 never invents a score. */
   formScore: number | null;
   source: SetSource;
   reps: RepLogEntry[];
@@ -165,7 +165,7 @@ export interface SetLogDraft {
   validFrameRatio: number | null;
   cameraAngle: string;
   loggedAt: number;
-  /** false while the set is still queued offline. */
+  /** False while the set is still queued offline. */
   synced: boolean;
 }
 
@@ -182,7 +182,7 @@ export interface SessionReport {
   durationMin: number;
   /** Set to true when < 50% of camera frames tracked — BR-CC-02. */
   hasUnverifiedSets: boolean;
-  personalRecords: Array<{ exerciseId: string; name: string; oneRepMaxKg: number }>;
+  personalRecords: { exerciseId: string; name: string; oneRepMaxKg: number }[];
   /**
    * The recent average volume this session is compared against on the summary.
    * A *recent average*, not the immediately preceding session — that is the

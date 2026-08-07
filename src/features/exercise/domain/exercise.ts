@@ -104,7 +104,9 @@ export function filterExercises(
         ...exercise.secondaryMuscleIds.map((id) => muscleNameById.get(id) ?? ""),
         ...exercise.tagIds.map((id) => tagNameById.get(id) ?? ""),
       ].join(" ");
-      if (!haystack.includes(q)) {return false;}
+      if (!haystack.includes(q)) {
+        return false;
+      }
     }
     if (filters.bodyPartIds.length > 0 && !filters.bodyPartIds.includes(exercise.bodyPartId)) {
       return false;
@@ -117,9 +119,13 @@ export function filterExercises(
     }
     if (filters.tagIds.length > 0) {
       const overlap = filters.tagIds.some((id) => exercise.tagIds.includes(id));
-      if (!overlap) {return false;}
+      if (!overlap) {
+        return false;
+      }
     }
-    if (filters.aiOnly && !exercise.hasAiSupported) {return false;}
+    if (filters.aiOnly && !exercise.hasAiSupported) {
+      return false;
+    }
     return true;
   });
 }

@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
-
 import type { HeaderAction } from "@/features/workout/ui/live/session-header";
 import { SessionHeader } from "@/features/workout/ui/live/session-header";
 
@@ -31,7 +30,7 @@ describe(SessionHeader, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
 
-    expect(onBack).toHaveBeenCalledTimes(1);
+    expect(onBack).toHaveBeenCalledOnce();
   });
 
   it("renders each action with its accessible name and wires its handler", () => {
@@ -60,7 +59,7 @@ describe(SessionHeader, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Exercise guide" }));
 
-    expect(onGuide).toHaveBeenCalledTimes(1);
+    expect(onGuide).toHaveBeenCalledOnce();
     expect(screen.getByRole("button", { name: "Voice guide" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Fullscreen" })).toBeInTheDocument();
   });

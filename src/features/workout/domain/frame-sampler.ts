@@ -66,7 +66,9 @@ export class FrameSampler {
   grab(): LetterboxedFrame | null {
     const sourceWidth = this.video.videoWidth;
     const sourceHeight = this.video.videoHeight;
-    if (sourceWidth === 0 || sourceHeight === 0) {return null;}
+    if (sourceWidth === 0 || sourceHeight === 0) {
+      return null;
+    }
 
     if (!this.canvas) {
       this.canvas = document.createElement("canvas");
@@ -74,8 +76,10 @@ export class FrameSampler {
       this.canvas.height = this.height;
       this.context = this.canvas.getContext("2d", { willReadFrequently: true });
     }
-    const {context} = this;
-    if (!context) {return null;}
+    const { context } = this;
+    if (!context) {
+      return null;
+    }
 
     const { drawHeight, drawWidth, padX, padY, scale } = letterboxLayout(
       sourceWidth,

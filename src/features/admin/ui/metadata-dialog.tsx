@@ -29,11 +29,15 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
     }
   }, [item, isOpen]);
 
-  if (!isOpen) {return null;}
+  if (!isOpen) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {return;}
+    if (!name.trim()) {
+      return;
+    }
 
     setIsSubmitting(true);
     try {

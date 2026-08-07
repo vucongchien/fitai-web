@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
-
 import { ActiveTimerBar } from "@/features/workout/ui/live/active-timer-bar";
 
 type TimerBarProps = ComponentProps<typeof ActiveTimerBar>;
@@ -65,8 +64,8 @@ describe(ActiveTimerBar, () => {
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
     fireEvent.click(screen.getByRole("button", { name: "Add 10 seconds" }));
 
-    expect(onDone).toHaveBeenCalledTimes(1);
-    expect(onAddTime).toHaveBeenCalledTimes(1);
+    expect(onDone).toHaveBeenCalledOnce();
+    expect(onAddTime).toHaveBeenCalledOnce();
   });
 
   it("names the timer for assistive tech without announcing every tick", () => {
@@ -170,7 +169,7 @@ describe(ActiveTimerBar, () => {
 
       fireEvent.click(screen.getByRole("button", { name: "Complete this set" }));
 
-      expect(onDone).toHaveBeenCalledTimes(1);
+      expect(onDone).toHaveBeenCalledOnce();
     });
   });
 });

@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 
-
 import { TripleLane } from "@/shared/ui/triple-lane";
 
 describe(TripleLane, () => {

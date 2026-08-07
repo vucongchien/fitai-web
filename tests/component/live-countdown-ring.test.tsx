@@ -1,6 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
 
-
 import { CountdownRing } from "@/features/workout/ui/live/countdown-ring";
 
 afterEach(cleanup);

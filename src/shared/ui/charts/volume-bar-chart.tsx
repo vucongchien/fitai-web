@@ -58,7 +58,9 @@ export function VolumeBarChart({
     [bars],
   );
 
-  if (logged.length === 0) {return <ChartEmpty height={height} message={emptyMessage} />;}
+  if (logged.length === 0) {
+    return <ChartEmpty height={height} message={emptyMessage} />;
+  }
 
   return (
     <div className="chart-frame chart-frame--effort" style={{ height: `${height}px` }}>

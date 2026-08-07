@@ -58,7 +58,9 @@ export function TripleLane({
     </div>
   );
 
-  if (!morph || !ViewTransition) {return lane;}
+  if (!morph || !ViewTransition) {
+    return lane;
+  }
 
   return (
     <ViewTransition default="none" name="triple-lane" share="triple-lane-morph">

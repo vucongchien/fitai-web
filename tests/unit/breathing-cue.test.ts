@@ -1,5 +1,3 @@
-
-
 import { MOCK_EXERCISES } from "@/shared/mock/exercises";
 
 describe("mock exercise catalogue", () => {

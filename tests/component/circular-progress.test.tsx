@@ -1,7 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { Salad } from "lucide-react";
 
-
 import { CircularProgress, toPercentage } from "@/shared/ui/charts/circular-progress";
 
 // This project's vitest config does not enable `globals`, so RTL auto-cleanup is off.

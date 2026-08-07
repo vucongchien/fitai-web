@@ -11,7 +11,9 @@ export function resolveEntryRoute({
   hasValidSession,
   profileCompletionRate,
 }: EntryState): EntryRoute {
-  if (!hasValidSession) {return "/login";}
+  if (!hasValidSession) {
+    return "/login";
+  }
   if (!Number.isFinite(profileCompletionRate) || profileCompletionRate < 80) {
     return "/onboarding";
   }

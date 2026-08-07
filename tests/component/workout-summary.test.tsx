@@ -2,22 +2,24 @@ import { cleanup, render, screen } from "@testing-library/react";
 import type { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
-
 import type { SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
 
-vi.mock<typeof import('next/navigation')>(import('next/navigation'), () => ({
+vi.mock<typeof import("next/navigation")>(import("next/navigation"), () => ({
   useRouter: () => ({
     push: vi.fn<ReturnType<typeof useRouter>["push"]>(),
   }),
 }));
 
-vi.mock<typeof import('@/shared/ui/page-transition')>(import('@/shared/ui/page-transition'), () => ({
-  PageTransition: ({ children, className }: { children: ReactNode; className?: string }) => (
-    <div className={className}>{children}</div>
-  ),
-}));
+vi.mock<typeof import("@/shared/ui/page-transition")>(
+  import("@/shared/ui/page-transition"),
+  () => ({
+    PageTransition: ({ children, className }: { children: ReactNode; className?: string }) => (
+      <div className={className}>{children}</div>
+    ),
+  }),
+);
 
 describe(WorkoutSummaryView, () => {
   beforeEach(() => {

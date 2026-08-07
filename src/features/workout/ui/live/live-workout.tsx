@@ -26,7 +26,9 @@ import { toast } from "@/shared/ui/toast";
 const ADD_SECONDS = 10;
 
 function toggleFullscreen() {
-  if (typeof document === "undefined") {return;}
+  if (typeof document === "undefined") {
+    return;
+  }
   if (document.fullscreenElement) {
     void document.exitFullscreen();
     return;
@@ -100,7 +102,9 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   // The intent to work. Without this the hold clock never runs, `+10s` has no
   // Clock to extend and the camera never begins counting reps.
   useEffect(() => {
-    if (sessionStatus === "ready" && !needsCalibration) {startSet(listening);}
+    if (sessionStatus === "ready" && !needsCalibration) {
+      startSet(listening);
+    }
   }, [listening, needsCalibration, sessionStatus, startSet]);
 
   // These three notices lived in the deleted `SessionShell`. The screens are
@@ -108,7 +112,9 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   // They must still speak: the protection note is a post-injury safety message
   // (ux-flow-spec §6.7, BR-AC-09), not decoration.
   useEffect(() => {
-    if (!online) {toast.info("Offline Mode: You're offline. Sets are saved locally.");}
+    if (!online) {
+      toast.info("Offline Mode: You're offline. Sets are saved locally.");
+    }
   }, [online]);
 
   const durationWarning =
@@ -116,12 +122,16 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       ? "This session has run long. Want to wrap it up?"
       : null;
   useEffect(() => {
-    if (durationWarning) {toast.info(`Session Duration: ${durationWarning}`);}
+    if (durationWarning) {
+      toast.info(`Session Duration: ${durationWarning}`);
+    }
   }, [durationWarning]);
 
-  const {protectionNote} = plan;
+  const { protectionNote } = plan;
   useEffect(() => {
-    if (protectionNote) {toast.info(`${protectionNote.title}: ${protectionNote.description}`);}
+    if (protectionNote) {
+      toast.info(`${protectionNote.title}: ${protectionNote.description}`);
+    }
   }, [protectionNote]);
 
   if (!step || !exercise) {
@@ -147,7 +157,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   // The confirmation behind the Back button. With nothing logged there is no
   // Session worth saving, so the dialog offers to cancel instead of "finish".
-  const {loggedSets} = session;
+  const { loggedSets } = session;
   const volumeKg = sessionVolumeKg(loggedSets);
   const endVariant: EndDialogVariant = loggedSets.length === 0 ? "empty" : "complete";
   const endDialog = endOpen ? (
@@ -181,7 +191,9 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   if (session.status === "resting") {
     const next = session.step;
-    if (!next) {return null;}
+    if (!next) {
+      return null;
+    }
 
     return (
       <>

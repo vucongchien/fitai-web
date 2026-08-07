@@ -6,7 +6,10 @@ import { useCallback, useEffect, useState } from "react";
 import { getMessagingIfSupported } from "@/shared/push/firebase-app";
 import { registerDeviceToken } from "@/shared/push/push-actions";
 
-export interface PushSupport { supported: boolean; reason: string | null }
+export interface PushSupport {
+  supported: boolean;
+  reason: string | null;
+}
 
 /**
  * Why push is or is not possible here. Split out from the hook so it is testable
@@ -36,7 +39,9 @@ export type PushStatus = "idle" | "asking" | "granted" | "denied" | "unsupported
  */
 async function mintAndRegister(): Promise<PushStatus> {
   const messaging = await getMessagingIfSupported();
-  if (!messaging) {return "unsupported";}
+  if (!messaging) {
+    return "unsupported";
+  }
 
   // Register our own SW and hand it to FCM, rather than letting the SDK look
   // For /firebase-messaging-sw.js. One service worker, one push handler.
@@ -46,7 +51,9 @@ async function mintAndRegister(): Promise<PushStatus> {
     vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
   }).catch(() => null);
 
-  if (!token) {return "failed";}
+  if (!token) {
+    return "failed";
+  }
 
   // The backend is the thing that decides whether push actually works. Reporting
   // "granted" on a failed handoff would tell the user reminders are on while the
@@ -66,7 +73,9 @@ export function usePushRegistration() {
       setStatus("denied");
       return;
     }
-    if (Notification.permission !== "granted") {return;}
+    if (Notification.permission !== "granted") {
+      return;
+    }
 
     // Optimistic: permission is granted, so hide the opt-in immediately rather
     // Than flashing a button for the duration of the round trip below.
@@ -80,7 +89,9 @@ export function usePushRegistration() {
     let cancelled = false;
     void (async () => {
       const next = await mintAndRegister();
-      if (!cancelled) {setStatus(next);}
+      if (!cancelled) {
+        setStatus(next);
+      }
     })();
     return () => {
       cancelled = true;

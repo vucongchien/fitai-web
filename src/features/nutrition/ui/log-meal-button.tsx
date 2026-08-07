@@ -3,8 +3,8 @@
 import { Check, Plus } from "lucide-react";
 import { useActionState } from "react";
 
-import { logMealAction } from '@/features/nutrition/server/nutrition-actions';
-import type { LogMealState } from '@/features/nutrition/server/nutrition-actions';
+import { logMealAction } from "@/features/nutrition/server/nutrition-actions";
+import type { LogMealState } from "@/features/nutrition/server/nutrition-actions";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 
 interface LogMealButtonProps {

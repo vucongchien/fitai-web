@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 
-
 import type { AdminTableProps, Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 

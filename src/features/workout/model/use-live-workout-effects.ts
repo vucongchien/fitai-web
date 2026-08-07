@@ -69,7 +69,7 @@ export function useLiveWorkoutEffects({
     motionRef.current = motion;
   });
 
-  const {step} = session;
+  const { step } = session;
   const exercise = step?.exercise ?? null;
   const spec: MotionSpec | null = useMemo(
     () => (exercise?.hasAiSupported ? (plan.motionSpecs[exercise.exerciseId] ?? null) : null),
@@ -105,22 +105,30 @@ export function useLiveWorkoutEffects({
   // Camera starts when the set does.
   const sessionStatus = session.status;
   useEffect(() => {
-    if (!cameraBranch || !spec) {return;}
-    if (sessionStatus === "complete" || sessionStatus === "resting") {return;}
+    if (!cameraBranch || !spec) {
+      return;
+    }
+    if (sessionStatus === "complete" || sessionStatus === "resting") {
+      return;
+    }
     let cancelled = false;
     const cam = cameraRef.current;
     const mot = motionRef.current;
 
     void (async () => {
       const started = await cam.start();
-      if (cancelled) {return;}
+      if (cancelled) {
+        return;
+      }
       if (!started) {
         setManualForSet(true);
         toast.info("Camera is unavailable — this set is logged by hand.");
         return;
       }
       const kind = await mot.prepare(spec, cam.videoRef.current);
-      if (cancelled) {return;}
+      if (cancelled) {
+        return;
+      }
       if (kind === "manual") {
         setManualForSet(true);
         return;
@@ -142,15 +150,21 @@ export function useLiveWorkoutEffects({
   // Resting. Leaving the stream open would keep the recording indicator lit
   // Through a rest period, which reads as "still being watched".
   useEffect(() => {
-    if (!cameraBranch || sessionStatus === "resting") {cameraRef.current.stop();}
+    if (!cameraBranch || sessionStatus === "resting") {
+      cameraRef.current.stop();
+    }
   }, [cameraBranch, sessionStatus]);
 
   // --- Audio cue player helper ---
   const playCueByCode = useCallback(
     (code: string, listening: boolean) => {
-      if (!listening || !spec) {return;}
+      if (!listening || !spec) {
+        return;
+      }
       const cue = spec.cues.find((entry) => entry.code === code);
-      if (cue) {audio.playCue(cue, spec.cueCooldownSec[code] ?? 0);}
+      if (cue) {
+        audio.playCue(cue, spec.cueCooldownSec[code] ?? 0);
+      }
     },
     [audio, spec],
   );
@@ -158,7 +172,9 @@ export function useLiveWorkoutEffects({
   // --- Set actions ---
   const startSet = useCallback(
     (listening: boolean) => {
-      if (!exercise) {return;}
+      if (!exercise) {
+        return;
+      }
       session.actions.startSet(exercise.durationSeconds);
       playCueByCode("set-start", listening);
       if (cameraBranch) {
@@ -171,7 +187,9 @@ export function useLiveWorkoutEffects({
 
   const finishSet = useCallback(
     (listening: boolean) => {
-      if (!exercise || !step) {return;}
+      if (!exercise || !step) {
+        return;
+      }
       playCueByCode("set-end", listening);
       const isCamera = cameraBranch && camera.state === "ready";
       const actualReps =
@@ -208,13 +226,21 @@ export function useLiveWorkoutEffects({
 
   // Auto finish timed or reps-based sets
   useEffect(() => {
-    if (session.status !== "working" || !exercise) {return;}
-    if (exercise.durationSeconds > 0 && session.setLeft === 0) {finishSet(true);}
+    if (session.status !== "working" || !exercise) {
+      return;
+    }
+    if (exercise.durationSeconds > 0 && session.setLeft === 0) {
+      finishSet(true);
+    }
   }, [exercise, finishSet, session.setLeft, session.status]);
 
   useEffect(() => {
-    if (session.status !== "working" || !cameraBranch || !exercise) {return;}
-    if (exercise.targetReps > 0 && motion.repCount >= exercise.targetReps) {finishSet(true);}
+    if (session.status !== "working" || !cameraBranch || !exercise) {
+      return;
+    }
+    if (exercise.targetReps > 0 && motion.repCount >= exercise.targetReps) {
+      finishSet(true);
+    }
   }, [cameraBranch, exercise, finishSet, motion.repCount, session.status]);
 
   // --- Session report & completion ---
@@ -325,13 +351,17 @@ export function useLiveWorkoutEffects({
   // Auto close on long timeout or complete status
   const autoClosed = useRef(false);
   useEffect(() => {
-    if (session.duration !== "auto-close" || autoClosed.current) {return;}
+    if (session.duration !== "auto-close" || autoClosed.current) {
+      return;
+    }
     autoClosed.current = true;
     void finishSession(true);
   }, [finishSession, session.duration]);
 
   useEffect(() => {
-    if (session.status !== "complete" || finishing) {return;}
+    if (session.status !== "complete" || finishing) {
+      return;
+    }
     void finishSession(false);
   }, [finishSession, finishing, session.status]);
 

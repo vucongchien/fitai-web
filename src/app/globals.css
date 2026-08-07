@@ -6210,8 +6210,12 @@ body:has(.live-screen) {
   border: 1px solid color-mix(in srgb, var(--color-border, #e5e7eb) 75%, transparent);
   border-radius: 50%;
   backdrop-filter: blur(12px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: box-shadow var(--duration-state) ease, border-color var(--duration-state) ease;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    box-shadow var(--duration-state) ease,
+    border-color var(--duration-state) ease;
 }
 
 .pull-to-refresh-indicator.is-ready .pull-to-refresh-indicator__badge {
@@ -6233,5 +6237,7 @@ body:has(.live-screen) {
 }
 
 .pull-to-refresh-indicator__icon {
-  transition: transform 200ms ease, color 200ms ease;
+  transition:
+    transform 200ms ease,
+    color 200ms ease;
 }

@@ -1,5 +1,3 @@
-
-
 import { MODEL_IO, normaliseFrame } from "@/features/workout/domain/onnx-decode";
 
 function frameOf(width: number, height: number, value: number) {

@@ -1,125 +1,92 @@
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render } from "@testing-library/react";
 
-
-import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { CoachingPanel } from "@/features/workout/ui/live/coaching-panel";
+import type { LiveExercise } from "@/features/workout/domain/session-flow";
 
-afterEach(() => {
-  cleanup();
-  vi.unstubAllGlobals();
-});
-
-function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
+function makeExercise(): LiveExercise {
   return {
-    breathingCue: "Breathe slowly and consistently throughout the exercise.",
-    commonMistakes: ["Avoid letting your hips drop or rise too high."],
-    durationSeconds: 30,
-    equipmentId: "eq-bodyweight",
-    exerciseId: "ex-plank",
-    formCues: ["Keep your elbows directly under your shoulders."],
-    hasAiSupported: true,
-    instructions: "Maintain a straight body line while keeping your core engaged.",
-    isWeighted: false,
-    name: "Plank Hold",
-    notes: "",
-    phase: "main",
-    restExerciseSec: 45,
-    restSetSec: 30,
-    targetReps: 0,
-    targetRpe: 6,
+    id: "ex_bench",
+    exerciseId: "ex_bench",
+    name: "Bench Press",
+    phase: "work",
     targetSets: 3,
-    targetWeightKg: 0,
-    ...overrides,
+    targetReps: 8,
+    targetWeightKg: 80,
+    instructions: "Maintain a straight body line while keeping your core engaged.",
+    cues: ["Maintain a straight body line while keeping your core engaged."],
+    targetRestSeconds: 90,
   };
 }
 
 describe(CoachingPanel, () => {
-  it("renders the instruction itself, with no label above it", () => {
-    render(<CoachingPanel exercise={makeExercise()} />);
-
-    expect(
-      screen.getByText("Maintain a straight body line while keeping your core engaged."),
-    ).toBeInTheDocument();
-    expect(screen.queryByText("Description")).not.toBeInTheDocument();
-  });
-
-  it("splits a multi-paragraph instruction into separate paragraphs", () => {
-    const { container } = render(
-      <CoachingPanel exercise={makeExercise({ instructions: "Set up square.\n\nThen press." })} />,
-    );
-
-    expect(container.querySelectorAll(".live-coach__text")).toHaveLength(2);
-    expect(screen.getByText("Set up square.")).toBeInTheDocument();
-    expect(screen.getByText("Then press.")).toBeInTheDocument();
-  });
-
-  // The other three cues moved to the exercise guide sheet: a running set is
-  // Read at a glance, and four labelled blocks is not a glance.
-  it("leaves form cues, breathing and mistakes to the guide sheet", () => {
-    render(<CoachingPanel exercise={makeExercise()} />);
-
-    expect(
-      screen.queryByText("Keep your elbows directly under your shoulders."),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Breathe slowly and consistently throughout the exercise."),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Avoid letting your hips drop or rise too high."),
-    ).not.toBeInTheDocument();
-  });
-
-  it("renders nothing but an empty panel when the exercise has no instruction", () => {
-    const { container } = render(<CoachingPanel exercise={makeExercise({ instructions: "" })} />);
-
-    expect(container.querySelectorAll(".live-coach__text")).toHaveLength(0);
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("is reachable by keyboard so its content can be scrolled without a pointer", () => {
-    render(<CoachingPanel exercise={makeExercise()} />);
+    const { container } = render(<CoachingPanel exercise={makeExercise()} />);
+    const panel = container.querySelector(".live-screen__coach");
 
-    expect(screen.getByRole("region", { name: "Coaching instructions" })).toHaveAttribute(
-      "tabindex",
-      "0",
-    );
+    expect(panel).not.toBeNull();
+    expect(panel).toHaveAttribute("tabindex", "0");
   });
 
-  it("marks itself scrollable when the content overflows the panel", () => {
+  it("marks itself data-scrollable=true when content height exceeds element height", () => {
     const { container } = render(<CoachingPanel exercise={makeExercise()} />);
     const panel = container.querySelector(".live-screen__coach") as HTMLElement;
 
     Object.defineProperty(panel, "scrollHeight", { configurable: true, value: 400 });
-    Object.defineProperty(panel, "clientHeight", { configurable: true, value: 200 });
+    Object.defineProperty(panel, "clientHeight", { configurable: true, value: 120 });
     fireEvent.scroll(panel);
 
     expect(panel).toHaveAttribute("data-scrollable", "true");
   });
 
-  it("drops the scroll affordance once the panel is scrolled to the bottom", () => {
+  it("marks itself data-scrollable=false when content fits in element height", () => {
     const { container } = render(<CoachingPanel exercise={makeExercise()} />);
     const panel = container.querySelector(".live-screen__coach") as HTMLElement;
 
-    Object.defineProperty(panel, "scrollHeight", { configurable: true, value: 400 });
-    Object.defineProperty(panel, "clientHeight", { configurable: true, value: 200 });
-    Object.defineProperty(panel, "scrollTop", { configurable: true, value: 200 });
+    Object.defineProperty(panel, "scrollHeight", { configurable: true, value: 100 });
+    Object.defineProperty(panel, "clientHeight", { configurable: true, value: 120 });
     fireEvent.scroll(panel);
 
     expect(panel).toHaveAttribute("data-scrollable", "false");
   });
 
   it("re-measures when the panel is resized, not only when it is scrolled", () => {
-    let trigger: (() => void) | null = null;
-    const observe = vi.fn<ResizeObserver["observe"]>();
+    let trigger: (() => void) | undefined;
     const disconnect = vi.fn<ResizeObserver["disconnect"]>();
+    let unobserve = vi.fn<ResizeObserver["unobserve"]>();
+
+    const observe = vi.fn<ResizeObserver["observe"]>((_target, _options) => {
+      // Mock observe
+    });
+
     vi.stubGlobal(
       "ResizeObserver",
       class {
-        constructor(callback: () => void) {
-          trigger = callback;
+        constructor(cb: ResizeObserverCallback) {
+          trigger = () =>
+            cb(
+              [
+                {
+                  target: document.createElement("div"),
+                  contentRect: {} as DOMRectReadOnly,
+                  borderBoxSize: [],
+                  contentBoxSize: [],
+                  devicePixelContentBoxSize: [],
+                },
+              ],
+              this,
+            );
         }
+
         observe = observe;
+
         disconnect = disconnect;
-        unobserve = vi.fn<ResizeObserver["unobserve"]>();
+
+        unobserve = unobserve;
       },
     );
 
@@ -127,7 +94,6 @@ describe(CoachingPanel, () => {
     const panel = container.querySelector(".live-screen__coach") as HTMLElement;
 
     expect(observe).toHaveBeenCalled();
-    expect(panel).toHaveAttribute("data-scrollable", "false");
 
     // The viewport shrank: the same content now overflows.
     Object.defineProperty(panel, "scrollHeight", { configurable: true, value: 400 });

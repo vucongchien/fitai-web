@@ -11,17 +11,26 @@ export function calculateBMI(
   const bmi = Number((weightKg / (heightM * heightM)).toFixed(1));
 
   let category = "Normal";
-  if (bmi < 18.5) {category = "Underweight";}
-  else if (bmi >= 18.5 && bmi <= 24.9) {category = "Normal";}
-  else if (bmi >= 25 && bmi <= 29.9) {category = "Overweight";}
-  else {category = "Obese";}
+  if (bmi < 18.5) {
+    category = "Underweight";
+  } else if (bmi >= 18.5 && bmi <= 24.9) {
+    category = "Normal";
+  } else if (bmi >= 25 && bmi <= 29.9) {
+    category = "Overweight";
+  } else {
+    category = "Obese";
+  }
 
   return { bmi, category };
 }
 
 export function calculateOneRepMax(weightKg: number, reps: number): number {
-  if (!weightKg || weightKg <= 0) {return 0;}
-  if (reps <= 1) {return weightKg;}
+  if (!weightKg || weightKg <= 0) {
+    return 0;
+  }
+  if (reps <= 1) {
+    return weightKg;
+  }
   return Math.round(weightKg * (1 + reps / 30));
 }
 

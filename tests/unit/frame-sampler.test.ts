@@ -1,5 +1,3 @@
-
-
 import { letterboxLayout, toSourceCoords } from "@/features/workout/domain/frame-sampler";
 
 describe(letterboxLayout, () => {

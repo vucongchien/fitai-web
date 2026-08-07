@@ -32,7 +32,9 @@ export function PainReportDialog({
   // User should not have to find a specific button to get back to the session.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {onDismiss();}
+      if (event.key === "Escape") {
+        onDismiss();
+      }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);

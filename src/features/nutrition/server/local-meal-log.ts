@@ -44,7 +44,9 @@ type StoredRow = [
 ];
 
 function decode(raw: string | undefined): StoredRow[] {
-  if (!raw) {return [];}
+  if (!raw) {
+    return [];
+  }
   try {
     const parsed: unknown = JSON.parse(raw);
     return Array.isArray(parsed) ? (parsed as StoredRow[]) : [];

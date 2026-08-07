@@ -1,7 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
-
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ExerciseMedia } from "@/features/workout/ui/live/exercise-media";
 

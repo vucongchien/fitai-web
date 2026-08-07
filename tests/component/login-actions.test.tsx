@@ -13,7 +13,6 @@
 import { cleanup, fireEvent, render, screen, act } from "@testing-library/react";
 import type { Mock } from "vitest";
 
-
 import { LoginActions } from "@/features/auth/ui/login-actions";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -225,7 +224,7 @@ describe(LoginActions, () => {
     // Second click is blocked by disabled state
     fireEvent.click(googleButton);
 
-    expect(mockWindowOpen).toHaveBeenCalledOnce();
+    expect(mockWindowOpen).toHaveBeenCalledTimes(1);
   });
 
   // ─── Dev Mode Shortcuts ───────────────────────────────────────────────────────

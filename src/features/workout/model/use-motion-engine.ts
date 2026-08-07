@@ -2,8 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { EMPTY_TELEMETRY } from '@/features/workout/domain/motion-engine';
-import type { MotionEngine, MotionEngineEvent, MotionEngineKind, SetTelemetry } from '@/features/workout/domain/motion-engine';
+import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
+import type {
+  MotionEngine,
+  MotionEngineEvent,
+  MotionEngineKind,
+  SetTelemetry,
+} from "@/features/workout/domain/motion-engine";
 import type {
   CalibrationDistance,
   CalibrationLighting,
@@ -61,7 +66,7 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
         break;
       }
       case "rep": {
-        if (event.counted) setRepCount(event.count);
+        if (event.counted) {setRepCount(event.count);}
         handlers.current.onRep?.(event);
         break;
       }
@@ -133,9 +138,10 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
     engineRef.current?.startSet(onEvent);
   }, [onEvent]);
 
-  const stopSet = useCallback(async (): Promise<SetTelemetry> => 
-    (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY
-  , []);
+  const stopSet = useCallback(
+    async (): Promise<SetTelemetry> => (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY,
+    [],
+  );
 
   useEffect(() => dispose, [dispose]);
 

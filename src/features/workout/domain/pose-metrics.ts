@@ -72,7 +72,9 @@ export const VALID_REP_ROM = 70;
 export function keypoint(pose: Pose, name: KeypointName): Keypoint | null {
   const index = KEYPOINT_NAMES.indexOf(name);
   const point = pose.keypoints[index];
-  if (!point || point.score < MIN_KEYPOINT_SCORE) {return null;}
+  if (!point || point.score < MIN_KEYPOINT_SCORE) {
+    return null;
+  }
   return point;
 }
 
@@ -98,7 +100,9 @@ export function jointAngle(
   const cbY = c.y - b.y;
   const abLen = Math.hypot(abX, abY);
   const cbLen = Math.hypot(cbX, cbY);
-  if (abLen === 0 || cbLen === 0) {return 0;}
+  if (abLen === 0 || cbLen === 0) {
+    return 0;
+  }
   const cosine = (abX * cbX + abY * cbY) / (abLen * cbLen);
   const clamped = Math.min(1, Math.max(-1, cosine));
   return (Math.acos(clamped) * 180) / Math.PI;
@@ -106,7 +110,9 @@ export function jointAngle(
 
 export function angleOfJoints(pose: Pose, joints: [string, string, string]): number | null {
   const [a, b, c] = joints.map((name) => keypoint(pose, name as KeypointName));
-  if (!a || !b || !c) {return null;}
+  if (!a || !b || !c) {
+    return null;
+  }
   return jointAngle(a, b, c);
 }
 
@@ -116,7 +122,9 @@ export function angleOfJoints(pose: Pose, joints: [string, string, string]): num
  */
 export function romPercent(angleDeg: number, range: RomRange): number {
   const span = range.endDeg - range.startDeg;
-  if (span === 0) {return 0;}
+  if (span === 0) {
+    return 0;
+  }
   const travelled = (angleDeg - range.startDeg) / span;
   return Math.min(100, Math.max(0, travelled * 100));
 }
@@ -180,10 +188,14 @@ export function evaluateRules(rules: FormRule[], pose: Pose): string[] {
   const codes: string[] = [];
   for (const rule of rules) {
     const angle = angleOfJoints(pose, rule.joints);
-    if (angle === null) {continue;}
+    if (angle === null) {
+      continue;
+    }
     const violated =
       rule.kind === "angle-below" ? angle < rule.thresholdDeg : angle > rule.thresholdDeg;
-    if (violated) {codes.push(rule.code);}
+    if (violated) {
+      codes.push(rule.code);
+    }
   }
   return codes;
 }
@@ -226,14 +238,22 @@ export type CalibrationLighting = "low" | "ok";
  * (Assumption-01). Outside that we ask the user to step in or out.
  */
 export function calibrationDistance(pose: Pose, frameHeight: number): CalibrationDistance {
-  if (frameHeight <= 0 || !isPoseUsable(pose)) {return "unknown";}
+  if (frameHeight <= 0 || !isPoseUsable(pose)) {
+    return "unknown";
+  }
   const visible = pose.keypoints.filter((point) => point.score >= MIN_KEYPOINT_SCORE);
-  if (visible.length < 6) {return "unknown";}
+  if (visible.length < 6) {
+    return "unknown";
+  }
   const top = Math.min(...visible.map((point) => point.y));
   const bottom = Math.max(...visible.map((point) => point.y));
   const coverage = (bottom - top) / frameHeight;
-  if (coverage < 0.55) {return "too-far";}
-  if (coverage > 0.85) {return "too-close";}
+  if (coverage < 0.55) {
+    return "too-far";
+  }
+  if (coverage > 0.85) {
+    return "too-close";
+  }
   return "ok";
 }
 
@@ -248,9 +268,17 @@ export function calibrationHint(
   distance: CalibrationDistance,
   lighting: CalibrationLighting,
 ): string {
-  if (lighting === "low") {return "Too dark to track — add some light.";}
-  if (distance === "too-far") {return "Step closer, about two metres from the camera.";}
-  if (distance === "too-close") {return "Step back, about two metres from the camera.";}
-  if (distance === "unknown") {return "Stand where the camera can see your whole body.";}
+  if (lighting === "low") {
+    return "Too dark to track — add some light.";
+  }
+  if (distance === "too-far") {
+    return "Step closer, about two metres from the camera.";
+  }
+  if (distance === "too-close") {
+    return "Step back, about two metres from the camera.";
+  }
+  if (distance === "unknown") {
+    return "Stand where the camera can see your whole body.";
+  }
   return "Framing looks good — you're ready.";
 }

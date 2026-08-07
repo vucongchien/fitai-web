@@ -1,8 +1,8 @@
 import { AlertCircle, ArrowLeft, ArrowRight, Camera, CheckCircle2, Dumbbell } from "lucide-react";
 import Link from "next/link";
 
-import { DIFFICULTY_LABEL } from '@/features/exercise/domain/exercise';
-import type { CatalogMetadata, ExerciseSummary } from '@/features/exercise/domain/exercise';
+import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
+import type { CatalogMetadata, ExerciseSummary } from "@/features/exercise/domain/exercise";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
 import { NAV_BACK, NAV_FORWARD } from "@/shared/ui/transition-types";

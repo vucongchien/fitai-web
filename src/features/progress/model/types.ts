@@ -1,7 +1,7 @@
 export interface PersonalRecord {
   id: string;
   exerciseName: string;
-  metric: string; // e.g. "100 kg", "15 reps"
+  metric: string; // E.g. "100 kg", "15 reps"
   value: number;
   unit: "kg" | "reps" | "sec";
   achievedAt: string; // ISO string date

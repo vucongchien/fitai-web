@@ -46,24 +46,31 @@ export function LoginActions() {
 
   const continueWith = useCallback(
     (provider: OAuthProvider) => {
-      if (pending) {return;}
+      if (pending) {
+        return;
+      }
       setPending(true);
 
       const popup = openOAuthPopup(provider);
-      if (!popup) {return;}
+      if (!popup) {
+        return;
+      }
 
       let cleanedUp = false;
 
       const cleanup = () => {
-        if (cleanedUp) {return;}
+        if (cleanedUp) {
+          return;
+        }
         cleanedUp = true;
         clearInterval(pollClosed);
         setPending(false);
       };
 
       const onMessage = (event: MessageEvent<OAuthMessage>) => {
-        if (event.origin && event.origin !== "null" && event.origin !== window.location.origin)
-          {return;}
+        if (event.origin && event.origin !== "null" && event.origin !== window.location.origin) {
+          return;
+        }
         if (event.data?.type === "OAUTH_COMPLETE") {
           window.removeEventListener("message", onMessage);
           try {

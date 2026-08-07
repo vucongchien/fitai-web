@@ -42,7 +42,9 @@ export function ProfileDetailsModal({
   profile,
   onSaveProfile,
 }: ProfileDetailsModalProps) {
-  if (!activeModal) {return null;}
+  if (!activeModal) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-xs p-0 sm:p-4 transition-opacity">
@@ -336,7 +338,9 @@ function GoalsForm({
 
   const toggleGoal = (item: string) => {
     if (goals.includes(item)) {
-      if (goals.length > 1) {setGoals(goals.filter((i) => i !== item));}
+      if (goals.length > 1) {
+        setGoals(goals.filter((i) => i !== item));
+      }
     } else {
       setGoals([...goals, item]);
     }
@@ -494,7 +498,9 @@ function EquipmentForm({
 
   const toggleEquipment = (item: string) => {
     if (equipment.includes(item)) {
-      if (equipment.length > 1) {setEquipment(equipment.filter((i) => i !== item));}
+      if (equipment.length > 1) {
+        setEquipment(equipment.filter((i) => i !== item));
+      }
     } else {
       setEquipment([...equipment, item]);
     }
@@ -579,8 +585,11 @@ function PersonalInfoForm({
   const [coachStyle, setCoachStyle] = useState(profile.settings.coachStyle || "Motivational");
 
   const toggleTime = (t: string) => {
-    if (times.includes(t)) {setTimes(times.filter((x) => x !== t));}
-    else {setTimes([...times, t]);}
+    if (times.includes(t)) {
+      setTimes(times.filter((x) => x !== t));
+    } else {
+      setTimes([...times, t]);
+    }
   };
 
   const handleSave = async () => {
@@ -755,7 +764,9 @@ function InjuryHistoryForm({
   const [confirmRecoverId, setConfirmRecoverId] = useState<string | null>(null);
 
   const handleSubmitInjury = async () => {
-    if (!newInjury.notes) {return;}
+    if (!newInjury.notes) {
+      return;
+    }
 
     const res = await reportInjuryServerAction({
       muscleGroup: newInjury.muscleGroup,
@@ -779,7 +790,9 @@ function InjuryHistoryForm({
   };
 
   const handleRecover = async () => {
-    if (!confirmRecoverId) {return;}
+    if (!confirmRecoverId) {
+      return;
+    }
 
     await recoverInjuryServerAction(confirmRecoverId);
 
@@ -976,7 +989,9 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
   const [sent, setSent] = useState(false);
 
   const handleSubmit = () => {
-    if (!feedback) {return;}
+    if (!feedback) {
+      return;
+    }
     setSent(true);
     setTimeout(() => {
       onClose();

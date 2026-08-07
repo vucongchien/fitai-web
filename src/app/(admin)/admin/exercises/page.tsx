@@ -186,9 +186,7 @@ export default function AdminExercisesPage() {
     initialPageParam: null as string | null,
   });
 
-  const exercises = useMemo(() => 
-    data?.pages.flatMap((page) => page.items) ?? []
-  , [data]);
+  const exercises = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
 
   const totalCount = data?.pages[0]?.totalCount ?? 0;
 

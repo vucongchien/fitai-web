@@ -9,11 +9,22 @@
  */
 
 import { FrameSampler, meanBrightness } from "@/features/workout/domain/frame-sampler";
-import type { MotionEngine, MotionEngineContext, MotionEventHandler, SetTelemetry } from '@/features/workout/domain/motion-engine';
-import { calibrationDistance, calibrationHint, calibrationLighting, KEYPOINT_NAMES, romPercent } from '@/features/workout/domain/pose-metrics';
-import type { Keypoint, Pose } from '@/features/workout/domain/pose-metrics';
-import { feedCounter, freshAccumulator, summarise } from '@/features/workout/domain/set-telemetry';
-import type { Accumulator } from '@/features/workout/domain/set-telemetry';
+import type {
+  MotionEngine,
+  MotionEngineContext,
+  MotionEventHandler,
+  SetTelemetry,
+} from "@/features/workout/domain/motion-engine";
+import {
+  calibrationDistance,
+  calibrationHint,
+  calibrationLighting,
+  KEYPOINT_NAMES,
+  romPercent,
+} from "@/features/workout/domain/pose-metrics";
+import type { Keypoint, Pose } from "@/features/workout/domain/pose-metrics";
+import { feedCounter, freshAccumulator, summarise } from "@/features/workout/domain/set-telemetry";
+import type { Accumulator } from "@/features/workout/domain/set-telemetry";
 import type { MotionSpec } from "@/features/workout/model/live-session.types";
 
 /** One rep every ~3 seconds. */
@@ -66,7 +77,9 @@ export class SimulatedMotionEngine implements MotionEngine {
   async prepare(context: MotionEngineContext): Promise<void> {
     this.spec = context.spec;
     this.video = context.video ?? null;
-    if (context.video) {this.sampler = new FrameSampler(context.video, 160, 213);}
+    if (context.video) {
+      this.sampler = new FrameSampler(context.video, 160, 213);
+    }
   }
 
   startCalibration(onEvent: MotionEventHandler): void {
@@ -101,12 +114,14 @@ export class SimulatedMotionEngine implements MotionEngine {
     this.setStartedAt = Date.now();
     this.tracking = true;
 
-    const {spec} = this;
+    const { spec } = this;
     let lastRepCount = 0;
 
     this.timer = window.setInterval(() => {
-      if (!this.tracking || !spec) {return;}
-      const {accumulator} = this;
+      if (!this.tracking || !spec) {
+        return;
+      }
+      const { accumulator } = this;
       accumulator.totalFrames += 1;
       accumulator.validFrames += 1;
 

@@ -9,7 +9,9 @@ import type { LiveExercise } from "@/features/workout/model/live-session.types";
 function readReducedMotion(): boolean {
   // Jsdom does not implement matchMedia, and neither do very old browsers.
   // Absent the query we assume motion is fine — the loop is the guidance.
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {return false;}
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return false;
+  }
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
@@ -24,7 +26,9 @@ function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(readReducedMotion);
 
   useEffect(() => {
-    if (typeof window.matchMedia !== "function") {return;}
+    if (typeof window.matchMedia !== "function") {
+      return;
+    }
 
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
     const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
@@ -59,7 +63,9 @@ export function ExerciseMedia({
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) {return;}
+    if (!video) {
+      return;
+    }
     if (reducedMotion) {
       video.pause();
       // Show the first frame rather than wherever it happened to stop.

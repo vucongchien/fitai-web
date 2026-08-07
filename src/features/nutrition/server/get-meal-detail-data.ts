@@ -1,6 +1,6 @@
 import "server-only";
-import { adaptMealDetailPageData } from '@/features/nutrition/model/meal-detail.mapper';
-import type { DailyMenuRows } from '@/features/nutrition/model/meal-detail.mapper';
+import { adaptMealDetailPageData } from "@/features/nutrition/model/meal-detail.mapper";
+import type { DailyMenuRows } from "@/features/nutrition/model/meal-detail.mapper";
 import type { MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 

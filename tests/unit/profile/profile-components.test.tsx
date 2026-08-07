@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-
 import { ProfileContent } from "../../../src/features/profile/components/profile-content";
 import { mapRawDataToProfileViewModel } from "../../../src/features/profile/model/profile.mapper";
 

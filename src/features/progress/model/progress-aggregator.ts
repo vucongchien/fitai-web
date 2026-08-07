@@ -6,7 +6,9 @@ import type {
 } from "./types";
 
 export function calculateAdherencePercentage(completed: number, scheduled: number): number {
-  if (scheduled <= 0) {return 0;}
+  if (scheduled <= 0) {
+    return 0;
+  }
   return Math.min(100, Math.round((completed / scheduled) * 100));
 }
 

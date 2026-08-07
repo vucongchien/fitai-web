@@ -1,7 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { MouseEventHandler } from "react";
 
-
 import { Button } from "@/shared/ui/button";
 
 describe(Button, () => {

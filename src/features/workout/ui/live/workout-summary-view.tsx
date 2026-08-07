@@ -150,7 +150,9 @@ function volumeComparison(
   volumeKg: number,
   recentAvgKg: number,
 ): { direction: "up" | "down" | "level"; text: string } | null {
-  if (recentAvgKg <= 0 || volumeKg <= 0) {return null;}
+  if (recentAvgKg <= 0 || volumeKg <= 0) {
+    return null;
+  }
 
   const deltaPct = Math.round((volumeKg / recentAvgKg - 1) * 100);
 

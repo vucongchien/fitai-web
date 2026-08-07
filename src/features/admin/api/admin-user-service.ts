@@ -179,7 +179,7 @@ export async function fetchAdminUsers({
   const paginatedItems = result.slice(startIndex, startIndex + limit);
   const hasMore = startIndex + limit < result.length;
   const nextCursor =
-    hasMore && paginatedItems.length > 0 ? paginatedItems.at(-1)?.userId ?? null : null;
+    hasMore && paginatedItems.length > 0 ? (paginatedItems.at(-1)?.userId ?? null) : null;
 
   return {
     items: paginatedItems,

@@ -10,8 +10,12 @@ interface TodayTimelineProps {
 }
 
 function EventIcon({ category }: { category: TodayItemCategory }) {
-  if (category === "workout") {return <Dumbbell aria-hidden="true" size={15} />;}
-  if (category === "snack") {return <Apple aria-hidden="true" size={15} />;}
+  if (category === "workout") {
+    return <Dumbbell aria-hidden="true" size={15} />;
+  }
+  if (category === "snack") {
+    return <Apple aria-hidden="true" size={15} />;
+  }
   return <Soup aria-hidden="true" size={15} />;
 }
 

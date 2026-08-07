@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import type { ProfileViewModel } from "../model/profile.types";
-import type { ModalType} from "./profile-details-modal";
+import type { ModalType } from "./profile-details-modal";
 import { ProfileDetailsModal } from "./profile-details-modal";
 import { ProfileHeroCard } from "./profile-hero-card";
 import { ProfileHighlightCards } from "./profile-highlight-cards";

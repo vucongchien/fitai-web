@@ -2,8 +2,17 @@
 
 import { X } from "lucide-react";
 
-import { countActiveFilters, DIFFICULTY_LABEL, DIFFICULTY_ORDER } from '@/features/exercise/domain/exercise';
-import type { CatalogEntry, CatalogMetadata, Difficulty, ExerciseFilters } from '@/features/exercise/domain/exercise';
+import {
+  countActiveFilters,
+  DIFFICULTY_LABEL,
+  DIFFICULTY_ORDER,
+} from "@/features/exercise/domain/exercise";
+import type {
+  CatalogEntry,
+  CatalogMetadata,
+  Difficulty,
+  ExerciseFilters,
+} from "@/features/exercise/domain/exercise";
 
 interface FilterPanelProps {
   open: boolean;
@@ -40,7 +49,9 @@ export function FilterPanel({
     onChange({ ...filters, difficulty: next });
   };
 
-  if (!open) {return null;}
+  if (!open) {
+    return null;
+  }
 
   return (
     <div className="filter-sheet">

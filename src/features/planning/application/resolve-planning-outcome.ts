@@ -10,7 +10,11 @@ export function resolvePlanningOutcome({
   activeRoadmapExists,
   initiateResult,
 }: PlanningOutcomeInput): PlanningNextAction {
-  if (initiateResult === "created" || activeRoadmapExists === true) {return "continue";}
-  if (activeRoadmapExists === undefined) {return "verify-active-roadmap";}
+  if (initiateResult === "created" || activeRoadmapExists === true) {
+    return "continue";
+  }
+  if (activeRoadmapExists === undefined) {
+    return "verify-active-roadmap";
+  }
   return "manual-retry";
 }

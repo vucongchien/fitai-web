@@ -26,7 +26,9 @@ import { getMockRoadmapPageData } from "./get-mock-roadmap-data";
  */
 export async function getRoadmapPageData(): Promise<RoadmapPageData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return getMockRoadmapPageData();}
+  if (!hasBackend) {
+    return getMockRoadmapPageData();
+  }
   // TODO: return getRealRoadmapPageData();
   return getMockRoadmapPageData();
 }

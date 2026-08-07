@@ -31,7 +31,9 @@ import { getMockSessionPlanData } from "./get-mock-roadmap-data";
  */
 export async function getSessionPlanPageData(sessionPlanId: string): Promise<SessionPlanPageData> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return getMockSessionPlanData(sessionPlanId);}
+  if (!hasBackend) {
+    return getMockSessionPlanData(sessionPlanId);
+  }
   // TODO: return getRealSessionPlanData(sessionPlanId);
   return getMockSessionPlanData(sessionPlanId);
 }

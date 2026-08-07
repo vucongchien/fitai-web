@@ -39,7 +39,9 @@ const RESPONSE_TYPES = new Set(["ready", "init-failed", "event", "frame-done", "
 
 /** Guards `onmessage`, which is typed `any` and reachable from any origin. */
 export function isInferenceResponse(value: unknown): value is InferenceResponse {
-  if (typeof value !== "object" || value === null) {return false;}
-  const {type} = (value as { type?: unknown });
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const { type } = value as { type?: unknown };
   return typeof type === "string" && RESPONSE_TYPES.has(type);
 }

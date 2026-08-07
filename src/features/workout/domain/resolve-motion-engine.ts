@@ -9,8 +9,8 @@
  * download just to find out the model is not there.
  */
 
-import { ManualMotionEngine } from '@/features/workout/domain/motion-engine';
-import type { MotionEngine } from '@/features/workout/domain/motion-engine';
+import { ManualMotionEngine } from "@/features/workout/domain/motion-engine";
+import type { MotionEngine } from "@/features/workout/domain/motion-engine";
 import { SimulatedMotionEngine } from "@/features/workout/domain/simulated-motion-engine";
 import { WorkerMotionEngine } from "@/features/workout/domain/worker-motion-engine";
 import type { MotionSpec } from "@/features/workout/model/live-session.types";
@@ -25,9 +25,13 @@ async function isReachable(url: string): Promise<boolean> {
 }
 
 export async function resolveMotionEngine(spec: MotionSpec | null): Promise<MotionEngine> {
-  if (!spec) {return new ManualMotionEngine();}
+  if (!spec) {
+    return new ManualMotionEngine();
+  }
 
-  if (await isReachable(spec.onnxSkeletonUrl)) {return new WorkerMotionEngine();}
+  if (await isReachable(spec.onnxSkeletonUrl)) {
+    return new WorkerMotionEngine();
+  }
 
   return process.env.NODE_ENV === "production"
     ? new ManualMotionEngine()

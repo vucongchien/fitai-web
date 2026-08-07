@@ -63,7 +63,9 @@ import {
  */
 export async function searchExercises(query: string): Promise<ExerciseResult[]> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return mockSearchExercises(query);}
+  if (!hasBackend) {
+    return mockSearchExercises(query);
+  }
   // TODO: return realSearchExercises(query);
   return mockSearchExercises(query);
 }
@@ -74,7 +76,9 @@ export async function searchExercises(query: string): Promise<ExerciseResult[]> 
  */
 export async function getAdhocConfig(): Promise<AdhocConfig> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return getMockAdhocConfig();}
+  if (!hasBackend) {
+    return getMockAdhocConfig();
+  }
   // TODO: return realGetAdhocConfig();
   return getMockAdhocConfig();
 }
@@ -96,7 +100,9 @@ export async function getAiRecommendation(): Promise<AiRecommendResult> {
  */
 export async function beginWorkoutSession(_exerciseIds: string[]): Promise<{ sessionId: string }> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return { sessionId: `adhoc_${Date.now()}` };}
+  if (!hasBackend) {
+    return { sessionId: `adhoc_${Date.now()}` };
+  }
   // TODO: implement real flow
   return { sessionId: `adhoc_${Date.now()}` };
 }
@@ -118,7 +124,9 @@ export async function logWorkoutSet(
   set: SetLogDraft,
 ): Promise<{ setLogId: string }> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` };}
+  if (!hasBackend) {
+    return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` };
+  }
   // TODO: return createClient(WorkoutExecutionService, ...).logWorkoutSet({ ... });
   return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` };
 }
@@ -132,7 +140,9 @@ export async function syncWorkoutLogs(
   sets: SetLogDraft[],
 ): Promise<{ syncedSetNumbers: number[] }> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return { syncedSetNumbers: sets.map((set) => set.setNumber) };}
+  if (!hasBackend) {
+    return { syncedSetNumbers: sets.map((set) => set.setNumber) };
+  }
   // TODO: log each pending set, then syncWorkoutLogs for the error stream.
   void sessionId;
   return { syncedSetNumbers: sets.map((set) => set.setNumber) };
@@ -154,7 +164,9 @@ export async function abortWorkoutSession(
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
   void reason;
   void note;
-  if (!hasBackend) {return { abortedAt: Date.now() };}
+  if (!hasBackend) {
+    return { abortedAt: Date.now() };
+  }
   // TODO: return createClient(WorkoutExecutionService, ...).abortWorkoutSession({ sessionId, reason, note });
   void sessionId;
   return { abortedAt: Date.now() };
@@ -195,7 +207,9 @@ export async function completeWorkoutSession(
     oneRepMaxByExercise: bestOneRepMaxByExercise(sets),
   };
 
-  if (!hasBackend) {return totals;}
+  if (!hasBackend) {
+    return totals;
+  }
   // TODO: use the server response instead of the locally computed totals.
   return totals;
 }
@@ -206,7 +220,9 @@ export async function completeWorkoutSession(
  */
 export async function getPersonalRecords(exerciseIds: string[]): Promise<Record<string, number>> {
   const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {return {};}
+  if (!hasBackend) {
+    return {};
+  }
   // TODO: map records[] → { [exerciseId]: oneRepMax }
   void exerciseIds;
   return {};

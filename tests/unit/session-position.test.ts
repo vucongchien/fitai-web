@@ -1,5 +1,3 @@
-
-
 import { buildTimeline, totalExerciseCount } from "@/features/workout/domain/session-flow";
 import type { LiveExercise, LiveSessionPlan } from "@/features/workout/model/live-session.types";
 

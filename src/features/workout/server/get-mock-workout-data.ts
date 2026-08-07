@@ -84,7 +84,9 @@ const MOCK_EXERCISE_LIBRARY: ExerciseResult[] = [
 ];
 
 export function mockSearchExercises(query: string): ExerciseResult[] {
-  if (!query.trim()) {return MOCK_EXERCISE_LIBRARY;}
+  if (!query.trim()) {
+    return MOCK_EXERCISE_LIBRARY;
+  }
   const q = query.toLowerCase();
   return MOCK_EXERCISE_LIBRARY.filter(
     (ex) => ex.name.toLowerCase().includes(q) || ex.note.toLowerCase().includes(q),

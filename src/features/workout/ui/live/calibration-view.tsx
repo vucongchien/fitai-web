@@ -47,10 +47,14 @@ export function CalibrationView({
     // Behaviour — a degraded overlay, not a broken one.
     const background = document.querySelector(".live-screen");
     const supportsInert = typeof HTMLElement !== "undefined" && "inert" in HTMLElement.prototype;
-    if (supportsInert) {background?.setAttribute("inert", "");}
+    if (supportsInert) {
+      background?.setAttribute("inert", "");
+    }
 
     return () => {
-      if (supportsInert) {background?.removeAttribute("inert");}
+      if (supportsInert) {
+        background?.removeAttribute("inert");
+      }
       previouslyFocused?.focus?.();
     };
   }, []);
