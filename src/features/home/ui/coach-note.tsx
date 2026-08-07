@@ -1,7 +1,7 @@
 "use client";
 
 import { Sparkles, X } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 type CoachNoteProps = {
   message?: string | null;
@@ -10,6 +10,7 @@ type CoachNoteProps = {
 
 export function CoachNote({ message, type = "recovery" }: CoachNoteProps) {
   const [dismissed, setDismissed] = useState(false);
+  const dismiss = useCallback(() => setDismissed(true), []);
 
   if (!message || dismissed) return null;
 
@@ -25,7 +26,7 @@ export function CoachNote({ message, type = "recovery" }: CoachNoteProps) {
       <button
         aria-label="Dismiss note"
         className="coach-note-banner__close"
-        onClick={() => setDismissed(true)}
+        onClick={dismiss}
         type="button"
       >
         <X size={15} />

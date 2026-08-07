@@ -36,13 +36,15 @@ async function ExerciseDetailAsync({ params }: { params: Promise<{ exerciseId: s
   return <ExerciseDetailContent exerciseId={exerciseId} />;
 }
 
+const DETAIL_FALLBACK = <ExerciseDetailSkeleton />;
+
 export default function ExerciseDetailPage({
   params,
 }: {
   params: Promise<{ exerciseId: string }>;
 }) {
   return (
-    <Suspense fallback={<ExerciseDetailSkeleton />}>
+    <Suspense fallback={DETAIL_FALLBACK}>
       <ExerciseDetailAsync params={params} />
     </Suspense>
   );
