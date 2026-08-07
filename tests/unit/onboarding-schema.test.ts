@@ -6,23 +6,32 @@ import {
 } from "@/features/onboarding/domain/onboarding-schema";
 
 describe("onboardingSchema", () => {
-  it("accepts a complete beginner profile", () => {
+  it("accepts a complete beginner profile with 2 goal options", () => {
     const result = onboardingSchema.safeParse({
       ...onboardingDefaults,
+      goal: "build-muscle",
+      experienceLevel: "beginner",
       availableDays: ["Mon", "Wed", "Fri"],
       equipment: ["Bodyweight", "Dumbbells"],
-      muscleFocus: ["Full body"],
+      muscleFocus: ["Chest", "Back"],
     });
 
     expect(result.success).toBe(true);
+  });
+
+  it("rejects invalid goal outside build-muscle or fat-loss", () => {
+    const result = onboardingSchema.safeParse({
+      ...onboardingDefaults,
+      goal: "invalid-goal" as any,
+    });
+
+    expect(result.success).toBe(false);
   });
 
   it("rejects a schedule with no available day", () => {
     const result = onboardingSchema.safeParse({
       ...onboardingDefaults,
       availableDays: [],
-      equipment: ["Bodyweight"],
-      muscleFocus: ["Full body"],
     });
 
     expect(result.success).toBe(false);
@@ -33,8 +42,6 @@ describe("onboardingSchema", () => {
     const result = onboardingSchema.safeParse({
       ...onboardingDefaults,
       availableDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      equipment: ["Bodyweight"],
-      muscleFocus: ["Full body"],
     });
 
     expect(result.success).toBe(false);

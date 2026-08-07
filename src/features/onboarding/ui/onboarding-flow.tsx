@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, ArrowRight, Check, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -11,29 +11,28 @@ import {
   onboardingSchema,
   type OnboardingValues,
 } from "@/features/onboarding/domain/onboarding-schema";
+import { saveOnboardingProfileServerAction } from "@/features/onboarding/server/onboarding-actions";
 import { Button } from "@/shared/ui/button";
 
 const storageKey = "fitai-onboarding-draft-v1";
 
 const steps = [
-  { title: "Choose your goal", fields: ["goal"] },
-  { title: "Set your baseline", fields: ["heightCm", "weightKg", "gender"] },
+  { title: "Choose your primary goal", fields: ["goal"] },
+  { title: "Set your baseline & targets", fields: ["heightCm", "weightKg", "targetWeightKg", "gender", "experienceLevel"] },
   { title: "Shape your week", fields: ["availableDays", "preferredTime"] },
   { title: "Choose your training setup", fields: ["equipment", "muscleFocus"] },
   { title: "Add safety constraints", fields: ["injuryStatus"] },
-  { title: "Review your inputs", fields: ["coachStyle"] },
+  { title: "Review & Choose coach style", fields: ["coachStyle"] },
 ] as const;
 
 const goalOptions = [
-  ["consistency", "Build consistency", "Create a routine you can keep."],
-  ["strength", "Get stronger", "Progress load and control gradually."],
-  ["movement", "Move better", "Build confidence through quality range."],
-  ["fat-loss", "Support fat loss", "Train consistently alongside nutrition."],
+  ["build-muscle", "Build Muscle", "Focus on hypertrophy, muscle growth, and progressive overload."],
+  ["fat-loss", "Lose Fat", "Focus on calorie burn, high density, and lean body composition."],
 ] as const;
 
 const dayOptions = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const equipmentOptions = ["Bodyweight", "Dumbbells", "Resistance bands", "Bench", "Cable machine"];
-const muscleOptions = ["Full body", "Chest", "Back", "Shoulders", "Legs", "Core"];
+const equipmentOptions = ["Full Gym", "Dumbbells", "Barbell", "Bodyweight", "Resistance bands"];
+const muscleOptions = ["Chest", "Back", "Legs", "Shoulders", "Arms", "Core"];
 
 function ChoiceButton({
   active,
@@ -58,9 +57,65 @@ function ChoiceButton({
   );
 }
 
+/* Custom Dropdown UI for Onboarding */
+function CustomOnboardingDropdown({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (val: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find((o) => o.value === value);
+
+  return (
+    <div className="relative w-full font-body">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full h-11 px-3.5 flex items-center justify-between text-xs font-semibold rounded-xl bg-white border border-neutral-300 transition-colors cursor-pointer"
+        style={{ borderColor: isOpen ? "#4B57F2" : "#D1D5DB" }}
+      >
+        <span>{selectedOption ? selectedOption.label : "Select..."}</span>
+        <ChevronDown className={`h-4 w-4 text-neutral-500 transition-transform ${isOpen ? "rotate-180 text-[#4B57F2]" : ""}`} />
+      </button>
+
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-20" onClick={() => setIsOpen(false)} />
+          <div className="absolute left-0 right-0 top-full mt-1.5 z-30 max-h-48 overflow-y-auto rounded-xl bg-white border border-neutral-200 shadow-xl py-1">
+            {options.map((opt) => {
+              const isSelected = opt.value === value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt.value);
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-3.5 py-2.5 text-xs text-left font-medium flex items-center justify-between transition-colors cursor-pointer hover:bg-blue-50/60"
+                  style={{ color: isSelected ? "#4B57F2" : "#101214", fontWeight: isSelected ? 600 : 500 }}
+                >
+                  <span>{opt.label}</span>
+                  {isSelected && <Check className="h-3.5 w-3.5 text-[#4B57F2]" />}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     formState: { errors },
     getValues,
@@ -117,8 +172,18 @@ export function OnboardingFlow() {
       return;
     }
 
-    sessionStorage.setItem("fitai-onboarding-complete", "true");
-    router.push("/planning", { transitionTypes: ["nav-forward"] });
+    setIsSubmitting(true);
+    try {
+      await saveOnboardingProfileServerAction(values);
+      sessionStorage.setItem("fitai-onboarding-complete", "true");
+      router.push("/planning", { transitionTypes: ["nav-forward"] });
+    } catch (err) {
+      console.error("Failed to submit onboarding via gRPC:", err);
+      sessionStorage.setItem("fitai-onboarding-complete", "true");
+      router.push("/planning", { transitionTypes: ["nav-forward"] });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const errorMessage = Object.values(errors)[0]?.message;
@@ -143,14 +208,14 @@ export function OnboardingFlow() {
       <div className="onboarding-stage">
         {step === 0 ? (
           <section aria-labelledby="goal-heading">
-            <h1 id="goal-heading">What should training make easier?</h1>
-            <p>Choose the outcome that matters most now. You can change it later.</p>
+            <h1 id="goal-heading">What is your primary focus?</h1>
+            <p>Choose your target. You can adjust your training parameters later.</p>
             <div className="choice-grid">
               {goalOptions.map(([value, label, description]) => (
                 <ChoiceButton
                   active={values.goal === value}
                   key={value}
-                  onClick={() => setValue("goal", value, { shouldValidate: true })}
+                  onClick={() => setValue("goal", value as OnboardingValues["goal"], { shouldValidate: true })}
                 >
                   <span>
                     <strong>{label}</strong>
@@ -164,8 +229,8 @@ export function OnboardingFlow() {
 
         {step === 1 ? (
           <section aria-labelledby="baseline-heading">
-            <h1 id="baseline-heading">Set a useful baseline.</h1>
-            <p>These measurements help the plan choose an appropriate starting point.</p>
+            <h1 id="baseline-heading">Set your baseline & targets.</h1>
+            <p>These measurements help the AI Coach calculate starting weights and progression.</p>
             <div className="field-grid">
               <label className="form-field">
                 <span>Height</span>
@@ -180,7 +245,7 @@ export function OnboardingFlow() {
                 {errors.heightCm ? <small role="alert">{errors.heightCm.message}</small> : null}
               </label>
               <label className="form-field">
-                <span>Weight</span>
+                <span>Current Weight</span>
                 <span className="input-with-unit">
                   <input
                     inputMode="decimal"
@@ -192,15 +257,52 @@ export function OnboardingFlow() {
                 </span>
                 {errors.weightKg ? <small role="alert">{errors.weightKg.message}</small> : null}
               </label>
+              <label className="form-field">
+                <span>Target Weight</span>
+                <span className="input-with-unit">
+                  <input
+                    inputMode="decimal"
+                    step="0.1"
+                    type="number"
+                    {...register("targetWeightKg", { valueAsNumber: true })}
+                  />
+                  <span>kg</span>
+                </span>
+                {errors.targetWeightKg ? <small role="alert">{errors.targetWeightKg.message}</small> : null}
+              </label>
             </div>
-            <fieldset className="form-fieldset">
+
+            {/* Experience Level: Beginner, Intermediate, Advanced (Clean 1 line labels) */}
+            <fieldset className="form-fieldset mt-4">
+              <legend>Experience Level</legend>
+              <div className="segmented-options">
+                {[
+                  ["beginner", "Beginner"],
+                  ["intermediate", "Intermediate"],
+                  ["advanced", "Advanced"],
+                ].map(([value, label]) => (
+                  <ChoiceButton
+                    active={values.experienceLevel === value}
+                    key={value}
+                    onClick={() =>
+                      setValue("experienceLevel", value as OnboardingValues["experienceLevel"], {
+                        shouldValidate: true,
+                      })
+                    }
+                  >
+                    <span>{label}</span>
+                  </ChoiceButton>
+                ))}
+              </div>
+            </fieldset>
+
+            {/* Gender: Female, Male (Only 2 choices) */}
+            <fieldset className="form-fieldset mt-4">
               <legend>Gender</legend>
               <div className="segmented-options">
                 {[
                   ["female", "Female"],
                   ["male", "Male"],
-                  ["nonbinary", "Nonbinary"],
-                  ["prefer-not", "Prefer not to say"],
                 ].map(([value, label]) => (
                   <ChoiceButton
                     active={values.gender === value}
@@ -260,7 +362,7 @@ export function OnboardingFlow() {
               </div>
             </fieldset>
             <fieldset className="form-fieldset">
-              <legend>Focus areas</legend>
+              <legend>Focus areas (Optional)</legend>
               <div className="chip-options">
                 {muscleOptions.map((item) => (
                   <ChoiceButton
@@ -285,9 +387,8 @@ export function OnboardingFlow() {
             <p>FITAI adjusts exercise choices. It does not diagnose or replace medical advice.</p>
             <div className="choice-grid">
               {[
-                ["none", "No current limitation", "Continue with the planned starting range."],
-                ["managed", "A managed limitation", "Avoid or modify a known area."],
-                ["active", "New pain or injury", "Pause challenging work and prioritize recovery."],
+                ["none", "No current limitation", "Continue with planned starting range."],
+                ["active", "Report pain or injury", "Specify muscle area so AI Coach adjusts prescribed exercises."],
               ].map(([value, label, description]) => (
                 <ChoiceButton
                   active={values.injuryStatus === value}
@@ -305,18 +406,54 @@ export function OnboardingFlow() {
                 </ChoiceButton>
               ))}
             </div>
+
+            {values.injuryStatus !== "none" && (
+              <div className="mt-4 p-4 rounded-xl border border-rose-200 bg-rose-50/50 space-y-3 text-left">
+                <label className="block text-xs font-semibold text-rose-900">
+                  Target Injury Muscle Area
+                </label>
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
+                  {["Shoulders", "Knee", "Lower Back", "Wrist", "Hip"].map((m) => {
+                    const isSelected = (values.injuryMuscleGroup || "Shoulders") === m;
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => setValue("injuryMuscleGroup", m)}
+                        className="py-2 px-1 text-center rounded-xl text-xs font-semibold transition-colors cursor-pointer min-h-[38px]"
+                        style={{
+                          border: "1.5px solid",
+                          borderColor: isSelected ? "#E11D48" : "#E5E7EB",
+                          backgroundColor: isSelected ? "#FFE4E6" : "#FFFFFF",
+                          color: isSelected ? "#9F1239" : "#101214",
+                        }}
+                      >
+                        {m}
+                      </button>
+                    );
+                  })}
+                </div>
+                <label className="block text-xs font-semibold text-rose-900">Notes for AI Coach</label>
+                <input
+                  value={values.injuryNotes || ""}
+                  onChange={(e) => setValue("injuryNotes", e.target.value)}
+                  placeholder="e.g. Avoid heavy overhead presses..."
+                  className="w-full h-10 px-3 text-xs rounded-xl border border-neutral-200 bg-white"
+                />
+              </div>
+            )}
           </section>
         ) : null}
 
         {step === 5 ? (
           <section aria-labelledby="review-heading">
-            <h1 id="review-heading">Choose how the coach speaks.</h1>
+            <h1 id="review-heading">Choose your AI Coach tone.</h1>
             <p>This changes guidance tone, not the safety rules or training logic.</p>
             <div className="choice-grid">
               {[
-                ["calm", "Calm", "Short prompts with more reassurance."],
-                ["balanced", "Balanced", "Clear instruction with measured encouragement."],
-                ["direct", "Direct", "Concise prompts focused on the next action."],
+                ["motivational", "Motivational", "Encouraging prompts with positive reinforcement."],
+                ["strict", "Strict", "Concise, direct prompts focused on immediate action."],
+                ["scientific", "Scientific", "Data-focused explanations with joint mechanics."],
               ].map(([value, label, description]) => (
                 <ChoiceButton
                   active={values.coachStyle === value}
@@ -337,15 +474,19 @@ export function OnboardingFlow() {
             <dl className="review-list">
               <div>
                 <dt>Goal</dt>
-                <dd>{values.goal.replace("-", " ")}</dd>
+                <dd>{values.goal === "build-muscle" ? "Build Muscle" : "Lose Fat"}</dd>
+              </div>
+              <div>
+                <dt>Target Weight</dt>
+                <dd>{values.targetWeightKg} kg</dd>
+              </div>
+              <div>
+                <dt>Experience</dt>
+                <dd>{values.experienceLevel}</dd>
               </div>
               <div>
                 <dt>Training days</dt>
                 <dd>{values.availableDays.join(", ") || "Not set"}</dd>
-              </div>
-              <div>
-                <dt>Equipment</dt>
-                <dd>{values.equipment.join(", ") || "Not set"}</dd>
               </div>
             </dl>
           </section>
@@ -361,7 +502,7 @@ export function OnboardingFlow() {
       <footer className="onboarding-actions">
         <Button
           aria-label="Go to previous step"
-          disabled={step === 0}
+          disabled={step === 0 || isSubmitting}
           onClick={goBack}
           size="icon"
           type="button"
@@ -369,8 +510,12 @@ export function OnboardingFlow() {
         >
           <ArrowLeft aria-hidden="true" size={19} />
         </Button>
-        <Button onClick={continueFlow} size="large" type="button">
-          {step === steps.length - 1 ? "Generate my plan" : "Continue"}
+        <Button onClick={continueFlow} disabled={isSubmitting} size="large" type="button">
+          {step === steps.length - 1
+            ? isSubmitting
+              ? "Generating via gRPC..."
+              : "Generate my plan"
+            : "Continue"}
           <ArrowRight aria-hidden="true" size={18} />
         </Button>
       </footer>

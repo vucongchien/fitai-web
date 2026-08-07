@@ -73,38 +73,7 @@ function toLiveExercise(seed: PrescriptionSeed): LiveExercise {
   };
 }
 
-const WARM_UP_SEEDS: PrescriptionSeed[] = [
-  {
-    id: "ex-worlds-greatest-stretch",
-    phase: "warmup",
-    sets: 1,
-    seconds: 60,
-    restSetSec: 0,
-    restExerciseSec: 20,
-    targetRpe: 3,
-    notes: "Move slowly through each position, two passes per side.",
-  },
-  {
-    id: "ex-band-pull-apart",
-    phase: "warmup",
-    sets: 2,
-    reps: 15,
-    restSetSec: 30,
-    restExerciseSec: 45,
-    targetRpe: 3,
-    notes: "Light tension — this is about waking the shoulders up.",
-  },
-  {
-    id: "ex-glute-bridge",
-    phase: "warmup",
-    sets: 1,
-    reps: 12,
-    restSetSec: 30,
-    restExerciseSec: 60,
-    targetRpe: 4,
-    notes: "Squeeze at the top for a beat before lowering.",
-  },
-];
+const WARM_UP_SEEDS: PrescriptionSeed[] = [];
 
 const MAIN_SEEDS: PrescriptionSeed[] = [
   {
