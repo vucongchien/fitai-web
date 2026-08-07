@@ -28,21 +28,21 @@ function perDay(total: number, loggedDays: number): number {
 
 export const WEEK_DAYS = 7;
 
+const formatRangeDay = (date: Date, withMonth: boolean) =>
+  date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: withMonth ? "long" : undefined,
+    timeZone: "UTC",
+  });
+
 /** Formats a range as "31 July – 6 August". */
 export function formatRangeLabel(startKey: DayKey, endKey: DayKey): string {
   const start = new Date(`${startKey}T00:00:00Z`);
   const end = new Date(`${endKey}T00:00:00Z`);
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return endKey;
 
-  const format = (date: Date, withMonth: boolean) =>
-    date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: withMonth ? "long" : undefined,
-      timeZone: "UTC",
-    });
-
   const sameMonth = start.getUTCMonth() === end.getUTCMonth();
-  return `${format(start, !sameMonth)} – ${format(end, true)}`;
+  return `${formatRangeDay(start, !sameMonth)} – ${formatRangeDay(end, true)}`;
 }
 
 /**

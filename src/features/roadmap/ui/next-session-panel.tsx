@@ -4,6 +4,7 @@ import { ViewTransition } from "react";
 
 import type { SessionSummary } from "@/features/roadmap/model/roadmap-page.types";
 import { buttonVariants } from "@/shared/ui/button";
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
 type NextSessionPanelProps = {
@@ -40,7 +41,7 @@ export function NextSessionPanel({
         <Link
           className={buttonVariants({ size: "large", variant: "primary" })}
           href={`/roadmap/${session.id}`}
-          transitionTypes={["nav-forward"]}
+          transitionTypes={NAV_FORWARD}
         >
           Begin session
           <ArrowRight aria-hidden="true" size={18} />

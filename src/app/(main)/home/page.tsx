@@ -21,13 +21,15 @@ function HomeSkeleton() {
   );
 }
 
+const HOME_FALLBACK = <HomeSkeleton />;
+
 export default function HomePage() {
   return (
     <PageTransition className="page home-page">
       {/* Static Shell: LCP Title 'Today' and chassis header paint immediately (0ms) */}
       <TodayHeader />
 
-      <Suspense fallback={<HomeSkeleton />}>
+      <Suspense fallback={HOME_FALLBACK}>
         <HomeContent />
       </Suspense>
     </PageTransition>

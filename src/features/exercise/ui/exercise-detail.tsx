@@ -8,6 +8,7 @@ import {
 } from "@/features/exercise/domain/exercise";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
+import { NAV_BACK, NAV_FORWARD } from "@/shared/ui/transition-types";
 
 type ExerciseDetailProps = {
   exercise: ExerciseSummary;
@@ -33,7 +34,7 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
           aria-label="Back to search"
           className="focused-header__back"
           href="/search"
-          transitionTypes={["nav-back"]}
+          transitionTypes={NAV_BACK}
         >
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>
@@ -125,14 +126,14 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
         <Link
           className="secondary-button"
           href={`/sessions/new?prefill=${exercise.id}`}
-          transitionTypes={["nav-forward"]}
+          transitionTypes={NAV_FORWARD}
         >
           Add to ad-hoc
         </Link>
         <Link
           className="primary-button"
           href={`/sessions/new?prefill=${exercise.id}&start=1`}
-          transitionTypes={["nav-forward"]}
+          transitionTypes={NAV_FORWARD}
         >
           Start now
           <ArrowRight aria-hidden="true" size={17} />

@@ -4,6 +4,7 @@ import { ViewTransition } from "react";
 
 import type { SessionSummary } from "@/features/roadmap/model/roadmap-page.types";
 import { cn } from "@/shared/lib/cn";
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 type WeekRouteProps = {
   morphNextSession?: boolean;
@@ -73,7 +74,7 @@ export function WeekRoute({ morphNextSession = true, sessions }: WeekRouteProps)
                 aria-label={`View ${session.title}`}
                 className="week-route__row"
                 href={`/roadmap/${session.id}`}
-                transitionTypes={["nav-forward"]}
+                transitionTypes={NAV_FORWARD}
               >
                 {content}
               </Link>

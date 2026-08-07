@@ -8,6 +8,7 @@ import { MealDetailView } from "@/features/nutrition/ui/meal-detail-view";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { MEAL_SLOT_LABELS } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { PageTransition } from "@/shared/ui/page-transition";
+import { NAV_BACK } from "@/shared/ui/transition-types";
 
 /**
  * Slugs the app links to, mapped onto the four wire slots. The timeline distinguishes a
@@ -59,6 +60,9 @@ async function MealHeading({ paramsPromise }: { paramsPromise: Promise<{ slot: s
   return <h1>{MEAL_SLOT_LABELS[resolved]}</h1>;
 }
 
+const HEADING_FALLBACK = <h1>Meal</h1>;
+const MEAL_FALLBACK = <MealSkeleton />;
+
 /**
  * `params` is awaited inside the Suspense children rather than here: under Cache Components
  * awaiting it in the page body makes the whole route block, so the promise is forwarded down.
@@ -68,17 +72,17 @@ export default function MealDetailPage({ params }: { params: Promise<{ slot: str
     <PageTransition className="page meal-page">
       <header className="page-heading">
         <div>
-          <Link className="meal-page__back" href="/nutrition" transitionTypes={["nav-back"]}>
+          <Link className="meal-page__back" href="/nutrition" transitionTypes={NAV_BACK}>
             <ArrowLeft aria-hidden="true" size={16} />
             Nutrition
           </Link>
-          <Suspense fallback={<h1>Meal</h1>}>
+          <Suspense fallback={HEADING_FALLBACK}>
             <MealHeading paramsPromise={params} />
           </Suspense>
         </div>
       </header>
 
-      <Suspense fallback={<MealSkeleton />}>
+      <Suspense fallback={MEAL_FALLBACK}>
         <MealContent paramsPromise={params} />
       </Suspense>
     </PageTransition>

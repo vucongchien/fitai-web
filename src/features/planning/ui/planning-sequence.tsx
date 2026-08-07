@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { buttonVariants } from "@/shared/ui/button";
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
 const stages = [
@@ -59,7 +60,7 @@ export function PlanningSequence() {
         <Link
           className={buttonVariants({ size: "large", variant: "primary" })}
           href="/home"
-          transitionTypes={["nav-forward"]}
+          transitionTypes={NAV_FORWARD}
         >
           See my next session
         </Link>
