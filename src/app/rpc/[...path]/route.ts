@@ -1,9 +1,8 @@
-import { createClient } from "@connectrpc/connect";
 import { cookies } from "next/headers";
 
 import { isAllowedRpcPath } from "@/shared/api/bff/allowed-services";
-import { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
-import { createServerTransport } from "@/shared/api/server/transport";
+import { createAuthCookieOptions } from "@/shared/auth/cookies";
+import { refreshSessionTokens } from "@/shared/auth/refresh";
 import { recordServerError } from "@/shared/observability/tracer";
 
 const forwardedRequestHeaders = [
@@ -28,32 +27,6 @@ const forwardedResponseHeaders = [
   "trailer",
   "x-trace-id",
 ] as const;
-
-// Single-flight deduplication map for concurrent token refresh operations
-const refreshFlightMap = new Map<
-  string,
-  Promise<{ accessToken: string; refreshToken: string }>
->();
-
-async function getOrRefreshTokens(refreshToken: string) {
-  let flight = refreshFlightMap.get(refreshToken);
-  if (!flight) {
-    flight = (async () => {
-      try {
-        const authClient = createClient(AuthService, createServerTransport());
-        const refreshed = await authClient.refreshToken({ refreshToken });
-        return {
-          accessToken: refreshed.accessToken,
-          refreshToken: refreshed.refreshToken,
-        };
-      } finally {
-        refreshFlightMap.delete(refreshToken);
-      }
-    })();
-    refreshFlightMap.set(refreshToken, flight);
-  }
-  return flight;
-}
 
 function forbidden(message: string) {
   return Response.json({ code: "permission_denied", message }, { status: 403 });
@@ -116,20 +89,18 @@ export async function POST(request: Request, context: { params: Promise<{ path: 
 
     if (upstream.status === 401 && refreshToken) {
       try {
-        const refreshed = await getOrRefreshTokens(refreshToken);
+        const refreshed = await refreshSessionTokens(refreshToken);
         accessToken = refreshed.accessToken;
-        cookieStore.set("fitai_access_token", refreshed.accessToken, {
-          httpOnly: true,
-          maxAge: 60 * 15,
-          sameSite: "lax",
-          secure: process.env.NODE_ENV === "production",
-        });
-        cookieStore.set("fitai_refresh_token", refreshed.refreshToken, {
-          httpOnly: true,
-          maxAge: 60 * 60 * 24 * 30,
-          sameSite: "lax",
-          secure: process.env.NODE_ENV === "production",
-        });
+        cookieStore.set(
+          "fitai_access_token",
+          refreshed.accessToken,
+          createAuthCookieOptions({ maxAge: 60 * 15 }),
+        );
+        cookieStore.set(
+          "fitai_refresh_token",
+          refreshed.refreshToken,
+          createAuthCookieOptions({ maxAge: 60 * 60 * 24 * 30 }),
+        );
         upstream = await send(accessToken);
       } catch (refreshError) {
         console.warn("[rpc/refresh] Token refresh failed:", refreshError);
