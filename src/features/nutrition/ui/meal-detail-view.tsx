@@ -83,6 +83,8 @@ function MacroLine({ choice }: { choice: MealChoice }) {
   );
 }
 
+import { PantryRecalibrateCard } from "@/features/nutrition/ui/pantry-recalibrate-card";
+
 export function MealDetailView({ data }: MealDetailViewProps) {
   const logged = data.loggedMeals.length > 0;
 
@@ -172,7 +174,7 @@ export function MealDetailView({ data }: MealDetailViewProps) {
                   calories={choice.calories}
                   carbs={choice.carbs}
                   fat={choice.fat}
-                  mealName={choice.name}
+                  mealName={choice.rawName || choice.name}
                   protein={choice.protein}
                   slot={data.slot}
                 />
@@ -181,6 +183,8 @@ export function MealDetailView({ data }: MealDetailViewProps) {
           </ul>
         </section>
       ) : null}
+
+      <PantryRecalibrateCard />
 
       <section className="content-section">
         <div className="content-section__header">

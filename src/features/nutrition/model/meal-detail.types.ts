@@ -13,6 +13,7 @@ export interface MealChoice {
   name: string;
   priceTier: PriceTier | null;
   protein: number;
+  rawName?: string;
   /** `MealOption.recipe_steps` — how to actually cook it. */
   recipeSteps: string[];
 }

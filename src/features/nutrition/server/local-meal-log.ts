@@ -72,31 +72,39 @@ function toRow(stored: StoredRow, index: number): MealLogRow {
 
 /** Appends one row and returns its id. */
 export async function appendLocalMeal(input: LocalMealInput): Promise<string> {
-  const store = await cookies();
-  const rows = decode(store.get(COOKIE)?.value);
+  try {
+    const store = await cookies();
+    const rows = decode(store.get(COOKIE)?.value);
 
-  rows.push([
-    input.mealName.trim(),
-    WIRE_MEAL_TYPE[input.slot],
-    input.calories,
-    input.protein,
-    input.carbs,
-    input.fat,
-    input.loggedAt,
-  ]);
+    rows.push([
+      input.mealName.trim(),
+      WIRE_MEAL_TYPE[input.slot],
+      input.calories,
+      input.protein,
+      input.carbs,
+      input.fat,
+      input.loggedAt,
+    ]);
 
-  store.set(COOKIE, JSON.stringify(rows), {
-    httpOnly: true,
-    maxAge: 60 * 60 * 24,
-    path: "/",
-    sameSite: "lax",
-  });
+    store.set(COOKIE, JSON.stringify(rows), {
+      httpOnly: true,
+      maxAge: 60 * 60 * 24,
+      path: "/",
+      sameSite: "lax",
+    });
 
-  return `local-meal-${rows.length}`;
+    return `local-meal-${rows.length}`;
+  } catch {
+    return "local-meal-fallback";
+  }
 }
 
 /** Everything logged locally, oldest first. */
 export async function readLocalMeals(): Promise<MealLogRow[]> {
-  const store = await cookies();
-  return decode(store.get(COOKIE)?.value).map(toRow);
+  try {
+    const store = await cookies();
+    return decode(store.get(COOKIE)?.value).map(toRow);
+  } catch {
+    return [];
+  }
 }

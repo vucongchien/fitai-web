@@ -45,6 +45,7 @@ export interface MealSlotGroup {
   calories: number;
   label: string;
   meals: LoggedMeal[];
+  plannedMeal?: { name: string; calories: number } | null;
   slot: MealSlot;
 }
 
@@ -89,17 +90,34 @@ export function countMeals(rows: readonly MealLogRow[], key: DayKey): number {
   return mealsOnDay(rows, key).length;
 }
 
+import { normalizeTodayMenu } from "@/features/nutrition/model/meal-detail.mapper";
+
 /**
  * Groups a day's rows into the four slots, ordered by clock time.
  * Every slot is present so the timeline can render its own empty state.
  */
-export function groupMealsBySlot(rows: readonly MealLogRow[], key: DayKey): MealSlotGroup[] {
+export function groupMealsBySlot(
+  rows: readonly MealLogRow[],
+  key: DayKey,
+  todayMenu?: any,
+): MealSlotGroup[] {
   const onDay = mealsOnDay(rows, key);
+  const normalizedMenu = normalizeTodayMenu(todayMenu);
 
   return MEAL_SLOTS.map((slot) => {
     const slotRows = onDay
       .filter((row) => toMealSlot(row.mealType) === slot)
       .toSorted((left, right) => minutesOfDay(left.loggedAt) - minutesOfDay(right.loggedAt));
+
+    const slotMenu = normalizedMenu[slot];
+    const validPlannedItem = slotMenu?.[0];
+
+    const planned = validPlannedItem
+      ? {
+          calories: Math.round(validPlannedItem.calories),
+          name: validPlannedItem.mealName.replace(/^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-/, "").trim(),
+        }
+      : null;
 
     return {
       calories: Math.round(sum(slotRows.map((row) => row.calories))),
@@ -110,6 +128,7 @@ export function groupMealsBySlot(rows: readonly MealLogRow[], key: DayKey): Meal
         name: row.mealName,
         time: clockLabel(row.loggedAt),
       })),
+      plannedMeal: planned,
       slot,
     };
   });

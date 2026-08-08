@@ -9,24 +9,12 @@ import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/s
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
-const EMPTY_NUTRITION_DATA: NutritionPageData = {
-  calorieSeries: [],
-  caloriesAverage: null,
-  caloriesTargetPerDay: 2000,
-  dateLabel: "No data available",
-  daysLogged: 0,
-  macros: [
-    { label: "Carbs", gramsPerDay: 0 },
-    { label: "Fat", gramsPerDay: 0 },
-    { label: "Protein", gramsPerDay: 0 },
-  ],
-  mealsLogged: 0,
-  slots: [
-    { slot: "breakfast", label: "Breakfast", calories: 0, meals: [] },
-    { slot: "lunch", label: "Lunch", calories: 0, meals: [] },
-    { slot: "dinner", label: "Dinner", calories: 0, meals: [] },
-    { slot: "snack", label: "Snack", calories: 0, meals: [] },
-  ],
+
+import { readLocalMeals } from "./local-meal-log";
+
+const DEFAULT_SUMMARY = {
+  consumedCalories: 0,
+  targetCalories: 2000,
 };
 
 async function getRealNutritionPageData(
@@ -35,38 +23,41 @@ async function getRealNutritionPageData(
 ): Promise<NutritionPageData> {
   const transport = createServerTransport(accessToken);
   const client = createClient(NutritionService, transport);
-  const today = toDayKey(new Date()) ?? "2026-08-08";
+  const today = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
+  const localRows = await readLocalMeals();
 
   console.info(`[getRealNutritionPageData] Calling gRPC for userId=${userId}, today=${today}`);
 
-  const [summaryRes, historyRes] = await Promise.allSettled([
+  const [summaryRes, historyRes, menuRes] = await Promise.allSettled([
     client.getNutritionSummary({ userId }),
     client.getNutritionHistory({
       endDate: today,
       startDate: dayKeyRange(today, 7)[0] ?? today,
       userId,
     }),
+    client.getTodayMenu({ userId }),
   ]);
 
   console.info("[getRealNutritionPageData] summaryRes status:", summaryRes.status, summaryRes.status === "rejected" ? summaryRes.reason : "");
   console.info("[getRealNutritionPageData] historyRes status:", historyRes.status, historyRes.status === "rejected" ? historyRes.reason : "");
+  console.info("[getRealNutritionPageData] menuRes status:", menuRes.status, menuRes.status === "rejected" ? menuRes.reason : "");
+  const summary = summaryRes.status === "fulfilled" && summaryRes.value ? summaryRes.value : DEFAULT_SUMMARY;
+  const history =
+    historyRes.status === "fulfilled" && historyRes.value?.meals && historyRes.value.meals.length > 0
+      ? historyRes.value.meals
+      : localRows;
 
-  if (summaryRes.status === "rejected" && historyRes.status === "rejected") {
-    return EMPTY_NUTRITION_DATA;
-  }
+  const todayMenu = menuRes.status === "fulfilled" && menuRes.value
+    ? (menuRes.value.meals as any)
+    : undefined;
 
-  const summary = summaryRes.status === "fulfilled" ? summaryRes.value : undefined;
-  const history = historyRes.status === "fulfilled" ? historyRes.value.meals : [];
-
-  if (summary) {
-    return adaptNutritionPageData(summary, history, today);
-  }
-
-  return EMPTY_NUTRITION_DATA;
+  return adaptNutritionPageData(summary, history, today, todayMenu);
 }
 
 export async function getNutritionPageData(): Promise<NutritionPageData> {
   const { accessToken, userId } = await getAuthenticatedSession();
+  const localRows = await readLocalMeals();
+  const today = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
 
   console.info("[getNutritionPageData] accessToken present:", Boolean(accessToken), "userId:", userId);
 
@@ -78,5 +69,5 @@ export async function getNutritionPageData(): Promise<NutritionPageData> {
     }
   }
 
-  return EMPTY_NUTRITION_DATA;
+  return adaptNutritionPageData(DEFAULT_SUMMARY, localRows, today);
 }
