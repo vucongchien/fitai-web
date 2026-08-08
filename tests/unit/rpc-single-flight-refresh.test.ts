@@ -1,3 +1,4 @@
+import { beforeEach, vi, afterEach, describe, expect, it } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -111,7 +112,7 @@ describe("bFF /rpc/[...path] Single-flight Token Refresh", () => {
       },
     );
 
-    expect(mockRefreshToken).toHaveBeenCalledOnce();
+    expect(mockRefreshToken).toHaveBeenCalledTimes(1);
     expect(mockRefreshToken).toHaveBeenCalledWith({ refreshToken: "valid_refresh_token" });
     expect(mockCookieSet).toHaveBeenCalledWith(
       "fitai_access_token",
@@ -191,7 +192,7 @@ describe("bFF /rpc/[...path] Single-flight Token Refresh", () => {
 
     const [res1, res2, res3] = await Promise.all([req1, req2, req3]);
 
-    expect(mockRefreshToken).toHaveBeenCalledOnce();
+    expect(mockRefreshToken).toHaveBeenCalledTimes(1);
     expect(res1.status).toBe(200);
     expect(res2.status).toBe(200);
     expect(res3.status).toBe(200);

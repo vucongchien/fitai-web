@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { describe, expect, it } from '@jest/globals';
 import type { MealLogRow } from "@/shared/api/bff/aggregate/nutrition-daily";
 import {
@@ -106,7 +107,7 @@ describe(dailyCalorieSeries, () => {
 
   it("marks an unlogged day as null rather than a measured zero", () => {
     const series = dailyCalorieSeries([], "2026-08-06", 2);
-    expect(series.every((point) => point.calories === null)).toBeTruthy();
+    expect(series.every((point) => point.calories === null)).toBe(true);
   });
 });
 

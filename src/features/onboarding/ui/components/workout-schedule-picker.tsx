@@ -4,16 +4,10 @@ import { useMemo } from "react";
 import {
   AvailabilityScheduler,
 } from "./scheduler/availability-scheduler";
-import {
-  type WeekAvailability,
-  mapToWeekAvailability,
-  weekAvailabilityToMap,
-} from "./scheduler/types";
-import {
-  type DayOfWeekKey,
-  type PreferredWorkoutTimesMap,
-  calculateWeeklyScheduleStats,
-} from "../../domain/workout-times-normalizer";
+import { mapToWeekAvailability, weekAvailabilityToMap } from './scheduler/types';
+import type { WeekAvailability } from './scheduler/types';
+import { calculateWeeklyScheduleStats } from '../../domain/workout-times-normalizer';
+import type { DayOfWeekKey, PreferredWorkoutTimesMap } from '../../domain/workout-times-normalizer';
 
 interface WorkoutSchedulePickerProps {
   value: Partial<Record<DayOfWeekKey, string[]>> | string[] | Record<string, string[]> | undefined;
@@ -40,7 +34,7 @@ export function WorkoutSchedulePicker({
   const stats = useMemo(() => calculateWeeklyScheduleStats(mapValue), [mapValue]);
 
   const handleSchedulerChange = (nextWeek: WeekAvailability) => {
-    if (disabled) return;
+    if (disabled) {return;}
     const nextMap = weekAvailabilityToMap(nextWeek);
     onChange(nextMap);
   };

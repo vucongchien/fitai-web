@@ -1,5 +1,5 @@
 import {
-  AlertTriangle,
+  AlertCircle,
   Check,
   CheckCircle2,
   Dumbbell,
@@ -730,7 +730,7 @@ function PersonalInfoForm({
             value={times}
             onChange={(updated) => setTimes(updated)}
             showTitle={false}
-            compact={true}
+            compact
           />
         </div>
 
@@ -832,7 +832,7 @@ function InjuryHistoryForm({
       <div className="flex items-center justify-between mb-6 pr-8">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
-            <AlertTriangle className="h-5 w-5" />
+            <AlertCircle className="h-5 w-5" />
           </div>
           <div>
             <h2 className="text-lg font-bold text-[#101214] font-display">Injury Management</h2>

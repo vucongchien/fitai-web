@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -163,6 +164,6 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const res = await deleteExercise("ex-1");
 
     expect(mockDeleteExercise).toHaveBeenCalledWith({ id: "ex-1" });
-    expect(res).toBeTruthy();
+    expect(res).toBe(true);
   });
 });

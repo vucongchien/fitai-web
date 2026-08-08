@@ -1,5 +1,3 @@
-import { CalendarRange, Gauge } from "lucide-react";
-
 import type {
   Roadmap,
   SessionPlan,
@@ -131,6 +129,20 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
     let nextFound = false;
     for (const dp of activeWeekPlan.dayPlans) {
       const { dayStr, dateStr } = formatDate(dp.scheduledDate as any);
+      if (!dp.sessionPlans || dp.sessionPlans.length === 0) {
+        currentWeekSessions.push({
+          id: dp.dayPlanId || `rest-${dayStr}-${dateStr}`,
+          day: dayStr,
+          date: dateStr,
+          title: "Recovery Day",
+          time: "All day",
+          duration: 20,
+          targetRpe: activeWeekPlan.targetRpe || 6,
+          muscles: [],
+          status: "rest",
+        });
+        continue;
+      }
       for (const sp of dp.sessionPlans || []) {
         const isRest = sp.targetMuscleGroups?.length === 0;
         const isPending = sp.status === SessionPlanStatus.PENDING;
@@ -146,10 +158,10 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
                 ...(sp.prescription.mainExercises || []),
                 ...(sp.prescription.coolDowns || []),
               ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-            ) || 45 //Hard code: default workout session duration fallback if exercise durations are missing
+            ) || 45
           : (isRest
-            ? 20 //hard code: default recovery day duration
-            : 40); //Hard code: default adhoc workout session duration
+            ? 20
+            : 40);
 
         currentWeekSessions.push({
           id: sp.sessionPlanId,
@@ -158,7 +170,7 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
           title: sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
           time: sp.slotTime || "18:30",
           duration,
-          targetRpe: activeWeekPlan.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
+          targetRpe: activeWeekPlan.targetRpe || 7,
           muscles: sp.targetMuscleGroups || [],
           status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
         });
@@ -177,13 +189,13 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
   const contextItems: ContextItem[] = [
     {
       id: "sessions-count",
-      Icon: CalendarRange,
+      iconName: "calendar-range",
       title: `${currentWeekSessions.filter((s) => s.status !== "rest").length} strength sessions`,
       description: "Plus scheduled guided recovery days",
     },
     {
       id: "effort-target",
-      Icon: Gauge,
+      iconName: "gauge",
       title: `Target effort ${activeWeekPlan?.targetRpe || "6–7"} RPE`,
       description: "Progress with challenge and control",
     },
@@ -208,46 +220,60 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
     const end = wp.endDate ? formatDate(wp.endDate as any).dateStr : "";
 
     const sessions: SessionSummary[] = [];
-    if (wp.dayPlans) {
-      let nextFound = false;
-      for (const dp of wp.dayPlans) {
-        const { dayStr, dateStr } = formatDate(dp.scheduledDate as any);
-        for (const sp of dp.sessionPlans || []) {
-          const isRest = sp.targetMuscleGroups?.length === 0;
-          const isPending = sp.status === SessionPlanStatus.PENDING;
-          const isNext = isPending && !isRest && !nextFound && wp.weekNumber === activeWeek;
-          if (isNext) {
-            nextFound = true;
+      if (wp.dayPlans) {
+        let nextFound = false;
+        for (const dp of wp.dayPlans) {
+          const { dayStr, dateStr } = formatDate(dp.scheduledDate as any);
+          if (!dp.sessionPlans || dp.sessionPlans.length === 0) {
+            sessions.push({
+              id: dp.dayPlanId || `rest-${dayStr}-${dateStr}`,
+              day: dayStr,
+              date: dateStr,
+              title: "Recovery Day",
+              time: "All day",
+              duration: 20,
+              targetRpe: wp.targetRpe || 6,
+              muscles: [],
+              status: "rest",
+            });
+            continue;
           }
+          for (const sp of dp.sessionPlans || []) {
+            const isRest = sp.targetMuscleGroups?.length === 0;
+            const isPending = sp.status === SessionPlanStatus.PENDING;
+            const isNext = isPending && !isRest && !nextFound && wp.weekNumber === activeWeek;
+            if (isNext) {
+              nextFound = true;
+            }
 
-          const duration =
-            (sp as any).estimatedDurationMinutes ??
-            (sp.prescription
-              ? Math.round(
-                  [
-                    ...(sp.prescription.warmUps || []),
-                    ...(sp.prescription.mainExercises || []),
-                    ...(sp.prescription.coolDowns || []),
-                  ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-                ) || 45
-              : isRest
-                ? 20
-                : 40);
+            const duration =
+              (sp as any).estimatedDurationMinutes ??
+              (sp.prescription
+                ? Math.round(
+                    [
+                      ...(sp.prescription.warmUps || []),
+                      ...(sp.prescription.mainExercises || []),
+                      ...(sp.prescription.coolDowns || []),
+                    ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
+                  ) || 45
+                : (isRest
+                  ? 20
+                  : 40));
 
-          sessions.push({
-            id: sp.sessionPlanId,
-            day: dayStr,
-            date: dateStr,
-            title: sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
-            time: sp.slotTime || "18:30",
-            duration,
-            targetRpe: wp.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
-            muscles: sp.targetMuscleGroups || [],
-            status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
-          });
+            sessions.push({
+              id: sp.sessionPlanId,
+              day: dayStr,
+              date: dateStr,
+              title: sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
+              time: sp.slotTime || "18:30",
+              duration,
+              targetRpe: wp.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
+              muscles: sp.targetMuscleGroups || [],
+              status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
+            });
+          }
         }
       }
-    }
 
     const weekSummary = roadmapData.weeks.find((w) => w.number === wp.weekNumber);
     const state = weekSummary ? weekSummary.state : "planned";

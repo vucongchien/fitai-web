@@ -1,5 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-
 export type WeekState = "complete" | "active" | "planned";
 
 export interface WeekSummary {
@@ -24,7 +22,7 @@ export interface SessionSummary {
 
 export interface ContextItem {
   id: string;
-  Icon: LucideIcon;
+  iconName: "calendar-range" | "gauge" | "sparkles" | "activity";
   title: string;
   description: string;
 }

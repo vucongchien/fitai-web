@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -105,8 +106,8 @@ describe("onboarding Server Actions & Enum Normalization", () => {
         ],
       }),
     );
-    expect(result.success).toBeTruthy();
-    expect(result.aiCoachActivated).toBeTruthy();
+    expect(result.success).toBe(true);
+    expect(result.aiCoachActivated).toBe(true);
   });
 
   it("omits injuries array when injuryStatus is none and supports single goal string fallback", async () => {
@@ -172,7 +173,7 @@ describe("onboarding Server Actions & Enum Normalization", () => {
       injuryStatus: "none",
     });
 
-    expect(result.success).toBeFalsy();
+    expect(result.success).toBe(false);
     expect(result.message).toContain("Connection reset");
   });
 });

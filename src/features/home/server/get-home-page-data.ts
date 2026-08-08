@@ -17,6 +17,7 @@ import type { ExerciseSummary } from "@/features/exercise/domain/exercise";
 import { getProfileData } from "@/features/profile/server/get-profile-data";
 import type { ProfileViewModel } from "@/features/profile/model/profile.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
+import { SessionPlanStatus } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
 import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
@@ -220,20 +221,68 @@ export async function getHomePageData(): Promise<HomePageData> {
 
 
       const todayTimeline: TodayTimelineItem[] = [];
+      let matchedDayPlan: any = undefined;
+      let matchedWeekPlan: any = undefined;
 
       if (roadmap?.weekPlans?.length) {
-        const currentWeek = roadmap.weekPlans[0];
-        if (currentWeek?.dayPlans?.length) {
-          const todayPlan = currentWeek.dayPlans[0];
-          if (todayPlan?.sessionPlans?.length) {
-            const session = todayPlan.sessionPlans[0];
+        const now = new Date();
+        const curYear = now.getFullYear();
+        const curMonth = now.getMonth() + 1;
+        const curDay = now.getDate();
+
+        // 1. Tìm chính xác DayPlan khớp ngày hôm nay
+        for (const wp of roadmap.weekPlans) {
+          for (const dp of wp.dayPlans || []) {
+            if (
+              dp.scheduledDate &&
+              dp.scheduledDate.year === curYear &&
+              dp.scheduledDate.month === curMonth &&
+              dp.scheduledDate.day === curDay
+            ) {
+              matchedDayPlan = dp;
+              matchedWeekPlan = wp;
+              break;
+            }
+          }
+          if (matchedDayPlan) {break;}
+        }
+
+        // 2. Nếu không khớp ngày chính xác, tìm buổi tập kế tiếp chưa hoàn thành (PENDING)
+        if (!matchedDayPlan) {
+          for (const wp of roadmap.weekPlans) {
+            for (const dp of wp.dayPlans || []) {
+              if (dp.sessionPlans?.some((sp) => sp.status === SessionPlanStatus.PENDING)) {
+                matchedDayPlan = dp;
+                matchedWeekPlan = wp;
+                break;
+              }
+            }
+            if (matchedDayPlan) {break;}
+          }
+        }
+
+        // 3. Fallback: Lấy DayPlan đầu tiên có session
+        if (!matchedDayPlan) {
+          for (const wp of roadmap.weekPlans) {
+            const dp = wp.dayPlans?.find((d) => (d.sessionPlans || []).length > 0);
+            if (dp) {
+              matchedDayPlan = dp;
+              matchedWeekPlan = wp;
+              break;
+            }
+          }
+        }
+
+        if (matchedDayPlan?.sessionPlans?.length) {
+          for (const session of matchedDayPlan.sessionPlans) {
+            const isRest = !session.targetMuscleGroups || session.targetMuscleGroups.length === 0;
             todayTimeline.push({
-              id: session.sessionPlanId || "today-workout",
+              id: session.sessionPlanId || `today-workout-${todayTimeline.length}`,
               time: session.slotTime || "17:30",
-              title: session.targetMuscleGroups?.join(", ") || "Workout Session",
-              subtitle: session.reasoning || `Target RPE ${currentWeek.targetRpe || 7.5}`,
+              title: session.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Session" : "Workout Session"),
+              subtitle: session.reasoning || (matchedWeekPlan ? `Target RPE ${matchedWeekPlan.targetRpe || 7.5}` : "Planned Workout"),
               category: "workout",
-              status: "planned",
+              status: session.status === SessionPlanStatus.COMPLETED ? "complete" : "planned",
               href: `/workouts/session?planId=${session.sessionPlanId}`,
             });
           }
@@ -298,12 +347,14 @@ export async function getHomePageData(): Promise<HomePageData> {
         },
       ];
 
-      const todaySession = roadmap?.weekPlans?.[0]?.dayPlans?.[0]?.sessionPlans?.[0];
+      const activeSession = matchedDayPlan?.sessionPlans?.[0] || roadmap?.weekPlans?.[0]?.dayPlans?.[0]?.sessionPlans?.[0];
       const coachNote =
-        todaySession?.reasoning ||
-        (roadmap?.weekPlans?.[0]
-          ? `Week ${roadmap.weekPlans[0].weekNumber} Target RPE: ${roadmap.weekPlans[0].targetRpe}`
-          : null) ||
+        activeSession?.reasoning ||
+        (matchedWeekPlan
+          ? `Week ${matchedWeekPlan.weekNumber} Target RPE: ${matchedWeekPlan.targetRpe || 7.5}`
+          : (roadmap?.weekPlans?.[0]
+          ? `Week ${roadmap.weekPlans[0].weekNumber} Target RPE: ${roadmap.weekPlans[0].targetRpe || 7.5}`
+          : null)) ||
         (profileProto?.coachStyle
           ? `AI Coach (${profileProto.coachStyle}) is active and monitoring your progress.`
           : "Your personalized AI roadmap is active. Ready for your session.");

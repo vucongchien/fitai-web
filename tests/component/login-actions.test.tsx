@@ -1,3 +1,4 @@
+import { it, afterEach, describe, expect, beforeEach } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 /**
  * Component tests: LoginActions
@@ -225,7 +226,7 @@ describe(LoginActions, () => {
     // Second click is blocked by disabled state
     fireEvent.click(googleButton);
 
-    expect(mockWindowOpen).toHaveBeenCalledOnce();
+    expect(mockWindowOpen).toHaveBeenCalledTimes(1);
   });
 
   // ─── Dev Mode Shortcuts ───────────────────────────────────────────────────────

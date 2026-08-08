@@ -1,5 +1,3 @@
-import { ViewTransition } from "react";
-
 import { cn } from "@/shared/lib/cn";
 
 interface TripleLaneProps {
@@ -15,9 +13,8 @@ export function TripleLane({
   className,
   compact = false,
   labelled = false,
-  morph = false,
 }: TripleLaneProps) {
-  const lane = (
+  return (
     <div
       aria-label={labelled ? "Plan, move, recover" : undefined}
       aria-hidden={labelled ? undefined : true}
@@ -56,15 +53,5 @@ export function TripleLane({
       <span className="triple-lane__join" />
       <span className="triple-lane__marker" />
     </div>
-  );
-
-  if (!morph || !ViewTransition) {
-    return lane;
-  }
-
-  return (
-    <ViewTransition default="none" name="triple-lane" share="triple-lane-morph">
-      {lane}
-    </ViewTransition>
   );
 }

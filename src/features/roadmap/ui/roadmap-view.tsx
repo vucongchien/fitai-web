@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { Activity, ArrowRight, CalendarRange, Gauge, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -13,6 +13,23 @@ import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-
 
 interface RoadmapViewProps {
   data: RoadmapPageData;
+}
+
+function ContextIcon({ iconName }: { iconName: string }) {
+  switch (iconName) {
+    case "calendar-range": {
+      return <CalendarRange aria-hidden="true" size={20} />;
+    }
+    case "gauge": {
+      return <Gauge aria-hidden="true" size={20} />;
+    }
+    case "activity": {
+      return <Activity aria-hidden="true" size={20} />;
+    }
+    default: {
+      return <Sparkles aria-hidden="true" size={20} />;
+    }
+  }
 }
 
 export function RoadmapView({ data }: RoadmapViewProps) {
@@ -85,18 +102,15 @@ export function RoadmapView({ data }: RoadmapViewProps) {
         </section>
 
         <aside className="roadmap-context">
-          {data.contextItems.map((item) => {
-            const { Icon } = item;
-            return (
-              <div className="roadmap-context__item" key={item.id}>
-                <Icon aria-hidden="true" size={20} />
-                <div>
-                  <strong>{item.title}</strong>
-                  <span>{item.description}</span>
-                </div>
+          {data.contextItems.map((item) => (
+            <div className="roadmap-context__item" key={item.id}>
+              <ContextIcon iconName={item.iconName} />
+              <div>
+                <strong>{item.title}</strong>
+                <span>{item.description}</span>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </aside>
       </div>
     </>

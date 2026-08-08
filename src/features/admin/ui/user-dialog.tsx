@@ -2,7 +2,7 @@
 
 import {
   Activity,
-  AlertTriangle,
+  AlertCircle,
   Calendar,
   Dumbbell,
   HeartPulse,
@@ -145,7 +145,7 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
           {/* Injuries Record */}
           <div className="space-y-2">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <AlertTriangle className="size-3.5 text-amber-500" />
+              <AlertCircle className="size-3.5 text-amber-500" />
               <span>Injury History</span>
             </h4>
             {user.injuries.length === 0 ? (

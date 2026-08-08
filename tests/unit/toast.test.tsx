@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { describe, expect, it } from '@jest/globals';
 import { act, render, screen } from "@testing-library/react";
 

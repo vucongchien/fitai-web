@@ -3,14 +3,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { cn } from "@/shared/lib/cn";
 import { DayRow } from "./day-row";
-import {
-  type DayAvailability,
-  type DayKey,
-  WEEKDAYS,
-  type WeekAvailability,
-  buildOptions,
-  defaultWeek,
-} from "./types";
+import { WEEKDAYS, buildOptions, defaultWeek } from './types';
+import type { DayAvailability, DayKey, WeekAvailability } from './types';
 
 export type {
   DayAvailability,
@@ -46,7 +40,7 @@ export function AvailabilityScheduler({
 
   const commit = useCallback(
     (next: WeekAvailability) => {
-      if (!controlled) setInternal(next);
+      if (!controlled) {setInternal(next);}
       onChange?.(next);
     },
     [controlled, onChange],

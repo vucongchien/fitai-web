@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { describe, expect, it } from '@jest/globals';
 import {
   KEYPOINT_NAMES,
@@ -91,7 +92,7 @@ describe("rep counter (BR-CC-01)", () => {
     const { state, completed } = run([0, 30, 60, 85, 60, 30, 5]);
     expect(state.count).toBe(1);
     expect(completed).toHaveLength(1);
-    expect(completed[0]!.counted).toBeTruthy();
+    expect(completed[0]!.counted).toBe(true);
     expect(completed[0]!.romPercentage).toBe(85);
   });
 
@@ -99,7 +100,7 @@ describe("rep counter (BR-CC-01)", () => {
     const { state, completed } = run([0, 30, 55, 30, 5]);
     expect(state.count).toBe(0);
     expect(completed).toHaveLength(1);
-    expect(completed[0]!.counted).toBeFalsy();
+    expect(completed[0]!.counted).toBe(false);
   });
 
   it("does not double count jitter around the threshold", () => {
@@ -153,8 +154,8 @@ describe("form rules and score", () => {
 
 describe("calibration", () => {
   it("recognises a usable pose", () => {
-    expect(isPoseUsable(pose(upright))).toBeTruthy();
-    expect(isPoseUsable(pose({ left_shoulder: [1, 1] }))).toBeFalsy();
+    expect(isPoseUsable(pose(upright))).toBe(true);
+    expect(isPoseUsable(pose({ left_shoulder: [1, 1] }))).toBe(false);
   });
 
   it("asks the user to step closer or step back based on body coverage", () => {

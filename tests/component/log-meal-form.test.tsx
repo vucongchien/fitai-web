@@ -1,4 +1,4 @@
-import { expect, describe, it } from 'vitest';
+
 import { fireEvent, render, screen } from "@testing-library/react";
 import { LogMealForm } from "@/features/nutrition/ui/log-meal-form";
 

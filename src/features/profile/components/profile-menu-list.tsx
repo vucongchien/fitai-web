@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import {
-  AlertTriangle,
+  AlertCircle,
   ChevronRight,
   Dumbbell,
   HelpCircle,
@@ -154,7 +154,7 @@ export function ProfileMenuList({ profile, onOpenModal }: ProfileMenuListProps) 
         >
           <div className="flex items-center gap-3.5">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
-              <AlertTriangle className="h-5 w-5" />
+              <AlertCircle className="h-5 w-5" />
             </div>
             <div>
               <div className="text-sm font-semibold text-[#101214] group-hover:text-[#4B57F2] transition-colors">

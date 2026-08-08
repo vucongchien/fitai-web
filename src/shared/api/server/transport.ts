@@ -13,7 +13,7 @@ export function createServerTransport(accessToken?: string) {
   }
 
   const authInterceptor: Interceptor = (next) => async (request) => {
-    if (accessToken && !accessToken.startsWith("mock_")) {
+    if (accessToken) {
       request.header.set("authorization", `Bearer ${accessToken}`);
     }
     return next(request);

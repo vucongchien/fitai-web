@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, RotateCcw } from "lucide-react";
+import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 interface FeedbackStateProps {
@@ -18,7 +18,7 @@ export function FeedbackState({
   tone = "empty",
   onActionClick,
 }: FeedbackStateProps) {
-  const Icon = tone === "error" ? AlertTriangle : RotateCcw;
+  const Icon = tone === "error" ? AlertCircle : RefreshCw;
 
   return (
     <section className="feedback-state" data-tone={tone}>

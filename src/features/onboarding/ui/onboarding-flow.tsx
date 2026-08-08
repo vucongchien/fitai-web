@@ -713,7 +713,7 @@ export function OnboardingFlow() {
                 <dd>
                   {(() => {
                     const stats = calculateWeeklyScheduleStats(preferredWorkoutTimes as any);
-                    if (stats.activeDaysCount === 0) return "No schedule selected";
+                    if (stats.activeDaysCount === 0) {return "No schedule selected";}
                     return `${stats.activeDaysCount} days / week (${stats.totalSlotsCount} sessions) • ~${stats.avgDurationMinutes}m avg`;
                   })()}
                 </dd>

@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Flag, HeartPulse } from "lucide-react";
+import { AlertCircle, Flag, HeartPulse } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { AbortReason } from "@/features/workout/model/live-session.types";
@@ -40,7 +40,7 @@ export function EndSessionDialog({
     return (
       <Dialog label="Confirm this session">
         <div className="end-dialog__mark end-dialog__mark--warn" aria-hidden="true">
-          <AlertTriangle size={24} />
+          <AlertCircle size={24} />
         </div>
         <h2>That was a much bigger session than usual</h2>
         <p>

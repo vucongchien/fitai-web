@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -141,7 +142,7 @@ describe("nutrition gRPC Actions & Services", () => {
         userId: "usr-nutri-888",
       }),
     );
-    expect(result.ok).toBeTruthy();
+    expect(result.ok).toBe(true);
   });
 
   it("recalibratePantryAction triggers pantry-based meal rebalancing", async () => {
@@ -161,6 +162,6 @@ describe("nutrition gRPC Actions & Services", () => {
       userId: "usr-nutri-888",
       availableIngredients: ["Eggs", "Spinach", "Tofu"],
     });
-    expect(res.success).toBeTruthy();
+    expect(res.success).toBe(true);
   });
 });

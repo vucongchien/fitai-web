@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+
 
 import {
   applyWeeklyPreset,
@@ -12,7 +12,7 @@ import {
   validateTimeSlot,
 } from "../../src/features/onboarding/domain/workout-times-normalizer";
 
-describe("Workout Times Normalizer & Schedule Engine", () => {
+describe("workout Times Normalizer & Schedule Engine", () => {
   describe(normalizeDayKey, () => {
     it("recognizes English standard abbreviations", () => {
       expect(normalizeDayKey("mon")).toBe("mon");
@@ -67,25 +67,25 @@ describe("Workout Times Normalizer & Schedule Engine", () => {
   describe(validateTimeSlot, () => {
     it("validates valid start and end time", () => {
       const result = validateTimeSlot("06:00", "07:30");
-      expect(result.isValid).toBe(true);
+      expect(result.isValid).toBeTruthy();
       expect(result.durationMinutes).toBe(90);
     });
 
     it("rejects invalid time format", () => {
       const result = validateTimeSlot("invalid", "07:30");
-      expect(result.isValid).toBe(false);
+      expect(result.isValid).toBeFalsy();
       expect(result.message).toContain("không hợp lệ");
     });
 
     it("rejects duration under 20 minutes", () => {
       const result = validateTimeSlot("06:00", "06:10");
-      expect(result.isValid).toBe(false);
+      expect(result.isValid).toBeFalsy();
       expect(result.message).toContain("tối thiểu là 20 phút");
     });
 
     it("rejects duration over 4 hours (240 minutes)", () => {
       const result = validateTimeSlot("06:00", "12:00");
-      expect(result.isValid).toBe(false);
+      expect(result.isValid).toBeFalsy();
       expect(result.message).toContain("không nên vượt quá 4 giờ");
     });
   });
@@ -99,9 +99,9 @@ describe("Workout Times Normalizer & Schedule Engine", () => {
       };
 
       const result = normalizeWorkoutTimes(input);
-      expect(result.mon).toEqual(["06:00-07:30", "17:30-19:00"]);
-      expect(result.wed).toEqual(["06:00-07:30"]);
-      expect(result.fri).toEqual(["06:00-07:30"]);
+      expect(result.mon).toStrictEqual(["06:00-07:30", "17:30-19:00"]);
+      expect(result.wed).toStrictEqual(["06:00-07:30"]);
+      expect(result.fri).toStrictEqual(["06:00-07:30"]);
       expect(result.tue).toBeUndefined(); // Rest day
       expect(result.thu).toBeUndefined(); // Rest day
       expect(result.sat).toBeUndefined(); // Rest day
@@ -112,8 +112,8 @@ describe("Workout Times Normalizer & Schedule Engine", () => {
       const input = ["mon:06:00-07:30", "mon:17:30-19:00", "fri:18:00-19:30"];
       const result = normalizeWorkoutTimes(input);
 
-      expect(result.mon).toEqual(["06:00-07:30", "17:30-19:00"]);
-      expect(result.fri).toEqual(["18:00-19:30"]);
+      expect(result.mon).toStrictEqual(["06:00-07:30", "17:30-19:00"]);
+      expect(result.fri).toStrictEqual(["18:00-19:30"]);
       expect(result.wed).toBeUndefined();
     });
 
@@ -121,31 +121,31 @@ describe("Workout Times Normalizer & Schedule Engine", () => {
       const input = ["Mon PM", "Wed PM", "Fri PM"];
       const result = normalizeWorkoutTimes(input);
 
-      expect(result.mon).toEqual(["17:30-19:00"]);
-      expect(result.wed).toEqual(["17:30-19:00"]);
-      expect(result.fri).toEqual(["17:30-19:00"]);
+      expect(result.mon).toStrictEqual(["17:30-19:00"]);
+      expect(result.wed).toStrictEqual(["17:30-19:00"]);
+      expect(result.fri).toStrictEqual(["17:30-19:00"]);
     });
 
     it("handles legacy string array with AM format ['Tue AM', 'Thu AM', 'Sat AM']", () => {
       const input = ["Tue AM", "Thu AM", "Sat AM"];
       const result = normalizeWorkoutTimes(input);
 
-      expect(result.tue).toEqual(["06:00-07:30"]);
-      expect(result.thu).toEqual(["06:00-07:30"]);
-      expect(result.sat).toEqual(["06:00-07:30"]);
+      expect(result.tue).toStrictEqual(["06:00-07:30"]);
+      expect(result.thu).toStrictEqual(["06:00-07:30"]);
+      expect(result.sat).toStrictEqual(["06:00-07:30"]);
     });
 
     it("handles JSON stringified object input cleanly", () => {
       const input = [JSON.stringify({ mon: ["06:00-07:30"], wed: ["17:30-19:00"] })];
       const result = normalizeWorkoutTimes(input);
 
-      expect(result.mon).toEqual(["06:00-07:30"]);
-      expect(result.wed).toEqual(["17:30-19:00"]);
+      expect(result.mon).toStrictEqual(["06:00-07:30"]);
+      expect(result.wed).toStrictEqual(["17:30-19:00"]);
     });
 
     it("returns empty object for undefined or null input", () => {
-      expect(normalizeWorkoutTimes(undefined)).toEqual({});
-      expect(normalizeWorkoutTimes(null)).toEqual({});
+      expect(normalizeWorkoutTimes()).toStrictEqual({});
+      expect(normalizeWorkoutTimes(null)).toStrictEqual({});
     });
   });
 
@@ -157,7 +157,7 @@ describe("Workout Times Normalizer & Schedule Engine", () => {
       };
 
       const result = formatWorkoutTimesToProto(map);
-      expect(result).toEqual(["mon:06:00-07:30", "wed:17:30-19:00"]);
+      expect(result).toStrictEqual(["mon:06:00-07:30", "wed:17:30-19:00"]);
     });
 
     it("provides safe fallback when schedule is completely empty", () => {
@@ -176,8 +176,8 @@ describe("Workout Times Normalizer & Schedule Engine", () => {
 
       const jsonStr = formatWorkoutTimesToAgentJson(map);
       const parsed = JSON.parse(jsonStr);
-      expect(parsed.mon).toEqual(["06:00-07:30"]);
-      expect(parsed.fri).toEqual(["17:30-19:00"]);
+      expect(parsed.mon).toStrictEqual(["06:00-07:30"]);
+      expect(parsed.fri).toStrictEqual(["17:30-19:00"]);
     });
   });
 
@@ -193,32 +193,32 @@ describe("Workout Times Normalizer & Schedule Engine", () => {
       expect(stats.activeDaysCount).toBe(3);
       expect(stats.totalSlotsCount).toBe(4);
       expect(stats.avgDurationMinutes).toBe(90);
-      expect(stats.totalHoursPerWeek).toBe(6.0); // 360 min / 60
-      expect(stats.activeDays).toEqual(["mon", "wed", "fri"]);
-      expect(stats.restDays).toEqual(["tue", "thu", "sat", "sun"]);
-      expect(stats.hasSchedule).toBe(true);
+      expect(stats.totalHoursPerWeek).toBe(6); // 360 min / 60
+      expect(stats.activeDays).toStrictEqual(["mon", "wed", "fri"]);
+      expect(stats.restDays).toStrictEqual(["tue", "thu", "sat", "sun"]);
+      expect(stats.hasSchedule).toBeTruthy();
     });
 
     it("returns zero stats when schedule is empty", () => {
       const stats = calculateWeeklyScheduleStats({});
       expect(stats.activeDaysCount).toBe(0);
       expect(stats.totalSlotsCount).toBe(0);
-      expect(stats.hasSchedule).toBe(false);
-      expect(stats.restDays.length).toBe(7);
+      expect(stats.hasSchedule).toBeFalsy();
+      expect(stats.restDays).toHaveLength(7);
     });
   });
 
   describe(applyWeeklyPreset, () => {
     it("applies MWF_EVENING preset accurately", () => {
       const preset = applyWeeklyPreset("MWF_EVENING");
-      expect(preset.mon).toEqual(["17:30-19:00"]);
-      expect(preset.wed).toEqual(["17:30-19:00"]);
-      expect(preset.fri).toEqual(["17:30-19:00"]);
+      expect(preset.mon).toStrictEqual(["17:30-19:00"]);
+      expect(preset.wed).toStrictEqual(["17:30-19:00"]);
+      expect(preset.fri).toStrictEqual(["17:30-19:00"]);
     });
 
     it("clears schedule when applying CLEAR preset", () => {
       const preset = applyWeeklyPreset("CLEAR");
-      expect(preset).toEqual({});
+      expect(preset).toStrictEqual({});
     });
   });
 
@@ -231,9 +231,9 @@ describe("Workout Times Normalizer & Schedule Engine", () => {
       };
 
       const updated = copySlotsToOtherActiveDays(initial, "mon");
-      expect(updated.mon).toEqual(["06:00-07:30", "18:00-19:30"]);
-      expect(updated.wed).toEqual(["06:00-07:30", "18:00-19:30"]);
-      expect(updated.fri).toEqual(["06:00-07:30", "18:00-19:30"]);
+      expect(updated.mon).toStrictEqual(["06:00-07:30", "18:00-19:30"]);
+      expect(updated.wed).toStrictEqual(["06:00-07:30", "18:00-19:30"]);
+      expect(updated.fri).toStrictEqual(["06:00-07:30", "18:00-19:30"]);
       expect(updated.tue).toBeUndefined(); // Rest day stays rest day
     });
   });
