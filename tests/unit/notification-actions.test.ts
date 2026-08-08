@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from '@jest/globals';
 import { create } from "@bufbuild/protobuf";
 
 
@@ -136,7 +137,7 @@ describe("notification Server Actions", () => {
         userId: "",
         notificationId: "notif-1",
       });
-      expect(result).toBeTruthy();
+      expect(result).toBe(true);
     });
 
     it("should return false when API reports failure", async () => {
@@ -154,7 +155,7 @@ describe("notification Server Actions", () => {
 
       const result = await markNotificationAsReadAction("notif-1");
 
-      expect(result).toBeFalsy();
+      expect(result).toBe(false);
     });
 
     it("should return false when gRPC call throws error", async () => {
@@ -167,7 +168,7 @@ describe("notification Server Actions", () => {
 
       const result = await markNotificationAsReadAction("notif-1");
 
-      expect(result).toBeFalsy();
+      expect(result).toBe(false);
     });
   });
 });

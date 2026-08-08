@@ -12,9 +12,10 @@ export interface AdhocExercise {
 }
 
 export function toAdhocExercise(ex: ExerciseResult, uniqueSuffix?: string): AdhocExercise {
+  const suffix = uniqueSuffix || Math.random().toString(36).substring(2, 7);
   return {
     ...ex,
-    id: uniqueSuffix ? `${ex.id}-${uniqueSuffix}` : ex.id,
+    id: ex.id.includes("-") ? ex.id : `${ex.id}-${suffix}`,
     sets: 3,
     reps: 10,
     weightKg: ex.isWeighted ? (ex.defaultWeightKg ?? 10) : undefined,

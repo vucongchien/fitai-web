@@ -1,10 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
+
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { AvailabilityScheduler } from "../../src/features/onboarding/ui/components/scheduler/availability-scheduler";
 import { defaultWeek } from "../../src/features/onboarding/ui/components/scheduler/types";
 
-describe("AvailabilityScheduler Component", () => {
+describe("availabilityScheduler Component", () => {
   it("renders 7 weekday rows with 3-letter labels", () => {
     render(<AvailabilityScheduler defaultValue={defaultWeek()} />);
 

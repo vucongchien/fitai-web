@@ -1,9 +1,8 @@
-import "server-only";
-
 import { createClient } from "@connectrpc/connect";
 
-import type { LiveExercise, LiveSessionPlan, MotionSpec, Playlist } from "@/features/workout/model/live-session.types";
+import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
 import { estimatedDurationMin } from "@/features/workout/domain/session-flow";
+import type { LiveExercise, LiveSessionPlan, MotionSpec, Playlist } from "@/features/workout/model/live-session.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
@@ -27,6 +26,219 @@ const STATIC_PLAYLISTS: Playlist[] = [
   },
 ];
 
+export function getFallbackVideoForExercise(identifier: string): { videoUrl: string; thumbnailUrl: string } {
+  const normalized = identifier.toLowerCase();
+  if (normalized.includes("squat")) {
+    return {
+      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-man-doing-squats-in-a-gym-43029-large.mp4",
+      thumbnailUrl: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&auto=format&fit=crop",
+    };
+  }
+  if (normalized.includes("pushup") || normalized.includes("push-up") || normalized.includes("push up")) {
+    return {
+      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-young-man-doing-push-ups-at-home-43033-large.mp4",
+      thumbnailUrl: "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=800&auto=format&fit=crop",
+    };
+  }
+  if (normalized.includes("plank")) {
+    return {
+      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-woman-doing-a-plank-exercise-on-a-mat-43030-large.mp4",
+      thumbnailUrl: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=800&auto=format&fit=crop",
+    };
+  }
+  if (normalized.includes("lunge")) {
+    return {
+      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-woman-doing-lunges-in-a-gym-43028-large.mp4",
+      thumbnailUrl: "https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=800&auto=format&fit=crop",
+    };
+  }
+  return {
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-man-doing-squats-in-a-gym-43029-large.mp4",
+    thumbnailUrl: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop",
+  };
+}
+
+export function getFallbackInstructionsForExercise(identifier: string): {
+  instructions: string;
+  formCues: string[];
+  commonMistakes: string[];
+  breathingCue: string;
+} {
+  const normalized = identifier.toLowerCase();
+  if (normalized.includes("squat")) {
+    return {
+      instructions: "Đứng chân rộng bằng vai, gồng chặt cơ bụng. Hạ hông gập gối xuống sâu như tư thế ngồi ghế, giữ ngực cao. Đẩy mạnh qua gót chân để đứng thẳng lên.",
+      formCues: ["Giữ thẳng lưng", "Đẩy đầu gối theo hướng mũi chân", "Gồng chặt cơ bụng"],
+      commonMistakes: ["Đầu gối chụm vào trong", "Võng thắt lưng"],
+      breathingCue: "Hít vào sâu khi hạ người xuống, thở ra khi đẩy người đứng thẳng lên.",
+    };
+  }
+  if (normalized.includes("pushup") || normalized.includes("push-up") || normalized.includes("push up")) {
+    return {
+      instructions: "Vào tư thế chống đẩy chuẩn, tay mở rộng hơn vai một chút. Hạ ngực xuống sát mặt sàn rồi dùng lực cơ ngực và tay sau đẩy mạnh về vị trí ban đầu.",
+      formCues: ["Thân người trên một đường thẳng", "Khuỷu tay mở 45 độ", "Siết chặt cơ mông"],
+      commonMistakes: ["Võng thắt lưng", "Nhô hông lên cao"],
+      breathingCue: "Hít vào khi hạ người xuống, thở ra mạnh khi đẩy người lên.",
+    };
+  }
+  if (normalized.includes("plank")) {
+    return {
+      instructions: "Chống hai cẳng tay xuống sàn, khuỷu tay vuông góc ngay dưới vai. Giữ toàn bộ đầu, lưng, hông và chân thành một đường thẳng tắp.",
+      formCues: ["Gồng cứng cơ bụng", "Siết mông", "Không hạ võng hông"],
+      commonMistakes: ["Cúi gập cổ quá sâu", "Hạ hông chạm sàn"],
+      breathingCue: "Duy trì nhịp thở đều đặn và sâu, không nín thở.",
+    };
+  }
+  if (normalized.includes("lunge")) {
+    return {
+      instructions: "Đứng thẳng, bước một chân về phía trước và hạ hông xuống cho tới khi cả hai gối gập thành góc 90 độ. Đẩy ngược gót chân trước để trở về tư thế ban đầu.",
+      formCues: ["Giữ lưng thẳng đứng", "Gối trước không vượt quá mũi chân"],
+      commonMistakes: ["Đầu gối trước đổ nghiêng vào trong"],
+      breathingCue: "Hít vào khi bước hạ hông xuống, thở ra khi rút chân về.",
+    };
+  }
+  return {
+    instructions: "Giữ tư thế chuẩn, gồng chặt cơ lõi và thực hiện chuyển động một cách kiểm soát, đúng biên độ.",
+    formCues: ["Duy trì tư thế trung tính", "Gồng cơ bụng"],
+    commonMistakes: ["Ăn gian chuyển động bằng đà"],
+    breathingCue: "Hít vào ở pha hạ lực, thở ra ở pha phát lực.",
+  };
+}
+
+const DEFAULT_FALLBACK_EXERCISES: LiveExercise[] = [
+  {
+    exerciseId: "ex-bodyweight-squat",
+    name: "Bodyweight Squat",
+    phase: "main",
+    equipmentId: "bodyweight",
+    targetSets: 3,
+    targetReps: 12,
+    durationSeconds: 0,
+    targetWeightKg: 0,
+    isWeighted: false,
+    restSetSec: 60,
+    restExerciseSec: 90,
+    targetRpe: 7,
+    notes: "Giữ ngực mở, đẩy đầu gối về phía ngoài theo hướng mũi chân.",
+    instructions: "Đứng chân rộng bằng vai, hạ hông xuống thấp như đang ngồi trên ghế, sau đó đứng thẳng dậy.",
+    formCues: ["Thẳng lưng", "Đẩy đầu gối ra ngoài"],
+    commonMistakes: ["Đầu gối chụm vào trong"],
+    breathingCue: "Hít vào khi hạ xuống, thở ra khi đứng lên.",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-man-doing-squats-in-a-gym-43029-large.mp4",
+    thumbnailUrl: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&auto=format&fit=crop",
+    hasAiSupported: true,
+  },
+  {
+    exerciseId: "ex-pushup",
+    name: "Push-up",
+    phase: "main",
+    equipmentId: "bodyweight",
+    targetSets: 3,
+    targetReps: 10,
+    durationSeconds: 0,
+    targetWeightKg: 0,
+    isWeighted: false,
+    restSetSec: 60,
+    restExerciseSec: 90,
+    targetRpe: 7,
+    notes: "Giữ cột sống trung tính và thực hiện hết phạm vi chuyển động.",
+    instructions: "Vào tư thế chống đẩy, hạ ngực gần sát sàn, sau đó đẩy mạnh người lên.",
+    formCues: ["Gồng cơ bụng", "Khuỷu tay mở 45 độ"],
+    commonMistakes: ["Võng lưng"],
+    breathingCue: "Hít vào khi hạ người xuống, thở ra khi đẩy người lên.",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-young-man-doing-push-ups-at-home-43033-large.mp4",
+    thumbnailUrl: "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=800&auto=format&fit=crop",
+    hasAiSupported: true,
+  },
+  {
+    exerciseId: "ex-plank",
+    name: "Plank Hold",
+    phase: "main",
+    equipmentId: "bodyweight",
+    targetSets: 3,
+    targetReps: 0,
+    durationSeconds: 45,
+    targetWeightKg: 0,
+    isWeighted: false,
+    restSetSec: 45,
+    restExerciseSec: 60,
+    targetRpe: 7,
+    notes: "Gồng chặt cơ bụng và cơ mông.",
+    instructions: "Giữ tư thế chống bằng cẳng tay, giữ toàn bộ thân người trên một đường thẳng.",
+    formCues: ["Gồng cơ mông", "Không hạ võng hông"],
+    commonMistakes: ["Võng thắt lưng"],
+    breathingCue: "Hít thở đều đặn và duy trì nhịp thở.",
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-woman-doing-a-plank-exercise-on-a-mat-43030-large.mp4",
+    thumbnailUrl: "https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=800&auto=format&fit=crop",
+    hasAiSupported: false,
+  },
+];
+
+async function getFallbackLiveSession(sessionId: string): Promise<LiveSessionPlan> {
+  let mainExercises: LiveExercise[] = [];
+
+  if (sessionId.startsWith("adhoc_")) {
+    const parts = sessionId.split("_");
+    if (parts.length >= 2 && parts[1] && parts[1] !== "default") {
+      const rawIds = parts[1].split(",");
+      const loaded = await Promise.all(
+        rawIds.map(async (id) => {
+          const ex = await exerciseSearchRepository.getById(id);
+          const fallbackMedia = getFallbackVideoForExercise(ex?.name || id);
+          const fallbackGuide = getFallbackInstructionsForExercise(ex?.name || id);
+          return {
+            exerciseId: id,
+            name: ex?.name || id.replace(/^ex-/, "").replace(/-/g, " "),
+            phase: "main" as const,
+            equipmentId: ex?.equipmentId || "eq-standard",
+            targetSets: 3,
+            targetReps: 10,
+            durationSeconds: 0,
+            targetWeightKg: ex?.equipmentId === "bodyweight" ? 0 : 10,
+            isWeighted: ex?.equipmentId !== "bodyweight",
+            restSetSec: ex?.defaultRestSeconds || 60,
+            restExerciseSec: 90,
+            targetRpe: 7,
+            notes: ex?.instructions || "Maintain proper form.",
+            instructions: ex?.instructions || fallbackGuide.instructions,
+            formCues: fallbackGuide.formCues,
+            commonMistakes: fallbackGuide.commonMistakes,
+            breathingCue: fallbackGuide.breathingCue,
+            videoUrl: ex?.videoUrl || fallbackMedia.videoUrl,
+            thumbnailUrl: ex?.thumbnailUrl || fallbackMedia.thumbnailUrl,
+            hasAiSupported: Boolean(ex?.hasAiSupported),
+          };
+        }),
+      );
+      if (loaded.length > 0) {
+        mainExercises = loaded;
+      }
+    }
+  }
+
+  if (mainExercises.length === 0) {
+    mainExercises = DEFAULT_FALLBACK_EXERCISES;
+  }
+
+  const plan: LiveSessionPlan = {
+    sessionId,
+    sessionPlanId: sessionId,
+    title: "Workout Session",
+    targetRpe: 7,
+    estimatedDurationMin: 30,
+    warmUps: [],
+    mainExercises,
+    coolDowns: [],
+    playlists: STATIC_PLAYLISTS,
+    motionSpecs: {},
+    recentAvgVolumeKg: 0,
+    personalRecords: {},
+    durationWarnMin: 90,
+  };
+
+  return { ...plan, estimatedDurationMin: estimatedDurationMin(plan) };
+}
+
 function adaptLiveSessionPlan({
   sessionId,
   sessionRes,
@@ -47,6 +259,8 @@ function adaptLiveSessionPlan({
   const mapExercise = (prescribed: any, phase: "warmup" | "main" | "cooldown"): LiveExercise => {
     const info = infosRes.find((inf) => inf.exercise?.id === prescribed.exerciseId)?.exercise;
     const isWeighted = info ? info.equipmentId !== "eq-bodyweight" : false;
+    const fallbackMedia = getFallbackVideoForExercise(prescribed.exerciseName || prescribed.exerciseId);
+    const fallbackGuide = getFallbackInstructionsForExercise(prescribed.exerciseName || prescribed.exerciseId);
 
     return {
       exerciseId: prescribed.exerciseId,
@@ -62,12 +276,12 @@ function adaptLiveSessionPlan({
       restExerciseSec: prescribed.restExerciseSec || 90,
       targetRpe: prescribed.targetRpe || 7,
       notes: prescribed.notes || "",
-      instructions: info?.instructions || "",
-      formCues: info?.formCues || [],
-      commonMistakes: info?.commonMistakes || [],
-      breathingCue: info?.breathingCue || "",
-      videoUrl: info?.videoUrl || "",
-      thumbnailUrl: info?.thumbnailUrl || "",
+      instructions: info?.instructions || fallbackGuide.instructions,
+      formCues: info?.formCues?.length ? info.formCues : fallbackGuide.formCues,
+      commonMistakes: info?.commonMistakes?.length ? info.commonMistakes : fallbackGuide.commonMistakes,
+      breathingCue: info?.breathingCue || fallbackGuide.breathingCue,
+      videoUrl: info?.videoUrl || fallbackMedia.videoUrl,
+      thumbnailUrl: info?.thumbnailUrl || fallbackMedia.thumbnailUrl,
       hasAiSupported: Boolean(info?.hasAiSupported),
     };
   };
@@ -82,12 +296,11 @@ function adaptLiveSessionPlan({
       const spec = specRes.motionSpecification;
       motionSpecs[spec.exerciseId] = {
         exerciseId: spec.exerciseId,
-        //Need to migrate: These local model assets should be provided dynamically by gRPC server in the future.
         onnxDetectorUrl: spec.onnxDetectorUrl || "/models/person-detector.onnx",
         onnxSkeletonUrl: spec.onnxSkeletonUrl || "/models/rtmpose-17kp.onnx",
         localRulesUrl: spec.localRulesUrl || `/models/rules/${spec.exerciseId}.json`,
         dialogueEngineUrl: spec.dialogueEngineUrl || `/models/dialogue/${spec.exerciseId}.json`,
-        recommendedCameraAngle: spec.recommendedCameraAngle || "side", //Hard code: fallback camera angle
+        recommendedCameraAngle: spec.recommendedCameraAngle || "side",
         romRange: spec.romRange || { joints: [], startDeg: 0, endDeg: 0 },
         rules: (spec.rules || []).map((rule: any) => ({
           code: rule.code,
@@ -125,7 +338,7 @@ function adaptLiveSessionPlan({
     sessionId,
     sessionPlanId: sessionId,
     title: sessionRes.targetMuscleGroups?.join(", ") || "Workout Session",
-    targetRpe: mainExercises?.[0]?.targetRpe || 7, //Hard code: fallback default RPE of 7 if main exercises do not specify target RPE
+    targetRpe: mainExercises?.[0]?.targetRpe || 7,
     estimatedDurationMin: 0,
     warmUps,
     mainExercises,
@@ -134,7 +347,7 @@ function adaptLiveSessionPlan({
     motionSpecs,
     recentAvgVolumeKg,
     personalRecords,
-    durationWarnMin: 90, //Hard code: default warning threshold for session duration
+    durationWarnMin: 90,
   };
 
   return { ...plan, estimatedDurationMin: estimatedDurationMin(plan) };
@@ -146,31 +359,74 @@ async function getRealLiveSession(sessionId: string, accessToken: string, userId
   const exercises = createClient(ExerciseService, transport);
   const execution = createClient(WorkoutExecutionService, transport);
 
-  // 1. Prescription: warm_ups / main_exercises / cool_downs
   const sessionRes = await coaching.getSessionPlan({ userId, sessionPlanId: sessionId });
   const prescription = sessionRes.sessionPlan?.prescription;
   if (!sessionRes.sessionPlan || !prescription) {
     throw new Error("Prescription not found for session plan.");
   }
 
-  // 2. Exercise library data for guidance
   const ids = [...(prescription.warmUps || []), ...(prescription.mainExercises || []), ...(prescription.coolDowns || [])]
     .map((item) => item.exerciseId);
-  const infosRes = await Promise.all(ids.map((id) => exercises.getExercise({ id })));
-
-  // 3. Motion specs
-  const aiIds = infosRes.filter((res) => res.exercise?.hasAiSupported).map((res) => res.exercise!.id);
-  const specsRes = await Promise.all(
-    aiIds.map((id) => execution.getMotionSpecification({ exerciseId: id, coachPersonality: "friendly" })),
+  const infosRes = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const res = await exercises.getExercise({ id });
+        if (res.exercise) {
+          return res;
+        }
+      } catch (err) {
+        console.warn(`[getLiveSessionData] exercise.getExercise({ id: "${id}" }) error:`, err);
+      }
+      const localEx = await exerciseSearchRepository.getById(id);
+      if (localEx) {
+        return {
+          exercise: {
+            id: localEx.id,
+            name: localEx.name,
+            equipmentId: localEx.equipmentId,
+            instructions: localEx.instructions,
+            videoUrl: localEx.videoUrl,
+            thumbnailUrl: localEx.thumbnailUrl,
+            hasAiSupported: localEx.hasAiSupported,
+            formCues: [],
+            commonMistakes: [],
+            breathingCue: "",
+          },
+        };
+      }
+      const fallbackMedia = getFallbackVideoForExercise(id);
+      return {
+        exercise: {
+          id,
+          name: id.replace(/^ex-/, "").replace(/-/g, " "),
+          equipmentId: "bodyweight",
+          instructions: "Thực hiện đúng tư thế chuẩn.",
+          videoUrl: fallbackMedia.videoUrl,
+          thumbnailUrl: fallbackMedia.thumbnailUrl,
+          hasAiSupported: false,
+          formCues: [],
+          commonMistakes: [],
+          breathingCue: "",
+        },
+      };
+    }),
   );
 
-  // 4. Baselines
+  const aiIds = infosRes.filter((res: any) => res.exercise?.hasAiSupported).map((res: any) => res.exercise!.id);
+  const specsRes = await Promise.all(
+    aiIds.map((id: string) =>
+      execution.getMotionSpecification({ exerciseId: id, coachPersonality: "friendly" }).catch(() => ({
+        motionSpecification: undefined,
+      })),
+    ),
+  );
+
   const [historyRes, recordsRes] = await Promise.all([
-    execution.getWorkoutHistory({ limit: 5, offset: 0 }),
-    execution.getPersonalRecords({ exerciseIds: ids }),
+    execution.getWorkoutHistory({ limit: 5, offset: 0 }).catch(() => ({ sessions: [] })),
+    execution.getPersonalRecords({ exerciseIds: ids }).catch(() => ({ records: [] })),
   ]);
 
-  return adaptLiveSessionPlan({
+  const realPlan = adaptLiveSessionPlan({
     sessionId,
     sessionRes: sessionRes.sessionPlan,
     infosRes,
@@ -178,24 +434,13 @@ async function getRealLiveSession(sessionId: string, accessToken: string, userId
     historyRes,
     recordsRes,
   });
-}
 
-//Hard code: Fallback safe empty session data when gRPC fails to fetch live session.
-const getEmptyLiveSession = (sessionId: string): LiveSessionPlan => ({
-  sessionId,
-  sessionPlanId: sessionId,
-  title: "Workout Session",
-  targetRpe: 7,
-  estimatedDurationMin: 45,
-  warmUps: [],
-  mainExercises: [],
-  coolDowns: [],
-  playlists: STATIC_PLAYLISTS,
-  motionSpecs: {},
-  recentAvgVolumeKg: 0,
-  personalRecords: {},
-  durationWarnMin: 90,
-});
+  if (realPlan.warmUps.length === 0 && realPlan.mainExercises.length === 0 && realPlan.coolDowns.length === 0) {
+    return getFallbackLiveSession(sessionId);
+  }
+
+  return realPlan;
+}
 
 /**
  * Everything the live workout screen needs, in one payload.
@@ -211,5 +456,5 @@ export async function getLiveSessionData(sessionId: string): Promise<LiveSession
     }
   }
 
-  return getEmptyLiveSession(sessionId);
+  return getFallbackLiveSession(sessionId);
 }

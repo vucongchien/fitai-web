@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -189,7 +190,7 @@ describe("user Health Profile gRPC Services & Actions", () => {
     });
 
     expect(mockUpdateProfile).toHaveBeenCalledWith();
-    expect(res.success).toBeTruthy();
+    expect(res.success).toBe(true);
   });
 
   it("logBodyMetricsServerAction calls gRPC LogPeriodicMetrics", async () => {
@@ -218,7 +219,7 @@ describe("user Health Profile gRPC Services & Actions", () => {
       heightCm: 178,
       progressPhotoUrl: "",
     });
-    expect(res.success).toBeTruthy();
+    expect(res.success).toBe(true);
     expect(res.logId).toBe("log-123");
   });
 
@@ -249,11 +250,11 @@ describe("user Health Profile gRPC Services & Actions", () => {
       severity: "MODERATE",
       notes: "Slight pain during deep squat",
     });
-    expect(reportRes.success).toBeTruthy();
+    expect(reportRes.success).toBe(true);
     expect(reportRes.injuryId).toBe("inj-456");
 
     const recoverRes = await recoverInjuryServerAction("inj-456");
     expect(mockRecoverInjury).toHaveBeenCalledWith({ injuryId: "inj-456" });
-    expect(recoverRes.success).toBeTruthy();
+    expect(recoverRes.success).toBe(true);
   });
 });

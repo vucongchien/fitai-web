@@ -1,7 +1,7 @@
 import { formatRangeLabel, WEEK_DAYS } from "@/features/nutrition/model/nutrition-page.mapper";
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
 import type { DayKey } from "@/shared/api/bff/aggregate/day-key";
-import { dayKeyRange } from "@/shared/api/bff/aggregate/day-key";
+import { dayKeyFromCalendarDate, dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
 import type {
   SessionHistoryRow,
   SessionPlanRow,
@@ -46,11 +46,33 @@ export function adaptWorkoutStatsData(
   history: readonly SessionHistoryRow[],
   today: DayKey,
 ): WorkoutStatsData {
-  const window = dayKeyRange(today, WEEK_DAYS);
+  const currentWindow = dayKeyRange(today, WEEK_DAYS);
+  let targetPlans = plansInWindow(plans, today, WEEK_DAYS);
+  let startKey = currentWindow[0] ?? today;
+  let endKey = today;
+
+  if (targetPlans.length === 0 && plans.length > 0) {
+    const futurePlanDates = plans
+      .map((p) => dayKeyFromCalendarDate(p.scheduledDate))
+      .filter((k): k is DayKey => k !== null && k >= today)
+      .sort();
+
+    if (futurePlanDates.length > 0) {
+      startKey = futurePlanDates[0]!;
+      const startDate = new Date(`${startKey}T00:00:00Z`);
+      startDate.setUTCDate(startDate.getUTCDate() + 6);
+      endKey = toDayKey(startDate) ?? startKey;
+
+      targetPlans = plans.filter((p) => {
+        const k = dayKeyFromCalendarDate(p.scheduledDate);
+        return k !== null && k >= startKey && k <= endKey;
+      });
+    }
+  }
 
   return {
-    adherence: planAdherence(plansInWindow(plans, today, WEEK_DAYS)),
-    dateLabel: formatRangeLabel(window[0] ?? today, today),
+    adherence: planAdherence(targetPlans),
+    dateLabel: formatRangeLabel(startKey, endKey),
     minutesToday: minutesTrainedOnDay(plans, today),
     volumeKg: sumVolume(historyInWindow(history, today, WEEK_DAYS)),
     volumeTrend: weeklyVolumeSeries(history, today, VOLUME_WEEKS).map((week) => ({

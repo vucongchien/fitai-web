@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 
 
 import { parseVideoSource } from "@/features/workout/domain/video-source-parser";

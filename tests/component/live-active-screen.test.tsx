@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it } from 'vitest';
 import { afterEach, describe, expect, it, vi } from '@jest/globals';
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
@@ -139,7 +140,7 @@ describe(ActiveExerciseScreen, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
 
-    expect(onReportPain).toHaveBeenCalledTimes(1);
+    expect(onReportPain).toHaveBeenCalledOnce();
   });
 
   it("renders the instruction, unlabelled", () => {
@@ -165,7 +166,7 @@ describe(ActiveExerciseScreen, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
 
-    expect(onDone).toHaveBeenCalledTimes(1);
+    expect(onDone).toHaveBeenCalledOnce();
   });
 
   // The ring shows three different things. Announcing a rep count as "time

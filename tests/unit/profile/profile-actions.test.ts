@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from '@jest/globals';
 
 
 import {
@@ -91,7 +92,7 @@ describe("profile Actions", () => {
 
       const result = await updateProfileServerAction(payload);
 
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
       expect(mockUpdateProfile).toHaveBeenCalledWith(
         expect.objectContaining({
           weightKg: 78.5,
@@ -115,7 +116,7 @@ describe("profile Actions", () => {
         highlights: { currentWeightKg: 70, targetWeightKg: 68, bodyFatPercent: 15 },
       });
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.message).toContain("gRPC network timeout");
     });
   });

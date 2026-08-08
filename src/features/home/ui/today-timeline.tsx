@@ -25,8 +25,8 @@ function EventIcon({ category }: { category: TodayItemCategory }) {
 
 export function TodayTimeline({
   items,
-  onGenerateRoadmap,
-  isGeneratingRoadmap = false,
+  onGenerateRoadmap: _onGenerateRoadmap,
+  isGeneratingRoadmap: _isGeneratingRoadmap = false,
 }: TodayTimelineProps) {
   if (items.length === 0) {
     return (
@@ -35,23 +35,19 @@ export function TodayTimeline({
           <Sparkles size={20} />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[var(--color-text)]">No active training roadmap</h3>
+          <h3 className="text-sm font-bold text-[var(--color-text)]">No workouts scheduled for today</h3>
           <p className="text-xs text-[var(--color-text-muted)] mt-1">
-            Generate your personalized 4-week AI training schedule or start an ad-hoc session.
+            Enjoy active recovery today, or view your full weekly schedule in Roadmap.
           </p>
         </div>
         <div className="pt-1 flex flex-wrap items-center justify-center gap-2">
-          {onGenerateRoadmap ? (
-            <button
-              onClick={onGenerateRoadmap}
-              disabled={isGeneratingRoadmap}
-              type="button"
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--color-action)] text-white hover:bg-[var(--color-action-hover)] transition-colors flex items-center gap-1.5 disabled:opacity-50"
-            >
-              <Sparkles size={14} />
-              <span>{isGeneratingRoadmap ? "Generating Roadmap..." : "Generate AI Roadmap"}</span>
-            </button>
-          ) : null}
+          <Link
+            href="/roadmap"
+            transitionTypes={NAV_FORWARD}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--color-action)] text-white hover:bg-[var(--color-action-hover)] transition-colors flex items-center gap-1.5"
+          >
+            <span>View Weekly Roadmap</span>
+          </Link>
           <Link
             href="/workouts/adhoc"
             transitionTypes={NAV_FORWARD}

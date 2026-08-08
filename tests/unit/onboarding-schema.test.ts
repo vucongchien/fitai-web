@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 
 
 import {
@@ -19,7 +20,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
       muscleFocus: ["Chest", "Back"],
     });
 
-    expect(result.success).toBeTruthy();
+    expect(result.success).toBe(true);
   });
 
   describe("goals validation", () => {
@@ -28,7 +29,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         goals: ["build-muscle"],
       });
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     it("accepts dual goal selection (Build Muscle + Fat Loss)", () => {
@@ -36,7 +37,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         goals: ["build-muscle", "fat-loss"],
       });
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     it("rejects empty goals array", () => {
@@ -44,17 +45,17 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         goals: [],
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Choose at least one goal.");
     });
   });
 
   describe("date of Birth & Age validation (14 to 90 years)", () => {
     it("validates age correctly with helper function", () => {
-      expect(validateAgeBetween("2000-01-01", 14, 90)).toBeTruthy();
-      expect(validateAgeBetween("2020-01-01", 14, 90)).toBeFalsy(); // Under 14
-      expect(validateAgeBetween("1910-01-01", 14, 90)).toBeFalsy(); // Over 90
-      expect(validateAgeBetween("invalid-date", 14, 90)).toBeFalsy();
+      expect(validateAgeBetween("2000-01-01", 14, 90)).toBe(true);
+      expect(validateAgeBetween("2020-01-01", 14, 90)).toBe(false); // Under 14
+      expect(validateAgeBetween("1910-01-01", 14, 90)).toBe(false); // Over 90
+      expect(validateAgeBetween("invalid-date", 14, 90)).toBe(false);
     });
 
     it("accepts a valid birthdate for a 25-year-old", () => {
@@ -62,7 +63,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         dateOfBirth: "1998-05-15",
       });
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     it("rejects birthdate for age under 14", () => {
@@ -72,7 +73,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         dateOfBirth: underAgeDob,
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Age must be between 14 and 90 years old.");
     });
 
@@ -81,7 +82,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         dateOfBirth: "1910-01-01",
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Age must be between 14 and 90 years old.");
     });
 
@@ -90,7 +91,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         dateOfBirth: "15/05/1998",
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Enter a valid date format (YYYY-MM-DD).");
     });
   });
@@ -101,7 +102,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         bodyFatPercent: 15.5,
       });
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     it("rejects body fat percentage below 5%", () => {
@@ -109,7 +110,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         bodyFatPercent: 3.5,
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Body fat must be at least 5%.");
     });
 
@@ -118,7 +119,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         bodyFatPercent: 65,
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Body fat must not exceed 60%.");
     });
   });
@@ -133,7 +134,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
           fri: ["06:00-07:30"],
         },
       });
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     it("accepts legacy string array workout slots", () => {
@@ -141,7 +142,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         preferredWorkoutTimes: ["Mon PM", "Wed PM", "Fri PM"],
       });
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     it("rejects empty workout time array", () => {
@@ -149,7 +150,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         preferredWorkoutTimes: [],
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Choose at least one preferred workout time window.");
     });
 
@@ -158,7 +159,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         preferredWorkoutTimes: {},
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Choose at least one preferred workout time window.");
     });
   });
@@ -169,7 +170,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         equipment: ["Full Gym", "Dumbbells", "Barbell", "Bodyweight", "Resistance Band"],
       });
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     it("rejects non-standard equipment name", () => {
@@ -177,7 +178,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         ...onboardingDefaults,
         equipment: ["Kettlebell Only" as any],
       });
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
     });
   });
 });

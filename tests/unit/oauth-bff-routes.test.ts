@@ -1,3 +1,4 @@
+import { it, afterEach, describe, expect, beforeEach } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";

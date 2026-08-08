@@ -54,8 +54,8 @@ export const onboardingSchema = z.object({
     ])
     .refine(
       (val) => {
-        if (!val) return false;
-        if (Array.isArray(val)) return val.length > 0;
+        if (!val) {return false;}
+        if (Array.isArray(val)) {return val.length > 0;}
         if (typeof val === "object") {
           return Object.values(val).some((slots) => Array.isArray(slots) && slots.length > 0);
         }

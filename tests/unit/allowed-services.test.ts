@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { describe, expect, it } from '@jest/globals';
 import { isAllowedRpcPath } from "@/shared/api/bff/allowed-services";
 
@@ -5,7 +6,7 @@ describe(isAllowedRpcPath, () => {
   it("allows user-facing coaching methods", () => {
     expect(
       isAllowedRpcPath("contracts.core.coaching.v1.service.CoachingService/GetActiveRoadmap"),
-    ).toBeTruthy();
+    ).toBe(true);
   });
 
   it("blocks admin services", () => {
@@ -13,12 +14,12 @@ describe(isAllowedRpcPath, () => {
       isAllowedRpcPath(
         "contracts.core.workout_execution.v1.service.AdminWorkoutExecutionService/GetHistory",
       ),
-    ).toBeFalsy();
+    ).toBe(false);
   });
 
   it("blocks malformed nested paths", () => {
     expect(
       isAllowedRpcPath("contracts.core.coaching.v1.service.CoachingService/GetRoadmap/extra"),
-    ).toBeFalsy();
+    ).toBe(false);
   });
 });

@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it } from 'vitest';
 import { afterEach, describe, expect, it, vi } from '@jest/globals';
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
@@ -69,7 +70,7 @@ describe(RestScreen, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Report pain" }));
 
-    expect(onReportPain).toHaveBeenCalledTimes(1);
+    expect(onReportPain).toHaveBeenCalledOnce();
   });
 
   it("labels the upcoming exercise and names it", () => {
@@ -119,8 +120,8 @@ describe(RestScreen, () => {
     fireEvent.click(screen.getByRole("button", { name: "+10 Seconds" }));
     fireEvent.click(screen.getByRole("button", { name: "Skip Rest" }));
 
-    expect(onAddTime).toHaveBeenCalledTimes(1);
-    expect(onSkipRest).toHaveBeenCalledTimes(1);
+    expect(onAddTime).toHaveBeenCalledOnce();
+    expect(onSkipRest).toHaveBeenCalledOnce();
   });
 
   it("explains the automatic transition", () => {

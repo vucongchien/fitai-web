@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
 import { StartWorkoutSessionRequestSchema } from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";

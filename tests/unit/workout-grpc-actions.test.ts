@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -167,7 +168,12 @@ describe("workout Execution gRPC Actions", () => {
       false,
     );
 
-    expect(mockCompleteWorkoutSession).toHaveBeenCalledWith();
+    expect(mockCompleteWorkoutSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: "sess-live-888",
+        confirmOverload: false,
+      }),
+    );
     expect(res.sessionId).toBe("sess-live-888");
     expect(res.totalSets).toBe(3);
     expect(res.totalVolumeKg).toBe(2400);

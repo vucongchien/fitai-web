@@ -100,7 +100,13 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
           </div>
           <div>
             <dt>Volume</dt>
-            <dd className="data-value">{`${formattedVolume} kg`}</dd>
+            <dd className="data-value">
+              {report.totalVolumeKg > 0 ? `${formattedVolume} kg` : "Bodyweight"}
+            </dd>
+          </div>
+          <div>
+            <dt>Completed Sets</dt>
+            <dd className="data-value">{`${report.totalSets} sets`}</dd>
           </div>
         </dl>
 

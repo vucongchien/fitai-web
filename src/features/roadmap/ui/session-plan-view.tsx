@@ -9,7 +9,6 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { ViewTransition } from "react";
 
 import type { SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { buttonVariants } from "@/shared/ui/button";
@@ -35,13 +34,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
           <p className="utility-label">
             {data.day ? `${data.day} · ${data.date}` : "Planned session"}
           </p>
-          <ViewTransition
-            default="none"
-            name={`session-plan-${data.sessionPlanId}`}
-            share="session-morph"
-          >
-            <h1>{data.title}</h1>
-          </ViewTransition>
+          <h1>{data.title}</h1>
           <p>{data.sessionDescription}</p>
           <div className="session-facts">
             <span>
@@ -63,7 +56,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
             </div>
             <ol>
               {data.exercises.map((exercise, index) => (
-                <li key={exercise.exerciseId}>
+                <li key={`${exercise.exerciseId}-${index}`}>
                   <span className="data-value">{String(index + 1).padStart(2, "0")}</span>
                   <div>
                     <strong>{exercise.name}</strong>

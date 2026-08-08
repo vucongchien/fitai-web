@@ -158,15 +158,31 @@ export function useLiveWorkoutEffects({
   // --- Audio cue player helper ---
   const playCueByCode = useCallback(
     (code: string, listening: boolean) => {
-      if (!listening || !spec) {
+      if (!listening) {
         return;
       }
-      const cue = spec.cues.find((entry) => entry.code === code);
-      if (cue) {
-        audio.playCue(cue, spec.cueCooldownSec[code] ?? 0);
+      if (spec) {
+        const cue = spec.cues.find((entry) => entry.code === code);
+        if (cue) {
+          audio.playCue(cue, spec.cueCooldownSec[code] ?? 0);
+          return;
+        }
+      }
+      // Fallback voice cue using TTS when audio MP3 cue is missing or exercise has no AI spec
+      if (code === "set-start") {
+        const exName = exercise?.name || "bài tập";
+        const repsOrTime = exercise?.durationSeconds
+          ? `${exercise.durationSeconds} giây`
+          : `${exercise?.targetReps ?? 10} cái`;
+        audio.speakText(`Bắt đầu ${exName}, mục tiêu ${repsOrTime}`);
+      } else if (code === "set-end") {
+        audio.speakText("Hoàn thành hiệp tập! Hãy nghỉ ngơi.");
+      } else if (code.startsWith("rule-")) {
+        const msg = code.replace("rule-", "").replace(/-/g, " ");
+        audio.speakText(msg);
       }
     },
-    [audio, spec],
+    [audio, exercise, spec],
   );
 
   // --- Set actions ---

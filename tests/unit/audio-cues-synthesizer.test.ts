@@ -1,8 +1,9 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
-import { playSyntheticCueTone } from "@/features/workout/domain/audio-cues";
+import { playSyntheticCueTone, speakText } from "@/features/workout/domain/audio-cues";
 
-describe("audio Cues Web Audio Synthesizer Fallback", () => {
+describe("audio Cues Web Audio & SpeechSynthesizer Fallback", () => {
   beforeEach(() => {
     vi.resetModules();
   });
@@ -14,6 +15,12 @@ describe("audio Cues Web Audio Synthesizer Fallback", () => {
       playSyntheticCueTone("good");
       playSyntheticCueTone("warning");
       playSyntheticCueTone("end");
+    }).not.toThrow();
+  });
+
+  it("safely executes text to speech without crashing in mock browser environment", () => {
+    expect(() => {
+      speakText("Bắt đầu bài tập squat");
     }).not.toThrow();
   });
 });

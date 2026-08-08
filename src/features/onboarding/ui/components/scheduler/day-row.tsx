@@ -3,12 +3,7 @@
 import { Plus, Trash2 } from "lucide-react";
 
 import { cn } from "@/shared/lib/cn";
-import {
-  type DayAvailability,
-  type DayKey,
-  type TimeOption,
-  type TimeRange,
-} from "./types";
+import type { DayAvailability, DayKey, TimeOption, TimeRange } from './types';
 
 interface DayRowProps {
   day: DayKey;
@@ -39,7 +34,7 @@ export function DayRow({
   };
 
   const handleAddRange = () => {
-    const lastRange = state.ranges[state.ranges.length - 1];
+    const lastRange = state.ranges.at(-1);
     let nextStart = "19:30";
     let nextEnd = "21:00";
 

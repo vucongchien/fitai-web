@@ -44,7 +44,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const audio = useAudioCoach(plan.playlists);
   const camera = useCameraStream();
 
-  const [listening, setListening] = useState(false);
+  const [listening, setListening] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
   const [guideOpen, setGuideOpen] = useState(false);
   const [endOpen, setEndOpen] = useState(false);
@@ -82,7 +82,29 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   // And the dialog is where the user chooses between finishing (which saves and
   // Shows the summary) and stopping early.
   const onBack = useCallback(() => setEndOpen(true), []);
-  const onToggleVoice = useCallback(() => setListening((value) => !value), []);
+  const onToggleVoice = useCallback(() => {
+    setListening((current) => {
+      const nextState = !current;
+      if (nextState) {
+        if (exercise) {
+          const textToRead = [
+            `Bài tập ${exercise.name}.`,
+            exercise.instructions ? `Hướng dẫn thực hiện: ${exercise.instructions}` : "",
+            exercise.breathingCue ? `Cách hít thở: ${exercise.breathingCue}` : "",
+            exercise.formCues.length > 0 ? `Lưu ý tư thế: ${exercise.formCues.join(", ")}` : "",
+          ]
+            .filter(Boolean)
+            .join(" ");
+          audio.speakText(textToRead);
+        }
+      } else {
+        if (typeof window !== "undefined" && "speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+        }
+      }
+      return nextState;
+    });
+  }, [audio, exercise]);
 
   // An AI set is only ready to run once the engine has loaded and the framing
   // Check passes. Starting before that would race `motion.prepare()` and count
@@ -233,7 +255,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         onToggleCamera={onToggleCamera}
         onToggleFullscreen={toggleFullscreen}
         onToggleVoice={onToggleVoice}
-        onWatchVideo={exercise.videoUrl ? () => setVideoOpen(true) : undefined}
+        onWatchVideo={undefined}
         repCount={cameraActive ? (motion.repCount ?? 0) : 0}
         secondsLeft={session.setLeft}
         setTotalSeconds={session.setTotal}
@@ -260,7 +282,11 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       ) : null}
 
       {guideOpen ? (
-        <InstructionsSheet exercise={exercise} onClose={() => setGuideOpen(false)} />
+        <InstructionsSheet
+          exercise={exercise}
+          onClose={() => setGuideOpen(false)}
+          onWatchVideo={exercise.videoUrl ? () => setVideoOpen(true) : undefined}
+        />
       ) : null}
 
       {videoOpen && exercise.videoUrl ? (

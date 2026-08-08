@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -64,7 +65,7 @@ describe("planning & Coaching gRPC Actions", () => {
     const res = await initiateRoadmapServerAction();
 
     expect(mockInitiateRoadmap).toHaveBeenCalledWith({ userId: "usr-plan-456" });
-    expect(res.success).toBeTruthy();
+    expect(res.success).toBe(true);
     expect(res.roadmapId).toBe("rdm-999");
   });
 
@@ -85,7 +86,7 @@ describe("planning & Coaching gRPC Actions", () => {
       roadmapId: "rdm-999",
       reason: "Injury reported",
     });
-    expect(res.success).toBeTruthy();
+    expect(res.success).toBe(true);
   });
 
   it("createAdhocSessionPlanServerAction builds flexible adhoc workout", async () => {
@@ -104,7 +105,7 @@ describe("planning & Coaching gRPC Actions", () => {
       userId: "usr-plan-456",
       exerciseIds: ["ex-bench", "ex-squat"],
     });
-    expect(res.success).toBeTruthy();
+    expect(res.success).toBe(true);
     expect(res.sessionPlanId).toBe("adhoc-plan-888");
   });
 });

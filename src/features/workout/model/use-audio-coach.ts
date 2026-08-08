@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { playSyntheticCueTone } from "@/features/workout/domain/audio-cues";
+import { playSyntheticCueTone, speakText } from "@/features/workout/domain/audio-cues";
 import type { CoachCue, MusicTrack, Playlist } from "@/features/workout/model/live-session.types";
 
 /**
@@ -242,11 +242,13 @@ export function useAudioCoach(playlists: Playlist[]) {
     element.onerror = () => {
       setAudioUnavailable(true);
       playSyntheticCueTone(cue.severity === 2 ? "warning" : "good");
+      speakText(cue.text);
       finish();
     };
     void element.play().catch(() => {
       setAudioUnavailable(true);
       playSyntheticCueTone(cue.severity === 2 ? "warning" : "good");
+      speakText(cue.text);
       finish();
     });
   }, [duckMusic]);
@@ -304,6 +306,7 @@ export function useAudioCoach(playlists: Playlist[]) {
     previous,
     changeVolume,
     playCue,
+    speakText,
     stopAll,
   };
 }

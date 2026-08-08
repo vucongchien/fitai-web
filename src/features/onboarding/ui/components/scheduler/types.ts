@@ -24,8 +24,8 @@ export const WEEKDAYS: WeekdayItem[] = [
 
 export interface TimeRange {
   id: string;
-  start: string; // e.g. "06:00" or "17:30"
-  end: string;   // e.g. "07:30" or "19:00"
+  start: string; // E.g. "06:00" or "17:30"
+  end: string;   // E.g. "07:30" or "19:00"
 }
 
 export interface DayAvailability {
@@ -127,7 +127,7 @@ export function mapToWeekAvailability(inputMap: Partial<Record<DayKey, string[]>
   // Array format
   if (Array.isArray(inputMap)) {
     for (const item of inputMap) {
-      if (typeof item !== "string") continue;
+      if (typeof item !== "string") {continue;}
       const colonIdx = item.indexOf(":");
       if (colonIdx > 0) {
         const dayKey = item.slice(0, colonIdx).trim().toLowerCase() as DayKey;

@@ -8,9 +8,9 @@ import { PageTransition } from "@/shared/ui/page-transition";
 
 export const metadata = { title: "Workout" };
 
-async function WorkoutStatsContent() {
+async function WorkoutStatsContent({ children }: { children?: React.ReactNode }) {
   const data = await getWorkoutStatsData();
-  return <WorkoutStatsPanel data={data} />;
+  return <WorkoutStatsPanel data={data}>{children}</WorkoutStatsPanel>;
 }
 
 async function RoadmapContent() {
@@ -50,11 +50,11 @@ export default function RoadmapPage() {
       </header>
 
       <Suspense fallback={STATS_FALLBACK}>
-        <WorkoutStatsContent />
-      </Suspense>
-
-      <Suspense fallback={ROADMAP_FALLBACK}>
-        <RoadmapContent />
+        <WorkoutStatsContent>
+          <Suspense fallback={ROADMAP_FALLBACK}>
+            <RoadmapContent />
+          </Suspense>
+        </WorkoutStatsContent>
       </Suspense>
     </PageTransition>
   );

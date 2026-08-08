@@ -1,6 +1,5 @@
 import { Check, ChevronRight, Moon, Play, SkipForward } from "lucide-react";
 import Link from "next/link";
-import { ViewTransition } from "react";
 
 import type { SessionSummary } from "@/features/roadmap/model/roadmap-page.types";
 import { cn } from "@/shared/lib/cn";
@@ -35,7 +34,7 @@ function StatusIcon({ status }: { status: SessionSummary["status"] }) {
   return <span aria-hidden="true" className="week-route__planned-dot" />;
 }
 
-export function WeekRoute({ morphNextSession = true, sessions }: WeekRouteProps) {
+export function WeekRoute({ sessions }: WeekRouteProps) {
   return (
     <ol className="week-route">
       {sessions.map((session) => {
@@ -49,17 +48,7 @@ export function WeekRoute({ morphNextSession = true, sessions }: WeekRouteProps)
               <span>{session.date}</span>
             </div>
             <div className="week-route__session">
-              <ViewTransition
-                default="none"
-                name={
-                  morphNextSession && session.status === "next"
-                    ? `session-plan-${session.id}`
-                    : undefined
-                }
-                share={morphNextSession && session.status === "next" ? "session-morph" : undefined}
-              >
-                <strong>{session.title}</strong>
-              </ViewTransition>
+              <strong>{session.title}</strong>
               <span>
                 {statusLabel[session.status]} · {session.time}
               </span>
