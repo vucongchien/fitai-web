@@ -11,6 +11,8 @@ export const metadata = { title: "Adhoc Workout — Custom Plan" };
 /** Hoisted so the array identity is stable across renders. */
 const NAV_BACK = ["nav-back"];
 
+import { Suspense } from "react";
+
 export default function AdhocWorkoutPage() {
   return (
     <PageTransition className="workout-prep-page adhoc-workout-page">
@@ -28,7 +30,9 @@ export default function AdhocWorkoutPage() {
       </header>
 
       <main className="workout-prep-main">
-        <AdhocWorkoutBuilder />
+        <Suspense fallback={<div className="p-8 text-center text-sm text-neutral-400">Loading workout builder...</div>}>
+          <AdhocWorkoutBuilder />
+        </Suspense>
       </main>
     </PageTransition>
   );

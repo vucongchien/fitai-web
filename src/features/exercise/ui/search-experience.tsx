@@ -29,18 +29,24 @@ interface SearchExperienceProps {
 }
 
 function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): ExerciseFilters {
+  const queryVal = params.get("q") || params.get("query") || "";
   const bodyPartIds = params
     .getAll("body")
-    .filter((id) => catalog.bodyParts.some((entry) => entry.id === id));
+    .map((b) => catalog.bodyParts.find((entry) => entry.id.toLowerCase() === b.toLowerCase() || entry.name.toLowerCase() === b.toLowerCase())?.id)
+    .filter((id): id is string => Boolean(id));
+
   const equipmentIds = params
     .getAll("equipment")
-    .filter((id) => catalog.equipments.some((entry) => entry.id === id));
+    .map((eq) => catalog.equipments.find((entry) => entry.id.toLowerCase() === eq.toLowerCase() || entry.name.toLowerCase() === eq.toLowerCase())?.id)
+    .filter((id): id is string => Boolean(id));
+
   const tagIds = params.getAll("tag").filter((id) => catalog.tags.some((entry) => entry.id === id));
   const difficulty = params
     .getAll("level")
     .filter((entry): entry is Difficulty => DIFFICULTY_ORDER.includes(entry as Difficulty));
+
   return {
-    q: params.get("q") ?? "",
+    q: queryVal,
     bodyPartIds,
     equipmentIds,
     difficulty,

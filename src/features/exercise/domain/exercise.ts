@@ -33,6 +33,7 @@ export interface ExerciseSummary {
   secondaryMuscleIds: string[];
   thumbnailUrl?: string;
   videoUrl?: string;
+  mediaUrl?: string;
   difficulty: Difficulty;
   defaultRestSeconds: number;
   tagIds: string[];

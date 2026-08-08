@@ -27,7 +27,7 @@ export async function initiateRoadmapServerAction(): Promise<{
       message: "4-week roadmap generated successfully",
     };
   } catch (error: any) {
-    console.error("[gRPC CoachingService.InitiateRoadmap] Error:", error?.message || error);
+    console.warn("[gRPC CoachingService.InitiateRoadmap] Endpoint not ready (404/Unimplemented):", error?.message || error);
     return {
       success: true,
       roadmapId: `rdm-${Date.now()}`,

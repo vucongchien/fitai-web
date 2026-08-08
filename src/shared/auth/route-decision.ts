@@ -1,4 +1,4 @@
-export type EntryRoute = "/home" | "/login" | "/onboarding" | "/planning";
+export type EntryRoute = "/home" | "/login" | "/onboarding";
 
 interface EntryState {
   hasActiveRoadmap: boolean;
@@ -7,7 +7,7 @@ interface EntryState {
 }
 
 export function resolveEntryRoute({
-  hasActiveRoadmap,
+  hasActiveRoadmap: _hasActiveRoadmap,
   hasValidSession,
   profileCompletionRate,
 }: EntryState): EntryRoute {
@@ -17,5 +17,5 @@ export function resolveEntryRoute({
   if (!Number.isFinite(profileCompletionRate) || profileCompletionRate < 80) {
     return "/onboarding";
   }
-  return hasActiveRoadmap ? "/home" : "/planning";
+  return "/home";
 }

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const target = searchParams.get("target") ?? "new";
 
-  const dest = target === "existing" ? "/planning" : "/onboarding";
+  const dest = target === "existing" ? "/home" : "/onboarding";
   const userId = target === "existing" ? "dev_user_existing" : "dev_user_new";
 
   const response = NextResponse.redirect(new URL(dest, origin));

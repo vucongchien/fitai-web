@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import "server-only";
 
 import { createClient } from "@connectrpc/connect";
@@ -12,9 +14,12 @@ import { mapRawDataToProfileViewModel } from "../model/profile.mapper";
 import type { ProfileViewModel } from "../model/profile.types";
 
 export async function getProfileData(): Promise<ProfileViewModel> {
-  const { accessToken, userId } = await getAuthenticatedSession();
+  const { accessToken, userId, userName } = await getAuthenticatedSession();
+  if (!accessToken) {
+    redirect("/login");
+  }
 
-  let athleteName = "Emma Nguyen";
+  let athleteName = userName || (userId ? `Athlete ${userId.slice(-4)}` : "Athlete");
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {
@@ -23,12 +28,15 @@ export async function getProfileData(): Promise<ProfileViewModel> {
       const workoutClient = createClient(WorkoutExecutionService, transport);
       const notificationClient = createClient(NotificationService, transport);
 
+      console.info("[getProfileData] Calling gRPC for userId=", userId);
       const [profileRes, prsRes, notificationRes, historyRes] = await Promise.allSettled([
         profileClient.getProfile({ userId: userId || "" }),
         workoutClient.getPersonalRecords({}),
         notificationClient.getNotificationSettings({ userId: userId || "" }),
         workoutClient.getWorkoutHistory({ limit: 50, offset: 0 }),
       ]);
+
+      console.info("[getProfileData] profileRes status:", profileRes.status, profileRes.status === "fulfilled" ? profileRes.value : profileRes.reason);
 
       const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
       const prListProto = prsRes.status === "fulfilled" ? prsRes.value.records : [];
@@ -49,8 +57,9 @@ export async function getProfileData(): Promise<ProfileViewModel> {
         return mapRawDataToProfileViewModel({
           user: {
             id: profileProto.userId || userId || "usr-me",
-            name: athleteName,
+            name: profileProto.fullName || athleteName,
             avatarUrl:
+              profileProto.avatarUrl ||
               "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
             level: userLevel,
           },

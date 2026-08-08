@@ -3,7 +3,7 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
@@ -18,10 +18,32 @@ import { useToast } from "@/shared/ui/toast/toast-context";
 
 export function useAdhocWorkout() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { showToast } = useToast();
 
   const [mounted, setMounted] = useState(false);
-  const [exerciseList, setExerciseList] = useState<AdhocExercise[]>([]);
+  const [exerciseList, setExerciseList] = useState<AdhocExercise[]>(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetId = urlParams.get("exerciseId");
+      const targetName = urlParams.get("name") || urlParams.get("exerciseName");
+      const targetPrescription = urlParams.get("prescription");
+
+      if (targetId || targetName) {
+        const matched: ExerciseResult = {
+          id: targetId || `ex-${Date.now()}`,
+          name: targetName || "Selected Movement",
+          equipmentId: "eq-standard",
+          isWeighted: true,
+          prescription: targetPrescription || "3 × 10",
+          rest: "90 sec",
+          note: "",
+        };
+        return [toAdhocExercise(matched, String(Date.now()))];
+      }
+    }
+    return [];
+  });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [editingExercise, setEditingExercise] = useState<AdhocExercise | null>(null);
   const [targetRpe, setTargetRpe] = useState(6.5);
@@ -30,16 +52,34 @@ export function useAdhocWorkout() {
   const [configPending, startConfigTransition] = useTransition();
   const [sessionPending, startSessionTransition] = useTransition();
 
-  // Mount + load initial config từ BFF (Server Action)
+  // Mount + load initial config từ BFF / URL searchParams
   useEffect(() => {
     setMounted(true);
+    const targetExerciseId = searchParams.get("exerciseId");
+    const targetName = searchParams.get("name") || searchParams.get("exerciseName");
+    const targetPrescription = searchParams.get("prescription");
+
+    if (targetExerciseId || targetName) {
+      const matched: ExerciseResult = {
+        id: targetExerciseId || `ex-${Date.now()}`,
+        name: targetName || "Selected Movement",
+        equipmentId: "eq-standard",
+        isWeighted: true,
+        prescription: targetPrescription || "3 × 10",
+        rest: "90 sec",
+        note: "",
+      };
+
+      setExerciseList([toAdhocExercise(matched, String(Date.now()))]);
+      return;
+    }
 
     startConfigTransition(async () => {
       const config = await getAdhocConfig();
       setTargetRpe(config.targetRpe);
       setExerciseList(config.defaultExercises.map((ex) => toAdhocExercise(ex)));
     });
-  }, []);
+  }, [searchParams]);
 
   // DND-Kit Sensors
   const sensors = useSensors(

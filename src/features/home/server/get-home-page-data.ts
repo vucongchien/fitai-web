@@ -1,16 +1,25 @@
+import { redirect } from "next/navigation";
+
 import "server-only";
 
 import { createClient } from "@connectrpc/connect";
 
 import type {
   EvidenceItem,
+  FeaturedExerciseItem,
   HomePageData,
+  MuscleGroupCategoryItem,
   QuickAction,
   TodayTimelineItem,
 } from "@/features/home/model/home-page.types";
+import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
+import type { ExerciseSummary } from "@/features/exercise/domain/exercise";
+import { getProfileData } from "@/features/profile/server/get-profile-data";
+import type { ProfileViewModel } from "@/features/profile/model/profile.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
+import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
@@ -39,11 +48,87 @@ const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
   },
 ];
 
+const DEFAULT_MUSCLE_GROUPS: MuscleGroupCategoryItem[] = [
+  {
+    id: "full-body",
+    name: "Full Body",
+    labelVi: "ALL MUSCLES",
+    icon: "activity",
+    bgGradient: "var(--color-surface)",
+    accentColor: "var(--color-border)",
+    queryParam: "Full Body",
+  },
+  {
+    id: "arms",
+    name: "Arms & Shoulders",
+    labelVi: "BICEPS & DELTS",
+    icon: "biceps",
+    bgGradient: "var(--color-surface)",
+    accentColor: "var(--color-border)",
+    queryParam: "Biceps",
+  },
+  {
+    id: "core",
+    name: "Core & Abs",
+    labelVi: "MIDSECTION",
+    icon: "flame",
+    bgGradient: "var(--color-surface)",
+    accentColor: "var(--color-border)",
+    queryParam: "Core",
+  },
+  {
+    id: "legs",
+    name: "Legs & Glutes",
+    labelVi: "LOWER BODY",
+    icon: "dumbbell",
+    bgGradient: "var(--color-surface)",
+    accentColor: "var(--color-border)",
+    queryParam: "Legs",
+  },
+  {
+    id: "chest-back",
+    name: "Chest & Back",
+    labelVi: "UPPER PUSH/PULL",
+    icon: "target",
+    bgGradient: "var(--color-surface)",
+    accentColor: "var(--color-border)",
+    queryParam: "Chest",
+  },
+];
+
+function isUuid(str?: string): boolean {
+  if (!str) return false;
+  const trimmed = str.trim();
+  return (
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
+    /^[0-9a-fA-F-]{24,}$/.test(trimmed)
+  );
+}
+
+function computeProfileCompletion(profileVm: ProfileViewModel): { rate: number; missingFields: string[] } {
+  let score = 0;
+  const missing: string[] = [];
+
+  if (profileVm.highlights.currentWeightKg > 0) score += 20; else missing.push("Weight");
+  if (profileVm.healthMetrics.heightCm > 0) score += 20; else missing.push("Height");
+  if (profileVm.user.dateOfBirth || (profileVm.user.gender && profileVm.user.gender !== "Not set")) score += 20; else missing.push("Personal Details");
+  if (profileVm.healthMetrics.goals && profileVm.healthMetrics.goals.length > 0) score += 20; else missing.push("Training Goals");
+  if (profileVm.user.experienceLevel || (profileVm.settings.availableEquipment && profileVm.settings.availableEquipment.length > 0)) score += 20; else missing.push("Equipment & Setup");
+
+  return { rate: score, missingFields: missing };
+}
+
 /**
  * Server Action lấy dữ liệu trang chủ thật từ các gRPC Services
  */
 export async function getHomePageData(): Promise<HomePageData> {
-  const { accessToken, userId } = await getAuthenticatedSession();
+  const { accessToken, userId, userName } = await getAuthenticatedSession();
+  if (!accessToken) {
+    redirect("/login");
+  }
+
+  const profileVm = await getProfileData();
+  const { rate: computedRate, missingFields: computedMissing } = computeProfileCompletion(profileVm);
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {
@@ -52,36 +137,90 @@ export async function getHomePageData(): Promise<HomePageData> {
       const nutritionClient = createClient(NutritionService, transport);
       const workoutClient = createClient(WorkoutExecutionService, transport);
       const profileClient = createClient(ProfileService, transport);
+      const exerciseClient = createClient(ExerciseService, transport);
 
-      const [roadmapRes, nutritionRes, menuRes, historyRes, profileRes] =
+      const [roadmapRes, nutritionRes, menuRes, historyRes, profileRes, exerciseRes, catalog] =
         await Promise.allSettled([
           coachingClient.getActiveRoadmap({ userId: userId || "" }),
           nutritionClient.getNutritionSummary({ userId: userId || "" }),
           nutritionClient.getTodayMenu({ userId: userId || "" }),
           workoutClient.getWorkoutHistory({ limit: 20, offset: 0 }),
           profileClient.getProfile({ userId: userId || "" }),
+          exerciseClient.searchExercises({ keyword: "", limit: 4 }),
+          exerciseSearchRepository.getCatalog(),
         ]);
 
       let roadmap = roadmapRes.status === "fulfilled" ? roadmapRes.value.roadmap : undefined;
       const nutrition = nutritionRes.status === "fulfilled" ? nutritionRes.value : undefined;
       const menu = menuRes.status === "fulfilled" ? menuRes.value : undefined;
       const history = historyRes.status === "fulfilled" ? historyRes.value.sessions : [];
-      const profile = profileRes.status === "fulfilled" ? profileRes.value : undefined;
+      const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
+      const catalogData = catalog.status === "fulfilled" ? catalog.value : { bodyParts: [], muscles: [], equipments: [] };
 
-      // Nếu chưa có active roadmap, tự động kích hoạt khởi tạo roadmap đầu tiên từ profile
-      if (!roadmap && userId) {
-        try {
-          const newRoadmap = await coachingClient.initiateRoadmap({ userId });
-          roadmap = newRoadmap.roadmap;
-        } catch {
-          // Ignore error
-        }
+      const bodyPartMap = new Map(catalogData.bodyParts.map((b) => [b.id, b.name]));
+      const muscleMap = new Map((catalogData.muscles || []).map((m) => [m.id, m.name]));
+      const equipmentMap = new Map(catalogData.equipments.map((e) => [e.id, e.name]));
+
+      const resolveMuscleGroup = (targetId?: string, bodyPartId?: string): string => {
+        if (targetId && muscleMap.has(targetId)) return muscleMap.get(targetId)!.toUpperCase();
+        if (bodyPartId && bodyPartMap.has(bodyPartId)) return bodyPartMap.get(bodyPartId)!.toUpperCase();
+        if (targetId && !isUuid(targetId)) return targetId.toUpperCase();
+        if (bodyPartId && !isUuid(bodyPartId)) return bodyPartId.toUpperCase();
+        return "FULL BODY";
+      };
+
+      const resolveEquipment = (eqId?: string): string => {
+        if (eqId && equipmentMap.has(eqId)) return equipmentMap.get(eqId)!;
+        if (eqId && !isUuid(eqId)) return eqId;
+        return "";
+      };
+
+      let featuredExercises: FeaturedExerciseItem[] = [];
+
+      if (exerciseRes.status === "fulfilled" && exerciseRes.value.exercises?.length) {
+        featuredExercises = exerciseRes.value.exercises.slice(0, 4).map((ex, idx) => ({
+          id: ex.id || `ex-${idx}`,
+          name: ex.name,
+          muscleGroup: resolveMuscleGroup(ex.targetMuscleId, ex.bodyPartId),
+          equipment: resolveEquipment(ex.equipmentId),
+          durationMins: ex.defaultRestSeconds ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60)) : 10,
+          prescription: "3 × 10 reps",
+          isWeighted: ex.equipmentId ? ex.equipmentId.toLowerCase() !== "bodyweight" : true,
+          imageUrl: ex.thumbnailUrl || ex.mediaUrl || ex.videoUrl || undefined,
+        }));
+      } else {
+        const repoResults = await exerciseSearchRepository.search({
+          q: "",
+          bodyPartIds: [],
+          equipmentIds: [],
+          difficulty: [],
+          tagIds: [],
+          aiOnly: false,
+        });
+        featuredExercises = repoResults.slice(0, 4).map((ex: ExerciseSummary) => ({
+          id: ex.id,
+          name: ex.name,
+          muscleGroup: resolveMuscleGroup(ex.targetMuscleId, ex.bodyPartId),
+          equipment: resolveEquipment(ex.equipmentId),
+          durationMins: ex.defaultRestSeconds ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60)) : 10,
+          prescription: "3 × 10 reps",
+          isWeighted: ex.equipmentId !== "bodyweight",
+          imageUrl: ex.thumbnailUrl || undefined,
+        }));
       }
 
-      // Dựng timeline từ Roadmap session plans và Bữa ăn thật
+      let completionRate = computedRate;
+      let missingFields = computedMissing;
+
+      if (profileProto && typeof profileProto.completionRate === "number" && profileProto.completionRate > 0) {
+        completionRate = Math.round(profileProto.completionRate <= 1 ? profileProto.completionRate * 100 : profileProto.completionRate);
+        missingFields = completionRate >= 100 ? [] : computedMissing;
+      }
+
+
+
       const todayTimeline: TodayTimelineItem[] = [];
 
-      // 1. Workout Session Plan hôm nay từ Roadmap
       if (roadmap?.weekPlans?.length) {
         const currentWeek = roadmap.weekPlans[0];
         if (currentWeek?.dayPlans?.length) {
@@ -101,7 +240,6 @@ export async function getHomePageData(): Promise<HomePageData> {
         }
       }
 
-      // 2. Bữa ăn hôm nay từ Nutrition TodayMenu gRPC
       if (menu?.meals) {
         const mealsObj = menu.meals as any;
         if (Array.isArray(mealsObj.breakfast) && mealsObj.breakfast.length > 0) {
@@ -139,10 +277,8 @@ export async function getHomePageData(): Promise<HomePageData> {
         }
       }
 
-      // Sắp xếp timeline theo mốc thời gian HH:mm
       todayTimeline.sort((a, b) => a.time.localeCompare(b.time));
 
-      // Dựng bằng chứng tập luyện từ lịch sử thật
       const lastSession = history.length > 0 ? history[0] : null;
       const evidenceItems: EvidenceItem[] = [
         {
@@ -168,33 +304,18 @@ export async function getHomePageData(): Promise<HomePageData> {
         (roadmap?.weekPlans?.[0]
           ? `Week ${roadmap.weekPlans[0].weekNumber} Target RPE: ${roadmap.weekPlans[0].targetRpe}`
           : null) ||
-        (profile?.coachStyle
-          ? `AI Coach (${profile.coachStyle}) is active and monitoring your progress.`
-          : "Your personalized AI roadmap is active. Ready for your session."); //hard code: fallback generic greeting if reasoning or plan is not set
-
-      if (!roadmap) {
-        return {
-          streak: { days: 0 },
-          coachNote: null,
-          todayTimeline: [],
-          evidenceItems: [],
-          nutritionSummary: {
-            loggedKcal: nutrition?.consumedCalories ?? 0,
-            targetKcal: nutrition?.targetCalories ?? 2000,
-          },
-          quickActions: DEFAULT_QUICK_ACTIONS,
-          error: {
-            type: "NO_ROADMAP",
-            message: "Active roadmap not found.",
-          },
-        };
-      }
+        (profileProto?.coachStyle
+          ? `AI Coach (${profileProto.coachStyle}) is active and monitoring your progress.`
+          : "Your personalized AI roadmap is active. Ready for your session.");
 
       const streakDays = history.length > 0 ? Math.min(history.length, 30) : 0;
 
       return {
         streak: { days: streakDays },
         coachNote,
+        userName,
+        profileCompletionRate: completionRate,
+        missingFields,
         todayTimeline,
         evidenceItems,
         nutritionSummary: {
@@ -202,38 +323,47 @@ export async function getHomePageData(): Promise<HomePageData> {
           targetKcal: nutrition?.targetCalories ?? 2000,
         },
         quickActions: DEFAULT_QUICK_ACTIONS,
+        featuredExercises,
+        muscleGroups: DEFAULT_MUSCLE_GROUPS,
       };
     } catch (error) {
       console.warn("[getHomePageData] gRPC error:", error);
-      return {
-        streak: { days: 0 },
-        coachNote: null,
-        todayTimeline: [],
-        evidenceItems: [],
-        nutritionSummary: { loggedKcal: 0, targetKcal: 2000 },
-        quickActions: DEFAULT_QUICK_ACTIONS,
-        error: {
-          type: "CONNECTION_ERROR",
-          message: error instanceof Error ? error.message : "Connection reset",
-        },
-      };
     }
   }
 
-  // Fallback sạch cho trạng thái rỗng của người dùng mới khi chưa kết nối gRPC server
+  const fallbackRepoResults = await exerciseSearchRepository.search({
+    q: "",
+    bodyPartIds: [],
+    equipmentIds: [],
+    difficulty: [],
+    tagIds: [],
+    aiOnly: false,
+  });
+  const fallbackFeatured: FeaturedExerciseItem[] = fallbackRepoResults.map((ex: ExerciseSummary) => ({
+    id: ex.id,
+    name: ex.name,
+    muscleGroup: ex.bodyPartId && !isUuid(ex.bodyPartId) ? ex.bodyPartId.toUpperCase() : "FULL BODY",
+    equipment: ex.equipmentId && !isUuid(ex.equipmentId) ? ex.equipmentId : "",
+    durationMins: ex.defaultRestSeconds ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60)) : 10,
+    prescription: "3 × 10 reps",
+    isWeighted: ex.equipmentId !== "bodyweight",
+    imageUrl: ex.thumbnailUrl || undefined,
+  }));
+
   return {
     streak: { days: 0 },
     coachNote: null,
+    userName,
+    profileCompletionRate: computedRate,
+    missingFields: computedMissing,
     todayTimeline: [],
     evidenceItems: [],
     nutritionSummary: {
       loggedKcal: 0,
-      targetKcal: 2000, //hard code: offline fallback target calories
+      targetKcal: 2000,
     },
     quickActions: DEFAULT_QUICK_ACTIONS,
-    error: {
-      type: "CONNECTION_ERROR",
-      message: "gRPC backend address not configured.",
-    },
+    featuredExercises: fallbackFeatured,
+    muscleGroups: DEFAULT_MUSCLE_GROUPS,
   };
 }

@@ -36,13 +36,39 @@ export interface StreakInfo {
   days: number;
 }
 
+export interface MuscleGroupCategoryItem {
+  id: string;
+  name: string;
+  labelVi: string;
+  icon: string;
+  bgGradient: string;
+  accentColor: string;
+  queryParam: string;
+}
+
+export interface FeaturedExerciseItem {
+  id: string;
+  name: string;
+  muscleGroup: string;
+  equipment: string;
+  durationMins: number;
+  prescription: string;
+  isWeighted: boolean;
+  imageUrl?: string;
+}
+
 export interface HomePageData {
   streak: StreakInfo;
   coachNote: string | null;
+  userName?: string;
+  profileCompletionRate: number;
+  missingFields?: string[];
   todayTimeline: TodayTimelineItem[];
   evidenceItems: EvidenceItem[];
   nutritionSummary: NutritionSummary;
   quickActions: QuickAction[];
+  featuredExercises: FeaturedExerciseItem[];
+  muscleGroups: MuscleGroupCategoryItem[];
   error?: {
     type: "CONNECTION_ERROR" | "NO_ROADMAP";
     message: string;

@@ -224,18 +224,8 @@ export function mapRawDataToProfileViewModel(raw: {
         })
       : [];
 
-  //hard code: Fallback default personal record when user doesn't have any recorded PRs
-  const defaultBestPr: BestPersonalRecord = {
-    exerciseId: "bench-press",
-    exerciseName: "Barbell Bench Press",
-    weightKg: 60,
-    reps: 1,
-    oneRepMax: 60,
-    achievedAt: new Date().toISOString().split("T")[0],
-  };
-
   const bestPr =
-    rawPrs.length > 0 ? [...rawPrs].sort((a, b) => b.oneRepMax - a.oneRepMax)[0] : defaultBestPr;
+    rawPrs.length > 0 ? [...rawPrs].sort((a, b) => b.oneRepMax - a.oneRepMax)[0] : null;
 
   const healthMetrics: HealthMetricsDetail = {
     heightCm: height,
@@ -248,14 +238,15 @@ export function mapRawDataToProfileViewModel(raw: {
     ),
   };
 
-  const userName = raw.user?.name || "Emma Nguyen"; //hard code: Fallback default user name if profile data is empty
-
+  const userName = raw.user?.name || profile.fullName || "Athlete";
+  console.log(raw.user);
   return {
     user: {
       id: raw.user?.id || profile.userId || "usr-me",
       name: userName,
       avatarUrl:
         raw.user?.avatarUrl ||
+        profile.avatarUrl ||
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
       level: raw.user?.level || 1,
       experienceLevel: translateExperienceLevel(profile.experienceLevel || ""),

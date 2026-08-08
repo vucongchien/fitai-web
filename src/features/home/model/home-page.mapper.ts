@@ -18,9 +18,12 @@ export function adaptHomePageData(roadmapRes: unknown, nutritionRes: unknown): H
   return {
     streak: { days: 0 }, // TODO: roadmapRes.streak.days
     coachNote: null, // TODO: roadmapRes.coachNote
+    profileCompletionRate: 60,
     todayTimeline: adaptTodayTimeline(roadmapRes),
     evidenceItems: [], // TODO: roadmapRes.evidenceItems
     nutritionSummary: adaptNutritionSummary(nutritionRes),
     quickActions: [], // TODO: static or from config service
+    featuredExercises: [],
+    muscleGroups: [],
   };
 }

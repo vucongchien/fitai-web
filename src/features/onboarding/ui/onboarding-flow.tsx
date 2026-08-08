@@ -267,11 +267,11 @@ export function OnboardingFlow() {
     try {
       await saveOnboardingProfileServerAction(values);
       sessionStorage.setItem("fitai-onboarding-complete", "true");
-      router.push("/planning", { transitionTypes: ["nav-forward"] });
+      router.push("/home", { transitionTypes: ["nav-forward"] });
     } catch (error) {
       console.error("Failed to submit onboarding via gRPC:", error);
       sessionStorage.setItem("fitai-onboarding-complete", "true");
-      router.push("/planning", { transitionTypes: ["nav-forward"] });
+      router.push("/home", { transitionTypes: ["nav-forward"] });
     } finally {
       setIsSubmitting(false);
     }

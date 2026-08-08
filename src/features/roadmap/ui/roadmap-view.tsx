@@ -9,7 +9,7 @@ import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.type
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 import { FeedbackState } from "@/shared/ui/feedback-state";
-import { initiateRoadmapServerAction } from "@/features/planning/server/planning-actions";
+import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 
 interface RoadmapViewProps {
   data: RoadmapPageData;

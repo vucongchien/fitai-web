@@ -9,7 +9,7 @@ import { getAccessToken } from "@/shared/auth/session";
 import type { ProfileViewModel } from "../model/profile.types";
 import { getProfileData } from "./get-profile-data";
 
-export async function mapGoalToEnum(goal: string): Promise<string> {
+function mapGoalToEnum(goal: string): string {
   const upper = goal?.toUpperCase() || "";
   if (upper.includes("FAT") || upper.includes("LOSE") || upper === "FAT_LOSS") {
     return "FAT_LOSS";
@@ -23,7 +23,7 @@ export async function mapGoalToEnum(goal: string): Promise<string> {
   return "BUILD_MUSCLE";
 }
 
-export async function mapEquipmentToEnum(equipment: string): Promise<string> {
+function mapEquipmentToEnum(equipment: string): string {
   const upper = equipment?.toUpperCase() || "";
   if (upper.includes("FULL GYM") || upper.includes("FULL_GYM") || upper.includes("CABLE")) {
     return "FULL_GYM";
@@ -46,7 +46,7 @@ export async function mapEquipmentToEnum(equipment: string): Promise<string> {
   return "BODYWEIGHT";
 }
 
-export async function mapCoachStyleToEnum(style: string): Promise<string> {
+function mapCoachStyleToEnum(style: string): string {
   switch (style?.toLowerCase()) {
     case "strict":
     case "direct":

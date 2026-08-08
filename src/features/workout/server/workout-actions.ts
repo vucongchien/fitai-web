@@ -16,51 +16,35 @@ import type {
 } from "@/features/workout/model/workout.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
-import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
 
-
+import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
 
 /**
  * Search exercise library.
- * gRPC: ExerciseService.searchExercises
+ * gRPC: ExerciseService.searchExercises with repository fallback
  */
 export async function searchExercises(query: string): Promise<ExerciseResult[]> {
-  const accessToken = await getAccessToken();
+  const results = await exerciseSearchRepository.search({
+    q: query,
+    bodyPartIds: [],
+    equipmentIds: [],
+    difficulty: [],
+    tagIds: [],
+    aiOnly: false,
+  });
 
-  if (process.env.FITAI_RPC_URL && accessToken) {
-    try {
-      const transport = createServerTransport(accessToken);
-      const exerciseClient = createClient(ExerciseService, transport);
-
-      const [searchRes, metaRes] = await Promise.all([
-        exerciseClient.searchExercises({ keyword: query, limit: 20 }),
-        exerciseClient.getCatalogMetadata({}),
-      ]);
-
-      const equipmentMap = new Map(metaRes.equipments.map((e) => [e.id, e]));
-
-      return searchRes.exercises.map((ex) => {
-        const equipment = equipmentMap.get(ex.equipmentId);
-        const isWeighted = equipment ? equipment.name.toLowerCase() !== "bodyweight" : false;
-        return {
-          id: ex.id,
-          name: ex.name,
-          equipmentId: ex.equipmentId,
-          isWeighted,
-          defaultWeightKg: isWeighted ? 10 : undefined, //hard code: fallback default weight of 10kg for weighted exercises
-          prescription: "3 × 10", //hard code: default prescription format //need to migrate: fetch actual prescription from coaching plan database
-          rest: `${ex.defaultRestSeconds || 90} sec`, //hard code: fallback rest duration
-          note: ex.instructions,
-        };
-      });
-    } catch (error) {
-      console.warn("[searchExercises] gRPC fallback:", error);
-    }
-  }
-
-  return [];
+  return results.map((ex) => ({
+    id: ex.id,
+    name: ex.name,
+    equipmentId: ex.equipmentId || "eq-standard",
+    isWeighted: ex.equipmentId !== "bodyweight",
+    defaultWeightKg: ex.equipmentId !== "bodyweight" ? 10 : undefined,
+    prescription: "3 × 10",
+    rest: `${ex.defaultRestSeconds || 90} sec`,
+    note: ex.instructions || "",
+  }));
 }
 
 /**

@@ -37,6 +37,8 @@ async function getRealNutritionPageData(
   const client = createClient(NutritionService, transport);
   const today = toDayKey(new Date()) ?? "2026-08-08";
 
+  console.info(`[getRealNutritionPageData] Calling gRPC for userId=${userId}, today=${today}`);
+
   const [summaryRes, historyRes] = await Promise.allSettled([
     client.getNutritionSummary({ userId }),
     client.getNutritionHistory({
@@ -45,6 +47,9 @@ async function getRealNutritionPageData(
       userId,
     }),
   ]);
+
+  console.info("[getRealNutritionPageData] summaryRes status:", summaryRes.status, summaryRes.status === "rejected" ? summaryRes.reason : "");
+  console.info("[getRealNutritionPageData] historyRes status:", historyRes.status, historyRes.status === "rejected" ? historyRes.reason : "");
 
   if (summaryRes.status === "rejected" && historyRes.status === "rejected") {
     return EMPTY_NUTRITION_DATA;
@@ -62,6 +67,8 @@ async function getRealNutritionPageData(
 
 export async function getNutritionPageData(): Promise<NutritionPageData> {
   const { accessToken, userId } = await getAuthenticatedSession();
+
+  console.info("[getNutritionPageData] accessToken present:", !!accessToken, "userId:", userId);
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {
