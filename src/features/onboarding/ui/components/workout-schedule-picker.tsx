@@ -31,7 +31,6 @@ export function WorkoutSchedulePicker({
   error,
   disabled = false,
   className = "",
-  showTitle = false,
 }: WorkoutSchedulePickerProps) {
   // Convert input value to WeekAvailability
   const weekState = useMemo(() => mapToWeekAvailability(value), [value]);

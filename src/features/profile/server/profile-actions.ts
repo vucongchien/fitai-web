@@ -79,7 +79,7 @@ export async function updateProfileServerAction(
       updated.settings?.preferredWorkoutTimes ??
       current?.settings.preferredWorkoutTimes ??
       ["Mon PM", "Wed PM", "Fri PM"];
-    const preferredWorkoutTimes = formatWorkoutTimesToProto(rawPreferredTimes);
+    const preferredWorkoutTimes = formatWorkoutTimesToProto(rawPreferredTimes as any);
 
     const res = await client.updateProfile({
       weightKg,

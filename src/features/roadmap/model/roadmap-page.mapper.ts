@@ -116,8 +116,11 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
   // Nếu không tìm được tuần active nào (ví dụ đã hoàn thành hết), tuần cuối cùng sẽ active hoặc complete
   const hasActive = weeks.some((w) => w.state === "active");
   if (!hasActive && weeks.length > 0) {
-    weeks.at(-1).state = "active";
-    activeWeekNumber = weeks.at(-1).number;
+    const lastWeek = weeks.at(-1);
+    if (lastWeek) {
+      lastWeek.state = "active";
+      activeWeekNumber = lastWeek.number;
+    }
   }
 
   // Lấy danh sách session của tuần active

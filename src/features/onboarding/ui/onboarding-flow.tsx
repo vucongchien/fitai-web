@@ -7,7 +7,6 @@ import {
   Check,
   Scale,
   ShieldAlert,
-  Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -69,16 +68,6 @@ const goalOptions = [
     "Endurance",
     "Focus on stamina, cardiovascular longevity, and high-density work capacity.",
   ],
-] as const;
-
-const dayList = [
-  { key: "Mon", label: "Mon" },
-  { key: "Tue", label: "Tue" },
-  { key: "Wed", label: "Wed" },
-  { key: "Thu", label: "Thu" },
-  { key: "Fri", label: "Fri" },
-  { key: "Sat", label: "Sat" },
-  { key: "Sun", label: "Sun" },
 ] as const;
 
 function ChoiceButton({
@@ -723,7 +712,7 @@ export function OnboardingFlow() {
                 <dt>Workout Schedule</dt>
                 <dd>
                   {(() => {
-                    const stats = calculateWeeklyScheduleStats(preferredWorkoutTimes);
+                    const stats = calculateWeeklyScheduleStats(preferredWorkoutTimes as any);
                     if (stats.activeDaysCount === 0) return "No schedule selected";
                     return `${stats.activeDaysCount} days / week (${stats.totalSlotsCount} sessions) • ~${stats.avgDurationMinutes}m avg`;
                   })()}

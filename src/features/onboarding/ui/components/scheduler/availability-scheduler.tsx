@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { cn } from "@/shared/lib/cn";
 import { DayRow } from "./day-row";
 import {
