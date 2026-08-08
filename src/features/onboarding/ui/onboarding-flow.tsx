@@ -144,19 +144,52 @@ export function OnboardingFlow() {
     watch,
   } = useForm<OnboardingValues>({
     defaultValues: onboardingDefaults,
-    mode: "onBlur",
+    mode: "onChange",
     resolver: zodResolver(onboardingSchema),
   });
 
-  const values = watch();
+  // Watch chỉ đúng các field cần thiết — tránh re-render toàn bộ component
+  const [
+    goals,
+    heightCm,
+    weightKg,
+    targetWeightKg,
+    bodyFatPercent,
+    gender,
+    experienceLevel,
+    preferredWorkoutTimes,
+    equipment,
+    muscleFocus,
+    injuryStatus,
+    injuryMuscleGroup,
+    injuryNotes,
+    coachStyle,
+    dateOfBirth,
+  ] = watch([
+    "goals",
+    "heightCm",
+    "weightKg",
+    "targetWeightKg",
+    "bodyFatPercent",
+    "gender",
+    "experienceLevel",
+    "preferredWorkoutTimes",
+    "equipment",
+    "muscleFocus",
+    "injuryStatus",
+    "injuryMuscleGroup",
+    "injuryNotes",
+    "coachStyle",
+    "dateOfBirth",
+  ]);
 
   // Instant calculated BMI preview
   const bmiInfo = useMemo(() => {
-    if (values.weightKg && values.heightCm) {
-      return calculateBMI(Number(values.weightKg), Number(values.heightCm));
+    if (weightKg && heightCm) {
+      return calculateBMI(Number(weightKg), Number(heightCm));
     }
     return null;
-  }, [values.weightKg, values.heightCm]);
+  }, [weightKg, heightCm]);
 
   // Load draft from session storage
   useEffect(() => {
@@ -185,13 +218,14 @@ export function OnboardingFlow() {
     }
   }, [reset]);
 
-  // Auto save draft to session storage
+  // Auto save draft to session storage (subscribe riêng để không ảnh hưởng render)
   useEffect(() => {
     const subscription = watch((draft) => {
       sessionStorage.setItem(storageKey, JSON.stringify(draft));
     });
     return () => subscription.unsubscribe();
-  }, [watch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Toggle goals (multi-select: support 1 or multiple goals)
   const toggleGoal = (goalVal: "build-muscle" | "fat-loss") => {
@@ -263,9 +297,29 @@ export function OnboardingFlow() {
       return;
     }
 
+    // Bước cuối: validate toàn bộ form trước khi gửi
+    const allFields = steps.flatMap((s) => s.fields);
+    const allValid = await trigger(allFields as any);
+    if (!allValid) {
+      // Tìm step đầu tiên có lỗi và nhảy về đó
+      const errorFields = Object.keys(errors);
+      const firstErrorStepIndex = steps.findIndex((s) =>
+        s.fields.some((f) => errorFields.includes(f)),
+      );
+      if (firstErrorStepIndex !== -1 && firstErrorStepIndex !== step) {
+        setStep(firstErrorStepIndex);
+        window.scrollTo({ behavior: "smooth", top: 0 });
+      }
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await saveOnboardingProfileServerAction(values);
+      // Dùng getValues() để lấy snapshot đầy đủ tại thời điểm submit
+      const result = await saveOnboardingProfileServerAction(getValues());
+      if (!result.success) {
+        console.error("[OnboardingFlow] Server returned error:", result.message);
+      }
       sessionStorage.setItem("fitai-onboarding-complete", "true");
       router.push("/home", { transitionTypes: ["nav-forward"] });
     } catch (error) {
@@ -304,7 +358,7 @@ export function OnboardingFlow() {
             <p>Select one or both goals. Your AI coach will optimize training volume accordingly.</p>
             <div className="choice-grid">
               {goalOptions.map(([value, label, description]) => {
-                const isSelected = (values.goals || []).includes(value as any);
+                const isSelected = (goals || []).includes(value as any);
                 return (
                   <ChoiceButton
                     active={isSelected}
@@ -447,7 +501,7 @@ export function OnboardingFlow() {
                   ["advanced", "Advanced"],
                 ].map(([value, label]) => (
                   <ChoiceButton
-                    active={values.experienceLevel === value}
+                    active={experienceLevel === value}
                     key={value}
                     onClick={() =>
                       setValue("experienceLevel", value as OnboardingValues["experienceLevel"], {
@@ -470,7 +524,7 @@ export function OnboardingFlow() {
                   ["male", "Male"],
                 ].map(([value, label]) => (
                   <ChoiceButton
-                    active={values.gender === value}
+                    active={gender === value}
                     key={value}
                     onClick={() =>
                       setValue("gender", value as OnboardingValues["gender"], {
@@ -533,8 +587,8 @@ export function OnboardingFlow() {
                 {dayList.map((day) => {
                   const amKey = `${day.key} AM`;
                   const pmKey = `${day.key} PM`;
-                  const isAmSelected = (values.preferredWorkoutTimes || []).includes(amKey);
-                  const isPmSelected = (values.preferredWorkoutTimes || []).includes(pmKey);
+                  const isAmSelected = (preferredWorkoutTimes || []).includes(amKey);
+                  const isPmSelected = (preferredWorkoutTimes || []).includes(pmKey);
 
                   return (
                     <div key={day.key} className="flex flex-col items-center space-y-2">
@@ -578,7 +632,7 @@ export function OnboardingFlow() {
                 <span>
                   Selected:{" "}
                   <strong className="text-[#101214]">
-                    {(values.preferredWorkoutTimes || []).length} slots
+                    {(preferredWorkoutTimes || []).length} slots
                   </strong>
                 </span>
                 <span className="text-[11px] text-neutral-400">AM = Sáng, PM = Chiều/Tối</span>
@@ -611,7 +665,7 @@ export function OnboardingFlow() {
                   <div className="chip-options">
                     {catalogEquipments.map((eq) => (
                       <ChoiceButton
-                        active={(values.equipment || []).includes(eq.name as any)}
+                        active={(equipment || []).includes(eq.name as any)}
                         key={eq.id}
                         onClick={() => toggleList("equipment", eq.name)}
                       >
@@ -631,7 +685,7 @@ export function OnboardingFlow() {
                   <div className="chip-options">
                     {catalogMuscles.map((m) => (
                       <ChoiceButton
-                        active={(values.muscleFocus || []).includes(m.name)}
+                        active={(muscleFocus || []).includes(m.name)}
                         key={m.id}
                         onClick={() => toggleList("muscleFocus", m.name)}
                       >
@@ -663,7 +717,7 @@ export function OnboardingFlow() {
                 ],
               ].map(([value, label, description]) => (
                 <ChoiceButton
-                  active={values.injuryStatus === value}
+                  active={injuryStatus === value}
                   key={value}
                   onClick={() =>
                     setValue("injuryStatus", value as OnboardingValues["injuryStatus"], {
@@ -679,14 +733,14 @@ export function OnboardingFlow() {
               ))}
             </div>
 
-            {values.injuryStatus !== "none" && (
+            {injuryStatus !== "none" && (
               <div className="mt-4 p-4 rounded-xl border border-rose-200 bg-rose-50/50 space-y-3 text-left">
                 <label className="block text-xs font-semibold text-rose-900">
                   Target Injury Muscle Area
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
                   {["Shoulders", "Knee", "Lower Back", "Wrist", "Hip"].map((m) => {
-                    const isSelected = (values.injuryMuscleGroup || "Shoulders") === m;
+                    const isSelected = (injuryMuscleGroup || "Shoulders") === m;
                     return (
                       <button
                         key={m}
@@ -709,7 +763,7 @@ export function OnboardingFlow() {
                   Notes for AI Coach
                 </label>
                 <input
-                  value={values.injuryNotes || ""}
+                  value={injuryNotes || ""}
                   onChange={(e) => setValue("injuryNotes", e.target.value)}
                   placeholder="e.g. Avoid heavy overhead presses..."
                   className="w-full h-10 px-3 text-xs rounded-xl border border-neutral-200 bg-white"
@@ -735,7 +789,7 @@ export function OnboardingFlow() {
                 ["scientific", "Scientific", "Data-focused explanations with joint mechanics."],
               ].map(([value, label, description]) => (
                 <ChoiceButton
-                  active={values.coachStyle === value}
+                  active={coachStyle === value}
                   key={value}
                   onClick={() =>
                     setValue("coachStyle", value as OnboardingValues["coachStyle"], {
@@ -755,19 +809,19 @@ export function OnboardingFlow() {
               <div>
                 <dt>Primary Goals</dt>
                 <dd>
-                  {(values.goals || [])
+                  {(goals || [])
                     .map((g) => (g === "build-muscle" ? "Build Muscle" : "Lose Fat"))
                     .join(" & ") || "Build Muscle"}
                 </dd>
               </div>
               <div>
                 <dt>Date of Birth</dt>
-                <dd>{values.dateOfBirth || "1998-05-15"}</dd>
+                <dd>{dateOfBirth || "1998-05-15"}</dd>
               </div>
               <div>
                 <dt>Body Fat / Target</dt>
                 <dd>
-                  {values.bodyFatPercent ?? 18.5}% (Target: {values.targetWeightKg} kg)
+                  {bodyFatPercent ?? 18.5}% (Target: {targetWeightKg} kg)
                 </dd>
               </div>
               {bmiInfo && (
@@ -780,17 +834,17 @@ export function OnboardingFlow() {
               )}
               <div>
                 <dt>Experience</dt>
-                <dd className="capitalize">{values.experienceLevel}</dd>
+                <dd className="capitalize">{experienceLevel}</dd>
               </div>
               <div>
                 <dt>Workout Schedule</dt>
                 <dd>
-                  {(values.preferredWorkoutTimes || []).join(", ") || "Mon PM, Wed PM, Fri PM"}
+                  {(preferredWorkoutTimes || []).join(", ") || "Mon PM, Wed PM, Fri PM"}
                 </dd>
               </div>
               <div>
                 <dt>Equipment</dt>
-                <dd>{(values.equipment || []).join(", ")}</dd>
+                <dd>{(equipment || []).join(", ")}</dd>
               </div>
             </dl>
           </section>
