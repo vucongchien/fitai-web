@@ -14,6 +14,7 @@ import {
   mapGoalToProto,
 } from "../domain/onboarding-mapper";
 import type { OnboardingValues } from "../domain/onboarding-schema";
+import { formatWorkoutTimesToProto } from "../domain/workout-times-normalizer";
 
 /**
  * Server Action gọi gRPC ProfileService.SaveHealthProfile và tự động tạo Roadmap 4 tuần
@@ -39,14 +40,7 @@ export async function saveOnboardingProfileServerAction(
           ]
         : [];
 
-    const preferredTimes =
-      values.preferredWorkoutTimes && values.preferredWorkoutTimes.length > 0
-        ? values.preferredWorkoutTimes
-        : values.availableDays?.map((d: string) => `${d} ${values.preferredTime || "18:30"}`) || [
-            "Mon PM",
-            "Wed PM",
-            "Fri PM",
-          ];
+    const preferredTimes = formatWorkoutTimesToProto(values.preferredWorkoutTimes);
 
     const rawGoals = values.goals || (values.goal ? [values.goal] : ["build-muscle"]);
 
@@ -81,15 +75,15 @@ export async function saveOnboardingProfileServerAction(
     try {
       const roadmapRes = await coachingClient.initiateRoadmap({ userId: userId || "" });
       roadmapId = roadmapRes.roadmap?.roadmapId;
-    } catch (e) {
-      console.warn("[saveOnboardingProfileServerAction] initiateRoadmap fallback:", e);
+    } catch (error) {
+      console.warn("[saveOnboardingProfileServerAction] initiateRoadmap fallback:", error);
     }
 
     return {
       success: true,
       message: res.message || "Onboarding profile saved and roadmap generated successfully",
       aiCoachActivated: res.aiCoachActivated ?? true,
-      roadmapId: roadmapId,
+      roadmapId,
     };
   } catch (error: any) {
     console.error("[gRPC ProfileService.SaveHealthProfile] Error:", error?.message || error);

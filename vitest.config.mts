@@ -49,7 +49,7 @@ export default defineConfig({
       ],
       thresholds: {
         // Baseline for the testable surface (UI + domain logic) after excluding
-        // workers, proto-gen, server infra, and browser-native-API files.
+        // Workers, proto-gen, server infra, and browser-native-API files.
         // Increase incrementally as more tests are added.
         lines: 30,
         functions: 28,

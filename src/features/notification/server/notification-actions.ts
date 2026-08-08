@@ -52,7 +52,7 @@ export async function listNotificationsAction(
     };
   } catch (error) {
     console.error("[listNotificationsAction] Failed to list notifications:", error);
-    throw new Error("FAILED_TO_FETCH_NOTIFICATIONS");
+    throw new Error("FAILED_TO_FETCH_NOTIFICATIONS", { cause: error });
   }
 }
 

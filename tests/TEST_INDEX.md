@@ -12,8 +12,10 @@
 
 | File                               | Scenarios                                                                                                                                                                                           |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `unit/onboarding-schema.test.ts`   | Onboarding Zod Schema: Multi-goals selection, Date of Birth & Age validation (14-90 years), Body Fat (5-60%), Preferred workout times (AM/PM), Standardized equipment enum |
-| `unit/onboarding-grpc-actions.test.ts` | Onboarding Server Actions: Multi-goals to proto enum, preferredWorkoutTimes array mapping, DOB, bodyFatPercent, equipment normalization to gRPC SaveHealthProfile, fallback error recovery |
+| `unit/availability-scheduler.test.tsx` | Row-by-row Availability Scheduler: 7 weekday rows, toggle switch for rest days vs active days, start/end time select dropdowns |
+| `unit/workout-times-normalizer.test.ts` | Workout Schedule Normalizer: Bidirectional Key-Value map parsing, slot duration calculation, weekly schedule stats, presets (MWF, TTS, 4-day, 5-day), copy day schedule |
+| `unit/onboarding-schema.test.ts`   | Onboarding Zod Schema: Multi-goals selection, Date of Birth & Age validation (14-90 years), Body Fat (5-60%), Preferred workout times (Key-Value map / array), Standardized equipment enum |
+| `unit/onboarding-grpc-actions.test.ts` | Onboarding Server Actions: Multi-goals to proto enum, preferredWorkoutTimes normalization to standardized string array, DOB, bodyFatPercent, equipment normalization to gRPC SaveHealthProfile, fallback error recovery |
 | `unit/profile-grpc-service.test.ts` | Profile Service: aggregates GetProfile, GetPersonalRecords, GetNotificationSettings, handles empty state and 401 unauthenticated |
 | `unit/planning-grpc-actions.test.ts` | Coaching & Roadmap: InitiateRoadmap, RegenerateSchedule on adaptation, CreateAdhocSessionPlan |
 | `unit/workout-grpc-actions.test.ts` | Workout Execution: beginWorkoutSession, logWorkoutSet with camera angle/RPE, syncWorkoutLogs, completeWorkoutSession |

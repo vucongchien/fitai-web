@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 
 import type { TodayTimelineItem } from "@/features/home/model/home-page.types";

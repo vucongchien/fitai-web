@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from '@jest/globals';
 import {
   fetchAdminUsers,
   resetUserStore,
@@ -28,14 +29,14 @@ describe("admin User Service (Proto Schema Aligned)", () => {
           u.email.toLowerCase().includes("alex") ||
           u.userId.toLowerCase().includes("alex"),
       ),
-    ).toBe(true);
+    ).toBeTruthy();
   });
 
   it("should filter users by role and status", async () => {
     const res = await fetchAdminUsers({
       filters: { role: "coach", status: "active" },
     });
-    expect(res.items.every((u) => u.role === "coach" && u.status === "active")).toBe(true);
+    expect(res.items.every((u) => u.role === "coach" && u.status === "active")).toBeTruthy();
   });
 
   it("should toggle user ban status between active and banned", async () => {

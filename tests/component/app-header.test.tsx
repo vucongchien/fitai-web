@@ -1,13 +1,14 @@
+import { describe, expect, it, vi } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 import { usePathname } from "next/navigation";
 
 import { AppHeader } from "@/shared/ui/app-header";
 
-vi.mock("next/navigation", () => ({
+vi.mock<typeof import('next/navigation')>(import('next/navigation'), () => ({
   usePathname: vi.fn(),
 }));
 
-vi.mock("next/link", () => ({
+vi.mock<typeof import('next/link')>(import('next/link'), () => ({
   default: ({ children, href, ...props }: React.ComponentPropsWithRef<"a">) => (
     <a href={href as string} {...props}>
       {children}
@@ -16,15 +17,15 @@ vi.mock("next/link", () => ({
 }));
 
 // HeaderActions and BrandMark are not under test here
-vi.mock("@/shared/ui/header-actions", () => ({
+vi.mock<typeof import('@/shared/ui/header-actions')>(import('@/shared/ui/header-actions'), () => ({
   HeaderActions: () => <div data-testid="header-actions" />,
 }));
 
-vi.mock("@/shared/ui/brand-mark", () => ({
+vi.mock<typeof import('@/shared/ui/brand-mark')>(import('@/shared/ui/brand-mark'), () => ({
   BrandMark: () => <span data-testid="brand-mark" />,
 }));
 
-describe("AppHeader", () => {
+describe(AppHeader, () => {
   it("renders a <header> landmark", () => {
     vi.mocked(usePathname).mockReturnValue("/home");
     render(<AppHeader />);

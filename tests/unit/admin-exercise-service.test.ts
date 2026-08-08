@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import {
   ApproveExerciseResponseSchema,
@@ -8,9 +8,8 @@ import {
   GetCatalogMetadataResponseSchema,
   GetExerciseResponseSchema,
   SearchExercisesResponseSchema,
-  UpdateExerciseResponseSchema,
+  UpdateExerciseResponseSchema,ExerciseStatus
 } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
-import { ExerciseStatus } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
 import type { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 
 type ExerciseClient = Client<typeof ExerciseService>;
@@ -80,7 +79,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const { fetchAdminExercises } = await import("@/features/admin/api/admin-exercise-service");
     const res = await fetchAdminExercises({ limit: 2, filters: { status: "approved" } });
 
-    expect(mockSearchExercises).toHaveBeenCalled();
+    expect(mockSearchExercises).toHaveBeenCalledWith();
     expect(res.items).toHaveLength(1); // Chỉ ex-1 active (approved)
     expect(res.items[0].id).toBe("ex-1");
   });
@@ -138,7 +137,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
       createdBy: "admin",
     });
 
-    expect(mockCreateExercise).toHaveBeenCalled();
+    expect(mockCreateExercise).toHaveBeenCalledWith();
     expect(res.id).toBe("ex-new");
     expect(res.status).toBe("created");
   });
@@ -153,7 +152,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const { updateExercise } = await import("@/features/admin/api/admin-exercise-service");
     const res = await updateExercise("ex-1", { name: "Push up v2" });
 
-    expect(mockUpdateExercise).toHaveBeenCalled();
+    expect(mockUpdateExercise).toHaveBeenCalledWith();
     expect(res.name).toBe("Push up v2");
   });
 
@@ -164,6 +163,6 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const res = await deleteExercise("ex-1");
 
     expect(mockDeleteExercise).toHaveBeenCalledWith({ id: "ex-1" });
-    expect(res).toBe(true);
+    expect(res).toBeTruthy();
   });
 });

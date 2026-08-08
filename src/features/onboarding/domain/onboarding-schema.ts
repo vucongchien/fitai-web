@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export function validateAgeBetween(dobString?: string, minAge = 14, maxAge = 90): boolean {
-  if (!dobString) return false;
+  if (!dobString) {return false;}
   const birthDate = new Date(dobString);
-  if (isNaN(birthDate.getTime())) return false;
+  if (isNaN(birthDate.getTime())) {return false;}
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const m = today.getMonth() - birthDate.getMonth();
@@ -48,8 +48,23 @@ export const onboardingSchema = z.object({
       message: "Age must be between 14 and 90 years old.",
     }),
   preferredWorkoutTimes: z
-    .array(z.string())
-    .min(1, "Choose at least one preferred workout time window."),
+    .union([
+      z.record(z.string(), z.array(z.string())),
+      z.array(z.string()),
+    ])
+    .refine(
+      (val) => {
+        if (!val) return false;
+        if (Array.isArray(val)) return val.length > 0;
+        if (typeof val === "object") {
+          return Object.values(val).some((slots) => Array.isArray(slots) && slots.length > 0);
+        }
+        return false;
+      },
+      {
+        message: "Choose at least one preferred workout time window.",
+      },
+    ),
   equipment: z.array(onboardingEquipmentEnum).min(1, "Choose the equipment you can use."),
   muscleFocus: z.array(z.string()),
   injuryStatus: z.enum(["none", "active"]),
@@ -71,7 +86,11 @@ export const onboardingDefaults: OnboardingValues = {
   targetBodyFatPercent: 15,
   gender: "female",
   dateOfBirth: "1998-05-15",
-  preferredWorkoutTimes: ["Mon PM", "Wed PM", "Fri PM"],
+  preferredWorkoutTimes: {
+    mon: ["17:30-19:00"],
+    wed: ["17:30-19:00"],
+    fri: ["17:30-19:00"],
+  },
   equipment: ["Bodyweight", "Dumbbells"],
   muscleFocus: ["Chest", "Back", "Legs"],
   injuryStatus: "none",

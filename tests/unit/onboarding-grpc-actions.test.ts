@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import { SaveHealthProfileResponseSchema } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
 import type { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
@@ -27,7 +27,7 @@ vi.mock<typeof import("@/shared/auth/session")>(import("@/shared/auth/session"),
   getAuthenticatedUserId: () => Promise.resolve("usr-onboarding-123"),
 }));
 
-describe("Onboarding Server Actions & Enum Normalization", () => {
+describe("onboarding Server Actions & Enum Normalization", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
@@ -61,7 +61,11 @@ describe("Onboarding Server Actions & Enum Normalization", () => {
       bodyFatPercent: 18.5,
       targetBodyFatPercent: 14,
       experienceLevel: "intermediate",
-      preferredWorkoutTimes: ["Mon PM", "Wed PM", "Fri PM"],
+      preferredWorkoutTimes: {
+        mon: ["17:30-19:00"],
+        wed: ["17:30-19:00"],
+        fri: ["17:30-19:00"],
+      },
       equipment: ["Full Gym", "Dumbbells", "Barbell", "Bodyweight", "Resistance Band"],
       muscleFocus: ["Chest", "Back", "Legs"],
       coachStyle: "scientific",
@@ -81,7 +85,7 @@ describe("Onboarding Server Actions & Enum Normalization", () => {
         bodyFatPercent: 18.5,
         targetBodyFatPercent: 14,
         goals: ["BUILD_MUSCLE", "FAT_LOSS"],
-        preferredWorkoutTimes: ["Mon PM", "Wed PM", "Fri PM"],
+        preferredWorkoutTimes: ["mon:17:30-19:00", "wed:17:30-19:00", "fri:17:30-19:00"],
         experienceLevel: "INTERMEDIATE",
         coachStyle: "SCIENTIFIC",
         availableEquipment: [
@@ -101,8 +105,8 @@ describe("Onboarding Server Actions & Enum Normalization", () => {
         ],
       }),
     );
-    expect(result.success).toBe(true);
-    expect(result.aiCoachActivated).toBe(true);
+    expect(result.success).toBeTruthy();
+    expect(result.aiCoachActivated).toBeTruthy();
   });
 
   it("omits injuries array when injuryStatus is none and supports single goal string fallback", async () => {
@@ -137,7 +141,7 @@ describe("Onboarding Server Actions & Enum Normalization", () => {
     expect(mockSaveHealthProfile).toHaveBeenCalledWith(
       expect.objectContaining({
         goals: ["FAT_LOSS"],
-        preferredWorkoutTimes: ["Tue AM", "Thu AM"],
+        preferredWorkoutTimes: ["tue:06:00-07:30", "thu:06:00-07:30"],
         experienceLevel: "BEGINNER",
         coachStyle: "MOTIVATIONAL",
         availableEquipment: ["BODYWEIGHT"],
@@ -168,7 +172,7 @@ describe("Onboarding Server Actions & Enum Normalization", () => {
       injuryStatus: "none",
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBeFalsy();
     expect(result.message).toContain("Connection reset");
   });
 });

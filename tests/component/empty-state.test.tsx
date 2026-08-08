@@ -1,9 +1,10 @@
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 import { Dumbbell } from "lucide-react";
 
 import { EmptyState } from "@/shared/ui/empty-state";
 
-describe("EmptyState", () => {
+describe(EmptyState, () => {
   it("renders as an <output> element (implicit status role)", () => {
     const { container } = render(<EmptyState title="No data yet" />);
 

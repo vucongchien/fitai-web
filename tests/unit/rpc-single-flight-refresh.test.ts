@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import { RefreshTokenResponseSchema } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 import type { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
@@ -50,7 +50,7 @@ function makeRpcRequest(path: string, token?: string) {
   });
 }
 
-describe("BFF /rpc/[...path] Single-flight Token Refresh", () => {
+describe("bFF /rpc/[...path] Single-flight Token Refresh", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
@@ -73,7 +73,7 @@ describe("BFF /rpc/[...path] Single-flight Token Refresh", () => {
       if (name === "fitai_refresh_token") {
         return { value: "valid_refresh_token" };
       }
-      return undefined;
+      return;
     });
 
     let fetchCount = 0;
@@ -111,7 +111,7 @@ describe("BFF /rpc/[...path] Single-flight Token Refresh", () => {
       },
     );
 
-    expect(mockRefreshToken).toHaveBeenCalledTimes(1);
+    expect(mockRefreshToken).toHaveBeenCalledOnce();
     expect(mockRefreshToken).toHaveBeenCalledWith({ refreshToken: "valid_refresh_token" });
     expect(mockCookieSet).toHaveBeenCalledWith(
       "fitai_access_token",
@@ -134,7 +134,7 @@ describe("BFF /rpc/[...path] Single-flight Token Refresh", () => {
       if (name === "fitai_refresh_token") {
         return { value: "shared_refresh_token" };
       }
-      return undefined;
+      return;
     });
 
     const fetchMock = vi.fn().mockImplementation(async (_url: string, init?: RequestInit) => {
@@ -191,7 +191,7 @@ describe("BFF /rpc/[...path] Single-flight Token Refresh", () => {
 
     const [res1, res2, res3] = await Promise.all([req1, req2, req3]);
 
-    expect(mockRefreshToken).toHaveBeenCalledTimes(1);
+    expect(mockRefreshToken).toHaveBeenCalledOnce();
     expect(res1.status).toBe(200);
     expect(res2.status).toBe(200);
     expect(res3.status).toBe(200);
@@ -205,15 +205,15 @@ describe("BFF /rpc/[...path] Single-flight Token Refresh", () => {
       if (name === "fitai_refresh_token") {
         return { value: "revoked_refresh_token" };
       }
-      return undefined;
+      return;
     });
 
-    const fetchMock = vi.fn().mockImplementation(async () => {
-      return new Response(new Uint8Array([]), {
+    const fetchMock = vi.fn().mockImplementation(async () => 
+      new Response(new Uint8Array([]), {
         status: 401,
         statusText: "Unauthorized",
-      });
-    });
+      })
+    );
     vi.stubGlobal("fetch", fetchMock);
 
     mockRefreshToken.mockRejectedValue(new Error("Refresh token revoked"));

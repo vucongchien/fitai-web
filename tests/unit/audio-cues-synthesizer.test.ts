@@ -1,8 +1,8 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+
 
 import { playSyntheticCueTone } from "@/features/workout/domain/audio-cues";
 
-describe("Audio Cues Web Audio Synthesizer Fallback", () => {
+describe("audio Cues Web Audio Synthesizer Fallback", () => {
   beforeEach(() => {
     vi.resetModules();
   });

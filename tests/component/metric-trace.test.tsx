@@ -1,8 +1,9 @@
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 
 import { MetricTrace } from "@/shared/ui/metric-trace";
 
-describe("MetricTrace", () => {
+describe(MetricTrace, () => {
   const defaultProps = {
     label: "Body weight",
     value: "72.4 kg",
@@ -12,7 +13,7 @@ describe("MetricTrace", () => {
   it("exposes the SVG chart as an img with a descriptive aria-label", () => {
     render(<MetricTrace {...defaultProps} />);
 
-    // role="img" + aria-label on the SVG
+    // Role="img" + aria-label on the SVG
     expect(
       screen.getByRole("img", { name: /body weight: 72\.4 kg/i }),
     ).toBeInTheDocument();

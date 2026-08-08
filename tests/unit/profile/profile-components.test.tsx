@@ -1,5 +1,6 @@
+import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { vi } from "vitest";
+
 
 import { ProfileContent } from "../../../src/features/profile/components/profile-content";
 import { mapRawDataToProfileViewModel } from "../../../src/features/profile/model/profile.mapper";

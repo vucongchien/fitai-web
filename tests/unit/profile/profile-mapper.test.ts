@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import {
   calculateBMI,
   calculateOneRepMax,
@@ -93,12 +94,12 @@ describe("profile Mapper", () => {
   describe(mapRawDataToProfileViewModel, () => {
     it("converts empty data into safe default ViewModel", () => {
       const vm = mapRawDataToProfileViewModel({});
-      expect(vm.user.name).toBe("Emma Nguyen");
+      expect(vm.user.name).toBe("Athlete");
       expect(vm.user.level).toBe(1);
       expect(vm.user.dateOfBirth).toBe("");
       expect(vm.user.gender).toBe("Not set");
       expect(vm.highlights.currentWeightKg).toBe(0);
-      expect(vm.bestPr?.weightKg).toBe(60);
+      expect(vm.bestPr).toBeNull();
       expect(vm.stats.totalWorkouts).toBe(0);
       expect(vm.settings.coachStyle).toBe("Motivational");
     });
@@ -139,8 +140,8 @@ describe("profile Mapper", () => {
       expect(vm.settings.coachStyle).toBe("Scientific");
       expect(vm.settings.availableEquipment).toContain("Full Gym");
       expect(vm.settings.availableEquipment).toContain("Kettlebell");
-      expect(vm.healthMetrics.goals).toEqual(["Strength", "Endurance"]);
-      expect(vm.healthMetrics.preferredMuscleGroups).toEqual(["Legs", "Glutes", "Core"]);
+      expect(vm.healthMetrics.goals).toStrictEqual(["Strength", "Endurance"]);
+      expect(vm.healthMetrics.preferredMuscleGroups).toStrictEqual(["Legs", "Glutes", "Core"]);
       expect(vm.highlights.currentWeightKg).toBe(58);
       expect(vm.bestPr?.exerciseName).toBe("Barbell Back Squat");
       expect(vm.bestPr?.weightKg).toBe(95);

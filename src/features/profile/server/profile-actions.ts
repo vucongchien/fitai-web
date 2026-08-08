@@ -9,55 +9,12 @@ import { getAccessToken } from "@/shared/auth/session";
 import type { ProfileViewModel } from "../model/profile.types";
 import { getProfileData } from "./get-profile-data";
 
-function mapGoalToEnum(goal: string): string {
-  const upper = goal?.toUpperCase() || "";
-  if (upper.includes("FAT") || upper.includes("LOSE") || upper === "FAT_LOSS") {
-    return "FAT_LOSS";
-  }
-  if (upper.includes("STRENGTH")) {
-    return "STRENGTH";
-  }
-  if (upper.includes("ENDURANCE")) {
-    return "ENDURANCE";
-  }
-  return "BUILD_MUSCLE";
-}
-
-function mapEquipmentToEnum(equipment: string): string {
-  const upper = equipment?.toUpperCase() || "";
-  if (upper.includes("FULL GYM") || upper.includes("FULL_GYM") || upper.includes("CABLE")) {
-    return "FULL_GYM";
-  }
-  if (upper.includes("DUMBBELL")) {
-    return "DUMBBELL_ONLY";
-  }
-  if (upper.includes("BARBELL")) {
-    return "BARBELL";
-  }
-  if (upper.includes("BAND")) {
-    return "RESISTANCE_BAND";
-  }
-  if (upper.includes("KETTLEBELL")) {
-    return "KETTLEBELL";
-  }
-  if (upper.includes("MACHINE")) {
-    return "MACHINE";
-  }
-  return "BODYWEIGHT";
-}
-
-function mapCoachStyleToEnum(style: string): string {
-  switch (style?.toLowerCase()) {
-    case "strict":
-    case "direct":
-      return "STRICT";
-    case "scientific":
-    case "balanced":
-      return "SCIENTIFIC";
-    default:
-      return "MOTIVATIONAL";
-  }
-}
+import { formatWorkoutTimesToProto } from "@/features/onboarding/domain/workout-times-normalizer";
+import {
+  mapCoachStyleToEnum,
+  mapEquipmentToEnum,
+  mapGoalToEnum,
+} from "../model/profile.mapper";
 
 /**
  * Server Action gọi gRPC ProfileService.UpdateProfile
@@ -112,16 +69,17 @@ export async function updateProfileServerAction(
       updated.healthMetrics?.preferredMuscleGroups ??
       current?.healthMetrics.preferredMuscleGroups ??
       ["CHEST", "BACK", "LEGS"];
-    const muscleGroupsEnum = rawMuscles.map((m) => m.replace(/\s+/g, "_").toUpperCase());
+    const muscleGroupsEnum = rawMuscles.map((m) => m.replaceAll(/\s+/g, "_").toUpperCase());
 
     const coachStyleStr =
       updated.settings?.coachStyle ?? current?.settings.coachStyle ?? "MOTIVATIONAL";
     const coachStyleEnum = await mapCoachStyleToEnum(coachStyleStr);
 
-    const preferredWorkoutTimes =
+    const rawPreferredTimes =
       updated.settings?.preferredWorkoutTimes ??
       current?.settings.preferredWorkoutTimes ??
       ["Mon PM", "Wed PM", "Fri PM"];
+    const preferredWorkoutTimes = formatWorkoutTimesToProto(rawPreferredTimes);
 
     const res = await client.updateProfile({
       weightKg,

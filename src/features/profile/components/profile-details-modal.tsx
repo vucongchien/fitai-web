@@ -12,11 +12,10 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 
-import {
-  getCatalogMetadataServerAction,
-  type CatalogEquipmentItem,
-  type CatalogMuscleItem,
-} from "@/features/exercise/server/catalog-actions";
+import { getCatalogMetadataServerAction } from '@/features/exercise/server/catalog-actions';
+import type { CatalogEquipmentItem, CatalogMuscleItem } from '@/features/exercise/server/catalog-actions';
+import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
+import type { PreferredWorkoutTimesMap } from "@/features/onboarding/domain/workout-times-normalizer";
 import { calculateBMI } from "../model/profile.mapper";
 import type { InjuryItem, ProfileViewModel } from "../model/profile.types";
 import {
@@ -357,10 +356,10 @@ function GoalsForm({
         if (active && res.success) {
           setCatalogMuscleGroups(res.muscles);
         }
-      } catch (e) {
-        console.error("Failed to load catalog muscles:", e);
+      } catch (error) {
+        console.error("Failed to load catalog muscles:", error);
       } finally {
-        if (active) setIsLoadingMuscles(false);
+        if (active) {setIsLoadingMuscles(false);}
       }
     }
     loadMuscles();
@@ -557,10 +556,10 @@ function EquipmentForm({
         if (active && res.success) {
           setCatalogEquipments(res.equipments);
         }
-      } catch (e) {
-        console.error("Failed to load catalog equipments:", e);
+      } catch (error) {
+        console.error("Failed to load catalog equipments:", error);
       } finally {
-        if (active) setIsLoadingEquipments(false);
+        if (active) {setIsLoadingEquipments(false);}
       }
     }
     loadEquipments();
@@ -654,17 +653,11 @@ function PersonalInfoForm({
 }) {
   const [dob, setDob] = useState(profile.user.dateOfBirth || "1998-05-15");
   const [gender, setGender] = useState(profile.user.gender || "Female");
-  const [times, setTimes] = useState<string[]>(profile.settings.preferredWorkoutTimes || []);
+  const [times, setTimes] = useState<PreferredWorkoutTimesMap | string[]>(
+    profile.settings.preferredWorkoutTimes || {},
+  );
   const [coachStyle, setCoachStyle] = useState(profile.settings.coachStyle || "Motivational");
   const [isSaving, setIsSaving] = useState(false);
-
-  const toggleTime = (t: string) => {
-    if (times.includes(t)) {
-      setTimes(times.filter((x) => x !== t));
-    } else {
-      setTimes([...times, t]);
-    }
-  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -733,59 +726,12 @@ function PersonalInfoForm({
           <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
             Preferred Workout Schedule
           </label>
-          <div className="p-4 rounded-xl border border-neutral-200 bg-neutral-50/40 space-y-3">
-            <div className="grid grid-cols-7 gap-1.5 sm:gap-2 text-center">
-              {[
-                { key: "Mon", label: "Mon" },
-                { key: "Tue", label: "Tue" },
-                { key: "Wed", label: "Wed" },
-                { key: "Thu", label: "Thu" },
-                { key: "Fri", label: "Fri" },
-                { key: "Sat", label: "Sat" },
-                { key: "Sun", label: "Sun" },
-              ].map((day) => {
-                const amKey = `${day.key} AM`;
-                const pmKey = `${day.key} PM`;
-                const isAm = times.includes(amKey);
-                const isPm = times.includes(pmKey);
-
-                return (
-                  <div key={day.key} className="flex flex-col items-center space-y-2">
-                    <span className="text-xs font-bold text-[#101214]">{day.label}</span>
-                    <button
-                      type="button"
-                      onClick={() => toggleTime(amKey)}
-                      className="w-full py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                      style={{
-                        border: "1.5px solid",
-                        borderColor: isAm ? "#4B57F2" : "#D1D5DB",
-                        backgroundColor: isAm ? "#4B57F2" : "#FFFFFF",
-                        color: isAm ? "#FFFFFF" : "#50565C",
-                      }}
-                    >
-                      AM
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => toggleTime(pmKey)}
-                      className="w-full py-2 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                      style={{
-                        border: "1.5px solid",
-                        borderColor: isPm ? "#4B57F2" : "#D1D5DB",
-                        backgroundColor: isPm ? "#4B57F2" : "#FFFFFF",
-                        color: isPm ? "#FFFFFF" : "#50565C",
-                      }}
-                    >
-                      PM
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="text-[11px] text-[#50565C] text-center pt-2 border-t border-neutral-200">
-              Select morning (AM) or evening (PM) workout windows
-            </p>
-          </div>
+          <WorkoutSchedulePicker
+            value={times}
+            onChange={(updated) => setTimes(updated)}
+            showTitle={false}
+            compact={true}
+          />
         </div>
 
         <div>

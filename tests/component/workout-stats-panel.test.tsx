@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it } from '@jest/globals';
 import { cleanup, render } from "@testing-library/react";
 
 import { WorkoutStatsPanel } from "@/features/workout-stats/ui/workout-stats-panel";

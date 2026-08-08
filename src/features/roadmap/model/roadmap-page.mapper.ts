@@ -38,16 +38,21 @@ export function formatDate(dateProto?: { day: number; month: number; year: numbe
 
 export function mapPhaseToLabel(phase: RoadmapPhase): string {
   switch (phase) {
-    case RoadmapPhase.ACCUMULATION:
+    case RoadmapPhase.ACCUMULATION: {
       return "Accumulation";
-    case RoadmapPhase.OVERLOAD:
+    }
+    case RoadmapPhase.OVERLOAD: {
       return "Overload";
-    case RoadmapPhase.PEAK:
+    }
+    case RoadmapPhase.PEAK: {
       return "Peak";
-    case RoadmapPhase.DELOAD:
+    }
+    case RoadmapPhase.DELOAD: {
       return "Recovery";
-    default:
+    }
+    default: {
       return "Foundation";
+    }
   }
 }
 
@@ -67,16 +72,21 @@ function isWeekComplete(week: WeekPlan): boolean {
 
 export function mapSessionStatus(status: SessionPlanStatus, isNext: boolean): SessionStatus {
   switch (status) {
-    case SessionPlanStatus.COMPLETED:
+    case SessionPlanStatus.COMPLETED: {
       return "complete";
-    case SessionPlanStatus.SKIPPED:
+    }
+    case SessionPlanStatus.SKIPPED: {
       return "skipped";
-    case SessionPlanStatus.ABORTED:
+    }
+    case SessionPlanStatus.ABORTED: {
       return "skipped";
-    case SessionPlanStatus.PENDING:
+    }
+    case SessionPlanStatus.PENDING: {
       return isNext ? "next" : "planned";
-    default:
+    }
+    default: {
       return "rest";
+    }
   }
 }
 
@@ -106,8 +116,8 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
   // Nếu không tìm được tuần active nào (ví dụ đã hoàn thành hết), tuần cuối cùng sẽ active hoặc complete
   const hasActive = weeks.some((w) => w.state === "active");
   if (!hasActive && weeks.length > 0) {
-    weeks[weeks.length - 1].state = "active";
-    activeWeekNumber = weeks[weeks.length - 1].number;
+    weeks.at(-1).state = "active";
+    activeWeekNumber = weeks.at(-1).number;
   }
 
   // Lấy danh sách session của tuần active
@@ -133,10 +143,10 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
                 ...(sp.prescription.mainExercises || []),
                 ...(sp.prescription.coolDowns || []),
               ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-            ) || 45 //hard code: default workout session duration fallback if exercise durations are missing
-          : isRest
+            ) || 45 //Hard code: default workout session duration fallback if exercise durations are missing
+          : (isRest
             ? 20 //hard code: default recovery day duration
-            : 40; //hard code: default adhoc workout session duration
+            : 40); //Hard code: default adhoc workout session duration
 
         currentWeekSessions.push({
           id: sp.sessionPlanId,
@@ -145,7 +155,7 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
           title: sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
           time: sp.slotTime || "18:30",
           duration,
-          targetRpe: activeWeekPlan.targetRpe || 7, //hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
+          targetRpe: activeWeekPlan.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
           muscles: sp.targetMuscleGroups || [],
           status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
         });
@@ -188,7 +198,7 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
 
 export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
   const roadmapData = adaptRoadmapPageData(roadmap);
-  const activeWeek = roadmapData.activeWeek;
+  const {activeWeek} = roadmapData;
 
   const weeks: ScheduleWeek[] = (roadmap.weekPlans || []).map((wp) => {
     const start = wp.startDate ? formatDate(wp.startDate as any).dateStr : "";
@@ -207,17 +217,19 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
             nextFound = true;
           }
 
-          const duration = sp.prescription
-            ? Math.round(
-                [
-                  ...(sp.prescription.warmUps || []),
-                  ...(sp.prescription.mainExercises || []),
-                  ...(sp.prescription.coolDowns || []),
-                ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-              ) || 45 //hard code: default workout duration fallback
-            : isRest
-              ? 20 //hard code: default recovery day duration
-              : 40; //hard code: default adhoc session duration
+          const duration =
+            (sp as any).estimatedDurationMinutes ??
+            (sp.prescription
+              ? Math.round(
+                  [
+                    ...(sp.prescription.warmUps || []),
+                    ...(sp.prescription.mainExercises || []),
+                    ...(sp.prescription.coolDowns || []),
+                  ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
+                ) || 45
+              : isRest
+                ? 20
+                : 40);
 
           sessions.push({
             id: sp.sessionPlanId,
@@ -226,7 +238,7 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
             title: sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
             time: sp.slotTime || "18:30",
             duration,
-            targetRpe: wp.targetRpe || 7, //hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
+            targetRpe: wp.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
             muscles: sp.targetMuscleGroups || [],
             status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
           });
@@ -265,8 +277,8 @@ export function adaptSessionPlanPageData(
           ...(sessionRes.prescription.mainExercises || []),
           ...(sessionRes.prescription.coolDowns || []),
         ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-      ) || 45 //hard code: default workout duration
-    : 45; //hard code: fallback default duration
+      ) || 45 //Hard code: default workout duration
+    : 45; //Hard code: fallback default duration
 
   const exercises = sessionRes.prescription
     ? [
@@ -277,8 +289,8 @@ export function adaptSessionPlanPageData(
         exerciseId: ex.exerciseId,
         name: ex.exerciseName,
         prescription: `${ex.targetSets} × ${ex.targetReps}`,
-        rest: `${ex.restSetSec || 60} sec`, //hard code: fallback rest set time
-        notes: ex.notes || "Maintain controlled range of motion.", //hard code: default instructions note
+        rest: `${ex.restSetSec || 60} sec`, //Hard code: fallback rest set time
+        notes: ex.notes || "Maintain controlled range of motion.", //Hard code: default instructions note
       }))
     : [];
 
@@ -299,8 +311,8 @@ export function adaptSessionPlanPageData(
     day: dayStr,
     date: dateStr,
     duration,
-    targetRpe: sessionRes.prescription?.mainExercises?.[0]?.targetRpe || 7, //hard code: default RPE fallback
-    sessionDescription: sessionRes.reasoning || "Personalized workout session tailored for your roadmap.", //hard code: fallback reasoning string
+    targetRpe: sessionRes.prescription?.mainExercises?.[0]?.targetRpe || 7, //Hard code: default RPE fallback
+    sessionDescription: sessionRes.reasoning || "Personalized workout session tailored for your roadmap.", //Hard code: fallback reasoning string
     exercises,
     readinessNote,
     featureNotes: [
@@ -316,6 +328,6 @@ export function adaptSessionPlanPageData(
       "Keep water within reach.",
       "Stop if new or sharp pain appears.",
     ],
-    startWorkoutHref: `/workouts/live/${sessionRes.sessionPlanId}`, //hard code: URL format helper
+    startWorkoutHref: `/workouts/live/${sessionRes.sessionPlanId}`, //Hard code: URL format helper
   };
 }

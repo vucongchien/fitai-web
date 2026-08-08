@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import {
   CreateAdhocSessionPlanResponseSchema,
@@ -62,7 +62,7 @@ vi.mock<typeof import("@/shared/auth/session")>(import("@/shared/auth/session"),
   getAuthenticatedUserId: () => Promise.resolve("usr-workout-live"),
 }));
 
-describe("Workout Execution gRPC Actions", () => {
+describe("workout Execution gRPC Actions", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
@@ -167,7 +167,7 @@ describe("Workout Execution gRPC Actions", () => {
       false,
     );
 
-    expect(mockCompleteWorkoutSession).toHaveBeenCalled();
+    expect(mockCompleteWorkoutSession).toHaveBeenCalledWith();
     expect(res.sessionId).toBe("sess-live-888");
     expect(res.totalSets).toBe(3);
     expect(res.totalVolumeKg).toBe(2400);
@@ -188,7 +188,7 @@ describe("Workout Execution gRPC Actions", () => {
     );
     const prs = await getPersonalRecords(["deadlift", "squat"]);
 
-    expect(prs).toEqual({
+    expect(prs).toStrictEqual({
       deadlift: 160,
       squat: 140,
     });

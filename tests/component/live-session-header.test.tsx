@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it, vi } from '@jest/globals';
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
@@ -30,7 +31,7 @@ describe(SessionHeader, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
 
-    expect(onBack).toHaveBeenCalledOnce();
+    expect(onBack).toHaveBeenCalledTimes(1);
   });
 
   it("renders each action with its accessible name and wires its handler", () => {
@@ -59,7 +60,7 @@ describe(SessionHeader, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Exercise guide" }));
 
-    expect(onGuide).toHaveBeenCalledOnce();
+    expect(onGuide).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("button", { name: "Voice guide" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Fullscreen" })).toBeInTheDocument();
   });

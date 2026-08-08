@@ -19,7 +19,7 @@ export async function getProfileData(): Promise<ProfileViewModel> {
     redirect("/login");
   }
 
-  let athleteName = userName || (userId ? `Athlete ${userId.slice(-4)}` : "Athlete");
+  const athleteName = userName || (userId ? `Athlete ${userId.slice(-4)}` : "Athlete");
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {

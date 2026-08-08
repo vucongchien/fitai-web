@@ -10,7 +10,7 @@ import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
-//hard code: Fallback static playlist since gRPC backend does not have playlist music service.
+//Hard code: Fallback static playlist since gRPC backend does not have playlist music service.
 const STATIC_PLAYLISTS: Playlist[] = [
   {
     id: "pl-steady",
@@ -82,12 +82,12 @@ function adaptLiveSessionPlan({
       const spec = specRes.motionSpecification;
       motionSpecs[spec.exerciseId] = {
         exerciseId: spec.exerciseId,
-        //need to migrate: These local model assets should be provided dynamically by gRPC server in the future.
+        //Need to migrate: These local model assets should be provided dynamically by gRPC server in the future.
         onnxDetectorUrl: spec.onnxDetectorUrl || "/models/person-detector.onnx",
         onnxSkeletonUrl: spec.onnxSkeletonUrl || "/models/rtmpose-17kp.onnx",
         localRulesUrl: spec.localRulesUrl || `/models/rules/${spec.exerciseId}.json`,
         dialogueEngineUrl: spec.dialogueEngineUrl || `/models/dialogue/${spec.exerciseId}.json`,
-        recommendedCameraAngle: spec.recommendedCameraAngle || "side", //hard code: fallback camera angle
+        recommendedCameraAngle: spec.recommendedCameraAngle || "side", //Hard code: fallback camera angle
         romRange: spec.romRange || { joints: [], startDeg: 0, endDeg: 0 },
         rules: (spec.rules || []).map((rule: any) => ({
           code: rule.code,
@@ -125,7 +125,7 @@ function adaptLiveSessionPlan({
     sessionId,
     sessionPlanId: sessionId,
     title: sessionRes.targetMuscleGroups?.join(", ") || "Workout Session",
-    targetRpe: mainExercises?.[0]?.targetRpe || 7, //hard code: fallback default RPE of 7 if main exercises do not specify target RPE
+    targetRpe: mainExercises?.[0]?.targetRpe || 7, //Hard code: fallback default RPE of 7 if main exercises do not specify target RPE
     estimatedDurationMin: 0,
     warmUps,
     mainExercises,
@@ -134,7 +134,7 @@ function adaptLiveSessionPlan({
     motionSpecs,
     recentAvgVolumeKg,
     personalRecords,
-    durationWarnMin: 90, //hard code: default warning threshold for session duration
+    durationWarnMin: 90, //Hard code: default warning threshold for session duration
   };
 
   return { ...plan, estimatedDurationMin: estimatedDurationMin(plan) };
@@ -180,7 +180,7 @@ async function getRealLiveSession(sessionId: string, accessToken: string, userId
   });
 }
 
-//hard code: Fallback safe empty session data when gRPC fails to fetch live session.
+//Hard code: Fallback safe empty session data when gRPC fails to fetch live session.
 const getEmptyLiveSession = (sessionId: string): LiveSessionPlan => ({
   sessionId,
   sessionPlanId: sessionId,

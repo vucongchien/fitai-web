@@ -68,7 +68,7 @@ async function getRealNutritionPageData(
 export async function getNutritionPageData(): Promise<NutritionPageData> {
   const { accessToken, userId } = await getAuthenticatedSession();
 
-  console.info("[getNutritionPageData] accessToken present:", !!accessToken, "userId:", userId);
+  console.info("[getNutritionPageData] accessToken present:", Boolean(accessToken), "userId:", userId);
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {

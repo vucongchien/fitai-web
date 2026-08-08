@@ -48,9 +48,9 @@ export function RoadmapView({ data }: RoadmapViewProps) {
             actionLabel={
               isPending
                 ? "Đang tạo lộ trình..."
-                : isNoRoadmap
+                : (isNoRoadmap
                 ? "Nhấn để tạo lộ trình"
-                : "Nhấn để thử lại"
+                : "Nhấn để thử lại")
             }
             onActionClick={isNoRoadmap ? handleCreateRoadmap : handleRetry}
           />

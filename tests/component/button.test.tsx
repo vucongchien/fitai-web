@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from '@jest/globals';
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { MouseEventHandler } from "react";
 

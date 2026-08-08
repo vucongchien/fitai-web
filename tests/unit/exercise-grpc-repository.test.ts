@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import {
   GetCatalogMetadataResponseSchema,
@@ -30,7 +30,7 @@ vi.mock<typeof import("@/shared/api/server/transport")>(
   }),
 );
 
-describe("Exercise Catalog gRPC Repository", () => {
+describe("exercise Catalog gRPC Repository", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
@@ -72,7 +72,7 @@ describe("Exercise Catalog gRPC Repository", () => {
     );
     expect(results).toHaveLength(1);
     expect(results[0].id).toBe("ex-bench-press");
-    expect(results[0].hasAiSupported).toBe(true);
+    expect(results[0].hasAiSupported).toBeTruthy();
   });
 
   it("getCatalog fetches metadata taxonomy from backend", async () => {
@@ -90,7 +90,7 @@ describe("Exercise Catalog gRPC Repository", () => {
     );
     const catalog = await exerciseSearchRepository.getCatalog();
 
-    expect(mockGetCatalogMetadata).toHaveBeenCalled();
+    expect(mockGetCatalogMetadata).toHaveBeenCalledWith();
     expect(catalog.bodyParts).toHaveLength(1);
     expect(catalog.equipments).toHaveLength(1);
   });

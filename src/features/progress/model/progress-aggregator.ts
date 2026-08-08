@@ -20,4 +20,4 @@ export function getTopPersonalRecords(records: PersonalRecord[], limit = 3): Per
     .slice(0, limit);
 }
 
-// replacing the mock function with empty space or comments
+// Replacing the mock function with empty space or comments

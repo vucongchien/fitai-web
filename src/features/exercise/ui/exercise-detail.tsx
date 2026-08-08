@@ -13,7 +13,7 @@ interface ExerciseDetailProps {
 }
 
 function isUuid(str?: string): boolean {
-  if (!str) return false;
+  if (!str) {return false;}
   const trimmed = str.trim();
   return (
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
@@ -22,12 +22,12 @@ function isUuid(str?: string): boolean {
 }
 
 function findName(pool: { id: string; name: string }[], id: string): string | undefined {
-  if (!id || isUuid(id)) return undefined;
+  if (!id || isUuid(id)) {return undefined;}
   return pool.find((entry) => entry.id === id || entry.name.toLowerCase() === id.toLowerCase())?.name;
 }
 
 function parseInstructionSteps(raw?: string): string[] {
-  if (!raw) return [];
+  if (!raw) {return [];}
   const splitSteps = raw
     .split(/(?=\b\d+\.\s+)/g)
     .map((s) => s.trim())
@@ -99,7 +99,7 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
         <div className="detail-thumb">
           {exercise.thumbnailUrl ? (
             <img alt={exercise.name} className="detail-thumb__img" src={exercise.thumbnailUrl} />
-          ) : videoMediaUrl ? (
+          ) : (videoMediaUrl ? (
             <div className="detail-thumb__fallback">
               <Video size={56} strokeWidth={1.2} />
             </div>
@@ -107,7 +107,7 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
             <div className="detail-thumb__fallback">
               <Dumbbell size={56} strokeWidth={1.2} />
             </div>
-          )}
+          ))}
 
           {exercise.hasAiSupported ? (
             <span className="ex-card__ai detail-thumb__ai">

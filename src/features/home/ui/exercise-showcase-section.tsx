@@ -11,7 +11,7 @@ interface ExerciseShowcaseSectionProps {
 }
 
 function isUuid(str?: string): boolean {
-  if (!str) return false;
+  if (!str) {return false;}
   const trimmed = str.trim();
   return (
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
@@ -20,7 +20,7 @@ function isUuid(str?: string): boolean {
 }
 
 function cleanLabel(val?: string, fallback: string = ""): string {
-  if (!val || isUuid(val)) return fallback;
+  if (!val || isUuid(val)) {return fallback;}
   return val;
 }
 

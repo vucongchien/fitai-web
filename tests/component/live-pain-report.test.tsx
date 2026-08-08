@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it, vi } from '@jest/globals';
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
@@ -50,7 +51,7 @@ describe(PainReportDialog, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "No, keep training" }));
 
-    expect(onDismiss).toHaveBeenCalledOnce();
+    expect(onDismiss).toHaveBeenCalledTimes(1);
     expect(onStop).not.toHaveBeenCalled();
   });
 
@@ -60,7 +61,7 @@ describe(PainReportDialog, () => {
 
     fireEvent.keyDown(document, { key: "Escape" });
 
-    expect(onDismiss).toHaveBeenCalledOnce();
+    expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
   it("focuses the stop button, the reason the dialog was opened", () => {

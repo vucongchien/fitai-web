@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import {
   CreateAdhocSessionPlanResponseSchema,
@@ -35,7 +35,7 @@ vi.mock<typeof import("@/shared/auth/session")>(import("@/shared/auth/session"),
   getAuthenticatedUserId: () => Promise.resolve("usr-plan-456"),
 }));
 
-describe("Planning & Coaching gRPC Actions", () => {
+describe("planning & Coaching gRPC Actions", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
@@ -64,7 +64,7 @@ describe("Planning & Coaching gRPC Actions", () => {
     const res = await initiateRoadmapServerAction();
 
     expect(mockInitiateRoadmap).toHaveBeenCalledWith({ userId: "usr-plan-456" });
-    expect(res.success).toBe(true);
+    expect(res.success).toBeTruthy();
     expect(res.roadmapId).toBe("rdm-999");
   });
 
@@ -85,7 +85,7 @@ describe("Planning & Coaching gRPC Actions", () => {
       roadmapId: "rdm-999",
       reason: "Injury reported",
     });
-    expect(res.success).toBe(true);
+    expect(res.success).toBeTruthy();
   });
 
   it("createAdhocSessionPlanServerAction builds flexible adhoc workout", async () => {
@@ -104,7 +104,7 @@ describe("Planning & Coaching gRPC Actions", () => {
       userId: "usr-plan-456",
       exerciseIds: ["ex-bench", "ex-squat"],
     });
-    expect(res.success).toBe(true);
+    expect(res.success).toBeTruthy();
     expect(res.sessionPlanId).toBe("adhoc-plan-888");
   });
 });

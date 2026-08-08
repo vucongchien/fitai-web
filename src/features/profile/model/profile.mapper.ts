@@ -1,5 +1,58 @@
 import type { BestPersonalRecord, HealthMetricsDetail, ProfileViewModel } from "./profile.types";
 
+export function mapGoalToEnum(goal: string): string {
+  const upper = goal?.toUpperCase() || "";
+  if (upper.includes("FAT") || upper.includes("LOSE") || upper === "FAT_LOSS") {
+    return "FAT_LOSS";
+  }
+  if (upper.includes("STRENGTH")) {
+    return "STRENGTH";
+  }
+  if (upper.includes("ENDURANCE")) {
+    return "ENDURANCE";
+  }
+  return "BUILD_MUSCLE";
+}
+
+export function mapEquipmentToEnum(equipment: string): string {
+  const upper = equipment?.toUpperCase() || "";
+  if (upper.includes("FULL GYM") || upper.includes("FULL_GYM") || upper.includes("CABLE")) {
+    return "FULL_GYM";
+  }
+  if (upper.includes("DUMBBELL")) {
+    return "DUMBBELL_ONLY";
+  }
+  if (upper.includes("BARBELL")) {
+    return "BARBELL";
+  }
+  if (upper.includes("BAND")) {
+    return "RESISTANCE_BAND";
+  }
+  if (upper.includes("KETTLEBELL")) {
+    return "KETTLEBELL";
+  }
+  if (upper.includes("MACHINE")) {
+    return "MACHINE";
+  }
+  return "BODYWEIGHT";
+}
+
+export function mapCoachStyleToEnum(style: string): string {
+  switch (style?.toLowerCase()) {
+    case "strict":
+    case "direct": {
+      return "STRICT";
+    }
+    case "scientific":
+    case "balanced": {
+      return "SCIENTIFIC";
+    }
+    default: {
+      return "MOTIVATIONAL";
+    }
+  }
+}
+
 export function calculateBMI(
   weightKg: number,
   heightCm: number,

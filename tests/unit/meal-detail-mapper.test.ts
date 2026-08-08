@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import type { DailyMenuRows } from "@/features/nutrition/model/meal-detail.mapper";
 import {
   adaptMealDetailPageData,

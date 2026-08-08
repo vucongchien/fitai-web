@@ -39,13 +39,13 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
 
   const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     const mealName = nameRef.current?.value.trim();
-    if (!mealName) {
+    if (mealName) {
+      setValidationError(null);
+    } else {
       e.preventDefault();
       setValidationError("Please enter a meal name");
       toast.error("Please enter a meal name");
       nameRef.current?.focus();
-    } else {
-      setValidationError(null);
     }
   }, []);
 
@@ -72,7 +72,7 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
           ref={nameRef}
           placeholder={`Your own ${slotLabel.toLowerCase()}`}
           onChange={() => {
-            if (validationError) setValidationError(null);
+            if (validationError) {setValidationError(null);}
           }}
           type="text"
           className={validationError ? "log-form__input--error" : undefined}

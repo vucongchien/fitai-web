@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import { LogoutResponseSchema } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 import type { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
@@ -85,7 +85,7 @@ describe("/api/auth/logout Route Handler", () => {
       if (name === "fitai_refresh_token") {
         return { value: "valid_refresh_token_123" };
       }
-      return undefined;
+      return;
     });
 
     mockLogout.mockResolvedValue(
@@ -138,14 +138,14 @@ describe("/api/auth/logout Route Handler", () => {
       }),
     );
 
-    expect(mockLogout).toHaveBeenCalled();
+    expect(mockLogout).toHaveBeenCalledWith();
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_access_token");
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_refresh_token");
     expect(res.status).toBe(200);
   });
 
   it("handles logout without refresh_token cookie gracefully", async () => {
-    mockGetCookie.mockReturnValue(undefined);
+    mockGetCookie.mockReturnValue();
 
     const { POST } = await import("@/app/api/auth/logout/route");
     const res = await POST(

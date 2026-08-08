@@ -32,7 +32,7 @@ const crcTable = (() => {
   for (let n = 0; n < 256; n += 1) {
     let c = n;
     for (let k = 0; k < 8; k += 1) {
-      c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+      c = c & 1 ? 0xED_B8_83_20 ^ (c >>> 1) : c >>> 1;
     }
     table[n] = c;
   }

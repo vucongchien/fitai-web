@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+
 
 import { parseVideoSource } from "@/features/workout/domain/video-source-parser";
 
-describe("Video Source Parser (YouTube vs Direct MP4)", () => {
+describe("video Source Parser (YouTube vs Direct MP4)", () => {
   it("recognizes standard youtube watch URLs", () => {
     const res = parseVideoSource("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     expect(res.type).toBe("youtube");

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { act, fireEvent, render } from "@testing-library/react";
 
 import { CoachingPanel } from "@/features/workout/ui/live/coaching-panel";
@@ -57,7 +57,7 @@ describe(CoachingPanel, () => {
   it("re-measures when the panel is resized, not only when it is scrolled", () => {
     let trigger: (() => void) | undefined;
     const disconnect = vi.fn<ResizeObserver["disconnect"]>();
-    let unobserve = vi.fn<ResizeObserver["unobserve"]>();
+    const unobserve = vi.fn<ResizeObserver["unobserve"]>();
 
     const observe = vi.fn<ResizeObserver["observe"]>((_target, _options) => {
       // Mock observe
@@ -93,7 +93,7 @@ describe(CoachingPanel, () => {
     const { container } = render(<CoachingPanel exercise={makeExercise()} />);
     const panel = container.querySelector(".live-screen__coach") as HTMLElement;
 
-    expect(observe).toHaveBeenCalled();
+    expect(observe).toHaveBeenCalledWith();
 
     // The viewport shrank: the same content now overflows.
     Object.defineProperty(panel, "scrollHeight", { configurable: true, value: 400 });

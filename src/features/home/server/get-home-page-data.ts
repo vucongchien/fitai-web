@@ -97,7 +97,7 @@ const DEFAULT_MUSCLE_GROUPS: MuscleGroupCategoryItem[] = [
 ];
 
 function isUuid(str?: string): boolean {
-  if (!str) return false;
+  if (!str) {return false;}
   const trimmed = str.trim();
   return (
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
@@ -109,11 +109,11 @@ function computeProfileCompletion(profileVm: ProfileViewModel): { rate: number; 
   let score = 0;
   const missing: string[] = [];
 
-  if (profileVm.highlights.currentWeightKg > 0) score += 20; else missing.push("Weight");
-  if (profileVm.healthMetrics.heightCm > 0) score += 20; else missing.push("Height");
-  if (profileVm.user.dateOfBirth || (profileVm.user.gender && profileVm.user.gender !== "Not set")) score += 20; else missing.push("Personal Details");
-  if (profileVm.healthMetrics.goals && profileVm.healthMetrics.goals.length > 0) score += 20; else missing.push("Training Goals");
-  if (profileVm.user.experienceLevel || (profileVm.settings.availableEquipment && profileVm.settings.availableEquipment.length > 0)) score += 20; else missing.push("Equipment & Setup");
+  if (profileVm.highlights.currentWeightKg > 0) {score += 20;} else {missing.push("Weight");}
+  if (profileVm.healthMetrics.heightCm > 0) {score += 20;} else {missing.push("Height");}
+  if (profileVm.user.dateOfBirth || (profileVm.user.gender && profileVm.user.gender !== "Not set")) {score += 20;} else {missing.push("Personal Details");}
+  if (profileVm.healthMetrics.goals && profileVm.healthMetrics.goals.length > 0) {score += 20;} else {missing.push("Training Goals");}
+  if (profileVm.user.experienceLevel || (profileVm.settings.availableEquipment && profileVm.settings.availableEquipment.length > 0)) {score += 20;} else {missing.push("Equipment & Setup");}
 
   return { rate: score, missingFields: missing };
 }
@@ -150,7 +150,7 @@ export async function getHomePageData(): Promise<HomePageData> {
           exerciseSearchRepository.getCatalog(),
         ]);
 
-      let roadmap = roadmapRes.status === "fulfilled" ? roadmapRes.value.roadmap : undefined;
+      const roadmap = roadmapRes.status === "fulfilled" ? roadmapRes.value.roadmap : undefined;
       const nutrition = nutritionRes.status === "fulfilled" ? nutritionRes.value : undefined;
       const menu = menuRes.status === "fulfilled" ? menuRes.value : undefined;
       const history = historyRes.status === "fulfilled" ? historyRes.value.sessions : [];
@@ -162,16 +162,16 @@ export async function getHomePageData(): Promise<HomePageData> {
       const equipmentMap = new Map(catalogData.equipments.map((e) => [e.id, e.name]));
 
       const resolveMuscleGroup = (targetId?: string, bodyPartId?: string): string => {
-        if (targetId && muscleMap.has(targetId)) return muscleMap.get(targetId)!.toUpperCase();
-        if (bodyPartId && bodyPartMap.has(bodyPartId)) return bodyPartMap.get(bodyPartId)!.toUpperCase();
-        if (targetId && !isUuid(targetId)) return targetId.toUpperCase();
-        if (bodyPartId && !isUuid(bodyPartId)) return bodyPartId.toUpperCase();
+        if (targetId && muscleMap.has(targetId)) {return muscleMap.get(targetId)!.toUpperCase();}
+        if (bodyPartId && bodyPartMap.has(bodyPartId)) {return bodyPartMap.get(bodyPartId)!.toUpperCase();}
+        if (targetId && !isUuid(targetId)) {return targetId.toUpperCase();}
+        if (bodyPartId && !isUuid(bodyPartId)) {return bodyPartId.toUpperCase();}
         return "FULL BODY";
       };
 
       const resolveEquipment = (eqId?: string): string => {
-        if (eqId && equipmentMap.has(eqId)) return equipmentMap.get(eqId)!;
-        if (eqId && !isUuid(eqId)) return eqId;
+        if (eqId && equipmentMap.has(eqId)) {return equipmentMap.get(eqId)!;}
+        if (eqId && !isUuid(eqId)) {return eqId;}
         return "";
       };
 

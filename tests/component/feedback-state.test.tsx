@@ -1,8 +1,9 @@
+import { describe, expect, it, vi } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 
 import { FeedbackState } from "@/shared/ui/feedback-state";
 
-vi.mock("next/link", () => ({
+vi.mock<typeof import('next/link')>(import('next/link'), () => ({
   default: ({ children, href, ...props }: React.ComponentPropsWithRef<"a">) => (
     <a href={href as string} {...props}>
       {children}
@@ -10,7 +11,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-describe("FeedbackState", () => {
+describe(FeedbackState, () => {
   describe("empty tone (default)", () => {
     it("renders title and description", () => {
       render(

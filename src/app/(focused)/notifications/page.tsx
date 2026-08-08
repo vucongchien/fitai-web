@@ -31,23 +31,23 @@ const ICON = {
 function formatRelativeTime(isoString: string): string {
   try {
     const date = new Date(isoString);
-    if (isNaN(date.getTime())) return isoString;
+    if (isNaN(date.getTime())) {return isoString;}
     
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     
     // Nếu mốc thời gian ở tương lai
-    if (diffMs < 0) return "Just now";
+    if (diffMs < 0) {return "Just now";}
     
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMins = Math.floor(diffMs / 60_000);
+    const diffHours = Math.floor(diffMs / 3_600_000);
+    const diffDays = Math.floor(diffMs / 86_400_000);
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffMins < 1) {return "Just now";}
+    if (diffMins < 60) {return `${diffMins}m ago`;}
+    if (diffHours < 24) {return `${diffHours}h ago`;}
+    if (diffDays === 1) {return "Yesterday";}
+    if (diffDays < 7) {return `${diffDays}d ago`;}
     
     return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   } catch {
@@ -98,8 +98,8 @@ export default function NotificationsPage() {
         read: item.isRead,
       }));
       setNotifications(mapped);
-    } catch (err) {
-      console.error("[NotificationsPage] failed to load:", err);
+    } catch (error) {
+      console.error("[NotificationsPage] failed to load:", error);
       setError("Unable to load notifications. Please try again.");
     } finally {
       setLoading(false);
@@ -111,7 +111,7 @@ export default function NotificationsPage() {
   }, [fetchNotifications]);
 
   const handleMarkAsRead = async (id: string, currentlyRead: boolean) => {
-    if (currentlyRead) return;
+    if (currentlyRead) {return;}
 
     // Cập nhật optimistic UI trước
     setNotifications((prev) =>
@@ -126,8 +126,8 @@ export default function NotificationsPage() {
           prev.map((item) => (item.id === id ? { ...item, read: false } : item))
         );
       }
-    } catch (err) {
-      console.error("[NotificationsPage] failed to mark as read:", err);
+    } catch (error) {
+      console.error("[NotificationsPage] failed to mark as read:", error);
       // Rollback nếu có lỗi
       setNotifications((prev) =>
         prev.map((item) => (item.id === id ? { ...item, read: false } : item))

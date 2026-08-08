@@ -11,7 +11,7 @@ interface ExerciseCardProps {
 }
 
 function isUuid(str?: string): boolean {
-  if (!str) return false;
+  if (!str) {return false;}
   const trimmed = str.trim();
   return (
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
@@ -20,7 +20,7 @@ function isUuid(str?: string): boolean {
 }
 
 function findName(pool: { id: string; name: string }[], id: string): string | undefined {
-  if (!id || isUuid(id)) return undefined;
+  if (!id || isUuid(id)) {return undefined;}
   return pool.find((entry) => entry.id === id || entry.name.toLowerCase() === id.toLowerCase())?.name;
 }
 

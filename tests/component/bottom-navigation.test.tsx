@@ -1,13 +1,14 @@
+import { describe, expect, it, vi } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 import { usePathname } from "next/navigation";
 
 import { BottomNavigation } from "@/shared/ui/bottom-navigation";
 
-vi.mock("next/navigation", () => ({
+vi.mock<typeof import('next/navigation')>(import('next/navigation'), () => ({
   usePathname: vi.fn(),
 }));
 
-vi.mock("next/link", () => ({
+vi.mock<typeof import('next/link')>(import('next/link'), () => ({
   default: ({ children, href, ...props }: React.ComponentPropsWithRef<"a">) => (
     <a href={href as string} {...props}>
       {children}
@@ -15,7 +16,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-describe("BottomNavigation", () => {
+describe(BottomNavigation, () => {
   it("renders a nav landmark with descriptive aria-label", () => {
     vi.mocked(usePathname).mockReturnValue("/home");
     render(<BottomNavigation />);

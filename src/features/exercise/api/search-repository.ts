@@ -12,12 +12,15 @@ import { getAccessToken } from "@/shared/auth/session";
 
 function mapDifficulty(diff?: string): Difficulty {
   switch (diff?.toUpperCase()) {
-    case "BEGINNER":
+    case "BEGINNER": {
       return "beginner";
-    case "ADVANCED":
+    }
+    case "ADVANCED": {
       return "advanced";
-    default:
+    }
+    default: {
       return "intermediate";
+    }
   }
 }
 

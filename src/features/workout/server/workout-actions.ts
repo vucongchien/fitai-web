@@ -40,7 +40,7 @@ export async function searchExercises(query: string): Promise<ExerciseResult[]> 
     name: ex.name,
     equipmentId: ex.equipmentId || "eq-standard",
     isWeighted: ex.equipmentId !== "bodyweight",
-    defaultWeightKg: ex.equipmentId !== "bodyweight" ? 10 : undefined,
+    defaultWeightKg: ex.equipmentId === "bodyweight" ? undefined : 10,
     prescription: "3 × 10",
     rest: `${ex.defaultRestSeconds || 90} sec`,
     note: ex.instructions || "",
@@ -71,7 +71,7 @@ export async function getAdhocConfig(): Promise<AdhocConfig> {
   }
 
   return {
-    targetRpe: 7.0, //hard code: fallback default RPE when gRPC is offline
+    targetRpe: 7, //Hard code: fallback default RPE when gRPC is offline
     defaultExercises: [],
   };
 }
@@ -95,7 +95,7 @@ export async function getAiRecommendation(): Promise<AiRecommendResult> {
           id: ex.exerciseId,
           name: ex.exerciseName,
           prescription: `${ex.targetSets} × ${ex.targetReps}`,
-          rest: `${ex.restSetSec || 90} sec`, //hard code: fallback rest duration if not specified
+          rest: `${ex.restSetSec || 90} sec`, //Hard code: fallback rest duration if not specified
           note: ex.notes || "AI Recommended",
           sets: ex.targetSets,
           reps: ex.targetReps,
@@ -139,7 +139,7 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
     }
   }
 
-  return { sessionId: `adhoc_${Date.now()}` }; //hard code: offline fallback session ID generation
+  return { sessionId: `adhoc_${Date.now()}` }; //Hard code: offline fallback session ID generation
 }
 
 /**
@@ -175,7 +175,7 @@ export async function logWorkoutSet(
     }
   }
 
-  return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` }; //hard code: offline fallback set ID generation
+  return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` }; //Hard code: offline fallback set ID generation
 }
 
 /**
@@ -234,7 +234,7 @@ export async function abortWorkoutSession(
     }
   }
 
-  return { abortedAt: Date.now() }; //hard code: offline fallback timestamp
+  return { abortedAt: Date.now() }; //Hard code: offline fallback timestamp
 }
 
 export interface CompleteSessionResult {

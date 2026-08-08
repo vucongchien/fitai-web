@@ -4,20 +4,20 @@ export function mapGoalToProto(goals: string[] | string): string[] {
   for (const g of list) {
     const lower = g?.toLowerCase() || "";
     if (lower.includes("strength") || lower === "strength") {
-      if (!result.includes("STRENGTH")) result.push("STRENGTH");
+      if (!result.includes("STRENGTH")) {result.push("STRENGTH");}
     } else if (lower.includes("endurance") || lower === "endurance") {
-      if (!result.includes("ENDURANCE")) result.push("ENDURANCE");
+      if (!result.includes("ENDURANCE")) {result.push("ENDURANCE");}
     } else if (lower.includes("fat") || lower.includes("lose") || lower === "fat_loss") {
-      if (!result.includes("FAT_LOSS")) result.push("FAT_LOSS");
+      if (!result.includes("FAT_LOSS")) {result.push("FAT_LOSS");}
     } else if (
       lower.includes("muscle") ||
       lower.includes("hypertrophy") ||
       lower === "build_muscle" ||
       lower === "build-muscle"
     ) {
-      if (!result.includes("BUILD_MUSCLE")) result.push("BUILD_MUSCLE");
+      if (!result.includes("BUILD_MUSCLE")) {result.push("BUILD_MUSCLE");}
     } else {
-      if (!result.includes("BUILD_MUSCLE")) result.push("BUILD_MUSCLE");
+      if (!result.includes("BUILD_MUSCLE")) {result.push("BUILD_MUSCLE");}
     }
   }
   return result.length > 0 ? result : ["BUILD_MUSCLE"];
@@ -64,7 +64,7 @@ export function mapEquipmentToProto(equipmentList: string[]): string[] {
     if (upper.includes("BODYWEIGHT")) {
       return "BODYWEIGHT";
     }
-    return item.replace(/\s+/g, "_").toUpperCase();
+    return item.replaceAll(/\s+/g, "_").toUpperCase();
   });
 }
 

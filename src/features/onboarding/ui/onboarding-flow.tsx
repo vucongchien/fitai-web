@@ -13,16 +13,15 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import {
-  getCatalogMetadataServerAction,
-  type CatalogEquipmentItem,
-  type CatalogMuscleItem,
-} from "@/features/exercise/server/catalog-actions";
+import { getCatalogMetadataServerAction } from '@/features/exercise/server/catalog-actions';
+import type { CatalogEquipmentItem, CatalogMuscleItem } from '@/features/exercise/server/catalog-actions';
 import {
   onboardingDefaults,
   onboardingSchema,
 } from "@/features/onboarding/domain/onboarding-schema";
 import type { OnboardingValues } from "@/features/onboarding/domain/onboarding-schema";
+import { calculateWeeklyScheduleStats } from "@/features/onboarding/domain/workout-times-normalizer";
+import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { saveOnboardingProfileServerAction } from "@/features/onboarding/server/onboarding-actions";
 import { calculateBMI } from "@/features/profile/model/profile.mapper";
 import { Button } from "@/shared/ui/button";
@@ -122,10 +121,10 @@ export function OnboardingFlow() {
           setCatalogEquipments(res.equipments);
           setCatalogMuscles(res.muscles);
         }
-      } catch (err) {
-        console.error("Failed to load catalog metadata in onboarding:", err);
+      } catch (error) {
+        console.error("Failed to load catalog metadata in onboarding:", error);
       } finally {
-        if (mounted) setIsLoadingCatalog(false);
+        if (mounted) {setIsLoadingCatalog(false);}
       }
     }
     fetchCatalog();
@@ -231,46 +230,14 @@ export function OnboardingFlow() {
   const toggleGoal = (goalVal: "build-muscle" | "fat-loss") => {
     const current = getValues("goals") || [];
     const next = current.includes(goalVal)
-      ? current.length > 1
+      ? (current.length > 1
         ? current.filter((g) => g !== goalVal)
-        : current
+        : current)
       : [...current, goalVal];
     setValue("goals", next as [("build-muscle" | "fat-loss"), ...("build-muscle" | "fat-loss")[]], {
       shouldDirty: true,
       shouldValidate: true,
     });
-  };
-
-  // Toggle workout slot (e.g. "Mon AM", "Mon PM")
-  const toggleWorkoutSlot = (slot: string) => {
-    const current = getValues("preferredWorkoutTimes") || [];
-    const next = current.includes(slot)
-      ? current.filter((s) => s !== slot)
-      : [...current, slot];
-    setValue("preferredWorkoutTimes", next, { shouldDirty: true, shouldValidate: true });
-  };
-
-  // Apply Quick Presets
-  const applyPreset = (preset: "MWF_PM" | "TTS_AM" | "ALL_PM" | "CLEAR") => {
-    if (preset === "MWF_PM") {
-      setValue("preferredWorkoutTimes", ["Mon PM", "Wed PM", "Fri PM"], {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    } else if (preset === "TTS_AM") {
-      setValue("preferredWorkoutTimes", ["Tue AM", "Thu AM", "Sat AM"], {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
-    } else if (preset === "ALL_PM") {
-      setValue(
-        "preferredWorkoutTimes",
-        dayList.map((d) => `${d.key} PM`),
-        { shouldDirty: true, shouldValidate: true },
-      );
-    } else if (preset === "CLEAR") {
-      setValue("preferredWorkoutTimes", [], { shouldDirty: true, shouldValidate: true });
-    }
   };
 
   // Toggle equipment or muscle focus
@@ -540,110 +507,26 @@ export function OnboardingFlow() {
           </section>
         ) : null}
 
-        {/* STEP 3: SHAPE YOUR WEEK (7-Day Schedule with AM/PM & Quick Presets) */}
+        {/* STEP 3: SHAPE YOUR WEEK (Workout Schedule Picker with Clean iOS Style) */}
         {step === 2 ? (
-          <section aria-labelledby="week-heading">
-            <h1 id="week-heading">Shape a schedule you can maintain.</h1>
-            <p>Select your preferred AM/PM windows for each training day, or use quick presets.</p>
-
-            {/* Quick Presets Bar */}
-            <div className="mb-4 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold text-[#50565C] mr-1 flex items-center gap-1">
-                <Sparkles size={14} className="text-[#4B57F2]" /> Quick presets:
-              </span>
-              <button
-                type="button"
-                onClick={() => applyPreset("MWF_PM")}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-[#4B57F2] border border-indigo-200 transition-colors cursor-pointer"
-              >
-                T2-T4-T6 Chiều (Mon-Wed-Fri PM)
-              </button>
-              <button
-                type="button"
-                onClick={() => applyPreset("TTS_AM")}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 transition-colors cursor-pointer"
-              >
-                T3-T5-T7 Sáng (Tue-Thu-Sat AM)
-              </button>
-              <button
-                type="button"
-                onClick={() => applyPreset("ALL_PM")}
-                className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 hover:bg-neutral-200 text-[#50565C] transition-colors cursor-pointer"
-              >
-                Hàng ngày PM
-              </button>
-              <button
-                type="button"
-                onClick={() => applyPreset("CLEAR")}
-                className="px-2 py-1.5 rounded-lg text-xs font-medium text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
-              >
-                Xóa chọn
-              </button>
-            </div>
-
-            {/* 7-Day AM/PM Matrix */}
-            <div className="p-4 sm:p-5 rounded-2xl border border-neutral-200 bg-neutral-50/50 space-y-4">
-              <div className="grid grid-cols-7 gap-1.5 sm:gap-2.5 text-center">
-                {dayList.map((day) => {
-                  const amKey = `${day.key} AM`;
-                  const pmKey = `${day.key} PM`;
-                  const isAmSelected = (preferredWorkoutTimes || []).includes(amKey);
-                  const isPmSelected = (preferredWorkoutTimes || []).includes(pmKey);
-
-                  return (
-                    <div key={day.key} className="flex flex-col items-center space-y-2">
-                      <span className="text-xs font-bold text-[#101214]">{day.label}</span>
-                      {/* AM Button */}
-                      <button
-                        type="button"
-                        onClick={() => toggleWorkoutSlot(amKey)}
-                        className="w-full py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 min-h-[42px]"
-                        style={{
-                          border: "1.5px solid",
-                          borderColor: isAmSelected ? "#4B57F2" : "#E5E7EB",
-                          backgroundColor: isAmSelected ? "#4B57F2" : "#FFFFFF",
-                          color: isAmSelected ? "#FFFFFF" : "#50565C",
-                          boxShadow: isAmSelected ? "0 2px 8px rgba(75, 87, 242, 0.25)" : "none",
-                        }}
-                      >
-                        <span>AM</span>
-                      </button>
-                      {/* PM Button */}
-                      <button
-                        type="button"
-                        onClick={() => toggleWorkoutSlot(pmKey)}
-                        className="w-full py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 min-h-[42px]"
-                        style={{
-                          border: "1.5px solid",
-                          borderColor: isPmSelected ? "#4B57F2" : "#E5E7EB",
-                          backgroundColor: isPmSelected ? "#4B57F2" : "#FFFFFF",
-                          color: isPmSelected ? "#FFFFFF" : "#50565C",
-                          boxShadow: isPmSelected ? "0 2px 8px rgba(75, 87, 242, 0.25)" : "none",
-                        }}
-                      >
-                        <span>PM</span>
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="flex items-center justify-between pt-3 border-t border-neutral-200 text-xs text-[#50565C]">
-                <span>
-                  Selected:{" "}
-                  <strong className="text-[#101214]">
-                    {(preferredWorkoutTimes || []).length} slots
-                  </strong>
-                </span>
-                <span className="text-[11px] text-neutral-400">AM = Sáng, PM = Chiều/Tối</span>
-              </div>
-            </div>
-
-            {errors.preferredWorkoutTimes ? (
-              <p className="mt-2 text-xs font-semibold text-rose-600" role="alert">
-                {errors.preferredWorkoutTimes.message}
+          <section aria-labelledby="week-heading" className="space-y-4">
+            <div>
+              <h1 id="week-heading">Shape your weekly schedule.</h1>
+              <p>
+                Select your workout hours. Unselected days remain rest days.
               </p>
-            ) : null}
+            </div>
+
+            <WorkoutSchedulePicker
+              value={preferredWorkoutTimes}
+              onChange={(map) =>
+                setValue("preferredWorkoutTimes", map as any, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+              error={errors.preferredWorkoutTimes?.message}
+            />
           </section>
         ) : null}
 
@@ -839,7 +722,11 @@ export function OnboardingFlow() {
               <div>
                 <dt>Workout Schedule</dt>
                 <dd>
-                  {(preferredWorkoutTimes || []).join(", ") || "Mon PM, Wed PM, Fri PM"}
+                  {(() => {
+                    const stats = calculateWeeklyScheduleStats(preferredWorkoutTimes);
+                    if (stats.activeDaysCount === 0) return "No schedule selected";
+                    return `${stats.activeDaysCount} days / week (${stats.totalSlotsCount} sessions) • ~${stats.avgDurationMinutes}m avg`;
+                  })()}
                 </dd>
               </div>
               <div>

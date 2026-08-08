@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import {
   GetNutritionHistoryResponseSchema,
@@ -61,7 +61,7 @@ vi.mock<typeof import("next/cache")>(import("next/cache"), () => ({
   revalidatePath: vi.fn(),
 }));
 
-describe("Nutrition gRPC Actions & Services", () => {
+describe("nutrition gRPC Actions & Services", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
@@ -141,7 +141,7 @@ describe("Nutrition gRPC Actions & Services", () => {
         userId: "usr-nutri-888",
       }),
     );
-    expect(result.ok).toBe(true);
+    expect(result.ok).toBeTruthy();
   });
 
   it("recalibratePantryAction triggers pantry-based meal rebalancing", async () => {
@@ -161,6 +161,6 @@ describe("Nutrition gRPC Actions & Services", () => {
       userId: "usr-nutri-888",
       availableIngredients: ["Eggs", "Spinach", "Tofu"],
     });
-    expect(res.success).toBe(true);
+    expect(res.success).toBeTruthy();
   });
 });

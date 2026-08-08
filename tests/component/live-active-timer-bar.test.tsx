@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it, vi } from '@jest/globals';
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
@@ -64,8 +65,8 @@ describe(ActiveTimerBar, () => {
     fireEvent.click(screen.getByRole("button", { name: "Done" }));
     fireEvent.click(screen.getByRole("button", { name: "Add 10 seconds" }));
 
-    expect(onDone).toHaveBeenCalledOnce();
-    expect(onAddTime).toHaveBeenCalledOnce();
+    expect(onDone).toHaveBeenCalledTimes(1);
+    expect(onAddTime).toHaveBeenCalledTimes(1);
   });
 
   it("names the timer for assistive tech without announcing every tick", () => {
@@ -169,7 +170,7 @@ describe(ActiveTimerBar, () => {
 
       fireEvent.click(screen.getByRole("button", { name: "Complete this set" }));
 
-      expect(onDone).toHaveBeenCalledOnce();
+      expect(onDone).toHaveBeenCalledTimes(1);
     });
   });
 });

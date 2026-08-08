@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import {
   buildTimeline,
   estimatedDurationMin,
@@ -81,8 +82,8 @@ describe("session flow", () => {
       "row#2",
       "stretch#1",
     ]);
-    expect(timeline[1]!.isLastSetOfExercise).toBe(false);
-    expect(timeline[2]!.isLastSetOfExercise).toBe(true);
+    expect(timeline[1]!.isLastSetOfExercise).toBeFalsy();
+    expect(timeline[2]!.isLastSetOfExercise).toBeTruthy();
   });
 
   it("treats a zero-set prescription as one set rather than dropping it", () => {

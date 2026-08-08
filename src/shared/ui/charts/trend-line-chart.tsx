@@ -45,9 +45,9 @@ export function TrendLineChart({
     const series =
       tone === "recovery"
         ? "var(--color-recovery)"
-        : tone === "effort"
+        : (tone === "effort"
           ? "var(--color-effort)"
-          : "var(--color-action)";
+          : "var(--color-action)");
 
     // Every category is passed so the axis keeps all its ticks; the marks' y channels
     // Accept null, so a day with nothing logged leaves a gap instead of dropping to zero.

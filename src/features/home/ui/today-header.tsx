@@ -34,7 +34,7 @@ export function TodayStreakBadge({ streakDays }: TodayStreakBadgeProps) {
     return null;
   }
 
-  const portalTarget = document.getElementById("today-header-badges");
+  const portalTarget = document.querySelector("#today-header-badges");
   if (!portalTarget) {
     return null;
   }

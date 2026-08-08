@@ -39,12 +39,12 @@ export function FeedbackState({
           {actionLabel}
           <ArrowRight aria-hidden="true" size={17} />
         </button>
-      ) : actionHref && actionLabel ? (
+      ) : (actionHref && actionLabel ? (
         <Link className="text-action" href={actionHref}>
           {actionLabel}
           <ArrowRight aria-hidden="true" size={17} />
         </Link>
-      ) : null}
+      ) : null)}
     </section>
   );
 }

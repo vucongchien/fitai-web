@@ -1,3 +1,4 @@
+import { describe, expect, it } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 import { MealDetailView } from "@/features/nutrition/ui/meal-detail-view";
 import type { MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";
@@ -39,14 +40,14 @@ const MOCK_DATA_CUSTOM: MealDetailPageData = {
       name: "Apple and almonds",
       calories: 180,
       time: "10:00",
-      recipeSteps: [], // custom log — no steps
+      recipeSteps: [], // Custom log — no steps
     },
   ],
   loggedCalories: 180,
   choices: [],
 };
 
-describe("MealDetailView", () => {
+describe(MealDetailView, () => {
   it("renders logged meal section with item name and calories", () => {
     render(<MealDetailView data={MOCK_DATA_WITH_RECIPE} />);
 

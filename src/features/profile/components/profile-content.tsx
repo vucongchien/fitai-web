@@ -23,21 +23,21 @@ export function ProfileContent({ profile: initialProfile }: ProfileContentProps)
       ...updatedFields,
       highlights: {
         ...prev.highlights,
-        ...(updatedFields.highlights || {}),
+        ...updatedFields.highlights,
       },
       healthMetrics: {
         ...prev.healthMetrics,
-        ...(updatedFields.healthMetrics || {}),
+        ...updatedFields.healthMetrics,
       },
       user: {
         ...prev.user,
-        ...(updatedFields.user || {}),
+        ...updatedFields.user,
       },
       settings: {
         ...prev.settings,
-        ...(updatedFields.settings || {}),
+        ...updatedFields.settings,
       },
-      injuries: updatedFields.injuries !== undefined ? updatedFields.injuries : prev.injuries,
+      injuries: updatedFields.injuries === undefined ? prev.injuries : updatedFields.injuries,
     }));
   };
 

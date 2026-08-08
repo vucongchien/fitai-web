@@ -16,42 +16,55 @@ import { getAuthenticatedSession } from "@/shared/auth/session";
 
 function mapDifficulty(diff?: string): "beginner" | "intermediate" | "advanced" {
   switch (diff?.toUpperCase()) {
-    case "BEGINNER":
+    case "BEGINNER": {
       return "beginner";
-    case "ADVANCED":
+    }
+    case "ADVANCED": {
       return "advanced";
-    default:
+    }
+    default: {
       return "intermediate";
+    }
   }
 }
 
 function mapStatusToProto(status?: AdminExerciseStatus): ExerciseStatus {
   switch (status) {
-    case "created":
+    case "created": {
       return ExerciseStatus.DRAFT;
-    case "submittedForApproval":
+    }
+    case "submittedForApproval": {
       return ExerciseStatus.PENDING_APPROVAL;
-    case "approved":
+    }
+    case "approved": {
       return ExerciseStatus.ACTIVE;
-    case "archived":
+    }
+    case "archived": {
       return ExerciseStatus.ARCHIVED;
-    default:
+    }
+    default: {
       return ExerciseStatus.UNSPECIFIED;
+    }
   }
 }
 
 function mapStatusToUI(status: ExerciseStatus): AdminExerciseStatus {
   switch (status) {
-    case ExerciseStatus.DRAFT:
+    case ExerciseStatus.DRAFT: {
       return "created";
-    case ExerciseStatus.PENDING_APPROVAL:
+    }
+    case ExerciseStatus.PENDING_APPROVAL: {
       return "submittedForApproval";
-    case ExerciseStatus.ACTIVE:
+    }
+    case ExerciseStatus.ACTIVE: {
       return "approved";
-    case ExerciseStatus.ARCHIVED:
+    }
+    case ExerciseStatus.ARCHIVED: {
       return "archived";
-    default:
+    }
+    default: {
       return "created";
+    }
   }
 }
 
@@ -401,10 +414,10 @@ export async function createMetadataItem(item: Omit<MetadataItem, "id">): Promis
   } else if (item.category === "muscle") {
     const res = await client.createMuscle({ name: item.name, bodyPartId: "" });
     return { id: res.muscle?.id || "", name: res.muscle?.name || "", category: "muscle" };
-  } else {
+  }
     const res = await client.createTag({ name: item.name });
     return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
-  }
+  
 }
 
 export async function updateMetadataItem(
@@ -423,10 +436,10 @@ export async function updateMetadataItem(
   } else if (data.category === "muscle") {
     const res = await client.updateMuscle({ id, name: data.name, bodyPartId: "" });
     return { id: res.muscle?.id || "", name: res.muscle?.name || "", category: "muscle" };
-  } else {
+  }
     const res = await client.updateTag({ id, name: data.name });
     return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
-  }
+  
 }
 
 export async function deleteMetadataItem(id: string): Promise<boolean> {

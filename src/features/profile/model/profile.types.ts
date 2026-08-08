@@ -49,7 +49,7 @@ export interface InjuryItem {
 
 export interface ProfileSettings {
   availableEquipment: string[];
-  preferredWorkoutTimes: string[];
+  preferredWorkoutTimes: string[] | Record<string, string[]>;
   coachStyle: string;
 }
 

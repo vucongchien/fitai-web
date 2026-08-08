@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 
 import {
   GetPersonalRecordsResponseSchema,
@@ -64,7 +64,7 @@ vi.mock<typeof import("@/shared/auth/session")>(import("@/shared/auth/session"),
   getAccessToken: () => Promise.resolve("mock_jwt_access_token"),
 }));
 
-describe("User Health Profile gRPC Services & Actions", () => {
+describe("user Health Profile gRPC Services & Actions", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
@@ -188,8 +188,8 @@ describe("User Health Profile gRPC Services & Actions", () => {
       },
     });
 
-    expect(mockUpdateProfile).toHaveBeenCalled();
-    expect(res.success).toBe(true);
+    expect(mockUpdateProfile).toHaveBeenCalledWith();
+    expect(res.success).toBeTruthy();
   });
 
   it("logBodyMetricsServerAction calls gRPC LogPeriodicMetrics", async () => {
@@ -218,7 +218,7 @@ describe("User Health Profile gRPC Services & Actions", () => {
       heightCm: 178,
       progressPhotoUrl: "",
     });
-    expect(res.success).toBe(true);
+    expect(res.success).toBeTruthy();
     expect(res.logId).toBe("log-123");
   });
 
@@ -249,11 +249,11 @@ describe("User Health Profile gRPC Services & Actions", () => {
       severity: "MODERATE",
       notes: "Slight pain during deep squat",
     });
-    expect(reportRes.success).toBe(true);
+    expect(reportRes.success).toBeTruthy();
     expect(reportRes.injuryId).toBe("inj-456");
 
     const recoverRes = await recoverInjuryServerAction("inj-456");
     expect(mockRecoverInjury).toHaveBeenCalledWith({ injuryId: "inj-456" });
-    expect(recoverRes.success).toBe(true);
+    expect(recoverRes.success).toBeTruthy();
   });
 });
