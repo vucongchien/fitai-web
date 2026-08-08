@@ -34,6 +34,24 @@ export function formatDate(dateProto?: { day: number; month: number; year: numbe
   return { dayStr, dateStr };
 }
 
+export function formatWeekDateRange(startDateProto?: { day: number; month: number; year: number }): string {
+  if (!startDateProto || !startDateProto.year) {
+    return "";
+  }
+  const startFormatted = formatDate(startDateProto);
+  const startObj = new Date(startDateProto.year, startDateProto.month - 1, startDateProto.day);
+  const endObj = new Date(startObj);
+  endObj.setDate(endObj.getDate() + 6);
+
+  const endFormatted = formatDate({
+    day: endObj.getDate(),
+    month: endObj.getMonth() + 1,
+    year: endObj.getFullYear(),
+  });
+
+  return `${startFormatted.dateStr}–${endFormatted.dateStr}`;
+}
+
 export function mapPhaseToLabel(phase: RoadmapPhase): string {
   switch (phase) {
     case RoadmapPhase.ACCUMULATION: {
@@ -126,7 +144,31 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
   const currentWeekSessions: SessionSummary[] = [];
 
   if (activeWeekPlan?.dayPlans) {
-    let nextFound = false;
+    const now = new Date();
+    const curYear = now.getFullYear();
+    const curMonth = now.getMonth() + 1;
+    const curDay = now.getDate();
+
+    let targetNextSessionId: string | null = null;
+
+    // Chỉ bài tập PENDING thuộc đúng ngày thời gian thực (ngày hôm nay) mới được màu xanh (Next session)
+    for (const dp of activeWeekPlan.dayPlans) {
+      if (
+        dp.scheduledDate &&
+        dp.scheduledDate.year === curYear &&
+        dp.scheduledDate.month === curMonth &&
+        dp.scheduledDate.day === curDay
+      ) {
+        const pending = (dp.sessionPlans || []).find(
+          (sp) => sp.status === SessionPlanStatus.PENDING && (sp.targetMuscleGroups?.length ?? 0) > 0,
+        );
+        if (pending) {
+          targetNextSessionId = pending.sessionPlanId;
+          break;
+        }
+      }
+    }
+
     for (const dp of activeWeekPlan.dayPlans) {
       const { dayStr, dateStr } = formatDate(dp.scheduledDate as any);
       if (!dp.sessionPlans || dp.sessionPlans.length === 0) {
@@ -145,11 +187,7 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
       }
       for (const sp of dp.sessionPlans || []) {
         const isRest = sp.targetMuscleGroups?.length === 0;
-        const isPending = sp.status === SessionPlanStatus.PENDING;
-        const isNext = isPending && !isRest && !nextFound;
-        if (isNext) {
-          nextFound = true;
-        }
+        const isNext = sp.sessionPlanId === targetNextSessionId;
 
         const duration = sp.prescription
           ? Math.round(
@@ -179,12 +217,7 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
   }
 
   // Tạo range ngày cho tuần active
-  let currentWeekDateRange = "";
-  if (activeWeekPlan?.startDate && activeWeekPlan?.endDate) {
-    const start = formatDate(activeWeekPlan.startDate as any).dateStr;
-    const end = formatDate(activeWeekPlan.endDate as any).dateStr;
-    currentWeekDateRange = `${start}–${end}`;
-  }
+  const currentWeekDateRange = formatWeekDateRange(activeWeekPlan?.startDate as any);
 
   const contextItems: ContextItem[] = [
     {
@@ -216,8 +249,7 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
   const {activeWeek} = roadmapData;
 
   const weeks: ScheduleWeek[] = (roadmap.weekPlans || []).map((wp) => {
-    const start = wp.startDate ? formatDate(wp.startDate as any).dateStr : "";
-    const end = wp.endDate ? formatDate(wp.endDate as any).dateStr : "";
+    const dateRange = formatWeekDateRange(wp.startDate as any);
 
     const sessions: SessionSummary[] = [];
       if (wp.dayPlans) {
@@ -279,7 +311,7 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
     const state = weekSummary ? weekSummary.state : "planned";
 
     return {
-      dateRange: `${start}–${end}`,
+      dateRange,
       label: mapPhaseToLabel(wp.phase),
       number: wp.weekNumber,
       sessions,

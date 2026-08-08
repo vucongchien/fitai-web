@@ -139,7 +139,8 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
     }
   }
 
-  return { sessionId: `adhoc_${Date.now()}` }; //Hard code: offline fallback session ID generation
+  const encodedExercises = exerciseIds.length > 0 ? exerciseIds.join(",") : "default";
+  return { sessionId: `adhoc_${encodedExercises}_${Date.now()}` };
 }
 
 /**
@@ -198,8 +199,12 @@ export async function syncWorkoutLogs(
       });
 
       return { syncedSetNumbers: sets.map((s) => s.setNumber) };
-    } catch (error) {
-      console.warn("[syncWorkoutLogs] gRPC fallback:", error);
+    } catch (error: any) {
+      if (error?.message?.includes("NotFound") || error?.rawMessage?.includes("session not found")) {
+        console.debug("[syncWorkoutLogs] session not found on remote gRPC server, saved locally.");
+      } else {
+        console.warn("[syncWorkoutLogs] gRPC fallback:", error);
+      }
     }
   }
 

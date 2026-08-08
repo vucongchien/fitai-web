@@ -244,47 +244,25 @@ export async function getHomePageData(): Promise<HomePageData> {
               break;
             }
           }
-          if (matchedDayPlan) {break;}
-        }
-
-        // 2. Nếu không khớp ngày chính xác, tìm buổi tập kế tiếp chưa hoàn thành (PENDING)
-        if (!matchedDayPlan) {
-          for (const wp of roadmap.weekPlans) {
-            for (const dp of wp.dayPlans || []) {
-              if (dp.sessionPlans?.some((sp) => sp.status === SessionPlanStatus.PENDING)) {
-                matchedDayPlan = dp;
-                matchedWeekPlan = wp;
-                break;
-              }
-            }
-            if (matchedDayPlan) {break;}
-          }
-        }
-
-        // 3. Fallback: Lấy DayPlan đầu tiên có session
-        if (!matchedDayPlan) {
-          for (const wp of roadmap.weekPlans) {
-            const dp = wp.dayPlans?.find((d) => (d.sessionPlans || []).length > 0);
-            if (dp) {
-              matchedDayPlan = dp;
-              matchedWeekPlan = wp;
-              break;
-            }
+          if (matchedDayPlan) {
+            break;
           }
         }
 
         if (matchedDayPlan?.sessionPlans?.length) {
           for (const session of matchedDayPlan.sessionPlans) {
-            const isRest = !session.targetMuscleGroups || session.targetMuscleGroups.length === 0;
-            todayTimeline.push({
-              id: session.sessionPlanId || `today-workout-${todayTimeline.length}`,
-              time: session.slotTime || "17:30",
-              title: session.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Session" : "Workout Session"),
-              subtitle: session.reasoning || (matchedWeekPlan ? `Target RPE ${matchedWeekPlan.targetRpe || 7.5}` : "Planned Workout"),
-              category: "workout",
-              status: session.status === SessionPlanStatus.COMPLETED ? "complete" : "planned",
-              href: `/workouts/session?planId=${session.sessionPlanId}`,
-            });
+            const hasMuscles = session.targetMuscleGroups && session.targetMuscleGroups.length > 0;
+            if (hasMuscles) {
+              todayTimeline.push({
+                id: session.sessionPlanId || `today-workout-${todayTimeline.length}`,
+                time: session.slotTime || "17:30",
+                title: session.targetMuscleGroups!.join(", "),
+                subtitle: session.reasoning || (matchedWeekPlan ? `Target RPE ${matchedWeekPlan.targetRpe || 7.5}` : "Planned Workout"),
+                category: "workout",
+                status: session.status === SessionPlanStatus.COMPLETED ? "complete" : "planned",
+                href: `/roadmap/${session.sessionPlanId}`,
+              });
+            }
           }
         }
       }

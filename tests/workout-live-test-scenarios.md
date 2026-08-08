@@ -36,12 +36,42 @@ Tài liệu này ghi chép các kịch bản kiểm thử (Test Scenarios) dành
 
 ---
 
+### 4. `tests/unit/get-live-session-data.test.ts`
+
+- **Mục tiêu**: Kiểm thử khả năng khởi tạo và fallback mượt mà của `getLiveSessionData` khi offline, khi gRPC gặp 404 NotFound hoặc khi bắt đầu buổi tập Adhoc.
+- **Chi tiết kịch bản**:
+  1. `returns fallback exercise plan when offline so live session never starts empty`:
+     - _Mô tả_: Gọi `getLiveSessionData` khi môi trường offline (gRPC rỗng hoặc lỗi 404).
+     - _Kỳ vọng_: Trả về `LiveSessionPlan` có danh sách bài tập fallback hợp lệ (Squat, Pushup, Plank), kèm theo `videoUrl` và `thumbnailUrl` chất lượng cao, đảm bảo người dùng có thể xem video hướng dẫn bất cứ lúc nào.
+  2. `parses exerciseIds encoded in adhoc sessionId when starting adhoc workout`:
+     - _Mô tả_: Gọi `getLiveSessionData` với `sessionId` mã hóa dạng `adhoc_ex-pushup,ex-plank_1723...`.
+     - _Kỳ vọng_: Phân tích và lấy đúng thông tin danh sách bài tập mà người dùng đã chọn trong Adhoc builder kèm đầy đủ URL video demo.
+
+---
+
+### 5. `tests/unit/audio-cues-synthesizer.test.ts`
+
+- **Mục tiêu**: Kiểm thử hệ thống phát âm thanh tổng hợp Web Audio API Chime & Web Speech API Text-To-Speech (TTS).
+- **Chi tiết kịch bản**:
+  1. `safely executes tone generation without crashing in mock browser environment`: Phát âm thanh chime tone không gây crash ứng dụng.
+  2. `safely executes text to speech without crashing in mock browser environment`: Đọc câu thoại hướng dẫn tư thế bằng Web Speech API không bị ngắt rớt.
+
+---
+
+### 6. `tests/unit/workout-grpc-actions.test.ts`
+
+- **Mục tiêu**: Kiểm thử các Server Actions điều phối gRPC Workout Execution (`beginWorkoutSession`, `logWorkoutSet`, `completeWorkoutSession`, `getPersonalRecords`).
+- **Chi tiết kịch bản**:
+  1. `beginWorkoutSession creates adhoc plan and starts live session`: Tạo plan adhoc và khởi chạy workout session gRPC.
+  2. `logWorkoutSet sends set performance to gRPC LogWorkoutSet`: Gửi số rep, weight, RPE, Form Score sang gRPC execution.
+  3. `completeWorkoutSession finishes session and returns totals`: Tổng kết buổi tập, tính tổng volume và cập nhật PR.
+  4. `getPersonalRecords maps gRPC records to dictionary`: Ánh xạ kỷ lục cá nhân từ gRPC thành Dictionary key-value.
+
+---
+
 ## 🚀 Hướng Dẫn Chạy Test
 
 ```bash
-# Chạy toàn bộ test suite
-pnpm test
-
-# Chỉ chạy test live workout summary
-npx vitest tests/component/workout-summary-flow.test.tsx
+# Chạy toàn bộ unit test live session, audio cues & workout actions
+pnpm vitest run tests/unit/get-live-session-data.test.ts tests/unit/audio-cues-synthesizer.test.ts tests/unit/workout-grpc-actions.test.ts
 ```

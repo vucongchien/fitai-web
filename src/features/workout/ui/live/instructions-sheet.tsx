@@ -1,7 +1,9 @@
 "use client";
 
-import { AlertCircle, CheckCircle2, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Play, Volume2, VolumeX, X } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
+import { speakText } from "@/features/workout/domain/audio-cues";
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 
 /**
@@ -11,21 +13,89 @@ import type { LiveExercise } from "@/features/workout/model/live-session.types";
 export function InstructionsSheet({
   exercise,
   onClose,
+  onWatchVideo,
 }: {
   exercise: LiveExercise;
   onClose: () => void;
+  onWatchVideo?: () => void;
 }) {
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const stopSpeech = useCallback(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+  }, []);
+
+  const handleSpeech = useCallback(() => {
+    if (isSpeaking) {
+      stopSpeech();
+      return;
+    }
+
+    const textToRead = [
+      `Bài tập ${exercise.name}.`,
+      exercise.instructions ? `Hướng dẫn thực hiện: ${exercise.instructions}` : "",
+      exercise.breathingCue ? `Hít thở: ${exercise.breathingCue}` : "",
+      exercise.formCues.length > 0 ? `Lưu ý tư thế: ${exercise.formCues.join(", ")}` : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    setIsSpeaking(true);
+    speakText(textToRead);
+  }, [exercise, isSpeaking, stopSpeech]);
+
+  // Tự động phát TTS đọc hướng dẫn khi sheet vừa mở
+  useEffect(() => {
+    handleSpeech();
+    return () => {
+      stopSpeech();
+    };
+  }, []);
+
+  const handleClose = () => {
+    stopSpeech();
+    onClose();
+  };
+
   return (
-    <div className="live-sheet" role="dialog" aria-label={`How to do ${exercise.name}`}>
+    <div aria-label={`How to do ${exercise.name}`} className="live-sheet" role="dialog">
       <div className="live-sheet__panel">
         <header className="live-sheet__header">
           <div>
             <p className="utility-label">How to do it</p>
             <h2>{exercise.name}</h2>
           </div>
-          <button aria-label="Close" className="workout-close" onClick={onClose} type="button">
-            <X aria-hidden="true" size={19} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              aria-label={isSpeaking ? "Tắt giọng nói hướng dẫn" : "Đọc hướng dẫn bằng TTS"}
+              className={`live-media__control ${isSpeaking ? "bg-primary text-primary-foreground" : ""}`}
+              onClick={handleSpeech}
+              title={isSpeaking ? "Tắt giọng nói hướng dẫn" : "Đọc hướng dẫn bằng TTS"}
+              type="button"
+            >
+              {isSpeaking ? <VolumeX aria-hidden="true" size={18} /> : <Volume2 aria-hidden="true" size={18} />}
+            </button>
+            {onWatchVideo && exercise.videoUrl ? (
+              <button
+                aria-label="Xem video hướng dẫn"
+                className="live-media__control"
+                onClick={() => {
+                  handleClose();
+                  onWatchVideo();
+                }}
+                title="Xem video demo"
+                type="button"
+              >
+                <Play aria-hidden="true" size={18} />
+              </button>
+            ) : null}
+            <button aria-label="Close" className="workout-close" onClick={handleClose} type="button">
+              <X aria-hidden="true" size={19} />
+            </button>
+          </div>
         </header>
 
         <div className="live-sheet__body">

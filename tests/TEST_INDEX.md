@@ -30,6 +30,7 @@
 | `unit/rpc-single-flight-refresh.test.ts` | Single-flight Token Refresh on 401: prevents duplicate refresh calls, updates cookies, transparent retry                                                                                       |
 | `unit/proxy-auto-refresh.test.ts` | Middleware Auto-refresh: bypasses public routes, redirects unauthenticated requests, auto-refreshes expired access token when refresh token is valid, clears cookies on refresh failure       |
 | `unit/dev-login-route.test.ts`     | Dev route: 404 in production, mock auth login for new vs existing user targets in development                                                                                                       |
+| `unit/roadmap-page.mapper.test.ts` | Roadmap & Workout Stats Mapper: Standard 7-day week date range (Mon to Sun, e.g. Aug 10-Aug 16), adaptRoadmapPageData active week format, and adaptWorkoutStatsData target window sync |
 | `unit/progress-aggregator.test.ts` | Calculates adherence percentage, formats volume (kg/tonnes), sorts top PRs                                                                                           |
 | `unit/notification-actions.test.ts` | Notification Server Actions: listNotificationsAction calls listNotifications, markNotificationAsReadAction marks specific notification as read, handles unauthorized/missing access tokens and gRPC failure states |
 

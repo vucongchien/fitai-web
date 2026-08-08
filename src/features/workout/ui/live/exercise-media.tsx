@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, Play } from "lucide-react";
+import { Camera } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -36,7 +36,6 @@ export function ExerciseMedia({
   children,
   exercise,
   onOpenCamera,
-  onWatchVideo,
 }: {
   exercise: LiveExercise;
   children?: ReactNode;
@@ -47,8 +46,6 @@ export function ExerciseMedia({
   const reducedMotion = useReducedMotion();
   const showCameraButton = Boolean(onOpenCamera) && exercise.hasAiSupported;
   const parsedVideo = parseVideoSource(exercise.videoUrl);
-  const hasValidVideo = parsedVideo.type !== "unknown";
-  const showVideoButton = Boolean(onWatchVideo) && hasValidVideo && !cameraActive;
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -74,24 +71,6 @@ export function ExerciseMedia({
     <div className="live-screen__media">
       {cameraActive && children ? (
         children
-      ) : parsedVideo.type === "youtube" && !reducedMotion ? (
-        <iframe
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="live-media__video w-full h-full border-0"
-          src={parsedVideo.embedUrl}
-          title={`${exercise.name} Demonstration`}
-        />
-      ) : parsedVideo.type === "direct" ? (
-        <video
-          ref={videoRef}
-          className="live-media__video"
-          loop
-          muted
-          playsInline
-          poster={exercise.thumbnailUrl}
-          src={parsedVideo.directUrl}
-        />
       ) : exercise.thumbnailUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img alt={exercise.name} className="live-media__poster" src={exercise.thumbnailUrl} />
@@ -101,30 +80,17 @@ export function ExerciseMedia({
         </div>
       )}
 
-      {showCameraButton || showVideoButton ? (
+      {showCameraButton ? (
         <div className="live-media__controls">
-          {showVideoButton ? (
-            <button
-              aria-label="Watch demo video"
-              className="live-media__control"
-              onClick={onWatchVideo}
-              type="button"
-            >
-              <Play aria-hidden="true" size={18} />
-            </button>
-          ) : null}
-
-          {showCameraButton ? (
-            <button
-              aria-label="Open AI camera"
-              aria-pressed={cameraActive}
-              className="live-media__control live-media__camera"
-              onClick={onOpenCamera}
-              type="button"
-            >
-              <Camera aria-hidden="true" size={18} />
-            </button>
-          ) : null}
+          <button
+            aria-label="Open AI camera"
+            aria-pressed={cameraActive}
+            className="live-media__control live-media__camera"
+            onClick={onOpenCamera}
+            type="button"
+          >
+            <Camera aria-hidden="true" size={18} />
+          </button>
         </div>
       ) : null}
     </div>

@@ -56,7 +56,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
             </div>
             <ol>
               {data.exercises.map((exercise, index) => (
-                <li key={exercise.exerciseId}>
+                <li key={`${exercise.exerciseId}-${index}`}>
                   <span className="data-value">{String(index + 1).padStart(2, "0")}</span>
                   <div>
                     <strong>{exercise.name}</strong>

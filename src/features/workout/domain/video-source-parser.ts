@@ -35,7 +35,7 @@ export function parseVideoSource(url?: string | null): ParsedVideoSource {
     return {
       type: "youtube",
       videoId,
-      embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=1&playsinline=1&rel=0`,
+      embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=1&playsinline=1&rel=0`,
     };
   }
 
