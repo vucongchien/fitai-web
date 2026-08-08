@@ -7,6 +7,7 @@ interface FeedbackStateProps {
   description: string;
   tone?: "empty" | "error";
   title: string;
+  onActionClick?: () => void;
 }
 
 export function FeedbackState({
@@ -15,6 +16,7 @@ export function FeedbackState({
   description,
   title,
   tone = "empty",
+  onActionClick,
 }: FeedbackStateProps) {
   const Icon = tone === "error" ? AlertTriangle : RotateCcw;
 
@@ -27,7 +29,17 @@ export function FeedbackState({
         <h2>{title}</h2>
         <p>{description}</p>
       </div>
-      {actionHref && actionLabel ? (
+      {onActionClick && actionLabel ? (
+        <button
+          className="ui-button ui-button--secondary ui-button--medium text-action"
+          onClick={onActionClick}
+          type="button"
+          style={{ marginTop: "1rem", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}
+        >
+          {actionLabel}
+          <ArrowRight aria-hidden="true" size={17} />
+        </button>
+      ) : actionHref && actionLabel ? (
         <Link className="text-action" href={actionHref}>
           {actionLabel}
           <ArrowRight aria-hidden="true" size={17} />

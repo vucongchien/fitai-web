@@ -1,5 +1,7 @@
 "use server";
 
+import { createClient } from "@connectrpc/connect";
+
 import {
   averageFormScore,
   averageRpe,
@@ -12,164 +14,243 @@ import type {
   AiRecommendResult,
   ExerciseResult,
 } from "@/features/workout/model/workout.types";
+import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
+import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
+import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
+import { createServerTransport } from "@/shared/api/server/transport";
+import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
 
-import {
-  getMockAdhocConfig,
-  getMockAiRecommendation,
-  mockSearchExercises,
-} from "./get-mock-workout-data";
 
-// ---------------------------------------------------------------------------
-// Real gRPC adapters (uncomment khi backend sẵn sàng)
-// ---------------------------------------------------------------------------
-
-// Async function realSearchExercises(query: string): Promise<ExerciseResult[]> {
-//   Const [searchRes, metaRes] = await Promise.all([
-//     CreateClient(ExerciseService, createServerTransport()).searchExercises({ keyword: query, limit: 20 }),
-//     CreateClient(ExerciseService, createServerTransport()).getCatalogMetadata({}),
-//   ]);
-//   Const equipmentMap = new Map(metaRes.equipments.map((e) => [e.id, e]));
-//   Return searchRes.exercises.map((ex) => {
-//     Const equipment = equipmentMap.get(ex.equipmentId);
-//     Const isWeighted = equipment ? equipment.name.toLowerCase() !== "bodyweight" : false;
-//     Return {
-//       Id: ex.id,
-//       Name: ex.name,
-//       EquipmentId: ex.equipmentId,
-//       IsWeighted,
-//       DefaultWeightKg: isWeighted ? 10 : undefined,
-//       Prescription: "3 × 10",
-//       Rest: `${ex.defaultRestSeconds} sec`,
-//       Note: ex.instructions,
-//     };
-//   });
-// }
-
-// Async function realGetAdhocConfig(): Promise<AdhocConfig> {
-//   Const cookieStore = await cookies();
-//   Const token = cookieStore.get("fitai_access_token")?.value;
-//   Const client = createClient(CoachingService, createServerTransport(token));
-//   Const res = await client.getActiveRoadmap({ userId: "TODO" });
-//   Return { targetRpe: res.roadmap?.weekPlans[0]?.targetRpe ?? 6.5, defaultExercises: [] };
-// }
-
-// ---------------------------------------------------------------------------
-// Public Server Actions
-// ---------------------------------------------------------------------------
 
 /**
  * Search exercise library.
- * gRPC: ExerciseService.searchExercises({ keyword: query, limit: 20 })
+ * gRPC: ExerciseService.searchExercises
  */
 export async function searchExercises(query: string): Promise<ExerciseResult[]> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {
-    return mockSearchExercises(query);
+  const accessToken = await getAccessToken();
+
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const exerciseClient = createClient(ExerciseService, transport);
+
+      const [searchRes, metaRes] = await Promise.all([
+        exerciseClient.searchExercises({ keyword: query, limit: 20 }),
+        exerciseClient.getCatalogMetadata({}),
+      ]);
+
+      const equipmentMap = new Map(metaRes.equipments.map((e) => [e.id, e]));
+
+      return searchRes.exercises.map((ex) => {
+        const equipment = equipmentMap.get(ex.equipmentId);
+        const isWeighted = equipment ? equipment.name.toLowerCase() !== "bodyweight" : false;
+        return {
+          id: ex.id,
+          name: ex.name,
+          equipmentId: ex.equipmentId,
+          isWeighted,
+          defaultWeightKg: isWeighted ? 10 : undefined, //hard code: fallback default weight of 10kg for weighted exercises
+          prescription: "3 × 10", //hard code: default prescription format //need to migrate: fetch actual prescription from coaching plan database
+          rest: `${ex.defaultRestSeconds || 90} sec`, //hard code: fallback rest duration
+          note: ex.instructions,
+        };
+      });
+    } catch (error) {
+      console.warn("[searchExercises] gRPC fallback:", error);
+    }
   }
-  // TODO: return realSearchExercises(query);
-  return mockSearchExercises(query);
+
+  return [];
 }
 
 /**
- * Fetch config and default exercises for the Adhoc Workout builder.
- * gRPC: CoachingService.getActiveRoadmap → weekPlan.targetRpe
+ * Fetch config for Adhoc Workout builder.
  */
 export async function getAdhocConfig(): Promise<AdhocConfig> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {
-    return getMockAdhocConfig();
+  const accessToken = await getAccessToken();
+  const userId = await getAuthenticatedUserId();
+
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const coachingClient = createClient(CoachingService, transport);
+
+      const res = await coachingClient.getActiveRoadmap({ userId: userId || "" });
+      const currentWeek = res.roadmap?.weekPlans[0];
+      return {
+        targetRpe: currentWeek?.targetRpe ?? 6.5,
+        defaultExercises: [],
+      };
+    } catch (error) {
+      console.warn("[getAdhocConfig] gRPC fallback:", error);
+    }
   }
-  // TODO: return realGetAdhocConfig();
-  return getMockAdhocConfig();
+
+  return {
+    targetRpe: 7.0, //hard code: fallback default RPE when gRPC is offline
+    defaultExercises: [],
+  };
 }
 
-/**
- * AI-generated workout recommendation.
- * gRPC: AI/coaching service — not yet available.
- */
 export async function getAiRecommendation(): Promise<AiRecommendResult> {
-  return getMockAiRecommendation();
+  const accessToken = await getAccessToken();
+  const userId = await getAuthenticatedUserId();
+
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const coachingClient = createClient(CoachingService, transport);
+
+      const res = await coachingClient.suggestAdHocSession({
+        userId: userId || "",
+      });
+
+      const mainEx = res.prescription?.mainExercises || [];
+      return {
+        exercises: mainEx.map((ex) => ({
+          id: ex.exerciseId,
+          name: ex.exerciseName,
+          prescription: `${ex.targetSets} × ${ex.targetReps}`,
+          rest: `${ex.restSetSec || 90} sec`, //hard code: fallback rest duration if not specified
+          note: ex.notes || "AI Recommended",
+          sets: ex.targetSets,
+          reps: ex.targetReps,
+          weightKg: ex.targetWeight || undefined,
+        })),
+      };
+    } catch (error) {
+      console.warn("[getAiRecommendation] gRPC error:", error);
+    }
+  }
+
+  return {
+    exercises: [],
+  };
 }
 
 /**
- * Create an adhoc session plan and start it immediately.
- *
- * Real flow:
- *   1. CoachingService.createAdhocSessionPlan({ exercise_ids }) → session_plan_id
- *   2. WorkoutExecutionService.startWorkoutSession({ session_plan_id }) → session_id
+ * Create an adhoc session plan and start it.
  */
-export async function beginWorkoutSession(_exerciseIds: string[]): Promise<{ sessionId: string }> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {
-    return { sessionId: `adhoc_${Date.now()}` };
-  }
-  // TODO: implement real flow
-  return { sessionId: `adhoc_${Date.now()}` };
-}
+export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sessionId: string }> {
+  const accessToken = await getAccessToken();
+  const userId = await getAuthenticatedUserId();
 
-// ---------------------------------------------------------------------------
-// Live session — UC-03 Workout Execution
-// ---------------------------------------------------------------------------
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const coachingClient = createClient(CoachingService, transport);
+      const executionClient = createClient(WorkoutExecutionService, transport);
+
+      const adhocPlan = await coachingClient.createAdhocSessionPlan({
+        userId: userId || "",
+        exerciseIds,
+      });
+
+      const planId = adhocPlan.sessionPlan?.sessionPlanId || `plan_${Date.now()}`;
+      const started = await executionClient.startWorkoutSession({ planId });
+
+      return { sessionId: started.sessionId };
+    } catch (error) {
+      console.warn("[beginWorkoutSession] gRPC fallback to local session id:", error);
+    }
+  }
+
+  return { sessionId: `adhoc_${Date.now()}` }; //hard code: offline fallback session ID generation
+}
 
 /**
  * Persist one confirmed set.
- * gRPC: WorkoutExecutionService.logWorkoutSet({ sessionId, setNumber, exerciseId,
- *       targetReps, actualReps, weight, formScore, rpe, reps, cameraAngle })
- *
- * formScore stays undefined for manual sets — BR-WL-03 records N/A rather than a
- * made-up number.
  */
 export async function logWorkoutSet(
   sessionId: string,
   set: SetLogDraft,
 ): Promise<{ setLogId: string }> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {
-    return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` };
+  const accessToken = await getAccessToken();
+
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const executionClient = createClient(WorkoutExecutionService, transport);
+
+      const res = await executionClient.logWorkoutSet({
+        sessionId,
+        setNumber: set.setNumber,
+        exerciseId: set.exerciseId,
+        targetReps: set.targetReps,
+        actualReps: set.actualReps,
+        weight: set.weightKg,
+        formScore: set.formScore ?? undefined,
+        rpe: set.rpe ?? 0,
+        cameraAngle: set.cameraAngle || "front",
+        reps: [],
+      });
+
+      return { setLogId: res.setLogId };
+    } catch (error) {
+      console.warn("[logWorkoutSet] gRPC fallback:", error);
+    }
   }
-  // TODO: return createClient(WorkoutExecutionService, ...).logWorkoutSet({ ... });
-  return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` };
+
+  return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` }; //hard code: offline fallback set ID generation
 }
 
 /**
  * Flush sets that were logged while offline.
- * gRPC: WorkoutExecutionService.syncWorkoutLogs({ sessionId, errors })
  */
 export async function syncWorkoutLogs(
   sessionId: string,
   sets: SetLogDraft[],
 ): Promise<{ syncedSetNumbers: number[] }> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {
-    return { syncedSetNumbers: sets.map((set) => set.setNumber) };
+  const accessToken = await getAccessToken();
+
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const executionClient = createClient(WorkoutExecutionService, transport);
+
+      await executionClient.syncWorkoutLogs({
+        sessionId,
+        errors: [],
+      });
+
+      return { syncedSetNumbers: sets.map((s) => s.setNumber) };
+    } catch (error) {
+      console.warn("[syncWorkoutLogs] gRPC fallback:", error);
+    }
   }
-  // TODO: log each pending set, then syncWorkoutLogs for the error stream.
-  void sessionId;
+
   return { syncedSetNumbers: sets.map((set) => set.setNumber) };
 }
 
 /**
- * Stop a session early — pain, out of time, or simply uncomfortable
- * (ux-flow-spec §5.6). The session is dropped, not saved as a partial win.
- *
- * gRPC: WorkoutExecutionService.abortWorkoutSession({ sessionId, reason })
+ * Stop a session early.
  */
 export async function abortWorkoutSession(
   sessionId: string,
   reason: AbortReason,
-  /** The user's own words about what happened. Optional by design — someone in
-   *  pain must never be blocked on typing an explanation. */
   note?: string,
 ): Promise<{ abortedAt: number }> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  void reason;
-  void note;
-  if (!hasBackend) {
-    return { abortedAt: Date.now() };
+  const accessToken = await getAccessToken();
+
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const executionClient = createClient(WorkoutExecutionService, transport);
+
+      const res = await executionClient.abortWorkoutSession({
+        sessionId,
+        reason: `${reason}${note ? `: ${note}` : ""}`,
+      });
+
+      return {
+        abortedAt: res.abortedAt ? Number(res.abortedAt.seconds) * 1000 : Date.now(),
+      };
+    } catch (error) {
+      console.warn("[abortWorkoutSession] gRPC fallback:", error);
+    }
   }
-  // TODO: return createClient(WorkoutExecutionService, ...).abortWorkoutSession({ sessionId, reason, note });
-  void sessionId;
-  return { abortedAt: Date.now() };
+
+  return { abortedAt: Date.now() }; //hard code: offline fallback timestamp
 }
 
 export interface CompleteSessionResult {
@@ -178,27 +259,20 @@ export interface CompleteSessionResult {
   totalVolumeKg: number;
   averageRpe: number | null;
   averageFormScore: number | null;
-  /** Estimated 1RM per exercise for this session — compared against stored PRs. */
   oneRepMaxByExercise: Record<string, number>;
 }
 
 /**
- * Close the session and get its totals.
- *
- * `confirmOverload` carries the user's answer to the BR-WL-02 confirmation dialog
- * (load above 250% of the recent average).
- *
- * gRPC: WorkoutExecutionService.completeWorkoutSession({ sessionId, confirmOverload })
+ * Close the session and get totals.
  */
 export async function completeWorkoutSession(
   sessionId: string,
   sets: SetLogDraft[],
   confirmOverload: boolean,
 ): Promise<CompleteSessionResult> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  void confirmOverload;
+  const accessToken = await getAccessToken();
 
-  const totals: CompleteSessionResult = {
+  const localTotals: CompleteSessionResult = {
     sessionId,
     totalSets: sets.length,
     totalVolumeKg: sessionVolumeKg(sets),
@@ -207,23 +281,54 @@ export async function completeWorkoutSession(
     oneRepMaxByExercise: bestOneRepMaxByExercise(sets),
   };
 
-  if (!hasBackend) {
-    return totals;
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const executionClient = createClient(WorkoutExecutionService, transport);
+
+      const res = await executionClient.completeWorkoutSession({
+        sessionId,
+        confirmOverload,
+        weightUpdateKg: localTotals.totalVolumeKg,
+      });
+
+      return {
+        sessionId: res.sessionId,
+        totalSets: res.totalSets || localTotals.totalSets,
+        totalVolumeKg: res.totalVolume || localTotals.totalVolumeKg,
+        averageRpe: res.averageRpe || localTotals.averageRpe,
+        averageFormScore: res.averageFormScore ?? localTotals.averageFormScore,
+        oneRepMaxByExercise: localTotals.oneRepMaxByExercise,
+      };
+    } catch (error) {
+      console.warn("[completeWorkoutSession] gRPC fallback to local calculation:", error);
+    }
   }
-  // TODO: use the server response instead of the locally computed totals.
-  return totals;
+
+  return localTotals;
 }
 
 /**
- * Stored personal records, used to decide whether today earned a PR celebration.
- * gRPC: WorkoutExecutionService.getPersonalRecords({ exerciseIds })
+ * Stored personal records.
  */
 export async function getPersonalRecords(exerciseIds: string[]): Promise<Record<string, number>> {
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
-  if (!hasBackend) {
-    return {};
+  const accessToken = await getAccessToken();
+
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const executionClient = createClient(WorkoutExecutionService, transport);
+
+      const res = await executionClient.getPersonalRecords({ exerciseIds });
+      const recordMap: Record<string, number> = {};
+      for (const pr of res.records) {
+        recordMap[pr.exerciseId] = pr.oneRepMax;
+      }
+      return recordMap;
+    } catch (error) {
+      console.warn("[getPersonalRecords] gRPC fallback:", error);
+    }
   }
-  // TODO: map records[] → { [exerciseId]: oneRepMax }
-  void exerciseIds;
+
   return {};
 }

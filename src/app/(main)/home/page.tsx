@@ -2,14 +2,19 @@ import { Suspense } from "react";
 
 import { getHomePageData } from "@/features/home/server/get-home-page-data";
 import { HomeView } from "@/features/home/ui/home-view";
-import { TodayHeader } from "@/features/home/ui/today-header";
+import { TodayHeader, TodayStreakBadge } from "@/features/home/ui/today-header";
 import { PageTransition } from "@/shared/ui/page-transition";
 
 export const metadata = { title: "Home — Today" };
 
 async function HomeContent() {
   const data = await getHomePageData();
-  return <HomeView data={data} />;
+  return (
+    <>
+      <TodayStreakBadge streakDays={data.streak.days} />
+      <HomeView data={data} />
+    </>
+  );
 }
 
 function HomeSkeleton() {

@@ -15,4 +15,8 @@ export interface WorkoutStatsData {
    * `volumeKg` is null for a week with no logged session.
    */
   volumeTrend: { label: string; volumeKg: number | null }[];
+  error?: {
+    type: "CONNECTION_ERROR" | "NO_ROADMAP";
+    message: string;
+  };
 }

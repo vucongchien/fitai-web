@@ -3,7 +3,7 @@ import {
   adaptMealDetailPageData,
   toPriceTier,
 } from "@/features/nutrition/model/meal-detail.mapper";
-import { getMockMealRows, MOCK_TODAY } from "@/features/nutrition/server/get-mock-nutrition-data";
+import { getMockMealRows, MOCK_TODAY } from "../mocks/nutrition-fixtures";
 
 const menu: DailyMenuRows = {
   breakfast: [

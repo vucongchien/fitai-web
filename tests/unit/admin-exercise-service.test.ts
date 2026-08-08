@@ -1,110 +1,169 @@
+import { create } from "@bufbuild/protobuf";
+import type { Client, Transport } from "@connectrpc/connect";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+
 import {
-  approveExercise,
-  archiveExercise,
-  createExercise,
-  deleteExercise,
-  fetchAdminExercises,
-  resetExerciseStore,
-  updateExercise,
-} from "@/features/admin/api/admin-exercise-service";
+  ApproveExerciseResponseSchema,
+  CreateExerciseResponseSchema,
+  GetCatalogMetadataResponseSchema,
+  GetExerciseResponseSchema,
+  SearchExercisesResponseSchema,
+  UpdateExerciseResponseSchema,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
+import { ExerciseStatus } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
+import type { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 
-describe("admin Exercise Service", () => {
+type ExerciseClient = Client<typeof ExerciseService>;
+
+const mockSearchExercises = vi.fn<ExerciseClient["searchExercises"]>();
+const mockGetExercise = vi.fn<ExerciseClient["getExercise"]>();
+const mockApproveExercise = vi.fn<ExerciseClient["approveExercise"]>();
+const mockUpdateExercise = vi.fn<ExerciseClient["updateExercise"]>();
+const mockCreateExercise = vi.fn<ExerciseClient["createExercise"]>();
+const mockDeleteExercise = vi.fn<ExerciseClient["deleteExercise"]>();
+const mockGetCatalogMetadata = vi.fn<ExerciseClient["getCatalogMetadata"]>();
+
+vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () => ({
+  createClient: (_service: unknown, _transport: unknown) => ({
+    searchExercises: mockSearchExercises,
+    getExercise: mockGetExercise,
+    approveExercise: mockApproveExercise,
+    updateExercise: mockUpdateExercise,
+    createExercise: mockCreateExercise,
+    deleteExercise: mockDeleteExercise,
+    getCatalogMetadata: mockGetCatalogMetadata,
+  }),
+}));
+
+vi.mock<typeof import("@/shared/api/server/transport")>(
+  import("@/shared/api/server/transport"),
+  () => ({
+    createServerTransport: vi.fn<() => Transport>(() => ({}) as Transport),
+  }),
+);
+
+vi.mock<typeof import("@/shared/auth/session")>(
+  import("@/shared/auth/session"),
+  () => ({
+    getAuthenticatedSession: vi.fn(async () => ({ accessToken: "test-token", userId: "test-user" })),
+  }),
+);
+
+describe("admin Exercise Service (gRPC Mocked)", () => {
   beforeEach(() => {
-    resetExerciseStore();
+    vi.resetModules();
+    vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
+    mockSearchExercises.mockReset();
+    mockGetExercise.mockReset();
+    mockApproveExercise.mockReset();
+    mockUpdateExercise.mockReset();
+    mockCreateExercise.mockReset();
+    mockDeleteExercise.mockReset();
+    mockGetCatalogMetadata.mockReset();
   });
 
-  it("nên trả về danh sách phân trang (cursor-based pagination)", async () => {
-    const page1 = await fetchAdminExercises({ limit: 3 });
-    expect(page1.items).toHaveLength(3);
-    expect(page1.nextCursor).not.toBeNull();
-    expect(page1.totalCount).toBeGreaterThan(3);
-
-    const page2 = await fetchAdminExercises({
-      cursor: page1.nextCursor,
-      limit: 3,
-    });
-    expect(page2.items).toHaveLength(3);
-    expect(page2.items[0].id).not.toStrictEqual(page1.items[0].id);
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
-  it("nên lọc đúng bài tập theo từ khóa tìm kiếm (q)", async () => {
-    const res = await fetchAdminExercises({
-      filters: { q: "push-up" },
-    });
-    expect(res.items.length).toBeGreaterThan(0);
-    expect(res.items.every((ex) => ex.name.toLowerCase().includes("push-up"))).toBe(true);
+  it("nên trả về danh sách bài tập đã được lọc và phân trang", async () => {
+    mockSearchExercises.mockResolvedValue(
+      create(SearchExercisesResponseSchema, {
+        exercises: [
+          { id: "ex-1", name: "Push up", status: ExerciseStatus.ACTIVE },
+          { id: "ex-2", name: "Pull up", status: ExerciseStatus.PENDING_APPROVAL },
+          { id: "ex-3", name: "Squat", status: ExerciseStatus.DRAFT },
+        ],
+      }),
+    );
+
+    const { fetchAdminExercises } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await fetchAdminExercises({ limit: 2, filters: { status: "approved" } });
+
+    expect(mockSearchExercises).toHaveBeenCalled();
+    expect(res.items).toHaveLength(1); // Chỉ ex-1 active (approved)
+    expect(res.items[0].id).toBe("ex-1");
   });
 
-  it("nên lọc đúng bài tập theo trạng thái (status)", async () => {
-    const res = await fetchAdminExercises({
-      filters: { status: "submittedForApproval" },
-    });
-    expect(res.items.every((ex) => ex.status === "submittedForApproval")).toBe(true);
-  });
+  it("nên duyệt (approve) bài tập thành công", async () => {
+    mockApproveExercise.mockResolvedValue(
+      create(ApproveExerciseResponseSchema, {
+        exercise: { id: "ex-1", name: "Push up", status: ExerciseStatus.ACTIVE },
+      }),
+    );
 
-  it("nên duyệt (approve) bài tập chuyển từ draft/submitted sang approved", async () => {
-    const list = await fetchAdminExercises({
-      filters: { status: "submittedForApproval" },
-    });
-    const target = list.items[0];
+    const { approveExercise } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await approveExercise("ex-1");
 
-    const approved = await approveExercise(target.id);
-    expect(approved.status).toBe("approved");
-
-    const refreshedList = await fetchAdminExercises({
-      filters: { status: "submittedForApproval" },
-    });
-    expect(refreshedList.items.some((ex) => ex.id === target.id)).toBe(false);
+    expect(mockApproveExercise).toHaveBeenCalledWith({ id: "ex-1" });
+    expect(res.status).toBe("approved");
   });
 
   it("nên lưu trữ (archive) bài tập thành công", async () => {
-    const list = await fetchAdminExercises({ limit: 1 });
-    const target = list.items[0];
+    mockUpdateExercise.mockResolvedValue(
+      create(UpdateExerciseResponseSchema, {
+        exercise: { id: "ex-1", name: "Push up", status: ExerciseStatus.ARCHIVED },
+      }),
+    );
 
-    const archived = await archiveExercise(target.id);
-    expect(archived.status).toBe("archived");
+    const { archiveExercise } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await archiveExercise("ex-1");
+
+    expect(mockUpdateExercise).toHaveBeenCalledWith({ id: "ex-1", status: ExerciseStatus.ARCHIVED });
+    expect(res.status).toBe("archived");
   });
 
-  it("nên tạo mới bài tập với trạng thái mặc định created", async () => {
-    const created = await createExercise({
-      name: "Test Cable Fly",
-      bodyPartId: "bp-chest",
-      equipmentId: "eq-cable",
-      targetMuscleId: "ms-chest",
+  it("nên tạo mới bài tập", async () => {
+    mockCreateExercise.mockResolvedValue(
+      create(CreateExerciseResponseSchema, {
+        exercise: { id: "ex-new", name: "Plank", status: ExerciseStatus.DRAFT },
+      }),
+    );
+
+    const { createExercise } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await createExercise({
+      name: "Plank",
+      bodyPartId: "bp-core",
+      equipmentId: "eq-bodyweight",
+      targetMuscleId: "ms-abs",
       secondaryMuscleIds: [],
-      difficulty: "intermediate",
-      defaultRestSeconds: 60,
       tagIds: [],
+      instructions: "Hold posture",
+      videoUrl: "",
+      thumbnailUrl: "",
+      difficulty: "beginner",
+      defaultRestSeconds: 60,
       hasAiSupported: false,
       status: "created",
-      createdBy: "admin@fitai.com",
+      createdBy: "admin",
     });
 
-    expect(created.id).toBeDefined();
-    expect(created.status).toBe("created");
-
-    const list = await fetchAdminExercises({ filters: { q: "Cable Fly" } });
-    expect(list.items.some((ex) => ex.id === created.id)).toBe(true);
+    expect(mockCreateExercise).toHaveBeenCalled();
+    expect(res.id).toBe("ex-new");
+    expect(res.status).toBe("created");
   });
 
-  it("nên cập nhật bài tập thành công", async () => {
-    const list = await fetchAdminExercises({ limit: 1 });
-    const target = list.items[0];
+  it("nên cập nhật bài tập", async () => {
+    mockUpdateExercise.mockResolvedValue(
+      create(UpdateExerciseResponseSchema, {
+        exercise: { id: "ex-1", name: "Push up v2", status: ExerciseStatus.DRAFT },
+      }),
+    );
 
-    const updated = await updateExercise(target.id, {
-      name: "Updated Name Test",
-    });
-    expect(updated.name).toBe("Updated Name Test");
+    const { updateExercise } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await updateExercise("ex-1", { name: "Push up v2" });
+
+    expect(mockUpdateExercise).toHaveBeenCalled();
+    expect(res.name).toBe("Push up v2");
   });
 
-  it("nên xóa bài tập thành công", async () => {
-    const list = await fetchAdminExercises({ limit: 1 });
-    const target = list.items[0];
+  it("nên xóa bài tập", async () => {
+    mockDeleteExercise.mockResolvedValue(create(UpdateExerciseResponseSchema, {}));
 
-    const deleted = await deleteExercise(target.id);
-    expect(deleted).toBe(true);
+    const { deleteExercise } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await deleteExercise("ex-1");
 
-    const refreshed = await fetchAdminExercises({ filters: { q: target.name } });
-    expect(refreshed.items.some((ex) => ex.id === target.id)).toBe(false);
+    expect(mockDeleteExercise).toHaveBeenCalledWith({ id: "ex-1" });
+    expect(res).toBe(true);
   });
 });

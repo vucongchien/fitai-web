@@ -1,82 +1,122 @@
+import "server-only";
+
+import { createClient } from "@connectrpc/connect";
+
+import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
+import { NotificationService } from "@/shared/api/gen/contracts/generic/notification/v1/service/notification_service_pb";
+import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
+import { createServerTransport } from "@/shared/api/server/transport";
+import { getAuthenticatedSession } from "@/shared/auth/session";
+
 import { mapRawDataToProfileViewModel } from "../model/profile.mapper";
 import type { ProfileViewModel } from "../model/profile.types";
 
 export async function getProfileData(): Promise<ProfileViewModel> {
-  // Giả lập delay server nhẹ (50ms)
-  await new Promise((resolve) => setTimeout(resolve, 50));
+  const { accessToken, userId } = await getAuthenticatedSession();
 
-  // Ở đây có thể gọi gRPC Client thực tế:
-  // Const profileRes = await profileClient.getProfile({});
-  // Const prRes = await workoutExecutionClient.getPersonalRecords({});
+  let athleteName = "Emma Nguyen";
 
-  const mockRawData = {
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const profileClient = createClient(ProfileService, transport);
+      const workoutClient = createClient(WorkoutExecutionService, transport);
+      const notificationClient = createClient(NotificationService, transport);
+
+      const [profileRes, prsRes, notificationRes, historyRes] = await Promise.allSettled([
+        profileClient.getProfile({ userId: userId || "" }),
+        workoutClient.getPersonalRecords({}),
+        notificationClient.getNotificationSettings({ userId: userId || "" }),
+        workoutClient.getWorkoutHistory({ limit: 50, offset: 0 }),
+      ]);
+
+      const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
+      const prListProto = prsRes.status === "fulfilled" ? prsRes.value.records : [];
+      const notificationProto =
+        notificationRes.status === "fulfilled" ? notificationRes.value : undefined;
+      const historySessions =
+        historyRes.status === "fulfilled" ? historyRes.value.sessions : [];
+
+      if (profileProto) {
+        const totalWorkouts = historySessions.length;
+        const totalCalories = historySessions.reduce(
+          (sum, s) => sum + (s.totalVolume ? Math.round(s.totalVolume * 0.15) : 0),
+          0,
+        );
+        const streakDays = historySessions.length > 0 ? Math.min(historySessions.length, 30) : 0;
+        const userLevel = Math.max(1, Math.floor(totalWorkouts / 4));
+
+        return mapRawDataToProfileViewModel({
+          user: {
+            id: profileProto.userId || userId || "usr-me",
+            name: athleteName,
+            avatarUrl:
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+            level: userLevel,
+          },
+          profileProto,
+          prListProto: prListProto.map((pr) => ({
+            exerciseId: pr.exerciseId,
+            exerciseName: pr.exerciseId,
+            weightKg: pr.weight,
+            reps: pr.reps,
+            oneRepMax: pr.oneRepMax,
+            achievedAt: pr.achievedAt
+              ? new Date(Number(pr.achievedAt.seconds) * 1000).toISOString().split("T")[0]
+              : "2026-08-01",
+          })),
+          statsProto: {
+            totalWorkouts,
+            activeStreakDays: streakDays,
+            totalCaloriesKcal: totalCalories,
+          },
+          notificationProto: notificationProto
+            ? {
+                enablePush: notificationProto.enablePush,
+                enableEmail: notificationProto.enableEmail,
+                quietHoursStart: notificationProto.quietHoursStart,
+                quietHoursEnd: notificationProto.quietHoursEnd,
+              }
+            : undefined,
+        });
+      }
+    } catch (error) {
+      console.warn("[getProfileData] gRPC calls failed, falling back to local dataset:", error);
+    }
+  }
+
+  // Dữ liệu ban đầu sạch của người dùng mới, khởi tạo các trường rỗng
+  const cleanRawData = {
     user: {
-      id: "usr-9901",
-      name: "Emma Nguyen",
+      id: userId || "usr-me",
+      name: athleteName,
       avatarUrl:
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-      level: 10,
+      level: 1,
     },
     profileProto: {
-      userId: "usr-9901",
-      weightKg: 68.5,
-      heightCm: 175,
-      targetWeightKg: 65,
-      bodyFatPercent: 18.5,
-      targetBodyFatPercent: 15,
-      experienceLevel: "INTERMEDIATE",
-      goals: ["BUILD_MUSCLE", "FAT_LOSS"],
-      preferredMuscleGroups: ["CHEST", "BACK", "LEGS"],
-      availableEquipment: ["FULL_GYM"],
-      injuries: [
-        {
-          injuryId: "inj-1",
-          muscleGroup: "SHOULDERS",
-          severity: "MILD",
-          notes: "Be careful with Overhead Press",
-          isRecovered: false,
-          reportedAt: "2026-07-10",
-        },
-      ],
+      userId: userId || "usr-me",
+      weightKg: 0,
+      heightCm: 0,
+      targetWeightKg: 0,
+      bodyFatPercent: 0,
+      targetBodyFatPercent: 0,
+      experienceLevel: "",
+      dateOfBirth: "",
+      gender: "",
+      goals: [],
+      preferredMuscleGroups: [],
+      availableEquipment: [],
+      coachStyle: "",
+      injuries: [],
     },
-    prListProto: [
-      {
-        exerciseId: "deadlift",
-        exerciseName: "Barbell Deadlift",
-        weight: 140,
-        reps: 1,
-        oneRepMax: 140,
-        achievedAt: "2026-08-01",
-      },
-      {
-        exerciseId: "squat",
-        exerciseName: "Barbell Squat",
-        weight: 120,
-        reps: 3,
-        oneRepMax: 131,
-        achievedAt: "2026-07-28",
-      },
-      {
-        exerciseId: "bench",
-        exerciseName: "Barbell Bench Press",
-        weight: 85,
-        reps: 5,
-        oneRepMax: 96,
-        achievedAt: "2026-07-20",
-      },
-    ],
+    prListProto: [],
     statsProto: {
-      totalWorkouts: 48,
-      activeStreakDays: 12,
-      totalCaloriesKcal: 12_500,
-    },
-    notificationProto: {
-      enablePush: true,
-      enableEmail: false,
-      quietHoursStart: "22:00",
-      quietHoursEnd: "06:00",
+      totalWorkouts: 0,
+      activeStreakDays: 0,
+      totalCaloriesKcal: 0,
     },
   };
 
-  return mapRawDataToProfileViewModel(mockRawData);
+  return mapRawDataToProfileViewModel(cleanRawData);
 }

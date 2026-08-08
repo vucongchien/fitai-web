@@ -36,6 +36,10 @@ export interface RoadmapPageData {
   currentWeekLabel: string;
   currentWeekDateRange: string;
   contextItems: ContextItem[];
+  error?: {
+    type: "CONNECTION_ERROR" | "NO_ROADMAP";
+    message: string;
+  };
 }
 
 /** One week of the full four-week schedule. */

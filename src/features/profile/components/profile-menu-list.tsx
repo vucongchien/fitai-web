@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   AlertTriangle,
   ChevronRight,
@@ -28,7 +29,27 @@ interface ProfileMenuListProps {
 }
 
 export function ProfileMenuList({ profile, onOpenModal }: ProfileMenuListProps) {
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const activeInjuries = profile.injuries.filter((i) => !i.isRecovered);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+      if (response.ok) {
+        window.location.href = "/login";
+      } else {
+        console.error("Failed to log out");
+        setIsLoggingOut(false);
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <div className="w-full space-y-1 text-left">
@@ -173,12 +194,18 @@ export function ProfileMenuList({ profile, onOpenModal }: ProfileMenuListProps) 
 
       {/* 7. Log Out */}
       <div className="pt-3">
-        <button className="group flex min-h-[52px] w-full items-center justify-between py-2 px-1 text-left transition-colors text-rose-600 hover:bg-rose-50/60 rounded-xl">
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="group flex min-h-[52px] w-full items-center justify-between py-2 px-1 text-left transition-colors text-rose-600 hover:bg-rose-50/60 rounded-xl disabled:opacity-50"
+        >
           <div className="flex items-center gap-3.5">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
               <LogOut className="h-5 w-5" />
             </div>
-            <div className="text-sm font-semibold">Log Out</div>
+            <div className="text-sm font-semibold">
+              {isLoggingOut ? "Logging out..." : "Log Out"}
+            </div>
           </div>
         </button>
       </div>

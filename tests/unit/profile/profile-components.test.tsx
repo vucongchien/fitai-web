@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { vi } from "vitest";
 
 import { ProfileContent } from "../../../src/features/profile/components/profile-content";
 import { mapRawDataToProfileViewModel } from "../../../src/features/profile/model/profile.mapper";
@@ -59,7 +60,7 @@ describe("profile UI Components", () => {
     const item = screen.getAllByText("Available Equipment")[0];
     fireEvent.click(item);
 
-    expect(screen.getByText("Barbells, dumbbells, cable machines & racks")).toBeInTheDocument();
+    expect(screen.getByText("Select what gear you have access to for workouts")).toBeInTheDocument();
   });
 
   it("opens Injury Management modal when clicking Injury Management menu item", () => {
@@ -69,5 +70,26 @@ describe("profile UI Components", () => {
     fireEvent.click(item);
 
     expect(screen.getByText("+ Report Injury")).toBeInTheDocument();
+  });
+
+  it("calls fetch to log out when clicking Log Out button", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal("fetch", mockFetch);
+    const mockLocation = { href: "" };
+    vi.stubGlobal("location", mockLocation);
+
+    render(<ProfileContent profile={mockProfileData} />);
+
+    const logoutBtn = screen.getByText("Log Out");
+    fireEvent.click(logoutBtn);
+
+    expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", {
+      method: "POST",
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(mockLocation.href).toBe("/login");
+
+    vi.unstubAllGlobals();
   });
 });

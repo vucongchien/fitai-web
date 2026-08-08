@@ -2,12 +2,12 @@
 
 import { createClient } from "@connectrpc/connect";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 
 import { appendLocalMeal } from "@/features/nutrition/server/local-meal-log";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
-import { createServerTransport } from "@/shared/api/connect/server-transport";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
+import { createServerTransport } from "@/shared/api/server/transport";
+import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
 
 export interface LogMealInput {
   calories: number;
@@ -38,10 +38,6 @@ function readNumber(form: FormData, key: string) {
 
 /**
  * Form-action entry point.
- *
- * A Server Function only writes cookies and returns fresh UI in one roundtrip when it is
- * used as a form `action`; called from an event handler the `Set-Cookie` never lands. Both
- * the one-tap button and the manual form go through here.
  */
 export async function logMealAction(
   _previous: LogMealState,
@@ -107,12 +103,7 @@ function validate(input: LogMealInput): string | null {
 
 /**
  * Logs one meal.
- *
- * gRPC: NutritionService.logMeal({ userId, mealName, mealType, calories, protein, carbs,
- *       fat, loggedAt }) → { mealLogId, success, message }
- *
- * Online-first, per PRODUCT.md: a failure returns the reason so the form can keep the
- * user's input rather than replaying a mutation whose outcome is unknown.
+ * gRPC: NutritionService.logMeal
  */
 export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
   const invalid = validate(input);
@@ -121,51 +112,67 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
   }
 
   const loggedAt = new Date().toISOString();
-  const hasBackend = Boolean(process.env.FITAI_RPC_URL);
+  const accessToken = await getAccessToken();
+  const userId = await getAuthenticatedUserId();
 
-  if (!hasBackend) {
-    const mealLogId = await appendLocalMeal({ ...input, loggedAt });
-    revalidateReaders(input.slot);
-    return { mealLogId, ok: true };
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const client = createClient(NutritionService, createServerTransport(accessToken));
+
+      const response = await client.logMeal({
+        calories: input.calories,
+        carbs: input.carbs,
+        fat: input.fat,
+        loggedAt,
+        mealName: input.mealName.trim(),
+        mealType: WIRE_MEAL_TYPE[input.slot],
+        protein: input.protein,
+        userId: userId || "",
+      });
+
+      if (!response.success) {
+        return { message: response.message || "The meal could not be saved.", ok: false };
+      }
+
+      revalidateReaders(input.slot);
+      return { mealLogId: response.mealLogId, ok: true };
+    } catch (error) {
+      if (isUnreachable(error)) {
+        const mealLogId = await appendLocalMeal({ ...input, loggedAt });
+        revalidateReaders(input.slot);
+        return { mealLogId, ok: true };
+      }
+
+      const detail = error instanceof Error ? error.message : "Unknown transport error";
+      return { message: `Could not save the meal: ${detail}`, ok: false };
+    }
   }
 
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("fitai_access_token")?.value;
-    const client = createClient(NutritionService, createServerTransport(token));
+  const mealLogId = await appendLocalMeal({ ...input, loggedAt });
+  revalidateReaders(input.slot);
+  return { mealLogId, ok: true };
+}
 
-    const response = await client.logMeal({
-      calories: input.calories,
-      carbs: input.carbs,
-      fat: input.fat,
-      loggedAt,
-      mealName: input.mealName.trim(),
-      mealType: WIRE_MEAL_TYPE[input.slot],
-      protein: input.protein,
-      // TODO: read the user id from the session once it is exposed server-side.
-      userId: "",
+/**
+ * Server Action tái hiệu chỉnh thực đơn theo nguyên liệu sẵn có trong tủ lạnh
+ */
+export async function recalibratePantryAction(
+  availableIngredients: string[],
+): Promise<{ success: boolean; message?: string }> {
+  try {
+    const accessToken = await getAccessToken();
+    const userId = await getAuthenticatedUserId();
+    const client = createClient(NutritionService, createServerTransport(accessToken));
+
+    const res = await client.recalibratePlanWithPantry({
+      userId: userId || "",
+      availableIngredients,
     });
 
-    if (!response.success) {
-      return { message: response.message || "The meal could not be saved.", ok: false };
-    }
-
-    revalidateReaders(input.slot);
-    return { mealLogId: response.mealLogId, ok: true };
-  } catch (error) {
-    // FITAI_RPC_URL can point at a backend that is not running yet, which is the normal
-    // State in local development. The read paths already fall back to mock data in that
-    // Case, so the write does too — otherwise logging is broken on every dev machine while
-    // The rest of the app looks fine.
-    if (isUnreachable(error)) {
-      const mealLogId = await appendLocalMeal({ ...input, loggedAt });
-      revalidateReaders(input.slot);
-      return { mealLogId, ok: true };
-    }
-
-    // A backend that answered and refused is a real failure: say so rather than writing a
-    // Local row the server does not know about.
-    const detail = error instanceof Error ? error.message : "Unknown transport error";
-    return { message: `Could not save the meal: ${detail}`, ok: false };
+    revalidatePath("/nutrition");
+    return { success: true, message: res.message || "Menu recalibrated with pantry ingredients" };
+  } catch (error: any) {
+    console.error("[recalibratePantryAction] Error:", error);
+    return { success: false, message: error?.message || "Failed to recalibrate menu" };
   }
 }

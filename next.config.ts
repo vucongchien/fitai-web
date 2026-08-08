@@ -7,23 +7,16 @@ const nextConfig: NextConfig = {
 
   images: {
     /**
-     * Allowlist for `next/image` remote sources — user avatars.
-     *
-     * The optimizer returns 400 for any host not listed here, so this must track
-     * the identity providers actually enabled. `AdminUser.provider` is
-     * "google" | "facebook" | "email"; the first two hand back a CDN URL.
-     * `images.unsplash.com` covers the mock fixtures in
-     * `features/admin/api/admin-user-service.ts` until the real API is wired.
-     *
-     * Adding a provider means adding its avatar host here, otherwise the picture
-     * silently 400s. Both call sites fall back to the user's initial on error, so
-     * a missing host degrades to the monogram rather than a broken image.
+     * Allowlist for `next/image` remote sources — user avatars, workout thumbnails, meal progress photos.
      */
     remotePatterns: [
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "platform-lookaside.fbsbx.com" },
       { protocol: "https", hostname: "**.fbcdn.net" },
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "**.s3.amazonaws.com" },
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "gym-companion-production.up.railway.app" },
     ],
   },
   experimental: {
@@ -38,6 +31,19 @@ const nextConfig: NextConfig = {
           {
             key: "Cache-Control",
             value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/wasm/:path*",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/wasm",
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },

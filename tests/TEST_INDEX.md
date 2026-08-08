@@ -12,12 +12,23 @@
 
 | File                               | Scenarios                                                                                                                                                                                           |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `unit/onboarding-schema.test.ts`   | Valid beginner profile, missing availability, maximum six training days                                                                                                                             |
+| `unit/onboarding-schema.test.ts`   | Onboarding Zod Schema: Multi-goals selection, Date of Birth & Age validation (14-90 years), Body Fat (5-60%), Preferred workout times (AM/PM), Standardized equipment enum |
+| `unit/onboarding-grpc-actions.test.ts` | Onboarding Server Actions: Multi-goals to proto enum, preferredWorkoutTimes array mapping, DOB, bodyFatPercent, equipment normalization to gRPC SaveHealthProfile, fallback error recovery |
+| `unit/profile-grpc-service.test.ts` | Profile Service: aggregates GetProfile, GetPersonalRecords, GetNotificationSettings, handles empty state and 401 unauthenticated |
+| `unit/planning-grpc-actions.test.ts` | Coaching & Roadmap: InitiateRoadmap, RegenerateSchedule on adaptation, CreateAdhocSessionPlan |
+| `unit/workout-grpc-actions.test.ts` | Workout Execution: beginWorkoutSession, logWorkoutSet with camera angle/RPE, syncWorkoutLogs, completeWorkoutSession |
+| `unit/nutrition-grpc-actions.test.ts` | Nutrition Engine: getNutritionPageData aggregation, logMeal with wire enum, recalibratePantryAction |
+| `unit/exercise-grpc-repository.test.ts` | Exercise Catalog: searchExercises with filters, getCatalogMetadata taxonomy, getById details |
+| `unit/video-source-parser.test.ts` | Video Parser: YouTube watch/shorts/embed recognition, direct MP4 file resolution |
+| `unit/audio-cues-synthesizer.test.ts` | Web Audio Tone Synthesizer: Synthetic cue tones (start/good/warning/end) safe fallback |
 | `unit/allowed-services.test.ts`    | User RPC allowlist, Admin denial, malformed path denial                                                                                                                                             |
 | `unit/app-error.test.ts`           | Authentication and service-unavailable error mapping                                                                                                                                                |
 | `unit/oauth-bff-routes.test.ts`    | BFF entry: invalid provider, missing RPC URL, 307 + state cookie, backend error; Callback: missing code, state mismatch, route resolution (onboarding/planning), auth cookies, Profile API fallback |
+| `unit/auth-logout-route.test.ts`   | Logout route: calls gRPC AuthService.Logout, clears access/refresh/user_id cookies, supports JSON and 302 redirect                                                                                   |
+| `unit/rpc-single-flight-refresh.test.ts` | Single-flight Token Refresh on 401: prevents duplicate refresh calls, updates cookies, transparent retry                                                                                       |
 | `unit/dev-login-route.test.ts`     | Dev route: 404 in production, mock auth login for new vs existing user targets in development                                                                                                       |
-| `unit/progress-aggregator.test.ts` | Calculates adherence percentage, formats volume (kg/tonnes), sorts top PRs                                                                                                                          |
+| `unit/progress-aggregator.test.ts` | Calculates adherence percentage, formats volume (kg/tonnes), sorts top PRs                                                                                           |
+| `unit/notification-actions.test.ts` | Notification Server Actions: listNotificationsAction calls listNotifications, markNotificationAsReadAction marks specific notification as read, handles unauthorized/missing access tokens and gRPC failure states |
 
 ## Component coverage
 

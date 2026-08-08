@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { playSyntheticCueTone } from "@/features/workout/domain/audio-cues";
 import type { CoachCue, MusicTrack, Playlist } from "@/features/workout/model/live-session.types";
 
 /**
@@ -234,17 +235,18 @@ export function useAudioCoach(playlists: Playlist[]) {
       element.onended = null;
       element.onerror = null;
       cuePlaying.current = false;
-      // Keep the caption visible briefly when there is no audio to carry it.
       window.setTimeout(() => drainCueQueue(), 200);
     };
 
     element.onended = finish;
     element.onerror = () => {
       setAudioUnavailable(true);
+      playSyntheticCueTone(cue.severity === 2 ? "warning" : "good");
       finish();
     };
     void element.play().catch(() => {
       setAudioUnavailable(true);
+      playSyntheticCueTone(cue.severity === 2 ? "warning" : "good");
       finish();
     });
   }, [duckMusic]);

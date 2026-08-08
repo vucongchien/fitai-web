@@ -1,3 +1,7 @@
+"use server";
+
+import { createClient } from "@connectrpc/connect";
+
 import type {
   AdminExercise,
   AdminExerciseStatus,
@@ -5,52 +9,51 @@ import type {
   MetadataItem,
   PaginatedResponse,
 } from "@/features/admin/domain/admin-types";
-import { MOCK_CATALOG } from "@/shared/mock/catalog";
-import { MOCK_EXERCISES } from "@/shared/mock/exercises";
+import { ExerciseStatus } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
+import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
+import { createServerTransport } from "@/shared/api/server/transport";
+import { getAuthenticatedSession } from "@/shared/auth/session";
 
-const INITIAL_ADMIN_EXERCISES: AdminExercise[] = MOCK_EXERCISES.map((ex, index) => {
-  let status: AdminExerciseStatus = "approved";
-  if (index % 4 === 0) {
-    status = "submittedForApproval";
-  } else if (index % 5 === 0) {
-    status = "created";
-  } else if (index % 9 === 0) {
-    status = "archived";
+function mapDifficulty(diff?: string): "beginner" | "intermediate" | "advanced" {
+  switch (diff?.toUpperCase()) {
+    case "BEGINNER":
+      return "beginner";
+    case "ADVANCED":
+      return "advanced";
+    default:
+      return "intermediate";
   }
+}
 
-  return {
-    ...ex,
-    status,
-    createdBy: index % 2 === 0 ? "admin@fitai.com" : "coach.alex@fitai.com",
-    createdAt: new Date(Date.now() - index * 86_400_000 * 2).toISOString(),
-    updatedAt: new Date(Date.now() - index * 86_400_000).toISOString(),
-  };
-});
+function mapStatusToProto(status?: AdminExerciseStatus): ExerciseStatus {
+  switch (status) {
+    case "created":
+      return ExerciseStatus.DRAFT;
+    case "submittedForApproval":
+      return ExerciseStatus.PENDING_APPROVAL;
+    case "approved":
+      return ExerciseStatus.ACTIVE;
+    case "archived":
+      return ExerciseStatus.ARCHIVED;
+    default:
+      return ExerciseStatus.UNSPECIFIED;
+  }
+}
 
-let exerciseStore: AdminExercise[] = [...INITIAL_ADMIN_EXERCISES];
-
-let metadataStore: MetadataItem[] = [
-  ...MOCK_CATALOG.bodyParts.map((bp) => ({
-    id: bp.id,
-    name: bp.name,
-    category: "bodyPart" as const,
-  })),
-  ...MOCK_CATALOG.equipments.map((eq) => ({
-    id: eq.id,
-    name: eq.name,
-    category: "equipment" as const,
-  })),
-  ...MOCK_CATALOG.muscles.map((ms) => ({
-    id: ms.id,
-    name: ms.name,
-    category: "muscle" as const,
-  })),
-  ...MOCK_CATALOG.tags.map((tg) => ({
-    id: tg.id,
-    name: tg.name,
-    category: "tag" as const,
-  })),
-];
+function mapStatusToUI(status: ExerciseStatus): AdminExerciseStatus {
+  switch (status) {
+    case ExerciseStatus.DRAFT:
+      return "created";
+    case ExerciseStatus.PENDING_APPROVAL:
+      return "submittedForApproval";
+    case ExerciseStatus.ACTIVE:
+      return "approved";
+    case ExerciseStatus.ARCHIVED:
+      return "archived";
+    default:
+      return "created";
+  }
+}
 
 export interface FetchExercisesParams {
   cursor?: string | null;
@@ -63,181 +66,391 @@ export async function fetchAdminExercises({
   limit = 10,
   filters,
 }: FetchExercisesParams): Promise<PaginatedResponse<AdminExercise>> {
-  await new Promise((resolve) => setTimeout(resolve, 30));
-
-  let result = [...exerciseStore];
-
-  if (filters) {
-    if (filters.q && filters.q.trim() !== "") {
-      const q = filters.q.trim().toLowerCase();
-      result = result.filter(
-        (ex) =>
-          ex.name.toLowerCase().includes(q) ||
-          ex.instructions?.toLowerCase().includes(q) ||
-          ex.id.toLowerCase().includes(q),
-      );
-    }
-
-    if (filters.status && filters.status !== "all") {
-      result = result.filter((ex) => ex.status === filters.status);
-    }
-
-    if (filters.bodyPartId && filters.bodyPartId !== "") {
-      result = result.filter((ex) => ex.bodyPartId === filters.bodyPartId);
-    }
-
-    if (filters.equipmentId && filters.equipmentId !== "") {
-      result = result.filter((ex) => ex.equipmentId === filters.equipmentId);
-    }
-
-    if (filters.difficulty && filters.difficulty !== "all") {
-      result = result.filter((ex) => ex.difficulty === filters.difficulty);
-    }
+  if (!process.env.FITAI_RPC_URL) {
+    return { items: [], nextCursor: null, totalCount: 0 };
   }
 
-  const totalCount = result.length;
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(ExerciseService, createServerTransport(accessToken));
 
-  let startIndex = 0;
-  if (cursor) {
-    const foundIndex = result.findIndex((item) => item.id === cursor);
-    if (foundIndex !== -1) {
-      startIndex = foundIndex + 1;
+    const keyword = filters?.q || "";
+    const bodyPartId = filters?.bodyPartId || "";
+    const equipmentId = filters?.equipmentId || "";
+    const difficulty = filters?.difficulty && filters.difficulty !== "all" ? filters.difficulty : "";
+
+    const res = await client.searchExercises({
+      keyword,
+      bodyPartId,
+      equipmentId,
+      difficulty,
+      limit: 100, // Lấy tập kết quả lớn để thực hiện filter status
+    });
+
+    let exercises = (res.exercises || []).map((ex) => ({
+      id: ex.id,
+      name: ex.name,
+      bodyPartId: ex.bodyPartId,
+      equipmentId: ex.equipmentId,
+      targetMuscleId: ex.targetMuscleId,
+      secondaryMuscleIds: ex.secondaryMuscleIds || [],
+      tagIds: ex.tagIds || [],
+      instructions: ex.instructions || "",
+      videoUrl: ex.videoUrl || "",
+      thumbnailUrl: ex.thumbnailUrl || "",
+      difficulty: mapDifficulty(ex.difficulty),
+      defaultRestSeconds: ex.defaultRestSeconds || 90,
+      hasAiSupported: Boolean(ex.hasAiSupported),
+      status: mapStatusToUI(ex.status),
+      createdBy: "system",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }));
+
+    if (filters?.status && filters.status !== "all") {
+      exercises = exercises.filter((ex) => ex.status === filters.status);
     }
+
+    const totalCount = exercises.length;
+    let startIndex = 0;
+    if (cursor) {
+      const foundIndex = exercises.findIndex((item) => item.id === cursor);
+      if (foundIndex !== -1) {
+        startIndex = foundIndex + 1;
+      }
+    }
+
+    const paginatedItems = exercises.slice(startIndex, startIndex + limit);
+    const hasMore = startIndex + limit < exercises.length;
+    const nextCursor = hasMore && paginatedItems.length > 0 ? (paginatedItems.at(-1)?.id ?? null) : null;
+
+    return {
+      items: paginatedItems,
+      nextCursor,
+      totalCount,
+    };
+  } catch (error) {
+    console.warn("[fetchAdminExercises] failed:", error);
+    return { items: [], nextCursor: null, totalCount: 0 };
   }
-
-  const paginatedItems = result.slice(startIndex, startIndex + limit);
-  const hasMore = startIndex + limit < result.length;
-  const nextCursor =
-    hasMore && paginatedItems.length > 0 ? (paginatedItems.at(-1)?.id ?? null) : null;
-
-  return {
-    items: paginatedItems,
-    nextCursor,
-    totalCount,
-  };
 }
 
 export async function fetchAdminExerciseById(id: string): Promise<AdminExercise | null> {
-  await new Promise((resolve) => setTimeout(resolve, 20));
-  const found = exerciseStore.find((ex) => ex.id === id);
-  return found ? { ...found } : null;
+  if (!process.env.FITAI_RPC_URL) {
+    return null;
+  }
+
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(ExerciseService, createServerTransport(accessToken));
+    const res = await client.getExercise({ id });
+    const ex = res.exercise;
+    if (!ex) {
+      return null;
+    }
+
+    return {
+      id: ex.id,
+      name: ex.name,
+      bodyPartId: ex.bodyPartId,
+      equipmentId: ex.equipmentId,
+      targetMuscleId: ex.targetMuscleId,
+      secondaryMuscleIds: ex.secondaryMuscleIds || [],
+      tagIds: ex.tagIds || [],
+      instructions: ex.instructions || "",
+      videoUrl: ex.videoUrl || "",
+      thumbnailUrl: ex.thumbnailUrl || "",
+      difficulty: mapDifficulty(ex.difficulty),
+      defaultRestSeconds: ex.defaultRestSeconds || 90,
+      hasAiSupported: Boolean(ex.hasAiSupported),
+      status: mapStatusToUI(ex.status),
+      createdBy: "system",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    console.warn("[fetchAdminExerciseById] failed:", error);
+    return null;
+  }
 }
 
 export async function approveExercise(id: string): Promise<AdminExercise> {
-  await new Promise((resolve) => setTimeout(resolve, 30));
-  const index = exerciseStore.findIndex((ex) => ex.id === id);
-  if (index === -1) {
-    throw new Error(`Exercise with id ${id} not found`);
+  const { accessToken } = await getAuthenticatedSession();
+  const client = createClient(ExerciseService, createServerTransport(accessToken));
+  const res = await client.approveExercise({ id });
+  const ex = res.exercise;
+  if (!ex) {
+    throw new Error(`Failed to approve exercise: ${id}`);
   }
-  const updated: AdminExercise = {
-    ...exerciseStore[index],
-    status: "approved",
+
+  return {
+    id: ex.id,
+    name: ex.name,
+    bodyPartId: ex.bodyPartId,
+    equipmentId: ex.equipmentId,
+    targetMuscleId: ex.targetMuscleId,
+    secondaryMuscleIds: ex.secondaryMuscleIds || [],
+    tagIds: ex.tagIds || [],
+    instructions: ex.instructions || "",
+    videoUrl: ex.videoUrl || "",
+    thumbnailUrl: ex.thumbnailUrl || "",
+    difficulty: mapDifficulty(ex.difficulty),
+    defaultRestSeconds: ex.defaultRestSeconds || 90,
+    hasAiSupported: Boolean(ex.hasAiSupported),
+    status: mapStatusToUI(ex.status),
+    createdBy: "system",
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  exerciseStore[index] = updated;
-  return updated;
 }
 
 export async function archiveExercise(id: string): Promise<AdminExercise> {
-  await new Promise((resolve) => setTimeout(resolve, 30));
-  const index = exerciseStore.findIndex((ex) => ex.id === id);
-  if (index === -1) {
-    throw new Error(`Exercise with id ${id} not found`);
+  const { accessToken } = await getAuthenticatedSession();
+  const client = createClient(ExerciseService, createServerTransport(accessToken));
+  const res = await client.updateExercise({
+    id,
+    status: mapStatusToProto("archived"),
+  });
+  const ex = res.exercise;
+  if (!ex) {
+    throw new Error(`Failed to archive exercise: ${id}`);
   }
-  const updated: AdminExercise = {
-    ...exerciseStore[index],
-    status: "archived",
+
+  return {
+    id: ex.id,
+    name: ex.name,
+    bodyPartId: ex.bodyPartId,
+    equipmentId: ex.equipmentId,
+    targetMuscleId: ex.targetMuscleId,
+    secondaryMuscleIds: ex.secondaryMuscleIds || [],
+    tagIds: ex.tagIds || [],
+    instructions: ex.instructions || "",
+    videoUrl: ex.videoUrl || "",
+    thumbnailUrl: ex.thumbnailUrl || "",
+    difficulty: mapDifficulty(ex.difficulty),
+    defaultRestSeconds: ex.defaultRestSeconds || 90,
+    hasAiSupported: Boolean(ex.hasAiSupported),
+    status: mapStatusToUI(ex.status),
+    createdBy: "system",
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  exerciseStore[index] = updated;
-  return updated;
 }
 
 export async function createExercise(
   data: Omit<AdminExercise, "id" | "createdAt" | "updatedAt">,
 ): Promise<AdminExercise> {
-  await new Promise((resolve) => setTimeout(resolve, 50));
-  const newId = `ex-${Date.now().toString(36)}`;
-  const now = new Date().toISOString();
-  const created: AdminExercise = {
-    ...data,
-    id: newId,
-    createdAt: now,
-    updatedAt: now,
+  const { accessToken } = await getAuthenticatedSession();
+  const client = createClient(ExerciseService, createServerTransport(accessToken));
+  const res = await client.createExercise({
+    name: data.name,
+    bodyPartId: data.bodyPartId,
+    equipmentId: data.equipmentId,
+    targetMuscleId: data.targetMuscleId,
+    secondaryMuscleIds: data.secondaryMuscleIds,
+    tagIds: data.tagIds,
+    instructions: data.instructions,
+    videoUrl: data.videoUrl,
+    thumbnailUrl: data.thumbnailUrl,
+    difficulty: data.difficulty,
+    defaultRestSeconds: data.defaultRestSeconds,
+  });
+
+  const ex = res.exercise;
+  if (!ex) {
+    throw new Error("Failed to create exercise.");
+  }
+
+  return {
+    id: ex.id,
+    name: ex.name,
+    bodyPartId: ex.bodyPartId,
+    equipmentId: ex.equipmentId,
+    targetMuscleId: ex.targetMuscleId,
+    secondaryMuscleIds: ex.secondaryMuscleIds || [],
+    tagIds: ex.tagIds || [],
+    instructions: ex.instructions || "",
+    videoUrl: ex.videoUrl || "",
+    thumbnailUrl: ex.thumbnailUrl || "",
+    difficulty: mapDifficulty(ex.difficulty),
+    defaultRestSeconds: ex.defaultRestSeconds || 90,
+    hasAiSupported: Boolean(ex.hasAiSupported),
+    status: mapStatusToUI(ex.status),
+    createdBy: "system",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
-  exerciseStore.unshift(created);
-  return created;
 }
 
 export async function updateExercise(
   id: string,
   data: Partial<AdminExercise>,
 ): Promise<AdminExercise> {
-  await new Promise((resolve) => setTimeout(resolve, 50));
-  const index = exerciseStore.findIndex((ex) => ex.id === id);
-  if (index === -1) {
-    throw new Error(`Exercise with id ${id} not found`);
+  const { accessToken } = await getAuthenticatedSession();
+  const client = createClient(ExerciseService, createServerTransport(accessToken));
+  const res = await client.updateExercise({
+    id,
+    name: data.name,
+    bodyPartId: data.bodyPartId,
+    equipmentId: data.equipmentId,
+    targetMuscleId: data.targetMuscleId,
+    secondaryMuscleIds: data.secondaryMuscleIds,
+    tagIds: data.tagIds,
+    instructions: data.instructions,
+    videoUrl: data.videoUrl,
+    thumbnailUrl: data.thumbnailUrl,
+    difficulty: data.difficulty,
+    defaultRestSeconds: data.defaultRestSeconds,
+    status: data.status ? mapStatusToProto(data.status) : undefined,
+  });
+
+  const ex = res.exercise;
+  if (!ex) {
+    throw new Error(`Failed to update exercise: ${id}`);
   }
-  const updated: AdminExercise = {
-    ...exerciseStore[index],
-    ...data,
+
+  return {
+    id: ex.id,
+    name: ex.name,
+    bodyPartId: ex.bodyPartId,
+    equipmentId: ex.equipmentId,
+    targetMuscleId: ex.targetMuscleId,
+    secondaryMuscleIds: ex.secondaryMuscleIds || [],
+    tagIds: ex.tagIds || [],
+    instructions: ex.instructions || "",
+    videoUrl: ex.videoUrl || "",
+    thumbnailUrl: ex.thumbnailUrl || "",
+    difficulty: mapDifficulty(ex.difficulty),
+    defaultRestSeconds: ex.defaultRestSeconds || 90,
+    hasAiSupported: Boolean(ex.hasAiSupported),
+    status: mapStatusToUI(ex.status),
+    createdBy: "system",
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  exerciseStore[index] = updated;
-  return updated;
 }
 
 export async function deleteExercise(id: string): Promise<boolean> {
-  await new Promise((resolve) => setTimeout(resolve, 30));
-  const initialLen = exerciseStore.length;
-  exerciseStore = exerciseStore.filter((ex) => ex.id !== id);
-  return exerciseStore.length < initialLen;
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(ExerciseService, createServerTransport(accessToken));
+    await client.deleteExercise({ id });
+    return true;
+  } catch (error) {
+    console.warn(`[deleteExercise] failed for id ${id}:`, error);
+    return false;
+  }
 }
 
 // METADATA APIS (BodyParts, Equipments, Muscles, Tags)
 export async function fetchMetadataList(
   category?: MetadataItem["category"],
 ): Promise<MetadataItem[]> {
-  await new Promise((resolve) => setTimeout(resolve, 30));
-  if (!category) {
-    return [...metadataStore];
+  if (!process.env.FITAI_RPC_URL) {
+    return [];
   }
-  return metadataStore.filter((item) => item.category === category);
+
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(ExerciseService, createServerTransport(accessToken));
+    const res = await client.getCatalogMetadata({});
+
+    const bodyParts = res.bodyParts.map((bp) => ({
+      id: bp.id,
+      name: bp.name,
+      category: "bodyPart" as const,
+    }));
+    const equipments = res.equipments.map((eq) => ({
+      id: eq.id,
+      name: eq.name,
+      category: "equipment" as const,
+    }));
+    const muscles = res.muscles.map((ms) => ({
+      id: ms.id,
+      name: ms.name,
+      category: "muscle" as const,
+    }));
+    const tags = res.tags.map((tg) => ({
+      id: tg.id,
+      name: tg.name,
+      category: "tag" as const,
+    }));
+
+    const allItems = [...bodyParts, ...equipments, ...muscles, ...tags];
+
+    if (!category) {
+      return allItems;
+    }
+    return allItems.filter((item) => item.category === category);
+  } catch (error) {
+    console.warn("[fetchMetadataList] failed:", error);
+    return [];
+  }
 }
 
 export async function createMetadataItem(item: Omit<MetadataItem, "id">): Promise<MetadataItem> {
-  await new Promise((resolve) => setTimeout(resolve, 30));
-  const prefix = item.category.slice(0, 2);
-  const newId = `${prefix}-${Date.now().toString(36)}`;
-  const created: MetadataItem = {
-    ...item,
-    id: newId,
-  };
-  metadataStore.push(created);
-  return created;
+  const { accessToken } = await getAuthenticatedSession();
+  const client = createClient(ExerciseService, createServerTransport(accessToken));
+
+  if (item.category === "bodyPart") {
+    const res = await client.createBodyPart({ name: item.name });
+    return { id: res.bodyPart?.id || "", name: res.bodyPart?.name || "", category: "bodyPart" };
+  } else if (item.category === "equipment") {
+    const res = await client.createEquipment({ name: item.name });
+    return { id: res.equipment?.id || "", name: res.equipment?.name || "", category: "equipment" };
+  } else if (item.category === "muscle") {
+    const res = await client.createMuscle({ name: item.name, bodyPartId: "" });
+    return { id: res.muscle?.id || "", name: res.muscle?.name || "", category: "muscle" };
+  } else {
+    const res = await client.createTag({ name: item.name });
+    return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
+  }
 }
 
 export async function updateMetadataItem(
   id: string,
   data: Partial<MetadataItem>,
 ): Promise<MetadataItem> {
-  await new Promise((resolve) => setTimeout(resolve, 30));
-  const index = metadataStore.findIndex((m) => m.id === id);
-  if (index === -1) {
-    throw new Error(`Metadata item ${id} not found`);
+  const { accessToken } = await getAuthenticatedSession();
+  const client = createClient(ExerciseService, createServerTransport(accessToken));
+
+  if (data.category === "bodyPart") {
+    const res = await client.updateBodyPart({ id, name: data.name });
+    return { id: res.bodyPart?.id || "", name: res.bodyPart?.name || "", category: "bodyPart" };
+  } else if (data.category === "equipment") {
+    const res = await client.updateEquipment({ id, name: data.name });
+    return { id: res.equipment?.id || "", name: res.equipment?.name || "", category: "equipment" };
+  } else if (data.category === "muscle") {
+    const res = await client.updateMuscle({ id, name: data.name, bodyPartId: "" });
+    return { id: res.muscle?.id || "", name: res.muscle?.name || "", category: "muscle" };
+  } else {
+    const res = await client.updateTag({ id, name: data.name });
+    return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
   }
-  const updated = { ...metadataStore[index], ...data };
-  metadataStore[index] = updated;
-  return updated;
 }
 
 export async function deleteMetadataItem(id: string): Promise<boolean> {
-  await new Promise((resolve) => setTimeout(resolve, 30));
-  const initialLen = metadataStore.length;
-  metadataStore = metadataStore.filter((m) => m.id !== id);
-  return metadataStore.length < initialLen;
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(ExerciseService, createServerTransport(accessToken));
+    // Tạm thời coi ID quyết định category hoặc gọi tuần tự do không có category trong params
+    // Thường ID có tiền tố bp-, eq-, ms-, tg-
+    if (id.startsWith("bp")) {
+      await client.deleteBodyPart({ id });
+    } else if (id.startsWith("eq")) {
+      await client.deleteEquipment({ id });
+    } else if (id.startsWith("ms")) {
+      await client.deleteMuscle({ id });
+    } else {
+      await client.deleteTag({ id });
+    }
+    return true;
+  } catch (error) {
+    console.warn(`[deleteMetadataItem] failed for id ${id}:`, error);
+    return false;
+  }
 }
 
-export function resetExerciseStore(): void {
-  exerciseStore = [...INITIAL_ADMIN_EXERCISES];
+export async function resetExerciseStore(): Promise<void> {
+  // Bỏ logic mock reset vì đã gọi gRPC
 }

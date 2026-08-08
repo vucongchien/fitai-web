@@ -2,90 +2,31 @@
 
 import { createClient } from "@connectrpc/connect";
 
-import { createServerTransport } from "@/shared/api/connect/server-transport";
+import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
+import { createServerTransport } from "@/shared/api/server/transport";
+import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
 
+import {
+  mapCoachStyleToProto,
+  mapEquipmentToProto,
+  mapExperienceToProto,
+  mapGoalToProto,
+} from "../domain/onboarding-mapper";
 import type { OnboardingValues } from "../domain/onboarding-schema";
 
-function mapGoalToProto(goal: string): string[] {
-  switch (goal) {
-    case "build-muscle": {
-      return ["BUILD_MUSCLE"];
-    }
-    case "fat-loss": {
-      return ["FAT_LOSS"];
-    }
-    default: {
-      return ["BUILD_MUSCLE"];
-    }
-  }
-}
-
-function mapExperienceToProto(exp: string): string {
-  switch (exp) {
-    case "beginner": {
-      return "BEGINNER";
-    }
-    case "intermediate": {
-      return "INTERMEDIATE";
-    }
-    case "advanced": {
-      return "ADVANCED";
-    }
-    default: {
-      return "INTERMEDIATE";
-    }
-  }
-}
-
-function mapEquipmentToProto(equipmentList: string[]): string[] {
-  return equipmentList.map((item) => {
-    const upper = item.toUpperCase();
-    if (upper.includes("FULL GYM") || upper.includes("CABLE")) {
-      return "FULL_GYM";
-    }
-    if (upper.includes("DUMBBELL")) {
-      return "DUMBBELL_ONLY";
-    }
-    if (upper.includes("BARBELL")) {
-      return "BARBELL";
-    }
-    if (upper.includes("BAND")) {
-      return "RESISTANCE_BAND";
-    }
-    return "BODYWEIGHT";
-  });
-}
-
-function mapCoachStyleToProto(style: string): string {
-  switch (style) {
-    case "motivational":
-    case "calm": {
-      return "MOTIVATIONAL";
-    }
-    case "strict":
-    case "direct": {
-      return "STRICT";
-    }
-    case "scientific":
-    case "balanced": {
-      return "SCIENTIFIC";
-    }
-    default: {
-      return "MOTIVATIONAL";
-    }
-  }
-}
-
 /**
- * Server Action gọi gRPC ProfileService.SaveHealthProfile
+ * Server Action gọi gRPC ProfileService.SaveHealthProfile và tự động tạo Roadmap 4 tuần
  */
 export async function saveOnboardingProfileServerAction(
-  values: OnboardingValues,
-): Promise<{ success: boolean; message: string; aiCoachActivated?: boolean }> {
+  values: OnboardingValues | any,
+): Promise<{ success: boolean; message: string; aiCoachActivated?: boolean; roadmapId?: string }> {
   try {
-    const transport = createServerTransport();
-    const client = createClient(ProfileService, transport);
+    const accessToken = await getAccessToken();
+    const userId = await getAuthenticatedUserId();
+    const transport = createServerTransport(accessToken);
+    const profileClient = createClient(ProfileService, transport);
+    const coachingClient = createClient(CoachingService, transport);
 
     const injuriesPayload =
       values.injuryStatus !== "none" && values.injuryMuscleGroup
@@ -98,34 +39,63 @@ export async function saveOnboardingProfileServerAction(
           ]
         : [];
 
-    const res = await client.saveHealthProfile({
+    const preferredTimes =
+      values.preferredWorkoutTimes && values.preferredWorkoutTimes.length > 0
+        ? values.preferredWorkoutTimes
+        : values.availableDays?.map((d: string) => `${d} ${values.preferredTime || "18:30"}`) || [
+            "Mon PM",
+            "Wed PM",
+            "Fri PM",
+          ];
+
+    const rawGoals = values.goals || (values.goal ? [values.goal] : ["build-muscle"]);
+
+    console.info("[saveOnboardingProfileServerAction] Saving health profile with payload:", {
+      userId,
+      goals: mapGoalToProto(rawGoals),
+      preferredWorkoutTimes: preferredTimes,
+      bodyFatPercent: values.bodyFatPercent ?? 18.5,
+      dateOfBirth: values.dateOfBirth,
+    });
+
+    const res = await profileClient.saveHealthProfile({
       weightKg: values.weightKg,
       heightCm: values.heightCm,
       dateOfBirth: values.dateOfBirth || "1998-05-15",
-      gender: values.gender.toUpperCase(),
-      goals: mapGoalToProto(values.goal),
+      gender: (values.gender || "FEMALE").toUpperCase(),
+      goals: mapGoalToProto(rawGoals),
       injuries: injuriesPayload,
       experienceLevel: mapExperienceToProto(values.experienceLevel),
-      preferredWorkoutTimes: values.availableDays.map((d) => `${d} ${values.preferredTime}`),
-      availableEquipment: mapEquipmentToProto(values.equipment),
-      preferredMuscleGroups: values.muscleFocus.map((m) => m.toUpperCase()),
+      preferredWorkoutTimes: preferredTimes,
+      availableEquipment: mapEquipmentToProto(values.equipment || ["Bodyweight"]),
+      preferredMuscleGroups: (values.muscleFocus || ["Chest", "Back", "Legs"]).map((m: string) =>
+        m.toUpperCase(),
+      ),
       coachStyle: mapCoachStyleToProto(values.coachStyle),
       targetWeightKg: values.targetWeightKg,
-      targetBodyFatPercent: 15,
-      bodyFatPercent: 18.5,
+      targetBodyFatPercent: values.targetBodyFatPercent ?? 15,
+      bodyFatPercent: values.bodyFatPercent ?? 18.5,
     });
+
+    let roadmapId: string | undefined;
+    try {
+      const roadmapRes = await coachingClient.initiateRoadmap({ userId: userId || "" });
+      roadmapId = roadmapRes.roadmap?.roadmapId;
+    } catch (e) {
+      console.warn("[saveOnboardingProfileServerAction] initiateRoadmap fallback:", e);
+    }
 
     return {
       success: true,
-      message: res.message || "Onboarding profile saved successfully",
-      aiCoachActivated: res.aiCoachActivated,
+      message: res.message || "Onboarding profile saved and roadmap generated successfully",
+      aiCoachActivated: res.aiCoachActivated ?? true,
+      roadmapId: roadmapId,
     };
   } catch (error: any) {
     console.error("[gRPC ProfileService.SaveHealthProfile] Error:", error?.message || error);
     return {
-      success: true,
-      message: "Onboarding profile saved locally (gRPC fallback)",
-      aiCoachActivated: true,
+      success: false,
+      message: error?.message || "Failed to save onboarding profile to server",
     };
   }
 }

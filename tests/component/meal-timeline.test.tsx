@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 
-import { getMockMealRows, MOCK_TODAY } from "@/features/nutrition/server/get-mock-nutrition-data";
+import { getMockMealRows, MOCK_TODAY } from "../mocks/nutrition-fixtures";
 import { MealTimeline } from "@/features/nutrition/ui/meal-timeline";
 import { groupMealsBySlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 

@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 
+import {
+  getCatalogMetadataServerAction,
+  type CatalogEquipmentItem,
+  type CatalogMuscleItem,
+} from "@/features/exercise/server/catalog-actions";
 import { calculateBMI } from "../model/profile.mapper";
 import type { InjuryItem, ProfileViewModel } from "../model/profile.types";
 import {
@@ -202,7 +207,7 @@ function BodyMetricsForm({
 
   const confirmSave = async () => {
     setIsSaving(true);
-    const updatedPayload = {
+    const updatedPayload: Partial<ProfileViewModel> = {
       highlights: {
         ...profile.highlights,
         currentWeightKg: Number(data.currentWeightKg),
@@ -218,8 +223,8 @@ function BodyMetricsForm({
       },
     };
 
-    await updateProfileServerAction(updatedPayload);
     onSave(updatedPayload);
+    await updateProfileServerAction(updatedPayload);
     setIsSaving(false);
     setShowConfirm(false);
     onClose();
@@ -306,7 +311,7 @@ function BodyMetricsForm({
       <button
         onClick={() => setShowConfirm(true)}
         disabled={isSaving}
-        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer"
+        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
       >
         {isSaving ? "Saving via gRPC..." : "Save Changes"}
       </button>
@@ -335,11 +340,34 @@ function GoalsForm({
   onClose: () => void;
 }) {
   const [experience, setExperience] = useState(profile.user.experienceLevel || "Intermediate");
-  const [goals, setGoals] = useState<string[]>(profile.healthMetrics.goals || []);
+  const [goals, setGoals] = useState<string[]>(profile.healthMetrics.goals || ["Build Muscle"]);
   const [muscles, setMuscles] = useState<string[]>(
-    profile.healthMetrics.preferredMuscleGroups || [],
+    profile.healthMetrics.preferredMuscleGroups || ["Chest", "Back", "Legs"],
   );
+  const [catalogMuscleGroups, setCatalogMuscleGroups] = useState<CatalogMuscleItem[]>([]);
+  const [isLoadingMuscles, setIsLoadingMuscles] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    async function loadMuscles() {
+      try {
+        const res = await getCatalogMetadataServerAction();
+        if (active && res.success) {
+          setCatalogMuscleGroups(res.muscles);
+        }
+      } catch (e) {
+        console.error("Failed to load catalog muscles:", e);
+      } finally {
+        if (active) setIsLoadingMuscles(false);
+      }
+    }
+    loadMuscles();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const toggleGoal = (item: string) => {
     if (goals.includes(item)) {
@@ -360,16 +388,25 @@ function GoalsForm({
   };
 
   const confirmSave = async () => {
-    const updatedPayload = {
+    setIsSaving(true);
+    const updatedPayload: Partial<ProfileViewModel> = {
       user: { ...profile.user, experienceLevel: experience },
       healthMetrics: { ...profile.healthMetrics, goals, preferredMuscleGroups: muscles },
     };
 
-    await updateProfileServerAction(updatedPayload);
     onSave(updatedPayload);
+    await updateProfileServerAction(updatedPayload);
+    setIsSaving(false);
     setShowConfirm(false);
     onClose();
   };
+
+  const catalogGoals = [
+    { id: "Build Muscle", desc: "Hypertrophy & muscle growth" },
+    { id: "Lose Fat", desc: "Calorie burn & lean physique" },
+    { id: "Strength", desc: "Pure power & heavier lifts" },
+    { id: "Endurance", desc: "Stamina & cardiovascular health" },
+  ];
 
   return (
     <>
@@ -386,7 +423,7 @@ function GoalsForm({
       </div>
 
       <div className="space-y-6 mb-8">
-        {/* Experience Level (Gọn gàng 1 dòng không bị tràn/bẻ chữ) */}
+        {/* Experience Level */}
         <div>
           <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
             Experience Level
@@ -419,11 +456,8 @@ function GoalsForm({
           <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
             Primary Goals (Select at least 1)
           </label>
-          <div className="grid grid-cols-2 gap-2.5">
-            {[
-              { id: "Build Muscle", desc: "Hypertrophy & muscle growth" },
-              { id: "Lose Fat", desc: "Calorie burn & lean physique" },
-            ].map((item) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {catalogGoals.map((item) => (
               <SelectableTile
                 key={item.id}
                 label={item.id}
@@ -435,44 +469,51 @@ function GoalsForm({
           </div>
         </div>
 
-        {/* Preferred Muscle Groups */}
+        {/* Preferred Muscle Groups from DB Catalog */}
         <div>
           <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
             Preferred Muscle Groups (Optional)
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-            {["Chest", "Back", "Legs", "Shoulders", "Arms", "Core"].map((mg) => {
-              const isSelected = muscles.includes(mg);
-              return (
-                <button
-                  key={mg}
-                  type="button"
-                  onClick={() => toggleMuscle(mg)}
-                  className="flex items-center justify-center p-3 rounded-xl text-center transition-colors cursor-pointer min-h-[48px]"
-                  style={{
-                    border: "1.5px solid",
-                    borderColor: isSelected ? "#4B57F2" : "#E5E7EB",
-                    backgroundColor: isSelected ? "#F4F5FF" : "#FFFFFF",
-                  }}
-                >
-                  <span
-                    className="text-xs font-semibold"
-                    style={{ color: isSelected ? "#4B57F2" : "#101214" }}
+          {isLoadingMuscles ? (
+            <div className="py-4 text-center text-xs text-[#50565C] animate-pulse">
+              Loading muscles catalog from server...
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {catalogMuscleGroups.map((mg) => {
+                const isSelected = muscles.includes(mg.name);
+                return (
+                  <button
+                    key={mg.id}
+                    type="button"
+                    onClick={() => toggleMuscle(mg.name)}
+                    className="flex items-center justify-center p-3 rounded-xl text-center transition-colors cursor-pointer min-h-[48px]"
+                    style={{
+                      border: "1.5px solid",
+                      borderColor: isSelected ? "#4B57F2" : "#E5E7EB",
+                      backgroundColor: isSelected ? "#F4F5FF" : "#FFFFFF",
+                    }}
                   >
-                    {mg}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+                    <span
+                      className="text-xs font-semibold"
+                      style={{ color: isSelected ? "#4B57F2" : "#101214" }}
+                    >
+                      {mg.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
       <button
         onClick={() => setShowConfirm(true)}
-        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer"
+        disabled={isSaving}
+        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
       >
-        Save Goal Plan
+        {isSaving ? "Saving via gRPC..." : "Save Goal Plan"}
       </button>
 
       {showConfirm && (
@@ -498,8 +539,35 @@ function EquipmentForm({
   onSave: (updated: Partial<ProfileViewModel>) => void;
   onClose: () => void;
 }) {
-  const [equipment, setEquipment] = useState<string[]>(profile.settings.availableEquipment || []);
+  const [equipment, setEquipment] = useState<string[]>(
+    profile.settings.availableEquipment && profile.settings.availableEquipment.length > 0
+      ? profile.settings.availableEquipment
+      : ["Full Gym"],
+  );
+  const [catalogEquipments, setCatalogEquipments] = useState<CatalogEquipmentItem[]>([]);
+  const [isLoadingEquipments, setIsLoadingEquipments] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    async function loadEquipments() {
+      try {
+        const res = await getCatalogMetadataServerAction();
+        if (active && res.success) {
+          setCatalogEquipments(res.equipments);
+        }
+      } catch (e) {
+        console.error("Failed to load catalog equipments:", e);
+      } finally {
+        if (active) setIsLoadingEquipments(false);
+      }
+    }
+    loadEquipments();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const toggleEquipment = (item: string) => {
     if (equipment.includes(item)) {
@@ -512,23 +580,17 @@ function EquipmentForm({
   };
 
   const confirmSave = async () => {
-    const updatedPayload = {
+    setIsSaving(true);
+    const updatedPayload: Partial<ProfileViewModel> = {
       settings: { ...profile.settings, availableEquipment: equipment },
     };
 
-    await updateProfileServerAction(updatedPayload);
     onSave(updatedPayload);
+    await updateProfileServerAction(updatedPayload);
+    setIsSaving(false);
     setShowConfirm(false);
     onClose();
   };
-
-  const equipmentList = [
-    { id: "Full Gym", desc: "Barbells, dumbbells, cable machines & racks" },
-    { id: "Dumbbells", desc: "Adjustable or fixed dumbbells" },
-    { id: "Barbell", desc: "Standard barbell & weight plates" },
-    { id: "Bodyweight", desc: "No equipment required (Calisthenics)" },
-    { id: "Resistance Band", desc: "Elastic resistance bands" },
-  ];
 
   return (
     <>
@@ -542,23 +604,29 @@ function EquipmentForm({
         </div>
       </div>
 
-      <div className="space-y-2.5 mb-8">
-        {equipmentList.map((item) => (
-          <SelectableTile
-            key={item.id}
-            label={item.id}
-            description={item.desc}
-            selected={equipment.includes(item.id)}
-            onClick={() => toggleEquipment(item.id)}
-          />
-        ))}
-      </div>
+      {isLoadingEquipments ? (
+        <div className="py-8 text-center text-xs font-semibold text-[#50565C] animate-pulse">
+          Loading equipment catalog from server...
+        </div>
+      ) : (
+        <div className="space-y-2.5 mb-8">
+          {catalogEquipments.map((item) => (
+            <SelectableTile
+              key={item.id}
+              label={item.name}
+              selected={equipment.includes(item.name)}
+              onClick={() => toggleEquipment(item.name)}
+            />
+          ))}
+        </div>
+      )}
 
       <button
         onClick={() => setShowConfirm(true)}
-        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer"
+        disabled={isSaving}
+        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
       >
-        Save Equipment
+        {isSaving ? "Saving via gRPC..." : "Save Equipment"}
       </button>
 
       {showConfirm && (
@@ -584,10 +652,11 @@ function PersonalInfoForm({
   onSave: (updated: Partial<ProfileViewModel>) => void;
   onClose: () => void;
 }) {
-  const [dob, setDob] = useState(profile.user.dateOfBirth || "");
-  const [gender, setGender] = useState(profile.user.gender === "Male" ? "Male" : "Female");
+  const [dob, setDob] = useState(profile.user.dateOfBirth || "1998-05-15");
+  const [gender, setGender] = useState(profile.user.gender || "Female");
   const [times, setTimes] = useState<string[]>(profile.settings.preferredWorkoutTimes || []);
   const [coachStyle, setCoachStyle] = useState(profile.settings.coachStyle || "Motivational");
+  const [isSaving, setIsSaving] = useState(false);
 
   const toggleTime = (t: string) => {
     if (times.includes(t)) {
@@ -598,13 +667,15 @@ function PersonalInfoForm({
   };
 
   const handleSave = async () => {
-    const updatedPayload = {
+    setIsSaving(true);
+    const updatedPayload: Partial<ProfileViewModel> = {
       user: { ...profile.user, dateOfBirth: dob, gender },
       settings: { ...profile.settings, preferredWorkoutTimes: times, coachStyle },
     };
 
-    await updateProfileServerAction(updatedPayload);
     onSave(updatedPayload);
+    await updateProfileServerAction(updatedPayload);
+    setIsSaving(false);
     onClose();
   };
 
@@ -631,18 +702,18 @@ function PersonalInfoForm({
               className="w-full h-11 px-3.5 text-sm rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30 font-body"
             />
           </div>
-          {/* Gender: Nam hoặc Nữ (Male / Female 2 segmented buttons) */}
+          {/* Gender: Male, Female, Other */}
           <div className="space-y-1">
             <label className="text-xs font-semibold text-[#50565C]">Gender</label>
-            <div className="grid grid-cols-2 gap-2">
-              {["Male", "Female"].map((g) => {
+            <div className="grid grid-cols-3 gap-2">
+              {["Male", "Female", "Other"].map((g) => {
                 const isSelected = gender === g;
                 return (
                   <button
                     key={g}
                     type="button"
                     onClick={() => setGender(g)}
-                    className="h-11 px-3 rounded-xl text-xs font-semibold text-center transition-colors cursor-pointer"
+                    className="h-11 px-2 rounded-xl text-xs font-semibold text-center transition-colors cursor-pointer"
                     style={{
                       border: "1.5px solid",
                       borderColor: isSelected ? "#4B57F2" : "#E5E7EB",
@@ -741,9 +812,10 @@ function PersonalInfoForm({
 
       <button
         onClick={handleSave}
-        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer"
+        disabled={isSaving}
+        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
       >
-        Save Personal Info
+        {isSaving ? "Saving via gRPC..." : "Save Personal Info"}
       </button>
     </>
   );

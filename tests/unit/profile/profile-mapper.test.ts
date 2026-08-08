@@ -45,28 +45,48 @@ describe("profile Mapper", () => {
 
     it("translates goals to English", () => {
       expect(translateGoal("HYPERTROPHY")).toBe("Build Muscle");
+      expect(translateGoal("BUILD_MUSCLE")).toBe("Build Muscle");
       expect(translateGoal("FAT_LOSS")).toBe("Lose Fat");
+      expect(translateGoal("LOSE_FAT")).toBe("Lose Fat");
+      expect(translateGoal("STRENGTH")).toBe("Strength");
+      expect(translateGoal("ENDURANCE")).toBe("Endurance");
     });
 
     it("translates muscle groups to English", () => {
       expect(translateMuscleGroup("CHEST")).toBe("Chest");
       expect(translateMuscleGroup("BACK")).toBe("Back");
       expect(translateMuscleGroup("LEGS")).toBe("Legs");
+      expect(translateMuscleGroup("SHOULDERS")).toBe("Shoulders");
+      expect(translateMuscleGroup("ARMS")).toBe("Arms");
+      expect(translateMuscleGroup("CORE")).toBe("Core");
+      expect(translateMuscleGroup("GLUTES")).toBe("Glutes");
+      expect(translateMuscleGroup("FULL_BODY")).toBe("Full Body");
     });
 
     it("translates equipment to English", () => {
       expect(translateEquipment("FULL_GYM")).toBe("Full Gym");
       expect(translateEquipment("DUMBBELL_ONLY")).toBe("Dumbbells");
+      expect(translateEquipment("DUMBBELLS")).toBe("Dumbbells");
+      expect(translateEquipment("BARBELL")).toBe("Barbell");
+      expect(translateEquipment("BODYWEIGHT")).toBe("Bodyweight");
+      expect(translateEquipment("RESISTANCE_BAND")).toBe("Resistance Band");
+      expect(translateEquipment("KETTLEBELL")).toBe("Kettlebell");
+      expect(translateEquipment("MACHINE")).toBe("Machine");
     });
 
     it("translates coach style to English", () => {
       expect(translateCoachStyle("MOTIVATIONAL")).toBe("Motivational");
       expect(translateCoachStyle("STRICT")).toBe("Strict");
+      expect(translateCoachStyle("SCIENTIFIC")).toBe("Scientific");
     });
 
-    it("translates gender to English", () => {
+    it("translates gender to English (Male, Female, Other)", () => {
       expect(translateGender("MALE")).toBe("Male");
       expect(translateGender("FEMALE")).toBe("Female");
+      expect(translateGender("OTHER")).toBe("Other");
+      expect(translateGender("Male")).toBe("Male");
+      expect(translateGender("Female")).toBe("Female");
+      expect(translateGender("Other")).toBe("Other");
     });
   });
 
@@ -74,51 +94,57 @@ describe("profile Mapper", () => {
     it("converts empty data into safe default ViewModel", () => {
       const vm = mapRawDataToProfileViewModel({});
       expect(vm.user.name).toBe("Emma Nguyen");
-      expect(vm.user.level).toBe(10);
-      expect(vm.user.dateOfBirth).toBe("1998-05-15");
-      expect(vm.user.gender).toBe("Female");
-      expect(vm.highlights.currentWeightKg).toBe(68.5);
-      expect(vm.bestPr?.weightKg).toBe(140);
-      expect(vm.stats.totalWorkouts).toBe(48);
+      expect(vm.user.level).toBe(1);
+      expect(vm.user.dateOfBirth).toBe("");
+      expect(vm.user.gender).toBe("Not set");
+      expect(vm.highlights.currentWeightKg).toBe(0);
+      expect(vm.bestPr?.weightKg).toBe(60);
+      expect(vm.stats.totalWorkouts).toBe(0);
       expect(vm.settings.coachStyle).toBe("Motivational");
     });
 
-    it("converts specific protobuf raw data", () => {
+    it("converts specific protobuf raw data with exact DOB and Other gender", () => {
       const vm = mapRawDataToProfileViewModel({
-        user: { name: "Alexander", level: 15 },
+        user: { name: "Taylor Swift", level: 12 },
         profileProto: {
-          weightKg: 75,
-          heightCm: 180,
-          targetWeightKg: 70,
-          bodyFatPercent: 16,
+          weightKg: 58,
+          heightCm: 178,
+          targetWeightKg: 56,
+          bodyFatPercent: 15,
           experienceLevel: "ADVANCED",
-          goals: ["STRENGTH"],
-          dateOfBirth: "1995-10-20",
-          gender: "MALE",
-          coachStyle: "STRICT",
+          goals: ["STRENGTH", "ENDURANCE"],
+          preferredMuscleGroups: ["LEGS", "GLUTES", "CORE"],
+          availableEquipment: ["FULL_GYM", "KETTLEBELL"],
+          dateOfBirth: "1989-12-13",
+          gender: "OTHER",
+          coachStyle: "SCIENTIFIC",
         },
         prListProto: [
           {
-            exerciseId: "bench",
-            exerciseName: "Bench Press",
-            weight: 100,
-            reps: 5,
-            oneRepMax: 116,
+            exerciseId: "squat",
+            exerciseName: "Barbell Back Squat",
+            weight: 95,
+            reps: 3,
+            oneRepMax: 104,
           },
         ],
-        statsProto: { totalWorkouts: 120, activeStreakDays: 30, totalCaloriesKcal: 45_000 },
+        statsProto: { totalWorkouts: 85, activeStreakDays: 20, totalCaloriesKcal: 32_000 },
       });
 
-      expect(vm.user.name).toBe("Alexander");
-      expect(vm.user.level).toBe(15);
+      expect(vm.user.name).toBe("Taylor Swift");
+      expect(vm.user.level).toBe(12);
       expect(vm.user.experienceLevel).toBe("Advanced");
-      expect(vm.user.dateOfBirth).toBe("1995-10-20");
-      expect(vm.user.gender).toBe("Male");
-      expect(vm.settings.coachStyle).toBe("Strict");
-      expect(vm.highlights.currentWeightKg).toBe(75);
-      expect(vm.bestPr?.exerciseName).toBe("Bench Press");
-      expect(vm.bestPr?.weightKg).toBe(100);
-      expect(vm.stats.totalWorkouts).toBe(120);
+      expect(vm.user.dateOfBirth).toBe("1989-12-13");
+      expect(vm.user.gender).toBe("Other");
+      expect(vm.settings.coachStyle).toBe("Scientific");
+      expect(vm.settings.availableEquipment).toContain("Full Gym");
+      expect(vm.settings.availableEquipment).toContain("Kettlebell");
+      expect(vm.healthMetrics.goals).toEqual(["Strength", "Endurance"]);
+      expect(vm.healthMetrics.preferredMuscleGroups).toEqual(["Legs", "Glutes", "Core"]);
+      expect(vm.highlights.currentWeightKg).toBe(58);
+      expect(vm.bestPr?.exerciseName).toBe("Barbell Back Squat");
+      expect(vm.bestPr?.weightKg).toBe(95);
+      expect(vm.stats.totalWorkouts).toBe(85);
     });
   });
 });

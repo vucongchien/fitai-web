@@ -10,6 +10,10 @@ interface WorkoutStatsPanelProps {
 }
 
 export function WorkoutStatsPanel({ data }: WorkoutStatsPanelProps) {
+  if (data.error) {
+    return null;
+  }
+
   const { adherence } = data;
 
   return (

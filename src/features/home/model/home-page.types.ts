@@ -43,4 +43,8 @@ export interface HomePageData {
   evidenceItems: EvidenceItem[];
   nutritionSummary: NutritionSummary;
   quickActions: QuickAction[];
+  error?: {
+    type: "CONNECTION_ERROR" | "NO_ROADMAP";
+    message: string;
+  };
 }
