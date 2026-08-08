@@ -1,7 +1,8 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 import type { DailyMenuRows } from "@/features/nutrition/model/meal-detail.mapper";
 import {
   adaptMealDetailPageData,
+  normalizeTodayMenu,
   toPriceTier,
 } from "@/features/nutrition/model/meal-detail.mapper";
 import { getMockMealRows, MOCK_TODAY } from "../mocks/nutrition-fixtures";
@@ -133,5 +134,60 @@ describe(adaptMealDetailPageData, () => {
 
   it("labels the slot for the heading", () => {
     expect(adaptMealDetailPageData(menu, [], "snack", MOCK_TODAY).slotLabel).toBe("Snacks");
+  });
+
+  it("correctly parses user backend meals_json array structure into 4 slots", () => {
+    const rawBeJson = [
+      {
+        mealType: "Breakfast",
+        options: [
+          { mealName: "Ức gà hấp bông cải xanh kèm cơm trắng", calories: 553.25, isNutiFoodProduct: false },
+          { mealName: "Sữa NutiFood Varna Elite Hoàng Gia", calories: 553.25, isNutiFoodProduct: true },
+        ],
+      },
+      {
+        mealType: "Lunch",
+        options: [
+          { mealName: "Ức gà hấp bông cải kèm cơm trắng", calories: 774.55, isNutiFoodProduct: false },
+          { mealName: "Sữa NutiFood Varna Elite Hoàng Gia", calories: 774.55, isNutiFoodProduct: true },
+        ],
+      },
+      {
+        mealType: "Dinner",
+        options: [
+          { mealName: "Ức gà áp chảo ăn kèm khoai lang và bông cải xanh", calories: 663.9, isNutiFoodProduct: false },
+          { mealName: "Sữa NutiFood Varna Elite Hoàng Gia", calories: 663.9, isNutiFoodProduct: true },
+        ],
+      },
+      {
+        mealType: "Snack",
+        options: [
+          { mealName: "Ức gà áp chảo sốt tiêu ăn kèm khoai lang...", calories: 221.3, isNutiFoodProduct: false },
+          { mealName: "Sữa NutiFood Varna Elite Hoàng Gia", calories: 221.3, isNutiFoodProduct: true },
+        ],
+      },
+    ];
+
+    const bfData = adaptMealDetailPageData(rawBeJson as any, [], "breakfast", MOCK_TODAY);
+    const luData = adaptMealDetailPageData(rawBeJson as any, [], "lunch", MOCK_TODAY);
+    const dnData = adaptMealDetailPageData(rawBeJson as any, [], "dinner", MOCK_TODAY);
+    const snData = adaptMealDetailPageData(rawBeJson as any, [], "snack", MOCK_TODAY);
+
+    expect(bfData.choices.map((c) => c.name)).toStrictEqual([
+      "Ức gà hấp bông cải xanh kèm cơm trắng",
+      "Sữa NutiFood Varna Elite Hoàng Gia",
+    ]);
+    expect(luData.choices.map((c) => c.name)).toStrictEqual([
+      "Ức gà hấp bông cải kèm cơm trắng",
+      "Sữa NutiFood Varna Elite Hoàng Gia",
+    ]);
+    expect(dnData.choices.map((c) => c.name)).toStrictEqual([
+      "Ức gà áp chảo ăn kèm khoai lang và bông cải xanh",
+      "Sữa NutiFood Varna Elite Hoàng Gia",
+    ]);
+    expect(snData.choices.map((c) => c.name)).toStrictEqual([
+      "Ức gà áp chảo sốt tiêu ăn kèm khoai lang...",
+      "Sữa NutiFood Varna Elite Hoàng Gia",
+    ]);
   });
 });

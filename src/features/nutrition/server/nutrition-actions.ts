@@ -101,6 +101,9 @@ function validate(input: LogMealInput): string | null {
   return null;
 }
 
+
+import { cleanMealDisplayName } from "@/features/nutrition/model/meal-detail.mapper";
+
 /**
  * Logs one meal.
  * gRPC: NutritionService.logMeal
@@ -114,21 +117,35 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
   const loggedAt = new Date().toISOString();
   const accessToken = await getAccessToken();
   const userId = await getAuthenticatedUserId();
+  const cleanName = cleanMealDisplayName(input.mealName);
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {
       const client = createClient(NutritionService, createServerTransport(accessToken));
 
-      const response = await client.logMeal({
+      let response = await client.logMeal({
         calories: input.calories,
         carbs: input.carbs,
         fat: input.fat,
         loggedAt,
-        mealName: input.mealName.trim(),
+        mealName: cleanName,
         mealType: WIRE_MEAL_TYPE[input.slot],
         protein: input.protein,
         userId: userId || "",
       });
+
+      if (!response.success && cleanName !== input.mealName.trim()) {
+        response = await client.logMeal({
+          calories: input.calories,
+          carbs: input.carbs,
+          fat: input.fat,
+          loggedAt,
+          mealName: input.mealName.trim(),
+          mealType: WIRE_MEAL_TYPE[input.slot],
+          protein: input.protein,
+          userId: userId || "",
+        });
+      }
 
       if (!response.success) {
         return { message: response.message || "The meal could not be saved.", ok: false };
@@ -138,7 +155,7 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
       return { mealLogId: response.mealLogId, ok: true };
     } catch (error) {
       if (isUnreachable(error)) {
-        const mealLogId = await appendLocalMeal({ ...input, loggedAt });
+        const mealLogId = await appendLocalMeal({ ...input, mealName: cleanName, loggedAt });
         revalidateReaders(input.slot);
         return { mealLogId, ok: true };
       }
@@ -148,9 +165,31 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
     }
   }
 
-  const mealLogId = await appendLocalMeal({ ...input, loggedAt });
+  const mealLogId = await appendLocalMeal({ ...input, mealName: cleanName, loggedAt });
   revalidateReaders(input.slot);
   return { mealLogId, ok: true };
+}
+
+export interface PantryMealOption {
+  calories: number;
+  carbs: number;
+  description?: string;
+  fat: number;
+  mealName: string;
+  priceTier?: string;
+  protein: number;
+  recipeSteps?: string[];
+}
+
+export interface PantryRecalibrateResult {
+  meals?: {
+    breakfast: PantryMealOption[];
+    dinner: PantryMealOption[];
+    lunch: PantryMealOption[];
+    snack: PantryMealOption[];
+  };
+  message?: string;
+  success: boolean;
 }
 
 /**
@@ -158,21 +197,47 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
  */
 export async function recalibratePantryAction(
   availableIngredients: string[],
-): Promise<{ success: boolean; message?: string }> {
+): Promise<PantryRecalibrateResult> {
   try {
     const accessToken = await getAccessToken();
     const userId = await getAuthenticatedUserId();
     const client = createClient(NutritionService, createServerTransport(accessToken));
 
     const res = await client.recalibratePlanWithPantry({
-      userId: userId || "",
       availableIngredients,
+      userId: userId || "",
     });
 
     revalidatePath("/nutrition");
-    return { success: true, message: res.message || "Menu recalibrated with pantry ingredients" };
+
+    const mapOptions = (opts?: any[]): PantryMealOption[] =>
+      (opts || []).map((o) => ({
+        calories: Math.round(o.calories || 0),
+        carbs: Math.round(o.carbs || 0),
+        description: o.description || "",
+        fat: Math.round(o.fat || 0),
+        mealName: o.mealName || "",
+        priceTier: o.priceTier || "",
+        protein: Math.round(o.protein || 0),
+        recipeSteps: Array.isArray(o.recipeSteps)
+          ? o.recipeSteps
+          : Array.isArray(o.recipe_steps)
+            ? o.recipe_steps
+            : [],
+      }));
+
+    return {
+      meals: {
+        breakfast: mapOptions(res.meals?.breakfast),
+        dinner: mapOptions(res.meals?.dinner),
+        lunch: mapOptions(res.meals?.lunch),
+        snack: mapOptions(res.meals?.snack),
+      },
+      message: res.message || "Menu recalibrated with pantry ingredients",
+      success: true,
+    };
   } catch (error: any) {
     console.error("[recalibratePantryAction] Error:", error);
-    return { success: false, message: error?.message || "Failed to recalibrate menu" };
+    return { message: error?.message || "Failed to recalibrate menu", success: false };
   }
 }

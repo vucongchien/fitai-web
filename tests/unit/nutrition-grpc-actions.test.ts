@@ -14,6 +14,7 @@ type NutritionClient = Client<typeof NutritionService>;
 
 const mockGetNutritionSummary = vi.fn<NutritionClient["getNutritionSummary"]>();
 const mockGetNutritionHistory = vi.fn<NutritionClient["getNutritionHistory"]>();
+const mockGetTodayMenu = vi.fn<NutritionClient["getTodayMenu"]>();
 const mockLogMeal = vi.fn<NutritionClient["logMeal"]>();
 const mockRecalibratePlanWithPantry = vi.fn<NutritionClient["recalibratePlanWithPantry"]>();
 
@@ -21,6 +22,7 @@ vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () 
   createClient: (_service: unknown, _transport: unknown) => ({
     getNutritionSummary: mockGetNutritionSummary,
     getNutritionHistory: mockGetNutritionHistory,
+    getTodayMenu: mockGetTodayMenu,
     logMeal: mockLogMeal,
     recalibratePlanWithPantry: mockRecalibratePlanWithPantry,
   }),
@@ -67,6 +69,7 @@ describe("nutrition gRPC Actions & Services", () => {
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
     mockGetNutritionSummary.mockReset();
     mockGetNutritionHistory.mockReset();
+    mockGetTodayMenu.mockReset();
     mockLogMeal.mockReset();
     mockRecalibratePlanWithPantry.mockReset();
   });

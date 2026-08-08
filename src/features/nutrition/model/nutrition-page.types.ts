@@ -13,6 +13,17 @@ export interface MacroReading {
   label: string;
 }
 
+export interface TodayNutritionStats {
+  calories: number;
+  carbs: number;
+  fat: number;
+  protein: number;
+  targetCalories: number;
+  targetCarbs?: number;
+  targetFat?: number;
+  targetProtein?: number;
+}
+
 export interface NutritionPageData {
   /** Calories per day across the week, for the trend chart. */
   calorieSeries: DailyCalories[];
@@ -27,4 +38,6 @@ export interface NutritionPageData {
   mealsLogged: number;
   /** Today's meal slots for the timeline. */
   slots: MealSlotGroup[];
+  /** Today's actual consumed nutrition summary. */
+  todayStats: TodayNutritionStats;
 }

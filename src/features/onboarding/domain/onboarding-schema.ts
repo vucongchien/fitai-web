@@ -65,7 +65,7 @@ export const onboardingSchema = z.object({
         message: "Choose at least one preferred workout time window.",
       },
     ),
-  equipment: z.array(onboardingEquipmentEnum).min(1, "Choose the equipment you can use."),
+  equipment: z.array(z.string()).min(1, "Choose the equipment you can use."),
   muscleFocus: z.array(z.string()),
   injuryStatus: z.enum(["none", "active"]),
   injuryMuscleGroup: z.string().optional(),

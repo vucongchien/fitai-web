@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from "vitest";
 import type { MealLogRow } from "@/shared/api/bff/aggregate/nutrition-daily";
 import {
   averageDailyProtein,

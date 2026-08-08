@@ -60,11 +60,20 @@ export function adaptNutritionPageData(
   summary: NutritionSummaryLike,
   mealRows: readonly MealLogRow[],
   today: DayKey,
+  todayMenu?: Record<string, Array<{ calories: number; mealName: string }>>,
 ): NutritionPageData {
   const window = dayKeyRange(today, WEEK_DAYS);
   const weekRows = mealsInWindow(mealRows, today, WEEK_DAYS);
   const totals = totalMacros(weekRows);
   const loggedDays = countLoggedDays(mealRows, today, WEEK_DAYS);
+
+  const todayMeals = mealsInWindow(mealRows, today, 1);
+  const todayTotals = totalMacros(todayMeals);
+
+  const todayCalories = summary.consumedCalories > 0 ? Math.round(summary.consumedCalories) : todayTotals.calories;
+  const todayProtein = summary.consumedMacros?.proteinGrams ? Math.round(summary.consumedMacros.proteinGrams) : todayTotals.protein;
+  const todayCarbs = summary.consumedMacros?.carbGrams ? Math.round(summary.consumedMacros.carbGrams) : todayTotals.carbs;
+  const todayFat = summary.consumedMacros?.fatGrams ? Math.round(summary.consumedMacros.fatGrams) : todayTotals.fat;
 
   return {
     calorieSeries: dailyCalorieSeries(mealRows, today, WEEK_DAYS),
@@ -78,6 +87,16 @@ export function adaptNutritionPageData(
       { gramsPerDay: perDay(totals.fat, loggedDays), label: "Fat" },
     ],
     mealsLogged: countMealsInWindow(mealRows, today, WEEK_DAYS),
-    slots: groupMealsBySlot(mealRows, today),
+    slots: groupMealsBySlot(mealRows, today, todayMenu),
+    todayStats: {
+      calories: todayCalories,
+      carbs: todayCarbs,
+      fat: todayFat,
+      protein: todayProtein,
+      targetCalories: Math.round(summary.targetCalories || 2000),
+      targetCarbs: summary.targetMacros?.carbGrams ? Math.round(summary.targetMacros.carbGrams) : undefined,
+      targetFat: summary.targetMacros?.fatGrams ? Math.round(summary.targetMacros.fatGrams) : undefined,
+      targetProtein: summary.targetMacros?.proteinGrams ? Math.round(summary.targetMacros.proteinGrams) : undefined,
+    },
   };
 }
