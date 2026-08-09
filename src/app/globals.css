@@ -812,6 +812,18 @@ button {
   content: "";
 }
 
+.week-route__progress-line {
+  position: absolute;
+  top: 1.8rem;
+  left: 1.22rem;
+  width: 2px;
+  max-height: calc(100% - 3.6rem);
+  background: var(--color-recovery, #10b981);
+  content: "";
+  z-index: 1;
+  transition: height 0.4s ease-out;
+}
+
 .week-route__item {
   position: relative;
 }
@@ -847,6 +859,12 @@ a.week-route__row:hover {
   color: var(--color-recovery-ink);
   background: var(--color-recovery-soft);
   border-color: var(--color-recovery);
+}
+
+.week-route__item--passed-time .week-route__marker {
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border-color: var(--color-recovery, #10b981);
 }
 
 .week-route__item--skipped .week-route__marker {

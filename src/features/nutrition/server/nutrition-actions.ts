@@ -151,6 +151,7 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
         return { message: response.message || "The meal could not be saved.", ok: false };
       }
 
+      await appendLocalMeal({ ...input, mealName: cleanName, loggedAt });
       revalidateReaders(input.slot);
       return { mealLogId: response.mealLogId, ok: true };
     } catch (error) {

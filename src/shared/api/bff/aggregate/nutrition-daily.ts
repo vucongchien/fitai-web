@@ -55,25 +55,24 @@ export interface DailyCalories {
 }
 
 /** `LogMealRequest.meal_type` is a bare string ("BREAKFAST", …); normalize defensively. */
-export function toMealSlot(mealType: string): MealSlot | null {
-  switch (mealType.trim().toUpperCase()) {
-    case "BREAKFAST": {
-      return "breakfast";
-    }
-    case "LUNCH": {
-      return "lunch";
-    }
-    case "DINNER": {
-      return "dinner";
-    }
-    case "SNACK":
-    case "SNACKS": {
-      return "snack";
-    }
-    default: {
-      return null;
-    }
+export function toMealSlot(mealType: string | undefined | null): MealSlot | null {
+  if (!mealType) {
+    return null;
   }
+  const upper = String(mealType).trim().toUpperCase();
+  if (upper === "BREAKFAST" || upper.includes("BREAKFAST")) {
+    return "breakfast";
+  }
+  if (upper === "LUNCH" || upper.includes("LUNCH")) {
+    return "lunch";
+  }
+  if (upper === "DINNER" || upper.includes("DINNER")) {
+    return "dinner";
+  }
+  if (upper === "SNACK" || upper === "SNACKS" || upper.includes("SNACK")) {
+    return "snack";
+  }
+  return null;
 }
 
 function sum(values: readonly number[]) {

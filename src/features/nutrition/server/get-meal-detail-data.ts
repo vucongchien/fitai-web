@@ -44,8 +44,16 @@ export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageD
         }),
       ]);
 
-      const history = historyRes.status === "fulfilled" ? historyRes.value.meals : [];
-      const rows = history.length > 0 ? history : localRows;
+      const history = historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
+      const seenIds = new Set<string>();
+      const rows = [...history, ...localRows].filter((r) => {
+        const id = r.mealLogId || `${r.mealName}-${r.mealType}-${r.loggedAt}`;
+        if (seenIds.has(id)) {
+          return false;
+        }
+        seenIds.add(id);
+        return true;
+      });
 
       if (menuRes.status === "fulfilled" && menuRes.value.meals) {
         const menu = menuRes.value.meals as any;

@@ -25,6 +25,11 @@ import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
+import { cleanMealDisplayName, normalizeTodayMenu } from "@/features/nutrition/model/meal-detail.mapper";
+import { readLocalMeals } from "@/features/nutrition/server/local-meal-log";
+import { dayKeyFromLoggedAt, dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
+import { toMealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
+
 const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
   {
     id: "extra-workout",
@@ -140,16 +145,35 @@ export async function getHomePageData(): Promise<HomePageData> {
       const profileClient = createClient(ProfileService, transport);
       const exerciseClient = createClient(ExerciseService, transport);
 
-      const [roadmapRes, nutritionRes, menuRes, historyRes, profileRes, exerciseRes, catalog] =
-        await Promise.allSettled([
-          coachingClient.getActiveRoadmap({ userId: userId || "" }),
-          nutritionClient.getNutritionSummary({ userId: userId || "" }),
-          nutritionClient.getTodayMenu({ userId: userId || "" }),
-          workoutClient.getWorkoutHistory({ limit: 20, offset: 0 }),
-          profileClient.getProfile({ userId: userId || "" }),
-          exerciseClient.searchExercises({ keyword: "", limit: 4 }),
-          exerciseSearchRepository.getCatalog(),
-        ]);
+      const todayStr = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
+
+      const [
+        roadmapRes,
+        nutritionRes,
+        menuRes,
+        historyRes,
+        profileRes,
+        exerciseRes,
+        catalog,
+        nutHistoryRes,
+        localMealsRes,
+      ] = await Promise.allSettled([
+        coachingClient.getActiveRoadmap({ userId: userId || "" }),
+        nutritionClient.getNutritionSummary({ userId: userId || "" }),
+        nutritionClient.getTodayMenu({ userId: userId || "" }),
+        workoutClient.getWorkoutHistory({ limit: 20, offset: 0 }),
+        profileClient.getProfile({ userId: userId || "" }),
+        exerciseClient.searchExercises({ keyword: "", limit: 4 }),
+        exerciseSearchRepository.getCatalog(),
+        typeof nutritionClient.getNutritionHistory === "function"
+          ? nutritionClient.getNutritionHistory({
+              endDate: todayStr,
+              startDate: dayKeyRange(todayStr, 7)[0] ?? todayStr,
+              userId: userId || "",
+            })
+          : Promise.resolve({ meals: [] }),
+        readLocalMeals(),
+      ]);
 
       const roadmap = roadmapRes.status === "fulfilled" ? roadmapRes.value.roadmap : undefined;
       const nutrition = nutritionRes.status === "fulfilled" ? nutritionRes.value : undefined;
@@ -157,6 +181,17 @@ export async function getHomePageData(): Promise<HomePageData> {
       const history = historyRes.status === "fulfilled" ? historyRes.value.sessions : [];
       const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
       const catalogData = catalog.status === "fulfilled" ? catalog.value : { bodyParts: [], muscles: [], equipments: [] };
+
+      const nutHistoryMeals = nutHistoryRes.status === "fulfilled" && nutHistoryRes.value?.meals ? nutHistoryRes.value.meals : [];
+      const localMeals = localMealsRes.status === "fulfilled" ? localMealsRes.value : [];
+      const allMealRows = [...nutHistoryMeals, ...localMeals];
+      const todayLoggedMeals = allMealRows.filter((row) => {
+        const key = dayKeyFromLoggedAt(row.loggedAt);
+        if (!key) {
+          return false;
+        }
+        return key === todayStr || dayKeyRange(todayStr, 1).includes(key);
+      });
 
       const bodyPartMap = new Map(catalogData.bodyParts.map((b) => [b.id, b.name]));
       const muscleMap = new Map((catalogData.muscles || []).map((m) => [m.id, m.name]));
@@ -267,44 +302,65 @@ export async function getHomePageData(): Promise<HomePageData> {
         }
       }
 
-      if (menu?.meals) {
-        const mealsObj = menu.meals as any;
-        if (Array.isArray(mealsObj.breakfast) && mealsObj.breakfast.length > 0) {
+      const normalizedMenu = normalizeTodayMenu(menu?.meals);
+
+      const mealSlotsConfig: Array<{
+        slot: "breakfast" | "lunch" | "dinner" | "snack";
+        time: string;
+        title: string;
+        category: "meal" | "snack";
+        href: string;
+      }> = [
+        { slot: "breakfast", time: "07:30", title: "Breakfast", category: "meal", href: "/nutrition/breakfast" },
+        { slot: "lunch", time: "12:30", title: "Lunch", category: "meal", href: "/nutrition/lunch" },
+        { slot: "snack", time: "15:30", title: "Snack", category: "snack", href: "/nutrition/snack" },
+        { slot: "dinner", time: "19:30", title: "Dinner", category: "meal", href: "/nutrition/dinner" },
+      ];
+
+      for (const config of mealSlotsConfig) {
+        const loggedForSlot = todayLoggedMeals.find(
+          (row) => toMealSlot(row.mealType) === config.slot || toMealSlot((row as any).slot) === config.slot,
+        );
+        if (loggedForSlot) {
           todayTimeline.push({
-            id: "menu-breakfast",
-            time: "07:30",
-            title: "Breakfast",
-            subtitle: mealsObj.breakfast[0].mealName || "Breakfast Plan",
-            category: "meal",
-            status: "planned",
-            href: "/nutrition/breakfast",
+            id: `logged-${config.slot}`,
+            time: config.time,
+            title: config.title,
+            subtitle: cleanMealDisplayName(loggedForSlot.mealName),
+            category: config.category,
+            status: "complete",
+            href: config.href,
           });
-        }
-        if (Array.isArray(mealsObj.lunch) && mealsObj.lunch.length > 0) {
-          todayTimeline.push({
-            id: "menu-lunch",
-            time: "12:30",
-            title: "Lunch",
-            subtitle: mealsObj.lunch[0].mealName || "Lunch Plan",
-            category: "meal",
-            status: "planned",
-            href: "/nutrition/lunch",
-          });
-        }
-        if (Array.isArray(mealsObj.dinner) && mealsObj.dinner.length > 0) {
-          todayTimeline.push({
-            id: "menu-dinner",
-            time: "19:30",
-            title: "Dinner",
-            subtitle: mealsObj.dinner[0].mealName || "Dinner Plan",
-            category: "meal",
-            status: "planned",
-            href: "/nutrition/dinner",
-          });
+        } else {
+          const options = normalizedMenu[config.slot];
+          if (options && options.length > 0) {
+            todayTimeline.push({
+              id: `menu-${config.slot}`,
+              time: config.time,
+              title: config.title,
+              subtitle: cleanMealDisplayName(options[0].mealName) || `${config.title} Plan`,
+              category: config.category,
+              status: "planned",
+              href: config.href,
+            });
+          }
         }
       }
 
       todayTimeline.sort((a, b) => a.time.localeCompare(b.time));
+
+      const now = new Date();
+      const nowTimeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      let nextItem = todayTimeline.find(
+        (item) => item.time >= nowTimeStr && item.status !== "complete" && item.status !== "skipped",
+      );
+      if (!nextItem) {
+        nextItem = todayTimeline.find((item) => item.status !== "complete" && item.status !== "skipped");
+      }
+      if (nextItem) {
+        nextItem.status = "next";
+      }
 
       const lastSession = history.length > 0 ? history[0] : null;
       const evidenceItems: EvidenceItem[] = [
@@ -379,13 +435,60 @@ export async function getHomePageData(): Promise<HomePageData> {
     imageUrl: ex.thumbnailUrl || undefined,
   }));
 
+  const localRows = await readLocalMeals();
+  const todayStr = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
+  const todayLoggedMeals = localRows.filter((row) => dayKeyFromLoggedAt(row.loggedAt) === todayStr);
+
+  const fallbackTodayTimeline: TodayTimelineItem[] = [];
+  const fallbackMealSlots: Array<{
+    slot: "breakfast" | "lunch" | "dinner" | "snack";
+    time: string;
+    title: string;
+    category: "meal" | "snack";
+    href: string;
+  }> = [
+    { slot: "breakfast", time: "07:30", title: "Breakfast", category: "meal", href: "/nutrition/breakfast" },
+    { slot: "lunch", time: "12:30", title: "Lunch", category: "meal", href: "/nutrition/lunch" },
+    { slot: "snack", time: "15:30", title: "Snack", category: "snack", href: "/nutrition/snack" },
+    { slot: "dinner", time: "19:30", title: "Dinner", category: "meal", href: "/nutrition/dinner" },
+  ];
+
+  for (const config of fallbackMealSlots) {
+    const loggedForSlot = todayLoggedMeals.find((row) => toMealSlot(row.mealType) === config.slot);
+    if (loggedForSlot) {
+      fallbackTodayTimeline.push({
+        id: `local-logged-${config.slot}`,
+        time: config.time,
+        title: config.title,
+        subtitle: cleanMealDisplayName(loggedForSlot.mealName),
+        category: config.category,
+        status: "complete",
+        href: config.href,
+      });
+    }
+  }
+  fallbackTodayTimeline.sort((a, b) => a.time.localeCompare(b.time));
+
+  const fallbackNow = new Date();
+  const fallbackNowTimeStr = `${String(fallbackNow.getHours()).padStart(2, "0")}:${String(fallbackNow.getMinutes()).padStart(2, "0")}`;
+
+  let fallbackNextItem = fallbackTodayTimeline.find(
+    (item) => item.time >= fallbackNowTimeStr && item.status !== "complete" && item.status !== "skipped",
+  );
+  if (!fallbackNextItem) {
+    fallbackNextItem = fallbackTodayTimeline.find((item) => item.status !== "complete" && item.status !== "skipped");
+  }
+  if (fallbackNextItem) {
+    fallbackNextItem.status = "next";
+  }
+
   return {
     streak: { days: 0 },
     coachNote: null,
     userName,
     profileCompletionRate: computedRate,
     missingFields: computedMissing,
-    todayTimeline: [],
+    todayTimeline: fallbackTodayTimeline,
     evidenceItems: [],
     nutritionSummary: {
       loggedKcal: 0,

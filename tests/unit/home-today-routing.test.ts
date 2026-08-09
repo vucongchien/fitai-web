@@ -11,6 +11,7 @@ vi.mock("@connectrpc/connect", () => ({
     getActiveRoadmap: mockGetActiveRoadmap,
     getTodayMenu: mockGetTodayMenu,
     getNutritionSummary: vi.fn().mockResolvedValue({ consumedCalories: 0, targetCalories: 2000 }),
+    getNutritionHistory: vi.fn().mockResolvedValue({ meals: [] }),
     getProfile: vi.fn().mockResolvedValue({ profile: {} }),
     getPersonalRecords: vi.fn().mockResolvedValue({ records: [] }),
     getWorkoutHistory: vi.fn().mockResolvedValue({ sessions: [] }),
@@ -113,5 +114,32 @@ describe("Home Page Today Timeline Routing & Filtering", () => {
     const workoutItem = data.todayTimeline.find((item) => item.category === "workout");
 
     expect(workoutItem).toBeUndefined();
+  });
+
+  it("correctly parses backend array-formatted todayMenu into todayTimeline meals", async () => {
+    mockGetActiveRoadmap.mockResolvedValue({ roadmap: null });
+    mockGetTodayMenu.mockResolvedValue({
+      meals: [
+        {
+          mealType: "Breakfast",
+          options: [{ mealName: "550a1b2c-1111-2222-3333-444455556666-Pho Bo Dac Biet", calories: 450 }],
+        },
+        {
+          mealType: "Lunch",
+          options: [{ mealName: "Com Tam Suon Nuong", calories: 650 }],
+        },
+      ],
+    });
+
+    const data = await getHomePageData();
+    const mealItems = data.todayTimeline.filter((item) => item.category === "meal");
+
+    expect(mealItems).toHaveLength(2);
+    expect(mealItems[0]?.title).toBe("Breakfast");
+    expect(mealItems[0]?.subtitle).toBe("Pho Bo Dac Biet");
+    expect(mealItems[0]?.href).toBe("/nutrition/breakfast");
+    expect(mealItems[1]?.title).toBe("Lunch");
+    expect(mealItems[1]?.subtitle).toBe("Com Tam Suon Nuong");
+    expect(mealItems[1]?.href).toBe("/nutrition/lunch");
   });
 });

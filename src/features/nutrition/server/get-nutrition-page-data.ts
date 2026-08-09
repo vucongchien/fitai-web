@@ -42,10 +42,16 @@ async function getRealNutritionPageData(
   console.info("[getRealNutritionPageData] historyRes status:", historyRes.status, historyRes.status === "rejected" ? historyRes.reason : "");
   console.info("[getRealNutritionPageData] menuRes status:", menuRes.status, menuRes.status === "rejected" ? menuRes.reason : "");
   const summary = summaryRes.status === "fulfilled" && summaryRes.value ? summaryRes.value : DEFAULT_SUMMARY;
-  const history =
-    historyRes.status === "fulfilled" && historyRes.value?.meals && historyRes.value.meals.length > 0
-      ? historyRes.value.meals
-      : localRows;
+  const historyRaw = historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
+  const seenIds = new Set<string>();
+  const history = [...historyRaw, ...localRows].filter((r) => {
+    const id = r.mealLogId || `${r.mealName}-${r.mealType}-${r.loggedAt}`;
+    if (seenIds.has(id)) {
+      return false;
+    }
+    seenIds.add(id);
+    return true;
+  });
 
   const todayMenu = menuRes.status === "fulfilled" && menuRes.value
     ? (menuRes.value.meals as any)
