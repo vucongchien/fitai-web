@@ -232,6 +232,8 @@ export async function getHomePageData(): Promise<HomePageData> {
         return "";
       };
 
+      const dynamicMuscleGroups = buildDynamicMuscleGroups(catalogData.bodyParts);
+
       let featuredExercises: FeaturedExerciseItem[] = [];
 
       if (exerciseRes.status === "fulfilled" && exerciseRes.value.exercises?.length) {
@@ -251,7 +253,6 @@ export async function getHomePageData(): Promise<HomePageData> {
           bodyPartIds: [],
           targetMuscleIds: [],
           equipmentIds: [],
-          targetMuscleIds: [],
           difficulty: [],
           tagIds: [],
           aiOnly: false,
@@ -436,7 +437,6 @@ export async function getHomePageData(): Promise<HomePageData> {
       bodyPartIds: [],
       targetMuscleIds: [],
       equipmentIds: [],
-      targetMuscleIds: [],
       difficulty: [],
       tagIds: [],
       aiOnly: false,

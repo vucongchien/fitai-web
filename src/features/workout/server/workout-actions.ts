@@ -30,7 +30,6 @@ export async function searchExercises(query: string): Promise<ExerciseResult[]> 
     bodyPartIds: [],
     targetMuscleIds: [],
     equipmentIds: [],
-    targetMuscleIds: [],
     difficulty: [],
     tagIds: [],
     aiOnly: false,
@@ -190,44 +189,6 @@ export async function getAiRecommendation(
 }
 
 /**
- * In-memory cache for active workout session UUID.
- * Auto-expires after 10 minutes of inactivity.
- */
-interface SessionCacheEntry {
-  sessionId: string;
-  updatedAt: number;
-}
-
-const activeSessionCache = new Map<string, SessionCacheEntry>();
-const TEN_MINUTES_MS = 10 * 60 * 1000;
-
-function storeActiveSession(key: string, realSessionId: string): void {
-  if (!realSessionId) return;
-  const entry: SessionCacheEntry = { sessionId: realSessionId, updatedAt: Date.now() };
-  activeSessionCache.set(key, entry);
-  activeSessionCache.set("CURRENT_ACTIVE", entry);
-}
-
-function getActiveSession(key: string): string | null {
-  const entry = activeSessionCache.get(key) || activeSessionCache.get("CURRENT_ACTIVE");
-  if (!entry) return null;
-
-  // Auto-expire after 10 minutes of inactivity
-  if (Date.now() - entry.updatedAt > TEN_MINUTES_MS) {
-    activeSessionCache.delete(key);
-    activeSessionCache.delete("CURRENT_ACTIVE");
-    return null;
-  }
-
-  entry.updatedAt = Date.now();
-  return entry.sessionId;
-}
-
-export async function clearActiveSessionCache(): Promise<void> {
-  activeSessionCache.clear();
-}
-
-/**
  * Start an ad-hoc session built from selected exercise IDs.
  */
 export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sessionId: string }> {
@@ -256,77 +217,6 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
   }
 
   return { sessionId: planId };
-}
-
-/**
- * Start a pre-scheduled workout session.
- */
-export async function startScheduledSession(sessionPlanId: string): Promise<{ sessionId: string }> {
-  const accessToken = await getAccessToken();
-
-  if (process.env.FITAI_RPC_URL && accessToken) {
-    try {
-      const transport = createServerTransport(accessToken);
-      const executionClient = createClient(WorkoutExecutionService, transport);
-
-      const res = await executionClient.startScheduledWorkoutSession({ sessionId: sessionPlanId });
-      const activeId = res.sessionId || sessionPlanId;
-      storeActiveSession(sessionPlanId, activeId);
-      return { sessionId: activeId };
-    } catch (error) {
-      console.warn("[startScheduledSession] gRPC error:", error);
-    }
-  }
-
-  return { sessionId: sessionPlanId };
-}
-
-/**
- * Persist one confirmed set using cached session ID.
- */
-async function ensureWorkoutSessionActive(executionClient: any, sessionId: string): Promise<string> {
-  // 1. Check in-memory cache first (Zero BE network calls!)
-  const cachedId = getActiveSession(sessionId);
-  if (cachedId) {
-    return cachedId;
-  }
-
-  // 2. Check recent active session from user history
-  try {
-    const history = await executionClient.getWorkoutHistory({ limit: 1, offset: 0 });
-    const activeSessionId = history.sessions?.[0]?.sessionId;
-    if (activeSessionId) {
-      storeActiveSession(sessionId, activeSessionId);
-      return activeSessionId;
-    }
-  } catch {
-    // Ignore
-  }
-
-  // 3. Create a new workout session via startWorkoutSession if missing
-  try {
-    const started = await executionClient.startWorkoutSession({ planId: sessionId });
-    if (started?.sessionId) {
-      storeActiveSession(sessionId, started.sessionId);
-      return started.sessionId;
-    }
-  } catch (err: any) {
-    const msg = err?.message || err?.rawMessage || "";
-    if (msg.includes("active workout session already exists")) {
-      try {
-        const history = await executionClient.getWorkoutHistory({ limit: 1, offset: 0 });
-        const existingActiveId = history.sessions?.[0]?.sessionId;
-        if (existingActiveId) {
-          storeActiveSession(sessionId, existingActiveId);
-          return existingActiveId;
-        }
-      } catch {
-        // Ignore
-      }
-    }
-  }
-
-  return sessionId;
 }
 
 export async function logWorkoutSet(

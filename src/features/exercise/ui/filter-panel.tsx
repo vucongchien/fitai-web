@@ -1,12 +1,12 @@
 "use client";
 
 import { X } from "lucide-react";
-import { GROUP_SYNONYMS } from "@/features/exercise/ui/search-experience";
 
 import {
   countActiveFilters,
   DIFFICULTY_LABEL,
   DIFFICULTY_ORDER,
+  GROUP_SYNONYMS,
 } from "@/features/exercise/domain/exercise";
 import type {
   CatalogEntry,

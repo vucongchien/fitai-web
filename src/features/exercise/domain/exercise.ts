@@ -14,6 +14,23 @@ export interface CatalogMetadata {
   tags: CatalogEntry[];
 }
 
+export const GROUP_SYNONYMS: Record<string, string[]> = {
+  "arms-shoulders": ["arms", "shoulders", "upper arms", "lower arms", "biceps", "triceps", "deltoids", "forearms"],
+  arms: ["arms", "upper arms", "lower arms", "biceps", "triceps", "forearms"],
+  shoulders: ["shoulders", "deltoids"],
+
+  "chest-back": ["chest", "back", "pectorals", "lats", "traps", "latissimus", "neck"],
+  chest: ["chest", "pectorals"],
+  back: ["back", "lats", "traps", "latissimus"],
+
+  "legs-glutes": ["legs", "glutes", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves", "thighs"],
+  legs: ["legs", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves"],
+
+  "core-abs": ["core", "abs", "waist", "abdominals", "midsection"],
+  core: ["core", "abs", "waist", "abdominals"],
+  waist: ["waist", "core", "abs", "abdominals"],
+};
+
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
 export const DIFFICULTY_LABEL: Record<Difficulty, string> = {

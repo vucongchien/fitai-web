@@ -14,7 +14,6 @@ export default async function SearchPage() {
       bodyPartIds: [],
       targetMuscleIds: [],
       equipmentIds: [],
-      targetMuscleIds: [],
       difficulty: [],
       tagIds: [],
       aiOnly: false,
