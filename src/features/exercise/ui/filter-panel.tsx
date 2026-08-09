@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { GROUP_SYNONYMS } from "@/features/exercise/ui/search-experience";
 
 import {
   countActiveFilters,
@@ -33,10 +34,13 @@ export function FilterPanel({
   onClear,
   onClose,
 }: FilterPanelProps) {
-  const activeCount = countActiveFilters(filters);
+  const activeCount = countActiveFilters(filters, catalog);
 
-  const toggleList = (key: "bodyPartIds" | "equipmentIds" | "tagIds", id: string) => {
-    const current = filters[key];
+  const toggleList = (
+    key: "bodyPartIds" | "equipmentIds" | "targetMuscleIds" | "tagIds",
+    id: string,
+  ) => {
+    const current = (filters[key] as string[]) || [];
     const next = current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id];
     onChange({ ...filters, [key]: next });
   };
@@ -52,6 +56,26 @@ export function FilterPanel({
   if (!open) {
     return null;
   }
+
+  const musclesList = catalog.muscles && catalog.muscles.length > 0 ? catalog.muscles : [
+    { id: "quadriceps", name: "Quadriceps", bodyPartId: "legs" },
+    { id: "glutes", name: "Glutes", bodyPartId: "legs" },
+    { id: "hamstrings", name: "Hamstrings", bodyPartId: "legs" },
+    { id: "pectorals", name: "Pectorals", bodyPartId: "chest" },
+    { id: "latissimus", name: "Lats", bodyPartId: "back" },
+    { id: "abs", name: "Abs", bodyPartId: "core" },
+    { id: "biceps", name: "Biceps", bodyPartId: "arms" },
+    { id: "triceps", name: "Triceps", bodyPartId: "arms" },
+    { id: "deltoids", name: "Deltoids", bodyPartId: "shoulders" },
+  ];
+
+  const tagsList = catalog.tags && catalog.tags.length > 0 ? catalog.tags : [
+    { id: "strength", name: "Strength" },
+    { id: "hypertrophy", name: "Hypertrophy" },
+    { id: "home-friendly", name: "Home Friendly" },
+    { id: "no-equipment", name: "No Equipment" },
+    { id: "warm-up", name: "Warm-up" },
+  ];
 
   return (
     <div className="filter-sheet">
@@ -86,6 +110,13 @@ export function FilterPanel({
           />
 
           <ChipGroup
+            label="Target Muscle"
+            entries={musclesList}
+            activeIds={filters.targetMuscleIds || []}
+            onToggle={(id) => toggleList("targetMuscleIds", id)}
+          />
+
+          <ChipGroup
             label="Equipment"
             entries={catalog.equipments}
             activeIds={filters.equipmentIds}
@@ -115,7 +146,7 @@ export function FilterPanel({
 
           <ChipGroup
             label="Tag"
-            entries={catalog.tags}
+            entries={tagsList}
             activeIds={filters.tagIds}
             onToggle={(id) => toggleList("tagIds", id)}
           />
@@ -167,7 +198,29 @@ function ChipGroup({ label, entries, activeIds, onToggle }: ChipGroupProps) {
       <legend className="chip-set__label">{label}</legend>
       <div className="chip-set__row">
         {entries.map((entry) => {
-          const active = activeIds.includes(entry.id);
+          const active = activeIds.some((id) => {
+            if (id === entry.id) {
+              return true;
+            }
+            const idLower = id.toLowerCase();
+            const eIdLower = entry.id.toLowerCase();
+            const eNameLower = entry.name.toLowerCase();
+
+            if (idLower === eIdLower || idLower === eNameLower) {
+              return true;
+            }
+
+            const synonyms = GROUP_SYNONYMS[idLower] || [idLower];
+            return synonyms.some(
+              (syn) =>
+                eIdLower === syn ||
+                eNameLower === syn ||
+                eIdLower.includes(syn) ||
+                syn.includes(eIdLower) ||
+                eNameLower.includes(syn) ||
+                syn.includes(eNameLower),
+            );
+          });
           return (
             <button
               aria-pressed={active}

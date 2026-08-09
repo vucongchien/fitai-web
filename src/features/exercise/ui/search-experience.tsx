@@ -28,17 +28,97 @@ interface SearchExperienceProps {
   catalog: CatalogMetadata;
 }
 
+export const GROUP_SYNONYMS: Record<string, string[]> = {
+  "arms-shoulders": ["arms", "shoulders", "upper arms", "lower arms", "biceps", "triceps", "deltoids", "forearms"],
+  arms: ["arms", "upper arms", "lower arms", "biceps", "triceps", "forearms"],
+  shoulders: ["shoulders", "deltoids"],
+
+  "chest-back": ["chest", "back", "pectorals", "lats", "traps", "latissimus", "neck"],
+  chest: ["chest", "pectorals"],
+  back: ["back", "lats", "traps", "latissimus"],
+
+  "legs-glutes": ["legs", "glutes", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves", "thighs"],
+  legs: ["legs", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves"],
+
+  "core-abs": ["core", "abs", "waist", "abdominals", "midsection"],
+  core: ["core", "abs", "waist", "abdominals"],
+  waist: ["waist", "core", "abs", "abdominals"],
+};
+
 function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): ExerciseFilters {
   const queryVal = params.get("q") || params.get("query") || "";
-  const bodyPartIds = params
-    .getAll("body")
-    .map((b) => catalog.bodyParts.find((entry) => entry.id.toLowerCase() === b.toLowerCase() || entry.name.toLowerCase() === b.toLowerCase())?.id)
-    .filter((id): id is string => Boolean(id));
+
+  const rawBodyParams = [
+    ...params.getAll("body"),
+    ...params.getAll("bodyPart"),
+    ...params.getAll("bodyPartId"),
+    ...params.getAll("muscle"),
+  ];
+
+  const bodyPartIds: string[] = [];
+
+  rawBodyParams.forEach((rawParam) => {
+    const pLower = rawParam.toLowerCase();
+    if (GROUP_SYNONYMS[pLower]) {
+      if (!bodyPartIds.includes(pLower)) {
+        bodyPartIds.push(pLower);
+      }
+      return;
+    }
+
+    const exactMatch = catalog.bodyParts.find(
+      (entry) => entry.id === rawParam || entry.id.toLowerCase() === pLower,
+    );
+
+    if (exactMatch) {
+      if (!bodyPartIds.includes(exactMatch.id)) {
+        bodyPartIds.push(exactMatch.id);
+      }
+      return;
+    }
+
+    let foundAny = false;
+    catalog.bodyParts.forEach((entry) => {
+      const eId = entry.id.toLowerCase();
+      const eName = entry.name.toLowerCase();
+
+      const isMatch = synonyms.some(
+        (syn) =>
+          eId === syn ||
+          eName === syn ||
+          eId.includes(syn) ||
+          syn.includes(eId) ||
+          eName.includes(syn) ||
+          syn.includes(eName),
+      );
+
+      if (isMatch && !bodyPartIds.includes(entry.id)) {
+        bodyPartIds.push(entry.id);
+        foundAny = true;
+      }
+    });
+
+    if (!foundAny && !bodyPartIds.includes(rawParam)) {
+      bodyPartIds.push(rawParam);
+    }
+  });
+
+  const targetMuscleIds = [
+    ...params.getAll("targetMuscle"),
+    ...params.getAll("muscle"),
+  ].filter((id) => Boolean(id));
 
   const equipmentIds = params
     .getAll("equipment")
-    .map((eq) => catalog.equipments.find((entry) => entry.id.toLowerCase() === eq.toLowerCase() || entry.name.toLowerCase() === eq.toLowerCase())?.id)
-    .filter((id): id is string => Boolean(id));
+    .map(
+      (eq) =>
+        catalog.equipments.find(
+          (entry) =>
+            entry.id === eq ||
+            entry.id.toLowerCase() === eq.toLowerCase() ||
+            entry.name.toLowerCase() === eq.toLowerCase(),
+        )?.id || eq,
+    );
 
   const tagIds = params.getAll("tag").filter((id) => catalog.tags.some((entry) => entry.id === id));
   const difficulty = params
@@ -49,6 +129,7 @@ function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): Exerci
     q: queryVal,
     bodyPartIds,
     equipmentIds,
+    targetMuscleIds,
     difficulty,
     tagIds,
     aiOnly: params.get("ai") === "1",
@@ -65,6 +146,9 @@ function toSearchString(filters: ExerciseFilters): string {
   }
   for (const id of filters.equipmentIds) {
     params.append("equipment", id);
+  }
+  for (const id of filters.targetMuscleIds || []) {
+    params.append("targetMuscle", id);
   }
   for (const id of filters.tagIds) {
     params.append("tag", id);
@@ -85,14 +169,21 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
   const inputRef = useRef<HTMLInputElement>(null);
   const [, startTransition] = useTransition();
 
+  const searchParamsString = searchParams.toString();
+
   const [filters, setFilters] = useState<ExerciseFilters>(() =>
-    parseFilters(new URLSearchParams(searchParams), catalog),
+    parseFilters(new URLSearchParams(searchParamsString), catalog),
   );
   const [panelOpen, setPanelOpen] = useState(false);
 
   useEffect(() => {
     inputRef.current?.focus({ preventScroll: true });
   }, []);
+
+  useEffect(() => {
+    const nextFilters = parseFilters(new URLSearchParams(searchParamsString), catalog);
+    setFilters(nextFilters);
+  }, [searchParamsString, catalog]);
 
   const syncUrl = useCallback(
     (next: ExerciseFilters) => {
@@ -139,7 +230,69 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
     [exercises, filters, catalog],
   );
 
-  const activeCount = countActiveFilters(filters);
+  const activeChips = useMemo(() => {
+    const chips: Array<{ id: string; type: keyof ExerciseFilters; label: string; value: string }> = [];
+
+    const groupLabelMap: Record<string, string> = {
+      "arms-shoulders": "Arms & Shoulders",
+      "chest-back": "Chest & Back",
+      "legs-glutes": "Legs & Glutes",
+      "core-abs": "Core & Abs",
+    };
+
+    filters.bodyPartIds.forEach((id) => {
+      const gLabel = groupLabelMap[id.toLowerCase()];
+      const bp = catalog.bodyParts.find(
+        (b) => b.id === id || b.id.toLowerCase() === id.toLowerCase(),
+      );
+      const displayLabel = gLabel || (bp ? bp.name : id);
+      chips.push({ id: `body-${id}`, type: "bodyPartIds", label: displayLabel, value: id });
+    });
+
+    (filters.targetMuscleIds || []).forEach((id) => {
+      const tm = catalog.muscles.find(
+        (m) => m.id === id || m.id.toLowerCase() === id.toLowerCase(),
+      );
+      chips.push({ id: `tm-${id}`, type: "targetMuscleIds", label: tm ? tm.name : id, value: id });
+    });
+
+    filters.equipmentIds.forEach((id) => {
+      const eq = catalog.equipments.find((e) => e.id.toLowerCase() === id.toLowerCase());
+      chips.push({ id: `eq-${id}`, type: "equipmentIds", label: eq ? eq.name : id, value: id });
+    });
+
+    filters.difficulty.forEach((diff) => {
+      chips.push({ id: `diff-${diff}`, type: "difficulty", label: diff, value: diff });
+    });
+
+    filters.tagIds.forEach((id) => {
+      const tag = catalog.tags.find((t) => t.id === id);
+      chips.push({ id: `tag-${id}`, type: "tagIds", label: tag ? tag.name : id, value: id });
+    });
+
+    if (filters.aiOnly) {
+      chips.push({ id: "ai-only", type: "aiOnly", label: "AI Supported", value: "aiOnly" });
+    }
+
+    return chips;
+  }, [filters, catalog]);
+
+  const removeChip = useCallback(
+    (type: keyof ExerciseFilters, value: string) => {
+      if (type === "aiOnly") {
+        updateFilters({ ...filters, aiOnly: false });
+      } else {
+        const current = (filters[type] as string[]) || [];
+        updateFilters({
+          ...filters,
+          [type]: current.filter((v) => v !== value),
+        });
+      }
+    },
+    [filters, updateFilters],
+  );
+
+  const activeCount = countActiveFilters(filters, catalog);
 
   return (
     <div className="focused-page search-focus">
@@ -195,23 +348,40 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
             {results.length} of {exercises.length} movements
           </span>
           {activeCount > 0 ? (
-            <button className="text-button" onClick={clearFacets} type="button">
+            <button className="text-button text-xs font-semibold text-[var(--color-action)]" onClick={clearFacets} type="button">
               Reset filters
             </button>
           ) : null}
         </div>
 
         {results.length === 0 ? (
-          <EmptyState
-            icon={SearchX}
-            title="No movements match"
-            description="Try removing a filter or broadening the search."
-            action={
-              <button className="secondary-button" onClick={resetSearch} type="button">
-                Reset search
-              </button>
-            }
-          />
+          <div className="search-empty-flow flex flex-col gap-6 py-4">
+            <EmptyState
+              icon={SearchX}
+              title="No movements match"
+              description="Try removing a filter or broadening your search options."
+              action={
+                <button className="secondary-button" onClick={resetSearch} type="button">
+                  Reset search
+                </button>
+              }
+            />
+
+            {exercises.length > 0 ? (
+              <section className="search-recommendations border-t border-[var(--color-border)] pt-4">
+                <h3 className="text-sm font-bold mb-3 text-[var(--color-text-main)]">
+                  Suggested movements
+                </h3>
+                <ol className="ex-grid">
+                  {exercises.slice(0, 8).map((exercise) => (
+                    <li key={`rec-${exercise.id}`}>
+                      <ExerciseCard exercise={exercise} catalog={catalog} />
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ) : null}
+          </div>
         ) : (
           <ol className="ex-grid">
             {results.map((exercise) => (

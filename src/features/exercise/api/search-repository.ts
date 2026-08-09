@@ -67,6 +67,18 @@ const DEFAULT_CATALOG = {
   ],
 };
 
+function dedupeCatalogEntries<T extends { id: string; name: string }>(entries: T[]): T[] {
+  const seen = new Set<string>();
+  return entries.filter((e) => {
+    const key = (e.name || e.id).trim().toLowerCase();
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
 export const exerciseSearchRepository: ExerciseSearchRepository = {
   async search(filters) {
     const raw = filters as any;
@@ -121,10 +133,10 @@ export const exerciseSearchRepository: ExerciseSearchRepository = {
         const client = createClient(ExerciseService, createServerTransport(accessToken));
         const res = await client.getCatalogMetadata({});
 
-        const bodyParts = (res.bodyParts || []).map((b) => ({ id: b.id, name: b.name }));
-        const equipments = (res.equipments || []).map((e) => ({ id: e.id, name: e.name }));
-        const muscles = (res.muscles || []).map((m) => ({ id: m.id, name: m.name, bodyPartId: m.bodyPartId }));
-        const tags = (res.tags || []).map((t) => ({ id: t.id, name: t.name }));
+        const bodyParts = dedupeCatalogEntries((res.bodyParts || []).map((b) => ({ id: b.id, name: b.name })));
+        const equipments = dedupeCatalogEntries((res.equipments || []).map((e) => ({ id: e.id, name: e.name })));
+        const muscles = dedupeCatalogEntries((res.muscles || []).map((m) => ({ id: m.id, name: m.name, bodyPartId: m.bodyPartId })));
+        const tags = dedupeCatalogEntries((res.tags || []).map((t) => ({ id: t.id, name: t.name })));
 
         return {
           bodyParts: bodyParts.length > 0 ? bodyParts : DEFAULT_CATALOG.bodyParts,

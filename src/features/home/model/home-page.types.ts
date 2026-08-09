@@ -44,6 +44,7 @@ export interface MuscleGroupCategoryItem {
   bgGradient: string;
   accentColor: string;
   queryParam: string;
+  href?: string;
 }
 
 export interface FeaturedExerciseItem {

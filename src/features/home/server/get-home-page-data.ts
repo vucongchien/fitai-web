@@ -56,40 +56,14 @@ const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
 
 const DEFAULT_MUSCLE_GROUPS: MuscleGroupCategoryItem[] = [
   {
-    id: "full-body",
-    name: "Full Body",
-    labelVi: "ALL MUSCLES",
-    icon: "activity",
-    bgGradient: "var(--color-surface)",
-    accentColor: "var(--color-border)",
-    queryParam: "Full Body",
-  },
-  {
-    id: "arms",
+    id: "arms-shoulders",
     name: "Arms & Shoulders",
     labelVi: "BICEPS & DELTS",
     icon: "biceps",
     bgGradient: "var(--color-surface)",
     accentColor: "var(--color-border)",
-    queryParam: "Biceps",
-  },
-  {
-    id: "core",
-    name: "Core & Abs",
-    labelVi: "MIDSECTION",
-    icon: "flame",
-    bgGradient: "var(--color-surface)",
-    accentColor: "var(--color-border)",
-    queryParam: "Core",
-  },
-  {
-    id: "legs",
-    name: "Legs & Glutes",
-    labelVi: "LOWER BODY",
-    icon: "dumbbell",
-    bgGradient: "var(--color-surface)",
-    accentColor: "var(--color-border)",
-    queryParam: "Legs",
+    queryParam: "arms-shoulders",
+    href: "/search?body=arms-shoulders",
   },
   {
     id: "chest-back",
@@ -98,9 +72,56 @@ const DEFAULT_MUSCLE_GROUPS: MuscleGroupCategoryItem[] = [
     icon: "target",
     bgGradient: "var(--color-surface)",
     accentColor: "var(--color-border)",
-    queryParam: "Chest",
+    queryParam: "chest-back",
+    href: "/search?body=chest-back",
+  },
+  {
+    id: "legs-glutes",
+    name: "Legs & Glutes",
+    labelVi: "LOWER BODY",
+    icon: "dumbbell",
+    bgGradient: "var(--color-surface)",
+    accentColor: "var(--color-border)",
+    queryParam: "legs-glutes",
+    href: "/search?body=legs-glutes",
+  },
+  {
+    id: "core-abs",
+    name: "Core & Abs",
+    labelVi: "MIDSECTION",
+    icon: "flame",
+    bgGradient: "var(--color-surface)",
+    accentColor: "var(--color-border)",
+    queryParam: "core-abs",
+    href: "/search?body=core-abs",
   },
 ];
+
+function buildDynamicMuscleGroups(bodyParts: Array<{ id: string; name: string }>): MuscleGroupCategoryItem[] {
+  if (!bodyParts || bodyParts.length === 0) {
+    return DEFAULT_MUSCLE_GROUPS;
+  }
+
+  const mapIcon = (name: string): string => {
+    const n = name.toLowerCase();
+    if (n.includes("arm") || n.includes("bicep") || n.includes("tricep")) return "biceps";
+    if (n.includes("leg") || n.includes("thigh") || n.includes("quad") || n.includes("glute") || n.includes("calf")) return "dumbbell";
+    if (n.includes("waist") || n.includes("abs") || n.includes("core")) return "flame";
+    if (n.includes("chest") || n.includes("back") || n.includes("shoulder") || n.includes("neck")) return "target";
+    return "activity";
+  };
+
+  return bodyParts.map((bp) => ({
+    id: bp.id,
+    name: bp.name,
+    labelVi: bp.name.toUpperCase(),
+    icon: mapIcon(bp.name),
+    bgGradient: "var(--color-surface)",
+    accentColor: "var(--color-border)",
+    queryParam: bp.id,
+    href: `/search?body=${encodeURIComponent(bp.id)}`,
+  }));
+}
 
 function isUuid(str?: string): boolean {
   if (!str) {return false;}
@@ -363,36 +384,28 @@ export async function getHomePageData(): Promise<HomePageData> {
       }
 
       const lastSession = history.length > 0 ? history[0] : null;
-      const evidenceItems: EvidenceItem[] = [
-        {
-          id: "total-volume",
-          icon: "dumbbell",
-          value: lastSession && lastSession.totalVolume ? `${Math.round(lastSession.totalVolume)} kg` : "0 kg",
-          label: lastSession ? "Total volume, last session" : "Volume benchmark",
-        },
-        {
-          id: "form-score",
-          icon: "zap",
-          value:
-            lastSession && typeof lastSession.averageFormScore === "number"
-              ? `${Math.round(lastSession.averageFormScore)}%`
-              : "0%",
-          label: lastSession ? "Average form score, last session" : "AI Form tracker",
-        },
-      ];
+      const evidenceItems: EvidenceItem[] =
+        lastSession && (lastSession.totalVolume || lastSession.averageFormScore)
+          ? [
+              {
+                id: "total-volume",
+                icon: "dumbbell",
+                value: `${Math.round(lastSession.totalVolume || 0)} kg`,
+                label: "Total volume, last session",
+              },
+              {
+                id: "form-score",
+                icon: "zap",
+                value: `${Math.round(lastSession.averageFormScore || 0)}%`,
+                label: "Average form score, last session",
+              },
+            ]
+          : [];
 
-      const activeSession = matchedDayPlan?.sessionPlans?.[0] || roadmap?.weekPlans?.[0]?.dayPlans?.[0]?.sessionPlans?.[0];
-      const coachNote =
-        activeSession?.reasoning ||
-        (matchedWeekPlan
-          ? `Week ${matchedWeekPlan.weekNumber} Target RPE: ${matchedWeekPlan.targetRpe || 7.5}`
-          : (roadmap?.weekPlans?.[0]
-          ? `Week ${roadmap.weekPlans[0].weekNumber} Target RPE: ${roadmap.weekPlans[0].targetRpe || 7.5}`
-          : null)) ||
-        (profileProto?.coachStyle
-          ? `AI Coach (${profileProto.coachStyle}) is active and monitoring your progress.`
-          : "Your personalized AI roadmap is active. Ready for your session.");
+      const activeSession = matchedDayPlan?.sessionPlans?.[0];
+      const coachNote = activeSession?.reasoning || null;
 
+      const dynamicMuscleGroups = buildDynamicMuscleGroups(catalogData.bodyParts);
       const streakDays = history.length > 0 ? Math.min(history.length, 30) : 0;
 
       return {
@@ -416,14 +429,17 @@ export async function getHomePageData(): Promise<HomePageData> {
     }
   }
 
-  const fallbackRepoResults = await exerciseSearchRepository.search({
-    q: "",
-    bodyPartIds: [],
-    equipmentIds: [],
-    difficulty: [],
-    tagIds: [],
-    aiOnly: false,
-  });
+  const [fallbackRepoResults, fallbackCatalog] = await Promise.all([
+    exerciseSearchRepository.search({
+      q: "",
+      bodyPartIds: [],
+      equipmentIds: [],
+      difficulty: [],
+      tagIds: [],
+      aiOnly: false,
+    }),
+    exerciseSearchRepository.getCatalog(),
+  ]);
   const fallbackFeatured: FeaturedExerciseItem[] = fallbackRepoResults.map((ex: ExerciseSummary) => ({
     id: ex.id,
     name: ex.name,
@@ -496,6 +512,6 @@ export async function getHomePageData(): Promise<HomePageData> {
     },
     quickActions: DEFAULT_QUICK_ACTIONS,
     featuredExercises: fallbackFeatured,
-    muscleGroups: DEFAULT_MUSCLE_GROUPS,
+    muscleGroups: buildDynamicMuscleGroups(fallbackCatalog.bodyParts),
   };
 }

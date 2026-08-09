@@ -38,23 +38,13 @@ export function HomeView({ data }: HomeViewProps) {
       {/* AI Coach Greeting & Note */}
       <CoachNote message={data.coachNote} />
 
-      {/* Conditional Profile Completion Banner (Strictly hidden if completionRate >= 100) */}
+      {/* Conditional Profile Completion Banner */}
       <ProfileCompletionBanner
         completionRate={data.profileCompletionRate}
         missingFields={data.missingFields}
       />
 
-      {/* Target Muscle Group Categories (Matching design screenshot) */}
-      {data.muscleGroups && data.muscleGroups.length > 0 ? (
-        <MuscleGroupSelector categories={data.muscleGroups} />
-      ) : null}
-
-      {/* Featured Exercises & Recommended Workouts Showcase */}
-      {data.featuredExercises && data.featuredExercises.length > 0 ? (
-        <ExerciseShowcaseSection exercises={data.featuredExercises} />
-      ) : null}
-
-      {/* Today's Timeline & Evidence Sidebar */}
+      {/* Today's Timeline & Evidence Sidebar (Moved to top as requested!) */}
       <div className="home-grid">
         <section className="content-section home-week">
           <div className="content-section__header">
@@ -74,10 +64,22 @@ export function HomeView({ data }: HomeViewProps) {
           </Link>
         </section>
 
-        <aside className="home-side">
-          <EvidenceSection items={data.evidenceItems} />
-        </aside>
+        {data.evidenceItems && data.evidenceItems.length > 0 ? (
+          <aside className="home-side">
+            <EvidenceSection items={data.evidenceItems} />
+          </aside>
+        ) : null}
       </div>
+
+      {/* Target Muscle Group Categories (Navigates to /search with body filter applied!) */}
+      {data.muscleGroups && data.muscleGroups.length > 0 ? (
+        <MuscleGroupSelector categories={data.muscleGroups} />
+      ) : null}
+
+      {/* Featured Exercises & Recommended Workouts Showcase */}
+      {data.featuredExercises && data.featuredExercises.length > 0 ? (
+        <ExerciseShowcaseSection exercises={data.featuredExercises} />
+      ) : null}
 
       <QuickActionsFab actions={data.quickActions} />
     </div>
