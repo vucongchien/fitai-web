@@ -79,6 +79,7 @@ function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): Exerci
 
     const synonyms: string[] = [pLower];
     let foundAny = false;
+    const synonyms: string[] = GROUP_SYNONYMS[pLower] || [pLower];
     catalog.bodyParts.forEach((entry) => {
       const eId = entry.id.toLowerCase();
       const eName = entry.name.toLowerCase();
@@ -292,6 +293,22 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
             </button>
           ) : null}
         </div>
+
+        {activeChips.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5 pb-2">
+            {activeChips.map((chip) => (
+              <button
+                key={chip.id}
+                type="button"
+                className="inline-flex items-center gap-1 rounded-full bg-[var(--color-surface-subtle)] px-2.5 py-1 text-xs font-medium text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-action)]"
+                onClick={() => removeChip(chip.type, chip.value)}
+              >
+                <span>{chip.label}</span>
+                <X size={12} className="text-[var(--color-text-muted)]" />
+              </button>
+            ))}
+          </div>
+        ) : null}
 
         {results.length === 0 ? (
           <div className="search-empty-flow flex flex-col gap-6 py-4">

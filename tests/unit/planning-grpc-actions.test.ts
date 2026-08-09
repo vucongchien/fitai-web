@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -60,7 +60,7 @@ describe("planning & Coaching gRPC Actions", () => {
     );
 
     const { initiateRoadmapServerAction } = await import(
-      "@/features/planning/server/planning-actions"
+      "@/features/roadmap/server/coaching-actions"
     );
     const res = await initiateRoadmapServerAction();
 
@@ -77,7 +77,7 @@ describe("planning & Coaching gRPC Actions", () => {
     );
 
     const { regenerateScheduleServerAction } = await import(
-      "@/features/planning/server/planning-actions"
+      "@/features/roadmap/server/coaching-actions"
     );
     const res = await regenerateScheduleServerAction("rdm-999", "Injury reported");
 
@@ -97,7 +97,7 @@ describe("planning & Coaching gRPC Actions", () => {
     );
 
     const { createAdhocSessionPlanServerAction } = await import(
-      "@/features/planning/server/planning-actions"
+      "@/features/roadmap/server/coaching-actions"
     );
     const res = await createAdhocSessionPlanServerAction(["ex-bench", "ex-squat"]);
 

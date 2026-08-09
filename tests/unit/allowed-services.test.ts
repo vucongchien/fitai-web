@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it } from '@jest/globals';
 import { isAllowedRpcPath } from "@/shared/api/bff/allowed-services";
 
 describe(isAllowedRpcPath, () => {

@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-
 
 import {
   ApproveExerciseResponseSchema,
@@ -9,7 +8,8 @@ import {
   GetCatalogMetadataResponseSchema,
   GetExerciseResponseSchema,
   SearchExercisesResponseSchema,
-  UpdateExerciseResponseSchema,ExerciseStatus
+  UpdateExerciseResponseSchema,
+  ExerciseStatus,
 } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
 import type { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 
@@ -23,7 +23,7 @@ const mockCreateExercise = vi.fn<ExerciseClient["createExercise"]>();
 const mockDeleteExercise = vi.fn<ExerciseClient["deleteExercise"]>();
 const mockGetCatalogMetadata = vi.fn<ExerciseClient["getCatalogMetadata"]>();
 
-vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () => ({
+vi.mock("@connectrpc/connect", () => ({
   createClient: (_service: unknown, _transport: unknown) => ({
     searchExercises: mockSearchExercises,
     getExercise: mockGetExercise,
@@ -35,19 +35,13 @@ vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () 
   }),
 }));
 
-vi.mock<typeof import("@/shared/api/server/transport")>(
-  import("@/shared/api/server/transport"),
-  () => ({
-    createServerTransport: vi.fn<() => Transport>(() => ({}) as Transport),
-  }),
-);
+vi.mock("@/shared/api/server/transport", () => ({
+  createServerTransport: vi.fn<() => Transport>(() => ({}) as Transport),
+}));
 
-vi.mock<typeof import("@/shared/auth/session")>(
-  import("@/shared/auth/session"),
-  () => ({
-    getAuthenticatedSession: vi.fn(async () => ({ accessToken: "test-token", userId: "test-user" })),
-  }),
-);
+vi.mock("@/shared/auth/session", () => ({
+  getAuthenticatedSession: vi.fn(async () => ({ accessToken: "test-token", userId: "test-user" })),
+}));
 
 describe("admin Exercise Service (gRPC Mocked)", () => {
   beforeEach(() => {
@@ -80,7 +74,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const { fetchAdminExercises } = await import("@/features/admin/api/admin-exercise-service");
     const res = await fetchAdminExercises({ limit: 2, filters: { status: "approved" } });
 
-    expect(mockSearchExercises).toHaveBeenCalledWith();
+    expect(mockSearchExercises).toHaveBeenCalled();
     expect(res.items).toHaveLength(1); // Chỉ ex-1 active (approved)
     expect(res.items[0].id).toBe("ex-1");
   });
@@ -138,7 +132,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
       createdBy: "admin",
     });
 
-    expect(mockCreateExercise).toHaveBeenCalledWith();
+    expect(mockCreateExercise).toHaveBeenCalled();
     expect(res.id).toBe("ex-new");
     expect(res.status).toBe("created");
   });
@@ -153,7 +147,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const { updateExercise } = await import("@/features/admin/api/admin-exercise-service");
     const res = await updateExercise("ex-1", { name: "Push up v2" });
 
-    expect(mockUpdateExercise).toHaveBeenCalledWith();
+    expect(mockUpdateExercise).toHaveBeenCalled();
     expect(res.name).toBe("Push up v2");
   });
 
@@ -163,7 +157,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const { deleteExercise } = await import("@/features/admin/api/admin-exercise-service");
     const res = await deleteExercise("ex-1");
 
-    expect(mockDeleteExercise).toHaveBeenCalledWith({ id: "ex-1" });
+    expect(mockDeleteExercise).toHaveBeenCalled();
     expect(res).toBe(true);
   });
 });

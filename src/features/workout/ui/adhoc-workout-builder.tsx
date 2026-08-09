@@ -2,10 +2,11 @@
 
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { ArrowRight, GripVertical, Pencil, ShieldCheck, Trash2 } from "lucide-react";
+import { ArrowRight, Dumbbell, GripVertical, Pencil, Plus, ShieldCheck, Sparkles, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 
 import { useAdhocWorkout } from "@/features/workout/model/use-adhoc-workout";
+import { AdhocAiGeneratorModal } from "@/features/workout/ui/adhoc-ai-generator-modal";
 import { AdhocEstimates } from "@/features/workout/ui/adhoc-estimates";
 import { AdhocHero } from "@/features/workout/ui/adhoc-hero";
 import { AdhocToolsRow } from "@/features/workout/ui/adhoc-tools-row";
@@ -20,6 +21,8 @@ export function AdhocWorkoutBuilder() {
     exerciseList,
     isSearchOpen,
     setIsSearchOpen,
+    isAiModalOpen,
+    setIsAiModalOpen,
     editingExercise,
     setEditingExercise,
     aiLoading,
@@ -31,6 +34,7 @@ export function AdhocWorkoutBuilder() {
     handleDeleteExercise,
     handleAddExercise,
     handleAiRecommend,
+    handleApplyAiExercises,
     handleSaveEdit,
     handleBeginSession,
   } = useAdhocWorkout();
@@ -50,7 +54,33 @@ export function AdhocWorkoutBuilder() {
             <p>{exerciseList.length} movements · Hold handle to reorder</p>
           </div>
 
-          {mounted ? (
+          {exerciseList.length === 0 ? (
+            <div className="adhoc-empty-state">
+              <div className="adhoc-empty-state__icon">
+                <Dumbbell size={28} />
+              </div>
+              <h3>No exercises selected yet</h3>
+              <p>Add movements manually from the library or let AI Coach build a tailored workout for you.</p>
+              <div className="adhoc-empty-state__actions">
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(true)}
+                  className="adhoc-empty-btn adhoc-empty-btn--secondary"
+                >
+                  <Plus size={16} />
+                  Add movement
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAiRecommend}
+                  className="adhoc-empty-btn adhoc-empty-btn--primary"
+                >
+                  <Sparkles size={16} />
+                  AI Recommend
+                </button>
+              </div>
+            </div>
+          ) : mounted ? (
             <DndContext
               collisionDetection={closestCenter}
               id="adhoc-workout-dnd-context"
@@ -100,11 +130,13 @@ export function AdhocWorkoutBuilder() {
             </ul>
           )}
 
-          <AdhocToolsRow
-            aiLoading={aiLoading}
-            onAiRecommend={handleAiRecommend}
-            onOpenSearch={() => setIsSearchOpen(true)}
-          />
+          {exerciseList.length > 0 && (
+            <AdhocToolsRow
+              aiLoading={aiLoading}
+              onAiRecommend={handleAiRecommend}
+              onOpenSearch={() => setIsSearchOpen(true)}
+            />
+          )}
 
           <AdhocEstimates
             estimatedDuration={estimatedDuration}
@@ -127,8 +159,9 @@ export function AdhocWorkoutBuilder() {
       <footer className="workout-prep-action">
         <button
           className={buttonVariants({ size: "large", variant: "primary" })}
-          disabled={sessionLoading}
+          disabled={sessionLoading || exerciseList.length === 0}
           onClick={handleBeginSession}
+          title={exerciseList.length === 0 ? "Add at least one movement to begin" : undefined}
           type="button"
         >
           {sessionLoading ? "Starting…" : "Begin session"}
@@ -148,6 +181,13 @@ export function AdhocWorkoutBuilder() {
         isOpen={isSearchOpen}
         onAddExercise={handleAddExercise}
         onClose={() => setIsSearchOpen(false)}
+      />
+
+      <AdhocAiGeneratorModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        onApplyExercises={handleApplyAiExercises}
+        currentExerciseCount={exerciseList.length}
       />
     </>
   );

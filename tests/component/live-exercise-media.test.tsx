@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { afterEach, describe, expect, it, vi } from '@jest/globals';
 import { cleanup, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 
@@ -121,7 +120,7 @@ describe(ExerciseMedia, () => {
 
     render(<ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />);
 
-    expect(pause).toHaveBeenCalledWith();
+    expect(pause).toHaveBeenCalled();
     expect(play).not.toHaveBeenCalled();
   });
 
@@ -139,6 +138,6 @@ describe(ExerciseMedia, () => {
 
     render(<ExerciseMedia exercise={makeExercise({ videoUrl: "/demo/plank.mp4" })} />);
 
-    expect(play).toHaveBeenCalledWith();
+    expect(play).toHaveBeenCalled();
   });
 });

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it } from '@jest/globals';
 import { isInferenceResponse } from "@/features/workout/model/inference-protocol";
 
 describe(isInferenceResponse, () => {

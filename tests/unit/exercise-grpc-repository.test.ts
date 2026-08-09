@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -16,20 +16,21 @@ const mockSearchExercises = vi.fn<ExerciseClient["searchExercises"]>();
 const mockGetCatalogMetadata = vi.fn<ExerciseClient["getCatalogMetadata"]>();
 const mockGetExercise = vi.fn<ExerciseClient["getExercise"]>();
 
-vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () => ({
-  createClient: (_service: unknown, _transport: unknown) => ({
+vi.mock("@connectrpc/connect", () => ({
+  createClient: vi.fn(() => ({
     searchExercises: mockSearchExercises,
     getCatalogMetadata: mockGetCatalogMetadata,
     getExercise: mockGetExercise,
-  }),
+  })),
 }));
 
-vi.mock<typeof import("@/shared/api/server/transport")>(
-  import("@/shared/api/server/transport"),
-  () => ({
-    createServerTransport: vi.fn<() => Transport>(() => ({}) as Transport),
-  }),
-);
+vi.mock("@/shared/api/server/transport", () => ({
+  createServerTransport: vi.fn(() => ({})),
+}));
+
+vi.mock("@/shared/auth/session", () => ({
+  getAccessToken: vi.fn().mockResolvedValue("mock-access-token"),
+}));
 
 describe("exercise Catalog gRPC Repository", () => {
   beforeEach(() => {
@@ -91,7 +92,7 @@ describe("exercise Catalog gRPC Repository", () => {
     );
     const catalog = await exerciseSearchRepository.getCatalog();
 
-    expect(mockGetCatalogMetadata).toHaveBeenCalledWith();
+    expect(mockGetCatalogMetadata).toHaveBeenCalled();
     expect(catalog.bodyParts).toHaveLength(1);
     expect(catalog.equipments).toHaveLength(1);
   });

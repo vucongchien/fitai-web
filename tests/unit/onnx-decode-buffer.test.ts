@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it } from '@jest/globals';
 import { MODEL_IO, normaliseFrame } from "@/features/workout/domain/onnx-decode";
 
 function frameOf(width: number, height: number, value: number) {

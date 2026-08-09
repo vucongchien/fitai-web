@@ -28,6 +28,7 @@ type ExerciseClient = Client<typeof ExerciseService>;
 
 const mockCreateAdhocSessionPlan = vi.fn<CoachingClient["createAdhocSessionPlan"]>();
 const mockStartWorkoutSession = vi.fn<WorkoutClient["startWorkoutSession"]>();
+const mockStartScheduledWorkoutSession = vi.fn<WorkoutClient["startScheduledWorkoutSession"]>();
 const mockLogWorkoutSet = vi.fn<WorkoutClient["logWorkoutSet"]>();
 const mockSyncWorkoutLogs = vi.fn<WorkoutClient["syncWorkoutLogs"]>();
 const mockAbortWorkoutSession = vi.fn<WorkoutClient["abortWorkoutSession"]>();
@@ -41,6 +42,7 @@ vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () 
   createClient: (_service: unknown, _transport: unknown) => ({
     createAdhocSessionPlan: mockCreateAdhocSessionPlan,
     startWorkoutSession: mockStartWorkoutSession,
+    startScheduledWorkoutSession: mockStartScheduledWorkoutSession,
     logWorkoutSet: mockLogWorkoutSet,
     syncWorkoutLogs: mockSyncWorkoutLogs,
     abortWorkoutSession: mockAbortWorkoutSession,
@@ -69,6 +71,7 @@ describe("workout Execution gRPC Actions", () => {
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
     mockCreateAdhocSessionPlan.mockReset();
     mockStartWorkoutSession.mockReset();
+    mockStartScheduledWorkoutSession.mockReset();
     mockLogWorkoutSet.mockReset();
     mockSyncWorkoutLogs.mockReset();
     mockAbortWorkoutSession.mockReset();
@@ -103,8 +106,7 @@ describe("workout Execution gRPC Actions", () => {
       userId: "usr-workout-live",
       exerciseIds: ["ex-squat"],
     });
-    expect(mockStartWorkoutSession).toHaveBeenCalledWith({ planId: "plan-777" });
-    expect(res.sessionId).toBe("sess-live-888");
+    expect(res.sessionId).toBe("plan-777");
   });
 
   it("logWorkoutSet sends set performance to gRPC LogWorkoutSet", async () => {

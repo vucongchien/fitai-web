@@ -3707,6 +3707,89 @@ a.week-route__row:hover {
   box-shadow: 0 12px 30px color-mix(in srgb, var(--color-text) 22%, transparent);
 }
 
+.adhoc-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  margin: 0.5rem 0 1.5rem;
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-card);
+  transition: border-color var(--duration-state) ease;
+}
+
+.adhoc-empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+
+.adhoc-empty-state h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 0.4rem;
+}
+
+.adhoc-empty-state p {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  max-width: 24rem;
+  margin: 0 0 1.5rem;
+  line-height: 1.45;
+}
+
+.adhoc-empty-state__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.adhoc-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.625rem 1.125rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--duration-state) ease;
+}
+
+.adhoc-empty-btn--primary {
+  background: linear-gradient(135deg, var(--color-action) 0%, color-mix(in srgb, var(--color-action) 80%, #ff8c00) 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-action) 35%, transparent);
+}
+
+.adhoc-empty-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--color-action) 45%, transparent);
+}
+
+.adhoc-empty-btn--secondary {
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.adhoc-empty-btn--secondary:hover {
+  background: var(--color-surface-active);
+  border-color: var(--color-text-muted);
+}
+
 .adhoc-row-inner {
   position: relative;
   z-index: 2;
@@ -4242,6 +4325,315 @@ a.week-route__row:hover {
   margin-top: 1.5rem;
   justify-content: flex-end;
   gap: 0.65rem;
+}
+
+/* ==========================================================================
+   AI Coach Generator Modal Styles
+   ========================================================================== */
+.ai-generator-modal {
+  width: min(100%, 36rem);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, var(--color-border));
+}
+
+.ai-generator-modal__body {
+  overflow-y: auto;
+  max-height: calc(90vh - 12rem);
+  padding-right: 0.25rem;
+}
+
+.ai-modal-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ai-modal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-accent);
+}
+
+.ai-generator-field label {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--color-text);
+}
+
+.ai-prompt-textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  resize: vertical;
+  min-height: 4.8rem;
+  transition: border-color var(--duration-state) ease, box-shadow var(--duration-state) ease;
+}
+
+.ai-prompt-textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 15%, transparent);
+}
+
+.ai-duration-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: var(--color-surface-subtle);
+  padding: 0.75rem;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-border);
+}
+
+.ai-duration-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.ai-duration-header strong {
+  color: var(--color-accent);
+  margin-left: auto;
+}
+
+.ai-duration-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.ai-duration-pill {
+  flex: 1;
+  min-width: 3.5rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--duration-state) ease;
+}
+
+.ai-duration-pill.is-active,
+.ai-duration-pill:hover {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+.ai-quick-prompts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ai-section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: var(--color-text-muted);
+}
+
+.ai-quick-prompts-list {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.ai-quick-prompt-btn {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 9999px;
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--duration-state) ease;
+}
+
+.ai-quick-prompt-btn:hover {
+  color: var(--color-text);
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-surface));
+}
+
+.ai-generate-action-row {
+  margin-top: 0.25rem;
+}
+
+.ai-submit-button {
+  width: 100%;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.ai-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-input);
+  background: color-mix(in srgb, #ef4444 12%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
+  color: #ef4444;
+  font-size: 0.82rem;
+}
+
+.ai-result-preview-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--color-border);
+}
+
+.ai-reasoning-card {
+  padding: 0.85rem;
+  border-radius: var(--radius-input);
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+}
+
+.ai-reasoning-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.ai-coach-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.ai-rpe-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-accent) 20%, var(--color-surface));
+  color: var(--color-accent);
+}
+
+.ai-reasoning-text {
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.ai-target-muscles {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.ai-muscle-tags {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.ai-muscle-tag {
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--color-border) 80%, transparent);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.72rem;
+}
+
+.ai-preview-list-header h3 {
+  font-size: 0.88rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.ai-preview-exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ai-preview-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-input);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+}
+
+.ai-preview-item__index {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  padding-top: 0.1rem;
+}
+
+.ai-preview-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+}
+
+.ai-preview-item__info strong {
+  font-size: 0.85rem;
+}
+
+.ai-preview-item__info span {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.ai-preview-item__note {
+  margin: 0.2rem 0 0;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.ai-generator-modal__footer {
+  justify-content: space-between;
+}
+
+.ai-apply-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 @media (min-width: 48rem) {

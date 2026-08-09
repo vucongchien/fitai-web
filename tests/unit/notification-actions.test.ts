@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from '@jest/globals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 
 

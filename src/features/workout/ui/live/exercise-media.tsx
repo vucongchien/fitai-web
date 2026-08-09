@@ -71,6 +71,15 @@ export function ExerciseMedia({
     <div className="live-screen__media">
       {cameraActive && children ? (
         children
+      ) : parsedVideo.type === "direct" && parsedVideo.directUrl ? (
+        <video
+          ref={videoRef}
+          className="live-media__poster"
+          loop
+          muted
+          playsInline
+          src={parsedVideo.directUrl}
+        />
       ) : exercise.thumbnailUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img alt={exercise.name} className="live-media__poster" src={exercise.thumbnailUrl} />

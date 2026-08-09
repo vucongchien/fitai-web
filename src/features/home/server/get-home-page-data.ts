@@ -249,6 +249,7 @@ export async function getHomePageData(): Promise<HomePageData> {
         const repoResults = await exerciseSearchRepository.search({
           q: "",
           bodyPartIds: [],
+          targetMuscleIds: [],
           equipmentIds: [],
           targetMuscleIds: [],
           difficulty: [],
@@ -422,7 +423,7 @@ export async function getHomePageData(): Promise<HomePageData> {
         },
         quickActions: DEFAULT_QUICK_ACTIONS,
         featuredExercises,
-        muscleGroups: DEFAULT_MUSCLE_GROUPS,
+        muscleGroups: dynamicMuscleGroups,
       };
     } catch (error) {
       console.warn("[getHomePageData] gRPC error:", error);
@@ -433,6 +434,7 @@ export async function getHomePageData(): Promise<HomePageData> {
     exerciseSearchRepository.search({
       q: "",
       bodyPartIds: [],
+      targetMuscleIds: [],
       equipmentIds: [],
       targetMuscleIds: [],
       difficulty: [],

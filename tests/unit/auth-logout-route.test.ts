@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -139,7 +139,7 @@ describe("/api/auth/logout Route Handler", () => {
       }),
     );
 
-    expect(mockLogout).toHaveBeenCalledWith();
+    expect(mockLogout).toHaveBeenCalled();
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_access_token");
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_refresh_token");
     expect(res.status).toBe(200);

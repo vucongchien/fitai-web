@@ -1,5 +1,4 @@
 import { it, afterEach, describe, expect, beforeEach } from 'vitest';
-import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 
@@ -248,7 +247,7 @@ describe("/auth/callback/[provider] (callback route)", () => {
     expect(res.headers.get("location")).toContain("/onboarding");
   });
 
-  it("redirects to /planning when profile completion ≥80 but no active roadmap", async () => {
+  it("redirects to /home when profile completion ≥80 but no active roadmap", async () => {
     mockGetCookie.mockReturnValue({ value: STATE });
     mockLoginWithOAuth.mockResolvedValue(
       create(LoginWithOAuthResponseSchema, {
@@ -266,7 +265,7 @@ describe("/auth/callback/[provider] (callback route)", () => {
         params: Promise.resolve({ provider: "google" }),
       },
     );
-    expect(res.headers.get("location")).toContain("/planning");
+    expect(res.headers.get("location")).toContain("/home");
   });
 
   it("sets all three auth cookies on success", async () => {

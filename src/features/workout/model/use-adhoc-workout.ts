@@ -12,7 +12,6 @@ import type { ExerciseResult } from "@/features/workout/model/workout.types";
 import {
   beginWorkoutSession,
   getAdhocConfig,
-  getAiRecommendation,
 } from "@/features/workout/server/workout-actions";
 import { useToast } from "@/shared/ui/toast/toast-context";
 
@@ -45,10 +44,11 @@ export function useAdhocWorkout() {
     return [];
   });
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [aiReasoning, setAiReasoning] = useState<string | null>(null);
   const [editingExercise, setEditingExercise] = useState<AdhocExercise | null>(null);
   const [targetRpe, setTargetRpe] = useState(6.5);
 
-  const [aiPending, startAiTransition] = useTransition();
   const [configPending, startConfigTransition] = useTransition();
   const [sessionPending, startSessionTransition] = useTransition();
 
@@ -90,7 +90,8 @@ export function useAdhocWorkout() {
 
   // Dynamic Estimates
   const totalSets = exerciseList.reduce((acc, item) => acc + (item.sets || 3), 0);
-  const estimatedDuration = Math.max(15, Math.round(totalSets * 2.5));
+  const estimatedDuration =
+    exerciseList.length === 0 ? 0 : Math.max(15, Math.round(totalSets * 2.5));
 
   // Handlers với useCallback
   const handleDragEnd = useCallback((event: DragEndEvent) => {
@@ -141,16 +142,34 @@ export function useAdhocWorkout() {
   }, []);
 
   const handleAiRecommend = useCallback(() => {
-    startAiTransition(async () => {
-      const result = await getAiRecommendation();
-      setExerciseList(
-        result.exercises.map((ex) => ({
-          ...ex,
-          id: `${ex.id}-${Date.now()}`,
-        })),
-      );
-    });
+    setIsAiModalOpen(true);
   }, []);
+
+  const handleApplyAiExercises = useCallback(
+    (newExercises: AdhocExercise[], mode: "replace" | "append") => {
+      const previousList = [...exerciseList];
+      if (mode === "replace") {
+        setExerciseList(newExercises);
+      } else {
+        setExerciseList((prev) => [...prev, ...newExercises]);
+      }
+
+      showToast({
+        message:
+          mode === "replace"
+            ? `Applied AI workout (${newExercises.length} movements)`
+            : `Added ${newExercises.length} AI movements`,
+        type: "success",
+        action: {
+          label: "Undo",
+          onClick: () => {
+            setExerciseList(previousList);
+          },
+        },
+      });
+    },
+    [exerciseList, showToast],
+  );
 
   const handleSaveEdit = useCallback(
     (updated: { sets: number; reps: number; rest: string; weightKg?: number }) => {
@@ -174,7 +193,17 @@ export function useAdhocWorkout() {
   );
 
   const handleBeginSession = useCallback(() => {
-    const exerciseIds = exerciseList.map((ex) => ex.id.split("-")[0]!);
+    if (exerciseList.length === 0) {
+      showToast({
+        message: "Vui lòng chọn ít nhất 1 bài tập trước khi bắt đầu buổi tập.",
+        type: "error",
+      });
+      return;
+    }
+
+    const exerciseIds = exerciseList.map(
+      (ex) => ex.exerciseId || ex.id.split("__")[0] || ex.id,
+    );
     startSessionTransition(async () => {
       try {
         const { sessionId } = await beginWorkoutSession(exerciseIds);
@@ -190,9 +219,13 @@ export function useAdhocWorkout() {
     exerciseList,
     isSearchOpen,
     setIsSearchOpen,
+    isAiModalOpen,
+    setIsAiModalOpen,
+    aiReasoning,
+    setAiReasoning,
     editingExercise,
     setEditingExercise,
-    aiLoading: aiPending,
+    aiLoading: false,
     configLoading: configPending,
     sessionLoading: sessionPending,
     sensors,
@@ -202,6 +235,7 @@ export function useAdhocWorkout() {
     handleDeleteExercise,
     handleAddExercise,
     handleAiRecommend,
+    handleApplyAiExercises,
     handleSaveEdit,
     handleBeginSession,
   };

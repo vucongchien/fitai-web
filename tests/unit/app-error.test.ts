@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it } from '@jest/globals';
 import { Code, ConnectError } from "@connectrpc/connect";
 
 import { toAppError } from "@/shared/api/errors/app-error";

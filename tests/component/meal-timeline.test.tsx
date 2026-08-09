@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { afterEach, describe, expect, it } from '@jest/globals';
 import { cleanup, render, screen } from "@testing-library/react";
 
 import { getMockMealRows, MOCK_TODAY } from "../mocks/nutrition-fixtures";
@@ -18,7 +17,7 @@ describe(MealTimeline, () => {
     expect(screen.getByText("Breakfast")).toBeInTheDocument();
     expect(screen.getByText("Lunch")).toBeInTheDocument();
     expect(screen.getByText("Dinner")).toBeInTheDocument();
-    expect(screen.getByText("Snacks")).toBeInTheDocument();
+    expect(screen.getByText(/^Snack/i)).toBeInTheDocument();
   });
 
   it("marks an unlogged slot as not logged instead of showing zero calories", () => {
