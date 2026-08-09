@@ -116,7 +116,116 @@ export function countMeals(rows: readonly MealLogRow[], key: DayKey): number {
   return mealsOnDay(rows, key).length;
 }
 
-import { normalizeTodayMenu } from "@/features/nutrition/model/meal-detail.mapper";
+export interface MealOptionRow {
+  calories: number;
+  carbs: number;
+  description: string;
+  fat: number;
+  isNutiFoodProduct?: boolean;
+  mealName: string;
+  priceTier: string;
+  protein: number;
+  recipeSteps: string[];
+}
+
+export function normalizeTodayMenu(menuInput: any): Record<MealSlot, MealOptionRow[]> {
+  const result: Record<MealSlot, MealOptionRow[]> = {
+    breakfast: [],
+    dinner: [],
+    lunch: [],
+    snack: [],
+  };
+
+  if (!menuInput) {
+    return result;
+  }
+
+  let data = menuInput;
+
+  // 1. Direct Uint8Array / Buffer bytes from PostgreSQL jsonb column
+  if (data instanceof Uint8Array || (typeof Buffer !== "undefined" && Buffer.isBuffer(data))) {
+    try {
+      const decoded = new TextDecoder().decode(data);
+      data = JSON.parse(decoded);
+    } catch {
+      return result;
+    }
+  }
+
+  // 2. String representation of jsonb
+  if (typeof data === "string") {
+    try {
+      data = JSON.parse(data);
+    } catch {
+      return result;
+    }
+  }
+
+  // 3. Object wrapper containing jsonb field
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    if (data.meals_json) {
+      return normalizeTodayMenu(data.meals_json);
+    }
+    if (data.mealsJson) {
+      return normalizeTodayMenu(data.mealsJson);
+    }
+    if (Array.isArray(data.meals)) {
+      return normalizeTodayMenu(data.meals);
+    }
+  }
+
+  // 4. Direct native jsonb Array of slot objects: [ { mealType: "Breakfast", options: [...] }, ... ]
+  if (Array.isArray(data)) {
+    for (const item of data) {
+      const slot = toMealSlot(item.mealType || item.meal_type || item.slot || "");
+      const rawOptions = item.options || item.meals || [];
+      if (slot && Array.isArray(rawOptions)) {
+        const mappedOptions = rawOptions.map((opt: any) => ({
+          calories: Number(opt.calories || opt.caloriesKcal || 0),
+          carbs: Number(opt.carbGrams || opt.carbs || 0),
+          description: opt.description || "",
+          fat: Number(opt.fatGrams || opt.fat || 0),
+          isNutiFoodProduct: Boolean(opt.isNutiFoodProduct),
+          mealName: opt.mealName || opt.meal_name || opt.name || "",
+          priceTier: opt.priceTier || "MEDIUM",
+          protein: Number(opt.proteinGrams || opt.protein || 0),
+          recipeSteps: Array.isArray(opt.cookingSteps)
+            ? opt.cookingSteps
+            : Array.isArray(opt.recipeSteps)
+              ? opt.recipeSteps
+              : [],
+        }));
+        result[slot].push(...mappedOptions);
+      }
+    }
+    return result;
+  }
+
+  // 5. Direct native jsonb Object: { breakfast: [...], lunch: [...], dinner: [...], snack: [...] }
+  const slots: MealSlot[] = ["breakfast", "lunch", "dinner", "snack"];
+  for (const s of slots) {
+    const rawList = data[s] || data[s.toUpperCase()] || data[s.toLowerCase()];
+    if (Array.isArray(rawList)) {
+      result[s] = rawList.map((opt: any) => ({
+        calories: Number(opt.calories || opt.caloriesKcal || 0),
+        carbs: Number(opt.carbGrams || opt.carbs || 0),
+        description: opt.description || "",
+        fat: Number(opt.fatGrams || opt.fat || 0),
+        isNutiFoodProduct: Boolean(opt.isNutiFoodProduct),
+        mealName: opt.mealName || opt.meal_name || opt.name || "",
+        priceTier: opt.priceTier || "MEDIUM",
+        protein: Number(opt.proteinGrams || opt.protein || 0),
+        recipeSteps: Array.isArray(opt.cookingSteps)
+          ? opt.cookingSteps
+          : Array.isArray(opt.recipeSteps)
+            ? opt.recipeSteps
+            : [],
+      }));
+    }
+  }
+
+  return result;
+}
 
 /**
  * Groups a day's rows into the four slots, ordered by clock time.

@@ -1,5 +1,4 @@
 import { it, afterEach, describe, expect, beforeEach } from 'vitest';
-import { afterEach, beforeEach, describe, expect, it, vi } from '@jest/globals';
 import type { createAuthCookieOptions } from "@/shared/auth/cookies";
 
 const mockCookieSet =
@@ -72,12 +71,12 @@ describe("/api/auth/dev-login (Dev Route)", () => {
     expect(cookieNames).toContain("fitai_user_id");
   });
 
-  it("redirects to /planning for existing user target and sets cookies", async () => {
+  it("redirects to /home for existing user target and sets cookies", async () => {
     const { GET } = await import("@/app/api/auth/dev-login/route");
     const req = new Request(`${ORIGIN}/api/auth/dev-login?target=existing`);
     const res = await GET(req);
 
-    expect(res.headers.get("location")).toContain("/planning");
+    expect(res.headers.get("location")).toContain("/home");
     const cookieNames = mockCookieSet.mock.calls.map((c) => c[0]);
     expect(cookieNames).toContain("fitai_access_token");
     expect(cookieNames).toContain("fitai_refresh_token");

@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import { expect, test } from "vitest";
 
 test("login opens the guided onboarding flow", async ({ page }) => {
   await page.goto("/login");

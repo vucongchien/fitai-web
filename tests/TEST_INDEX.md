@@ -32,12 +32,14 @@
 | `unit/dev-login-route.test.ts`     | Dev route: 404 in production, mock auth login for new vs existing user targets in development                                                                                                       |
 | `unit/roadmap-page.mapper.test.ts` | Roadmap & Workout Stats Mapper: Standard 7-day week date range (Mon to Sun, e.g. Aug 10-Aug 16), adaptRoadmapPageData active week format, and adaptWorkoutStatsData target window sync |
 | `unit/progress-aggregator.test.ts` | Calculates adherence percentage, formats volume (kg/tonnes), sorts top PRs                                                                                           |
-| `unit/notification-actions.test.ts` | Notification Server Actions: listNotificationsAction calls listNotifications, markNotificationAsReadAction marks specific notification as read, handles unauthorized/missing access tokens and gRPC failure states |
+| `unit/adhoc-ai-recommendation.test.ts` | Adhoc AI Workout Recommendation: calls CoachingService.suggestAdHocSession directly with ConnectRPC AdHocHint, extracts reasoning & estimated RPE, throws on gRPC error |
+| `unit/get-live-session-data.test.ts` | Live Workout Session Data: fetches session plan from CoachingService, starts execution session, maps exercise catalog details, triggers notFound on missing plan |
 
 ## Component coverage
 
 | File                                     | Scenarios                                                                                                                                                                                            |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `component/adhoc-ai-generator-modal.test.tsx` | Tests AI Workout Generator Modal: open/close dialog, free-text prompt typing, duration pill selection, AI generation trigger, reasoning display, and apply/append exercises with undo toast |
 | `component/button.test.tsx`              | Loading state remains accessible and prevents duplicate submission                                                                                                                                   |
 | `component/triple-lane.test.tsx`         | Labelled signature has a non-color text alternative                                                                                                                                                  |
 | `component/login-actions.test.tsx`       | Popup opens for Google/Facebook, popup-blocker fallback, OAUTH_COMPLETE navigates to dest, OAUTH_ERROR resets pending, popup closed manually resets, no duplicate clicks                             |

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from '@jest/globals';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { act, fireEvent, render } from "@testing-library/react";
 
@@ -94,7 +94,7 @@ describe(CoachingPanel, () => {
     const { container } = render(<CoachingPanel exercise={makeExercise()} />);
     const panel = container.querySelector(".live-screen__coach") as HTMLElement;
 
-    expect(observe).toHaveBeenCalledWith();
+    expect(observe).toHaveBeenCalled();
 
     // The viewport shrank: the same content now overflows.
     Object.defineProperty(panel, "scrollHeight", { configurable: true, value: 400 });

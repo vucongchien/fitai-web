@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { afterEach, describe, expect, it, vi } from '@jest/globals';
 import { pushSupport } from "@/shared/push/use-push-registration";
 
 afterEach(() => {

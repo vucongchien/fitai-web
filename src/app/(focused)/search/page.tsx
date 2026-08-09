@@ -12,8 +12,8 @@ export default async function SearchPage() {
     exerciseSearchRepository.search({
       q: "",
       bodyPartIds: [],
-      equipmentIds: [],
       targetMuscleIds: [],
+      equipmentIds: [],
       difficulty: [],
       tagIds: [],
       aiOnly: false,

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from '@jest/globals';
+import { describe, expect, it, vi } from 'vitest';
 
 
 import {
@@ -10,19 +10,19 @@ import {
   updateProfileServerAction,
 } from "../../../src/features/profile/server/profile-actions";
 
-vi.mock<typeof import('@/shared/auth/session')>(import('@/shared/auth/session'), () => ({
+vi.mock("@/shared/auth/session", () => ({
   getAccessToken: vi.fn().mockResolvedValue("mock-access-token"),
 }));
 
 const mockUpdateProfile = vi.fn();
 
-vi.mock<typeof import('@connectrpc/connect')>(import('@connectrpc/connect'), () => ({
+vi.mock("@connectrpc/connect", () => ({
   createClient: vi.fn(() => ({
     updateProfile: mockUpdateProfile,
   })),
 }));
 
-vi.mock<typeof import('@/shared/api/server/transport')>(import('@/shared/api/server/transport'), () => ({
+vi.mock("@/shared/api/server/transport", () => ({
   createServerTransport: vi.fn(() => ({})),
 }));
 

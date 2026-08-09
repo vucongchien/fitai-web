@@ -18,15 +18,3 @@ export interface AdhocConfig {
   defaultExercises: ExerciseResult[];
 }
 
-export interface AiRecommendResult {
-  exercises: {
-    id: string;
-    name: string;
-    prescription: string;
-    rest: string;
-    note: string;
-    sets: number;
-    reps: number;
-    weightKg?: number;
-  }[];
-}

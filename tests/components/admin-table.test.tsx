@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it, vi } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 
 import type { AdminTableProps, Column } from "@/features/admin/ui/admin-table";

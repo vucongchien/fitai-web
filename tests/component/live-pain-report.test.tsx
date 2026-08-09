@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { afterEach, describe, expect, it, vi } from '@jest/globals';
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 

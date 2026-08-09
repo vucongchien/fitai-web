@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it } from '@jest/globals';
 import { shouldCalibrate } from "@/features/workout/domain/calibration-gate";
 import type { LiveStatus } from "@/features/workout/model/use-live-session";
 

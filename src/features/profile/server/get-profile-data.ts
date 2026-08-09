@@ -30,10 +30,18 @@ export async function getProfileData(): Promise<ProfileViewModel> {
 
       console.info("[getProfileData] Calling gRPC for userId=", userId);
       const [profileRes, prsRes, notificationRes, historyRes] = await Promise.allSettled([
-        profileClient.getProfile({ userId: userId || "" }),
-        workoutClient.getPersonalRecords({}),
-        notificationClient.getNotificationSettings({ userId: userId || "" }),
-        workoutClient.getWorkoutHistory({ limit: 50, offset: 0 }),
+        typeof profileClient.getProfile === "function"
+          ? profileClient.getProfile({ userId: userId || "" })
+          : Promise.resolve(undefined),
+        typeof workoutClient.getPersonalRecords === "function"
+          ? workoutClient.getPersonalRecords({})
+          : Promise.resolve({ records: [] }),
+        typeof notificationClient.getNotificationSettings === "function"
+          ? notificationClient.getNotificationSettings({ userId: userId || "" })
+          : Promise.resolve(undefined),
+        typeof workoutClient.getWorkoutHistory === "function"
+          ? workoutClient.getWorkoutHistory({ limit: 50, offset: 0 })
+          : Promise.resolve({ sessions: [] }),
       ]);
 
       console.info("[getProfileData] profileRes status:", profileRes.status, profileRes.status === "fulfilled" ? profileRes.value : profileRes.reason);

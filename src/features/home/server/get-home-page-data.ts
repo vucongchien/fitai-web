@@ -232,6 +232,8 @@ export async function getHomePageData(): Promise<HomePageData> {
         return "";
       };
 
+      const dynamicMuscleGroups = buildDynamicMuscleGroups(catalogData.bodyParts);
+
       let featuredExercises: FeaturedExerciseItem[] = [];
 
       if (exerciseRes.status === "fulfilled" && exerciseRes.value.exercises?.length) {
@@ -249,8 +251,8 @@ export async function getHomePageData(): Promise<HomePageData> {
         const repoResults = await exerciseSearchRepository.search({
           q: "",
           bodyPartIds: [],
-          equipmentIds: [],
           targetMuscleIds: [],
+          equipmentIds: [],
           difficulty: [],
           tagIds: [],
           aiOnly: false,
@@ -422,7 +424,7 @@ export async function getHomePageData(): Promise<HomePageData> {
         },
         quickActions: DEFAULT_QUICK_ACTIONS,
         featuredExercises,
-        muscleGroups: DEFAULT_MUSCLE_GROUPS,
+        muscleGroups: dynamicMuscleGroups,
       };
     } catch (error) {
       console.warn("[getHomePageData] gRPC error:", error);
@@ -433,8 +435,8 @@ export async function getHomePageData(): Promise<HomePageData> {
     exerciseSearchRepository.search({
       q: "",
       bodyPartIds: [],
-      equipmentIds: [],
       targetMuscleIds: [],
+      equipmentIds: [],
       difficulty: [],
       tagIds: [],
       aiOnly: false,

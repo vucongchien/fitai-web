@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it } from '@jest/globals';
 import { act, render, screen } from "@testing-library/react";
 
 import { ToastProvider, useToast } from "@/shared/ui/toast/toast-context";

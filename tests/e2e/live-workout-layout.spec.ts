@@ -1,6 +1,5 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
-import { expect, test } from "vitest";
 
 // IPhone 14-ish viewport — the smallest target the spec cares about.
 test.use({ viewport: { height: 844, width: 390 } });

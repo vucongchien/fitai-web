@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it } from '@jest/globals';
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import type { QuickAction } from "@/features/home/model/home-page.types";
