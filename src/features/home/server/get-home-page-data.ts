@@ -28,7 +28,7 @@ import { getAuthenticatedSession } from "@/shared/auth/session";
 import { cleanMealDisplayName, normalizeTodayMenu } from "@/features/nutrition/model/meal-detail.mapper";
 import { readLocalMeals } from "@/features/nutrition/server/local-meal-log";
 import { dayKeyFromLoggedAt, dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
-import { toMealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
+import { deduplicateMealRows, toMealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 
 const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
   {
@@ -205,7 +205,7 @@ export async function getHomePageData(): Promise<HomePageData> {
 
       const nutHistoryMeals = nutHistoryRes.status === "fulfilled" && nutHistoryRes.value?.meals ? nutHistoryRes.value.meals : [];
       const localMeals = localMealsRes.status === "fulfilled" ? localMealsRes.value : [];
-      const allMealRows = [...nutHistoryMeals, ...localMeals];
+      const allMealRows = deduplicateMealRows([...nutHistoryMeals, ...localMeals]);
       const todayLoggedMeals = allMealRows.filter((row) => {
         const key = dayKeyFromLoggedAt(row.loggedAt);
         if (!key) {
@@ -250,6 +250,7 @@ export async function getHomePageData(): Promise<HomePageData> {
           q: "",
           bodyPartIds: [],
           equipmentIds: [],
+          targetMuscleIds: [],
           difficulty: [],
           tagIds: [],
           aiOnly: false,
@@ -405,7 +406,6 @@ export async function getHomePageData(): Promise<HomePageData> {
       const activeSession = matchedDayPlan?.sessionPlans?.[0];
       const coachNote = activeSession?.reasoning || null;
 
-      const dynamicMuscleGroups = buildDynamicMuscleGroups(catalogData.bodyParts);
       const streakDays = history.length > 0 ? Math.min(history.length, 30) : 0;
 
       return {
@@ -434,6 +434,7 @@ export async function getHomePageData(): Promise<HomePageData> {
       q: "",
       bodyPartIds: [],
       equipmentIds: [],
+      targetMuscleIds: [],
       difficulty: [],
       tagIds: [],
       aiOnly: false,

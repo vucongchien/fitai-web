@@ -22,16 +22,16 @@ export function NutritionView({ data }: NutritionViewProps) {
         ariaLabel={`Consumed ${todayCalories} kcal today against a ${data.caloriesTargetPerDay} kcal daily target`}
         dateLabel={data.dateLabel}
         max={data.caloriesTargetPerDay}
-        note={`Target ${data.caloriesTargetPerDay.toLocaleString()} kcal / day`}
+        note={`Target ${data.caloriesTargetPerDay.toLocaleString("en-US")} kcal / day`}
         stats={data.macros.map((macro, index) => ({
           Icon: MACRO_ICONS[index] ?? Beef,
           label: `${macro.label} / day`,
-          value: `${macro.gramsPerDay.toLocaleString()} g`,
+          value: `${macro.gramsPerDay.toLocaleString("en-US")} g`,
         }))}
         tone="recovery"
         unit="kcal"
         value={todayCalories}
-        valueText={todayCalories === 0 ? "0" : todayCalories.toLocaleString()}
+        valueText={todayCalories === 0 ? "0" : todayCalories.toLocaleString("en-US")}
       />
       <section className="content-section">
         <div className="content-section__header">

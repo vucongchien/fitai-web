@@ -64,13 +64,17 @@ export function dayKeyFromLoggedAt(loggedAt: string | undefined): DayKey | null 
     return null;
   }
 
+  const leading = /^(\d{4}-\d{2}-\d{2})/.exec(loggedAt.trim());
+  if (leading?.[1]) {
+    return leading[1];
+  }
+
   const parsed = new Date(loggedAt);
   if (!Number.isNaN(parsed.getTime())) {
     return toDayKey(parsed);
   }
 
-  const leading = /^(\d{4}-\d{2}-\d{2})/.exec(loggedAt);
-  return leading?.[1] ?? null;
+  return null;
 }
 
 /** Minutes since midnight, for ordering a day's meals. Unparseable values sort last. */
@@ -81,7 +85,7 @@ export function minutesOfDay(loggedAt: string | undefined): number {
 
   const parsed = new Date(loggedAt);
   if (!Number.isNaN(parsed.getTime())) {
-    return parsed.getUTCHours() * 60 + parsed.getUTCMinutes();
+    return parsed.getHours() * 60 + parsed.getMinutes();
   }
 
   const clock = /(\d{1,2}):(\d{2})/.exec(loggedAt);

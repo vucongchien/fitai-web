@@ -93,22 +93,85 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
         {/* Two numbers, not five. Duration and volume are what the session
             actually was; RPE and form score were self-reported or absent, and a
             wall of stats buries the one thing the user came here to see. */}
-        <dl className="summary-stats summary-stats--pair">
-          <div>
-            <dt>Time</dt>
-            <dd className="data-value">{report.durationMin} min</dd>
-          </div>
-          <div>
-            <dt>Volume</dt>
-            <dd className="data-value">
-              {report.totalVolumeKg > 0 ? `${formattedVolume} kg` : "Bodyweight"}
-            </dd>
-          </div>
-          <div>
-            <dt>Completed Sets</dt>
-            <dd className="data-value">{`${report.totalSets} sets`}</dd>
-          </div>
-        </dl>
+        {/* Calculate fatigue percentage on a 100% scale */}
+        {(() => {
+          const fatiguePct = report.averageRpe && report.averageRpe > 0
+            ? Math.min(100, Math.max(10, Math.round((report.averageRpe / 10) * 100)))
+            : Math.min(100, Math.max(30, Math.round((report.totalSets / 10) * 75)));
+
+          const fatigueLabel =
+            fatiguePct >= 85
+              ? "Hết sức (High)"
+              : fatiguePct >= 70
+              ? "Mệt nhiều (Optimal)"
+              : fatiguePct >= 50
+              ? "Vừa sức (Moderate)"
+              : "Nhẹ (Low)";
+
+          const fatigueColor =
+            fatiguePct >= 85
+              ? "#ef4444"
+              : fatiguePct >= 70
+              ? "#f59e0b"
+              : fatiguePct >= 50
+              ? "#10b981"
+              : "#3b82f6";
+
+          return (
+            <>
+              <dl className="summary-stats summary-stats--pair" style={{ marginBottom: "20px" }}>
+                <div>
+                  <dt>Time</dt>
+                  <dd className="data-value">{report.durationMin} min</dd>
+                </div>
+                <div>
+                  <dt>Volume</dt>
+                  <dd className="data-value">
+                    {report.totalVolumeKg > 0 ? `${formattedVolume} kg` : "Bodyweight"}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Completed Sets</dt>
+                  <dd className="data-value">{`${report.totalSets} sets`}</dd>
+                </div>
+                <div>
+                  <dt>Độ mệt mỏi</dt>
+                  <dd className="data-value" style={{ color: fatigueColor }}>
+                    {fatiguePct}%
+                  </dd>
+                </div>
+              </dl>
+
+              {/* Visual Fatigue Progress Bar */}
+              <div
+                style={{
+                  background: "var(--color-bg-subtle, #f8fafc)",
+                  padding: "14px 18px",
+                  borderRadius: "16px",
+                  border: "1px solid var(--color-border, #e2e8f0)",
+                  marginBottom: "32px",
+                  marginTop: "8px",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: 600, marginBottom: "8px" }}>
+                  <span style={{ color: "var(--color-text-main, #1e293b)" }}>Chỉ số mệt mỏi thể lực</span>
+                  <span style={{ color: fatigueColor, fontWeight: 700 }}>{fatigueLabel}</span>
+                </div>
+                <div style={{ width: "100%", height: "10px", background: "#e2e8f0", borderRadius: "999px", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      width: `${fatiguePct}%`,
+                      height: "100%",
+                      background: fatigueColor,
+                      borderRadius: "999px",
+                      transition: "width 0.5s ease",
+                    }}
+                  />
+                </div>
+              </div>
+            </>
+          );
+        })()}
 
         {comparison ? (
           <section className="summary-compare" data-direction={comparison.direction}>

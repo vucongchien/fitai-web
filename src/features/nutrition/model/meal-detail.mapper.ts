@@ -194,7 +194,7 @@ function toChoice(option: MealOptionRow, index: number): MealChoice {
 
 /** Loose comparison so "Lean beef pho" and "lean beef pho " count as the same dish. */
 function sameDish(left: string, right: string) {
-  return left.trim().toLowerCase() === right.trim().toLowerCase();
+  return cleanMealDisplayName(left).toLowerCase() === cleanMealDisplayName(right).toLowerCase();
 }
 
 /**

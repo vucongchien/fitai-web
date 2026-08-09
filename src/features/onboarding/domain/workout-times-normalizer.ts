@@ -204,7 +204,7 @@ export function validateTimeSlot(
   const endMin = parseTimeToMinutes(endTime);
 
   if (startMin === null || endMin === null) {
-    return { isValid: false, message: "Invalid time format (HH:mm)" };
+    return { isValid: false, message: "Định dạng thời gian không hợp lệ (HH:mm)" };
   }
 
   let duration = endMin - startMin;
@@ -213,11 +213,11 @@ export function validateTimeSlot(
   }
 
   if (duration < 20) {
-    return { isValid: false, message: "Workout must be at least 20 minutes" };
+    return { isValid: false, message: "Thời gian tập tối thiểu là 20 phút" };
   }
 
   if (duration > 240) {
-    return { isValid: false, message: "Workout should not exceed 4 hours" };
+    return { isValid: false, message: "Thời gian tập không nên vượt quá 4 giờ" };
   }
 
   return { isValid: true, durationMinutes: duration };
@@ -248,7 +248,7 @@ export function normalizeDayKey(rawDay: string): DayOfWeekKey | null {
   if (cleaned.startsWith("sat") || cleaned === "t7" || cleaned === "sa" || cleaned === "saturday") {
     return "sat";
   }
-  if (cleaned.startsWith("sun") || cleaned === "cn" || cleaned === "su" || cleaned === "sunday") {
+  if (cleaned.startsWith("sun") || cleaned === "cn" || cleaned === "su" || cleaned === "sunday" || cleaned.startsWith("chủ")) {
     return "sun";
   }
 

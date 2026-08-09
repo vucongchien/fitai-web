@@ -77,13 +77,14 @@ function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): Exerci
       return;
     }
 
+    const synonyms: string[] = [pLower];
     let foundAny = false;
     catalog.bodyParts.forEach((entry) => {
       const eId = entry.id.toLowerCase();
       const eName = entry.name.toLowerCase();
 
       const isMatch = synonyms.some(
-        (syn) =>
+        (syn: string) =>
           eId === syn ||
           eName === syn ||
           eId.includes(syn) ||
@@ -228,68 +229,6 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
   const results = useMemo(
     () => sortExercises(filterExercises(exercises, filters, catalog), "relevance"),
     [exercises, filters, catalog],
-  );
-
-  const activeChips = useMemo(() => {
-    const chips: Array<{ id: string; type: keyof ExerciseFilters; label: string; value: string }> = [];
-
-    const groupLabelMap: Record<string, string> = {
-      "arms-shoulders": "Arms & Shoulders",
-      "chest-back": "Chest & Back",
-      "legs-glutes": "Legs & Glutes",
-      "core-abs": "Core & Abs",
-    };
-
-    filters.bodyPartIds.forEach((id) => {
-      const gLabel = groupLabelMap[id.toLowerCase()];
-      const bp = catalog.bodyParts.find(
-        (b) => b.id === id || b.id.toLowerCase() === id.toLowerCase(),
-      );
-      const displayLabel = gLabel || (bp ? bp.name : id);
-      chips.push({ id: `body-${id}`, type: "bodyPartIds", label: displayLabel, value: id });
-    });
-
-    (filters.targetMuscleIds || []).forEach((id) => {
-      const tm = catalog.muscles.find(
-        (m) => m.id === id || m.id.toLowerCase() === id.toLowerCase(),
-      );
-      chips.push({ id: `tm-${id}`, type: "targetMuscleIds", label: tm ? tm.name : id, value: id });
-    });
-
-    filters.equipmentIds.forEach((id) => {
-      const eq = catalog.equipments.find((e) => e.id.toLowerCase() === id.toLowerCase());
-      chips.push({ id: `eq-${id}`, type: "equipmentIds", label: eq ? eq.name : id, value: id });
-    });
-
-    filters.difficulty.forEach((diff) => {
-      chips.push({ id: `diff-${diff}`, type: "difficulty", label: diff, value: diff });
-    });
-
-    filters.tagIds.forEach((id) => {
-      const tag = catalog.tags.find((t) => t.id === id);
-      chips.push({ id: `tag-${id}`, type: "tagIds", label: tag ? tag.name : id, value: id });
-    });
-
-    if (filters.aiOnly) {
-      chips.push({ id: "ai-only", type: "aiOnly", label: "AI Supported", value: "aiOnly" });
-    }
-
-    return chips;
-  }, [filters, catalog]);
-
-  const removeChip = useCallback(
-    (type: keyof ExerciseFilters, value: string) => {
-      if (type === "aiOnly") {
-        updateFilters({ ...filters, aiOnly: false });
-      } else {
-        const current = (filters[type] as string[]) || [];
-        updateFilters({
-          ...filters,
-          [type]: current.filter((v) => v !== value),
-        });
-      }
-    },
-    [filters, updateFilters],
   );
 
   const activeCount = countActiveFilters(filters, catalog);

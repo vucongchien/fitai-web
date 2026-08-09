@@ -5,6 +5,7 @@ import { createClient } from "@connectrpc/connect";
 import { adaptNutritionPageData } from "@/features/nutrition/model/nutrition-page.mapper";
 import type { NutritionPageData } from "@/features/nutrition/model/nutrition-page.types";
 import { dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
+import { deduplicateMealRows } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
@@ -43,15 +44,7 @@ async function getRealNutritionPageData(
   console.info("[getRealNutritionPageData] menuRes status:", menuRes.status, menuRes.status === "rejected" ? menuRes.reason : "");
   const summary = summaryRes.status === "fulfilled" && summaryRes.value ? summaryRes.value : DEFAULT_SUMMARY;
   const historyRaw = historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
-  const seenIds = new Set<string>();
-  const history = [...historyRaw, ...localRows].filter((r) => {
-    const id = r.mealLogId || `${r.mealName}-${r.mealType}-${r.loggedAt}`;
-    if (seenIds.has(id)) {
-      return false;
-    }
-    seenIds.add(id);
-    return true;
-  });
+  const history = deduplicateMealRows([...historyRaw, ...localRows]);
 
   const todayMenu = menuRes.status === "fulfilled" && menuRes.value
     ? (menuRes.value.meals as any)

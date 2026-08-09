@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { describe, expect, it } from '@jest/globals';
 import { render, screen } from "@testing-library/react";
 import { MealDetailView } from "@/features/nutrition/ui/meal-detail-view";
 import type { MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";

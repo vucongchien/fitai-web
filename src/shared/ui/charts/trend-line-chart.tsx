@@ -99,7 +99,7 @@ export function TrendLineChart({
           <span className="chart-legend__series">Logged</span>
           <span className="chart-legend__reference">
             {reference.label} ·{" "}
-            <span className="data-value">{reference.value.toLocaleString()}</span>
+            <span className="data-value">{reference.value.toLocaleString("en-US")}</span>
           </span>
         </figcaption>
       ) : null}

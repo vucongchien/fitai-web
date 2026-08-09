@@ -38,8 +38,15 @@ export function DemoVideoOverlay({
   }, []);
 
   return (
-    <div aria-label={`${name} demo`} aria-modal="true" className="demo-video" role="dialog">
-      <div className="demo-video__panel">
+    <div
+      aria-label={`${name} demo`}
+      aria-modal="true"
+      className="demo-video"
+      role="dialog"
+      onClick={onClose}
+      style={{ cursor: "pointer" }}
+    >
+      <div className="demo-video__panel" onClick={(e) => e.stopPropagation()} style={{ cursor: "default" }}>
         {parsed.type === "youtube" ? (
           <iframe
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

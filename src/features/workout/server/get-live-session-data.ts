@@ -359,6 +359,17 @@ async function getRealLiveSession(sessionId: string, accessToken: string, userId
   const exercises = createClient(ExerciseService, transport);
   const execution = createClient(WorkoutExecutionService, transport);
 
+  // Initialize or attach to active session in execution service DB
+  try {
+    await execution.startScheduledWorkoutSession({ sessionId });
+  } catch {
+    try {
+      await execution.startWorkoutSession({ planId: sessionId });
+    } catch {
+      // Reuse existing active session if one is already in progress
+    }
+  }
+
   const sessionRes = await coaching.getSessionPlan({ userId, sessionPlanId: sessionId });
   const prescription = sessionRes.sessionPlan?.prescription;
   if (!sessionRes.sessionPlan || !prescription) {

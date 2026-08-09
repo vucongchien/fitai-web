@@ -30,6 +30,7 @@ export async function searchExercises(query: string): Promise<ExerciseResult[]> 
     q: query,
     bodyPartIds: [],
     equipmentIds: [],
+    targetMuscleIds: [],
     difficulty: [],
     tagIds: [],
     aiOnly: false,
@@ -113,7 +114,45 @@ export async function getAiRecommendation(): Promise<AiRecommendResult> {
 }
 
 /**
- * Create an adhoc session plan and start it.
+ * In-memory cache for active workout session UUID.
+ * Auto-expires after 10 minutes of inactivity.
+ */
+interface SessionCacheEntry {
+  sessionId: string;
+  updatedAt: number;
+}
+
+const activeSessionCache = new Map<string, SessionCacheEntry>();
+const TEN_MINUTES_MS = 10 * 60 * 1000;
+
+function storeActiveSession(key: string, realSessionId: string): void {
+  if (!realSessionId) return;
+  const entry: SessionCacheEntry = { sessionId: realSessionId, updatedAt: Date.now() };
+  activeSessionCache.set(key, entry);
+  activeSessionCache.set("CURRENT_ACTIVE", entry);
+}
+
+function getActiveSession(key: string): string | null {
+  const entry = activeSessionCache.get(key) || activeSessionCache.get("CURRENT_ACTIVE");
+  if (!entry) return null;
+
+  // Auto-expire after 10 minutes of inactivity
+  if (Date.now() - entry.updatedAt > TEN_MINUTES_MS) {
+    activeSessionCache.delete(key);
+    activeSessionCache.delete("CURRENT_ACTIVE");
+    return null;
+  }
+
+  entry.updatedAt = Date.now();
+  return entry.sessionId;
+}
+
+export async function clearActiveSessionCache(): Promise<void> {
+  activeSessionCache.clear();
+}
+
+/**
+ * Start an ad-hoc session built from selected exercise IDs.
  */
 export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sessionId: string }> {
   const accessToken = await getAccessToken();
@@ -133,6 +172,11 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
       const planId = adhocPlan.sessionPlan?.sessionPlanId || `plan_${Date.now()}`;
       const started = await executionClient.startWorkoutSession({ planId });
 
+      if (started?.sessionId) {
+        storeActiveSession(planId, started.sessionId);
+        storeActiveSession(started.sessionId, started.sessionId);
+      }
+
       return { sessionId: started.sessionId };
     } catch (error) {
       console.warn("[beginWorkoutSession] gRPC fallback to local session id:", error);
@@ -144,8 +188,76 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
 }
 
 /**
- * Persist one confirmed set.
+ * Start a pre-scheduled workout session.
  */
+export async function startScheduledSession(sessionPlanId: string): Promise<{ sessionId: string }> {
+  const accessToken = await getAccessToken();
+
+  if (process.env.FITAI_RPC_URL && accessToken) {
+    try {
+      const transport = createServerTransport(accessToken);
+      const executionClient = createClient(WorkoutExecutionService, transport);
+
+      const res = await executionClient.startScheduledWorkoutSession({ sessionId: sessionPlanId });
+      const activeId = res.sessionId || sessionPlanId;
+      storeActiveSession(sessionPlanId, activeId);
+      return { sessionId: activeId };
+    } catch (error) {
+      console.warn("[startScheduledSession] gRPC error:", error);
+    }
+  }
+
+  return { sessionId: sessionPlanId };
+}
+
+/**
+ * Persist one confirmed set using cached session ID.
+ */
+async function ensureWorkoutSessionActive(executionClient: any, sessionId: string): Promise<string> {
+  // 1. Check in-memory cache first (Zero BE network calls!)
+  const cachedId = getActiveSession(sessionId);
+  if (cachedId) {
+    return cachedId;
+  }
+
+  // 2. Check recent active session from user history
+  try {
+    const history = await executionClient.getWorkoutHistory({ limit: 1, offset: 0 });
+    const activeSessionId = history.sessions?.[0]?.sessionId;
+    if (activeSessionId) {
+      storeActiveSession(sessionId, activeSessionId);
+      return activeSessionId;
+    }
+  } catch {
+    // Ignore
+  }
+
+  // 3. Create a new workout session via startWorkoutSession if missing
+  try {
+    const started = await executionClient.startWorkoutSession({ planId: sessionId });
+    if (started?.sessionId) {
+      storeActiveSession(sessionId, started.sessionId);
+      return started.sessionId;
+    }
+  } catch (err: any) {
+    const msg = err?.message || err?.rawMessage || "";
+    if (msg.includes("active workout session already exists")) {
+      try {
+        const history = await executionClient.getWorkoutHistory({ limit: 1, offset: 0 });
+        const existingActiveId = history.sessions?.[0]?.sessionId;
+        if (existingActiveId) {
+          storeActiveSession(sessionId, existingActiveId);
+          return existingActiveId;
+        }
+      } catch {
+        // Ignore
+      }
+    }
+  }
+
+  return sessionId;
+}
+
 export async function logWorkoutSet(
   sessionId: string,
   set: SetLogDraft,
@@ -157,8 +269,10 @@ export async function logWorkoutSet(
       const transport = createServerTransport(accessToken);
       const executionClient = createClient(WorkoutExecutionService, transport);
 
+      const targetSessionId = await ensureWorkoutSessionActive(executionClient, sessionId);
+
       const res = await executionClient.logWorkoutSet({
-        sessionId,
+        sessionId: targetSessionId,
         setNumber: set.setNumber,
         exerciseId: set.exerciseId,
         targetReps: set.targetReps,
@@ -176,7 +290,7 @@ export async function logWorkoutSet(
     }
   }
 
-  return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` }; //Hard code: offline fallback set ID generation
+  return { setLogId: `set_${sessionId}_${set.exerciseId}_${set.setNumber}` };
 }
 
 /**
@@ -193,10 +307,34 @@ export async function syncWorkoutLogs(
       const transport = createServerTransport(accessToken);
       const executionClient = createClient(WorkoutExecutionService, transport);
 
-      await executionClient.syncWorkoutLogs({
-        sessionId,
-        errors: [],
-      });
+      const targetSessionId = await ensureWorkoutSessionActive(executionClient, sessionId);
+
+      if (sets.length > 0) {
+        await Promise.all(
+          sets.map((set) =>
+            executionClient.logWorkoutSet({
+              sessionId: targetSessionId,
+              setNumber: set.setNumber,
+              exerciseId: set.exerciseId,
+              targetReps: set.targetReps,
+              actualReps: set.actualReps,
+              weight: set.weightKg,
+              formScore: set.formScore ?? undefined,
+              rpe: set.rpe ?? 0,
+              cameraAngle: set.cameraAngle || "front",
+              reps: [],
+            }),
+          ),
+        );
+      }
+
+      // Also call syncWorkoutLogs for error logs if any
+      await executionClient
+        .syncWorkoutLogs({
+          sessionId: targetSessionId,
+          errors: [],
+        })
+        .catch(() => null);
 
       return { syncedSetNumbers: sets.map((s) => s.setNumber) };
     } catch (error: any) {
@@ -226,19 +364,26 @@ export async function abortWorkoutSession(
       const transport = createServerTransport(accessToken);
       const executionClient = createClient(WorkoutExecutionService, transport);
 
+      const targetSessionId = await ensureWorkoutSessionActive(executionClient, sessionId);
+
       const res = await executionClient.abortWorkoutSession({
-        sessionId,
+        sessionId: targetSessionId,
         reason: `${reason}${note ? `: ${note}` : ""}`,
       });
+
+      await clearActiveSessionCache();
 
       return {
         abortedAt: res.abortedAt ? Number(res.abortedAt.seconds) * 1000 : Date.now(),
       };
     } catch (error) {
       console.warn("[abortWorkoutSession] gRPC fallback:", error);
+    } finally {
+      await clearActiveSessionCache();
     }
   }
 
+  await clearActiveSessionCache();
   return { abortedAt: Date.now() }; //Hard code: offline fallback timestamp
 }
 
@@ -275,11 +420,15 @@ export async function completeWorkoutSession(
       const transport = createServerTransport(accessToken);
       const executionClient = createClient(WorkoutExecutionService, transport);
 
+      const targetSessionId = await ensureWorkoutSessionActive(executionClient, sessionId);
+
       const res = await executionClient.completeWorkoutSession({
-        sessionId,
+        sessionId: targetSessionId,
         confirmOverload,
         weightUpdateKg: localTotals.totalVolumeKg,
       });
+
+      await clearActiveSessionCache();
 
       return {
         sessionId: res.sessionId,
@@ -291,9 +440,12 @@ export async function completeWorkoutSession(
       };
     } catch (error) {
       console.warn("[completeWorkoutSession] gRPC fallback to local calculation:", error);
+    } finally {
+      await clearActiveSessionCache();
     }
   }
 
+  await clearActiveSessionCache();
   return localTotals;
 }
 

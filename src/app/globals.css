@@ -4505,13 +4505,42 @@ a.week-route__row:hover {
   animation: sheet-slide-up 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes sheet-slide-up {
+@keyframes sheet-fade-out {
   from {
-    transform: translateY(100%);
+    opacity: 1;
   }
   to {
-    transform: translateY(0);
+    opacity: 0;
   }
+}
+
+@keyframes sheet-slide-down {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.live-sheet--closing {
+  animation: sheet-fade-out 220ms ease-in forwards !important;
+}
+
+.live-sheet--closing .live-sheet__panel,
+.live-sheet--closing .end-dialog,
+.live-sheet--closing .set-confirm-dialog,
+.live-sheet--closing .pain-dialog,
+.live-sheet--closing .demo-video__panel {
+  animation: sheet-slide-down 240ms cubic-bezier(0.7, 0, 0.84, 0) forwards !important;
+}
+
+.end-dialog,
+.set-confirm-dialog,
+.pain-dialog {
+  animation: sheet-slide-up 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .live-sheet__header {

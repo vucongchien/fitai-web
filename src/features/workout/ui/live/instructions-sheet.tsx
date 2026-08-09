@@ -3,8 +3,28 @@
 import { AlertCircle, CheckCircle2, Play, Volume2, VolumeX, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-import { speakText } from "@/features/workout/domain/audio-cues";
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
+
+function parseInstructions(text: string): string[] {
+  if (!text) return [];
+
+  // Match pattern: "1. Step text 2. Step text..." or line breaks "\n"
+  const hasStepNumbers = /(?:\d+\.\s+)/.test(text);
+
+  if (hasStepNumbers) {
+    const parts = text.split(/(?=\d+\.\s+)/).map((s) => s.trim()).filter(Boolean);
+    if (parts.length > 1) {
+      return parts.map((p) => p.replace(/^\d+\.\s*/, "").trim());
+    }
+  }
+
+  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  if (lines.length > 1) {
+    return lines;
+  }
+
+  return [text];
+}
 
 /**
  * "Read the guide" — instructions, form cues and common mistakes for the current
@@ -28,41 +48,76 @@ export function InstructionsSheet({
     setIsSpeaking(false);
   }, []);
 
-  const handleSpeech = useCallback(() => {
-    if (isSpeaking) {
-      stopSpeech();
+  const startSpeech = useCallback(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
       return;
     }
 
+    const steps = parseInstructions(exercise.instructions || "");
+    const formattedSteps = steps.length > 0 ? steps.map((s, idx) => `Bước ${idx + 1}: ${s}`).join(". ") : "";
+
     const textToRead = [
       `Bài tập ${exercise.name}.`,
-      exercise.instructions ? `Hướng dẫn thực hiện: ${exercise.instructions}` : "",
+      formattedSteps ? `Hướng dẫn các bước thực hiện: ${formattedSteps}` : "",
       exercise.breathingCue ? `Hít thở: ${exercise.breathingCue}` : "",
       exercise.formCues.length > 0 ? `Lưu ý tư thế: ${exercise.formCues.join(", ")}` : "",
     ]
       .filter(Boolean)
       .join(" ");
 
-    setIsSpeaking(true);
-    speakText(textToRead);
-  }, [exercise, isSpeaking, stopSpeech]);
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.lang = "vi-VN";
+      utterance.rate = 1.0;
+      utterance.volume = 1.0;
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      setIsSpeaking(true);
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      setIsSpeaking(false);
+    }
+  }, [exercise]);
 
-  // Tự động phát TTS đọc hướng dẫn khi sheet vừa mở
+  const toggleSpeech = useCallback(() => {
+    if (isSpeaking) {
+      stopSpeech();
+    } else {
+      startSpeech();
+    }
+  }, [isSpeaking, startSpeech, stopSpeech]);
+
+  // Tự động đọc giọng nói hướng dẫn ngay khi mở sách hướng dẫn
   useEffect(() => {
-    handleSpeech();
+    startSpeech();
     return () => {
       stopSpeech();
     };
-  }, []);
+  }, [startSpeech, stopSpeech]);
+
+  const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = () => {
+    if (isClosing) return;
+    setIsClosing(true);
     stopSpeech();
-    onClose();
+    setTimeout(() => {
+      onClose();
+    }, 220);
   };
 
+  const steps = parseInstructions(exercise.instructions || "");
+
   return (
-    <div aria-label={`How to do ${exercise.name}`} className="live-sheet" role="dialog">
-      <div className="live-sheet__panel">
+    <div
+      aria-label={`How to do ${exercise.name}`}
+      className={`live-sheet ${isClosing ? "live-sheet--closing" : ""}`}
+      role="dialog"
+      onClick={handleClose}
+      style={{ cursor: "pointer" }}
+    >
+      <div className="live-sheet__panel" onClick={(e) => e.stopPropagation()} style={{ cursor: "default" }}>
         <header className="live-sheet__header">
           <div>
             <p className="utility-label">How to do it</p>
@@ -70,11 +125,20 @@ export function InstructionsSheet({
           </div>
           <div className="flex items-center gap-2">
             <button
-              aria-label={isSpeaking ? "Tắt giọng nói hướng dẫn" : "Đọc hướng dẫn bằng TTS"}
-              className={`live-media__control ${isSpeaking ? "bg-primary text-primary-foreground" : ""}`}
-              onClick={handleSpeech}
-              title={isSpeaking ? "Tắt giọng nói hướng dẫn" : "Đọc hướng dẫn bằng TTS"}
+              aria-label={isSpeaking ? "Tắt âm thanh (Đang phát)" : "Đọc hướng dẫn bằng giọng nói"}
+              className={`live-media__control ${isSpeaking ? "bg-red-500 text-white" : ""}`}
+              onClick={toggleSpeech}
+              title={isSpeaking ? "Tắt âm thanh (Đang phát)" : "Đọc hướng dẫn bằng giọng nói"}
               type="button"
+              style={
+                isSpeaking
+                  ? {
+                      background: "var(--color-primary-600, #2563eb)",
+                      color: "#ffffff",
+                      boxShadow: "0 0 10px rgba(37, 99, 235, 0.5)",
+                    }
+                  : undefined
+              }
             >
               {isSpeaking ? <VolumeX aria-hidden="true" size={18} /> : <Volume2 aria-hidden="true" size={18} />}
             </button>
@@ -99,7 +163,59 @@ export function InstructionsSheet({
         </header>
 
         <div className="live-sheet__body">
-          {exercise.instructions ? <p className="detail-body">{exercise.instructions}</p> : null}
+          {steps.length > 1 ? (
+            <div className="detail-section">
+              <h3>Các bước thực hiện</h3>
+              <ol
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                  padding: 0,
+                  margin: "12px 0 20px 0",
+                  listStyle: "none",
+                }}
+              >
+                {steps.map((step, idx) => (
+                  <li
+                    key={idx}
+                    style={{
+                      display: "flex",
+                      gap: "14px",
+                      alignItems: "flex-start",
+                      background: "var(--color-bg-subtle, #f8fafc)",
+                      padding: "14px 16px",
+                      borderRadius: "14px",
+                      border: "1px solid var(--color-border, #e2e8f0)",
+                    }}
+                  >
+                    <span
+                      style={{
+                        minWidth: "26px",
+                        height: "26px",
+                        borderRadius: "50%",
+                        background: "var(--color-primary-600, #2563eb)",
+                        color: "#ffffff",
+                        fontWeight: 700,
+                        fontSize: "13px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {idx + 1}
+                    </span>
+                    <p style={{ margin: 0, fontSize: "15px", lineHeight: "1.5", color: "var(--color-text-main, #1e293b)", fontWeight: 500 }}>
+                      {step}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : exercise.instructions ? (
+            <p className="detail-body">{exercise.instructions}</p>
+          ) : null}
 
           {exercise.notes ? (
             <section className="detail-section">

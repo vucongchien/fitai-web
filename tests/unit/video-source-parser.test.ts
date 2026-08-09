@@ -1,5 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
-
+import { describe, expect, it } from "vitest";
 
 import { parseVideoSource } from "@/features/workout/domain/video-source-parser";
 
@@ -8,7 +7,7 @@ describe("video Source Parser (YouTube vs Direct MP4)", () => {
     const res = parseVideoSource("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     expect(res.type).toBe("youtube");
     expect(res.videoId).toBe("dQw4w9WgXcQ");
-    expect(res.embedUrl).toContain("https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ");
+    expect(res.embedUrl).toContain("https://www.youtube.com/embed/dQw4w9WgXcQ");
     expect(res.embedUrl).toContain("autoplay=1");
   });
 
@@ -16,7 +15,7 @@ describe("video Source Parser (YouTube vs Direct MP4)", () => {
     const res = parseVideoSource("https://youtu.be/abc123XYZ45");
     expect(res.type).toBe("youtube");
     expect(res.videoId).toBe("abc123XYZ45");
-    expect(res.embedUrl).toContain("https://www.youtube-nocookie.com/embed/abc123XYZ45");
+    expect(res.embedUrl).toContain("https://www.youtube.com/embed/abc123XYZ45");
   });
 
   it("recognizes youtube embed and shorts URLs", () => {

@@ -19,6 +19,7 @@ import type { EndDialogVariant } from "@/features/workout/ui/live/end-session-di
 import { EndSessionDialog } from "@/features/workout/ui/live/end-session-dialog";
 import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
 import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
+import { SetConfirmDialog } from "@/features/workout/ui/live/set-confirm-dialog";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
 import { toast } from "@/shared/ui/toast";
 
@@ -50,6 +51,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const [endOpen, setEndOpen] = useState(false);
   const [painOpen, setPainOpen] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
+  const [confirmSetOpen, setConfirmSetOpen] = useState(false);
 
   const motion = useMotionEngine({
     onFallback: (reason) => {
@@ -211,6 +213,26 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     />
   ) : null;
 
+  const confirmDialog = confirmSetOpen && exercise ? (
+    <SetConfirmDialog
+      aiCountedReps={cameraActive ? (motion.repCount ?? 0) : 0}
+      currentSet={step.setNumber}
+      exercise={exercise}
+      onClose={() => setConfirmSetOpen(false)}
+      onConfirm={(data) => {
+        setConfirmSetOpen(false);
+        finishSet(listening, {
+          actualReps: data.actualReps,
+          actualSeconds: data.actualSeconds,
+          weightKg: data.weightKg,
+          rpe: data.rpe,
+        });
+      }}
+      secondsElapsed={session.setTotal > 0 ? session.setTotal - session.setLeft : 0}
+      totalSets={Math.max(1, exercise.targetSets)}
+    />
+  ) : null;
+
   if (session.status === "resting") {
     const next = session.step;
     if (!next) {
@@ -236,6 +258,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         />
         {painDialog}
         {endDialog}
+        {confirmDialog}
       </>
     );
   }
@@ -249,7 +272,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         exercise={exercise}
         onAddTime={() => session.actions.addSetTime(ADD_SECONDS)}
         onBack={onBack}
-        onDone={() => finishSet(listening)}
+        onDone={() => setConfirmSetOpen(true)}
         onOpenGuide={() => setGuideOpen(true)}
         onReportPain={() => setPainOpen(true)}
         onToggleCamera={onToggleCamera}
@@ -262,6 +285,8 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         totalSets={Math.max(1, exercise.targetSets)}
         voiceOn={listening}
       />
+
+      {confirmDialog}
 
       {/*
         Framing check before an AI set — ux-flow-spec §5.3. It covers the active

@@ -79,6 +79,10 @@ function isUnreachable(error: unknown): boolean {
 function revalidateReaders(slot: MealSlot) {
   revalidatePath("/nutrition");
   revalidatePath(`/nutrition/${slot}`);
+  revalidatePath("/nutrition/breakfast");
+  revalidatePath("/nutrition/lunch");
+  revalidatePath("/nutrition/dinner");
+  revalidatePath("/nutrition/snack");
   revalidatePath("/home");
 }
 
@@ -119,6 +123,9 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
   const userId = await getAuthenticatedUserId();
   const cleanName = cleanMealDisplayName(input.mealName);
 
+  // Always write to local storage first so the local session UI immediately shows the meal
+  const localMealId = await appendLocalMeal({ ...input, mealName: cleanName, loggedAt });
+
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {
       const client = createClient(NutritionService, createServerTransport(accessToken));
@@ -151,14 +158,12 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
         return { message: response.message || "The meal could not be saved.", ok: false };
       }
 
-      await appendLocalMeal({ ...input, mealName: cleanName, loggedAt });
       revalidateReaders(input.slot);
-      return { mealLogId: response.mealLogId, ok: true };
+      return { mealLogId: response.mealLogId || localMealId, ok: true };
     } catch (error) {
       if (isUnreachable(error)) {
-        const mealLogId = await appendLocalMeal({ ...input, mealName: cleanName, loggedAt });
         revalidateReaders(input.slot);
-        return { mealLogId, ok: true };
+        return { mealLogId: localMealId, ok: true };
       }
 
       const detail = error instanceof Error ? error.message : "Unknown transport error";
@@ -166,9 +171,8 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
     }
   }
 
-  const mealLogId = await appendLocalMeal({ ...input, mealName: cleanName, loggedAt });
   revalidateReaders(input.slot);
-  return { mealLogId, ok: true };
+  return { mealLogId: localMealId, ok: true };
 }
 
 export interface PantryMealOption {

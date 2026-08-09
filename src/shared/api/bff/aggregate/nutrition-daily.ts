@@ -79,9 +79,36 @@ function sum(values: readonly number[]) {
   return values.reduce((total, value) => total + value, 0);
 }
 
+export function deduplicateMealRows(rows: readonly MealLogRow[]): MealLogRow[] {
+  const seenKeys = new Set<string>();
+  const result: MealLogRow[] = [];
+
+  for (const row of rows) {
+    const cleanName = (row.mealName || "")
+      .replace(/^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-/, "")
+      .trim()
+      .toLowerCase();
+    const slot = (toMealSlot(row.mealType) || "").toLowerCase();
+    const day = dayKeyFromLoggedAt(row.loggedAt) || (row.loggedAt ? row.loggedAt.slice(0, 10) : "");
+
+    const contentKey = `${cleanName}_${slot}_${day}`;
+    const idKey = row.mealLogId && !row.mealLogId.startsWith("local-meal-") ? row.mealLogId : contentKey;
+
+    if (seenKeys.has(idKey) || seenKeys.has(contentKey)) {
+      continue;
+    }
+
+    if (idKey) seenKeys.add(idKey);
+    if (contentKey) seenKeys.add(contentKey);
+    result.push(row);
+  }
+
+  return result;
+}
+
 /** Rows logged on a given day. */
 export function mealsOnDay(rows: readonly MealLogRow[], key: DayKey): MealLogRow[] {
-  return rows.filter((row) => dayKeyFromLoggedAt(row.loggedAt) === key);
+  return deduplicateMealRows(rows.filter((row) => dayKeyFromLoggedAt(row.loggedAt) === key));
 }
 
 /** Number of meals logged on a day. The proto carries no count field. */

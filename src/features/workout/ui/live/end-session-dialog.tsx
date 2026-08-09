@@ -156,17 +156,19 @@ export function EndSessionDialog({
   );
 }
 
-function Dialog({ children, label }: { children: React.ReactNode; label: string }) {
+function Dialog({ children, label, onClose }: { children: React.ReactNode; label: string; onClose?: () => void }) {
   return (
     <div
       aria-label={label}
       aria-modal="true"
       className="live-sheet live-sheet--dialog"
       role="dialog"
+      onClick={onClose}
+      style={{ cursor: onClose ? "pointer" : "default" }}
     >
       {/* The grab handle went with the bottom-sheet position: a centred dialog
           cannot be dragged anywhere, so a drag affordance was a lie. */}
-      <div className="end-dialog">{children}</div>
+      <div className="end-dialog" onClick={(e) => e.stopPropagation()} style={{ cursor: "default" }}>{children}</div>
     </div>
   );
 }

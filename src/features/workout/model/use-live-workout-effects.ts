@@ -202,14 +202,28 @@ export function useLiveWorkoutEffects({
   );
 
   const finishSet = useCallback(
-    (listening: boolean) => {
+    (
+      listening: boolean,
+      customData?: { actualReps?: number; actualSeconds?: number; weightKg?: number; rpe?: number },
+    ) => {
       if (!exercise || !step) {
         return;
       }
       playCueByCode("set-end", listening);
       const isCamera = cameraBranch && camera.state === "ready";
-      const actualReps =
-        isCamera && motion.repCount > 0 ? motion.repCount : (exercise.targetReps ?? 10);
+      const timed = exercise.durationSeconds > 0;
+
+      let actualReps = isCamera && motion.repCount > 0 ? motion.repCount : (exercise.targetReps ?? 10);
+      if (timed) {
+        actualReps = customData?.actualSeconds ?? exercise.durationSeconds ?? 30;
+      } else if (customData?.actualReps !== undefined) {
+        actualReps = customData.actualReps;
+      }
+
+      const weightKg =
+        customData?.weightKg !== undefined ? customData.weightKg : (exercise.targetWeightKg ?? 0);
+
+      const rpe = customData?.rpe !== undefined ? customData.rpe : 8.0;
 
       session.actions.saveSet({
         actualReps,
@@ -218,12 +232,12 @@ export function useLiveWorkoutEffects({
         formScore: isCamera ? 85 : null,
         phase: exercise.phase,
         reps: [],
-        rpe: null,
+        rpe,
         setNumber: step.setNumber,
         source: isCamera ? "camera" : "manual",
-        targetReps: exercise.targetReps,
+        targetReps: timed ? exercise.durationSeconds : exercise.targetReps,
         validFrameRatio: isCamera ? 0.9 : null,
-        weightKg: exercise.targetWeightKg ?? 0,
+        weightKg,
       });
 
       toast.success("Set completed!");

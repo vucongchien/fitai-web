@@ -13,6 +13,7 @@ export default async function SearchPage() {
       q: "",
       bodyPartIds: [],
       equipmentIds: [],
+      targetMuscleIds: [],
       difficulty: [],
       tagIds: [],
       aiOnly: false,

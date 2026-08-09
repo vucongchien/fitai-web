@@ -52,8 +52,10 @@ export function PainReportDialog({
       aria-modal="true"
       className="live-sheet live-sheet--dialog"
       role="dialog"
+      onClick={onDismiss}
+      style={{ cursor: "pointer" }}
     >
-      <div className="pain-dialog">
+      <div className="pain-dialog" onClick={(e) => e.stopPropagation()} style={{ cursor: "default" }}>
         <div className="pain-dialog__mark" aria-hidden="true">
           <HeartPulse size={26} />
         </div>

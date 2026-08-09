@@ -6,6 +6,7 @@ import { adaptMealDetailPageData } from "@/features/nutrition/model/meal-detail.
 import type { DailyMenuRows } from "@/features/nutrition/model/meal-detail.mapper";
 import type { MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";
 import { dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
+import { deduplicateMealRows } from "@/shared/api/bff/aggregate/nutrition-daily";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
@@ -19,6 +20,8 @@ const EMPTY_DAILY_MENU: DailyMenuRows = {
   dinner: [],
   snack: [],
 };
+
+
 
 /**
  * Fetches meal detail from live gRPC backend.
@@ -45,15 +48,7 @@ export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageD
       ]);
 
       const history = historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
-      const seenIds = new Set<string>();
-      const rows = [...history, ...localRows].filter((r) => {
-        const id = r.mealLogId || `${r.mealName}-${r.mealType}-${r.loggedAt}`;
-        if (seenIds.has(id)) {
-          return false;
-        }
-        seenIds.add(id);
-        return true;
-      });
+      const rows = deduplicateMealRows([...history, ...localRows]);
 
       if (menuRes.status === "fulfilled" && menuRes.value.meals) {
         const menu = menuRes.value.meals as any;

@@ -36,7 +36,7 @@ describe("availabilityScheduler Component", () => {
     const handleChange = vi.fn();
     render(<AvailabilityScheduler defaultValue={defaultWeek()} onChange={handleChange} />);
 
-    const startSelect = screen.getByLabelText("Start time for Monday");
+    const startSelect = screen.getByLabelText("Start time for Mon");
     fireEvent.change(startSelect, { target: { value: "06:00" } });
 
     expect(handleChange).toHaveBeenCalledWith(
@@ -52,7 +52,7 @@ describe("availabilityScheduler Component", () => {
     const handleChange = vi.fn();
     render(<AvailabilityScheduler defaultValue={defaultWeek()} onChange={handleChange} />);
 
-    const endSelect = screen.getByLabelText("End time for Monday");
+    const endSelect = screen.getByLabelText("End time for Mon");
     fireEvent.change(endSelect, { target: { value: "07:30" } });
 
     expect(handleChange).toHaveBeenCalledWith(
@@ -66,7 +66,7 @@ describe("availabilityScheduler Component", () => {
 
   it("shows rest day label when day is disabled", () => {
     render(<AvailabilityScheduler defaultValue={defaultWeek()} />);
-    const restDayLabels = screen.getAllByText("Rest Day (Unavailable)");
+    const restDayLabels = screen.getAllByText("Rest");
     expect(restDayLabels.length).toBeGreaterThan(0);
   });
 });
