@@ -85,7 +85,7 @@ export function minutesOfDay(loggedAt: string | undefined): number {
 
   const parsed = new Date(loggedAt);
   if (!Number.isNaN(parsed.getTime())) {
-    return parsed.getHours() * 60 + parsed.getMinutes();
+    return parsed.getUTCHours() * 60 + parsed.getUTCMinutes();
   }
 
   const clock = /(\d{1,2}):(\d{2})/.exec(loggedAt);

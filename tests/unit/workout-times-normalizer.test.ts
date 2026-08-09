@@ -74,19 +74,19 @@ describe("workout Times Normalizer & Schedule Engine", () => {
     it("rejects invalid time format", () => {
       const result = validateTimeSlot("invalid", "07:30");
       expect(result.isValid).toBeFalsy();
-      expect(result.message).toMatch(/invalid time format/i);
+      expect(result.message).toMatch(/invalid time format|không hợp lệ/i);
     });
 
     it("rejects duration under 20 minutes", () => {
       const result = validateTimeSlot("06:00", "06:10");
       expect(result.isValid).toBeFalsy();
-      expect(result.message).toMatch(/at least 20 minutes/i);
+      expect(result.message).toMatch(/at least 20 minutes|tối thiểu là 20 phút/i);
     });
 
     it("rejects duration over 4 hours (240 minutes)", () => {
       const result = validateTimeSlot("06:00", "12:00");
       expect(result.isValid).toBeFalsy();
-      expect(result.message).toMatch(/not exceed 4 hours/i);
+      expect(result.message).toMatch(/not exceed 4 hours|không nên vượt quá 4 giờ/i);
     });
   });
 
