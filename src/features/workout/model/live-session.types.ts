@@ -96,6 +96,29 @@ export interface RomRange {
   endDeg: number;
 }
 
+export type CoachingStyle = "normal" | "strict" | "gentle";
+
+export interface VoiceStyleContent {
+  text: string;
+  url?: string;
+}
+
+export interface VoiceSeverityItem {
+  severity_level: number;
+  status: string;
+  styles: Record<string, VoiceStyleContent>;
+}
+
+export interface VoiceFeedbackMetric {
+  metric_name: string;
+  description?: string;
+  severities: {
+    warning?: VoiceSeverityItem;
+    danger?: VoiceSeverityItem;
+    [key: string]: VoiceSeverityItem | undefined;
+  };
+}
+
 export interface MotionSpec {
   exerciseId: string;
   /** ONNX person detector, served from S3. */
@@ -108,6 +131,10 @@ export interface MotionSpec {
   romRange: RomRange;
   rules: FormRule[];
   cues: CoachCue[];
+  rep_type?: "timed" | "rep";
+  phase_detection?: Record<string, any>;
+  /** Voice feedbacks loaded from dialogues_url / voice_coaching json file. */
+  voiceFeedbacks?: Record<string, VoiceFeedbackMetric>;
   /** Per-code cue cooldown in seconds so the coach does not nag. */
   cueCooldownSec: Record<string, number>;
 }

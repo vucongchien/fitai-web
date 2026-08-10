@@ -434,17 +434,184 @@ export interface GenericRuleFile {
   rules?: GenericRuleItem[];
 }
 
+export function resolveLandmarkPoint(
+  pose: Pose,
+  descriptor: string,
+): { x: number; y: number } | null {
+  if (!pose || !descriptor) {
+    return null;
+  }
+  const clean = descriptor
+    .split("(")[0]
+    ?.trim()
+    .toLowerCase()
+    .replace("mid-", "")
+    .replace("mid_", "") ?? "";
+
+  let keyName: KeypointName = "nose";
+  if (clean.includes("shoulder")) keyName = "left_shoulder";
+  else if (clean.includes("hip")) keyName = "left_hip";
+  else if (clean.includes("knee")) keyName = "left_knee";
+  else if (clean.includes("ankle") || clean.includes("toe")) keyName = "left_ankle";
+  else if (clean.includes("elbow")) keyName = "left_elbow";
+  else if (clean.includes("wrist")) keyName = "left_wrist";
+  else if (clean.includes("ear")) keyName = "left_ear";
+  else if (clean.includes("eye")) keyName = "left_eye";
+  else if (clean.includes("nose")) keyName = "nose";
+  else return null;
+
+  const altName = (
+    keyName.startsWith("left_") ? keyName.replace("left_", "right_") : keyName
+  ) as KeypointName;
+
+  const leftPt = keypoint(pose, keyName);
+  const rightPt = keypoint(pose, altName);
+
+  if (leftPt && rightPt) {
+    return { x: (leftPt.x + rightPt.x) / 2, y: (leftPt.y + rightPt.y) / 2 };
+  }
+  if (leftPt) return leftPt;
+  if (rightPt) return rightPt;
+
+  return null;
+}
+
+export function signedHipYDiff(pose: Pose): number | null {
+  const shoulder = keypoint(pose, "left_shoulder") ?? keypoint(pose, "right_shoulder");
+  const hip = keypoint(pose, "left_hip") ?? keypoint(pose, "right_hip");
+  const ankle = keypoint(pose, "left_ankle") ?? keypoint(pose, "right_ankle");
+  if (!shoulder || !hip || !ankle) {
+    return null;
+  }
+
+  const lS = keypoint(pose, "left_shoulder");
+  const rS = keypoint(pose, "right_shoulder");
+  const sX = lS && rS ? (lS.x + rS.x) / 2 : shoulder.x;
+  const sY = lS && rS ? (lS.y + rS.y) / 2 : shoulder.y;
+
+  const lH = keypoint(pose, "left_hip");
+  const rH = keypoint(pose, "right_hip");
+  const hX = lH && rH ? (lH.x + rH.x) / 2 : hip.x;
+  const hY = lH && rH ? (lH.y + rH.y) / 2 : hip.y;
+
+  const lA = keypoint(pose, "left_ankle");
+  const rA = keypoint(pose, "right_ankle");
+  const aX = lA && rA ? (lA.x + rA.x) / 2 : ankle.x;
+  const aY = lA && rA ? (lA.y + rA.y) / 2 : ankle.y;
+
+  const torsoLength = Math.hypot(hX - sX, hY - sY);
+  if (torsoLength === 0) {
+    return 0;
+  }
+
+  const lineDx = aX - sX;
+  const lineDy = aY - sY;
+  const lineLen = Math.hypot(lineDx, lineDy);
+  if (lineLen === 0) {
+    return 0;
+  }
+
+  const cross = lineDx * (hY - sY) - lineDy * (hX - sX);
+  const perpDist = cross / lineLen;
+  return Math.abs(perpDist) / torsoLength;
+}
+
+/**
+  * Dynamic metric evaluation driven by the `calculation` spec (landmarks, formula) in each rule JSON file.
+  */
 export function evaluateMetricValue(
   metricName: string,
   landmarks: string[] | undefined,
   formula: string | undefined,
   pose: Pose,
 ): number | null {
-  if (metricName === "spine_angle" || formula?.includes("[0, -1, 0]")) {
-    return spineAngle(pose);
+  if (!pose) {
+    return null;
   }
 
-  // Parse landmarks if provided (e.g. ["Hip (P11, P12)", "Knee (P13, P14)", "Ankle (P15, P16)"])
+  // 1. Dynamic Landmark Point Resolution
+  const pts: { x: number; y: number }[] = [];
+  if (landmarks && Array.isArray(landmarks)) {
+    for (const lm of landmarks) {
+      const p = resolveLandmarkPoint(pose, lm);
+      if (p) pts.push(p);
+    }
+  }
+
+  const formulaStr = (formula ?? "").toLowerCase();
+
+  // Formula Case 1: Point to Line Distance (e.g. signed_hip_y_diff)
+  if (
+    formulaStr.includes("signed_distance_point_to_line") ||
+    metricName.includes("signed_hip_y_diff") ||
+    metricName.includes("hip_y")
+  ) {
+    const s = pts[0] ?? resolveLandmarkPoint(pose, "shoulder");
+    const h = pts[1] ?? resolveLandmarkPoint(pose, "hip");
+    const a = pts[2] ?? resolveLandmarkPoint(pose, "ankle");
+    if (!s || !h || !a) return null;
+
+    const torsoLen = Math.hypot(h.x - s.x, h.y - s.y);
+    if (torsoLen === 0) return 0;
+
+    const lineDx = a.x - s.x;
+    const lineDy = a.y - s.y;
+    const lineLen = Math.hypot(lineDx, lineDy);
+    if (lineLen === 0) return 0;
+
+    const cross = lineDx * (h.y - s.y) - lineDy * (h.x - s.x);
+    const perpDist = cross / lineLen;
+    return Math.abs(perpDist) / torsoLen;
+  }
+
+  // Formula Case 2: Angle Relative to Vertical Vector [0, -1, 0] (e.g. spine_angle, spine_sway_angle)
+  if (
+    formulaStr.includes("[0, -1") ||
+    formulaStr.includes("vertical") ||
+    metricName.includes("spine")
+  ) {
+    const s = pts[0] ?? resolveLandmarkPoint(pose, "shoulder");
+    const h = pts[1] ?? resolveLandmarkPoint(pose, "hip");
+    if (!s || !h) return null;
+
+    const dx = s.x - h.x;
+    const dy = s.y - h.y;
+    const len = Math.hypot(dx, dy);
+    if (len === 0) return 0;
+
+    const cosine = -dy / len;
+    const clamped = Math.min(1, Math.max(-1, cosine));
+    return (Math.acos(clamped) * 180) / Math.PI;
+  }
+
+  // Formula Case 3: Horizontal Sway / Translation Offset (e.g. elbow_sway, knee_toe_distance)
+  if (
+    formulaStr.includes("sway") ||
+    formulaStr.includes("x_") ||
+    metricName.includes("sway") ||
+    metricName.includes("knee_toe")
+  ) {
+    const p1 = pts[0] ?? resolveLandmarkPoint(pose, "shoulder");
+    const p2 = pts[1] ?? resolveLandmarkPoint(pose, "elbow");
+    const hip = resolveLandmarkPoint(pose, "hip");
+    if (!p1 || !p2) return null;
+
+    const dx = Math.abs(p2.x - p1.x);
+    const torsoLen =
+      p1 && hip
+        ? Math.hypot(hip.x - p1.x, hip.y - p1.y)
+        : Math.hypot(p2.x - p1.x, p2.y - p1.y);
+    if (torsoLen === 0) return 0;
+
+    return dx / torsoLen;
+  }
+
+  // Formula Case 4: 3-Point Joint Interior Angle (e.g. knee_angle, elbow_angle, hip_angle, neck_pull_angle)
+  if (pts.length >= 3) {
+    return jointAngle(pts[0]!, pts[1]!, pts[2]!);
+  }
+
+  // Fallbacks based on landmarks string parsing
   if (landmarks && landmarks.length >= 3) {
     const parsedJoints = landmarks.slice(0, 3).map((item) => {
       const clean = item.split(" ")[0] ?? item;
@@ -456,7 +623,7 @@ export function evaluateMetricValue(
     }
   }
 
-  // Default joint fallbacks based on metric name
+  // Fallbacks based on metric name
   if (metricName.includes("knee") || metricName.includes("leg")) {
     return angleOfJoints(pose, ["hip", "knee", "ankle"]);
   }
@@ -481,7 +648,12 @@ export function detectPhaseFromRuleJson(
   const phaseDet = ruleFile.phase_detection;
 
   // Handle Timed / Isometric / Static exercises (e.g. Plank, Wall Sit, rep_type: "timed", metric: "none")
-  if (!phaseDet || phaseDet.metric === "none" || ruleFile.rep_type === "timed") {
+  if (
+    !phaseDet ||
+    phaseDet.metric === "none" ||
+    ruleFile.rep_type === "timed" ||
+    Boolean(phaseDet.thresholds?.always)
+  ) {
     return { endDeg: 0, metricName: "none", phase: "always", startDeg: 0 };
   }
 

@@ -16,11 +16,13 @@ import {
 } from "@/features/workout/domain/training-load";
 import type {
   AbortReason,
+  CoachingStyle,
   CueSeverity,
   LiveSessionPlan,
   MotionSpec,
   SessionReport,
   SetLogDraft,
+  VoiceFeedbackMetric,
 } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import type { AudioCoach } from "@/features/workout/model/use-audio-coach";
@@ -35,6 +37,37 @@ import {
 } from "@/features/workout/server/workout-actions";
 import type { SyncErrorItem } from "@/features/workout/server/workout-actions";
 import { toast } from "@/shared/ui/toast";
+
+export function resolveCoachingStyle(): CoachingStyle {
+  if (typeof window === "undefined") {
+    return "normal";
+  }
+  const directStyle =
+    localStorage.getItem("fitai-coaching-style") ||
+    localStorage.getItem("fitai-coach-style");
+
+  if (directStyle) {
+    const s = directStyle.toLowerCase();
+    if (s === "strict" || s === "direct") return "strict";
+    if (s === "gentle" || s === "motivational" || s === "calm") return "gentle";
+    if (s === "normal" || s === "scientific" || s === "balanced") return "normal";
+  }
+
+  try {
+    const onboarding = localStorage.getItem("fitai-onboarding");
+    if (onboarding) {
+      const parsed = JSON.parse(onboarding);
+      const coachStyle = (parsed?.coachStyle || "").toString().toLowerCase();
+      if (coachStyle === "strict" || coachStyle === "direct") return "strict";
+      if (coachStyle === "motivational" || coachStyle === "calm" || coachStyle === "gentle") return "gentle";
+      if (coachStyle === "scientific" || coachStyle === "balanced" || coachStyle === "normal") return "normal";
+    }
+  } catch {
+    // Ignore parse error
+  }
+
+  return "normal";
+}
 
 export function useLiveWorkoutEffects({
   audio,
@@ -55,28 +88,12 @@ export function useLiveWorkoutEffects({
   const [online, setOnline] = useState(true);
   const [manualForSet, setManualForSet] = useState(false);
   const [finishing, setFinishing] = useState(false);
+  const [voiceFeedbacks, setVoiceFeedbacks] = useState<Record<string, VoiceFeedbackMetric> | null>(null);
 
   const elapsedSecRef = useRef(session.elapsedSec);
   useEffect(() => {
     elapsedSecRef.current = session.elapsedSec;
   }, [session.elapsedSec]);
-
-  /**
-   * Live handles to the two controllers, for effects that must *not* re-run when
-   * the controllers change identity.
-   *
-   * `motion` carries `pose` and `calibration`, which update on every camera frame
-   * (~30/s). Depending on the object directly meant the camera-lifecycle effect
-   * below tore down and restarted the stream on every frame — `getUserMedia` was
-   * being called ~140 times a second, which is what made the screen flicker.
-   * The effect should re-run when the *exercise* changes, not when a pose lands.
-   */
-  const cameraRef = useRef(camera);
-  const motionRef = useRef(motion);
-  useEffect(() => {
-    cameraRef.current = camera;
-    motionRef.current = motion;
-  });
 
   const { step } = session;
   const exercise = step?.exercise ?? null;
@@ -84,6 +101,113 @@ export function useLiveWorkoutEffects({
     () => (exercise?.hasAiSupported ? (plan.motionSpecs[exercise.exerciseId] ?? null) : null),
     [exercise, plan.motionSpecs],
   );
+
+const FALLBACK_VIETNAMESE_DIALOGUES: Record<
+  string,
+  Record<"warning" | "danger", Record<CoachingStyle, string>>
+> = {
+  signed_hip_y_diff: {
+    warning: {
+      normal: "Hông hơi võng hoặc nhô cao, hãy siết chặt mông và bụng để giữ thẳng.",
+      strict: "Gồng cơ bụng ngay! Không được để sụp hông khi plank!",
+      gentle: "Hơi võng hông rồi bạn ơi, gồng nhẹ bụng đẩy hông lên bằng vai nhé.",
+    },
+    danger: {
+      normal: "Võng lưng hoặc chổng mông quá nặng, tư thế plank không còn tác dụng.",
+      strict: "Đau thắt lưng đấy! Hạ mông xuống hoặc nâng hông lên đường thẳng ngay!",
+      gentle: "Hãy hạ gối xuống nghỉ chút nào, hông bị lệch nhiều làm đau lưng dưới đó.",
+    },
+  },
+  knee_angle: {
+    warning: {
+      normal: "Đầu gối chưa đạt độ sâu chuẩn, hãy hạ thấp mông thêm chút nữa.",
+      strict: "Xuống sâu hơn nữa! Đưa mông xuống ngang tầm đầu gối!",
+      gentle: "Hạ mông thấp hơn một chút nữa để tập vào đùi tốt hơn bạn nhé.",
+    },
+    danger: {
+      normal: "Đầu gối vượt quá mũi chân hoặc khuỳnh ra ngoài quá nhiều.",
+      strict: "Chỉnh lại chân ngay! Đừng để đầu gối chịu toàn bộ áp lực!",
+      gentle: "Chú ý điều chỉnh hướng đầu gối theo chiều mũi chân để bảo vệ khớp nhé.",
+    },
+  },
+  elbow_angle: {
+    warning: {
+      normal: "Góc khuỷu tay chưa chuẩn, hãy điều chỉnh góc gập tay.",
+      strict: "Điều chỉnh khuỷu tay ngay! Đặt tay đúng vị trí chịu lực!",
+      gentle: "Điều chỉnh nhẹ tay một chút cho thoải mái và vững hơn bạn nhé.",
+    },
+    danger: {
+      normal: "Khớp khuỷu tay bị áp lực quá mức, hãy dừng lại kiểm tra vị trí tay.",
+      strict: "Dừng lại chỉnh tay ngay! Tránh chấn thương khớp khuỷu tay!",
+      gentle: "Nghỉ tay một chút và đặt lại góc khuỷu tay vuông góc nhé.",
+    },
+  },
+};
+
+  // Fetch Vietnamese dialogue Engine JSON from spec.dialogueEngineUrl dynamically when spec changes
+  useEffect(() => {
+    if (!spec?.dialogueEngineUrl) {
+      setVoiceFeedbacks(null);
+      return;
+    }
+    let cancelled = false;
+    fetch(spec.dialogueEngineUrl)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.voice_feedbacks) {
+          setVoiceFeedbacks(data.voice_feedbacks);
+        }
+      })
+      .catch(() => {
+        // Fallback silently if dialogue URL is temporarily unreachable
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [spec?.dialogueEngineUrl]);
+
+  // Fetch Rule JSON spec on main thread to parse rep_type and phase_detection dynamically
+  useEffect(() => {
+    const exId = spec?.exerciseId || exercise?.exerciseId;
+    if (!spec || !exId) return;
+    let cancelled = false;
+    const ruleUrls = [
+      spec.localRulesUrl,
+      `/models/rules/${exId}.json`,
+      `/rule/${exId}.json`,
+    ].filter(Boolean) as string[];
+
+    (async () => {
+      for (const url of ruleUrls) {
+        try {
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            if (!cancelled && data) {
+              if (data.rep_type) spec.rep_type = data.rep_type;
+              if (data.phase_detection) spec.phase_detection = data.phase_detection;
+              return;
+            }
+          }
+        } catch {
+          // Try next URL
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [exercise?.exerciseId, spec]);
+
+  const cameraRef = useRef(camera);
+  const motionRef = useRef(motion);
+  useEffect(() => {
+    cameraRef.current = camera;
+    motionRef.current = motion;
+  });
+
   const cameraBranch = Boolean(spec) && !manualForSet;
 
   // --- Network online/offline listener ---
@@ -173,9 +297,9 @@ export function useLiveWorkoutEffects({
         return;
       }
 
-      // Check cooldown for warning cues based on spec setup or default 3s
+      // Check cooldown for warning cues based on spec setup or default 180s (3 minutes)
       const nowSec = Date.now() / 1000;
-      const cooldownSec = spec?.cueCooldownSec?.[code] ?? (code.startsWith("set-") ? 0 : 3.0);
+      const cooldownSec = spec?.cueCooldownSec?.[code] ?? (code.startsWith("set-") ? 0 : 180.0);
       const lastTime = lastCueTimesRef.current[code] ?? 0;
 
       if (nowSec - lastTime < cooldownSec) {
@@ -211,6 +335,45 @@ export function useLiveWorkoutEffects({
       }
     },
     [audio, exercise, spec, step],
+  );
+
+  const getCueTextForError = useCallback(
+    (code: string, severity: CueSeverity, fallbackMessage: string): string => {
+      const style = resolveCoachingStyle();
+      const feedbacks = voiceFeedbacks ?? spec?.voiceFeedbacks;
+      if (feedbacks) {
+        const feedback = feedbacks[code];
+        if (feedback?.severities) {
+          const severityKey = severity === 2 ? "danger" : "warning";
+          const severityBlock = feedback.severities[severityKey];
+          if (severityBlock?.styles) {
+            const styleContent = severityBlock.styles[style] ?? severityBlock.styles.normal;
+            if (styleContent?.text) {
+              return styleContent.text;
+            }
+          }
+        }
+      }
+
+      // Check in-memory Vietnamese fallback dictionary
+      const fallbackEntry = FALLBACK_VIETNAMESE_DIALOGUES[code];
+      if (fallbackEntry) {
+        const severityKey = severity === 2 ? "danger" : "warning";
+        const text = fallbackEntry[severityKey]?.[style] ?? fallbackEntry[severityKey]?.normal;
+        if (text) {
+          return text;
+        }
+      }
+
+      // Clean up technical English message text if any remains
+      const clean = fallbackMessage
+        .replace(/^[0-9>-]+cm:\s*/i, "")
+        .replace(/alignment/gi, "đường thẳng")
+        .replace(/signed_hip_y_diff/gi, "Võng lưng hoặc chổng mông quá cao");
+
+      return clean;
+    },
+    [spec, voiceFeedbacks],
   );
 
   const pendingErrorsRef = useRef<SyncErrorItem[]>([]);
@@ -283,6 +446,8 @@ export function useLiveWorkoutEffects({
       if (!exercise || !step) {
         return;
       }
+      // Clear all audio & speech synthesis queue from the current set to prevent lingering/repeating audio
+      audio.stopCues();
       playCueByCode("set-end", listening);
       const isCamera = cameraBranch && camera.state === "ready";
       const timed = exercise.durationSeconds > 0;
@@ -361,6 +526,7 @@ export function useLiveWorkoutEffects({
       toast.success("Set completed!");
     },
     [
+      audio,
       cameraBranch,
       camera.state,
       exercise,
@@ -379,9 +545,10 @@ export function useLiveWorkoutEffects({
       return;
     }
     if (exercise.durationSeconds > 0 && session.setLeft === 0) {
+      audio.stopCues();
       finishSet(true);
     }
-  }, [exercise, finishSet, session.setLeft, session.status]);
+  }, [audio, exercise, finishSet, session.setLeft, session.status]);
 
   // --- Session report & completion ---
   const buildReport = useCallback(
@@ -520,6 +687,7 @@ export function useLiveWorkoutEffects({
     manualForSet,
     online,
     playCueByCode,
+    getCueTextForError,
     recordFormError,
     setManualForSet,
     spec,

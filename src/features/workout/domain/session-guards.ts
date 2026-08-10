@@ -9,7 +9,7 @@
  * ux-flow-spec §5.5: ending with no logged set asks to cancel instead of saving empty.
  */
 
-import type { LiveExercise, SetLogDraft } from "@/features/workout/model/live-session.types";
+import type { LiveExercise, MotionSpec, SetLogDraft } from "@/features/workout/model/live-session.types";
 
 export const SESSION_WARN_MIN = 90;
 export const SESSION_LONG_WARN_MIN = 180;
@@ -92,4 +92,34 @@ export function verificationNote(sets: SetLogDraft[]): string | null {
   return unverified === 1
     ? "One set could not be verified by the camera."
     : `${unverified} sets could not be verified by the camera.`;
+}
+
+/**
+ * Determines if an exercise is timed ("tính s") vs rep-based ("đếm rep"):
+ * 1. AI-supported exercises (spec present): PRIORITIZE 100% data from rule JSON file.
+ *    - phase_detection.metric === "none" -> Timed exercise ("tính s")
+ *    - phase_detection.metric !== "none" (e.g. "elbow_angle", "knee_angle") -> Rep exercise ("đếm rep")
+ * 2. Non-AI exercises (spec is null): Fallback to API prescription data (durationSeconds > 0).
+ */
+export function isTimedExercise(
+  exercise?: Partial<LiveExercise> | null,
+  spec?: Partial<MotionSpec> | null,
+): boolean {
+  // Branch 1: AI-supported exercise (spec exists) -> PRIORITIZE 100% RULE FILE DATA!
+  if (spec) {
+    const generic = spec as any;
+    if (generic.phase_detection?.metric !== undefined) {
+      return generic.phase_detection.metric === "none";
+    }
+    if (generic.rep_type !== undefined) {
+      return generic.rep_type === "timed";
+    }
+  }
+
+  // Branch 2: Non-AI exercise (spec is null) -> USE API PRESCRIPTION DATA
+  if (exercise && (exercise.durationSeconds ?? 0) > 0) {
+    return true;
+  }
+
+  return false;
 }

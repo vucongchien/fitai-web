@@ -40,6 +40,13 @@ export function CountdownRing({
 
   const dynamicStroke = getDynamicStroke();
 
+  const valueStyle: React.CSSProperties =
+    display.length > 8
+      ? { fontSize: "0.8rem" }
+      : display.length > 6
+        ? { fontSize: "0.92rem" }
+        : {};
+
   return (
     <div aria-label={label} className="countdown-ring" data-tone={tone} role="timer">
       <svg aria-hidden="true" className="countdown-ring__svg" viewBox={`0 0 ${SIZE} ${SIZE}`}>
@@ -68,7 +75,9 @@ export function CountdownRing({
         )}
       </svg>
 
-      <span className="countdown-ring__value">{display}</span>
+      <span className="countdown-ring__value" style={valueStyle}>
+        {display}
+      </span>
     </div>
   );
 }

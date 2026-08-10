@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { cancelAllSpeech, formatVietnameseSecond } from "@/features/workout/domain/audio-cues";
+import { isTimedExercise } from "@/features/workout/domain/session-guards";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
 import { loadRatio, sessionVolumeKg } from "@/features/workout/domain/training-load";
 import type { LiveSessionPlan } from "@/features/workout/model/live-session.types";
@@ -68,18 +70,25 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     },
     onFormError: (error) => {
       workoutEffects.recordFormError(error);
-      if (!listening) {
+      if (!listening || confirmSetOpen || session.status !== "working") {
         return;
       }
-      if (error.severity === 2) {
-        audio.speakText(`Cảnh báo: ${error.message}`);
-      } else {
-        workoutEffects.playCueByCode(error.code, listening);
-      }
+      const cueText = workoutEffects.getCueTextForError(error.code, error.severity, error.message);
+      // Enforce post-speech silence gap: 1.5s for Danger (severity 2), 3.0s for Warning (severity 1)
+      const gapSec = error.severity === 2 ? 1.5 : 3.0;
+      audio.speakText(cueText, "vi-VN", { cooldownGapSec: gapSec, priority: "error" });
     },
     onRep: (rep) => {
-      if (rep.counted && listening) {
-        audio.speakText(`Hoàn thành rep ${rep.count}`);
+      if (rep.counted && listening && !confirmSetOpen && session.status === "working") {
+        const isTimed = isTimedExercise(workoutEffects.exercise, workoutEffects.spec);
+
+        if (isTimed) {
+          // Timed static exercise ("trường đếm s"): ONLY speak the number ("Một", "Hai", "Ba"...)
+          const viSecondText = formatVietnameseSecond(rep.count);
+          audio.speakText(viSecondText, "vi-VN", { priority: "normal" });
+        } else {
+          audio.speakText(`Hoàn thành rep ${rep.count}`, "vi-VN", { priority: "normal" });
+        }
       }
     },
   });
@@ -117,9 +126,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           audio.speakText(textToRead);
         }
       } else {
-        if (typeof window !== "undefined" && "speechSynthesis" in window) {
-          window.speechSynthesis.cancel();
-        }
+        cancelAllSpeech();
       }
       return nextState;
     });
@@ -142,6 +149,13 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   // Fixed-height with no room for a banner row, so they speak as toasts — but
   // They must still speak: the protection note is a post-injury safety message
   // (ux-flow-spec §6.7, BR-AC-09), not decoration.
+  // Cancel all audio playback & speech synthesis when resting or completed
+  useEffect(() => {
+    if (sessionStatus === "resting" || sessionStatus === "complete") {
+      audio.stopCues();
+    }
+  }, [audio, sessionStatus]);
+
   useEffect(() => {
     if (!online) {
       toast.info("Offline Mode: You're offline. Sets are saved locally.");
@@ -232,6 +246,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       exercise={exercise}
       onClose={() => setConfirmSetOpen(false)}
       onConfirm={(data) => {
+        audio.stopCues();
         setConfirmSetOpen(false);
         finishSet(listening, {
           actualReps: data.actualReps,
@@ -282,10 +297,14 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         cameraSlot={cameraStage}
         currentSet={step.setNumber}
         exercise={exercise}
+        spec={workoutEffects.spec}
         metrics={motion.metrics}
         onAddTime={() => session.actions.addSetTime(ADD_SECONDS)}
         onBack={onBack}
-        onDone={() => setConfirmSetOpen(true)}
+        onDone={() => {
+          audio.stopCues();
+          setConfirmSetOpen(true);
+        }}
         onOpenGuide={() => setGuideOpen(true)}
         onReportPain={() => setPainOpen(true)}
         onToggleCamera={onToggleCamera}

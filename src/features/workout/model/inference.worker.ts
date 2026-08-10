@@ -31,6 +31,7 @@ import {
   calibrationHint,
   calibrationLighting,
   detectPhaseFromRuleJson,
+  evaluateGenericRuleJson,
   evaluateRules,
   isPoseUsable,
   KEYPOINT_NAMES,
@@ -44,7 +45,7 @@ import type {
   InferenceRequest,
   InferenceResponse,
 } from "@/features/workout/model/inference-protocol";
-import type { MotionSpec } from "@/features/workout/model/live-session.types";
+import type { CueSeverity, MotionSpec } from "@/features/workout/model/live-session.types";
 
 type OrtModule = typeof import("onnxruntime-web");
 type OrtSession = Awaited<ReturnType<OrtModule["InferenceSession"]["create"]>>;
@@ -67,6 +68,7 @@ let darkFrames = 0;
 /** Scratch tensor reused across frames — see inferPose. */
 let inputBuffer: Float32Array | null = null;
 let prevPoseKeypoints: Keypoint[] | null = null;
+let lastErrorEmitTimes: Record<string, number> = {};
 
 function post(response: InferenceResponse): void {
   scope.postMessage(response);
@@ -139,12 +141,21 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
     }
     if (rulesRes.cueCooldownSec) {
       spec.cueCooldownSec = { ...spec.cueCooldownSec, ...rulesRes.cueCooldownSec };
+    } else if (rulesRes.audio_cooldown_seconds) {
+      const ac = rulesRes.audio_cooldown_seconds;
+      const warningSec = Number(ac.warning) || 180.0;
+      const dangerSec = Number(ac.danger) || 180.0;
+      const sec = Math.max(warningSec, dangerSec);
+      spec.cueCooldownSec = { ...spec.cueCooldownSec, signed_hip_y_diff: sec };
     }
   }
 
   if (dialogueRes) {
     if (dialogueRes.cues && Array.isArray(dialogueRes.cues)) {
       spec.cues = dialogueRes.cues;
+    }
+    if (dialogueRes.voice_feedbacks) {
+      spec.voiceFeedbacks = dialogueRes.voice_feedbacks;
     }
   }
 
@@ -282,23 +293,64 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
   }
   emit({ pose, type: "pose" });
   if (!pose || !isPoseUsable(pose)) {
+    accumulator.lastValidFrameTimeMs = null;
     return;
   }
 
   accumulator.validFrames += 1;
 
-  if (spec.rules && Array.isArray(spec.rules)) {
+  const genericRule = spec as unknown as GenericRuleFile;
+  const isTimed =
+    genericRule.rep_type === "timed" ||
+    genericRule.phase_detection?.metric === "none" ||
+    Boolean(genericRule.phase_detection?.thresholds?.always) ||
+    spec.romRange === undefined;
+
+  let maxSeverity = 0;
+
+  const nowMs = Date.now();
+
+  // Evaluate legacy rules if present
+  if (spec.rules && Array.isArray(spec.rules) && spec.rules.length > 0 && spec.rules[0]?.joints) {
     for (const code of evaluateRules(spec.rules, pose)) {
       accumulator.errorCodes.push(code);
       accumulator.pendingErrors.add(code);
       const rule = spec.rules.find((entry) => entry.code === code);
       if (rule) {
-        emit({ code, message: rule.message, severity: rule.severity, type: "form-error" });
+        if (rule.severity > maxSeverity) {
+          maxSeverity = rule.severity;
+        }
+        const cooldownSec = spec.cueCooldownSec?.[code] ?? 180.0;
+        const lastEmit = lastErrorEmitTimes[code] ?? 0;
+        if (nowMs - lastEmit >= cooldownSec * 1000) {
+          lastErrorEmitTimes[code] = nowMs;
+          emit({ code, message: rule.message, severity: rule.severity, type: "form-error" });
+        }
       }
     }
   }
 
-  const genericRule = spec as unknown as GenericRuleFile;
+  // Evaluate generic JSON rules (e.g. plank.json signed_hip_y_diff)
+  const { violations } = evaluateGenericRuleJson(genericRule, pose);
+  for (const v of violations) {
+    if (v.severity > maxSeverity) {
+      maxSeverity = v.severity;
+    }
+    accumulator.errorCodes.push(v.code);
+    accumulator.pendingErrors.add(v.code);
+    const cooldownSec = spec.cueCooldownSec?.[v.code] ?? 180.0;
+    const lastEmit = lastErrorEmitTimes[v.code] ?? 0;
+    if (nowMs - lastEmit >= cooldownSec * 1000) {
+      lastErrorEmitTimes[v.code] = nowMs;
+      emit({
+        code: v.code,
+        message: v.message,
+        severity: v.severity as CueSeverity,
+        type: "form-error",
+      });
+    }
+  }
+
   const { phase: detectedPhase, startDeg, endDeg, metricName } = detectPhaseFromRuleJson(genericRule, pose);
 
   const joints: [string, string, string] = (spec.romRange?.joints as [string, string, string]) ?? ["hip", "knee", "ankle"];
@@ -312,10 +364,35 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
     jointAngles[metricName] = angle;
   }
   accumulator.lastJointAngles = jointAngles;
-  const tick = detectedAngle !== null ? feedCounter(accumulator, rom, jointAngles) : null;
 
-  // Use detectedPhase ("always" for Plank/timed, or FSM phase for rep exercises)
-  const currentPhase = detectedPhase === "always" ? "always" : accumulator.counter.phase;
+  let currentPhase = detectedPhase === "always" || isTimed ? "always" : accumulator.counter.phase;
+
+  if (isTimed) {
+    // For static/timed exercises like Plank:
+    // Perform counting seconds ("đếm s") when form is Correct (maxSeverity 0) or Warning (maxSeverity 1 - "sai nhẹ").
+    // Pause counting seconds when form is Danger (maxSeverity 2 - "sai nặng").
+    if (maxSeverity <= 1) {
+      const now = Date.now();
+      const deltaMs = accumulator.lastValidFrameTimeMs ? Math.min(200, now - accumulator.lastValidFrameTimeMs) : 33;
+      accumulator.validHoldTimeMs = (accumulator.validHoldTimeMs ?? 0) + deltaMs;
+      accumulator.lastValidFrameTimeMs = now;
+      const currentValidSeconds = Math.floor(accumulator.validHoldTimeMs / 1000);
+
+      if (currentValidSeconds > accumulator.counter.count) {
+        accumulator.counter.count = currentValidSeconds;
+        emit({ count: currentValidSeconds, counted: true, romPercentage: 100, type: "rep" });
+      }
+    } else {
+      // Pause seconds counting when form is Danger (severity 2)
+      accumulator.lastValidFrameTimeMs = null;
+    }
+  } else {
+    const tick = detectedAngle !== null ? feedCounter(accumulator, rom, jointAngles) : null;
+    currentPhase = accumulator.counter.phase;
+    if (tick) {
+      emit(tick);
+    }
+  }
 
   emit({
     type: "metrics",
@@ -328,10 +405,6 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
     rom,
     startDeg,
   });
-
-  if (tick) {
-    emit(tick);
-  }
 }
 
 scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>) => {
@@ -355,6 +428,7 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
       if (request.mode === "set") {
         accumulator = freshAccumulator();
         darkFrames = 0;
+        lastErrorEmitTimes = {};
       }
       return;
     }
@@ -365,10 +439,7 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
         if (frame) {
           if (mode === "calibration") {
             await runCalibration(frame);
-          } else {
-            if (mode === "idle") {
-              mode = "set";
-            }
+          } else if (mode === "set") {
             await runSetFrame(frame);
           }
         } else {

@@ -161,10 +161,11 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
     engineRef.current?.startSet(onEvent);
   }, [onEvent]);
 
-  const stopSet = useCallback(
-    async (): Promise<SetTelemetry> => (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY,
-    [],
-  );
+  const stopSet = useCallback(async (): Promise<SetTelemetry> => {
+    setRepCount(0);
+    setLastError(null);
+    return (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY;
+  }, []);
 
   useEffect(() => dispose, [dispose]);
 

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { playSyntheticCueTone, speakText } from "@/features/workout/domain/audio-cues";
+import { cancelAllSpeech, playSyntheticCueTone, speakText } from "@/features/workout/domain/audio-cues";
 import type { CoachCue, MusicTrack, Playlist } from "@/features/workout/model/live-session.types";
 
 /**
@@ -277,38 +277,69 @@ export function useAudioCoach(playlists: Playlist[]) {
     [drainCueQueue],
   );
 
-  const stopAll = useCallback(() => {
+  const stopCues = useCallback(() => {
     cueQueue.current = [];
     cuePlaying.current = false;
-    musicRef.current?.pause();
-    cueRef.current?.pause();
-    setIsPlaying(false);
+    if (cueRef.current) {
+      cueRef.current.pause();
+      cueRef.current.currentTime = 0;
+    }
     setCueText(null);
+    cancelAllSpeech();
   }, []);
+
+  const stopAll = useCallback(() => {
+    stopCues();
+    musicRef.current?.pause();
+    setIsPlaying(false);
+  }, [stopCues]);
 
   useEffect(() => stopAll, [stopAll]);
 
-  return {
-    playlists,
-    playlist,
-    playlistId,
-    track,
-    isPlaying,
-    volume,
-    cueText,
-    audioUnavailable,
-    hasMusic: playlists.length > 0,
-    selectPlaylist,
-    play,
-    pause,
-    toggle,
-    next,
-    previous,
-    changeVolume,
-    playCue,
-    speakText,
-    stopAll,
-  };
+  return useMemo(
+    () => ({
+      playlists,
+      playlist,
+      playlistId,
+      track,
+      isPlaying,
+      volume,
+      cueText,
+      audioUnavailable,
+      hasMusic: playlists.length > 0,
+      selectPlaylist,
+      play,
+      pause,
+      toggle,
+      next,
+      previous,
+      changeVolume,
+      playCue,
+      speakText,
+      stopCues,
+      stopAll,
+    }),
+    [
+      playlists,
+      playlist,
+      playlistId,
+      track,
+      isPlaying,
+      volume,
+      cueText,
+      audioUnavailable,
+      selectPlaylist,
+      play,
+      pause,
+      toggle,
+      next,
+      previous,
+      changeVolume,
+      playCue,
+      stopCues,
+      stopAll,
+    ],
+  );
 }
 
 export type AudioCoach = ReturnType<typeof useAudioCoach>;

@@ -3,7 +3,8 @@
 import { BookOpen, Maximize2, TriangleAlert, Volume2, VolumeX } from "lucide-react";
 import type { ReactNode } from "react";
 
-import type { LiveExercise } from "@/features/workout/model/live-session.types";
+import { isTimedExercise } from "@/features/workout/domain/session-guards";
+import type { LiveExercise, MotionSpec } from "@/features/workout/model/live-session.types";
 import { formatCountdown } from "@/features/workout/model/use-session-timer";
 import { ActiveTimerBar } from "@/features/workout/ui/live/active-timer-bar";
 import { CoachingPanel } from "@/features/workout/ui/live/coaching-panel";
@@ -13,9 +14,12 @@ import type { HeaderAction } from "@/features/workout/ui/live/session-header";
 import { SessionHeader } from "@/features/workout/ui/live/session-header";
 
 /** "30 sec" for a hold, "10 reps" (plus load when weighted) for a rep-based set. */
-function targetLabel(exercise: LiveExercise): string {
-  if (exercise.durationSeconds > 0) {
-    return `${exercise.durationSeconds} sec`;
+function targetLabel(exercise: LiveExercise, spec?: MotionSpec | null): string {
+  const isTimed = isTimedExercise(exercise, spec);
+
+  if (isTimed) {
+    const sec = exercise.durationSeconds > 0 ? exercise.durationSeconds : 30;
+    return `${sec} sec`;
   }
   const reps = `${exercise.targetReps} reps`;
   const weighted = exercise.isWeighted && exercise.targetWeightKg > 0;
@@ -27,6 +31,7 @@ export function ActiveExerciseScreen({
   cameraSlot,
   currentSet,
   exercise,
+  spec,
   onAddTime,
   onBack,
   onDone,
@@ -44,6 +49,7 @@ export function ActiveExerciseScreen({
   voiceOn,
 }: {
   exercise: LiveExercise;
+  spec?: MotionSpec | null;
   currentSet: number;
   totalSets: number;
   recommendedAngle?: string;
@@ -103,18 +109,24 @@ export function ActiveExerciseScreen({
     },
   ];
 
-  const timed = exercise.durationSeconds > 0;
+  const timed = isTimedExercise(exercise, spec);
+
+  const durationTarget = exercise.durationSeconds > 0 ? exercise.durationSeconds : 30;
   const tracking = !timed && repCount !== undefined && exercise.targetReps > 0;
   const hasInstrument = timed || tracking;
 
   const display = timed
-    ? formatCountdown(Math.max(0, secondsLeft))
+    ? (repCount && repCount > 0
+        ? `${repCount}s / ${durationTarget}s`
+        : formatCountdown(Math.max(0, secondsLeft)))
     : `${repCount ?? 0} / ${exercise.targetReps}`;
 
   const ringLabel = timed ? "Time remaining in this set" : "Reps completed in this set";
-  const setTotal = setTotalSeconds > 0 ? setTotalSeconds : exercise.durationSeconds;
+  const setTotal = setTotalSeconds > 0 ? setTotalSeconds : durationTarget;
   const progress = timed
-    ? (setTotal > 0 ? Math.max(0, secondsLeft) / setTotal : null)
+    ? (repCount && repCount > 0
+        ? Math.min(1, repCount / setTotal)
+        : (setTotal > 0 ? Math.max(0, secondsLeft) / setTotal : null))
     : (tracking ? repCount! / exercise.targetReps : null);
 
   return (
@@ -134,7 +146,7 @@ export function ActiveExerciseScreen({
         currentSet={currentSet}
         name={exercise.name}
         recommendedAngle={recommendedAngle}
-        target={targetLabel(exercise)}
+        target={targetLabel(exercise, spec)}
         totalSets={totalSets}
       />
 

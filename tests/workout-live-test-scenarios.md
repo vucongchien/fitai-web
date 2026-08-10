@@ -69,9 +69,35 @@ Tài liệu này ghi chép các kịch bản kiểm thử (Test Scenarios) dành
 
 ---
 
+### 7. `tests/unit/pose-metrics-timed.test.ts`
+
+- **Mục tiêu**: Kiểm thử tính toán độ lệch hông `signed_hip_y_diff`, kiểm tra form bài tập tĩnh (Plank) và cơ chế tính s (seconds hold) khi đúng/sai nhẹ.
+- **Chi tiết kịch bản**:
+  1. `detects phase as 'always' for metric: 'none' or thresholds.always`:
+     - _Mô tả_: Đọc cấu hình `phase_detection` của `plank.json`.
+     - _Kỳ vọng_: Nhận diện đúng phase `"always"` cho bài tập tĩnh không phân biệt start/active rep.
+  2. `calculates signedHipYDiff correctly for straight plank pose`:
+     - _Mô tả_: Truyền keypoints vai, hông, cổ chân nằm trên cùng một đường thẳng.
+     - _Kỳ vọng_: Trả về độ lệch hông bằng `0`.
+  3. `evaluates Plank rules for Warning (severity 1) and Danger (severity 2)`:
+     - _Mô tả_: Đánh giá posture đối với các mức độ võng hông.
+     - _Kỳ vọng_: Hông thẳng -> `Correct` (no error); Hông võng nhiều -> phát hiện lỗi `Danger` (`severity: 2`) và đưa ra câu cảnh báo chỉnh tư thế.
+
+---
+
+### 8. `tests/unit/voice-coaching-dialogues.test.ts`
+
+- **Mục tiêu**: Kiểm thử truy xuất câu thoại hướng dẫn tư thế theo `dialogues_url` (voice_coaching) và khớp phong cách huấn luyện (`normal`, `strict`, `gentle`).
+- **Chi tiết kịch bản**:
+  1. `selects correct gentle warning dialogue for Plank signed_hip_y_diff`: Lấy đúng câu nhắc nhở nhẹ nhàng khi hông hơi võng ở bài Plank.
+  2. `selects correct strict danger dialogue for Plank signed_hip_y_diff`: Lấy đúng câu cảnh báo nghiêm khắc khi võng lưng quá nặng nguy cơ đau thắt lưng.
+  3. `selects normal style as default when style is normal`: Lấy câu thoại mặc định phong cách Normal.
+
+---
+
 ## 🚀 Hướng Dẫn Chạy Test
 
 ```bash
-# Chạy toàn bộ unit test live session, audio cues & workout actions
-pnpm vitest run tests/unit/get-live-session-data.test.ts tests/unit/audio-cues-synthesizer.test.ts tests/unit/workout-grpc-actions.test.ts
+# Chạy toàn bộ unit test live session, audio cues, timed plank, dialogues & workout actions
+pnpm vitest run tests/unit/voice-coaching-dialogues.test.ts tests/unit/pose-metrics-timed.test.ts tests/unit/get-live-session-data.test.ts tests/unit/audio-cues-synthesizer.test.ts tests/unit/workout-grpc-actions.test.ts
 ```

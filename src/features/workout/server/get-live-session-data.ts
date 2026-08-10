@@ -84,12 +84,20 @@ function adaptLiveSessionPlan({
       if (exId) {
         motionSpecs[exId] = {
           exerciseId: exId,
-          onnxDetectorUrl: spec.onnxDetectorUrl || "/models/person-detector.onnx",
-          onnxSkeletonUrl: spec.onnxSkeletonUrl || "/models/rtmpose-17kp.onnx",
-          localRulesUrl: spec.localRulesUrl || `/models/rules/${exId}.json`,
-          dialogueEngineUrl: spec.dialogueEngineUrl || `/models/dialogue/${exId}.json`,
+          onnxDetectorUrl: spec.onnxDetectorUrl || spec.onnx_detector_url || "/models/person-detector.onnx",
+          onnxSkeletonUrl: spec.onnxSkeletonUrl || spec.onnx_skeleton_url || "/models/rtmpose-17kp.onnx",
+          localRulesUrl: spec.localRulesUrl || spec.rules_url || `/models/rules/${exId}.json`,
+          dialogueEngineUrl: spec.dialogueEngineUrl || spec.dialogues_url || `/models/dialogue/${exId}.json`,
           recommendedCameraAngle: spec.recommendedCameraAngle || "side",
           romRange: spec.romRange || { joints: [], startDeg: 0, endDeg: 0 },
+          rep_type:
+            spec.rep_type ||
+            (exId.toLowerCase().includes("plank") ||
+            exId.toLowerCase().includes("hold") ||
+            exId.toLowerCase().includes("wall_sit")
+              ? "timed"
+              : "rep"),
+          phase_detection: spec.phase_detection,
           rules: (spec.rules || []).map((rule: any) => ({
             code: rule.code,
             message: rule.message,
@@ -114,14 +122,20 @@ function adaptLiveSessionPlan({
   for (const infoRes of infosRes) {
     const ex = infoRes?.exercise;
     if (ex && ex.hasAiSupported && !motionSpecs[ex.id]) {
+      const isTimedName =
+        ex.id.toLowerCase().includes("plank") ||
+        ex.id.toLowerCase().includes("hold") ||
+        ex.id.toLowerCase().includes("wall_sit");
       motionSpecs[ex.id] = {
         exerciseId: ex.id,
-        onnxDetectorUrl: "/models/person-detector.onnx",
-        onnxSkeletonUrl: "/models/rtmpose-17kp.onnx",
-        localRulesUrl: `/models/rules/${ex.id}.json`,
-        dialogueEngineUrl: `/models/dialogue/${ex.id}.json`,
+        onnxDetectorUrl: ex.onnxDetectorUrl || ex.onnx_detector_url || "/models/person-detector.onnx",
+        onnxSkeletonUrl: ex.onnxSkeletonUrl || ex.onnx_skeleton_url || "/models/rtmpose-17kp.onnx",
+        localRulesUrl: ex.rulesUrl || ex.rules_url || `/models/rules/${ex.id}.json`,
+        dialogueEngineUrl: ex.dialoguesUrl || ex.dialogues_url || `/models/dialogue/${ex.id}.json`,
         recommendedCameraAngle: "side",
         romRange: { joints: ["shoulder", "elbow", "wrist"], startDeg: 0, endDeg: 0 },
+        rep_type: isTimedName ? "timed" : "rep",
+        phase_detection: isTimedName ? { metric: "none", thresholds: { always: {} } } : undefined,
         rules: [],
         cues: [],
         cueCooldownSec: {},

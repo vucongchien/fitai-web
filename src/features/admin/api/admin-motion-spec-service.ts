@@ -311,7 +311,8 @@ export async function updateMotionSpecification(
         recommendedCameraAngle: data.recommendedCameraAngle || "",
       });
     } catch (err) {
-      console.warn("[updateMotionSpecification] RPC failed:", err);
+      console.error("[updateMotionSpecification] RPC failed:", err);
+      throw new Error(`Cập nhật trên gRPC Server thất bại: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
@@ -358,7 +359,8 @@ export async function patchMotionSpecificationAsset(
         updatedAt: res.updatedAt ? new Date(Number(res.updatedAt.seconds) * 1000).toISOString() : new Date().toISOString(),
       };
     } catch (err) {
-      console.warn("[patchMotionSpecificationAsset] RPC failed:", err);
+      console.error("[patchMotionSpecificationAsset] RPC failed:", err);
+      throw new Error(`Patch asset lên gRPC Server thất bại: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 

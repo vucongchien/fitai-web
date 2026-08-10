@@ -20,6 +20,8 @@ export interface Accumulator {
   /** Errors seen since the last completed rep — attached to that rep. */
   pendingErrors: Set<string>;
   lastJointAngles?: Record<string, number>;
+  validHoldTimeMs?: number;
+  lastValidFrameTimeMs?: number | null;
 }
 
 export function freshAccumulator(): Accumulator {
@@ -27,11 +29,13 @@ export function freshAccumulator(): Accumulator {
     counter: createRepCounter(),
     errorCodes: [],
     lastJointAngles: {},
+    lastValidFrameTimeMs: null,
     pendingErrors: new Set(),
     reps: [],
     startedAt: Date.now(),
     totalFrames: 0,
     validFrames: 0,
+    validHoldTimeMs: 0,
   };
 }
 
@@ -76,13 +80,19 @@ export function summarise(accumulator: Accumulator, endedAt = Date.now()): SetTe
   }
   const counted = accumulator.counter.completedRoms;
   const seconds = (endedAt - accumulator.startedAt) / 1000;
+  const countedReps = accumulator.counter.count;
+  const averageRom =
+    counted.length === 0
+      ? countedReps > 0
+        ? 100
+        : 0
+      : counted.reduce((total, rom) => total + rom, 0) / counted.length;
   return {
-    averageRom:
-      counted.length === 0 ? 0 : counted.reduce((total, rom) => total + rom, 0) / counted.length,
-    countedReps: accumulator.counter.count,
+    averageRom,
+    countedReps,
     errorCount: accumulator.errorCodes.length,
     reps: accumulator.reps,
-    secondsPerRep: accumulator.counter.count === 0 ? 0 : seconds / accumulator.counter.count,
+    secondsPerRep: countedReps === 0 ? 0 : seconds / countedReps,
     validFrameRatio: accumulator.validFrames / accumulator.totalFrames,
   };
 }
