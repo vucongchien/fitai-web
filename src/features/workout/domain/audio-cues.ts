@@ -85,7 +85,11 @@ export function playSyntheticCueTone(type: CueToneType = "good"): void {
 /**
  * Đọc lời thoại trực tiếp sử dụng Web Speech API (Text-To-Speech / TTS)
  */
-export function speakText(text: string, lang = "vi-VN"): void {
+export function speakText(
+  text: string,
+  lang = "vi-VN",
+  options: { pitch?: number; rate?: number } = {},
+): void {
   if (typeof window === "undefined" || !("speechSynthesis" in window) || !text) {
     return;
   }
@@ -93,7 +97,8 @@ export function speakText(text: string, lang = "vi-VN"): void {
     window.speechSynthesis.cancel(); // Dừng câu thoại trước đó nếu đang đọc
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
-    utterance.rate = 1.0;
+    utterance.rate = options.rate ?? 1.0;
+    utterance.pitch = options.pitch ?? 1.0;
     utterance.volume = 1.0;
     window.speechSynthesis.speak(utterance);
   } catch (error) {

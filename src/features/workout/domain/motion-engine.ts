@@ -32,6 +32,7 @@ export type MotionEngineEvent =
     }
   /** Latest skeleton, for the overlay. */
   | { type: "pose"; pose: Pose | null }
+  | { type: "metrics"; frameIndex: number; metricName: string; angle: number; rom: number; phase: string; repCount: number; startDeg: number; endDeg: number }
   | { type: "rep"; count: number; romPercentage: number; counted: boolean }
   | { type: "form-error"; code: string; message: string; severity: CueSeverity }
   /** Emitted when tracking degrades enough to hand the set back to manual logging. */

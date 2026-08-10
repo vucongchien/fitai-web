@@ -17,35 +17,82 @@ export type FacingMode = "user" | "environment";
 export function useCameraStream() {
   const [state, setState] = useState<CameraState>("idle");
   const [facingMode, setFacingMode] = useState<FacingMode>("user");
+  const [isCustomVideo, setIsCustomVideo] = useState(false);
+  const [customVideoSrc, setCustomVideoSrc] = useState<string | null>(null);
+  const isCustomVideoRef = useRef(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
 
   /**
    * The current facing mode, readable without making it a callback dependency.
-   *
-   * `start` used to close over the `facingMode` *state*, so every successful
-   * start produced a new `start` — and therefore a new controller object — which
-   * re-triggered the caller's camera effect, which called `start` again. That
-   * loop restarted the camera ~140 times a second and was visible as the screen
-   * flickering. A ref keeps the callbacks referentially stable.
    */
   const facingModeRef = useRef<FacingMode>(facingMode);
 
-  const stop = useCallback(() => {
-    streamRef.current?.getTracks().forEach((track) => track.stop());
-    streamRef.current = null;
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
+  const cleanupObjectUrl = useCallback(() => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
     }
-    setState("idle");
+    setCustomVideoSrc(null);
   }, []);
 
+  const stop = useCallback(() => {
+    if (isCustomVideoRef.current) {
+      return;
+    }
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    cleanupObjectUrl();
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+      videoRef.current.removeAttribute("src");
+    }
+    isCustomVideoRef.current = false;
+    setIsCustomVideo(false);
+    setState("idle");
+  }, [cleanupObjectUrl]);
+
+  const loadVideoFile = useCallback(
+    (file: File) => {
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      cleanupObjectUrl();
+
+      const objectUrl = URL.createObjectURL(file);
+      objectUrlRef.current = objectUrl;
+
+      isCustomVideoRef.current = true;
+      setIsCustomVideo(true);
+      setCustomVideoSrc(objectUrl);
+      setState("ready");
+
+      const video = videoRef.current;
+      if (video) {
+        video.srcObject = null;
+        video.src = objectUrl;
+        video.loop = true;
+        video.muted = true;
+        video.playsInline = true;
+        video.load();
+        void video.play().catch((err) => console.warn("[AI Engine] Custom video play error:", err));
+      }
+    },
+    [cleanupObjectUrl],
+  );
+
   const start = useCallback(async (mode: FacingMode = facingModeRef.current): Promise<boolean> => {
+    if (isCustomVideoRef.current) {
+      return true;
+    }
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
       setState("unavailable");
       return false;
     }
 
+    cleanupObjectUrl();
+    isCustomVideoRef.current = false;
+    setIsCustomVideo(false);
     setState("requesting");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -64,6 +111,7 @@ export function useCameraStream() {
 
       const video = videoRef.current;
       if (video) {
+        video.removeAttribute("src");
         video.srcObject = stream;
         video.muted = true;
         await video.play().catch(() => {});
@@ -75,7 +123,18 @@ export function useCameraStream() {
       setState(name === "NotAllowedError" || name === "SecurityError" ? "denied" : "unavailable");
       return false;
     }
-  }, []);
+  }, [cleanupObjectUrl]);
+
+  const clearCustomVideo = useCallback(async () => {
+    isCustomVideoRef.current = false;
+    setIsCustomVideo(false);
+    cleanupObjectUrl();
+    if (videoRef.current) {
+      videoRef.current.removeAttribute("src");
+      videoRef.current.load();
+    }
+    await start(facingModeRef.current);
+  }, [cleanupObjectUrl, start]);
 
   const flip = useCallback(async () => {
     const nextMode: FacingMode = facingModeRef.current === "user" ? "environment" : "user";
@@ -88,8 +147,19 @@ export function useCameraStream() {
   // Memoised so callers can safely put the controller in an effect's dependency
   // Array. A fresh object literal here re-ran those effects on every render.
   return useMemo(
-    () => ({ state, facingMode, videoRef, start, stop, flip }),
-    [facingMode, flip, start, state, stop],
+    () => ({
+      clearCustomVideo,
+      customVideoSrc,
+      facingMode,
+      flip,
+      isCustomVideo,
+      loadVideoFile,
+      start,
+      state,
+      stop,
+      videoRef,
+    }),
+    [clearCustomVideo, customVideoSrc, facingMode, flip, isCustomVideo, loadVideoFile, start, state, stop],
   );
 }
 

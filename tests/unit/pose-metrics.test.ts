@@ -87,28 +87,27 @@ describe("rOM", () => {
 });
 
 describe("rep counter (BR-CC-01)", () => {
-  it("counts a rep that reaches at least 70% ROM", () => {
-    const { state, completed } = run([0, 30, 60, 85, 60, 30, 5]);
+  it("counts a rep that reaches at least 70% ROM in strict 5-step sequence", () => {
+    const { state, completed } = run([0, 40, 75, 50, 10]);
     expect(state.count).toBe(1);
     expect(completed).toHaveLength(1);
     expect(completed[0]!.counted).toBe(true);
-    expect(completed[0]!.romPercentage).toBe(85);
+    expect(completed[0]!.romPercentage).toBe(75);
   });
 
-  it("reports but does not count a partial rep below 70% ROM", () => {
-    const { state, completed } = run([0, 30, 55, 30, 5]);
+  it("resets without counting if user turns back early before reaching target", () => {
+    const { state, completed } = run([0, 40, 55, 20, 10]);
     expect(state.count).toBe(0);
-    expect(completed).toHaveLength(1);
-    expect(completed[0]!.counted).toBe(false);
+    expect(completed).toHaveLength(0);
   });
 
   it("does not double count jitter around the threshold", () => {
-    const { state } = run([0, 45, 42, 46, 90, 45, 44, 46, 10]);
+    const { state } = run([0, 45, 42, 75, 45, 44, 46, 10]);
     expect(state.count).toBe(1);
   });
 
   it("counts several clean reps in a row", () => {
-    const { state } = run([0, 50, 95, 10, 50, 95, 10, 50, 95, 5]);
+    const { state } = run([0, 40, 95, 10, 40, 95, 10, 40, 95, 5]);
     expect(state.count).toBe(3);
     expect(state.completedRoms).toHaveLength(3);
   });

@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, ArrowLeft, CheckCircle2, Dumbbell, Plus, Save, Trash2, X } from "lucide-react";
+import { Archive, ArrowLeft, CheckCircle2, Dumbbell, Plus, Save, Sparkles, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useId, useState } from "react";
@@ -19,6 +19,7 @@ import type {
   MetadataItem,
 } from "@/features/admin/domain/admin-types";
 import { EXERCISE_STATUS_LABEL, EXERCISE_STATUS_STYLE } from "@/features/admin/domain/admin-types";
+import { MotionSpecDialog } from "@/features/admin/ui/motion-spec-dialog";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
 import { toast } from "@/shared/ui/toast";
 
@@ -30,6 +31,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
   const [exercise, setExercise] = useState<AdminExercise | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isMotionSpecDialogOpen, setIsMotionSpecDialogOpen] = useState(false);
   const [metadata, setMetadata] = useState<MetadataItem[]>([]);
 
   // Form Fields State
@@ -133,6 +135,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
       });
       setExercise(updated);
       toast.success("Exercise updated successfully!");
+      router.push("/admin/exercises");
     } finally {
       setIsSaving(false);
     }
@@ -212,6 +215,15 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
 
         {/* Action Header Buttons */}
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsMotionSpecDialogOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition-colors cursor-pointer"
+          >
+            <Sparkles className="size-4 text-indigo-600" />
+            <span>AI Rules & Voice</span>
+          </button>
+
           {(status === "created" || status === "submittedForApproval") && (
             <button
               type="button"
@@ -526,6 +538,13 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
           </div>
         </div>
       </div>
+
+      <MotionSpecDialog
+        isOpen={isMotionSpecDialogOpen}
+        exerciseId={id}
+        exerciseName={name}
+        onClose={() => setIsMotionSpecDialogOpen(false)}
+      />
     </form>
   );
 }

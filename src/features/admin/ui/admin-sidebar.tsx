@@ -7,6 +7,7 @@ import {
   FolderTree,
   LayoutDashboard,
   Shield,
+  Sparkles,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -25,6 +26,11 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
       href: "/admin/exercises",
       icon: Dumbbell,
       badge: pendingApprovalCount > 0 ? pendingApprovalCount : undefined,
+    },
+    {
+      label: "AI Rules & Voice",
+      href: "/admin/motion-specs",
+      icon: Sparkles,
     },
     {
       label: "Metadata Catalog",

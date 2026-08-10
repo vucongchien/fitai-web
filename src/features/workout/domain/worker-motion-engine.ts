@@ -205,13 +205,19 @@ export class WorkerMotionEngine implements MotionEngine {
   private startLoop(): void {
     this.stopLoop();
     this.pending = false;
+    let loggedReady = false;
     const loop = () => {
-      const { video } = this;
+      const video = this.video;
       if (!this.pending && video && video.videoWidth > 0 && video.videoHeight > 0) {
+        if (!loggedReady) {
+          console.log("[AI Engine] Camera video element ready for frame sampling:", video.videoWidth, "x", video.videoHeight);
+          loggedReady = true;
+        }
         this.pending = true;
         createImageBitmap(video).then(
           (bitmap) => this.send({ bitmap, type: "frame" }),
-          () => {
+          (err) => {
+            console.warn("[AI Engine] createImageBitmap failed:", err);
             this.pending = false;
           },
         );

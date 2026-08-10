@@ -6,20 +6,40 @@ import { SearchExperience } from "@/features/exercise/ui/search-experience";
 export const metadata = { title: "Search" };
 export const instant = false;
 
-export default async function SearchPage() {
-  await connection();
-  const [exercises, catalog] = await Promise.all([
-    exerciseSearchRepository.search({
-      q: "",
-      bodyPartIds: [],
-      targetMuscleIds: [],
-      equipmentIds: [],
-      difficulty: [],
-      tagIds: [],
-      aiOnly: false,
-    }),
-    exerciseSearchRepository.getCatalog(),
-  ]);
+type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-  return <SearchExperience exercises={exercises} catalog={catalog} />;
+export default async function SearchPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
+  await connection();
+  const rawParams = searchParams ? await searchParams : {};
+  const catalog = await exerciseSearchRepository.getCatalog();
+
+  const q = typeof rawParams.q === "string" ? rawParams.q : (typeof rawParams.query === "string" ? rawParams.query : "");
+  const bodyPartIds = Array.isArray(rawParams.body)
+    ? rawParams.body
+    : typeof rawParams.body === "string"
+      ? [rawParams.body]
+      : [];
+  const equipmentIds = Array.isArray(rawParams.equipment)
+    ? rawParams.equipment
+    : typeof rawParams.equipment === "string"
+      ? [rawParams.equipment]
+      : [];
+
+  const initialFilters = {
+    q,
+    bodyPartIds,
+    equipmentIds,
+    targetMuscleIds: [],
+    difficulty: [],
+    tagIds: [],
+    aiOnly: rawParams.ai === "1",
+  };
+
+  const exercises = await exerciseSearchRepository.search(initialFilters);
+
+  return <SearchExperience initialExercises={exercises} catalog={catalog} />;
 }

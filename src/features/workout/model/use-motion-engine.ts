@@ -47,6 +47,16 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
   const [error, setError] = useState<string | null>(null);
   const [calibration, setCalibration] = useState<CalibrationStatus | null>(null);
   const [pose, setPose] = useState<Pose | null>(null);
+  const [metrics, setMetrics] = useState<{
+    frameIndex: number;
+    metricName: string;
+    angle: number;
+    rom: number;
+    phase: string;
+    repCount: number;
+    startDeg: number;
+    endDeg: number;
+  } | null>(null);
   const [repCount, setRepCount] = useState(0);
   const [lastError, setLastError] = useState<string | null>(null);
 
@@ -63,6 +73,19 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
       }
       case "pose": {
         setPose(event.pose);
+        break;
+      }
+      case "metrics": {
+        setMetrics({
+          angle: event.angle,
+          endDeg: event.endDeg,
+          frameIndex: event.frameIndex,
+          metricName: event.metricName,
+          phase: event.phase,
+          repCount: event.repCount,
+          rom: event.rom,
+          startDeg: event.startDeg,
+        });
         break;
       }
       case "rep": {
@@ -151,6 +174,7 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
     error,
     calibration,
     pose,
+    metrics,
     repCount,
     lastError,
     prepare,

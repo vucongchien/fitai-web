@@ -61,31 +61,65 @@ export interface Pose {
   /** 17 keypoints in KEYPOINT_NAMES order. */
   keypoints: Keypoint[];
   score: number;
+  sourceWidth?: number;
+  sourceHeight?: number;
 }
 
 /** Below this a keypoint is treated as missing. */
-export const MIN_KEYPOINT_SCORE = 0.3;
+export const MIN_KEYPOINT_SCORE = 0.15;
 
 /** BR-CC-01 — a rep counts once ROM reaches 70% of the standard range. */
 export const VALID_REP_ROM = 70;
 
-export function keypoint(pose: Pose, name: KeypointName): Keypoint | null {
-  const index = KEYPOINT_NAMES.indexOf(name);
-  const point = pose.keypoints[index];
-  if (!point || point.score < MIN_KEYPOINT_SCORE) {
-    return null;
+export function normalizeKeypointName(name: string): KeypointName {
+  if (KEYPOINT_NAMES.includes(name as KeypointName)) {
+    return name as KeypointName;
   }
-  return point;
+  const leftVariant = `left_${name}` as KeypointName;
+  if (KEYPOINT_NAMES.includes(leftVariant)) {
+    return leftVariant;
+  }
+  return name as KeypointName;
 }
 
-/** A pose is usable when both hips and both shoulders tracked. */
+export function keypoint(pose: Pose, name: string): Keypoint | null {
+  const normName = normalizeKeypointName(name);
+  const index = KEYPOINT_NAMES.indexOf(normName);
+  if (index === -1) {
+    return null;
+  }
+  const point = pose.keypoints[index];
+  if (point && point.score >= MIN_KEYPOINT_SCORE) {
+    return point;
+  }
+
+  // If primary side keypoint is obscured, try opposite side fallback (e.g. left_hip -> right_hip)
+  const altName = normName.startsWith("left_")
+    ? normName.replace("left_", "right_")
+    : normName.startsWith("right_")
+      ? normName.replace("right_", "left_")
+      : null;
+  if (altName) {
+    const altIndex = KEYPOINT_NAMES.indexOf(altName as KeypointName);
+    if (altIndex !== -1) {
+      const altPoint = pose.keypoints[altIndex];
+      if (altPoint && altPoint.score >= MIN_KEYPOINT_SCORE) {
+        return altPoint;
+      }
+    }
+  }
+
+  return null;
+}
+
+/** A pose is usable when at least 1 shoulder and 1 hip are tracked (supports side-view exercises like Sit-up & Push-up). */
 export function isPoseUsable(pose: Pose): boolean {
-  return (
-    keypoint(pose, "left_shoulder") !== null &&
-    keypoint(pose, "right_shoulder") !== null &&
-    keypoint(pose, "left_hip") !== null &&
-    keypoint(pose, "right_hip") !== null
-  );
+  const hasLeftUpper = keypoint(pose, "left_shoulder") !== null && keypoint(pose, "left_hip") !== null;
+  const hasRightUpper = keypoint(pose, "right_shoulder") !== null && keypoint(pose, "right_hip") !== null;
+  const hasAnyShoulder = keypoint(pose, "left_shoulder") !== null || keypoint(pose, "right_shoulder") !== null;
+  const hasAnyHip = keypoint(pose, "left_hip") !== null || keypoint(pose, "right_hip") !== null;
+
+  return hasLeftUpper || hasRightUpper || (hasAnyShoulder && hasAnyHip);
 }
 
 /** Interior angle at vertex `b`, in degrees (0-180). */
@@ -108,10 +142,44 @@ export function jointAngle(
   return (Math.acos(clamped) * 180) / Math.PI;
 }
 
-export function angleOfJoints(pose: Pose, joints: [string, string, string]): number | null {
-  const [a, b, c] = joints.map((name) => keypoint(pose, name as KeypointName));
-  if (!a || !b || !c) {
+export function spineAngle(pose: Pose): number | null {
+  const shoulder = keypoint(pose, "shoulder");
+  const hip = keypoint(pose, "hip");
+  if (!shoulder || !hip) {
     return null;
+  }
+  const dx = shoulder.x - hip.x;
+  const dy = shoulder.y - hip.y;
+  const len = Math.hypot(dx, dy);
+  if (len === 0) {
+    return 0;
+  }
+  // Angle with vertical vector [0, -1]
+  const cosine = -dy / len;
+  const clamped = Math.min(1, Math.max(-1, cosine));
+  return (Math.acos(clamped) * 180) / Math.PI;
+}
+
+export function angleOfJoints(pose: Pose, joints?: [string, string, string]): number | null {
+  if (!joints || !Array.isArray(joints) || joints.length < 3) {
+    return null;
+  }
+  let [a, b, c] = joints.map((name) => keypoint(pose, name as KeypointName));
+  if (!a || !b || !c) {
+    // Opposite side fallback if primary side is obscured in side-view videos (e.g. left_hip -> right_hip)
+    const altJoints = joints.map((name) => {
+      if (name.startsWith("left_")) return name.replace("left_", "right_");
+      if (name.startsWith("right_")) return name.replace("right_", "left_");
+      return name;
+    });
+    const [altA, altB, altC] = altJoints.map((name) => keypoint(pose, name as KeypointName));
+    if (altA && altB && altC) {
+      a = altA;
+      b = altB;
+      c = altC;
+    } else {
+      return null;
+    }
   }
   return jointAngle(a, b, c);
 }
@@ -129,7 +197,7 @@ export function romPercent(angleDeg: number, range: RomRange): number {
   return Math.min(100, Math.max(0, travelled * 100));
 }
 
-export type RepPhase = "extended" | "contracting" | "contracted" | "extending";
+export type RepPhase = "start" | "moving_to_target" | "target_reached" | "moving_to_start";
 
 export interface RepCounterState {
   phase: RepPhase;
@@ -140,12 +208,14 @@ export interface RepCounterState {
   completedRoms: number[];
 }
 
-/** Hysteresis so jitter around the threshold does not double count. */
-const CONTRACT_ENTER_ROM = 40;
-const EXTEND_EXIT_ROM = 20;
+/** Hysteresis thresholds for strict 5-step sequential phase transitions. */
+const START_ROM_MAX = 30;       // Below 30% ROM is considered START position
+const MOVING_START_MIN = 20;     // Moving above 20% transitions to MOVING_TO_TARGET
+const TARGET_REACH_MIN = 60;     // Reaching >= 60% ROM reaches TARGET_REACHED
+const MOVING_START_MAX = 70;     // Dropping below 70% after target reached transitions to MOVING_TO_START
 
 export function createRepCounter(): RepCounterState {
-  return { phase: "extended", count: 0, peakRom: 0, completedRoms: [] };
+  return { phase: "start", count: 0, peakRom: 0, completedRoms: [] };
 }
 
 export interface RepCounterTick {
@@ -155,38 +225,107 @@ export interface RepCounterTick {
 }
 
 /**
- * Feed one frame's ROM. A rep closes when the user comes back up past
- * EXTEND_EXIT_ROM after having gone below CONTRACT_ENTER_ROM; it only increments
- * the counter when peak ROM reached VALID_REP_ROM (BR-CC-01).
+ * Strict 5-step sequential state machine:
+ * START (<=25%) -> MOVING_TO_TARGET (>=35%) -> TARGET_REACHED (>=70%) -> MOVING_TO_START (<=60%) -> RETURNED TO START (<=25%) (Rep + 1)
+ * Must follow exact sequential order without skipping steps!
  */
 export function feedRepCounter(state: RepCounterState, rom: number): RepCounterTick {
   const peakRom = Math.max(state.peakRom, rom);
 
-  if (state.phase === "extended" || state.phase === "extending") {
-    if (rom >= CONTRACT_ENTER_ROM) {
-      return { state: { ...state, phase: "contracting", peakRom }, completedRep: null };
+  switch (state.phase) {
+    case "start": {
+      // Step 1: rest (start position). Transition to Step 2: transition (moving_to_target)
+      if (rom >= MOVING_START_MIN) {
+        return {
+          state: { ...state, phase: "moving_to_target", peakRom },
+          completedRep: null,
+        };
+      }
+      return { state: { ...state, peakRom: 0 }, completedRep: null };
     }
-    return { state: { ...state, phase: "extended", peakRom }, completedRep: null };
-  }
 
-  // Coming back up closes the rep.
-  if (rom <= EXTEND_EXIT_ROM) {
-    const counted = peakRom >= VALID_REP_ROM;
-    const count = counted ? state.count + 1 : state.count;
-    const completedRoms = counted ? [...state.completedRoms, peakRom] : state.completedRoms;
-    return {
-      state: { phase: "extended", count, peakRom: 0, completedRoms },
-      completedRep: { repNumber: count, romPercentage: Math.round(peakRom), counted },
-    };
-  }
+    case "moving_to_target": {
+      // Step 2: transition (moving_to_target). Must reach Step 3: active (target_reached)
+      if (rom >= TARGET_REACH_MIN) {
+        return {
+          state: { ...state, phase: "target_reached", peakRom },
+          completedRep: null,
+        };
+      }
+      // If user turns back early to start (< 30%) WITHOUT reaching active, reset to start without incrementing!
+      if (rom <= START_ROM_MAX) {
+        return {
+          state: { ...state, phase: "start", peakRom: 0 },
+          completedRep: null,
+        };
+      }
+      return { state: { ...state, peakRom }, completedRep: null };
+    }
 
-  return { state: { ...state, phase: "contracting", peakRom }, completedRep: null };
+    case "target_reached": {
+      // Step 3: active (target_reached). Returning to rest (<= 30%) or transition (<= 70%)
+      if (rom <= START_ROM_MAX) {
+        // Returned to rest position (<=30%) after reaching active — full sequence complete!
+        const counted = peakRom >= VALID_REP_ROM;
+        if (!counted) {
+          return {
+            state: { ...state, phase: "start", peakRom: 0 },
+            completedRep: null,
+          };
+        }
+        const count = state.count + 1;
+        const completedRoms = [...state.completedRoms, peakRom];
+        return {
+          state: { phase: "start", count, peakRom: 0, completedRoms },
+          completedRep: { repNumber: count, romPercentage: Math.round(peakRom), counted: true },
+        };
+      }
+      if (rom <= MOVING_START_MAX) {
+        return {
+          state: { ...state, phase: "moving_to_start", peakRom },
+          completedRep: null,
+        };
+      }
+      return { state: { ...state, peakRom }, completedRep: null };
+    }
+
+    case "moving_to_start": {
+      // Step 4 & 5: transition (moving_to_start). Returning fully to Step 5: rest (start position <= 30%)
+      // Sequence COMPLETE: rest -> transition -> active -> transition -> rest! Rep + 1!
+      if (rom <= START_ROM_MAX) {
+        const counted = peakRom >= VALID_REP_ROM;
+        if (!counted) {
+          return {
+            state: { ...state, phase: "start", peakRom: 0 },
+            completedRep: null,
+          };
+        }
+        const count = state.count + 1;
+        const completedRoms = [...state.completedRoms, peakRom];
+        return {
+          state: { phase: "start", count, peakRom: 0, completedRoms },
+          completedRep: { repNumber: count, romPercentage: Math.round(peakRom), counted: true },
+        };
+      }
+      return { state: { ...state, peakRom }, completedRep: null };
+    }
+
+    default: {
+      return { state: { ...state, phase: "start", peakRom: 0 }, completedRep: null };
+    }
+  }
 }
 
 /** FR-CC-03 — codes of every rule the current pose violates. */
 export function evaluateRules(rules: FormRule[], pose: Pose): string[] {
+  if (!rules || !Array.isArray(rules) || !pose) {
+    return [];
+  }
   const codes: string[] = [];
   for (const rule of rules) {
+    if (!rule || !rule.joints) {
+      continue;
+    }
     const angle = angleOfJoints(pose, rule.joints);
     if (angle === null) {
       continue;
@@ -259,6 +398,183 @@ export function calibrationDistance(pose: Pose, frameHeight: number): Calibratio
 
 /** Mean luma of a downsampled frame, 0-255. */
 export const MIN_FRAME_BRIGHTNESS = 45;
+
+export interface GenericRuleRange {
+  severity: number;
+  status: string;
+  min: number | null;
+  max: number | null;
+  comment?: string;
+}
+
+export interface GenericRuleItem {
+  metric: string;
+  description?: string;
+  evaluation_type?: string;
+  apply_in_phases?: string[];
+  ranges?: GenericRuleRange[];
+  calculation?: {
+    landmarks?: string[];
+    formula?: string;
+  };
+}
+
+export interface GenericRuleFile {
+  display_name?: string;
+  rep_type?: "counted" | "timed";
+  notes?: string;
+  phase_detection?: {
+    metric?: string;
+    thresholds?: Record<string, { gt?: number; gte?: number; lt?: number; lte?: number; comment?: string }>;
+    calculation?: {
+      landmarks?: string[];
+      formula?: string;
+    };
+  };
+  rules?: GenericRuleItem[];
+}
+
+export function evaluateMetricValue(
+  metricName: string,
+  landmarks: string[] | undefined,
+  formula: string | undefined,
+  pose: Pose,
+): number | null {
+  if (metricName === "spine_angle" || formula?.includes("[0, -1, 0]")) {
+    return spineAngle(pose);
+  }
+
+  // Parse landmarks if provided (e.g. ["Hip (P11, P12)", "Knee (P13, P14)", "Ankle (P15, P16)"])
+  if (landmarks && landmarks.length >= 3) {
+    const parsedJoints = landmarks.slice(0, 3).map((item) => {
+      const clean = item.split(" ")[0] ?? item;
+      return clean.toLowerCase();
+    }) as [string, string, string];
+    const angle = angleOfJoints(pose, parsedJoints);
+    if (angle !== null) {
+      return angle;
+    }
+  }
+
+  // Default joint fallbacks based on metric name
+  if (metricName.includes("knee") || metricName.includes("leg")) {
+    return angleOfJoints(pose, ["hip", "knee", "ankle"]);
+  }
+  if (metricName.includes("hip")) {
+    return angleOfJoints(pose, ["shoulder", "hip", "knee"]);
+  }
+  if (metricName.includes("elbow") || metricName.includes("arm")) {
+    return angleOfJoints(pose, ["shoulder", "elbow", "wrist"]);
+  }
+
+  return null;
+}
+
+export function detectPhaseFromRuleJson(
+  ruleFile: GenericRuleFile,
+  pose: Pose,
+): { phase: string; startDeg: number; endDeg: number; metricName: string } {
+  if (!ruleFile || !pose) {
+    return { endDeg: 115, metricName: "knee_angle", phase: "start", startDeg: 150 };
+  }
+
+  const phaseDet = ruleFile.phase_detection;
+
+  // Handle Timed / Isometric / Static exercises (e.g. Plank, Wall Sit, rep_type: "timed", metric: "none")
+  if (!phaseDet || phaseDet.metric === "none" || ruleFile.rep_type === "timed") {
+    return { endDeg: 0, metricName: "none", phase: "always", startDeg: 0 };
+  }
+
+  const metricName = phaseDet.metric ?? "knee_angle";
+  const val = evaluateMetricValue(
+    metricName,
+    phaseDet.calculation?.landmarks,
+    phaseDet.calculation?.formula,
+    pose,
+  );
+
+  const thresholds = phaseDet.thresholds ?? {};
+  const restCond = thresholds.rest ?? {};
+  const activeCond = thresholds.active ?? {};
+
+  const restGt = restCond.gt ?? restCond.gte ?? 150;
+  const activeLte = activeCond.lte ?? activeCond.lt ?? 115;
+
+  if (val === null) {
+    return { endDeg: activeLte, metricName, phase: "start", startDeg: restGt };
+  }
+
+  // Parse conditions dynamically:
+  // 1. Check rest condition (gt: Greater than, gte: Greater than or equal)
+  const isRest =
+    (restCond.gt !== undefined && val > restCond.gt) ||
+    (restCond.gte !== undefined && val >= restCond.gte) ||
+    (restCond.gt === undefined && restCond.gte === undefined && val > 150);
+
+  if (isRest) {
+    return { endDeg: activeLte, metricName, phase: "start", startDeg: restGt };
+  }
+
+  // 2. Check active condition (lte: Less than or equal to, lt: Less than)
+  const isActive =
+    (activeCond.lte !== undefined && val <= activeCond.lte) ||
+    (activeCond.lt !== undefined && val < activeCond.lt) ||
+    (activeCond.lte === undefined && activeCond.lt === undefined && val <= 115);
+
+  if (isActive) {
+    return { endDeg: activeLte, metricName, phase: "target_reached", startDeg: restGt };
+  }
+
+  // 3. Fallback: transition condition (gt 115: Greater than 115 and <= 150)
+  return { endDeg: activeLte, metricName, phase: "moving_to_target", startDeg: restGt };
+}
+
+export function evaluateGenericRuleJson(
+  ruleFile: GenericRuleFile,
+  pose: Pose,
+): { violations: { code: string; message: string; severity: number }[]; currentPhase: string } {
+  const violations: { code: string; message: string; severity: number }[] = [];
+  if (!ruleFile || !pose) {
+    return { currentPhase: "start", violations };
+  }
+
+  // 1. Dynamic Phase Detection
+  const { phase: currentPhase } = detectPhaseFromRuleJson(ruleFile, pose);
+
+  // 2. Dynamic Rule Ranges Evaluation
+  if (ruleFile.rules && Array.isArray(ruleFile.rules)) {
+    for (const rule of ruleFile.rules) {
+      const value = evaluateMetricValue(
+        rule.metric,
+        rule.calculation?.landmarks,
+        rule.calculation?.formula,
+        pose,
+      );
+      if (value === null || !rule.ranges) {
+        continue;
+      }
+
+      for (const range of rule.ranges) {
+        if (range.severity === 0) {
+          continue;
+        }
+
+        if ((range.min !== null && range.max !== null && value >= range.min && value <= range.max) ||
+            (range.min !== null && range.max === null && value >= range.min) ||
+            (range.min === null && range.max !== null && value <= range.max)) {
+          violations.push({
+            code: rule.metric,
+            message: range.comment || rule.description || `Lỗi tư thế ${rule.metric}`,
+            severity: range.severity,
+          });
+          break;
+        }
+      }
+    }
+  }
+
+  return { currentPhase, violations };
+}
 
 export function calibrationLighting(meanBrightness: number): CalibrationLighting {
   return meanBrightness < MIN_FRAME_BRIGHTNESS ? "low" : "ok";

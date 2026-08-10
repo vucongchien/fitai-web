@@ -110,3 +110,14 @@ export async function getCatalogMetadataServerAction(): Promise<CatalogMetadataR
     };
   }
 }
+
+/**
+ * Server Action gọi gRPC ExerciseService.SearchExercises thông qua searchRepository
+ */
+export async function searchExercisesServerAction(
+  filters: import("@/features/exercise/domain/exercise").ExerciseFilters,
+): Promise<import("@/features/exercise/domain/exercise").ExerciseSummary[]> {
+  const { exerciseSearchRepository } = await import("@/features/exercise/api/search-repository");
+  return exerciseSearchRepository.search(filters);
+}
+

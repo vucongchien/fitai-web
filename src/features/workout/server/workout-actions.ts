@@ -332,23 +332,28 @@ export async function completeWorkoutSession(
     return localTotals;
   }
 
-  const transport = createServerTransport(accessToken);
-  const executionClient = createClient(WorkoutExecutionService, transport);
+  try {
+    const transport = createServerTransport(accessToken);
+    const executionClient = createClient(WorkoutExecutionService, transport);
 
-  const res = await executionClient.completeWorkoutSession({
-    sessionId,
-    confirmOverload,
-    weightUpdateKg: localTotals.totalVolumeKg,
-  });
+    const res = await executionClient.completeWorkoutSession({
+      sessionId,
+      confirmOverload,
+      weightUpdateKg: localTotals.totalVolumeKg,
+    });
 
-  return {
-    sessionId: res.sessionId,
-    totalSets: res.totalSets || localTotals.totalSets,
-    totalVolumeKg: res.totalVolume || localTotals.totalVolumeKg,
-    averageRpe: res.averageRpe || localTotals.averageRpe,
-    averageFormScore: res.averageFormScore ?? localTotals.averageFormScore,
-    oneRepMaxByExercise: localTotals.oneRepMaxByExercise,
-  };
+    return {
+      sessionId: res.sessionId,
+      totalSets: res.totalSets || localTotals.totalSets,
+      totalVolumeKg: res.totalVolume || localTotals.totalVolumeKg,
+      averageRpe: res.averageRpe ?? localTotals.averageRpe,
+      averageFormScore: res.averageFormScore ?? localTotals.averageFormScore,
+      oneRepMaxByExercise: localTotals.oneRepMaxByExercise,
+    };
+  } catch (error) {
+    console.warn("completeWorkoutSession RPC failed or session already finished, using local totals:", error);
+    return localTotals;
+  }
 }
 
 /**

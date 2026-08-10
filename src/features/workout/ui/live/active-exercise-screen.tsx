@@ -18,8 +18,6 @@ function targetLabel(exercise: LiveExercise): string {
     return `${exercise.durationSeconds} sec`;
   }
   const reps = `${exercise.targetReps} reps`;
-  // The load needs a weight, not just the weighted flag: a band or bodyweight
-  // Movement can be flagged weighted with 0 kg, and "· 0 kg" is noise.
   const weighted = exercise.isWeighted && exercise.targetWeightKg > 0;
   return weighted ? `${reps} · ${exercise.targetWeightKg} kg` : reps;
 }
@@ -38,6 +36,7 @@ export function ActiveExerciseScreen({
   onToggleFullscreen,
   onToggleVoice,
   onWatchVideo,
+  recommendedAngle,
   repCount,
   secondsLeft,
   setTotalSeconds = 0,
@@ -47,22 +46,23 @@ export function ActiveExerciseScreen({
   exercise: LiveExercise;
   currentSet: number;
   totalSets: number;
+  recommendedAngle?: string;
   secondsLeft: number;
-  /**
-   * Full length of the running set — the ring's denominator. It grows with
-   * "+10s", which `exercise.durationSeconds` cannot. 0 means the set has not
-   * started yet, so the prescription stands in.
-   */
   setTotalSeconds?: number;
   repCount?: number;
+  metrics?: {
+    angle: number;
+    rom: number;
+    phase: string;
+    startDeg: number;
+    endDeg: number;
+  } | null;
   cameraActive: boolean;
   onToggleCamera?: () => void;
   onBack: () => void;
   onOpenGuide: () => void;
-  /** "Something hurts" — always reachable while a set is running. */
   onReportPain: () => void;
   onToggleVoice: () => void;
-  /** Open the full demo clip. Optional: not every exercise has one. */
   onWatchVideo?: () => void;
   voiceOn: boolean;
   onToggleFullscreen: () => void;
@@ -71,8 +71,6 @@ export function ActiveExerciseScreen({
   cameraSlot?: ReactNode;
 }) {
   const actions: HeaderAction[] = [
-    // First in the row: a safety control should never be the one that gets
-    // Dropped or hunted for. `tone: "alert"` is what colours it apart.
     {
       icon: <TriangleAlert aria-hidden="true" size={18} />,
       key: "pain",
@@ -105,14 +103,6 @@ export function ActiveExerciseScreen({
     },
   ];
 
-  // Three honest cases, and no fourth:
-  //   Timed hold          → clock counting down, arc depletes with it
-  //   Reps + camera count → "4 / 10", arc tracks the count
-  //   Reps, no camera     → nothing to count and no clock to run, so there is no
-  //                         Instrument to show. The footer becomes a single
-  //                         Confirm button; the target is already in the meta
-  //                         Row, and PRODUCT.md forbids inventing evidence, so
-  //                         No fake progress is displayed.
   const timed = exercise.durationSeconds > 0;
   const tracking = !timed && repCount !== undefined && exercise.targetReps > 0;
   const hasInstrument = timed || tracking;
@@ -121,22 +111,14 @@ export function ActiveExerciseScreen({
     ? formatCountdown(Math.max(0, secondsLeft))
     : `${repCount ?? 0} / ${exercise.targetReps}`;
 
-  // The ring's accessible name has to follow the same branch as its value —
-  // Announcing a rep count as "time remaining" is simply false.
   const ringLabel = timed ? "Time remaining in this set" : "Reps completed in this set";
-
   const setTotal = setTotalSeconds > 0 ? setTotalSeconds : exercise.durationSeconds;
-
   const progress = timed
-    ? (setTotal > 0
-      ? Math.max(0, secondsLeft) / setTotal
-      : null)
-    : (tracking
-      ? repCount! / exercise.targetReps
-      : null);
+    ? (setTotal > 0 ? Math.max(0, secondsLeft) / setTotal : null)
+    : (tracking ? repCount! / exercise.targetReps : null);
 
   return (
-    <div className="live-screen">
+    <div className="live-screen" data-camera-active={cameraActive}>
       <SessionHeader actions={actions} onBack={onBack} title={exercise.name} />
 
       <ExerciseMedia
@@ -151,6 +133,7 @@ export function ActiveExerciseScreen({
       <ExerciseMetaRow
         currentSet={currentSet}
         name={exercise.name}
+        recommendedAngle={recommendedAngle}
         target={targetLabel(exercise)}
         totalSets={totalSets}
       />
@@ -158,6 +141,7 @@ export function ActiveExerciseScreen({
       <CoachingPanel exercise={exercise} />
 
       <ActiveTimerBar
+        addSeconds={10}
         display={display}
         hasInstrument={hasInstrument}
         label={ringLabel}

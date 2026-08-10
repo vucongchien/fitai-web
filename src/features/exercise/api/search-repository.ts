@@ -90,17 +90,21 @@ export const exerciseSearchRepository: ExerciseSearchRepository = {
         const client = createClient(ExerciseService, createServerTransport(accessToken));
         const bodyPartId = filters.bodyPartIds?.[0] || raw.bodyPartId || "";
         const equipmentId = filters.equipmentIds?.[0] || raw.equipmentId || "";
+        const targetMuscleId = filters.targetMuscleIds?.[0] || raw.targetMuscleId || "";
         const difficulty = filters.difficulty?.[0] || raw.difficulty || "";
+        const tagIds = filters.tagIds || [];
 
         const res = await client.searchExercises({
           keyword,
           bodyPartId,
           equipmentId,
+          targetMuscleId,
+          tagIds,
           difficulty,
-          limit: 50,
+          limit: 100,
         });
 
-        if (res.exercises && res.exercises.length > 0) {
+        if (res.exercises) {
           return res.exercises.map((ex) => ({
             id: ex.id,
             name: ex.name,
@@ -180,6 +184,16 @@ export const exerciseSearchRepository: ExerciseSearchRepository = {
       } catch (error) {
         console.warn("[exerciseSearchRepository.getById] gRPC error:", error);
       }
+    }
+
+    try {
+      const all = await this.search({ q: "", bodyPartIds: [], targetMuscleIds: [], equipmentIds: [], difficulty: [], tagIds: [], aiOnly: false });
+      const found = all.find((item) => item.id === id || item.id.toLowerCase() === id.toLowerCase());
+      if (found) {
+        return found;
+      }
+    } catch (fallbackError) {
+      console.warn("[exerciseSearchRepository.getById] Fallback search error:", fallbackError);
     }
 
     return null;

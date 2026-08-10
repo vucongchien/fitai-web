@@ -27,6 +27,7 @@ const STATIC_PLAYLISTS: Playlist[] = [
 
 function adaptLiveSessionPlan({
   sessionId,
+  planId,
   sessionRes,
   infosRes,
   specsRes,
@@ -34,6 +35,7 @@ function adaptLiveSessionPlan({
   recordsRes,
 }: {
   sessionId: string;
+  planId: string;
   sessionRes: any;
   infosRes: any[];
   specsRes: any[];
@@ -76,31 +78,53 @@ function adaptLiveSessionPlan({
 
   const motionSpecs: Record<string, MotionSpec> = {};
   for (const specRes of specsRes) {
-    if (specRes.motionSpecification) {
-      const spec = specRes.motionSpecification;
-      motionSpecs[spec.exerciseId] = {
-        exerciseId: spec.exerciseId,
-        onnxDetectorUrl: spec.onnxDetectorUrl || "/models/person-detector.onnx",
-        onnxSkeletonUrl: spec.onnxSkeletonUrl || "/models/rtmpose-17kp.onnx",
-        localRulesUrl: spec.localRulesUrl || `/models/rules/${spec.exerciseId}.json`,
-        dialogueEngineUrl: spec.dialogueEngineUrl || `/models/dialogue/${spec.exerciseId}.json`,
-        recommendedCameraAngle: spec.recommendedCameraAngle || "side",
-        romRange: spec.romRange || { joints: [], startDeg: 0, endDeg: 0 },
-        rules: (spec.rules || []).map((rule: any) => ({
-          code: rule.code,
-          message: rule.message,
-          severity: rule.severity === 2 ? 2 : 1,
-          joints: rule.joints || [],
-          kind: rule.kind || "angle-below",
-          thresholdDeg: rule.thresholdDeg || 0,
-        })),
-        cues: (spec.cues || []).map((cue: any) => ({
-          code: cue.code,
-          text: cue.text,
-          audioUrl: cue.audioUrl || "",
-          severity: cue.severity === 2 ? 2 : 1,
-        })),
-        cueCooldownSec: spec.cueCooldownSec || {},
+    if (specRes) {
+      const spec = specRes.motionSpecification || specRes;
+      const exId = spec.exerciseId;
+      if (exId) {
+        motionSpecs[exId] = {
+          exerciseId: exId,
+          onnxDetectorUrl: spec.onnxDetectorUrl || "/models/person-detector.onnx",
+          onnxSkeletonUrl: spec.onnxSkeletonUrl || "/models/rtmpose-17kp.onnx",
+          localRulesUrl: spec.localRulesUrl || `/models/rules/${exId}.json`,
+          dialogueEngineUrl: spec.dialogueEngineUrl || `/models/dialogue/${exId}.json`,
+          recommendedCameraAngle: spec.recommendedCameraAngle || "side",
+          romRange: spec.romRange || { joints: [], startDeg: 0, endDeg: 0 },
+          rules: (spec.rules || []).map((rule: any) => ({
+            code: rule.code,
+            message: rule.message,
+            severity: rule.severity === 2 ? 2 : 1,
+            joints: rule.joints || [],
+            kind: rule.kind || "angle-below",
+            thresholdDeg: rule.thresholdDeg || 0,
+          })),
+          cues: (spec.cues || []).map((cue: any) => ({
+            code: cue.code,
+            text: cue.text,
+            audioUrl: cue.audioUrl || "",
+            severity: cue.severity === 2 ? 2 : 1,
+          })),
+          cueCooldownSec: spec.cueCooldownSec || {},
+        };
+      }
+    }
+  }
+
+  // Guarantee motionSpecs object exists for all AI supported exercises
+  for (const infoRes of infosRes) {
+    const ex = infoRes?.exercise;
+    if (ex && ex.hasAiSupported && !motionSpecs[ex.id]) {
+      motionSpecs[ex.id] = {
+        exerciseId: ex.id,
+        onnxDetectorUrl: "/models/person-detector.onnx",
+        onnxSkeletonUrl: "/models/rtmpose-17kp.onnx",
+        localRulesUrl: `/models/rules/${ex.id}.json`,
+        dialogueEngineUrl: `/models/dialogue/${ex.id}.json`,
+        recommendedCameraAngle: "side",
+        romRange: { joints: ["shoulder", "elbow", "wrist"], startDeg: 0, endDeg: 0 },
+        rules: [],
+        cues: [],
+        cueCooldownSec: {},
       };
     }
   }
@@ -118,9 +142,18 @@ function adaptLiveSessionPlan({
     }
   }
 
+  let protectionNote: { title: string; description: string } | undefined;
+  const weeklyCount = (sessionRes as any)?.weeklySessionCount || (sessionRes as any)?.totalWeeklySessions || 0;
+  if (weeklyCount > 6) {
+    protectionNote = {
+      title: "Cảnh báo tần suất tập",
+      description: `Bạn đang có ${weeklyCount} buổi tập trong tuần (vượt khuyến nghị 6 buổi/tuần). Hãy chú ý lắng nghe cơ thể và dành thời gian hồi phục.`,
+    };
+  }
+
   const plan: LiveSessionPlan = {
     sessionId,
-    sessionPlanId: sessionId,
+    sessionPlanId: planId,
     title: sessionRes.targetMuscleGroups?.join(", ") || "Workout Session",
     targetRpe: mainExercises?.[0]?.targetRpe || 7,
     estimatedDurationMin: 0,
@@ -129,6 +162,7 @@ function adaptLiveSessionPlan({
     coolDowns,
     playlists: STATIC_PLAYLISTS,
     motionSpecs,
+    protectionNote,
     recentAvgVolumeKg,
     personalRecords,
     durationWarnMin: 90,
@@ -152,29 +186,40 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
   const exercises = createClient(ExerciseService, transport);
   const execution = createClient(WorkoutExecutionService, transport);
 
-  // 1. Kích hoạt phiên tập trong Execution Service nếu chưa start
-  let activeSessionId = planId;
+  // 1. Lấy kế hoạch bài tập (Prescription) từ Coaching Service
+  let sessionRes;
+  let targetPlanId = planId;
   try {
-    const startRes = await execution.startWorkoutSession({ planId });
+    sessionRes = await coaching.getSessionPlan({ userId, sessionPlanId: targetPlanId });
+  } catch {
+    // Trường hợp URL chứa workout_session_id thay vì planId, tra cứu planId từ lịch sử tập
+    try {
+      const history = await execution.getWorkoutHistory({ limit: 10, offset: 0 });
+      const matched = history.sessions?.find((s: any) => s.sessionId === planId);
+      if (matched) {
+        sessionRes = await coaching.getSessionPlan({ userId, sessionPlanId: targetPlanId });
+      }
+    } catch {
+      // Ignore
+    }
+  }
+
+  const prescription = sessionRes?.sessionPlan?.prescription;
+  if (!sessionRes?.sessionPlan || !prescription) {
+    notFound();
+  }
+
+  // 2. Kích hoạt phiên tập trong Execution Service & lấy workout_session_id thực sự
+  // activeSessionId phải là workout_session.id (UUID từ execution service), KHÔNG phải planId
+  let activeSessionId = "";
+  try {
+    const startRes = await execution.startWorkoutSession({ planId: targetPlanId });
     if (startRes.sessionId) {
       activeSessionId = startRes.sessionId;
     }
   } catch {
-    // Session có thể đã được start trước đó, tiếp tục dùng planId
-  }
-
-  // 2. Lấy kế hoạch bài tập (Prescription) từ Coaching Service
-  let sessionRes;
-  try {
-    sessionRes = await coaching.getSessionPlan({ userId, sessionPlanId: planId });
-  } catch (error) {
-    console.error(`[getLiveSessionData] Coaching.getSessionPlan failed for planId=${planId}:`, error);
-    notFound();
-  }
-
-  const prescription = sessionRes.sessionPlan?.prescription;
-  if (!sessionRes.sessionPlan || !prescription) {
-    notFound();
+    // Session đã tồn tại — tìm workout_session_id thực sự từ lịch sử IN_PROGRESS
+    // (ErrActiveSessionAlreadyExists không trả về sessionId nên phải tra cứu)
   }
 
   // 3. Tải thông tin chi tiết bài tập từ Exercise Service
@@ -223,12 +268,27 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
 
   // 5. Tải lịch sử tập luyện và kỷ lục cá nhân
   const [historyRes, recordsRes] = await Promise.all([
-    execution.getWorkoutHistory({ limit: 5, offset: 0 }).catch(() => ({ sessions: [] })),
+    execution.getWorkoutHistory({ limit: 10, offset: 0 }).catch(() => ({ sessions: [] })),
     execution.getPersonalRecords({ exerciseIds: ids }).catch(() => ({ records: [] })),
   ]);
 
+  // Fallback: nếu startWorkoutSession bị ErrActiveSessionAlreadyExists (không trả sessionId),
+  // tìm workout_session_id của phiên tập đang IN_PROGRESS từ history
+  if (!activeSessionId && historyRes.sessions && historyRes.sessions.length > 0) {
+    const inProgressSession = historyRes.sessions.find((s: any) => s.sessionId);
+    if (inProgressSession?.sessionId) {
+      activeSessionId = inProgressSession.sessionId;
+    }
+  }
+
+  // Cuối cùng fallback về planId nếu không tìm được gì (phòng thủ)
+  if (!activeSessionId) {
+    activeSessionId = targetPlanId;
+  }
+
   return adaptLiveSessionPlan({
     sessionId: activeSessionId,
+    planId: targetPlanId,
     sessionRes: sessionRes.sessionPlan,
     infosRes,
     specsRes,

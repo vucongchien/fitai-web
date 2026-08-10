@@ -27,6 +27,19 @@ export function CountdownRing({
 }) {
   const filled = progress === null ? null : Math.min(1, Math.max(0, progress));
 
+  // Dynamic stroke color based on completion percentage:
+  // < 50%: Coral Red (#ff5252)
+  // 50% - 99%: Vibrant Blue (#3b82f6)
+  // >= 100%: Emerald Green (#10b981) for target met or exceeded (10/8, 20/8)!
+  const getDynamicStroke = () => {
+    if (progress === null) return undefined;
+    if (progress >= 1.0) return "#10b981"; // Emerald green for >= 100%
+    if (progress >= 0.5) return "#3b82f6"; // Blue for 50-99%
+    return "#ff5252"; // Coral red for < 50%
+  };
+
+  const dynamicStroke = getDynamicStroke();
+
   return (
     <div aria-label={label} className="countdown-ring" data-tone={tone} role="timer">
       <svg aria-hidden="true" className="countdown-ring__svg" viewBox={`0 0 ${SIZE} ${SIZE}`}>
@@ -40,15 +53,17 @@ export function CountdownRing({
         />
         {filled === null ? null : (
           <circle
-            className="countdown-ring__arc"
+            className="countdown-ring__arc transition-all duration-300"
             cx={SIZE / 2}
             cy={SIZE / 2}
             fill="none"
             r={RADIUS}
+            stroke={dynamicStroke}
             strokeDasharray={CIRCUMFERENCE}
             strokeDashoffset={CIRCUMFERENCE * (1 - filled)}
             strokeLinecap="round"
             strokeWidth={STROKE}
+            style={dynamicStroke ? { stroke: dynamicStroke } : undefined}
           />
         )}
       </svg>

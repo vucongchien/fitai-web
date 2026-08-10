@@ -5070,6 +5070,10 @@ a.week-route__row:hover {
   background: var(--color-surface-subtle);
 }
 
+.live-screen[data-camera-active="true"] .live-screen__media {
+  height: clamp(380px, 58dvh, 620px);
+}
+
 .live-screen__coach {
   min-height: 0;
   overflow-y: auto;
@@ -5210,6 +5214,25 @@ body:has(.live-screen) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.live-meta__angle-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted, #50565c);
+}
+
+.pose-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
 }
 
 /* Values that change in place: data face, tabular. */
@@ -5935,9 +5958,9 @@ body:has(.live-screen) {
   display: grid;
   align-items: end;
   justify-items: center;
-  /* Solid, not a scrim. DESIGN.md rules out translucent layers over media, and
-     the framing check reads better as its own step than as a floating panel. */
-  background: var(--color-canvas);
+  /* Translucent overlay so camera feed stays visible while user lines up */
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(2px);
   padding: var(--space-5);
   padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
+import { ArrowLeft, Loader2, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -19,13 +19,15 @@ import type {
   ExerciseFilters,
   ExerciseSummary,
 } from "@/features/exercise/domain/exercise";
+import { searchExercisesServerAction } from "@/features/exercise/server/catalog-actions";
 import { ExerciseCard } from "@/features/exercise/ui/exercise-card";
 import { FilterPanel } from "@/features/exercise/ui/filter-panel";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { NAV_BACK } from "@/shared/ui/transition-types";
 
 interface SearchExperienceProps {
-  exercises: ExerciseSummary[];
+  initialExercises?: ExerciseSummary[];
+  exercises?: ExerciseSummary[];
   catalog: CatalogMetadata;
 }
 
@@ -147,7 +149,7 @@ function toSearchString(filters: ExerciseFilters): string {
   return params.toString();
 }
 
-export function SearchExperience({ exercises, catalog }: SearchExperienceProps) {
+export function SearchExperience({ initialExercises, exercises: legacyExercises, catalog }: SearchExperienceProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -160,6 +162,8 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
     parseFilters(new URLSearchParams(searchParamsString), catalog),
   );
   const [panelOpen, setPanelOpen] = useState(false);
+  const [rawExercises, setRawExercises] = useState<ExerciseSummary[]>(() => initialExercises || legacyExercises || []);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     inputRef.current?.focus({ preventScroll: true });
@@ -169,6 +173,31 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
     const nextFilters = parseFilters(new URLSearchParams(searchParamsString), catalog);
     setFilters(nextFilters);
   }, [searchParamsString, catalog]);
+
+  // Dynamic server-side search fetch when filters change
+  useEffect(() => {
+    let isCancelled = false;
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const remoteResults = await searchExercisesServerAction(filters);
+        if (!isCancelled) {
+          setRawExercises(remoteResults);
+        }
+      } catch (error) {
+        console.warn("[SearchExperience] Server search error:", error);
+      } finally {
+        if (!isCancelled) {
+          setIsSearching(false);
+        }
+      }
+    }, 250);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timer);
+    };
+  }, [filters]);
 
   const syncUrl = useCallback(
     (next: ExerciseFilters) => {
@@ -211,8 +240,8 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
   const closePanel = useCallback(() => setPanelOpen(false), []);
 
   const results = useMemo(
-    () => sortExercises(filterExercises(exercises, filters, catalog), "relevance"),
-    [exercises, filters, catalog],
+    () => sortExercises(filterExercises(rawExercises, filters, catalog), "relevance"),
+    [rawExercises, filters, catalog],
   );
 
   const activeCount = countActiveFilters(filters, catalog);
@@ -279,7 +308,9 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
             onChange={(event) => setQuery(event.target.value)}
             aria-label="Search exercises"
           />
-          {filters.q ? (
+          {isSearching ? (
+            <Loader2 className="animate-spin text-slate-400" size={16} />
+          ) : filters.q ? (
             <button
               aria-label="Clear search"
               className="search-field__clear"
@@ -307,7 +338,7 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
       <main className="focused-main">
         <div className="search-meta">
           <span>
-            {results.length} of {exercises.length} movements
+            {results.length} of {rawExercises.length} movements
           </span>
           {activeCount > 0 ? (
             <button className="text-button text-xs font-semibold text-[var(--color-action)]" onClick={clearFacets} type="button">
@@ -345,13 +376,13 @@ export function SearchExperience({ exercises, catalog }: SearchExperienceProps) 
               }
             />
 
-            {exercises.length > 0 ? (
+            {rawExercises.length > 0 ? (
               <section className="search-recommendations border-t border-[var(--color-border)] pt-4">
                 <h3 className="text-sm font-bold mb-3 text-[var(--color-text-main)]">
                   Suggested movements
                 </h3>
                 <ol className="ex-grid">
-                  {exercises.slice(0, 8).map((exercise) => (
+                  {rawExercises.slice(0, 8).map((exercise) => (
                     <li key={`rec-${exercise.id}`}>
                       <ExerciseCard exercise={exercise} catalog={catalog} />
                     </li>

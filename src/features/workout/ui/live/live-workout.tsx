@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { shouldCalibrate } from "@/features/workout/domain/calibration-gate";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
 import { loadRatio, sessionVolumeKg } from "@/features/workout/domain/training-load";
 import type { LiveSessionPlan } from "@/features/workout/model/live-session.types";
@@ -12,7 +11,6 @@ import { useLiveSession } from "@/features/workout/model/use-live-session";
 import { useLiveWorkoutEffects } from "@/features/workout/model/use-live-workout-effects";
 import { useMotionEngine } from "@/features/workout/model/use-motion-engine";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
-import { CalibrationView } from "@/features/workout/ui/live/calibration-view";
 import { CameraStage } from "@/features/workout/ui/live/camera-stage";
 import { DemoVideoOverlay } from "@/features/workout/ui/live/demo-video-overlay";
 import type { EndDialogVariant } from "@/features/workout/ui/live/end-session-dialog";
@@ -21,6 +19,7 @@ import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet
 import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
 import { SetConfirmDialog } from "@/features/workout/ui/live/set-confirm-dialog";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
+import { RuleVoiceModal } from "@/features/workout/ui/live/rule-voice-modal";
 import { toast } from "@/shared/ui/toast";
 
 /** Seconds the "+" button adds — same amount on both screens. */
@@ -52,9 +51,14 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const [painOpen, setPainOpen] = useState(false);
   const [videoOpen, setVideoOpen] = useState(false);
   const [confirmSetOpen, setConfirmSetOpen] = useState(false);
+  const [ruleModalOpen, setRuleModalOpen] = useState(false);
 
   const motion = useMotionEngine({
     onFallback: (reason) => {
+      // Don't switch to manual logging if playing user video file!
+      if (camera.isCustomVideo) {
+        return;
+      }
       workoutEffects.setManualForSet(true);
       toast.info(
         reason === "low-light"
@@ -62,10 +66,24 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           : "Camera tracking stopped — switching to manual logging.",
       );
     },
-    onFormError: (error) => workoutEffects.playCueByCode(error.code, listening),
+    onFormError: (error) => {
+      if (!listening) {
+        return;
+      }
+      if (error.severity === 2) {
+        audio.speakText(`Cảnh báo: ${error.message}`);
+      } else {
+        workoutEffects.playCueByCode(error.code, listening);
+      }
+    },
+    onRep: (rep) => {
+      if (rep.counted && listening) {
+        audio.speakText(`Hoàn thành rep ${rep.count}`);
+      }
+    },
   });
 
-  const workoutEffects = useLiveWorkoutEffects({ audio, camera, motion, plan, session });
+  const workoutEffects = useLiveWorkoutEffects({ audio, camera, cameraOn, motion, plan, session });
   const {
     abortSession,
     cameraBranch,
@@ -73,8 +91,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     finishSet,
     finishSession,
     online,
-    setManualForSet,
-    spec,
     startSet,
     step,
   } = workoutEffects;
@@ -112,24 +128,14 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   // Check passes. Starting before that would race `motion.prepare()` and count
   // Reps against a model that is not there yet.
   const sessionStatus = session.status;
-  const cameraActive = cameraBranch && cameraOn;
-  const cameraReady =
-    !motion.preparing && motion.kind !== null && Boolean(motion.calibration?.ready);
-  const needsCalibration = shouldCalibrate({
-    cameraBranch,
-    cameraOn,
-    cameraReady,
-    status: sessionStatus,
-  });
+  const cameraActive = (cameraBranch || Boolean(workoutEffects.spec)) && cameraOn;
 
-  // The redesigned screens have no "start set" control: arriving at a step *is*
-  // The intent to work. Without this the hold clock never runs, `+10s` has no
-  // Clock to extend and the camera never begins counting reps.
+  // Auto-start set immediately when arriving at step
   useEffect(() => {
-    if (sessionStatus === "ready" && !needsCalibration) {
+    if (sessionStatus === "ready") {
       startSet(listening);
     }
-  }, [listening, needsCalibration, sessionStatus, startSet]);
+  }, [listening, sessionStatus, startSet]);
 
   // These three notices lived in the deleted `SessionShell`. The screens are
   // Fixed-height with no room for a banner row, so they speak as toasts — but
@@ -171,13 +177,18 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const cameraStage = cameraActive ? (
     <CameraStage
       alert={Boolean(motion.lastError)}
+      customVideoSrc={camera.customVideoSrc}
+      isCustomVideo={camera.isCustomVideo}
+      onClearCustomVideo={camera.clearCustomVideo}
       onFlip={camera.flip}
+      onOpenRuleModal={() => setRuleModalOpen(true)}
+      onUploadVideo={camera.loadVideoFile}
       pose={motion.pose}
       state={camera.state}
       videoRef={camera.videoRef}
     />
   ) : null;
-  const onToggleCamera = cameraBranch ? () => setCameraOn((value) => !value) : undefined;
+  const onToggleCamera = (cameraBranch || Boolean(workoutEffects.spec)) ? () => setCameraOn((value) => !value) : undefined;
 
   // The confirmation behind the Back button. With nothing logged there is no
   // Session worth saving, so the dialog offers to cancel instead of "finish".
@@ -270,6 +281,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         cameraSlot={cameraStage}
         currentSet={step.setNumber}
         exercise={exercise}
+        metrics={motion.metrics}
         onAddTime={() => session.actions.addSetTime(ADD_SECONDS)}
         onBack={onBack}
         onDone={() => setConfirmSetOpen(true)}
@@ -279,6 +291,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         onToggleFullscreen={toggleFullscreen}
         onToggleVoice={onToggleVoice}
         onWatchVideo={undefined}
+        recommendedAngle={plan.motionSpecs?.[exercise.exerciseId]?.recommendedCameraAngle}
         repCount={cameraActive ? (motion.repCount ?? 0) : 0}
         secondsLeft={session.setLeft}
         setTotalSeconds={session.setTotal}
@@ -296,15 +309,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         keeps it strictly pre-set, so it can never cover a running one. Manual
         logging is one tap away, so the camera can never trap the user here.
       */}
-      {needsCalibration ? (
-        <CalibrationView
-          calibration={motion.calibration}
-          cameraState={camera.state}
-          onRetryPermission={() => void camera.start()}
-          onUseManual={() => setManualForSet(true)}
-          recommendedAngle={spec?.recommendedCameraAngle ?? ""}
-        />
-      ) : null}
+
 
       {guideOpen ? (
         <InstructionsSheet
@@ -322,6 +327,12 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           videoUrl={exercise.videoUrl}
         />
       ) : null}
+
+      <RuleVoiceModal
+        isOpen={ruleModalOpen}
+        onClose={() => setRuleModalOpen(false)}
+        spec={workoutEffects.spec}
+      />
 
       {painDialog}
       {endDialog}

@@ -95,7 +95,7 @@ describe("Home Page Today Timeline Routing & Filtering", () => {
             phase: RoadmapPhase.ACCUMULATION,
             dayPlans: [
               {
-                scheduledDate: { year: 2026, month: 8, day: 10 },
+                scheduledDate: { year: 2099, month: 12, day: 31 },
                 sessionPlans: [
                   {
                     sessionPlanId: "sp-future-leg-day",

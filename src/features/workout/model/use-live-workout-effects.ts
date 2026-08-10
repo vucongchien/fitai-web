@@ -32,6 +32,7 @@ import { toast } from "@/shared/ui/toast";
 export function useLiveWorkoutEffects({
   audio,
   camera,
+  cameraOn = true,
   motion,
   plan,
   session,
@@ -41,6 +42,7 @@ export function useLiveWorkoutEffects({
   audio: AudioCoach;
   camera: ReturnType<typeof useCameraStream>;
   motion: ReturnType<typeof useMotionEngine>;
+  cameraOn?: boolean;
 }) {
   const router = useRouter();
   const [online, setOnline] = useState(true);
@@ -104,11 +106,11 @@ export function useLiveWorkoutEffects({
   // Stretch of the session where nothing is being tracked. Rest is rest; the
   // Camera starts when the set does.
   const sessionStatus = session.status;
+  const wantCameraStream = Boolean(spec) && cameraOn && sessionStatus !== "complete" && sessionStatus !== "resting";
+
   useEffect(() => {
-    if (!cameraBranch || !spec) {
-      return;
-    }
-    if (sessionStatus === "complete" || sessionStatus === "resting") {
+    if (!wantCameraStream || !spec) {
+      cameraRef.current.stop();
       return;
     }
     let cancelled = false;
@@ -131,29 +133,31 @@ export function useLiveWorkoutEffects({
       }
       if (kind === "manual") {
         setManualForSet(true);
+        toast.info("AI pose model unavailable — camera preview active with manual logging.");
         return;
       }
       if (kind === "simulated") {
         toast.info("Running camera in demo mode — pose model loading.");
       }
-      mot.startCalibration();
+      console.log("[AI Engine] ONNX Pose model prepared successfully. Mode:", kind);
+      mot.startSet();
     })();
 
     return () => {
       cancelled = true;
       motionRef.current.stopCalibration();
     };
-    // Keyed on the set, not on controller identity — see cameraRef above.
-  }, [cameraBranch, exerciseId, sessionStatus, spec]);
+    // Keyed on set, cameraOn toggle, and spec readiness.
+  }, [exerciseId, sessionStatus, spec, wantCameraStream]);
 
-  // Release the hardware whenever tracking is not wanted — no camera branch, or
-  // Resting. Leaving the stream open would keep the recording indicator lit
-  // Through a rest period, which reads as "still being watched".
+  // Release the hardware whenever camera is turned off, complete, or resting.
   useEffect(() => {
-    if (!cameraBranch || sessionStatus === "resting") {
+    if (!wantCameraStream) {
       cameraRef.current.stop();
     }
-  }, [cameraBranch, sessionStatus]);
+  }, [wantCameraStream]);
+
+  const lastCueTimesRef = useRef<Record<string, number>>({});
 
   // --- Audio cue player helper ---
   const playCueByCode = useCallback(
@@ -161,10 +165,25 @@ export function useLiveWorkoutEffects({
       if (!listening) {
         return;
       }
+
+      // Check cooldown for warning cues based on spec setup or default 3s
+      const nowSec = Date.now() / 1000;
+      const cooldownSec = spec?.cueCooldownSec?.[code] ?? (code.startsWith("set-") ? 0 : 3.0);
+      const lastTime = lastCueTimesRef.current[code] ?? 0;
+
+      if (nowSec - lastTime < cooldownSec) {
+        // Cooldown active according to rule setup — skip duplicate audio/speech
+        return;
+      }
+      lastCueTimesRef.current[code] = nowSec;
+
       if (spec) {
         const cue = spec.cues.find((entry) => entry.code === code);
         if (cue) {
-          audio.playCue(cue, spec.cueCooldownSec[code] ?? 0);
+          audio.playCue(cue, cooldownSec);
+          if (cue.text) {
+            audio.speakText(cue.text);
+          }
           return;
         }
       }
@@ -174,15 +193,17 @@ export function useLiveWorkoutEffects({
         const repsOrTime = exercise?.durationSeconds
           ? `${exercise.durationSeconds} giây`
           : `${exercise?.targetReps ?? 10} cái`;
-        audio.speakText(`Bắt đầu ${exName}, mục tiêu ${repsOrTime}`);
+        const setNum = step?.setNumber ?? 1;
+        audio.speakText(`Bắt đầu hiệp ${setNum} bài ${exName}, mục tiêu ${repsOrTime}`);
       } else if (code === "set-end") {
-        audio.speakText("Hoàn thành hiệp tập! Hãy nghỉ ngơi.");
-      } else if (code.startsWith("rule-")) {
+        const setNum = step?.setNumber ?? 1;
+        audio.speakText(`Hoàn thành hiệp ${setNum}! Hãy nghỉ ngơi.`);
+      } else if (code.startsWith("rule-") || code.length > 0) {
         const msg = code.replace("rule-", "").replace(/-/g, " ");
         audio.speakText(msg);
       }
     },
-    [audio, exercise, spec],
+    [audio, exercise, spec, step],
   );
 
   // --- Set actions ---
@@ -254,7 +275,7 @@ export function useLiveWorkoutEffects({
     ],
   );
 
-  // Auto finish timed or reps-based sets
+  // Auto finish timed sets (for time-based exercises when clock hits 0)
   useEffect(() => {
     if (session.status !== "working" || !exercise) {
       return;
@@ -263,15 +284,6 @@ export function useLiveWorkoutEffects({
       finishSet(true);
     }
   }, [exercise, finishSet, session.setLeft, session.status]);
-
-  useEffect(() => {
-    if (session.status !== "working" || !cameraBranch || !exercise) {
-      return;
-    }
-    if (exercise.targetReps > 0 && motion.repCount >= exercise.targetReps) {
-      finishSet(true);
-    }
-  }, [cameraBranch, exercise, finishSet, motion.repCount, session.status]);
 
   // --- Session report & completion ---
   const buildReport = useCallback(
@@ -304,8 +316,14 @@ export function useLiveWorkoutEffects({
     [plan],
   );
 
+  const isFinishingSessionRef = useRef(false);
+
   const finishSession = useCallback(
     async (confirmOverload: boolean) => {
+      if (isFinishingSessionRef.current) {
+        return;
+      }
+      isFinishingSessionRef.current = true;
       const sets = session.loggedSets;
       setFinishing(true);
       audio.stopAll();
@@ -329,6 +347,7 @@ export function useLiveWorkoutEffects({
           transitionTypes: ["workout-complete"],
         });
       } catch {
+        isFinishingSessionRef.current = false;
         setFinishing(false);
         toast.error("Could not save session report. Please try again.");
       }

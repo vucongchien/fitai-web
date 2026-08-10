@@ -16,20 +16,17 @@ const root = join(import.meta.dirname, "..");
 const from = join(root, "node_modules", "onnxruntime-web", "dist");
 const to = join(root, "public", "ort");
 
-const WANTED = [
-  "ort-wasm-simd-threaded.wasm",
-  "ort-wasm-simd-threaded.mjs",
-  "ort-wasm-simd-threaded.jsep.wasm",
-  "ort-wasm-simd-threaded.jsep.mjs",
-];
+const available = await readdir(from);
+const filesToCopy = available.filter(
+  (name) => name.endsWith(".wasm") || name.endsWith(".mjs") || name.endsWith(".js"),
+);
 
-const available = new Set(await readdir(from));
-const missing = WANTED.filter((name) => !available.has(name));
-if (missing.length > 0) {
-  console.error(`[copy-ort-assets] missing from onnxruntime-web/dist: ${missing.join(", ")}`);
+if (filesToCopy.length === 0) {
+  console.error("[copy-ort-assets] No runtime assets found in onnxruntime-web/dist");
   process.exit(1);
 }
 
 await mkdir(to, { recursive: true });
-await Promise.all(WANTED.map((name) => copyFile(join(from, name), join(to, name))));
-console.log(`[copy-ort-assets] copied ${WANTED.length} files to public/ort/`);
+await Promise.all(filesToCopy.map((name) => copyFile(join(from, name), join(to, name))));
+console.log(`[copy-ort-assets] copied ${filesToCopy.length} files to public/ort/`);
+
