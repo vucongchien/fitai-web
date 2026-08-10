@@ -164,21 +164,22 @@ describe("onboarding Zod Schema & Validation Rules", () => {
     });
   });
 
-  describe("equipment standardization", () => {
-    it("accepts standardized equipment enum values matching profile modal", () => {
+  describe("equipment validation", () => {
+    it("accepts dynamic equipment list from catalog (Assisted, Band, Barbell, Body Weight, Bosu Ball, Cable)", () => {
       const result = onboardingSchema.safeParse({
         ...onboardingDefaults,
-        equipment: ["Full Gym", "Dumbbells", "Barbell", "Bodyweight", "Resistance Band"],
+        equipment: ["Assisted", "Band", "Barbell", "Body Weight", "Bosu Ball", "Cable"],
       });
       expect(result.success).toBe(true);
     });
 
-    it("rejects non-standard equipment name", () => {
+    it("rejects empty equipment array", () => {
       const result = onboardingSchema.safeParse({
         ...onboardingDefaults,
-        equipment: ["Kettlebell Only" as any],
+        equipment: [],
       });
       expect(result.success).toBe(false);
+      expect(result.error?.issues[0]?.message).toBe("Choose the equipment you can use.");
     });
   });
 });

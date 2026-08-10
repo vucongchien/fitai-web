@@ -42,8 +42,8 @@ export function mapExperienceToProto(exp: string): string {
 
 export function mapEquipmentToProto(equipmentList: string[]): string[] {
   return equipmentList.map((item) => {
-    const upper = item.toUpperCase();
-    if (upper.includes("FULL GYM") || upper.includes("FULL_GYM") || upper.includes("CABLE")) {
+    const upper = (item || "").trim().toUpperCase();
+    if (upper.includes("FULL GYM") || upper.includes("FULL_GYM")) {
       return "FULL_GYM";
     }
     if (upper.includes("DUMBBELL")) {
@@ -61,10 +61,10 @@ export function mapEquipmentToProto(equipmentList: string[]): string[] {
     if (upper.includes("MACHINE")) {
       return "MACHINE";
     }
-    if (upper.includes("BODYWEIGHT")) {
+    if (upper.includes("BODYWEIGHT") || upper.includes("BODY WEIGHT") || upper === "BODY WEIGHT") {
       return "BODYWEIGHT";
     }
-    return item.replaceAll(/\s+/g, "_").toUpperCase();
+    return upper.replaceAll(/\s+/g, "_");
   });
 }
 

@@ -13,15 +13,7 @@ export function validateAgeBetween(dobString?: string, minAge = 14, maxAge = 90)
   return age >= minAge && age <= maxAge;
 }
 
-export const onboardingEquipmentEnum = z.enum([
-  "Full Gym",
-  "Dumbbells",
-  "Barbell",
-  "Bodyweight",
-  "Resistance Band",
-  "Kettlebell",
-  "Machine",
-]);
+export const onboardingEquipmentEnum = z.string().min(1);
 
 export const onboardingGoalEnum = z.enum(["build-muscle", "fat-loss", "strength", "endurance"]);
 

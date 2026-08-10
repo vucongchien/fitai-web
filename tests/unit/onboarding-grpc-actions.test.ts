@@ -151,6 +151,51 @@ describe("onboarding Server Actions & Enum Normalization", () => {
     );
   });
 
+  it("correctly maps and sends dynamic catalog equipments (Assisted, Band, Barbell, Body Weight, Bosu Ball, Cable) to gRPC SaveHealthProfile", async () => {
+    mockSaveHealthProfile.mockResolvedValue(
+      create(SaveHealthProfileResponseSchema, {
+        userId: "usr-onboarding-123",
+        completionRate: 100,
+        aiCoachActivated: true,
+      }),
+    );
+
+    const { saveOnboardingProfileServerAction } = await import(
+      "@/features/onboarding/server/onboarding-actions"
+    );
+
+    await saveOnboardingProfileServerAction({
+      weightKg: 70,
+      heightCm: 175,
+      dateOfBirth: "1998-05-15",
+      gender: "male",
+      goals: ["build-muscle"],
+      bodyFatPercent: 18.5,
+      experienceLevel: "intermediate",
+      preferredWorkoutTimes: {
+        mon: ["17:30-19:00"],
+      },
+      equipment: ["Assisted", "Band", "Barbell", "Body Weight", "Bosu Ball", "Cable"],
+      muscleFocus: ["Chest"],
+      coachStyle: "motivational",
+      targetWeightKg: 68,
+      injuryStatus: "none",
+    });
+
+    expect(mockSaveHealthProfile).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availableEquipment: [
+          "ASSISTED",
+          "RESISTANCE_BAND",
+          "BARBELL",
+          "BODYWEIGHT",
+          "BOSU_BALL",
+          "CABLE",
+        ],
+      }),
+    );
+  });
+
   it("recovers gracefully when gRPC SaveHealthProfile throws", async () => {
     mockSaveHealthProfile.mockRejectedValue(new Error("Connection reset"));
 
