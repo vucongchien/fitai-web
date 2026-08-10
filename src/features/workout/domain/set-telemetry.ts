@@ -19,12 +19,14 @@ export interface Accumulator {
   startedAt: number;
   /** Errors seen since the last completed rep — attached to that rep. */
   pendingErrors: Set<string>;
+  lastJointAngles?: Record<string, number>;
 }
 
 export function freshAccumulator(): Accumulator {
   return {
     counter: createRepCounter(),
     errorCodes: [],
+    lastJointAngles: {},
     pendingErrors: new Set(),
     reps: [],
     startedAt: Date.now(),
@@ -41,7 +43,11 @@ export interface RepEvent {
 }
 
 /** Push one ROM sample. Returns a rep event on the frame a rep closes. */
-export function feedCounter(accumulator: Accumulator, rom: number): RepEvent | null {
+export function feedCounter(
+  accumulator: Accumulator,
+  rom: number,
+  jointAngles?: Record<string, number>,
+): RepEvent | null {
   const tick = feedRepCounter(accumulator.counter, rom);
   accumulator.counter = tick.state;
   if (!tick.completedRep) {
@@ -50,6 +56,7 @@ export function feedCounter(accumulator: Accumulator, rom: number): RepEvent | n
 
   accumulator.reps.push({
     errorCodes: [...accumulator.pendingErrors],
+    jointAngles: jointAngles ?? (accumulator.lastJointAngles ? { ...accumulator.lastJointAngles } : {}),
     repNumber: accumulator.reps.length + 1,
     romPercentage: tick.completedRep.romPercentage,
   });

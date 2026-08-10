@@ -146,6 +146,7 @@ export interface RepLogEntry {
   repNumber: number;
   romPercentage: number;
   errorCodes: string[];
+  jointAngles?: Record<string, number>;
 }
 
 export interface SetLogDraft {

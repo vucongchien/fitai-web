@@ -241,37 +241,66 @@ export async function logWorkoutSet(
     formScore: set.formScore ?? undefined,
     rpe: set.rpe ?? 0,
     cameraAngle: set.cameraAngle || "front",
-    reps: [],
+    reps: (set.reps || []).map((r) => ({
+      errorCodes: r.errorCodes || [],
+      jointAngles: r.jointAngles || {},
+      repNumber: r.repNumber,
+      romPercentage: r.romPercentage,
+    })),
   });
 
   return { setLogId: res.setLogId };
 }
 
+export interface SyncErrorItem {
+  errorCode: string;
+  severity: string;
+  timestamp?: string;
+  setNumber?: number;
+  repNumber?: number;
+  exerciseId?: string;
+}
+
 /**
- * Flush sets that were logged while offline.
+ * Flush real-time posture errors up to backend.
  */
 export async function syncWorkoutLogs(
   sessionId: string,
-  sets: SetLogDraft[],
-): Promise<{ syncedSetNumbers: number[] }> {
+  errors: SyncErrorItem[] = [],
+): Promise<{ success: boolean }> {
   const accessToken = await getAccessToken();
   if (!accessToken) {
-    return { syncedSetNumbers: sets.map((s) => s.setNumber) };
+    return { success: true };
   }
 
   const transport = createServerTransport(accessToken);
   const executionClient = createClient(WorkoutExecutionService, transport);
 
   try {
-    await executionClient.syncWorkoutLogs({
-      sessionId,
-      errors: [],
+    const errorLogs = errors.map((e) => {
+      const date = e.timestamp ? new Date(e.timestamp) : new Date();
+      return {
+        errorCode: e.errorCode,
+        exerciseId: e.exerciseId ?? "",
+        repNumber: e.repNumber ?? 0,
+        setNumber: e.setNumber ?? 1,
+        severity: e.severity,
+        timestamp: {
+          nanos: (date.getTime() % 1000) * 1000000,
+          seconds: BigInt(Math.floor(date.getTime() / 1000)),
+        },
+      };
     });
+
+    await executionClient.syncWorkoutLogs({
+      errors: errorLogs,
+      sessionId,
+    });
+    return { success: true };
   } catch (error) {
     console.warn("[syncWorkoutLogs] gRPC call failed:", error);
+    return { success: false };
   }
-
-  return { syncedSetNumbers: sets.map((set) => set.setNumber) };
 }
 
 /**
@@ -330,6 +359,15 @@ export async function completeWorkoutSession(
 
   if (!accessToken) {
     return localTotals;
+  }
+
+  // Ensure all sets (Set 1, Set 2, Set 3, etc.) are logged and saved to DB before completing
+  for (const set of sets) {
+    try {
+      await logWorkoutSet(sessionId, set);
+    } catch (err) {
+      console.warn(`[completeWorkoutSession] Logging set ${set.setNumber} before completion:`, err);
+    }
   }
 
   try {

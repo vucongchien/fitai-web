@@ -304,10 +304,15 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
   const joints: [string, string, string] = (spec.romRange?.joints as [string, string, string]) ?? ["hip", "knee", "ankle"];
   const detectedAngle = angleOfJoints(pose, joints) ?? angleOfJoints(pose, ["hip", "knee", "ankle"]);
 
-  // If joint angle cannot be calculated (e.g. pose not detected yet), rom is 0%, do NOT trigger false target_reached!
   const angle = Math.round(detectedAngle ?? startDeg);
   const rom = detectedAngle !== null ? Math.round(romPercent(angle, { endDeg, joints, startDeg })) : 0;
-  const tick = detectedAngle !== null ? feedCounter(accumulator, rom) : null;
+  
+  const jointAngles: Record<string, number> = {};
+  if (metricName && detectedAngle !== null) {
+    jointAngles[metricName] = angle;
+  }
+  accumulator.lastJointAngles = jointAngles;
+  const tick = detectedAngle !== null ? feedCounter(accumulator, rom, jointAngles) : null;
 
   // Use detectedPhase ("always" for Plank/timed, or FSM phase for rep exercises)
   const currentPhase = detectedPhase === "always" ? "always" : accumulator.counter.phase;

@@ -67,6 +67,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       );
     },
     onFormError: (error) => {
+      workoutEffects.recordFormError(error);
       if (!listening) {
         return;
       }

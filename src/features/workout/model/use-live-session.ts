@@ -19,7 +19,7 @@ import type {
   SetSource,
 } from "@/features/workout/model/live-session.types";
 import { elapsedSeconds, secondsLeft, useTicker } from "@/features/workout/model/use-session-timer";
-import { syncWorkoutLogs } from "@/features/workout/server/workout-actions";
+import { logWorkoutSet } from "@/features/workout/server/workout-actions";
 
 /**
  * The live session state machine.
@@ -355,7 +355,9 @@ export function useLiveSession(plan: LiveSessionPlan) {
     }
     syncing.current = true;
     try {
-      await syncWorkoutLogs(plan.sessionId, pending);
+      for (const set of pending) {
+        await logWorkoutSet(plan.sessionId, set);
+      }
       dispatch({
         type: "mark-synced",
         setNumbers: pending.map((set) => ({
@@ -415,6 +417,13 @@ export function useLiveSession(plan: LiveSessionPlan) {
     [state.stepIndex, timeline],
   );
 
+  const markSetSynced = useCallback((exerciseId: string, setNumber: number) => {
+    dispatch({
+      type: "mark-synced",
+      setNumbers: [{ exerciseId, setNumber }],
+    });
+  }, []);
+
   return {
     timeline,
     step,
@@ -441,6 +450,7 @@ export function useLiveSession(plan: LiveSessionPlan) {
       finishSet,
       cancelReview,
       saveSet,
+      markSetSynced,
       endRest,
       addRest,
       addSetTime,

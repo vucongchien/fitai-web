@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
+import type { SetTelemetry } from "@/features/workout/domain/motion-engine";
+import { formScore } from "@/features/workout/domain/pose-metrics";
 import { countUnverifiedSets } from "@/features/workout/domain/session-guards";
 import {
   averageFormScore,
@@ -13,6 +16,7 @@ import {
 } from "@/features/workout/domain/training-load";
 import type {
   AbortReason,
+  CueSeverity,
   LiveSessionPlan,
   MotionSpec,
   SessionReport,
@@ -26,7 +30,10 @@ import type { useMotionEngine } from "@/features/workout/model/use-motion-engine
 import {
   abortWorkoutSession,
   completeWorkoutSession,
+  logWorkoutSet,
+  syncWorkoutLogs,
 } from "@/features/workout/server/workout-actions";
+import type { SyncErrorItem } from "@/features/workout/server/workout-actions";
 import { toast } from "@/shared/ui/toast";
 
 export function useLiveWorkoutEffects({
@@ -206,6 +213,52 @@ export function useLiveWorkoutEffects({
     [audio, exercise, spec, step],
   );
 
+  const pendingErrorsRef = useRef<SyncErrorItem[]>([]);
+
+  const recordFormError = useCallback(
+    (error: { code: string; message: string; severity: CueSeverity }) => {
+      if (!exercise) {
+        return;
+      }
+      const isCritical =
+        error.severity === 2 ||
+        error.code === "ERR_BAR_TRAPPED" ||
+        error.code === "ERR_FALL_DETECTED";
+
+      // Chỉ ghi nhận các lỗi nghiêm trọng (CRITICAL) vào hàng đợi để gửi Backend
+      if (!isCritical) {
+        return;
+      }
+
+      pendingErrorsRef.current.push({
+        errorCode: error.code,
+        exerciseId: exercise.exerciseId,
+        repNumber: motion.repCount,
+        setNumber: step?.setNumber ?? 1,
+        severity: "CRITICAL",
+        timestamp: new Date().toISOString(),
+      });
+    },
+    [exercise, motion.repCount, step?.setNumber],
+  );
+
+  // Periodically flush unsynced error logs to backend every 15 seconds
+  useEffect(() => {
+    if (sessionStatus !== "working" || !plan.sessionId) {
+      return;
+    }
+    const intervalId = setInterval(() => {
+      if (pendingErrorsRef.current.length === 0) {
+        return;
+      }
+      const toSync = [...pendingErrorsRef.current];
+      pendingErrorsRef.current = [];
+      void syncWorkoutLogs(plan.sessionId, toSync);
+    }, 15000);
+
+    return () => clearInterval(intervalId);
+  }, [plan.sessionId, sessionStatus]);
+
   // --- Set actions ---
   const startSet = useCallback(
     (listening: boolean) => {
@@ -223,7 +276,7 @@ export function useLiveWorkoutEffects({
   );
 
   const finishSet = useCallback(
-    (
+    async (
       listening: boolean,
       customData?: { actualReps?: number; actualSeconds?: number; weightKg?: number; rpe?: number },
     ) => {
@@ -234,7 +287,17 @@ export function useLiveWorkoutEffects({
       const isCamera = cameraBranch && camera.state === "ready";
       const timed = exercise.durationSeconds > 0;
 
-      let actualReps = isCamera && motion.repCount > 0 ? motion.repCount : (exercise.targetReps ?? 10);
+      let telemetry: SetTelemetry = EMPTY_TELEMETRY;
+      if (isCamera) {
+        telemetry = await motion.stopSet();
+      }
+
+      let actualReps =
+        isCamera && telemetry.countedReps > 0
+          ? telemetry.countedReps
+          : motion.repCount > 0
+          ? motion.repCount
+          : (exercise.targetReps ?? 10);
       if (timed) {
         actualReps = customData?.actualSeconds ?? exercise.durationSeconds ?? 30;
       } else if (customData?.actualReps !== undefined) {
@@ -246,20 +309,54 @@ export function useLiveWorkoutEffects({
 
       const rpe = customData?.rpe !== undefined ? customData.rpe : 8.0;
 
-      session.actions.saveSet({
+      let calculatedFormScore: number | null = null;
+      if (isCamera) {
+        calculatedFormScore = formScore({
+          averageRom: telemetry.averageRom,
+          errorCount: telemetry.errorCount,
+          repCount: actualReps,
+          secondsPerRep: telemetry.secondsPerRep,
+        });
+      }
+
+      const setDraft: Omit<SetLogDraft, "loggedAt" | "synced"> = {
         actualReps,
         cameraAngle: spec?.recommendedCameraAngle ?? "",
         exerciseId: exercise.exerciseId,
-        formScore: isCamera ? 85 : null,
+        formScore: calculatedFormScore,
         phase: exercise.phase,
-        reps: [],
+        reps: telemetry.reps,
         rpe,
         setNumber: step.setNumber,
         source: isCamera ? "camera" : "manual",
         targetReps: timed ? exercise.durationSeconds : exercise.targetReps,
-        validFrameRatio: isCamera ? 0.9 : null,
+        validFrameRatio: isCamera ? telemetry.validFrameRatio : null,
         weightKg,
-      });
+      };
+
+      session.actions.saveSet(setDraft);
+
+      // Directly sync this set and its reps to Backend immediately
+      if (plan.sessionId) {
+        void logWorkoutSet(plan.sessionId, {
+          ...setDraft,
+          loggedAt: Date.now(),
+          synced: false,
+        })
+          .then(() => {
+            session.actions.markSetSynced(exercise.exerciseId, step.setNumber);
+          })
+          .catch((err) => {
+            console.warn(`[finishSet] Failed to sync set ${step.setNumber}:`, err);
+          });
+      }
+
+      // Flush any remaining unsynced errors on set completion
+      if (pendingErrorsRef.current.length > 0 && plan.sessionId) {
+        const toSync = [...pendingErrorsRef.current];
+        pendingErrorsRef.current = [];
+        void syncWorkoutLogs(plan.sessionId, toSync);
+      }
 
       toast.success("Set completed!");
     },
@@ -267,8 +364,9 @@ export function useLiveWorkoutEffects({
       cameraBranch,
       camera.state,
       exercise,
-      motion.repCount,
+      motion,
       playCueByCode,
+      plan.sessionId,
       session.actions,
       spec,
       step,
@@ -422,10 +520,11 @@ export function useLiveWorkoutEffects({
     manualForSet,
     online,
     playCueByCode,
+    recordFormError,
+    setManualForSet,
     spec,
     startSet,
     step,
-    setManualForSet,
     finishSession,
     abortSession,
   };

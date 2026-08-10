@@ -79,6 +79,9 @@ describe("workout Execution gRPC Actions", () => {
     mockGetPersonalRecords.mockReset();
     mockSearchExercises.mockReset();
     mockGetCatalogMetadata.mockReset();
+    mockLogWorkoutSet.mockResolvedValue(
+      create(LogWorkoutSetResponseSchema, { setLogId: "mock-set-id" }),
+    );
   });
 
   afterEach(() => {
@@ -109,7 +112,7 @@ describe("workout Execution gRPC Actions", () => {
     expect(res.sessionId).toBe("plan-777");
   });
 
-  it("logWorkoutSet sends set performance to gRPC LogWorkoutSet", async () => {
+  it("logWorkoutSet sends set performance to gRPC LogWorkoutSet with per-rep telemetry", async () => {
     mockLogWorkoutSet.mockResolvedValue(
       create(LogWorkoutSetResponseSchema, { setLogId: "set-log-555" }),
     );
@@ -126,6 +129,19 @@ describe("workout Execution gRPC Actions", () => {
       rpe: 8,
       formScore: 92,
       cameraAngle: "side",
+      phase: "main",
+      source: "camera",
+      validFrameRatio: 0.95,
+      loggedAt: Date.now(),
+      synced: false,
+      reps: [
+        {
+          repNumber: 1,
+          romPercentage: 98,
+          errorCodes: ["ERR_ELBOW_FLARE"],
+          jointAngles: { elbow_angle: 88.5 },
+        },
+      ],
     });
 
     expect(mockLogWorkoutSet).toHaveBeenCalledWith(
@@ -136,9 +152,53 @@ describe("workout Execution gRPC Actions", () => {
         weight: 80,
         rpe: 8,
         formScore: 92,
+        reps: [
+          expect.objectContaining({
+            repNumber: 1,
+            romPercentage: 98,
+            errorCodes: ["ERR_ELBOW_FLARE"],
+            jointAngles: { elbow_angle: 88.5 },
+          }),
+        ],
       }),
     );
     expect(res.setLogId).toBe("set-log-555");
+  });
+
+  it("syncWorkoutLogs flushes real-time posture errors to gRPC", async () => {
+    mockSyncWorkoutLogs.mockResolvedValue(
+      create(SyncWorkoutLogsResponseSchema, {}),
+    );
+
+    const { syncWorkoutLogs } = await import(
+      "@/features/workout/server/workout-actions"
+    );
+    const res = await syncWorkoutLogs("sess-live-888", [
+      {
+        errorCode: "ERR_BAR_TRAPPED",
+        severity: "CRITICAL",
+        setNumber: 2,
+        repNumber: 3,
+        exerciseId: "bench",
+        timestamp: new Date().toISOString(),
+      },
+    ]);
+
+    expect(mockSyncWorkoutLogs).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: "sess-live-888",
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            errorCode: "ERR_BAR_TRAPPED",
+            severity: "CRITICAL",
+            setNumber: 2,
+            repNumber: 3,
+            exerciseId: "bench",
+          }),
+        ]),
+      }),
+    );
+    expect(res.success).toBe(true);
   });
 
   it("completeWorkoutSession finishes session and returns totals", async () => {
