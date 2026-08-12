@@ -206,12 +206,27 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
   const transport = createServerTransport(accessToken);
   const coachingClient = createClient(CoachingService, transport);
 
-  const adhocPlan = await coachingClient.createAdhocSessionPlan({
-    userId,
-    exerciseIds,
-  });
+  let planId = "";
+  try {
+    const adhocPlan = await coachingClient.createAdhocSessionPlan({
+      userId,
+      exerciseIds,
+    });
+    planId = adhocPlan.sessionPlan?.sessionPlanId || "";
+  } catch (error: any) {
+    console.warn("[beginWorkoutSession] createAdhocSessionPlan failed, attempting auto-initiate roadmap:", error?.message);
+    try {
+      await coachingClient.initiateRoadmap({ userId });
+      const retryPlan = await coachingClient.createAdhocSessionPlan({
+        userId,
+        exerciseIds,
+      });
+      planId = retryPlan.sessionPlan?.sessionPlanId || "";
+    } catch (retryErr) {
+      console.error("[beginWorkoutSession] Failed after initiating roadmap:", retryErr);
+    }
+  }
 
-  const planId = adhocPlan.sessionPlan?.sessionPlanId;
   if (!planId) {
     throw new Error("Failed to create adhoc session plan on server.");
   }

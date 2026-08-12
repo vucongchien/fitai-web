@@ -200,22 +200,14 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
   const exercises = createClient(ExerciseService, transport);
   const execution = createClient(WorkoutExecutionService, transport);
 
-  // 1. Lấy kế hoạch bài tập (Prescription) từ Coaching Service
-  let sessionRes;
   let targetPlanId = planId;
+  let sessionRes: any = null;
+
+  // 1. Tải thông tin kế hoạch bài tập (Prescription) từ Coaching Service
   try {
     sessionRes = await coaching.getSessionPlan({ userId, sessionPlanId: targetPlanId });
-  } catch {
-    // Trường hợp URL chứa workout_session_id thay vì planId, tra cứu planId từ lịch sử tập
-    try {
-      const history = await execution.getWorkoutHistory({ limit: 10, offset: 0 });
-      const matched = history.sessions?.find((s: any) => s.sessionId === planId);
-      if (matched) {
-        sessionRes = await coaching.getSessionPlan({ userId, sessionPlanId: targetPlanId });
-      }
-    } catch {
-      // Ignore
-    }
+  } catch (err) {
+    console.warn(`[getLiveSessionData] coaching.getSessionPlan failed for targetPlanId=${targetPlanId}:`, err);
   }
 
   const prescription = sessionRes?.sessionPlan?.prescription;
@@ -223,17 +215,39 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
     notFound();
   }
 
-  // 2. Kích hoạt phiên tập trong Execution Service & lấy workout_session_id thực sự
-  // activeSessionId phải là workout_session.id (UUID từ execution service), KHÔNG phải planId
+  // 2. Kích hoạt phiên tập trong Execution Service để lấy workout_session_id (UUID)
   let activeSessionId = "";
   try {
     const startRes = await execution.startWorkoutSession({ planId: targetPlanId });
     if (startRes.sessionId) {
       activeSessionId = startRes.sessionId;
     }
-  } catch {
-    // Session đã tồn tại — tìm workout_session_id thực sự từ lịch sử IN_PROGRESS
-    // (ErrActiveSessionAlreadyExists không trả về sessionId nên phải tra cứu)
+  } catch (startErr: any) {
+    console.warn("[getLiveSessionData] startWorkoutSession returned error (resolving conflict):", startErr?.message || startErr);
+    try {
+      const historyRes = await execution.getWorkoutHistory({ limit: 10, offset: 0 });
+      const firstSession = historyRes.sessions?.[0];
+      if (firstSession?.sessionId) {
+        console.log("[getLiveSessionData] Aborting hanging session:", firstSession.sessionId);
+        await execution.abortWorkoutSession({
+          sessionId: firstSession.sessionId,
+          reason: "SYSTEM_ABORT_FOR_NEW_SESSION",
+        });
+      }
+      const retryRes = await execution.startWorkoutSession({ planId: targetPlanId });
+      if (retryRes.sessionId) {
+        activeSessionId = retryRes.sessionId;
+      }
+    } catch (retryErr) {
+      console.error("[getLiveSessionData] Failed to resolve active session conflict & start session:", retryErr);
+    }
+  }
+
+  // ĐẢM BẢO NGHIÊM NGẶT: activeSessionId bắt buộc phải là UUID hợp lệ của workout_execution
+  // Tuyệt đối KHÔNG BAO GIỜ fallback activeSessionId = planId!
+  if (!activeSessionId) {
+    console.error("[getLiveSessionData] CRITICAL ERROR: Could not obtain execution session UUID.");
+    notFound();
   }
 
   // 3. Tải thông tin chi tiết bài tập từ Exercise Service
@@ -272,33 +286,17 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
 
   // 4. Tải AI Motion Specifications cho các bài có AI Support
   const aiIds = infosRes.filter((res: any) => res.exercise?.hasAiSupported).map((res: any) => res.exercise!.id);
-  const specsRes = await Promise.all(
-    aiIds.map((id: string) =>
-      execution.getMotionSpecification({ exerciseId: id, coachPersonality: "friendly" }).catch(() => ({
-        motionSpecification: undefined,
-      })),
+  const [specsRes, historyRes, recordsRes] = await Promise.all([
+    Promise.all(
+      aiIds.map((id: string) =>
+        execution.getMotionSpecification({ exerciseId: id, coachPersonality: "friendly" }).catch(() => ({
+          motionSpecification: undefined,
+        })),
+      ),
     ),
-  );
-
-  // 5. Tải lịch sử tập luyện và kỷ lục cá nhân
-  const [historyRes, recordsRes] = await Promise.all([
     execution.getWorkoutHistory({ limit: 10, offset: 0 }).catch(() => ({ sessions: [] })),
     execution.getPersonalRecords({ exerciseIds: ids }).catch(() => ({ records: [] })),
   ]);
-
-  // Fallback: nếu startWorkoutSession bị ErrActiveSessionAlreadyExists (không trả sessionId),
-  // tìm workout_session_id của phiên tập đang IN_PROGRESS từ history
-  if (!activeSessionId && historyRes.sessions && historyRes.sessions.length > 0) {
-    const inProgressSession = historyRes.sessions.find((s: any) => s.sessionId);
-    if (inProgressSession?.sessionId) {
-      activeSessionId = inProgressSession.sessionId;
-    }
-  }
-
-  // Cuối cùng fallback về planId nếu không tìm được gì (phòng thủ)
-  if (!activeSessionId) {
-    activeSessionId = targetPlanId;
-  }
 
   return adaptLiveSessionPlan({
     sessionId: activeSessionId,

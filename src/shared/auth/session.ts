@@ -9,8 +9,12 @@ export async function getAuthenticatedSession(): Promise<{
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("fitai_access_token")?.value;
   const refreshToken = cookieStore.get("fitai_refresh_token")?.value;
-  const userId = cookieStore.get("fitai_user_id")?.value;
+  let userId = cookieStore.get("fitai_user_id")?.value;
   const userName = cookieStore.get("fitai_user_name")?.value;
+
+  if (!userId && accessToken?.startsWith("mock_dev_access_token_")) {
+    userId = accessToken.replace("mock_dev_access_token_", "");
+  }
 
   return {
     accessToken,
