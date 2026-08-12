@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { cancelAllSpeech } from "@/features/workout/domain/audio-cues";
 import { isTimedExercise } from "@/features/workout/domain/session-guards";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
-import { loadRatio, sessionVolumeKg } from "@/features/workout/domain/training-load";
+import { isAnomalousLoad, loadRatio, sessionVolumeKg } from "@/features/workout/domain/training-load";
 import type { LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useAudioCoach } from "@/features/workout/model/use-audio-coach";
 import { useCameraStream } from "@/features/workout/model/use-camera-stream";
@@ -207,7 +207,9 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   // Session worth saving, so the dialog offers to cancel instead of "finish".
   const { loggedSets } = session;
   const volumeKg = sessionVolumeKg(loggedSets);
-  const endVariant: EndDialogVariant = loggedSets.length === 0 ? "empty" : "complete";
+  const isOverload = isAnomalousLoad(volumeKg, plan.recentAvgVolumeKg);
+  const endVariant: EndDialogVariant =
+    loggedSets.length === 0 ? "empty" : isOverload ? "overload" : "complete";
   const endDialog = endOpen ? (
     <EndSessionDialog
       loadRatio={loadRatio(volumeKg, plan.recentAvgVolumeKg)}

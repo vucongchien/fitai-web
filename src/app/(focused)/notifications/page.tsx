@@ -5,7 +5,6 @@ import { ArrowLeft, Bell, Sparkles, Trophy } from "lucide-react";
 import Link from "next/link";
 
 import { listNotificationsAction, markNotificationAsReadAction } from "@/features/notification/server/notification-actions";
-import { EnablePushButton } from "@/shared/push/enable-push-button";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { FeedbackState } from "@/shared/ui/feedback-state";
@@ -135,7 +134,18 @@ export default function NotificationsPage() {
     }
   };
 
-  const hasUnread = notifications.some((item) => !item.read);
+  const unreadCount = notifications.filter((item) => !item.read).length;
+  const hasUnread = unreadCount > 0;
+
+  const handleMarkAllAsRead = async () => {
+    if (!hasUnread) return;
+    setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+    try {
+      await markNotificationAsReadAction("all");
+    } catch (err) {
+      console.error("[NotificationsPage] failed to mark all as read:", err);
+    }
+  };
 
   return (
     <PullToRefresh activePath="/notifications">
@@ -155,8 +165,42 @@ export default function NotificationsPage() {
 
         <main className="focused-main">
           <header className="page-hero">
-            <h1 className="page-hero__title">Notifications</h1>
-            <EnablePushButton />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <h1 className="page-hero__title" style={{ margin: 0 }}>Notifications</h1>
+                {unreadCount > 0 && (
+                  <span
+                    style={{
+                      background: "var(--color-primary)",
+                      color: "#fff",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      padding: "2px 8px",
+                      borderRadius: "12px",
+                    }}
+                  >
+                    {unreadCount} mới
+                  </span>
+                )}
+              </div>
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  onClick={handleMarkAllAsRead}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--color-text-secondary)",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                >
+                  Đọc tất cả
+                </button>
+              )}
+            </div>
             <p className="page-hero__lede">Coach messages, milestones, and plan updates.</p>
           </header>
 

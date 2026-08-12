@@ -36,24 +36,24 @@ export function cleanUserDatabase(): void {
 
   const seedRoadmapSql = `
     INSERT INTO coaching.roadmaps (roadmap_id, user_id, status, start_date, end_date, created_at, updated_at)
-    VALUES ('rm_e2e_dev_user_new', 'dev_user_new', 'ACTIVE', CURRENT_DATE, CURRENT_DATE + INTERVAL '28 days', NOW(), NOW())
+    VALUES ('rm_e2e_00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'ACTIVE', CURRENT_DATE, CURRENT_DATE + INTERVAL '28 days', NOW(), NOW())
     ON CONFLICT (roadmap_id) DO NOTHING;
 
     INSERT INTO coaching.week_plans (week_plan_id, roadmap_id, user_id, week_number, phase, target_rpe, start_date, end_date, muscle_split_type, created_at)
-    VALUES ('wp_e2e_dev_user_new', 'rm_e2e_dev_user_new', 'dev_user_new', 1, 'ACCUMULATION', 7.0, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', 'FULL_BODY', NOW())
+    VALUES ('wp_e2e_00000000-0000-0000-0000-000000000001', 'rm_e2e_00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 1, 'ACCUMULATION', 7.0, CURRENT_DATE, CURRENT_DATE + INTERVAL '7 days', 'FULL_BODY', NOW())
     ON CONFLICT (week_plan_id) DO NOTHING;
 
     INSERT INTO coaching.day_plans (day_plan_id, week_plan_id, roadmap_id, user_id, scheduled_date, created_at)
-    VALUES ('dp_e2e_dev_user_new', 'wp_e2e_dev_user_new', 'rm_e2e_dev_user_new', 'dev_user_new', CURRENT_DATE, NOW())
+    VALUES ('dp_e2e_00000000-0000-0000-0000-000000000001', 'wp_e2e_00000000-0000-0000-0000-000000000001', 'rm_e2e_00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', CURRENT_DATE, NOW())
     ON CONFLICT (day_plan_id) DO NOTHING;
 
     INSERT INTO coaching.session_plans (session_plan_id, day_plan_id, week_plan_id, roadmap_id, user_id, scheduled_date, slot_time, estimated_duration_minutes, status, source, target_muscle_groups, prescription, reasoning)
     VALUES (
-      'sp_e2e_dev_user_new',
-      'dp_e2e_dev_user_new',
-      'wp_e2e_dev_user_new',
-      'rm_e2e_dev_user_new',
-      'dev_user_new',
+      'sp_e2e_00000000-0000-0000-0000-000000000001',
+      'dp_e2e_00000000-0000-0000-0000-000000000001',
+      'wp_e2e_00000000-0000-0000-0000-000000000001',
+      'rm_e2e_00000000-0000-0000-0000-000000000001',
+      '00000000-0000-0000-0000-000000000001',
       CURRENT_DATE,
       '08:00',
       45,

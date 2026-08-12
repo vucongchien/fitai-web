@@ -270,7 +270,7 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
       return {
         exercise: {
           id,
-          name: id.replace(/^ex-/, "").replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+          name: id.replace(/^ex-/, "").replace(/[-_]/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
           equipmentId: "",
           instructions: "",
           videoUrl: "",

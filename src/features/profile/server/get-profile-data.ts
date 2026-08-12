@@ -12,6 +12,7 @@ import { getAuthenticatedSession } from "@/shared/auth/session";
 
 import { mapRawDataToProfileViewModel } from "../model/profile.mapper";
 import type { ProfileViewModel } from "../model/profile.types";
+import { calculateConsecutiveStreakDays } from "@/shared/utils/streak";
 
 export async function getProfileData(): Promise<ProfileViewModel> {
   const { accessToken, userId, userName } = await getAuthenticatedSession();
@@ -59,8 +60,34 @@ export async function getProfileData(): Promise<ProfileViewModel> {
           (sum, s) => sum + (s.totalVolume ? Math.round(s.totalVolume * 0.15) : 0),
           0,
         );
-        const streakDays = historySessions.length > 0 ? Math.min(historySessions.length, 30) : 0;
+        const streakDays = calculateConsecutiveStreakDays(historySessions);
         const userLevel = Math.max(1, Math.floor(totalWorkouts / 4));
+
+        const prListWithNames = await Promise.all(
+          prListProto.map(async (pr) => {
+            let name = pr.exerciseId;
+            try {
+              if (typeof workoutClient.getMotionSpecification === "function") {
+                const spec = await workoutClient.getMotionSpecification({ exerciseId: pr.exerciseId });
+                if (spec?.exerciseName) {
+                  name = spec.exerciseName;
+                }
+              }
+            } catch {
+              // fallback to exerciseId if spec not found
+            }
+            return {
+              exerciseId: pr.exerciseId,
+              exerciseName: name,
+              weightKg: pr.weight,
+              reps: pr.reps,
+              oneRepMax: pr.oneRepMax,
+              achievedAt: pr.achievedAt
+                ? new Date(Number(pr.achievedAt.seconds) * 1000).toISOString().split("T")[0]
+                : "2026-08-01",
+            };
+          }),
+        );
 
         return mapRawDataToProfileViewModel({
           user: {
@@ -72,16 +99,7 @@ export async function getProfileData(): Promise<ProfileViewModel> {
             level: userLevel,
           },
           profileProto,
-          prListProto: prListProto.map((pr) => ({
-            exerciseId: pr.exerciseId,
-            exerciseName: pr.exerciseId,
-            weightKg: pr.weight,
-            reps: pr.reps,
-            oneRepMax: pr.oneRepMax,
-            achievedAt: pr.achievedAt
-              ? new Date(Number(pr.achievedAt.seconds) * 1000).toISOString().split("T")[0]
-              : "2026-08-01",
-          })),
+          prListProto: prListWithNames,
           statsProto: {
             totalWorkouts,
             activeStreakDays: streakDays,

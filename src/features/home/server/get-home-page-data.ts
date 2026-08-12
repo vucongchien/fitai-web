@@ -29,6 +29,7 @@ import { cleanMealDisplayName, normalizeTodayMenu } from "@/features/nutrition/m
 import { readLocalMeals } from "@/features/nutrition/server/local-meal-log";
 import { dayKeyFromLoggedAt, dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
 import { deduplicateMealRows, toMealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
+import { calculateConsecutiveStreakDays } from "@/shared/utils/streak";
 
 const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
   {
@@ -408,7 +409,7 @@ export async function getHomePageData(): Promise<HomePageData> {
       const activeSession = matchedDayPlan?.sessionPlans?.[0];
       const coachNote = activeSession?.reasoning || null;
 
-      const streakDays = history.length > 0 ? Math.min(history.length, 30) : 0;
+      const streakDays = calculateConsecutiveStreakDays(history);
 
       return {
         streak: { days: streakDays },

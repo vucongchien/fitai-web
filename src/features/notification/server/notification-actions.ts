@@ -1,10 +1,11 @@
 "use server";
 
 import { createClient } from "@connectrpc/connect";
-import { cookies } from "next/headers";
 
 import { NotificationService } from "@/shared/api/gen/contracts/generic/notification/v1/service/notification_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
+
+import { getAuthenticatedSession } from "@/shared/auth/session";
 
 export interface NotificationItemDTO {
   id: string;
@@ -19,9 +20,8 @@ export async function listNotificationsAction(
   limit: number = 50,
   offset: number = 0,
 ): Promise<{ notifications: NotificationItemDTO[]; totalCount: number }> {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("fitai_access_token")?.value;
-  if (!accessToken) {
+  const { accessToken, userId } = await getAuthenticatedSession();
+  if (!accessToken || !userId) {
     throw new Error("UNAUTHENTICATED");
   }
 
@@ -30,7 +30,7 @@ export async function listNotificationsAction(
     const client = createClient(NotificationService, transport);
 
     const response = await client.listNotifications({
-      userId: "", // Backend automatically extracts userId from token
+      userId,
       limit,
       offset,
     });
@@ -57,9 +57,8 @@ export async function listNotificationsAction(
 }
 
 export async function markNotificationAsReadAction(notificationId: string): Promise<boolean> {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("fitai_access_token")?.value;
-  if (!accessToken) {
+  const { accessToken, userId } = await getAuthenticatedSession();
+  if (!accessToken || !userId) {
     throw new Error("UNAUTHENTICATED");
   }
 
@@ -68,7 +67,7 @@ export async function markNotificationAsReadAction(notificationId: string): Prom
     const client = createClient(NotificationService, transport);
 
     const response = await client.markNotificationAsRead({
-      userId: "", // Backend automatically extracts userId from token
+      userId,
       notificationId,
     });
 

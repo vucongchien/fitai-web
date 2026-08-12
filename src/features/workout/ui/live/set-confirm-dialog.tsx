@@ -330,8 +330,8 @@ export function SetConfirmDialog({
           )}
         </div>
 
-        {/* Optional Weight Input if Weighted */}
-        {(exercise.isWeighted || exercise.targetWeightKg > 0) && (
+        {/* Weight Input (Cho phép chỉnh mức tạ cho mọi bài tập theo rep) */}
+        {!timed && (
           <div
             style={{
               background: "var(--color-surface-subtle)",
