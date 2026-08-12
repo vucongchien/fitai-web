@@ -89,10 +89,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
         dialogueEngineUrl,
         recommendedCameraAngle,
       });
-      toast.success("Cập nhật thông tin Motion Spec thành công!");
+      toast.success("Motion Spec updated successfully!");
       if (onSaveSuccess) onSaveSuccess(updated);
     } catch (err) {
-      toast.error("Lỗi khi lưu Motion Spec: " + String(err));
+      toast.error("Failed to save Motion Spec: " + String(err));
     } finally {
       setIsSavingGeneral(false);
     }
@@ -112,15 +112,15 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
       try {
         const parsed = JSON.parse(fileText);
         setPoseRules((prev) => ({ ...prev, ...parsed }));
-        toast.success(`Đã đọc file rule JSON: ${file.name}`);
+        toast.success(`Loaded rule JSON file: ${file.name}`);
       } catch (err) {
-        toast.info("File vừa upload không đúng định dạng JSON tiêu chuẩn, nhưng vẫn lưu URL");
+        toast.info("Uploaded file is not standard JSON, but URL has been saved");
       }
 
       setLocalRulesUrl(presigned.fileUrl);
-      toast.success(`Upload file rule thành công! S3 URL: ${presigned.fileUrl}`);
+      toast.success(`Uploaded rule file successfully! URL: ${presigned.fileUrl}`);
     } catch (err) {
-      toast.error("Lỗi upload file rule: " + String(err));
+      toast.error("Failed to upload rule file: " + String(err));
     } finally {
       setIsUploadingRuleFile(false);
     }
@@ -144,16 +144,16 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
           if (parsed.dialogueMap) setDialogueMap(parsed.dialogueMap);
           if (parsed.cooldowns) setCooldowns(parsed.cooldowns);
           if (parsed.personalityId) setPersonalityId(parsed.personalityId);
-          toast.success("Đã nạp cấu hình kịch bản giọng nói từ JSON");
+          toast.success("Loaded voice dialogue configuration from JSON");
         } catch (err) {
-          toast.info("File kịch bản không đúng JSON tiêu chuẩn");
+          toast.info("Dialogue file is not standard JSON");
         }
         setDialogueEngineUrl(presigned.fileUrl);
       } else {
-        toast.success(`Upload thành công audio giọng nói! URL: ${presigned.fileUrl}`);
+        toast.success(`Uploaded voice audio successfully! URL: ${presigned.fileUrl}`);
       }
     } catch (err) {
-      toast.error("Lỗi upload file giọng nói: " + String(err));
+      toast.error("Failed to upload voice file: " + String(err));
     } finally {
       setIsUploadingVoiceFile(false);
     }
@@ -169,7 +169,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
         patchJson: JSON.stringify(poseRules, null, 2),
       });
       setLocalRulesUrl(res.fileUrl);
-      toast.success("Đã Patch thành công File Rule tư thế lên Cloud Storage!");
+      toast.success("Successfully patched Pose Rules file to Cloud Storage!");
       if (onSaveSuccess) {
         onSaveSuccess({
           ...spec,
@@ -178,7 +178,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
         });
       }
     } catch (err) {
-      toast.error("Lỗi khi patch file rule: " + String(err));
+      toast.error("Failed to patch rule file: " + String(err));
     } finally {
       setIsPatchingRules(false);
     }
@@ -200,7 +200,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
         patchJson: JSON.stringify(fullConfig, null, 2),
       });
       setDialogueEngineUrl(res.fileUrl);
-      toast.success("Đã Patch thành công File Giọng nói & Kịch bản AI Coach!");
+      toast.success("Successfully patched Voice & Dialogue script to Cloud Storage!");
       if (onSaveSuccess) {
         onSaveSuccess({
           ...spec,
@@ -209,7 +209,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
         });
       }
     } catch (err) {
-      toast.error("Lỗi khi patch kịch bản giọng nói: " + String(err));
+      toast.error("Failed to patch dialogue script: " + String(err));
     } finally {
       setIsPatchingVoice(false);
     }
@@ -234,7 +234,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
         errorRules: {
           ...base.errorRules,
           [formatted]: {
-            description: newErrorDesc || "Mô tả lỗi tư thế",
+            description: newErrorDesc || "Pose error description",
             joint: "knee_left_right",
             thresholdDegrees: 15,
           },
@@ -245,15 +245,15 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
     setDialogueMap((prev) => ({
       ...prev,
       [formatted]: {
-        severity1: [{ text: `Cảnh báo: ${newErrorDesc || formatted}`, audioUrl: "" }],
-        severity2: [{ text: `Nguy hiểm: ${newErrorDesc || formatted}`, audioUrl: "" }],
+        severity1: [{ text: `Warning: ${newErrorDesc || formatted}`, audioUrl: "" }],
+        severity2: [{ text: `Caution: ${newErrorDesc || formatted}`, audioUrl: "" }],
       },
     }));
 
     setCooldowns((prev) => ({ ...prev, [formatted]: 3.0 }));
     setNewErrorCode("");
     setNewErrorDesc("");
-    toast.success(`Đã thêm mã lỗi mới: ${formatted}`);
+    toast.success(`Added new error code: ${formatted}`);
   };
 
   // Remove Error Code
@@ -269,19 +269,19 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
       delete updated[code];
       return updated;
     });
-    toast.info(`Đã xoá mã lỗi ${code}`);
+    toast.info(`Removed error code ${code}`);
   };
 
   // Play audio preview
   const handlePlayAudio = (url: string) => {
     if (!url) {
-      toast.info("Chưa có URL file audio giọng nói cho dòng kịch bản này");
+      toast.info("No audio file URL configured for this dialogue line");
       return;
     }
     const audio = new Audio(url);
     setPlayingAudioUrl(url);
     audio.play().catch(() => {
-      toast.info(`Đang giả lập phát audio giọng nói: ${url}`);
+      toast.info(`Simulating voice audio playback: ${url}`);
     });
     audio.onended = () => setPlayingAudioUrl(null);
   };
@@ -296,10 +296,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
           </div>
           <div>
             <h3 className="font-bold text-slate-900 text-sm font-display">
-              Cấu hình AI Rules & Voice Coaching
+              AI Rules & Voice Coaching Configuration
             </h3>
             <p className="text-xs text-slate-500">
-              Bài tập ID: <code className="text-indigo-600 font-mono font-bold">{spec.exerciseId}</code>
+              Exercise ID: <code className="text-indigo-600 font-mono font-bold">{spec.exerciseId}</code>
             </p>
           </div>
         </div>
@@ -315,7 +315,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             }`}
           >
             <Sliders className="size-3.5" />
-            <span>Tổng quan & Models</span>
+            <span>Overview & Models</span>
           </button>
 
           <button
@@ -328,7 +328,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             }`}
           >
             <FileCode className="size-3.5" />
-            <span>File Rule Tư thế (.json)</span>
+            <span>Pose Rules (.json)</span>
           </button>
 
           <button
@@ -341,7 +341,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             }`}
           >
             <Mic className="size-3.5" />
-            <span>File Giọng nói & Audio</span>
+            <span>Voice & Audio Files</span>
           </button>
         </div>
       </div>
@@ -390,7 +390,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   htmlFor={`${fieldIdBase}-localRulesUrl`}
                   className="block text-xs font-bold text-slate-700 mb-1"
                 >
-                  File Rule Tư thế URL (`local_rules_url`)
+                  Pose Rules File URL (`local_rules_url`)
                 </label>
                 <input
                   id={`${fieldIdBase}-localRulesUrl`}
@@ -407,7 +407,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   htmlFor={`${fieldIdBase}-dialogueEngineUrl`}
                   className="block text-xs font-bold text-slate-700 mb-1"
                 >
-                  File Kịch bản Giọng nói URL (`dialogue_engine_url`)
+                  Dialogue Script File URL (`dialogue_engine_url`)
                 </label>
                 <input
                   id={`${fieldIdBase}-dialogueEngineUrl`}
@@ -424,7 +424,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   htmlFor={`${fieldIdBase}-recommendedCameraAngle`}
                   className="block text-xs font-bold text-slate-700 mb-1"
                 >
-                  Góc quay Camera đề xuất
+                  Recommended Camera Angle
                 </label>
                 <select
                   id={`${fieldIdBase}-recommendedCameraAngle`}
@@ -432,10 +432,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   onChange={(e) => setRecommendedCameraAngle(e.target.value)}
                   className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white font-semibold cursor-pointer"
                 >
-                  <option value="side">Nhìn ngang (Side View - 90°)</option>
-                  <option value="front">Nhìn chính diện (Front View - 0°)</option>
-                  <option value="45_degree">Góc chéo (45 Degree Angle)</option>
-                  <option value="overhead">Từ trên xuống (Overhead View)</option>
+                  <option value="side">Side View (90°)</option>
+                  <option value="front">Front View (0°)</option>
+                  <option value="45_degree">Diagonal View (45° Angle)</option>
+                  <option value="overhead">Overhead View</option>
                 </select>
               </div>
             </div>
@@ -448,13 +448,13 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                 className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <Save className="size-4" />
-                <span>{isSavingGeneral ? "Đang lưu..." : "Lưu cấu hình Motion Spec"}</span>
+                <span>{isSavingGeneral ? "Saving..." : "Save Motion Spec"}</span>
               </button>
             </div>
           </div>
         )}
 
-        {/* TAB 2: FILE RULE TƯ THẾ (POSE RULES) */}
+        {/* TAB 2: POSE RULES */}
         {activeTab === "rules" && (
           <div className="space-y-6">
             {/* Header Action Upload */}
@@ -463,10 +463,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                 <FileJson className="size-6 text-amber-600" />
                 <div>
                   <h4 className="text-xs font-bold text-amber-900">
-                    File Rule Tư thế Cục bộ (Pose Rules JSON)
+                    Local Pose Rules (JSON)
                   </h4>
                   <p className="text-[11px] text-amber-700">
-                    Quy định ngưỡng tính Rep, điểm phạt sai form, góc giới hạn khớp và khoảng cách camera.
+                    Defines rep counting thresholds, form penalty scores, joint angle limits, and camera distances.
                   </p>
                 </div>
               </div>
@@ -474,7 +474,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="flex items-center gap-2">
                 <label className="cursor-pointer px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
                   <UploadCloud className="size-4" />
-                  <span>{isUploadingRuleFile ? "Đang upload..." : "Upload File Rule .json"}</span>
+                  <span>{isUploadingRuleFile ? "Uploading..." : "Upload Rule File (.json)"}</span>
                   <input
                     type="file"
                     accept=".json,application/json"
@@ -490,7 +490,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
                 >
                   <Save className="size-4" />
-                  <span>{isPatchingRules ? "Đang Patch..." : "Patch Rule File lên S3"}</span>
+                  <span>{isPatchingRules ? "Patching..." : "Patch Rule File to S3"}</span>
                 </button>
               </div>
             </div>
@@ -499,8 +499,8 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-amber-300 bg-amber-50/50 rounded-2xl space-y-3">
                 <FileJson className="size-8 text-amber-500 mx-auto" />
                 <div>
-                  <p className="font-bold text-slate-800 text-sm">Chưa có dữ liệu File Rule tư thế (`local_rules_url` chưa được nạp)</p>
-                  <p className="text-slate-500 mt-1">Bài tập này chưa có file rule JSON hoặc cấu hình các quy tắc tư thế.</p>
+                  <p className="font-bold text-slate-800 text-sm">No Pose Rules File data (`local_rules_url` not loaded)</p>
+                  <p className="text-slate-500 mt-1">This exercise does not have a rule JSON file or pose rule configuration yet.</p>
                 </div>
                 <button
                   type="button"
@@ -515,7 +515,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Plus className="size-4" />
-                  <span>Khởi tạo cấu hình Rule tư thế mới</span>
+                  <span>Initialize New Pose Rules</span>
                 </button>
               </div>
             ) : (
@@ -526,14 +526,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                 <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <Sliders className="size-3.5 text-indigo-600" />
-                  <span>Hiệu chỉnh Camera (Calibration)</span>
+                  <span>Camera Calibration</span>
                 </h5>
                 <div>
                   <label
                     htmlFor={`${fieldIdBase}-minDistanceMeters`}
                     className="text-[11px] text-slate-500 font-medium"
                   >
-                    Khoảng cách tối thiểu (mét):
+                    Minimum Distance (meters):
                   </label>
                   <input
                     id={`${fieldIdBase}-minDistanceMeters`}
@@ -557,7 +557,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                     htmlFor={`${fieldIdBase}-maxDistanceMeters`}
                     className="text-[11px] text-slate-500 font-medium"
                   >
-                    Khoảng cách tối đa (mét):
+                    Maximum Distance (meters):
                   </label>
                   <input
                     id={`${fieldIdBase}-maxDistanceMeters`}
@@ -581,14 +581,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                 <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <CheckCircle2 className="size-3.5 text-emerald-600" />
-                  <span>Quy tắc Đếm Rep (Rep Counting)</span>
+                  <span>Rep Counting Rules</span>
                 </h5>
                 <div>
                   <label
                     htmlFor={`${fieldIdBase}-minRomPercentage`}
                     className="text-[11px] text-slate-500 font-medium"
                   >
-                    Biên độ chuyển động tối thiểu (ROM %):
+                    Minimum Range of Motion (ROM %):
                   </label>
                   <input
                     id={`${fieldIdBase}-minRomPercentage`}
@@ -611,14 +611,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                 <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <AlertCircle className="size-3.5 text-rose-600" />
-                  <span>Điểm phạt Form (Form Scoring)</span>
+                  <span>Form Scoring & Penalties</span>
                 </h5>
                 <div>
                   <label
                     htmlFor={`${fieldIdBase}-penaltyPerError`}
                     className="text-[11px] text-slate-500 font-medium"
                   >
-                    Điểm trừ cho mỗi vi phạm tư thế:
+                    Penalty points per form error:
                   </label>
                   <input
                     id={`${fieldIdBase}-penaltyPerError`}
@@ -643,19 +643,19 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             <div className="space-y-3">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Danh sách Mã lỗi Tư thế (Error Rules)
+                  Pose Error Rules List
                 </h5>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
-                    placeholder="Mã lỗi (ví dụ: ERR_KNEE_VALGUS)"
+                    placeholder="Error code (e.g. ERR_KNEE_VALGUS)"
                     value={newErrorCode}
                     onChange={(e) => setNewErrorCode(e.target.value)}
                     className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 w-52 font-mono uppercase"
                   />
                   <input
                     type="text"
-                    placeholder="Mô tả lỗi tư thế"
+                    placeholder="Pose error description"
                     value={newErrorDesc}
                     onChange={(e) => setNewErrorDesc(e.target.value)}
                     className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 w-64"
@@ -666,7 +666,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                     className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1 cursor-pointer"
                   >
                     <Plus className="size-3.5" />
-                    <span>Thêm</span>
+                    <span>Add</span>
                   </button>
                 </div>
               </div>
@@ -675,11 +675,11 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-100 border-b border-slate-200 font-bold text-slate-700">
                     <tr>
-                      <th className="p-3">Mã Lỗi (Error Code)</th>
-                      <th className="p-3">Mô tả Lỗi</th>
-                      <th className="p-3">Khớp theo dõi</th>
-                      <th className="p-3">Ngưỡng lệch (Độ °)</th>
-                      <th className="p-3 text-right">Thao tác</th>
+                      <th className="p-3">Error Code</th>
+                      <th className="p-3">Description</th>
+                      <th className="p-3">Tracked Joint</th>
+                      <th className="p-3">Deviation Threshold (°)</th>
+                      <th className="p-3 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200">
@@ -715,7 +715,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
                 <Code2 className="size-4 text-indigo-600" />
-                <span>Xem trước File Rule JSON tiêu chuẩn (Live Rules JSON)</span>
+                <span>Preview Standard Rule JSON (Live Rules JSON)</span>
               </div>
               <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto max-h-60 leading-relaxed border border-slate-800">
                 {JSON.stringify(poseRules, null, 2)}
@@ -726,7 +726,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
           </div>
         )}
 
-        {/* TAB 3: FILE GIỌNG NÓI & AUDIO (DIALOGUE ENGINE) */}
+        {/* TAB 3: AUDIO & VOICE (DIALOGUE ENGINE) */}
         {activeTab === "voice" && (
           <div className="space-y-6">
             {/* Header Action Upload */}
@@ -735,10 +735,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                 <Mic className="size-6 text-indigo-600" />
                 <div>
                   <h4 className="text-xs font-bold text-indigo-900">
-                    File Giọng nói & Kịch bản Feedback AI Coach
+                    Voice Files & AI Coach Feedback Scripts
                   </h4>
                   <p className="text-[11px] text-indigo-700">
-                    Quy định lời thoại giọng nói, file âm thanh `.mp3` và thời gian đệm Cooldown cho từng mức độ lỗi.
+                    Defines voice dialogue cues, audio `.mp3` files, and cooldown buffers for each error severity level.
                   </p>
                 </div>
               </div>
@@ -746,7 +746,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="flex items-center gap-2">
                 <label className="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
                   <UploadCloud className="size-4" />
-                  <span>{isUploadingVoiceFile ? "Đang upload..." : "Upload Audio / Dialogue .json"}</span>
+                  <span>{isUploadingVoiceFile ? "Uploading..." : "Upload Audio / Dialogue (.json)"}</span>
                   <input
                     type="file"
                     accept=".mp3,.wav,.json,audio/*,application/json"
@@ -762,7 +762,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
                 >
                   <Save className="size-4" />
-                  <span>{isPatchingVoice ? "Đang Patch..." : "Patch Kịch bản Giọng nói lên S3"}</span>
+                  <span>{isPatchingVoice ? "Patching..." : "Patch Dialogue Script to S3"}</span>
                 </button>
               </div>
             </div>
@@ -774,7 +774,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   htmlFor={`${fieldIdBase}-personalityId`}
                   className="block text-xs font-bold text-slate-700 mb-1"
                 >
-                  Tính cách AI Coach (Personality ID):
+                  AI Coach Personality ID:
                 </label>
                 <input
                   id={`${fieldIdBase}-personalityId`}
@@ -786,22 +786,22 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               </div>
 
               <div className="text-xs text-slate-500">
-                Mỗi Coach (ví dụ: <code className="font-bold text-slate-700">coach_alex</code>, <code className="font-bold text-slate-700">coach_sarah</code>) sẽ dùng bộ file giọng nói riêng.
+                Each Coach (e.g., <code className="font-bold text-slate-700">coach_alex</code>, <code className="font-bold text-slate-700">coach_sarah</code>) uses a dedicated voice set.
               </div>
             </div>
 
             {/* Dialogue Map Cards */}
             <div className="space-y-4">
               <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Kịch bản Lời thoại & File âm thanh Giọng nói theo Mã lỗi
+                Dialogue Scripts & Voice Audio Files by Error Code
               </h5>
 
               {Object.keys(dialogueMap).length === 0 && (
                 <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-indigo-200 bg-indigo-50/30 rounded-2xl space-y-3">
                   <Mic className="size-8 text-indigo-500 mx-auto" />
                   <div>
-                    <p className="font-bold text-slate-800 text-sm">Chưa có dữ liệu File Giọng nói (`dialogue_engine_url` chưa được nạp)</p>
-                    <p className="text-slate-500 mt-1">Bài tập này chưa có file audio giọng nói hoặc kịch bản lời thoại AI Coach.</p>
+                    <p className="font-bold text-slate-800 text-sm">No Voice File data (`dialogue_engine_url` not loaded)</p>
+                    <p className="text-slate-500 mt-1">This exercise does not have a voice audio file or AI Coach dialogue script yet.</p>
                   </div>
                   <button
                     type="button"
@@ -809,8 +809,8 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                       setPersonalityId("coach_alex");
                       setDialogueMap({
                         ERR_FORM_NOTICE: {
-                          severity1: [{ text: "Giữ đúng tư thế chuẩn!", audioUrl: "" }],
-                          severity2: [{ text: "Chú ý điều chỉnh tư thế ngay!", audioUrl: "" }],
+                          severity1: [{ text: "Maintain proper form!", audioUrl: "" }],
+                          severity2: [{ text: "Correct your posture immediately!", audioUrl: "" }],
                         },
                       });
                       setCooldowns({ ERR_FORM_NOTICE: 3.0 });
@@ -818,7 +818,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                     className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <Plus className="size-4" />
-                    <span>Khởi tạo Kịch bản Giọng nói mới</span>
+                    <span>Initialize New Dialogue Script</span>
                   </button>
                 </div>
               )}
@@ -834,7 +834,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                         {code}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500 font-medium">Cooldown (giây):</span>
+                        <span className="text-xs text-slate-500 font-medium">Cooldown (s):</span>
                         <input
                           type="number"
                           step="0.5"
@@ -855,7 +855,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                       onClick={() => handleRemoveErrorCode(code)}
                       className="text-xs text-rose-600 hover:text-rose-700 font-semibold cursor-pointer"
                     >
-                      Xoá kịch bản mã lỗi này
+                      Delete this error script
                     </button>
                   </div>
 
@@ -863,7 +863,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   <div className="space-y-2">
                     <div className="text-xs font-bold text-amber-700 flex items-center gap-1.5">
                       <Volume2 className="size-4" />
-                      <span>Mức độ 1 (Severity 1 - Nhắc nhở nhẹ):</span>
+                      <span>Severity 1 (Minor Cue / Reminder):</span>
                     </div>
 
                     {item.severity1.map((opt, idx) => (
@@ -879,7 +879,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                               [code]: { ...item, severity1: newSev1 },
                             });
                           }}
-                          placeholder="Lời thoại nhắc nhở..."
+                          placeholder="Reminder dialogue..."
                           className="md:col-span-6 text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-medium"
                         />
                         <input
@@ -893,14 +893,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                               [code]: { ...item, severity1: newSev1 },
                             });
                           }}
-                          placeholder="URL file audio giọng nói (.mp3)"
+                          placeholder="Voice audio file URL (.mp3)"
                           className="md:col-span-5 text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-mono"
                         />
                         <button
                           type="button"
                           onClick={() => handlePlayAudio(opt.audioUrl)}
                           className="md:col-span-1 p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center cursor-pointer"
-                          title="Phát thử âm thanh"
+                          title="Preview audio"
                         >
                           {playingAudioUrl === opt.audioUrl ? (
                             <Pause className="size-4 text-indigo-700 animate-pulse" />
@@ -916,7 +916,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   <div className="space-y-2 pt-2">
                     <div className="text-xs font-bold text-rose-700 flex items-center gap-1.5">
                       <Volume2 className="size-4" />
-                      <span>Mức độ 2 (Severity 2 - Cảnh báo nghiêm trọng):</span>
+                      <span>Severity 2 (Major Warning):</span>
                     </div>
 
                     {item.severity2.map((opt, idx) => (
@@ -932,7 +932,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                               [code]: { ...item, severity2: newSev2 },
                             });
                           }}
-                          placeholder="Lời thoại cảnh báo nghiêm trọng..."
+                          placeholder="Critical warning dialogue..."
                           className="md:col-span-6 text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-medium"
                         />
                         <input
@@ -946,14 +946,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                               [code]: { ...item, severity2: newSev2 },
                             });
                           }}
-                          placeholder="URL file audio giọng nói (.mp3)"
+                          placeholder="Voice audio file URL (.mp3)"
                           className="md:col-span-5 text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-mono"
                         />
                         <button
                           type="button"
                           onClick={() => handlePlayAudio(opt.audioUrl)}
                           className="md:col-span-1 p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center cursor-pointer"
-                          title="Phát thử âm thanh"
+                          title="Preview audio"
                         >
                           {playingAudioUrl === opt.audioUrl ? (
                             <Pause className="size-4 text-indigo-700 animate-pulse" />
@@ -972,7 +972,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
                 <Code2 className="size-4 text-indigo-600" />
-                <span>Xem trước File Dialogue Engine Config JSON tiêu chuẩn</span>
+                <span>Preview Standard Dialogue Engine Config JSON</span>
               </div>
               <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto max-h-60 leading-relaxed border border-slate-800">
                 {JSON.stringify(

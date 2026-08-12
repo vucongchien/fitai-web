@@ -155,11 +155,11 @@ if (typeof window !== "undefined" && "speechSynthesis" in window) {
 }
 
 /**
- * Đọc lời thoại trực tiếp sử dụng Web Speech API (Text-To-Speech / TTS)
+ * Speaks text directly using the Web Speech API (Text-To-Speech / TTS)
  */
 export function speakText(
   text: string,
-  lang = "vi-VN",
+  lang = "en-US",
   options: {
     pitch?: number;
     rate?: number;
@@ -205,7 +205,6 @@ export function speakText(
 
     lastSpokenText = text;
     lastSpokenTime = now;
-
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     utterance.rate = options.rate ?? 1.0;

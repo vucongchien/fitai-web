@@ -36,7 +36,7 @@ function formatRelativeTime(isoString: string): string {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     
-    // Nếu mốc thời gian ở tương lai
+    // If timestamp is in future
     if (diffMs < 0) {return "Just now";}
     
     const diffMins = Math.floor(diffMs / 60_000);
@@ -113,7 +113,7 @@ export default function NotificationsPage() {
   const handleMarkAsRead = async (id: string, currentlyRead: boolean) => {
     if (currentlyRead) {return;}
 
-    // Cập nhật optimistic UI trước
+    // Optimistic UI update
     setNotifications((prev) =>
       prev.map((item) => (item.id === id ? { ...item, read: true } : item))
     );
@@ -121,14 +121,14 @@ export default function NotificationsPage() {
     try {
       const success = await markNotificationAsReadAction(id);
       if (!success) {
-        // Rollback nếu fail
+        // Rollback on failure
         setNotifications((prev) =>
           prev.map((item) => (item.id === id ? { ...item, read: false } : item))
         );
       }
     } catch (error) {
       console.error("[NotificationsPage] failed to mark as read:", error);
-      // Rollback nếu có lỗi
+      // Rollback on error
       setNotifications((prev) =>
         prev.map((item) => (item.id === id ? { ...item, read: false } : item))
       );

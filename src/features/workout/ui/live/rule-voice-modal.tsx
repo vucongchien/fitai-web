@@ -25,7 +25,7 @@ export function RuleVoiceModal({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleTestTts = useCallback(() => {
-    speakText("Hệ thống đếm rep và kiểm tra tư thế FitAI sẵn sàng!", "vi-VN", {
+    speakText("FitAI pose verification and rep counting system is ready!", "en-US", {
       pitch: ttsPitch,
       rate: ttsRate,
     });
@@ -57,13 +57,13 @@ export function RuleVoiceModal({
             };
             onUpdateSpec(updated);
           }
-          toast.success("Đã tải file cấu hình Rule & Giọng nói thành công!");
-          speakText("Đã cập nhật bộ quy tắc kiểm tra tư thế mới!", "vi-VN", {
+          toast.success("Rule and Voice configuration loaded successfully!");
+          speakText("Updated with new pose evaluation rules!", "en-US", {
             pitch: ttsPitch,
             rate: ttsRate,
           });
         } catch (err) {
-          toast.error("File JSON không hợp lệ. Vui lòng kiểm tra định dạng!");
+          toast.error("Invalid JSON file. Please check the format!");
           console.warn("[RuleVoiceModal] Invalid JSON file:", err);
         }
       };
@@ -78,17 +78,31 @@ export function RuleVoiceModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-2xl bg-white dark:bg-slate-900 shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh]">
+      <div
+        className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] border"
+        style={{
+          background: "var(--color-surface)",
+          borderColor: "var(--color-border)",
+          color: "var(--color-text)",
+        }}
+      >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold text-base">
-            <Sliders className="text-emerald-500" size={18} />
-            <span>Cấu hình Rule & Giọng nói TTS</span>
+        <div
+          className="flex items-center justify-between px-5 py-4 border-b"
+          style={{
+            background: "var(--color-surface-subtle)",
+            borderColor: "var(--color-border)",
+          }}
+        >
+          <div className="flex items-center gap-2 font-semibold text-base" style={{ color: "var(--color-text)" }}>
+            <Sliders size={18} style={{ color: "var(--color-action)" }} />
+            <span>Configure Rule & TTS Voice</span>
           </div>
           <button
             aria-label="Close modal"
-            className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="p-1 rounded-full transition-colors cursor-pointer"
             onClick={onClose}
+            style={{ color: "var(--color-text-muted)" }}
             type="button"
           >
             <X size={18} />
@@ -96,13 +110,19 @@ export function RuleVoiceModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 overflow-y-auto space-y-6 flex-1 text-sm text-slate-700 dark:text-slate-300">
+        <div className="p-5 overflow-y-auto space-y-6 flex-1 text-sm" style={{ color: "var(--color-text)" }}>
           {/* Section 1: Upload Custom Rule JSON */}
-          <div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 space-y-3">
+          <div
+            className="p-4 rounded-xl border space-y-3"
+            style={{
+              background: "var(--color-action-soft)",
+              borderColor: "var(--color-action)",
+            }}
+          >
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
+              <span className="font-semibold flex items-center gap-1.5" style={{ color: "var(--color-action-ink)" }}>
                 <FileCheck size={16} />
-                <span>Nạp File Quy tắc (Rule JSON)</span>
+                <span>Load Rule File (Rule JSON)</span>
               </span>
               <input
                 accept=".json"
@@ -112,53 +132,56 @@ export function RuleVoiceModal({
                 type="file"
               />
               <button
-                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-sm transition-all"
+                className="px-3 py-1.5 rounded-lg text-white font-medium text-xs shadow-sm transition-all cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
+                style={{ background: "var(--color-action)" }}
                 type="button"
               >
-                Tải file .JSON
+                Upload .JSON
               </button>
             </div>
-            <p className="text-xs text-emerald-800/80 dark:text-emerald-400/80 leading-relaxed">
-              Tải file quy tắc JSON để định nghĩa lại góc khớp (`thresholdDeg`), loại kiểm tra tư thế và danh sách lời nhắc nhở cảnh báo.
+            <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
+              Upload a JSON rule file to redefine joint thresholds (`thresholdDeg`), pose check types, and cue alerts.
             </p>
           </div>
 
           {/* Section 2: Text-To-Speech Controls */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
-              <Volume2 className="text-emerald-500" size={16} />
-              <span>Cấu hình Giọng đọc TTS (Text-To-Speech)</span>
+            <h4 className="font-semibold flex items-center gap-1.5" style={{ color: "var(--color-text)" }}>
+              <Volume2 size={16} style={{ color: "var(--color-action)" }} />
+              <span>TTS Voice Settings (Text-To-Speech)</span>
             </h4>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 flex justify-between">
-                  <span>Tốc độ đọc (Rate)</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{ttsRate}x</span>
+                <label className="text-xs font-medium flex justify-between" style={{ color: "var(--color-text-muted)" }}>
+                  <span>Speech Rate</span>
+                  <span className="font-semibold" style={{ color: "var(--color-text)" }}>{ttsRate}x</span>
                 </label>
                 <input
-                  className="w-full accent-emerald-500"
+                  className="w-full"
                   max="1.5"
                   min="0.7"
                   onChange={(e) => setTtsRate(parseFloat(e.target.value))}
                   step="0.1"
+                  style={{ accentColor: "var(--color-action)" }}
                   type="range"
                   value={ttsRate}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 flex justify-between">
-                  <span>Cao độ (Pitch)</span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{ttsPitch}</span>
+                <label className="text-xs font-medium flex justify-between" style={{ color: "var(--color-text-muted)" }}>
+                  <span>Pitch</span>
+                  <span className="font-semibold" style={{ color: "var(--color-text)" }}>{ttsPitch}</span>
                 </label>
                 <input
-                  className="w-full accent-emerald-500"
+                  className="w-full"
                   max="1.3"
                   min="0.7"
                   onChange={(e) => setTtsPitch(parseFloat(e.target.value))}
                   step="0.1"
+                  style={{ accentColor: "var(--color-action)" }}
                   type="range"
                   value={ttsPitch}
                 />
@@ -166,35 +189,50 @@ export function RuleVoiceModal({
             </div>
 
             <button
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 font-medium text-xs flex items-center justify-center gap-2 transition-colors border border-slate-200 dark:border-slate-700"
+              className="w-full py-2.5 px-4 rounded-xl font-medium text-xs flex items-center justify-center gap-2 transition-colors border cursor-pointer"
               onClick={handleTestTts}
+              style={{
+                background: "var(--color-surface-subtle)",
+                borderColor: "var(--color-border)",
+                color: "var(--color-text)",
+              }}
               type="button"
             >
-              <Play className="text-emerald-500 fill-emerald-500" size={14} />
-              <span>Nghe thử giọng đọc TTS tiếng Việt</span>
+              <Play size={14} style={{ color: "var(--color-action)", fill: "var(--color-action)" }} />
+              <span>Test TTS Voice</span>
             </button>
           </div>
 
           {/* Section 3: Active Rules & Cues List */}
           <div className="space-y-3">
-            <h4 className="font-semibold text-slate-900 dark:text-white text-xs uppercase tracking-wider text-slate-400">
-              Quy tắc kích hoạt ({rules.length}) & Lời nhắc ({cues.length})
+            <h4 className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--color-text-muted)" }}>
+              Active Rules ({rules.length}) & Cues ({cues.length})
             </h4>
             {rules.length === 0 ? (
-              <div className="p-3 text-center text-xs text-slate-400 rounded-lg bg-slate-50 dark:bg-slate-800/40">
-                Chưa có quy tắc nào. Hệ thống đang sử dụng quy tắc mặc định của mô hình AI.
+              <div
+                className="p-3 text-center text-xs rounded-lg"
+                style={{
+                  background: "var(--color-surface-subtle)",
+                  color: "var(--color-text-muted)",
+                }}
+              >
+                No custom rules configured. Using default AI model rules.
               </div>
             ) : (
               <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
                 {rules.map((rule, idx) => (
                   <div
                     key={rule.code || idx}
-                    className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs"
+                    className="p-2.5 rounded-lg border flex items-center justify-between text-xs"
+                    style={{
+                      background: "var(--color-surface-subtle)",
+                      borderColor: "var(--color-border)",
+                    }}
                   >
-                    <span className="font-medium text-slate-800 dark:text-slate-200">
+                    <span className="font-medium" style={{ color: "var(--color-text)" }}>
                       {rule.message || rule.code}
                     </span>
-                    <span className="text-slate-400 font-mono text-[11px]">
+                    <span className="font-mono text-[11px]" style={{ color: "var(--color-text-muted)" }}>
                       {rule.kind} ({rule.thresholdDeg}°)
                     </span>
                   </div>
@@ -205,13 +243,20 @@ export function RuleVoiceModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex justify-end">
+        <div
+          className="p-4 border-t flex justify-end"
+          style={{
+            background: "var(--color-surface-subtle)",
+            borderColor: "var(--color-border)",
+          }}
+        >
           <button
-            className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs shadow-md transition-all"
+            className="px-5 py-2 rounded-xl text-white font-medium text-xs shadow-md transition-all cursor-pointer"
             onClick={onClose}
+            style={{ background: "var(--color-action)" }}
             type="button"
           >
-            Đóng & Áp dụng
+            Close & Apply
           </button>
         </div>
       </div>

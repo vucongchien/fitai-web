@@ -204,7 +204,7 @@ export function validateTimeSlot(
   const endMin = parseTimeToMinutes(endTime);
 
   if (startMin === null || endMin === null) {
-    return { isValid: false, message: "Định dạng thời gian không hợp lệ (HH:mm)" };
+    return { isValid: false, message: "Invalid time format (HH:mm)" };
   }
 
   let duration = endMin - startMin;
@@ -213,11 +213,11 @@ export function validateTimeSlot(
   }
 
   if (duration < 20) {
-    return { isValid: false, message: "Thời gian tập tối thiểu là 20 phút" };
+    return { isValid: false, message: "Minimum workout duration is 20 minutes" };
   }
 
   if (duration > 240) {
-    return { isValid: false, message: "Thời gian tập không nên vượt quá 4 giờ" };
+    return { isValid: false, message: "Workout duration should not exceed 4 hours" };
   }
 
   return { isValid: true, durationMinutes: duration };

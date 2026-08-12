@@ -21,29 +21,29 @@ interface MetadataOption {
  * effect re-run on every render — wiping the form while the user typed.
  */
 const DEFAULT_BODY_PARTS: MetadataOption[] = [
-  { id: "bp-chest", name: "Ngực (Chest)" },
-  { id: "bp-back", name: "Lưng (Back)" },
-  { id: "bp-legs", name: "Chân (Legs)" },
-  { id: "bp-shoulders", name: "Vai (Shoulders)" },
-  { id: "bp-arms", name: "Tay (Arms)" },
-  { id: "bp-core", name: "Bụng (Core)" },
+  { id: "bp-chest", name: "Chest" },
+  { id: "bp-back", name: "Back" },
+  { id: "bp-legs", name: "Legs" },
+  { id: "bp-shoulders", name: "Shoulders" },
+  { id: "bp-arms", name: "Arms" },
+  { id: "bp-core", name: "Core" },
 ];
 
 const DEFAULT_EQUIPMENTS: MetadataOption[] = [
-  { id: "eq-bodyweight", name: "Bodyweight (Trọng lượng cơ thể)" },
-  { id: "eq-dumbbell", name: "Dumbbell (Tạ đơn)" },
-  { id: "eq-barbell", name: "Barbell (Tạ đòn)" },
-  { id: "eq-kettlebell", name: "Kettlebell (Tạ ấm)" },
-  { id: "eq-cable", name: "Cable (Máy kéo cáp)" },
-  { id: "eq-machine", name: "Machine (Máy tập)" },
+  { id: "eq-bodyweight", name: "Bodyweight" },
+  { id: "eq-dumbbell", name: "Dumbbell" },
+  { id: "eq-barbell", name: "Barbell" },
+  { id: "eq-kettlebell", name: "Kettlebell" },
+  { id: "eq-cable", name: "Cable" },
+  { id: "eq-machine", name: "Machine" },
 ];
 
 const DEFAULT_MUSCLES: MetadataOption[] = [
-  { id: "ms-pectoralis-major", name: "Cơ ngực lớn" },
-  { id: "ms-latissimus-dorsi", name: "Cơ xô (Lats)" },
-  { id: "ms-quadriceps", name: "Cơ đùi trước" },
-  { id: "ms-biceps", name: "Cơ tay trước" },
-  { id: "ms-triceps", name: "Cơ tay sau" },
+  { id: "ms-pectoralis-major", name: "Pectoralis Major" },
+  { id: "ms-latissimus-dorsi", name: "Latissimus Dorsi (Lats)" },
+  { id: "ms-quadriceps", name: "Quadriceps" },
+  { id: "ms-biceps", name: "Biceps" },
+  { id: "ms-triceps", name: "Triceps" },
 ];
 
 export interface ExerciseDialogProps {
@@ -158,12 +158,12 @@ export function ExerciseDialog({
             </div>
             <div>
               <h2 className="text-base font-bold text-zinc-100">
-                {mode === "create" && "Thêm Bài tập mới"}
-                {mode === "edit" && "Chỉnh sửa Bài tập"}
-                {mode === "view" && "Chi tiết Bài tập"}
+                {mode === "create" && "Add New Exercise"}
+                {mode === "edit" && "Edit Exercise"}
+                {mode === "view" && "Exercise Details"}
               </h2>
               <p className="text-xs text-zinc-400">
-                {mode === "view" ? `ID: ${exercise?.id}` : "Điền đầy đủ thông tin bài tập bên dưới"}
+                {mode === "view" ? `ID: ${exercise?.id}` : "Fill in the exercise details below"}
               </p>
             </div>
           </div>
@@ -187,7 +187,7 @@ export function ExerciseDialog({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2 space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-1`}>
-                Tên bài tập *
+                Exercise Name *
               </label>
               <input
                 id={`${fieldIdBase}-1`}
@@ -195,14 +195,14 @@ export function ExerciseDialog({
                 disabled={isReadOnly}
                 value={formData.name || ""}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="VD: Incline Dumbbell Press"
+                placeholder="e.g. Incline Dumbbell Press"
                 className="w-full px-3.5 py-2.5 text-xs bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-xl text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:opacity-70 disabled:bg-zinc-900/50"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-2`}>
-                Trạng thái (Status)
+                Status
               </label>
               <select
                 id={`${fieldIdBase}-2`}
@@ -213,10 +213,10 @@ export function ExerciseDialog({
                 }
                 className="w-full px-3.5 py-2.5 text-xs bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-xl text-zinc-100 focus:outline-none disabled:opacity-70 disabled:bg-zinc-900/50 cursor-pointer"
               >
-                <option value="created">Draft (Mới tạo)</option>
-                <option value="submittedForApproval">Chờ duyệt</option>
-                <option value="approved">Đã duyệt</option>
-                <option value="archived">Đã lưu trữ</option>
+                <option value="created">Draft</option>
+                <option value="submittedForApproval">Pending Approval</option>
+                <option value="approved">Approved</option>
+                <option value="archived">Archived</option>
               </select>
             </div>
           </div>
@@ -225,7 +225,7 @@ export function ExerciseDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-3`}>
-                Nhóm cơ chính *
+                Primary Muscle Group *
               </label>
               <select
                 id={`${fieldIdBase}-3`}
@@ -244,7 +244,7 @@ export function ExerciseDialog({
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-4`}>
-                Dụng cụ *
+                Equipment *
               </label>
               <select
                 id={`${fieldIdBase}-4`}
@@ -263,7 +263,7 @@ export function ExerciseDialog({
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-5`}>
-                Cơ mục tiêu *
+                Target Muscle *
               </label>
               <select
                 id={`${fieldIdBase}-5`}
@@ -282,7 +282,7 @@ export function ExerciseDialog({
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-6`}>
-                Độ khó *
+                Difficulty *
               </label>
               <select
                 id={`${fieldIdBase}-6`}
@@ -304,7 +304,7 @@ export function ExerciseDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-7`}>
-                Thời gian nghỉ mặc định (Giây)
+                Default Rest Time (seconds)
               </label>
               <input
                 id={`${fieldIdBase}-7`}
@@ -327,7 +327,7 @@ export function ExerciseDialog({
                   onChange={(e) => setFormData({ ...formData, hasAiSupported: e.target.checked })}
                   className="size-4 rounded accent-amber-500 bg-zinc-900 border-zinc-800 cursor-pointer"
                 />
-                <span>Hỗ trợ Camera AI phân tích Form</span>
+                <span>AI Camera Form Analysis Support</span>
               </label>
             </div>
           </div>
@@ -335,7 +335,7 @@ export function ExerciseDialog({
           {/* Instructions */}
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-8`}>
-              Hướng dẫn thực hiện
+              Instructions
             </label>
             <textarea
               id={`${fieldIdBase}-8`}
@@ -343,7 +343,7 @@ export function ExerciseDialog({
               disabled={isReadOnly}
               value={formData.instructions || ""}
               onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
-              placeholder="Mô tả các bước thực hiện bài tập chi tiết..."
+              placeholder="Describe exercise execution steps in detail..."
               className="w-full px-3.5 py-2.5 text-xs bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-xl text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:opacity-70"
             />
           </div>
@@ -352,7 +352,7 @@ export function ExerciseDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-9`}>
-                Gợi ý kỹ thuật (Form Cues - 1 câu/dòng)
+                Form Cues (1 per line)
               </label>
               <textarea
                 id={`${fieldIdBase}-9`}
@@ -360,14 +360,14 @@ export function ExerciseDialog({
                 disabled={isReadOnly}
                 value={formCuesText}
                 onChange={(e) => setFormCuesText(e.target.value)}
-                placeholder="VD: Siết chặt cơ bụng&#10;Hạ tạ có kiểm soát"
+                placeholder="e.g. Brace core tightly&#10;Lower weight with control"
                 className="w-full px-3.5 py-2.5 text-xs bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-xl text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:opacity-70"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300" htmlFor={`${fieldIdBase}-10`}>
-                Lỗi thường gặp (1 câu/dòng)
+                Common Mistakes (1 per line)
               </label>
               <textarea
                 id={`${fieldIdBase}-10`}
@@ -375,7 +375,7 @@ export function ExerciseDialog({
                 disabled={isReadOnly}
                 value={commonMistakesText}
                 onChange={(e) => setCommonMistakesText(e.target.value)}
-                placeholder="VD: Võng lưng quá mức&#10;Gồng vai quá đà"
+                placeholder="e.g. Excessive lower back arch&#10;Shrugging shoulders"
                 className="w-full px-3.5 py-2.5 text-xs bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-xl text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:opacity-70"
               />
             </div>
@@ -389,7 +389,7 @@ export function ExerciseDialog({
             onClick={onClose}
             className="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-medium border border-zinc-700 transition-colors cursor-pointer"
           >
-            {isReadOnly ? "Đóng" : "Hủy"}
+            {isReadOnly ? "Close" : "Cancel"}
           </button>
           {!isReadOnly && (
             <button
@@ -399,7 +399,7 @@ export function ExerciseDialog({
               className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-zinc-950 text-xs font-bold shadow-lg shadow-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
             >
               <Check className="size-4" />
-              <span>{isSubmitting ? "Đang lưu..." : "Lưu thay đổi"}</span>
+              <span>{isSubmitting ? "Saving..." : "Save Changes"}</span>
             </button>
           )}
         </div>

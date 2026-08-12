@@ -54,13 +54,13 @@ export function InstructionsSheet({
     }
 
     const steps = parseInstructions(exercise.instructions || "");
-    const formattedSteps = steps.length > 0 ? steps.map((s, idx) => `Bước ${idx + 1}: ${s}`).join(". ") : "";
+    const formattedSteps = steps.length > 0 ? steps.map((s, idx) => `Step ${idx + 1}: ${s}`).join(". ") : "";
 
     const textToRead = [
-      `Bài tập ${exercise.name}.`,
-      formattedSteps ? `Hướng dẫn các bước thực hiện: ${formattedSteps}` : "",
-      exercise.breathingCue ? `Hít thở: ${exercise.breathingCue}` : "",
-      exercise.formCues.length > 0 ? `Lưu ý tư thế: ${exercise.formCues.join(", ")}` : "",
+      `Exercise ${exercise.name}.`,
+      formattedSteps ? `Instructions: ${formattedSteps}` : "",
+      exercise.breathingCue ? `Breathing: ${exercise.breathingCue}` : "",
+      exercise.formCues.length > 0 ? `Form cues: ${exercise.formCues.join(", ")}` : "",
     ]
       .filter(Boolean)
       .join(" ");
@@ -68,7 +68,7 @@ export function InstructionsSheet({
     try {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(textToRead);
-      utterance.lang = "vi-VN";
+      utterance.lang = "en-US";
       utterance.rate = 1.0;
       utterance.volume = 1.0;
       utterance.onend = () => setIsSpeaking(false);
@@ -88,7 +88,7 @@ export function InstructionsSheet({
     }
   }, [isSpeaking, startSpeech, stopSpeech]);
 
-  // Tự động đọc giọng nói hướng dẫn ngay khi mở sách hướng dẫn
+  // Read voice instructions automatically when opening the sheet
   useEffect(() => {
     startSpeech();
     return () => {
@@ -125,10 +125,10 @@ export function InstructionsSheet({
           </div>
           <div className="flex items-center gap-2">
             <button
-              aria-label={isSpeaking ? "Tắt âm thanh (Đang phát)" : "Đọc hướng dẫn bằng giọng nói"}
+              aria-label={isSpeaking ? "Mute audio (Playing)" : "Read instructions aloud"}
               className={`live-media__control ${isSpeaking ? "bg-red-500 text-white" : ""}`}
               onClick={toggleSpeech}
-              title={isSpeaking ? "Tắt âm thanh (Đang phát)" : "Đọc hướng dẫn bằng giọng nói"}
+              title={isSpeaking ? "Mute audio (Playing)" : "Read instructions aloud"}
               type="button"
               style={
                 isSpeaking
@@ -144,13 +144,13 @@ export function InstructionsSheet({
             </button>
             {onWatchVideo && exercise.videoUrl ? (
               <button
-                aria-label="Xem video hướng dẫn"
+                aria-label="Watch tutorial video"
                 className="live-media__control"
                 onClick={() => {
                   handleClose();
                   onWatchVideo();
                 }}
-                title="Xem video demo"
+                title="Watch demo video"
                 type="button"
               >
                 <Play aria-hidden="true" size={18} />
@@ -165,7 +165,7 @@ export function InstructionsSheet({
         <div className="live-sheet__body">
           {steps.length > 1 ? (
             <div className="detail-section">
-              <h3>Các bước thực hiện</h3>
+              <h3>Execution Steps</h3>
               <ol
                 style={{
                   display: "flex",

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { cancelAllSpeech, formatVietnameseSecond } from "@/features/workout/domain/audio-cues";
+import { cancelAllSpeech } from "@/features/workout/domain/audio-cues";
 import { isTimedExercise } from "@/features/workout/domain/session-guards";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
 import { loadRatio, sessionVolumeKg } from "@/features/workout/domain/training-load";
@@ -76,18 +76,16 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       const cueText = workoutEffects.getCueTextForError(error.code, error.severity, error.message);
       // Enforce post-speech silence gap: 1.5s for Danger (severity 2), 3.0s for Warning (severity 1)
       const gapSec = error.severity === 2 ? 1.5 : 3.0;
-      audio.speakText(cueText, "vi-VN", { cooldownGapSec: gapSec, priority: "error" });
+      audio.speakText(cueText, "en-US", { cooldownGapSec: gapSec, priority: "error" });
     },
     onRep: (rep) => {
       if (rep.counted && listening && !confirmSetOpen && session.status === "working") {
         const isTimed = isTimedExercise(workoutEffects.exercise, workoutEffects.spec);
 
         if (isTimed) {
-          // Timed static exercise ("trường đếm s"): ONLY speak the number ("Một", "Hai", "Ba"...)
-          const viSecondText = formatVietnameseSecond(rep.count);
-          audio.speakText(viSecondText, "vi-VN", { priority: "normal" });
+          audio.speakText(String(rep.count), "en-US", { priority: "normal" });
         } else {
-          audio.speakText(`Hoàn thành rep ${rep.count}`, "vi-VN", { priority: "normal" });
+          audio.speakText(`Rep ${rep.count} completed`, "en-US", { priority: "normal" });
         }
       }
     },
@@ -116,10 +114,10 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       if (nextState) {
         if (exercise) {
           const textToRead = [
-            `Bài tập ${exercise.name}.`,
-            exercise.instructions ? `Hướng dẫn thực hiện: ${exercise.instructions}` : "",
-            exercise.breathingCue ? `Cách hít thở: ${exercise.breathingCue}` : "",
-            exercise.formCues.length > 0 ? `Lưu ý tư thế: ${exercise.formCues.join(", ")}` : "",
+            `Exercise ${exercise.name}.`,
+            exercise.instructions ? `Instructions: ${exercise.instructions}` : "",
+            exercise.breathingCue ? `Breathing cue: ${exercise.breathingCue}` : "",
+            exercise.formCues.length > 0 ? `Form cues: ${exercise.formCues.join(", ")}` : "",
           ]
             .filter(Boolean)
             .join(" ");

@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { getFatigueLevel } from "@/features/workout/domain/pose-metrics";
 import type { SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import { buttonVariants } from "@/shared/ui/button";
@@ -28,11 +29,9 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
       if (raw) {
         const parsed = JSON.parse(raw) as SessionReport;
         setReport(parsed);
-      } else {
-        setError("No workout report was found for this session.");
       }
     } catch {
-      setError("Failed to parse the workout report.");
+      setError("We couldn't load the summary of your session.");
     } finally {
       setLoaded(true);
     }
@@ -88,6 +87,8 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
           <Check aria-hidden="true" size={30} />
         </div>
 
+        <p className="utility-label">Nice work</p>
+
         <h1>Session complete.</h1>
 
         {/* Two numbers, not five. Duration and volume are what the session
@@ -99,23 +100,7 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
             ? Math.min(100, Math.max(10, Math.round((report.averageRpe / 10) * 100)))
             : Math.min(100, Math.max(30, Math.round((report.totalSets / 10) * 75)));
 
-          const fatigueLabel =
-            fatiguePct >= 85
-              ? "Hết sức (High)"
-              : fatiguePct >= 70
-              ? "Mệt nhiều (Optimal)"
-              : fatiguePct >= 50
-              ? "Vừa sức (Moderate)"
-              : "Nhẹ (Low)";
-
-          const fatigueColor =
-            fatiguePct >= 85
-              ? "#ef4444"
-              : fatiguePct >= 70
-              ? "#f59e0b"
-              : fatiguePct >= 50
-              ? "#10b981"
-              : "#3b82f6";
+          const { color, label } = getFatigueLevel(fatiguePct);
 
           return (
             <>
@@ -135,8 +120,8 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
                   <dd className="data-value">{`${report.totalSets} sets`}</dd>
                 </div>
                 <div>
-                  <dt>Độ mệt mỏi</dt>
-                  <dd className="data-value" style={{ color: fatigueColor }}>
+                  <dt>Fatigue Level</dt>
+                  <dd className="data-value" style={{ color }}>
                     {fatiguePct}%
                   </dd>
                 </div>
@@ -154,15 +139,15 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: 600, marginBottom: "8px" }}>
-                  <span style={{ color: "var(--color-text-main, #1e293b)" }}>Chỉ số mệt mỏi thể lực</span>
-                  <span style={{ color: fatigueColor, fontWeight: 700 }}>{fatigueLabel}</span>
+                  <span style={{ color: "var(--color-text-main, #1e293b)" }}>Physical Exertion Index</span>
+                  <span style={{ color, fontWeight: 700 }}>{label}</span>
                 </div>
                 <div style={{ width: "100%", height: "10px", background: "#e2e8f0", borderRadius: "999px", overflow: "hidden" }}>
                   <div
                     style={{
                       width: `${fatiguePct}%`,
                       height: "100%",
-                      background: fatigueColor,
+                      background: color,
                       borderRadius: "999px",
                       transition: "width 0.5s ease",
                     }}

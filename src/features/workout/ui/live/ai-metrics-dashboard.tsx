@@ -54,12 +54,12 @@ export function AiMetricsDashboard({
   const metricName = metrics?.metricName ?? "knee_angle";
   const liveRepCount = metrics?.repCount ?? propRepCount;
 
-  // Friendly metric name formatter (e.g. knee_angle -> Góc Gối)
+  // Friendly metric name formatter (e.g. knee_angle -> Knee Angle)
   const formatMetricName = (name: string) => {
-    if (name.includes("knee")) return "Góc Gối (knee_angle)";
-    if (name.includes("hip")) return "Góc Hông (hip_angle)";
-    if (name.includes("spine")) return "Cột sống (spine_angle)";
-    if (name.includes("elbow")) return "Góc Khuỷu (elbow_angle)";
+    if (name.includes("knee")) return "Knee Angle (knee_angle)";
+    if (name.includes("hip")) return "Hip Angle (hip_angle)";
+    if (name.includes("spine")) return "Spine Angle (spine_angle)";
+    if (name.includes("elbow")) return "Elbow Angle (elbow_angle)";
     return name;
   };
 
@@ -98,38 +98,38 @@ export function AiMetricsDashboard({
     });
   }, [angle, endDeg, frameIndex, liveRepCount, metrics, phase, startDeg]);
 
-  // Render phase badge text & style based on rest -> Bắt đầu, transition -> Di chuyển, active -> Tới đích
+  // Render phase badge text & style based on rest -> Start, transition -> Move, active -> Peak/Target
   const getPhaseBadge = (p: string) => {
     switch (p) {
       case "always":
         return {
-          bg: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 font-bold",
+          style: { background: "var(--color-recovery-soft)", color: "var(--color-recovery-strong)", borderColor: "var(--color-recovery)" },
           icon: <CheckCircle2 size={14} />,
-          label: "Giữ tư thế",
+          label: "Hold Pose",
         };
       case "moving_to_target":
         return {
-          bg: "bg-blue-500/20 text-blue-400 border-blue-500/40",
+          style: { background: "var(--color-action-soft)", color: "var(--color-action)", borderColor: "var(--color-action)" },
           icon: <Activity className="animate-pulse" size={14} />,
-          label: "Di chuyển",
+          label: "Moving",
         };
       case "target_reached":
         return {
-          bg: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 font-bold",
+          style: { background: "var(--color-recovery-soft)", color: "var(--color-recovery-strong)", borderColor: "var(--color-recovery)" },
           icon: <CheckCircle2 size={14} />,
-          label: "Tới đích",
+          label: "Target Reached",
         };
       case "moving_to_start":
         return {
-          bg: "bg-purple-500/20 text-purple-400 border-purple-500/40",
+          style: { background: "var(--color-effort-soft)", color: "var(--color-effort)", borderColor: "var(--color-effort)" },
           icon: <Activity className="animate-pulse" size={14} />,
-          label: "Quay về",
+          label: "Returning",
         };
       default:
         return {
-          bg: "bg-slate-700/50 text-slate-300 border-slate-600/40",
+          style: { background: "var(--color-surface-subtle)", color: "var(--color-text-muted)", borderColor: "var(--color-border)" },
           icon: <Target size={14} />,
-          label: "Bắt đầu",
+          label: "Start",
         };
     }
   };
@@ -137,27 +137,48 @@ export function AiMetricsDashboard({
   const badge = getPhaseBadge(phase);
 
   return (
-    <div className="w-full bg-slate-950/95 text-white backdrop-blur-xl border-t border-slate-800 p-4 md:p-5 space-y-4 shadow-2xl transition-all">
+    <div
+      className="w-full backdrop-blur-xl p-4 md:p-5 space-y-4 shadow-2xl transition-all"
+      style={{
+        background: "var(--color-surface)",
+        color: "var(--color-text)",
+        borderTop: "1px solid var(--color-border)",
+      }}
+    >
       {/* Top Bar: Exercise Info, Completed Rep Counter & Movement Phase Badge */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+      <div
+        className="flex flex-wrap items-center justify-between gap-2 pb-3"
+        style={{ borderBottom: "1px solid var(--color-border)" }}
+      >
         <div className="flex items-center gap-3">
-          <h3 className="font-bold text-base md:text-lg text-white flex items-center gap-2">
+          <h3 className="font-bold text-base md:text-lg flex items-center gap-2" style={{ color: "var(--color-text)" }}>
             <span>{exerciseName}</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-medium">
-              Hiệp {currentSet} / {totalSets}
+            <span
+              className="text-xs px-2.5 py-0.5 rounded-full font-medium"
+              style={{ background: "var(--color-surface-subtle)", color: "var(--color-text-muted)" }}
+            >
+              Set {currentSet} / {totalSets}
             </span>
           </h3>
 
           {/* Prominent Live Completed Rep Badge (5-stage FSM) */}
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-xs border border-emerald-500/40 shadow-sm animate-pulse">
-            <Flame className="text-emerald-400 fill-emerald-400" size={14} />
-            <span>Đã tập: {liveRepCount} / {targetReps} cái</span>
+          <div
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full font-extrabold text-xs shadow-sm border"
+            style={{
+              background: "var(--color-recovery-soft)",
+              color: "var(--color-recovery-strong)",
+              borderColor: "var(--color-recovery)",
+            }}
+          >
+            <Flame size={14} style={{ color: "var(--color-recovery)" }} />
+            <span>Reps: {liveRepCount} / {targetReps}</span>
           </div>
         </div>
 
         {/* Dynamic Movement Phase Pill */}
         <div
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${badge.bg}`}
+          className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border"
+          style={badge.style}
         >
           {badge.icon}
           <span>{badge.label}</span>
@@ -165,42 +186,62 @@ export function AiMetricsDashboard({
       </div>
 
       {/* 4-Column Real-time Telemetry Log Table */}
-      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-3.5 space-y-2">
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
-          <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+      <div
+        className="rounded-2xl p-3.5 space-y-2 border"
+        style={{
+          background: "var(--color-surface-subtle)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div
+          className="flex items-center justify-between pb-2"
+          style={{ borderBottom: "1px solid var(--color-border)" }}
+        >
+          <span
+            className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+            style={{ color: "var(--color-action)" }}
+          >
             <ListOrdered size={16} />
-            Bảng chỉ số AI 4 Cột & Đếm Rep (Thời gian thực)
+            AI 4-Column Telemetry & Rep Counter (Real-time)
           </span>
-          <span className="text-[11px] text-slate-400 font-mono">
-            {`10 frames mới nhất`}
+          <span className="text-[11px] font-mono" style={{ color: "var(--color-text-muted)" }}>
+            Latest 10 frames
           </span>
         </div>
 
         <div className="overflow-x-auto max-h-48 overflow-y-auto pr-1">
-          <table className="w-full text-left text-xs text-slate-300">
-            <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+          <table className="w-full text-left text-xs" style={{ color: "var(--color-text)" }}>
+            <tbody className="divide-y font-mono text-[11px]" style={{ borderColor: "var(--color-border)" }}>
               {logHistory.map((row) => {
                 const b = getPhaseBadge(row.phase);
                 return (
                   <tr
-                    className="hover:bg-slate-800/50 transition-colors"
+                    className="transition-colors"
                     key={row.frameIndex}
+                    style={{ borderBottom: "1px solid var(--color-border)" }}
                   >
-                    <td className="py-2 px-2.5 text-slate-300 font-semibold">
+                    <td className="py-2 px-2.5 font-semibold" style={{ color: "var(--color-text)" }}>
                       Frame #{row.frameIndex}
                     </td>
-                    <td className="py-2 px-2.5 text-amber-400 font-bold">
+                    <td className="py-2 px-2.5 font-bold" style={{ color: "var(--color-effort)" }}>
                       {row.metricName}: {row.userAngle}°
                     </td>
-                    <td className="py-2 px-2.5 text-slate-300">
-                      Đích: <span className="text-emerald-400 font-bold">≤{row.ruleAngle}°</span> | Đầu: &gt;{row.startDeg}°
+                    <td className="py-2 px-2.5" style={{ color: "var(--color-text-muted)" }}>
+                      Target: <span className="font-bold" style={{ color: "var(--color-recovery)" }}>≤{row.ruleAngle}°</span> | Start: &gt;{row.startDeg}°
                     </td>
                     <td className="py-2 px-2.5 flex items-center gap-2">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-semibold border ${b.bg}`}>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-semibold border" style={b.style}>
                         {b.label}
                       </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">
-                        {row.repCount} cái
+                      <span
+                        className="text-[10px] px-2 py-0.5 rounded font-bold border"
+                        style={{
+                          background: "var(--color-recovery-soft)",
+                          color: "var(--color-recovery-strong)",
+                          borderColor: "var(--color-recovery)",
+                        }}
+                      >
+                        {row.repCount} reps
                       </span>
                     </td>
                   </tr>
@@ -214,41 +255,69 @@ export function AiMetricsDashboard({
       {/* Secondary Cards: Live ROM & Rep Counter */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Card 1: Live Angle Summary */}
-        <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between">
-          <div className="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
-            <Gauge className="text-amber-400" size={15} />
+        <div
+          className="p-3 rounded-xl border flex items-center justify-between"
+          style={{
+            background: "var(--color-surface-subtle)",
+            borderColor: "var(--color-border)",
+          }}
+        >
+          <div className="text-xs flex items-center gap-1.5 font-medium" style={{ color: "var(--color-text-muted)" }}>
+            <Gauge size={15} style={{ color: "var(--color-effort)" }} />
             {formatMetricName(metricName)}
           </div>
-          <div className="text-xl font-bold text-amber-400">{angle}°</div>
+          <div className="text-xl font-bold" style={{ color: "var(--color-effort)" }}>{angle}°</div>
         </div>
 
         {/* Card 2: Live ROM % */}
-        <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between">
-          <div className="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
-            <Flame className="text-emerald-400" size={15} />
-            Biên độ (ROM)
+        <div
+          className="p-3 rounded-xl border flex items-center justify-between"
+          style={{
+            background: "var(--color-surface-subtle)",
+            borderColor: "var(--color-border)",
+          }}
+        >
+          <div className="text-xs flex items-center gap-1.5 font-medium" style={{ color: "var(--color-text-muted)" }}>
+            <Flame size={15} style={{ color: "var(--color-recovery)" }} />
+            Range of Motion (ROM)
           </div>
-          <div className="text-xl font-bold text-emerald-400">{rom}%</div>
+          <div className="text-xl font-bold" style={{ color: "var(--color-recovery)" }}>{rom}%</div>
         </div>
 
         {/* Card 3: Rep Counter & Finish Button */}
-        <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between gap-2">
+        <div
+          className="p-3 rounded-xl border flex items-center justify-between gap-2"
+          style={{
+            background: "var(--color-surface-subtle)",
+            borderColor: "var(--color-border)",
+          }}
+        >
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full border-2 border-emerald-500/40 text-white font-bold text-sm flex items-center justify-center">
+            <div
+              className="w-9 h-9 rounded-full border-2 font-bold text-sm flex items-center justify-center"
+              style={{
+                borderColor: "var(--color-recovery)",
+                color: "var(--color-text)",
+              }}
+            >
               {timed ? secondsLeft : liveRepCount}
             </div>
-            <div className="text-xs font-semibold text-slate-200">
+            <div className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>
               {timed ? `${secondsLeft}s` : `${liveRepCount} / ${targetReps} Reps`}
             </div>
           </div>
 
           <button
-            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow transition-all flex items-center gap-1"
+            className="px-3.5 py-1.5 rounded-lg font-bold text-xs shadow transition-all flex items-center gap-1 cursor-pointer"
             onClick={onDone}
+            style={{
+              background: "var(--color-action)",
+              color: "#ffffff",
+            }}
             type="button"
           >
             <CheckCircle2 size={15} />
-            <span>Hoàn thành</span>
+            <span>Complete Set</span>
           </button>
         </div>
       </div>

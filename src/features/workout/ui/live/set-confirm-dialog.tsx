@@ -4,6 +4,7 @@ import { Check, Clock, Dumbbell, Minus, Plus, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
+import { getFatigueLevel } from "@/features/workout/domain/pose-metrics";
 import { Button } from "@/shared/ui/button";
 
 export interface SetConfirmData {
@@ -77,7 +78,7 @@ export function SetConfirmDialog({
 
   return (
     <div
-      aria-label="Xác nhận số lượng hoàn thành"
+      aria-label="Confirm completed set"
       aria-modal="true"
       className={`live-sheet live-sheet--dialog ${isClosing ? "live-sheet--closing" : ""}`}
       role="dialog"
@@ -98,7 +99,7 @@ export function SetConfirmDialog({
       <div
         className="end-dialog set-confirm-dialog"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: "440px", width: "100%", padding: "24px", background: "#ffffff", borderRadius: "20px", boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3)", cursor: "default" }}
+        style={{ maxWidth: "440px", width: "100%", padding: "24px", background: "var(--color-surface)", borderRadius: "20px", boxShadow: "var(--shadow-float, 0 20px 25px -5px rgba(0, 0, 0, 0.3))", cursor: "default" }}
       >
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
@@ -109,12 +110,12 @@ export function SetConfirmDialog({
                 fontWeight: 600,
                 textTransform: "uppercase",
                 letterSpacing: "0.05em",
-                color: "var(--color-primary-500, #3b82f6)",
+                color: "var(--color-action)",
               }}
             >
-              Companion Companion · Set {currentSet}/{totalSets}
+              Companion · Set {currentSet}/{totalSets}
             </span>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, margin: "4px 0 0 0" }}>{exercise.name}</h2>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, margin: "4px 0 0 0", color: "var(--color-text)" }}>{exercise.name}</h2>
           </div>
           <button
             onClick={() => triggerClose()}
@@ -124,7 +125,7 @@ export function SetConfirmDialog({
               border: "none",
               cursor: "pointer",
               padding: "4px",
-              color: "var(--color-text-muted, #9ca3af)",
+              color: "var(--color-text-muted)",
             }}
           >
             <X size={20} />
@@ -140,26 +141,26 @@ export function SetConfirmDialog({
               gap: "6px",
               padding: "6px 12px",
               borderRadius: "20px",
-              background: "rgba(59, 130, 246, 0.12)",
-              color: "#3b82f6",
+              background: "var(--color-action-soft)",
+              color: "var(--color-action)",
               fontSize: "13px",
               fontWeight: 600,
               marginBottom: "16px",
             }}
           >
             <Sparkles size={14} />
-            AI đã đếm được: {aiCountedReps} reps
+            AI counted: {aiCountedReps} reps
           </div>
         )}
 
         {/* Quantity Controls */}
-        <div style={{ background: "var(--color-bg-subtle, #f3f4f6)", borderRadius: "16px", padding: "20px", marginBottom: "16px" }}>
+        <div style={{ background: "var(--color-surface-subtle)", borderRadius: "16px", padding: "20px", marginBottom: "16px" }}>
           {!timed ? (
             /* Reps Input */
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                <Dumbbell size={18} style={{ color: "#3b82f6" }} />
-                <span style={{ fontWeight: 600, fontSize: "15px" }}>Số Reps thực tế hoàn thành</span>
+                <Dumbbell size={18} style={{ color: "var(--color-action)" }} />
+                <span style={{ fontWeight: 600, fontSize: "15px", color: "var(--color-text)" }}>Actual Completed Reps</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
                 <button
@@ -169,8 +170,9 @@ export function SetConfirmDialog({
                     width: "44px",
                     height: "44px",
                     borderRadius: "50%",
-                    border: "1px solid #d1d5db",
-                    background: "#fff",
+                    border: "1px solid var(--color-border)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -192,8 +194,9 @@ export function SetConfirmDialog({
                     fontWeight: 800,
                     textAlign: "center",
                     borderRadius: "12px",
-                    border: "2px solid #3b82f6",
-                    background: "#fff",
+                    border: "2px solid var(--color-action)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                   }}
                 />
                 <button
@@ -203,8 +206,9 @@ export function SetConfirmDialog({
                     width: "44px",
                     height: "44px",
                     borderRadius: "50%",
-                    border: "1px solid #d1d5db",
-                    background: "#fff",
+                    border: "1px solid var(--color-border)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -226,8 +230,9 @@ export function SetConfirmDialog({
                     style={{
                       padding: "4px 12px",
                       borderRadius: "8px",
-                      background: "#fff",
-                      border: "1px solid #e5e7eb",
+                      background: "var(--color-surface)",
+                      border: "1px solid var(--color-border)",
+                      color: "var(--color-text)",
                       fontSize: "13px",
                       fontWeight: 600,
                       cursor: "pointer",
@@ -242,8 +247,8 @@ export function SetConfirmDialog({
             /* Time Input */
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-                <Clock size={18} style={{ color: "#10b981" }} />
-                <span style={{ fontWeight: 600, fontSize: "15px" }}>Thời gian thực tế tập (giây)</span>
+                <Clock size={18} style={{ color: "var(--color-recovery)" }} />
+                <span style={{ fontWeight: 600, fontSize: "15px", color: "var(--color-text)" }}>Actual Duration (seconds)</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
                 <button
@@ -253,8 +258,9 @@ export function SetConfirmDialog({
                     width: "44px",
                     height: "44px",
                     borderRadius: "50%",
-                    border: "1px solid #d1d5db",
-                    background: "#fff",
+                    border: "1px solid var(--color-border)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -274,8 +280,9 @@ export function SetConfirmDialog({
                     fontWeight: 800,
                     textAlign: "center",
                     borderRadius: "12px",
-                    border: "2px solid #10b981",
-                    background: "#fff",
+                    border: "2px solid var(--color-recovery)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                   }}
                 />
                 <button
@@ -285,8 +292,9 @@ export function SetConfirmDialog({
                     width: "44px",
                     height: "44px",
                     borderRadius: "50%",
-                    border: "1px solid #d1d5db",
-                    background: "#fff",
+                    border: "1px solid var(--color-border)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -306,8 +314,9 @@ export function SetConfirmDialog({
                     style={{
                       padding: "4px 12px",
                       borderRadius: "8px",
-                      background: "#fff",
-                      border: "1px solid #e5e7eb",
+                      background: "var(--color-surface)",
+                      border: "1px solid var(--color-border)",
+                      color: "var(--color-text)",
                       fontSize: "13px",
                       fontWeight: 600,
                       cursor: "pointer",
@@ -325,14 +334,14 @@ export function SetConfirmDialog({
         {(exercise.isWeighted || exercise.targetWeightKg > 0) && (
           <div
             style={{
-              background: "var(--color-bg-subtle, #f3f4f6)",
+              background: "var(--color-surface-subtle)",
               borderRadius: "16px",
               padding: "16px",
               marginBottom: "20px",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontWeight: 600, fontSize: "14px" }}>Mức tạ (kg)</span>
+              <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text)" }}>Weight (kg)</span>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <button
                   type="button"
@@ -341,8 +350,9 @@ export function SetConfirmDialog({
                     width: "32px",
                     height: "32px",
                     borderRadius: "50%",
-                    border: "1px solid #d1d5db",
-                    background: "#fff",
+                    border: "1px solid var(--color-border)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                     cursor: "pointer",
                   }}
                 >
@@ -360,7 +370,9 @@ export function SetConfirmDialog({
                     fontWeight: 700,
                     textAlign: "center",
                     borderRadius: "8px",
-                    border: "1px solid #d1d5db",
+                    border: "1px solid var(--color-border)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                   }}
                 />
                 <button
@@ -370,8 +382,9 @@ export function SetConfirmDialog({
                     width: "32px",
                     height: "32px",
                     borderRadius: "50%",
-                    border: "1px solid #d1d5db",
-                    background: "#fff",
+                    border: "1px solid var(--color-border)",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
                     cursor: "pointer",
                   }}
                 >
@@ -383,82 +396,80 @@ export function SetConfirmDialog({
         )}
 
         {/* Fatigue Level (0% - 100% scale) */}
-        <div
-          style={{
-            background: "var(--color-bg-subtle, #f8fafc)",
-            borderRadius: "16px",
-            padding: "16px",
-            marginBottom: "20px",
-            border: "1px solid var(--color-border, #e2e8f0)",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-            <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text-main, #1e293b)" }}>
-              Cảm nhận độ mệt mỏi
-            </span>
-            <span
+        {(() => {
+          const { color, label } = getFatigueLevel(fatiguePercent);
+          return (
+            <div
               style={{
-                fontWeight: 800,
-                fontSize: "15px",
-                color:
-                  fatiguePercent >= 85
-                    ? "#ef4444"
-                    : fatiguePercent >= 70
-                    ? "#f59e0b"
-                    : fatiguePercent >= 50
-                    ? "#10b981"
-                    : "#3b82f6",
+                background: "var(--color-surface-subtle)",
+                borderRadius: "16px",
+                padding: "16px",
+                marginBottom: "20px",
+                border: "1px solid var(--color-border)",
               }}
             >
-              {fatiguePercent}% {fatiguePercent >= 85 ? "(Hết sức)" : fatiguePercent >= 70 ? "(Mệt nhiều)" : fatiguePercent >= 50 ? "(Vừa sức)" : "(Nhẹ)"}
-            </span>
-          </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text)" }}>
+                  Perceived Exertion
+                </span>
+                <span
+                  style={{
+                    fontWeight: 800,
+                    fontSize: "15px",
+                    color,
+                  }}
+                >
+                  {fatiguePercent}% ({label})
+                </span>
+              </div>
 
-          {/* Slider */}
-          <input
-            type="range"
-            min="10"
-            max="100"
-            step="5"
-            value={fatiguePercent}
-            onChange={(e) => setFatiguePercent(parseInt(e.target.value, 10))}
-            style={{
-              width: "100%",
-              accentColor: "var(--color-primary-600, #2563eb)",
-              cursor: "pointer",
-              marginBottom: "10px",
-            }}
-          />
-
-          {/* Quick Presets */}
-          <div style={{ display: "flex", justifyContent: "space-between", gap: "6px" }}>
-            {[
-              { label: "40% (Nhẹ)", val: 40 },
-              { label: "60% (Vừa)", val: 60 },
-              { label: "80% (Nặng)", val: 80 },
-              { label: "100% (Max)", val: 100 },
-            ].map((p) => (
-              <button
-                key={p.val}
-                type="button"
-                onClick={() => setFatiguePercent(p.val)}
+              {/* Slider */}
+              <input
+                type="range"
+                min="10"
+                max="100"
+                step="5"
+                value={fatiguePercent}
+                onChange={(e) => setFatiguePercent(parseInt(e.target.value, 10))}
                 style={{
-                  flex: 1,
-                  padding: "6px 2px",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  border: fatiguePercent === p.val ? "2px solid #2563eb" : "1px solid #cbd5e1",
-                  background: fatiguePercent === p.val ? "#eff6ff" : "#ffffff",
-                  color: fatiguePercent === p.val ? "#1d4ed8" : "#64748b",
+                  width: "100%",
+                  accentColor: "var(--color-action)",
                   cursor: "pointer",
+                  marginBottom: "10px",
                 }}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        </div>
+              />
+
+              {/* Quick Presets */}
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "6px" }}>
+                {[
+                  { label: "Light (40%)", val: 40 },
+                  { label: "Moderate (60%)", val: 60 },
+                  { label: "High (80%)", val: 80 },
+                  { label: "Max (100%)", val: 100 },
+                ].map((p) => (
+                  <button
+                    key={p.val}
+                    type="button"
+                    onClick={() => setFatiguePercent(p.val)}
+                    style={{
+                      flex: 1,
+                      padding: "6px 2px",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      border: fatiguePercent === p.val ? "2px solid var(--color-action)" : "1px solid var(--color-border)",
+                      background: fatiguePercent === p.val ? "var(--color-action-soft)" : "var(--color-surface)",
+                      color: fatiguePercent === p.val ? "var(--color-action-ink)" : "var(--color-text-muted)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Action Buttons */}
         <div style={{ display: "flex", gap: "12px" }}>
@@ -469,14 +480,15 @@ export function SetConfirmDialog({
               flex: 1,
               height: "48px",
               borderRadius: "12px",
-              border: "1px solid #d1d5db",
-              background: "#fff",
+              border: "1px solid var(--color-border)",
+              background: "var(--color-surface)",
+              color: "var(--color-text)",
               fontWeight: 600,
               fontSize: "15px",
               cursor: "pointer",
             }}
           >
-            Tập lại
+            Retry Set
           </button>
           <Button
             onClick={handleConfirm}
@@ -485,7 +497,7 @@ export function SetConfirmDialog({
               flex: 2,
               height: "48px",
               borderRadius: "12px",
-              background: "var(--color-primary-600, #2563eb)",
+              background: "var(--color-action)",
               color: "#fff",
               fontWeight: 700,
               fontSize: "15px",
@@ -496,7 +508,7 @@ export function SetConfirmDialog({
             }}
           >
             <Check size={18} />
-            Xác nhận & Lưu Set
+            Confirm & Save Set
           </Button>
         </div>
       </div>

@@ -320,15 +320,15 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
       }
       // Fallback voice cue using TTS when audio MP3 cue is missing or exercise has no AI spec
       if (code === "set-start") {
-        const exName = exercise?.name || "bài tập";
+        const exName = exercise?.name || "exercise";
         const repsOrTime = exercise?.durationSeconds
-          ? `${exercise.durationSeconds} giây`
-          : `${exercise?.targetReps ?? 10} cái`;
+          ? `${exercise.durationSeconds} seconds`
+          : `${exercise?.targetReps ?? 10} reps`;
         const setNum = step?.setNumber ?? 1;
-        audio.speakText(`Bắt đầu hiệp ${setNum} bài ${exName}, mục tiêu ${repsOrTime}`);
+        audio.speakText(`Start set ${setNum} of ${exName}, target ${repsOrTime}`);
       } else if (code === "set-end") {
         const setNum = step?.setNumber ?? 1;
-        audio.speakText(`Hoàn thành hiệp ${setNum}! Hãy nghỉ ngơi.`);
+        audio.speakText(`Completed set ${setNum}! Take a rest.`);
       } else if (code.startsWith("rule-") || code.length > 0) {
         const msg = code.replace("rule-", "").replace(/-/g, " ");
         audio.speakText(msg);

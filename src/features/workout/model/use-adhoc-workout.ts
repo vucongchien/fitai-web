@@ -195,7 +195,7 @@ export function useAdhocWorkout() {
   const handleBeginSession = useCallback(() => {
     if (exerciseList.length === 0) {
       showToast({
-        message: "Vui lòng chọn ít nhất 1 bài tập trước khi bắt đầu buổi tập.",
+        message: "Please select at least 1 exercise before starting the workout session.",
         type: "error",
       });
       return;

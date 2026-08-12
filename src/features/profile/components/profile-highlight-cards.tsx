@@ -9,40 +9,76 @@ interface ProfileHighlightCardsProps {
 export function ProfileHighlightCards({ highlights }: ProfileHighlightCardsProps) {
   return (
     <div className="grid grid-cols-3 gap-2.5">
-      {/* Cân nặng hiện tại */}
-      <div className="flex flex-col items-center justify-center rounded-xl bg-white p-3 border border-neutral-200/60 text-center">
-        <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-[#EEF0FF] text-[#4B57F2]">
+      {/* Current Weight */}
+      <div
+        className="flex flex-col items-center justify-center rounded-xl p-3 border text-center"
+        style={{
+          background: "var(--color-surface)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div
+          className="mb-1 flex h-7 w-7 items-center justify-center rounded-full"
+          style={{
+            background: "var(--color-action-soft)",
+            color: "var(--color-action)",
+          }}
+        >
           <Scale className="h-3.5 w-3.5" />
         </div>
-        <span className="text-sm font-bold text-[#101214] font-mono">
+        <span className="text-sm font-bold font-mono" style={{ color: "var(--color-text)" }}>
           {highlights.currentWeightKg}{" "}
-          <span className="text-[11px] font-normal text-[#50565C]">kg</span>
+          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>kg</span>
         </span>
-        <span className="mt-0.5 text-[11px] text-[#50565C]">Weight</span>
+        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>Weight</span>
       </div>
 
-      {/* Tỉ lệ mỡ */}
-      <div className="flex flex-col items-center justify-center rounded-xl bg-white p-3 border border-neutral-200/60 text-center">
-        <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-[#FFF0ED] text-[#FF5A47]">
+      {/* Body Fat Percentage */}
+      <div
+        className="flex flex-col items-center justify-center rounded-xl p-3 border text-center"
+        style={{
+          background: "var(--color-surface)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div
+          className="mb-1 flex h-7 w-7 items-center justify-center rounded-full"
+          style={{
+            background: "var(--color-effort-soft)",
+            color: "var(--color-effort)",
+          }}
+        >
           <Activity className="h-3.5 w-3.5" />
         </div>
-        <span className="text-sm font-bold text-[#101214] font-mono">
+        <span className="text-sm font-bold font-mono" style={{ color: "var(--color-text)" }}>
           {highlights.bodyFatPercent}{" "}
-          <span className="text-[11px] font-normal text-[#50565C]">%</span>
+          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>%</span>
         </span>
-        <span className="mt-0.5 text-[11px] text-[#50565C]">Body Fat</span>
+        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>Body Fat</span>
       </div>
 
-      {/* Cân nặng mục tiêu */}
-      <div className="flex flex-col items-center justify-center rounded-xl bg-white p-3 border border-neutral-200/60 text-center">
-        <div className="mb-1 flex h-7 w-7 items-center justify-center rounded-full bg-[#EAFBF2] text-[#25C77A]">
+      {/* Target Weight */}
+      <div
+        className="flex flex-col items-center justify-center rounded-xl p-3 border text-center"
+        style={{
+          background: "var(--color-surface)",
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div
+          className="mb-1 flex h-7 w-7 items-center justify-center rounded-full"
+          style={{
+            background: "var(--color-recovery-soft)",
+            color: "var(--color-recovery)",
+          }}
+        >
           <Target className="h-3.5 w-3.5" />
         </div>
-        <span className="text-sm font-bold text-[#101214] font-mono">
+        <span className="text-sm font-bold font-mono" style={{ color: "var(--color-text)" }}>
           {highlights.targetWeightKg}{" "}
-          <span className="text-[11px] font-normal text-[#50565C]">kg</span>
+          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>kg</span>
         </span>
-        <span className="mt-0.5 text-[11px] text-[#50565C]">Target</span>
+        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>Target</span>
       </div>
     </div>
   );

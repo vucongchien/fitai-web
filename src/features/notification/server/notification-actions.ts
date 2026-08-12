@@ -30,7 +30,7 @@ export async function listNotificationsAction(
     const client = createClient(NotificationService, transport);
 
     const response = await client.listNotifications({
-      userId: "", // Backend tự động trích xuất userId từ token
+      userId: "", // Backend automatically extracts userId from token
       limit,
       offset,
     });
@@ -68,7 +68,7 @@ export async function markNotificationAsReadAction(notificationId: string): Prom
     const client = createClient(NotificationService, transport);
 
     const response = await client.markNotificationAsRead({
-      userId: "", // Backend tự động trích xuất userId từ token
+      userId: "", // Backend automatically extracts userId from token
       notificationId,
     });
 

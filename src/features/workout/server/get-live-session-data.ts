@@ -160,8 +160,8 @@ function adaptLiveSessionPlan({
   const weeklyCount = (sessionRes as any)?.weeklySessionCount || (sessionRes as any)?.totalWeeklySessions || 0;
   if (weeklyCount > 6) {
     protectionNote = {
-      title: "Cảnh báo tần suất tập",
-      description: `Bạn đang có ${weeklyCount} buổi tập trong tuần (vượt khuyến nghị 6 buổi/tuần). Hãy chú ý lắng nghe cơ thể và dành thời gian hồi phục.`,
+      title: "Workout Frequency Warning",
+      description: `You have ${weeklyCount} workout sessions this week (exceeding the recommended 6 sessions/week). Please listen to your body and prioritize recovery.`,
     };
   }
 

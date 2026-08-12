@@ -57,10 +57,10 @@ export function MotionSpecDialog({
             </div>
             <div>
               <h2 className="font-bold text-slate-900 text-base font-display">
-                Cập nhật AI Rules & File Giọng nói
+                Update AI Rules & Voice Files
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                Bài tập: <span className="font-bold text-indigo-600">{exerciseName && exerciseName !== exerciseId ? exerciseName : "Chưa có dữ liệu"}</span>
+                Exercise: <span className="font-bold text-indigo-600">{exerciseName && exerciseName !== exerciseId ? exerciseName : "No data"}</span>
               </p>
             </div>
           </div>
@@ -79,7 +79,7 @@ export function MotionSpecDialog({
           {isLoading ? (
             <div className="py-16 text-center text-xs font-semibold text-slate-500 space-y-2">
               <Sparkles className="size-8 animate-spin text-indigo-600 mx-auto" />
-              <p>Đang tải cấu hình AI Motion Specification & File Rule/Giọng nói...</p>
+              <p>Loading AI Motion Specification & Rule/Voice files...</p>
             </div>
           ) : spec ? (
             <MotionSpecEditor
@@ -91,7 +91,7 @@ export function MotionSpecDialog({
             />
           ) : (
             <div className="py-12 text-center text-xs text-slate-500">
-              Không thể tải dữ liệu cấu hình Motion Specification.
+              Failed to load Motion Specification configuration data.
             </div>
           )}
         </div>

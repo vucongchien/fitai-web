@@ -16,27 +16,27 @@ interface AdhocAiGeneratorModalProps {
 const QUICK_PROMPTS = [
   {
     label: "💪 Push Day",
-    text: "Tập ngực, vai trước và tay sau với tạ đơn",
+    text: "Chest, front delts, and triceps with dumbbells",
     duration: 45,
   },
   {
     label: "⚡ Pull & Core",
-    text: "Tập lưng xô, tay trước và bụng trong 45 phút",
+    text: "Back, biceps, and core in 45 minutes",
     duration: 45,
   },
   {
-    label: "🦵 Legs Thân Dưới",
-    text: "Tập đùi trước, đùi sau và cơ mông",
+    label: "🦵 Legs / Lower Body",
+    text: "Quads, hamstrings, and glutes",
     duration: 40,
   },
   {
     label: "🔥 Full Body 30m",
-    text: "Toàn thân nhanh gọn, kích hoạt mọi nhóm cơ chính",
+    text: "Quick full body workout activating all major muscle groups",
     duration: 30,
   },
   {
-    label: "🏨 Phòng Khách / Khách Sạn",
-    text: "Không cần dụng cụ phức tạp, tận dụng bodyweight và tạ đơn nhẹ",
+    label: "🏨 Hotel / Living Room",
+    text: "No equipment needed, bodyweight and light dumbbells",
     duration: 30,
   },
 ];
@@ -88,7 +88,7 @@ export function AdhocAiGeneratorModal({
       });
       setResult(res);
     } catch (err: any) {
-      setErrorMsg(err?.message || "Không thể tạo gợi ý lúc này. Vui lòng thử lại.");
+      setErrorMsg(err?.message || "Unable to generate workout recommendations right now. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -163,13 +163,13 @@ export function AdhocAiGeneratorModal({
           {/* Prompt Section */}
           <div className="ai-generator-field">
             <label htmlFor="ai-prompt-input">
-              <span>Bạn muốn tập gì hôm nay? (Nhập tự do)</span>
+              <span>What do you want to train today? (Free text)</span>
             </label>
             <div className="ai-textarea-wrapper">
               <textarea
                 id="ai-prompt-input"
                 className="ai-prompt-textarea"
-                placeholder="Ví dụ: Hôm nay tôi muốn tập ngực và tay sau trong 45 phút với tạ đơn, vai đang hơi mỏi nên tránh bài ép tạ qua đầu..."
+                placeholder="e.g. 45 min chest and triceps with dumbbells, shoulder is slightly tight so avoid heavy overhead presses..."
                 rows={3}
                 value={promptText}
                 onChange={(e) => setPromptText(e.target.value)}
@@ -182,8 +182,8 @@ export function AdhocAiGeneratorModal({
           <div className="ai-duration-section">
             <div className="ai-duration-header">
               <Clock size={15} />
-              <span>Thời lượng buổi tập:</span>
-              <strong>{durationMinutes} phút</strong>
+              <span>Workout Duration:</span>
+              <strong>{durationMinutes} min</strong>
             </div>
             <div className="ai-duration-pills">
               {DURATION_OPTIONS.map((mins) => (
@@ -203,7 +203,7 @@ export function AdhocAiGeneratorModal({
           {/* Quick Prompts Inspiration */}
           <div className="ai-quick-prompts-section">
             <span className="ai-section-label">
-              <Zap size={13} /> Gợi ý nhanh 1-chạm:
+              <Zap size={13} /> Quick 1-tap presets:
             </span>
             <div className="ai-quick-prompts-list">
               {QUICK_PROMPTS.map((item) => (
@@ -231,12 +231,12 @@ export function AdhocAiGeneratorModal({
               {isLoading ? (
                 <>
                   <Loader2 className="animate-spin" size={18} />
-                  <span>AI Coach đang phân tích & lên giáo án...</span>
+                  <span>AI Coach is analyzing & creating plan...</span>
                 </>
               ) : (
                 <>
                   <Sparkles size={18} />
-                  <span>{result ? "Tạo lại giáo án (Regenerate)" : "Tạo giáo án thông minh"}</span>
+                  <span>{result ? "Regenerate Plan" : "Generate Smart Workout"}</span>
                 </>
               )}
             </button>
@@ -267,7 +267,7 @@ export function AdhocAiGeneratorModal({
 
                 {result.muscleGroups && result.muscleGroups.length > 0 && (
                   <div className="ai-target-muscles">
-                    <span>Nhóm cơ kích hoạt:</span>
+                    <span>Target Muscles:</span>
                     <div className="ai-muscle-tags">
                       {result.muscleGroups.map((m) => (
                         <span key={m} className="ai-muscle-tag">
@@ -281,7 +281,7 @@ export function AdhocAiGeneratorModal({
 
               {/* Exercises Preview List */}
               <div className="ai-preview-list-header">
-                <h3>Danh sách bài tập gợi ý ({result.exercises.length} bài)</h3>
+                <h3>Recommended Exercises ({result.exercises.length})</h3>
               </div>
 
               <div className="ai-preview-exercise-list">
@@ -293,8 +293,8 @@ export function AdhocAiGeneratorModal({
                     <div className="ai-preview-item__info">
                       <strong>{ex.exerciseName}</strong>
                       <span>
-                        {ex.targetSets} hiệp × {ex.targetReps} reps
-                        {ex.targetWeight ? ` · ${ex.targetWeight} kg` : ""} · Nghỉ {ex.restSetSec}s
+                        {ex.targetSets} sets × {ex.targetReps} reps
+                        {ex.targetWeight ? ` · ${ex.targetWeight} kg` : ""} · Rest {ex.restSetSec}s
                       </span>
                       {ex.notes && <p className="ai-preview-item__note">{ex.notes}</p>}
                     </div>
@@ -312,7 +312,7 @@ export function AdhocAiGeneratorModal({
             onClick={onClose}
             type="button"
           >
-            Đóng
+            Close
           </button>
 
           {result && result.exercises.length > 0 && (
@@ -324,7 +324,7 @@ export function AdhocAiGeneratorModal({
                   type="button"
                 >
                   <Plus size={16} />
-                  Thêm tiếp ({result.exercises.length})
+                  Add to Routine ({result.exercises.length})
                 </button>
               )}
 
@@ -334,7 +334,7 @@ export function AdhocAiGeneratorModal({
                 type="button"
               >
                 <Check size={16} />
-                Áp dụng toàn bộ ({result.exercises.length})
+                Apply All ({result.exercises.length})
               </button>
             </div>
           )}

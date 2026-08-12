@@ -736,7 +736,7 @@ export function evaluateGenericRuleJson(
             (range.min === null && range.max !== null && value <= range.max)) {
           violations.push({
             code: rule.metric,
-            message: range.comment || rule.description || `Lỗi tư thế ${rule.metric}`,
+            message: range.comment || rule.description || `Form error: ${rule.metric}`,
             severity: range.severity,
           });
           break;
@@ -770,3 +770,16 @@ export function calibrationHint(
   }
   return "Framing looks good — you're ready.";
 }
+
+export interface FatigueLevel {
+  label: "Exhausted" | "High" | "Moderate" | "Light";
+  color: string;
+}
+
+export function getFatigueLevel(pct: number): FatigueLevel {
+  if (pct >= 85) return { label: "Exhausted", color: "var(--color-danger)" };
+  if (pct >= 70) return { label: "High", color: "var(--color-effort)" };
+  if (pct >= 50) return { label: "Moderate", color: "var(--color-recovery)" };
+  return { label: "Light", color: "var(--color-action)" };
+}
+

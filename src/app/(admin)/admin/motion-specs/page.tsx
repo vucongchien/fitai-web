@@ -99,10 +99,10 @@ export default function AdminMotionSpecsPage() {
             <span>AI Camera Coach & Engine Control (Workout Module)</span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight font-display">
-            Quản lý File Rule & File Giọng nói AI
+            AI Motion Rules & Voice Management
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Cấu hình file luật tư thế (`local_rules_url`), kịch bản giọng nói AI Coach (`dialogue_engine_url`) và các mô hình ONNX qua Admin Workout Service.
+            Configure pose rules (`local_rules_url`), AI Coach dialogue scripts (`dialogue_engine_url`), and ONNX models via Admin Workout Service.
           </p>
         </div>
 
@@ -113,7 +113,7 @@ export default function AdminMotionSpecsPage() {
           className="px-4 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
         >
           <RefreshCw className={`size-3.5 ${isLoading ? "animate-spin" : ""}`} />
-          <span>Làm mới dữ liệu Workout</span>
+          <span>Refresh Workout Data</span>
         </button>
       </div>
 
@@ -121,38 +121,38 @@ export default function AdminMotionSpecsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">Tổng Bài tập DB</span>
+            <span className="text-xs font-semibold">Total DB Exercises</span>
             <FileCode className="size-4 text-indigo-600" />
           </div>
           <p className="text-2xl font-bold text-slate-900 font-display">{stats.totalExercises}</p>
-          <p className="text-[11px] text-slate-500">Bài tập từ DB Workout Module</p>
+          <p className="text-[11px] text-slate-500">Exercises from Workout Module DB</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">File Rule Tư thế (.json)</span>
+            <span className="text-xs font-semibold">Pose Rules File (.json)</span>
             <FileJson className="size-4 text-amber-600" />
           </div>
           <p className="text-2xl font-bold text-amber-600 font-display">{stats.activePoseRules}</p>
-          <p className="text-[11px] text-slate-500">Đã nạp `local_rules_url`</p>
+          <p className="text-[11px] text-slate-500">Loaded `local_rules_url`</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">File Giọng nói & Audio</span>
+            <span className="text-xs font-semibold">Voice & Audio Files</span>
             <Mic className="size-4 text-indigo-600" />
           </div>
           <p className="text-2xl font-bold text-indigo-600 font-display">{stats.activeVoiceFiles}</p>
-          <p className="text-[11px] text-slate-500">Đã nạp `dialogue_engine_url`</p>
+          <p className="text-[11px] text-slate-500">Loaded `dialogue_engine_url`</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-1">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold">Sẵn sàng Tập luyện AI</span>
+            <span className="text-xs font-semibold">Ready for AI Workout</span>
             <CheckCircle2 className="size-4 text-emerald-600" />
           </div>
           <p className="text-2xl font-bold text-emerald-600 font-display">{stats.readyAiSpecs}</p>
-          <p className="text-[11px] text-slate-500">Đủ cả Rule & Giọng nói</p>
+          <p className="text-[11px] text-slate-500">Both Rule & Voice ready</p>
         </div>
       </div>
 
@@ -163,7 +163,7 @@ export default function AdminMotionSpecsPage() {
           <input
             id={`${fieldIdBase}-searchQuery`}
             type="text"
-            placeholder="Tìm kiếm bài tập theo tên hoặc ID qua API Search Workout Service..."
+            placeholder="Search exercises by name or ID via Workout Service..."
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -176,7 +176,7 @@ export default function AdminMotionSpecsPage() {
         <div className="flex items-center gap-3 text-xs flex-wrap">
           <div className="flex items-center gap-1.5 font-semibold text-slate-600">
             <SlidersHorizontal className="size-4 text-slate-400" />
-            <span>Kích thước trang:</span>
+            <span>Page size:</span>
             <select
               value={pageSize}
               onChange={(e) => {
@@ -185,10 +185,10 @@ export default function AdminMotionSpecsPage() {
               }}
               className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 font-bold text-indigo-600 focus:outline-hidden cursor-pointer"
             >
-              <option value={10}>10 bài tập / trang</option>
-              <option value={20}>20 bài tập / trang</option>
-              <option value={30}>30 bài tập / trang</option>
-              <option value={50}>50 bài tập / trang</option>
+              <option value={10}>10 items / page</option>
+              <option value={20}>20 items / page</option>
+              <option value={30}>30 items / page</option>
+              <option value={50}>50 items / page</option>
             </select>
           </div>
 
@@ -199,7 +199,7 @@ export default function AdminMotionSpecsPage() {
               onClick={() => setCurrentPage(1)}
               disabled={validCurrentPage <= 1}
               className="p-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 disabled:opacity-30 cursor-pointer shadow-2xs"
-              title="Trang đầu"
+              title="First page"
             >
               <ChevronsLeft className="size-4" />
             </button>
@@ -209,13 +209,13 @@ export default function AdminMotionSpecsPage() {
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               disabled={validCurrentPage <= 1}
               className="p-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 disabled:opacity-30 cursor-pointer shadow-2xs"
-              title="Trang trước"
+              title="Previous page"
             >
               <ChevronLeft className="size-4" />
             </button>
 
             <span className="px-3 py-1 font-bold text-indigo-600 text-xs">
-              Trang {validCurrentPage} / {totalPages}
+              Page {validCurrentPage} / {totalPages}
             </span>
 
             <button
@@ -223,7 +223,7 @@ export default function AdminMotionSpecsPage() {
               onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
               disabled={validCurrentPage >= totalPages}
               className="p-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 disabled:opacity-30 cursor-pointer shadow-2xs"
-              title="Trang sau"
+              title="Next page"
             >
               <ChevronRight className="size-4" />
             </button>
@@ -233,7 +233,7 @@ export default function AdminMotionSpecsPage() {
               onClick={() => setCurrentPage(totalPages)}
               disabled={validCurrentPage >= totalPages}
               className="p-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 disabled:opacity-30 cursor-pointer shadow-2xs"
-              title="Trang cuối"
+              title="Last page"
             >
               <ChevronsRight className="size-4" />
             </button>
@@ -246,12 +246,12 @@ export default function AdminMotionSpecsPage() {
         {isLoading ? (
           <div className="py-20 text-center text-xs text-slate-500 space-y-2">
             <Sparkles className="size-8 animate-bounce text-indigo-600 mx-auto" />
-            <p>Đang tải danh sách Motion Specs từ Workout Service...</p>
+            <p>Loading Motion Specs list from Workout Service...</p>
           </div>
         ) : specs.length === 0 ? (
           <div className="py-16 text-center text-xs text-slate-500 space-y-2">
-            <p className="font-bold text-slate-700">Không tìm thấy bài tập nào khớp từ khóa "{searchQuery}"</p>
-            <p>Thử tìm kiếm với từ khóa khác hoặc xóa bộ lọc.</p>
+            <p className="font-bold text-slate-700">No exercises found matching "{searchQuery}"</p>
+            <p>Try searching with a different keyword or clear filters.</p>
           </div>
         ) : (
           <div>
@@ -259,12 +259,12 @@ export default function AdminMotionSpecsPage() {
               <table className="w-full text-left text-xs border-collapse">
                 <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider">
                   <tr>
-                    <th className="p-4">Bài Tập</th>
-                    <th className="p-4">File Rule Tư Thế</th>
-                    <th className="p-4">File Giọng Nói AI</th>
-                    <th className="p-4">Góc Camera</th>
-                    <th className="p-4">Trạng Thái AI</th>
-                    <th className="p-4 text-right">Thao Tác</th>
+                    <th className="p-4">Exercise</th>
+                    <th className="p-4">Pose Rules File</th>
+                    <th className="p-4">AI Voice File</th>
+                    <th className="p-4">Camera Angle</th>
+                    <th className="p-4">AI Status</th>
+                    <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -278,7 +278,7 @@ export default function AdminMotionSpecsPage() {
                           <div className="font-bold text-slate-900 text-sm font-display">
                             {item.exerciseName && item.exerciseName !== item.exerciseId
                               ? item.exerciseName
-                              : "Chưa có dữ liệu"}
+                              : "No data"}
                           </div>
                           <div className="text-[11px] text-slate-400 font-mono">ID: {item.exerciseId}</div>
                         </td>
@@ -293,7 +293,7 @@ export default function AdminMotionSpecsPage() {
                             </div>
                           ) : (
                             <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 font-semibold text-[11px] border border-slate-200">
-                              Chưa có dữ liệu
+                              No data
                             </span>
                           )}
                         </td>
@@ -308,7 +308,7 @@ export default function AdminMotionSpecsPage() {
                             </div>
                           ) : (
                             <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 font-semibold text-[11px] border border-slate-200">
-                              Chưa có dữ liệu
+                              No data
                             </span>
                           )}
                         </td>
@@ -319,7 +319,7 @@ export default function AdminMotionSpecsPage() {
                               {item.recommendedCameraAngle}
                             </span>
                           ) : (
-                            <span className="text-[11px] text-slate-400 font-medium">Chưa có dữ liệu</span>
+                            <span className="text-[11px] text-slate-400 font-medium">No data</span>
                           )}
                         </td>
 
@@ -330,7 +330,7 @@ export default function AdminMotionSpecsPage() {
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 text-[11px] font-medium border border-slate-200">
-                              Thiếu dữ liệu
+                              Missing data
                             </span>
                           )}
                         </td>
@@ -342,7 +342,7 @@ export default function AdminMotionSpecsPage() {
                             className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
                           >
                             <Sparkles className="size-3.5" />
-                            <span>Cập nhật Rules & Voice</span>
+                            <span>Update Rules & Voice</span>
                           </button>
                         </td>
                       </tr>
@@ -355,9 +355,9 @@ export default function AdminMotionSpecsPage() {
             {/* Bottom Pagination Controls Bar */}
             <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-wrap gap-3 text-xs">
               <div className="text-slate-500 font-medium">
-                Hiển thị <span className="font-bold text-slate-900">{totalCount > 0 ? startIndex + 1 : 0}</span> đến{" "}
-                <span className="font-bold text-slate-900">{endIndex}</span> trong tổng số{" "}
-                <span className="font-bold text-indigo-600">{totalCount}</span> bài tập (Workout Module)
+                Showing <span className="font-bold text-slate-900">{totalCount > 0 ? startIndex + 1 : 0}</span> to{" "}
+                <span className="font-bold text-slate-900">{endIndex}</span> of{" "}
+                <span className="font-bold text-indigo-600">{totalCount}</span> exercises (Workout Module)
               </div>
 
               <div className="flex items-center gap-1">
@@ -366,7 +366,7 @@ export default function AdminMotionSpecsPage() {
                   onClick={() => setCurrentPage(1)}
                   disabled={validCurrentPage <= 1}
                   className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 transition-colors disabled:opacity-40 cursor-pointer"
-                  title="Trang đầu"
+                  title="First page"
                 >
                   <ChevronsLeft className="size-4" />
                 </button>
@@ -376,13 +376,13 @@ export default function AdminMotionSpecsPage() {
                   onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                   disabled={validCurrentPage <= 1}
                   className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 transition-colors disabled:opacity-40 cursor-pointer"
-                  title="Trang trước"
+                  title="Previous page"
                 >
                   <ChevronLeft className="size-4" />
                 </button>
 
                 <div className="px-3 py-1 font-bold text-slate-700 bg-white border border-slate-200 rounded-lg">
-                  Trang {validCurrentPage} / {totalPages}
+                  Page {validCurrentPage} / {totalPages}
                 </div>
 
                 <button
@@ -390,7 +390,7 @@ export default function AdminMotionSpecsPage() {
                   onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                   disabled={validCurrentPage >= totalPages}
                   className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 transition-colors disabled:opacity-40 cursor-pointer"
-                  title="Trang sau"
+                  title="Next page"
                 >
                   <ChevronRight className="size-4" />
                 </button>
@@ -400,7 +400,7 @@ export default function AdminMotionSpecsPage() {
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={validCurrentPage >= totalPages}
                   className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 transition-colors disabled:opacity-40 cursor-pointer"
-                  title="Trang cuối"
+                  title="Last page"
                 >
                   <ChevronsRight className="size-4" />
                 </button>

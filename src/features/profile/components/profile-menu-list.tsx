@@ -77,7 +77,7 @@ export function ProfileMenuList({ profile, onOpenModal }: ProfileMenuListProps) 
         </button>
       </div>
 
-      {/* 2. Training Goals (Tách riêng) */}
+      {/* 2. Training Goals (Dedicated) */}
       <div className="py-3 border-b border-neutral-200">
         <button
           onClick={() => onOpenModal("GOALS")}
@@ -100,7 +100,7 @@ export function ProfileMenuList({ profile, onOpenModal }: ProfileMenuListProps) 
         </button>
       </div>
 
-      {/* 3. Available Equipment (Tách riêng) */}
+      {/* 3. Available Equipment (Dedicated) */}
       <div className="py-3 border-b border-neutral-200">
         <button
           onClick={() => onOpenModal("EQUIPMENT")}

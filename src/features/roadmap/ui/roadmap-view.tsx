@@ -55,19 +55,19 @@ export function RoadmapView({ data }: RoadmapViewProps) {
       <div className="roadmap-layout mt-4">
         <section className="content-section">
           <FeedbackState
-            title={isNoRoadmap ? "Lộ trình tập luyện chưa được thiết lập" : "Lỗi kết nối máy chủ"}
+            title={isNoRoadmap ? "Workout roadmap not configured yet" : "Server connection error"}
             description={
               isNoRoadmap
-                ? "Vui lòng cập nhật Onboarding Profile của bạn để AI Coach phân tích thể trạng và tự động thiết kế lộ trình tập luyện cá nhân hóa."
-                : "Đã xảy ra sự cố kết nối tới máy chủ gRPC. Vui lòng kiểm tra lại cấu hình hoặc kết nối mạng và thử lại."
+                ? "Please update your Onboarding Profile so AI Coach can analyze your fitness level and automatically generate a personalized workout roadmap."
+                : "A connection issue occurred while communicating with the server. Please check your network connection and try again."
             }
             tone={isNoRoadmap ? "empty" : "error"}
             actionLabel={
               isPending
-                ? "Đang tạo lộ trình..."
+                ? "Generating roadmap..."
                 : (isNoRoadmap
-                ? "Nhấn để tạo lộ trình"
-                : "Nhấn để thử lại")
+                ? "Click to generate roadmap"
+                : "Click to retry")
             }
             onActionClick={isNoRoadmap ? handleCreateRoadmap : handleRetry}
           />

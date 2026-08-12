@@ -327,7 +327,7 @@ function BodyMetricsForm({
 }
 
 /* ==========================================
-   FORM 2: TRAINING GOALS (Tách riêng)
+   FORM 2: TRAINING GOALS (Dedicated)
    ========================================== */
 function GoalsForm({
   profile,
@@ -527,7 +527,7 @@ function GoalsForm({
 }
 
 /* ==========================================
-   FORM 3: AVAILABLE EQUIPMENT (Tách riêng)
+   FORM 3: AVAILABLE EQUIPMENT (Dedicated)
    ========================================== */
 function EquipmentForm({
   profile,

@@ -129,7 +129,7 @@ export async function getAiRecommendation(
   const userId = await getAuthenticatedUserId();
 
   if (!accessToken || !userId) {
-    throw new Error("Vui lòng đăng nhập để sử dụng tính năng gợi ý từ AI Coach.");
+    throw new Error("Please log in to use AI Coach recommendations.");
   }
 
   const transport = createServerTransport(accessToken);
@@ -156,7 +156,7 @@ export async function getAiRecommendation(
 
   return {
     muscleGroups: res.muscleGroups || [],
-    reasoning: res.reasoning || "AI Coach đã thiết kế buổi tập dựa trên mục tiêu của bạn.",
+    reasoning: res.reasoning || "AI Coach tailored this workout based on your goals.",
     estimatedRpe: res.estimatedRpe || 7.0,
     exercises: mainEx.map((ex) => ({
       exerciseId: ex.exerciseId,
@@ -174,7 +174,7 @@ export async function getAiRecommendation(
       exerciseName: ex.exerciseName,
       targetSets: ex.targetSets || 2,
       targetReps: ex.targetReps || 15,
-      notes: ex.notes || "Khởi động",
+      notes: ex.notes || "Warm-up",
       restSetSec: ex.restSetSec || 45,
     })),
     coolDowns: coolDowns.map((ex) => ({
@@ -182,7 +182,7 @@ export async function getAiRecommendation(
       exerciseName: ex.exerciseName,
       targetSets: ex.targetSets || 2,
       targetReps: ex.targetReps || 12,
-      notes: ex.notes || "Giãn cơ hạ nhiệt",
+      notes: ex.notes || "Cool-down",
       restSetSec: ex.restSetSec || 30,
     })),
   };
@@ -200,7 +200,7 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
   const userId = await getAuthenticatedUserId();
 
   if (!accessToken || !userId) {
-    throw new Error("Vui lòng đăng nhập để bắt đầu buổi tập.");
+    throw new Error("Please log in to start a workout session.");
   }
 
   const transport = createServerTransport(accessToken);
