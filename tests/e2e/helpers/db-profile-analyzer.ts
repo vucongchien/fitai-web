@@ -50,6 +50,8 @@ export function seedProfileAndRoadmapForTest(userId: string = "00000000-0000-000
     DELETE FROM profile.injuries WHERE user_id = '${userId}';
     DELETE FROM profile.users WHERE user_id = '${userId}';
     DELETE FROM profile.outbox WHERE payload::text LIKE '%${userId}%';
+    DELETE FROM workout_execution.workout_sessions WHERE user_id = '${userId}';
+    DELETE FROM workout_execution.outbox WHERE payload::text LIKE '%${userId}%';
     DELETE FROM coaching.session_plans WHERE user_id = '${userId}';
     DELETE FROM coaching.day_plans WHERE user_id = '${userId}';
     DELETE FROM coaching.week_plans WHERE user_id = '${userId}';
@@ -78,7 +80,7 @@ export function seedProfileAndRoadmapForTest(userId: string = "00000000-0000-000
     );
 
     INSERT INTO profile.body_metrics (id, user_id, weight_kg, height_cm, body_fat_percent, logged_at)
-    VALUES ('bm_e2e_${userId}_1', '${userId}', 70.0, 175.0, 18.5, NOW());
+    VALUES ('11111111-1111-1111-1111-111111111111', '${userId}', 70.0, 175.0, 18.5, NOW());
 
     -- 3. Seed Roadmap với 1 Completed Plan (hôm qua) và 1 Pending Plan (hôm nay)
     INSERT INTO coaching.roadmaps (roadmap_id, user_id, status, start_date, end_date, created_at, updated_at)
@@ -265,4 +267,110 @@ export function analyzeProfileDatabase(
     gaps,
     findings,
   };
+}
+
+/**
+ * Seed an active injury for testing Injury Recover flow
+ */
+export function seedActiveInjury(
+  userId: string = "00000000-0000-0000-0000-000000000001",
+  injuryId: string = "22222222-2222-2222-2222-222222222222",
+  muscleGroup: string = "Knee",
+) {
+  const sql = `
+    INSERT INTO profile.injuries (id, user_id, muscle_group, severity, notes, is_recovered, reported_at)
+    VALUES ('${injuryId}', '${userId}', '${muscleGroup}', 'MODERATE', 'Patellar tendinitis', false, NOW())
+    ON CONFLICT (id) DO UPDATE SET is_recovered = false, recovered_at = NULL;
+  `;
+  execSql(sql);
+  console.log(`🩹 [DB Profile Cleaner] Seeded active injury '${injuryId}' on '${muscleGroup}' for ${userId}`);
+}
+
+/**
+ * Gap Analysis for Injury Recovery Flow
+ */
+export function analyzeInjuryRecovery(
+  userId: string = "00000000-0000-0000-0000-000000000001",
+  muscleGroup: string = "Knee",
+): { gaps: string[]; findings: string[]; recoveredInjury: any; outboxEvent: any } {
+  console.log(`\n================================================================`);
+  console.log(`🔍 [DB Profile Analyzer] GAP ANALYSIS FOR INJURY RECOVERY (${userId})`);
+  console.log(`================================================================`);
+
+  const injuries = queryJson(
+    `SELECT * FROM profile.injuries WHERE user_id = '${userId}' AND muscle_group = '${muscleGroup}' ORDER BY reported_at DESC`,
+  );
+  const outboxEvents = queryJson(
+    `SELECT * FROM profile.outbox WHERE payload::text LIKE '%${userId}%' ORDER BY created_at DESC`,
+  );
+
+  const gaps: string[] = [];
+  const findings: string[] = [];
+
+  const recovered = injuries[0] || null;
+  if (!recovered) {
+    gaps.push(`[GAP-RECOV-01] Không tìm thấy bản ghi chấn thương cho ${muscleGroup}`);
+  } else if (!recovered.is_recovered) {
+    gaps.push(`[GAP-RECOV-02] Trạng thái is_recovered chưa chuyển sang true cho ${muscleGroup}`);
+  } else {
+    findings.push(`✅ [Injury Recovered in DB] Chấn thương ${muscleGroup} đã được đánh dấu is_recovered=true (recovered_at: ${recovered.recovered_at})`);
+  }
+
+  const recEvent = outboxEvents.find(
+    (e) => e.event_type.includes("injuryRecovered") || e.event_type.includes("InjuryRecovered"),
+  );
+  if (!recEvent) {
+    gaps.push(`[GAP-RECOV-03] Thiếu sự kiện Outbox 'InjuryRecovered' trong profile.outbox`);
+  } else {
+    findings.push(`✅ [InjuryRecovered Event Emitted] Event ID: ${recEvent.event_id} | Type: ${recEvent.event_type}`);
+  }
+
+  findings.forEach((f) => console.log(f));
+  gaps.forEach((g) => console.log(`❌ ${g}`));
+  console.log(`================================================================\n`);
+
+  return { gaps, findings, recoveredInjury: recovered, outboxEvent: recEvent };
+}
+
+/**
+ * Gap Analysis for Workout Session Abort & History Preservation
+ */
+export function analyzeWorkoutAbortAndHistory(
+  userId: string = "00000000-0000-0000-0000-000000000001",
+  abortedSessionPlanId: string = "sp_e2e_prof_pending_00000000-0000-0000-0000-000000000001",
+): { gaps: string[]; findings: string[]; abortedSession: any; pastCompletedSessions: any[] } {
+  console.log(`\n================================================================`);
+  console.log(`🔍 [DB Profile Analyzer] GAP ANALYSIS FOR WORKOUT ABORT & D3 INVARIANT (${userId})`);
+  console.log(`================================================================`);
+
+  const sessions = queryJson(`SELECT * FROM coaching.session_plans WHERE user_id = '${userId}' ORDER BY scheduled_date ASC`);
+  const gaps: string[] = [];
+  const findings: string[] = [];
+
+  const aborted = sessions.find((s) => s.session_plan_id === abortedSessionPlanId) || null;
+  const pastCompleted = sessions.filter((s) => s.scheduled_date < (new Date().toISOString().split("T")[0]));
+
+  if (!aborted) {
+    gaps.push(`[GAP-ABORT-01] Không tìm thấy session ${abortedSessionPlanId} trong coaching.session_plans`);
+  } else if (aborted.status !== "ABORTED" && aborted.status !== "PENDING") {
+    findings.push(`ℹ️ [Session Status] Session ${abortedSessionPlanId} status is: ${aborted.status}`);
+  } else {
+    findings.push(`✅ [Session Plan Found] Session: ${abortedSessionPlanId} | Status: ${aborted.status}`);
+  }
+
+  // D3 Invariant Check
+  if (pastCompleted.length > 0) {
+    const untouched = pastCompleted.every((s) => s.status === "COMPLETED");
+    if (!untouched) {
+      gaps.push(`[GAP-ABORT-02] Dữ liệu lịch sử bị thay đổi sai lệch (Vi phạm nguyên tắc D3)`);
+    } else {
+      findings.push(`✅ [Rule D3 Invariant] Tất cả ${pastCompleted.length} buổi tập quá khứ giữ nguyên status COMPLETED`);
+    }
+  }
+
+  findings.forEach((f) => console.log(f));
+  gaps.forEach((g) => console.log(`❌ ${g}`));
+  console.log(`================================================================\n`);
+
+  return { gaps, findings, abortedSession: aborted, pastCompletedSessions: pastCompleted };
 }

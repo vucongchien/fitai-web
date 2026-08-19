@@ -135,3 +135,147 @@ describe(countLoggedDays, () => {
     expect(countLoggedDays([], "2026-08-06", 7)).toBe(0);
   });
 });
+
+describe("normalizeTodayMenu with real DB JSON payload", () => {
+  const realDbJson = [
+    {
+      options: [
+        {
+          calories: 908.0084999999999,
+          carbGrams: 39.9,
+          cookingSteps: [
+            "Boil the chicken eggs in a pot of water for 10 minutes until hard-boiled, then peel and slice.",
+            "Warm up the brown rice in a microwave or pan.",
+            "Steam the broccoli florets for 4-5 minutes until tender-crisp.",
+            "Assemble everything on a plate and season with a pinch of black pepper and olive oil.",
+          ],
+          fatGrams: 6.38,
+          ingredients: [
+            { grams: 150, ingredientName: "Chicken Eggs", isSupplementary: false },
+            { grams: 200, ingredientName: "Cơm gạo lứt luộc", isSupplementary: false },
+            { grams: 120, ingredientName: "Bông cải xanh (Broccoli)", isSupplementary: false },
+            { grams: 5, ingredientName: "Olive oil", isSupplementary: false },
+            { grams: 1, ingredientName: "Black pepper", isSupplementary: false },
+          ],
+          isLogged: false,
+          isNutiFoodProduct: false,
+          mealName: "Boiled Eggs with Brown Rice and Steamed Broccoli",
+          optionId: "b2f28d6b-1e4f-4f33-bb4b-812ae9314cc3",
+          proteinGrams: 17.68,
+        },
+      ],
+      mealType: "Breakfast",
+      scheduledTime: "12:00",
+    },
+    {
+      options: [
+        {
+          calories: 908.0084999999999,
+          carbGrams: 48,
+          cookingSteps: [
+            "Crack the chicken eggs into a bowl, whisk well, and scramble them in a non-stick pan with a touch of olive oil.",
+            "Peel and slice the pre-boiled sweet potato.",
+            "Blanch the broccoli in boiling water for 3 minutes.",
+            "Serve the scrambled eggs alongside the sweet potato and broccoli.",
+          ],
+          fatGrams: 6.58,
+          ingredients: [
+            { grams: 150, ingredientName: "Chicken Eggs", isSupplementary: false },
+            { grams: 200, ingredientName: "Khoai lang mật luộc", isSupplementary: false },
+            { grams: 120, ingredientName: "Bông cải xanh (Broccoli)", isSupplementary: false },
+            { grams: 5, ingredientName: "Olive oil", isSupplementary: false },
+            { grams: 1, ingredientName: "Salt", isSupplementary: false },
+          ],
+          isLogged: false,
+          isNutiFoodProduct: false,
+          mealName: "Scrambled Eggs with Boiled Sweet Potato and Broccoli",
+          optionId: "9e459430-d240-47e7-a7e8-f4182abcdd26",
+          proteinGrams: 16.4,
+        },
+      ],
+      mealType: "Lunch",
+      scheduledTime: "12:00",
+    },
+    {
+      options: [
+        {
+          calories: 908.0084999999999,
+          carbGrams: 39.9,
+          cookingSteps: [
+            "Boil the chicken eggs in a pot of water for 10 minutes until hard-boiled, then peel and slice.",
+            "Warm up the brown rice in a microwave or pan.",
+            "Steam the broccoli florets for 4-5 minutes until tender-crisp.",
+            "Assemble everything on a plate and season with a pinch of black pepper and olive oil.",
+          ],
+          fatGrams: 6.38,
+          ingredients: [
+            { grams: 150, ingredientName: "Chicken Eggs", isSupplementary: false },
+            { grams: 200, ingredientName: "Cơm gạo lứt luộc", isSupplementary: false },
+            { grams: 120, ingredientName: "Bông cải xanh (Broccoli)", isSupplementary: false },
+            { grams: 5, ingredientName: "Olive oil", isSupplementary: false },
+            { grams: 1, ingredientName: "Black pepper", isSupplementary: false },
+          ],
+          isLogged: false,
+          isNutiFoodProduct: false,
+          mealName: "Boiled Eggs with Brown Rice and Steamed Broccoli",
+          optionId: "b2f28d6b-1e4f-4f33-bb4b-812ae9314cc3",
+          proteinGrams: 17.68,
+        },
+      ],
+      mealType: "Dinner",
+      scheduledTime: "12:00",
+    },
+    {
+      options: [
+        {
+          calories: 908.0084999999999,
+          carbGrams: 48,
+          cookingSteps: [
+            "Crack the chicken eggs into a bowl, whisk well, and scramble them in a non-stick pan with a touch of olive oil.",
+            "Peel and slice the pre-boiled sweet potato.",
+            "Blanch the broccoli in boiling water for 3 minutes.",
+            "Serve the scrambled eggs alongside the sweet potato and broccoli.",
+          ],
+          fatGrams: 6.58,
+          ingredients: [
+            { grams: 150, ingredientName: "Chicken Eggs", isSupplementary: false },
+            { grams: 200, ingredientName: "Khoai lang mật luộc", isSupplementary: false },
+            { grams: 120, ingredientName: "Bông cải xanh (Broccoli)", isSupplementary: false },
+            { grams: 5, ingredientName: "Olive oil", isSupplementary: false },
+            { grams: 1, ingredientName: "Salt", isSupplementary: false },
+          ],
+          isLogged: false,
+          isNutiFoodProduct: false,
+          mealName: "Scrambled Eggs with Boiled Sweet Potato and Broccoli",
+          optionId: "9e459430-d240-47e7-a7e8-f4182abcdd26",
+          proteinGrams: 16.4,
+        },
+      ],
+      mealType: "Snack",
+      scheduledTime: "12:00",
+    },
+  ];
+
+  it("correctly normalizes all 4 separate slots without bundling into snack", () => {
+    const normalized = groupMealsBySlot([], "2026-08-06", realDbJson);
+
+    expect(normalized).toHaveLength(4);
+
+    const bf = normalized.find((g) => g.slot === "breakfast");
+    const lu = normalized.find((g) => g.slot === "lunch");
+    const dn = normalized.find((g) => g.slot === "dinner");
+    const sn = normalized.find((g) => g.slot === "snack");
+
+    expect(bf?.plannedMeal?.name).toBe("Boiled Eggs with Brown Rice and Steamed Broccoli");
+    expect(bf?.plannedMeal?.scheduledTime).toBe("12:00");
+    expect(bf?.plannedMeal?.ingredients).toHaveLength(5);
+    expect(bf?.plannedMeal?.cookingSteps).toHaveLength(4);
+
+    expect(lu?.plannedMeal?.name).toBe("Scrambled Eggs with Boiled Sweet Potato and Broccoli");
+    expect(lu?.plannedMeal?.scheduledTime).toBe("12:00");
+    expect(lu?.plannedMeal?.ingredients).toHaveLength(5);
+
+    expect(dn?.plannedMeal?.name).toBe("Boiled Eggs with Brown Rice and Steamed Broccoli");
+    expect(sn?.plannedMeal?.name).toBe("Scrambled Eggs with Boiled Sweet Potato and Broccoli");
+  });
+});

@@ -41,11 +41,49 @@ export interface LoggedMeal {
   time: string | null;
 }
 
+export interface MealIngredient {
+  grams: number;
+  ingredientName: string;
+  isSupplementary?: boolean;
+}
+
+export interface MealOptionRow {
+  calories: number;
+  carbs: number;
+  cookingSteps: string[];
+  description: string;
+  fat: number;
+  ingredients: MealIngredient[];
+  isLogged?: boolean;
+  isNutiFoodProduct?: boolean;
+  mealName: string;
+  optionId?: string;
+  priceTier: string;
+  protein: number;
+  recipeSteps: string[];
+  scheduledTime?: string;
+}
+
+export interface PlannedMealInfo {
+  calories: number;
+  carbs?: number;
+  cookingSteps?: string[];
+  fat?: number;
+  ingredients?: MealIngredient[];
+  isLogged?: boolean;
+  name: string;
+  optionId?: string;
+  options?: MealOptionRow[];
+  protein?: number;
+  scheduledTime?: string;
+}
+
 export interface MealSlotGroup {
   calories: number;
   label: string;
   meals: LoggedMeal[];
-  plannedMeal?: { name: string; calories: number } | null;
+  plannedMeal?: PlannedMealInfo | null;
+  scheduledTime?: string;
   slot: MealSlot;
 }
 
@@ -60,16 +98,41 @@ export function toMealSlot(mealType: string | undefined | null): MealSlot | null
     return null;
   }
   const upper = String(mealType).trim().toUpperCase();
-  if (upper === "BREAKFAST" || upper.includes("BREAKFAST")) {
+  if (
+    upper === "BREAKFAST" ||
+    upper.includes("BREAKFAST") ||
+    upper.includes("SÁNG") ||
+    upper.includes("SANG") ||
+    upper.includes("MORNING")
+  ) {
     return "breakfast";
   }
-  if (upper === "LUNCH" || upper.includes("LUNCH")) {
+  if (
+    upper === "LUNCH" ||
+    upper.includes("LUNCH") ||
+    upper.includes("TRƯA") ||
+    upper.includes("TRUA") ||
+    upper.includes("NOON")
+  ) {
     return "lunch";
   }
-  if (upper === "DINNER" || upper.includes("DINNER")) {
+  if (
+    upper === "DINNER" ||
+    upper.includes("DINNER") ||
+    upper.includes("TỐI") ||
+    upper.includes("TOI") ||
+    upper.includes("EVENING")
+  ) {
     return "dinner";
   }
-  if (upper === "SNACK" || upper === "SNACKS" || upper.includes("SNACK")) {
+  if (
+    upper === "SNACK" ||
+    upper === "SNACKS" ||
+    upper.includes("SNACK") ||
+    upper.includes("PHỤ") ||
+    upper.includes("PHU") ||
+    upper.includes("AFTERNOON")
+  ) {
     return "snack";
   }
   return null;
@@ -116,16 +179,38 @@ export function countMeals(rows: readonly MealLogRow[], key: DayKey): number {
   return mealsOnDay(rows, key).length;
 }
 
-export interface MealOptionRow {
-  calories: number;
-  carbs: number;
-  description: string;
-  fat: number;
-  isNutiFoodProduct?: boolean;
-  mealName: string;
-  priceTier: string;
-  protein: number;
-  recipeSteps: string[];
+function mapRawMealOption(opt: any, defaultScheduledTime?: string): MealOptionRow {
+  const cookingSteps = Array.isArray(opt.cookingSteps)
+    ? opt.cookingSteps
+    : Array.isArray(opt.recipeSteps)
+      ? opt.recipeSteps
+      : Array.isArray(opt.cooking_steps)
+        ? opt.cooking_steps
+        : [];
+
+  const rawIngredients = Array.isArray(opt.ingredients) ? opt.ingredients : [];
+  const ingredients: MealIngredient[] = rawIngredients.map((ing: any) => ({
+    grams: Number(ing.grams || 0),
+    ingredientName: String(ing.ingredientName || ing.ingredient_name || ing.name || ""),
+    isSupplementary: Boolean(ing.isSupplementary ?? ing.is_supplementary ?? false),
+  }));
+
+  return {
+    calories: Number(opt.calories || opt.caloriesKcal || 0),
+    carbs: Number(opt.carbGrams ?? opt.carbs ?? 0),
+    cookingSteps,
+    description: String(opt.description || ""),
+    fat: Number(opt.fatGrams ?? opt.fat ?? 0),
+    ingredients,
+    isLogged: Boolean(opt.isLogged ?? opt.is_logged ?? false),
+    isNutiFoodProduct: Boolean(opt.isNutiFoodProduct ?? opt.is_nutifood_product ?? false),
+    mealName: String(opt.mealName || opt.meal_name || opt.name || ""),
+    optionId: opt.optionId || opt.option_id || opt.id || undefined,
+    priceTier: String(opt.priceTier || opt.price_tier || "MEDIUM"),
+    protein: Number(opt.proteinGrams ?? opt.protein ?? 0),
+    recipeSteps: cookingSteps,
+    scheduledTime: opt.scheduledTime || opt.scheduled_time || defaultScheduledTime || undefined,
+  };
 }
 
 export function normalizeTodayMenu(menuInput: any): Record<MealSlot, MealOptionRow[]> {
@@ -152,12 +237,12 @@ export function normalizeTodayMenu(menuInput: any): Record<MealSlot, MealOptionR
     }
   }
 
-  // 2. String representation of jsonb
-  if (typeof data === "string") {
+  // 2. String representation of jsonb (handle nested string serialization if any)
+  while (typeof data === "string") {
     try {
       data = JSON.parse(data);
     } catch {
-      return result;
+      break;
     }
   }
 
@@ -169,32 +254,32 @@ export function normalizeTodayMenu(menuInput: any): Record<MealSlot, MealOptionR
     if (data.mealsJson) {
       return normalizeTodayMenu(data.mealsJson);
     }
+    if (data.daily_meals) {
+      return normalizeTodayMenu(data.daily_meals);
+    }
+    if (data.dailyMeals) {
+      return normalizeTodayMenu(data.dailyMeals);
+    }
+    if (data.today_menu) {
+      return normalizeTodayMenu(data.today_menu);
+    }
+    if (data.todayMenu) {
+      return normalizeTodayMenu(data.todayMenu);
+    }
     if (Array.isArray(data.meals)) {
       return normalizeTodayMenu(data.meals);
     }
   }
 
-  // 4. Direct native jsonb Array of slot objects: [ { mealType: "Breakfast", options: [...] }, ... ]
+  // 4. Direct native jsonb Array of slot objects: [ { mealType: "Breakfast", scheduledTime: "12:00", options: [...] }, ... ]
   if (Array.isArray(data)) {
     for (const item of data) {
       const slot = toMealSlot(item.mealType || item.meal_type || item.slot || "");
-      const rawOptions = item.options || item.meals || [];
+      const scheduledTime = item.scheduledTime || item.scheduled_time || "";
+      const rawOptions = item.options || item.meals || (item.mealName ? [item] : []);
+
       if (slot && Array.isArray(rawOptions)) {
-        const mappedOptions = rawOptions.map((opt: any) => ({
-          calories: Number(opt.calories || opt.caloriesKcal || 0),
-          carbs: Number(opt.carbGrams || opt.carbs || 0),
-          description: opt.description || "",
-          fat: Number(opt.fatGrams || opt.fat || 0),
-          isNutiFoodProduct: Boolean(opt.isNutiFoodProduct),
-          mealName: opt.mealName || opt.meal_name || opt.name || "",
-          priceTier: opt.priceTier || "MEDIUM",
-          protein: Number(opt.proteinGrams || opt.protein || 0),
-          recipeSteps: Array.isArray(opt.cookingSteps)
-            ? opt.cookingSteps
-            : Array.isArray(opt.recipeSteps)
-              ? opt.recipeSteps
-              : [],
-        }));
+        const mappedOptions = rawOptions.map((opt: any) => mapRawMealOption(opt, scheduledTime));
         result[slot].push(...mappedOptions);
       }
     }
@@ -206,21 +291,22 @@ export function normalizeTodayMenu(menuInput: any): Record<MealSlot, MealOptionR
   for (const s of slots) {
     const rawList = data[s] || data[s.toUpperCase()] || data[s.toLowerCase()];
     if (Array.isArray(rawList)) {
-      result[s] = rawList.map((opt: any) => ({
-        calories: Number(opt.calories || opt.caloriesKcal || 0),
-        carbs: Number(opt.carbGrams || opt.carbs || 0),
-        description: opt.description || "",
-        fat: Number(opt.fatGrams || opt.fat || 0),
-        isNutiFoodProduct: Boolean(opt.isNutiFoodProduct),
-        mealName: opt.mealName || opt.meal_name || opt.name || "",
-        priceTier: opt.priceTier || "MEDIUM",
-        protein: Number(opt.proteinGrams || opt.protein || 0),
-        recipeSteps: Array.isArray(opt.cookingSteps)
-          ? opt.cookingSteps
-          : Array.isArray(opt.recipeSteps)
-            ? opt.recipeSteps
-            : [],
-      }));
+      result[s] = rawList.map((opt: any) => mapRawMealOption(opt));
+    }
+  }
+
+  // 6. Self-healing fallback: If snack contains all options and 3 main meals are empty, redistribute across slots
+  if (
+    result.snack.length >= 4 &&
+    result.breakfast.length === 0 &&
+    result.lunch.length === 0 &&
+    result.dinner.length === 0
+  ) {
+    const all = [...result.snack];
+    result.snack = [];
+    for (let i = 0; i < all.length; i++) {
+      const targetSlot = slots[i % 4] ?? "snack";
+      result[targetSlot].push(all[i]!);
     }
   }
 
@@ -247,10 +333,19 @@ export function groupMealsBySlot(
     const slotMenu = normalizedMenu[slot];
     const validPlannedItem = slotMenu?.[0];
 
-    const planned = validPlannedItem
+    const planned: PlannedMealInfo | null = validPlannedItem
       ? {
           calories: Math.round(validPlannedItem.calories),
+          carbs: Math.round(validPlannedItem.carbs),
+          cookingSteps: validPlannedItem.cookingSteps,
+          fat: Math.round(validPlannedItem.fat),
+          ingredients: validPlannedItem.ingredients,
+          isLogged: validPlannedItem.isLogged,
           name: validPlannedItem.mealName.replace(/^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-/, "").trim(),
+          optionId: validPlannedItem.optionId,
+          options: slotMenu,
+          protein: Math.round(validPlannedItem.protein),
+          scheduledTime: validPlannedItem.scheduledTime,
         }
       : null;
 
@@ -264,6 +359,7 @@ export function groupMealsBySlot(
         time: clockLabel(row.loggedAt),
       })),
       plannedMeal: planned,
+      scheduledTime: validPlannedItem?.scheduledTime,
       slot,
     };
   });

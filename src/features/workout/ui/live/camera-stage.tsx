@@ -1,6 +1,6 @@
 "use client";
 
-import { CameraOff, RefreshCw, Upload, Video, X } from "lucide-react";
+import { ArrowLeftRight, CameraOff, RefreshCw, Upload, Video, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 
@@ -13,7 +13,7 @@ export function CameraStage({
   children,
   customVideoSrc,
   isCustomVideo,
-  mirrored = true,
+  mirrored = false,
   onClearCustomVideo,
   onFlip,
   onUploadVideo,
@@ -38,16 +38,37 @@ export function CameraStage({
     height: 0,
     width: 0,
   });
+  const [isMirrored, setIsMirrored] = useState(mirrored);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const activeMirrored = isCustomVideo ? false : mirrored;
 
-  const handleLoadedMetadata = useCallback((e: React.SyntheticEvent<HTMLVideoElement>) => {
-    const video = e.currentTarget;
-    if (video.videoWidth > 0 && video.videoHeight > 0) {
-      setDimensions({ height: video.videoHeight, width: video.videoWidth });
+  // Sync internal mirrored state if prop changes
+  useEffect(() => {
+    setIsMirrored(mirrored);
+  }, [mirrored]);
+
+  const activeMirrored = isCustomVideo ? false : isMirrored;
+
+  const safePlay = useCallback((video: HTMLVideoElement) => {
+    try {
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        void playPromise.catch(() => {});
+      }
+    } catch {
+      // Ignore synchronous play errors
     }
-    void video.play().catch(() => {});
   }, []);
+
+  const handleLoadedMetadata = useCallback(
+    (e: React.SyntheticEvent<HTMLVideoElement>) => {
+      const video = e.currentTarget;
+      if (video.videoWidth > 0 && video.videoHeight > 0) {
+        setDimensions({ height: video.videoHeight, width: video.videoWidth });
+      }
+      safePlay(video);
+    },
+    [safePlay],
+  );
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,9 +83,9 @@ export function CameraStage({
   useEffect(() => {
     const video = videoRef.current;
     if (video && customVideoSrc) {
-      void video.play().catch(() => {});
+      safePlay(video);
     }
-  }, [customVideoSrc, videoRef]);
+  }, [customVideoSrc, safePlay, videoRef]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -76,7 +97,7 @@ export function CameraStage({
         setDimensions({ height: video.videoHeight, width: video.videoWidth });
       }
       if (video.paused && customVideoSrc) {
-        void video.play().catch(() => {});
+        safePlay(video);
       }
     };
     syncDimensions();
@@ -94,13 +115,13 @@ export function CameraStage({
 
   return (
     <div
-      className="camera-stage relative flex flex-col items-center justify-center w-full h-full min-h-[360px] md:min-h-[480px] rounded-2xl bg-[var(--color-surface-subtle,#eceef0)] shadow-xl overflow-hidden"
+      className="camera-stage relative flex flex-col items-center justify-center w-full h-full min-h-[360px] md:min-h-[480px] rounded-2xl bg-black shadow-xl overflow-hidden"
       data-state={state}
     >
       <video
         autoPlay
-        className="camera-stage__video absolute inset-0 w-full h-full object-cover rounded-2xl data-[mirrored]:-scale-x-100"
-        data-mirrored={activeMirrored || undefined}
+        className="camera-stage__video absolute inset-0 w-full h-full object-contain rounded-2xl"
+        data-mirrored={activeMirrored ? "true" : undefined}
         loop
         muted
         onCanPlay={handleLoadedMetadata}
@@ -179,13 +200,31 @@ export function CameraStage({
         </div>
       )}
 
-      {/* Bottom Right Controls (Flip Camera) */}
+      {/* Bottom Right Controls (Mirror Toggle & Flip Camera) */}
       <div className="absolute bottom-3 right-3 z-20 flex items-center gap-2">
+        {!isCustomVideo && state === "ready" ? (
+          <button
+            aria-label={activeMirrored ? "Tắt lật gương camera" : "Bật lật gương camera"}
+            aria-pressed={activeMirrored}
+            className={`camera-stage__mirror p-2.5 rounded-full shadow-md backdrop-blur-md active:scale-95 transition-all ${
+              activeMirrored
+                ? "bg-slate-900 text-white hover:bg-slate-800"
+                : "bg-[var(--color-surface,#ffffff)] text-[var(--color-text,#101214)] hover:bg-[var(--color-surface-subtle,#eceef0)]"
+            }`}
+            onClick={() => setIsMirrored((prev) => !prev)}
+            title={activeMirrored ? "Đang bật lật gương (Bấm để tắt)" : "Đang tắt lật gương (Bấm để bật)"}
+            type="button"
+          >
+            <ArrowLeftRight aria-hidden="true" size={16} />
+          </button>
+        ) : null}
+
         {onFlip && !isCustomVideo && state === "ready" ? (
           <button
             aria-label="Switch camera"
             className="camera-stage__flip p-2.5 rounded-full bg-[var(--color-surface,#ffffff)] text-[var(--color-text,#101214)] shadow-md hover:bg-[var(--color-surface-subtle,#eceef0)] active:scale-95 transition-all"
             onClick={onFlip}
+            title="Đổi camera trước / sau"
             type="button"
           >
             <RefreshCw aria-hidden="true" size={16} />

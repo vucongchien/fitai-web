@@ -55,13 +55,16 @@
 | `component/app-header.test.tsx`          | header banner landmark, BrandMark on top-level, back link aria-label for /nutrition and /roadmap sub-routes, /schedule routes, ArrowLeft icon aria-hidden                                           |
 | `component/feedback-state.test.tsx`      | empty/error tones, title heading, description text, icon aria-hidden, no link without action props, action link accessible name and href, ArrowRight icon aria-hidden inside link                    |
 | `component/metric-trace.test.tsx`        | SVG has role=img with aria-label=label+value, figure+figcaption structure, visible label+value text, tone modifier class, default blue tone, line path rendered, single-point dataset without throw  |
+| `component/live-camera-stage.test.tsx`  | Tests CameraStage component: un-mirrored default mode, toggle mirror button (enable/disable transform and data attributes), custom video upload (disables mirror), switch camera trigger |
+| `component/live-pose-overlay.test.tsx`   | Tests PoseOverlay component: canvas DOM element rendering, keypoint coordinate mapping and drawing in non-mirrored & mirrored modes |
 | `component/empty-state.test.tsx`         | output element (role=status), h3 heading, description text, no p without description, icon aria-hidden, no icon wrapper without icon prop, action slot rendered, no action container without action  |
 
 ## End-to-end coverage
 
-| File                    | Scenarios                                                                          |
-| ----------------------- | ---------------------------------------------------------------------------------- |
-| `e2e/core-flow.spec.ts` | Login → onboarding, Home → preparation → live workout → summary, mobile navigation |
+| File                                       | Scenarios                                                                                                                                                                                                                                        |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `e2e/core-flow.spec.ts`                    | Login → onboarding, Home → preparation → live workout → summary, mobile navigation                                                                                                                                                               |
+| `e2e/profile-and-regenerate-flow.spec.ts` | Profile & Adaptive Plan Regeneration: Flow 4.1 Body metrics & Anti-overwrite, Flow 4.2 Report Active Injury & InjuryReported event, Flow 4.3 Recover Injury & InjuryRecovered event, Flow 4.4 Live Workout Pain Stop & History Invariant D3 |
 
 ## Required UI states
 

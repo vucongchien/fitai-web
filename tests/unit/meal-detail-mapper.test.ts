@@ -190,4 +190,88 @@ describe(adaptMealDetailPageData, () => {
       "Sữa NutiFood Varna Elite Hoàng Gia",
     ]);
   });
+
+  it("extracts ingredients, cookingSteps, scheduledTime and optionId correctly from user DB schema", () => {
+    const userDbPayload = [
+      {
+        mealType: "Breakfast",
+        options: [
+          {
+            calories: 908.0084999999999,
+            carbGrams: 39.9,
+            cookingSteps: [
+              "Boil the chicken eggs in a pot of water for 10 minutes until hard-boiled, then peel and slice.",
+              "Warm up the brown rice in a microwave or pan.",
+              "Steam the broccoli florets for 4-5 minutes until tender-crisp.",
+              "Assemble everything on a plate and season with a pinch of black pepper and olive oil.",
+            ],
+            fatGrams: 6.38,
+            ingredients: [
+              { grams: 150, ingredientName: "Chicken Eggs", isSupplementary: false },
+              { grams: 200, ingredientName: "Cơm gạo lứt luộc", isSupplementary: false },
+              { grams: 120, ingredientName: "Bông cải xanh (Broccoli)", isSupplementary: false },
+              { grams: 5, ingredientName: "Olive oil", isSupplementary: false },
+              { grams: 1, ingredientName: "Black pepper", isSupplementary: false },
+            ],
+            isLogged: false,
+            isNutiFoodProduct: false,
+            mealName: "Boiled Eggs with Brown Rice and Steamed Broccoli",
+            optionId: "b2f28d6b-1e4f-4f33-bb4b-812ae9314cc3",
+            proteinGrams: 17.68,
+          },
+        ],
+        scheduledTime: "12:00",
+      },
+      {
+        mealType: "Lunch",
+        options: [
+          {
+            calories: 908.0084999999999,
+            carbGrams: 48,
+            cookingSteps: [
+              "Crack the chicken eggs into a bowl, whisk well, and scramble them in a non-stick pan with a touch of olive oil.",
+              "Peel and slice the pre-boiled sweet potato.",
+              "Blanch the broccoli in boiling water for 3 minutes.",
+              "Serve the scrambled eggs alongside the sweet potato and broccoli.",
+            ],
+            fatGrams: 6.58,
+            ingredients: [
+              { grams: 150, ingredientName: "Chicken Eggs", isSupplementary: false },
+              { grams: 200, ingredientName: "Khoai lang mật luộc", isSupplementary: false },
+              { grams: 120, ingredientName: "Bông cải xanh (Broccoli)", isSupplementary: false },
+              { grams: 5, ingredientName: "Olive oil", isSupplementary: false },
+              { grams: 1, ingredientName: "Salt", isSupplementary: false },
+            ],
+            isLogged: false,
+            isNutiFoodProduct: false,
+            mealName: "Scrambled Eggs with Boiled Sweet Potato and Broccoli",
+            optionId: "9e459430-d240-47e7-a7e8-f4182abcdd26",
+            proteinGrams: 16.4,
+          },
+        ],
+        scheduledTime: "12:00",
+      },
+    ];
+
+    const bf = adaptMealDetailPageData(userDbPayload as any, [], "breakfast", MOCK_TODAY);
+    expect(bf.choices).toHaveLength(1);
+    expect(bf.choices[0]?.name).toBe("Boiled Eggs with Brown Rice and Steamed Broccoli");
+    expect(bf.choices[0]?.optionId).toBe("b2f28d6b-1e4f-4f33-bb4b-812ae9314cc3");
+    expect(bf.choices[0]?.calories).toBe(908);
+    expect(bf.choices[0]?.protein).toBe(18);
+    expect(bf.choices[0]?.carbs).toBe(40);
+    expect(bf.choices[0]?.fat).toBe(6);
+    expect(bf.choices[0]?.scheduledTime).toBe("12:00");
+    expect(bf.choices[0]?.ingredients).toHaveLength(5);
+    expect(bf.choices[0]?.ingredients[0]?.ingredientName).toBe("Chicken Eggs");
+    expect(bf.choices[0]?.ingredients[0]?.grams).toBe(150);
+    expect(bf.choices[0]?.cookingSteps).toHaveLength(4);
+
+    const lu = adaptMealDetailPageData(userDbPayload as any, [], "lunch", MOCK_TODAY);
+    expect(lu.choices).toHaveLength(1);
+    expect(lu.choices[0]?.name).toBe("Scrambled Eggs with Boiled Sweet Potato and Broccoli");
+    expect(lu.choices[0]?.optionId).toBe("9e459430-d240-47e7-a7e8-f4182abcdd26");
+    expect(lu.choices[0]?.ingredients).toHaveLength(5);
+    expect(lu.choices[0]?.cookingSteps).toHaveLength(4);
+  });
 });

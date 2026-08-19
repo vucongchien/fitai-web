@@ -120,4 +120,60 @@ describe("profile Actions", () => {
       expect(result.message).toContain("gRPC network timeout");
     });
   });
+
+  describe("reportInjuryServerAction & recoverInjuryServerAction", () => {
+    it("reports injury with formatted muscle group and default notes", async () => {
+      const mockReportInjury = vi.fn().mockResolvedValue({
+        success: true,
+        injuryId: "inj-test-123",
+        message: "Injury reported",
+      });
+
+      const { createClient } = await import("@connectrpc/connect");
+      vi.mocked(createClient).mockReturnValueOnce({
+        reportInjury: mockReportInjury,
+      } as any);
+
+      const { reportInjuryServerAction } = await import(
+        "../../../src/features/profile/server/profile-actions"
+      );
+
+      const result = await reportInjuryServerAction({
+        muscleGroup: "Lower Back",
+        severity: "Moderate",
+        notes: "",
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.injuryId).toBe("inj-test-123");
+      expect(mockReportInjury).toHaveBeenCalledWith({
+        muscleGroup: "LOWER_BACK",
+        severity: "MODERATE",
+        notes: "Reported via profile",
+      });
+    });
+
+    it("recovers injury by injuryId", async () => {
+      const mockRecoverInjury = vi.fn().mockResolvedValue({
+        success: true,
+        message: "Injury marked as recovered",
+      });
+
+      const { createClient } = await import("@connectrpc/connect");
+      vi.mocked(createClient).mockReturnValueOnce({
+        recoverInjury: mockRecoverInjury,
+      } as any);
+
+      const { recoverInjuryServerAction } = await import(
+        "../../../src/features/profile/server/profile-actions"
+      );
+
+      const result = await recoverInjuryServerAction("inj-test-123");
+
+      expect(result.success).toBe(true);
+      expect(mockRecoverInjury).toHaveBeenCalledWith({
+        injuryId: "inj-test-123",
+      });
+    });
+  });
 });

@@ -50,8 +50,8 @@ export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageD
       const history = historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
       const rows = deduplicateMealRows([...history, ...localRows]);
 
-      if (menuRes.status === "fulfilled" && menuRes.value.meals) {
-        const menu = menuRes.value.meals as any;
+      if (menuRes.status === "fulfilled" && menuRes.value) {
+        const menu = (menuRes.value.meals as any) || menuRes.value;
         return adaptMealDetailPageData(menu, rows, slot, todayStr);
       }
 

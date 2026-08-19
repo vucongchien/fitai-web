@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Plus } from "lucide-react";
+import { Check, ChevronRight, Clock, Plus } from "lucide-react";
 import Link from "next/link";
 
 import type { MealSlotGroup } from "@/shared/api/bff/aggregate/nutrition-daily";
@@ -20,25 +20,47 @@ export function MealTimeline({ slots }: MealTimelineProps) {
       {slots.map((slot) => {
         const logged = slot.meals.length > 0;
         const displayName = SLOT_VI_NAMES[slot.slot] || slot.label;
+        const scheduledTime = slot.scheduledTime || slot.plannedMeal?.scheduledTime;
+        const ingredients = slot.plannedMeal?.ingredients || [];
 
         return (
           <li
             className="meal-timeline__slot"
             data-state={logged ? "logged" : "empty"}
             key={slot.slot}
-            style={{ position: "relative", marginBottom: "1rem" }}
+            style={{ position: "relative", marginBottom: "1.25rem" }}
           >
             <span aria-hidden="true" className="meal-timeline__marker">
               {logged ? <Check size={13} /> : <Plus size={13} />}
             </span>
 
             <div className="meal-timeline__head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <strong>{displayName}</strong>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <strong>{displayName}</strong>
+                {scheduledTime ? (
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                      fontSize: "0.75rem",
+                      padding: "0.15rem 0.45rem",
+                      borderRadius: "0.375rem",
+                      backgroundColor: "rgba(255, 255, 255, 0.08)",
+                      color: "var(--color-text-muted, #8b949e)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    <Clock size={11} /> {scheduledTime}
+                  </span>
+                ) : null}
+              </div>
+
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 {logged ? (
                   <span className="data-value" style={{ fontWeight: 700 }}>{slot.calories} kcal</span>
                 ) : slot.plannedMeal ? (
-                  <span className="data-value" style={{ opacity: 0.8 }}>{slot.plannedMeal.calories} kcal (Planned)</span>
+                  <span className="data-value" style={{ opacity: 0.85, fontWeight: 600 }}>{slot.plannedMeal.calories} kcal</span>
                 ) : (
                   <span className="meal-timeline__pending">Not logged</span>
                 )}
@@ -54,6 +76,7 @@ export function MealTimeline({ slots }: MealTimelineProps) {
                     backgroundColor: "rgba(255, 255, 255, 0.08)",
                     color: "inherit",
                     textDecoration: "none",
+                    fontWeight: 500,
                   }}
                 >
                   {logged ? "View details" : "Log meal"} <ChevronRight size={14} />
@@ -74,14 +97,26 @@ export function MealTimeline({ slots }: MealTimelineProps) {
                 ))}
               </ul>
             ) : slot.plannedMeal ? (
-              <ul className="meal-timeline__meals" style={{ marginTop: "0.5rem" }}>
-                <li style={{ display: "flex", justifyContent: "space-between", padding: "0.35rem 0" }}>
-                  <span className="meal-timeline__name" style={{ fontStyle: "italic", opacity: 0.85 }}>
-                    📌 Scheduled menu: <strong>{slot.plannedMeal.name}</strong>
+              <div style={{ marginTop: "0.5rem", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                  <span className="meal-timeline__name" style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+                    {slot.plannedMeal.name}
                   </span>
-                  <span className="data-value">{slot.plannedMeal.calories} kcal</span>
-                </li>
-              </ul>
+                  {(slot.plannedMeal.protein || slot.plannedMeal.carbs || slot.plannedMeal.fat) ? (
+                    <span style={{ fontSize: "0.75rem", opacity: 0.75 }}>
+                      {slot.plannedMeal.protein ? `P: ${slot.plannedMeal.protein}g ` : ""}
+                      {slot.plannedMeal.carbs ? `C: ${slot.plannedMeal.carbs}g ` : ""}
+                      {slot.plannedMeal.fat ? `F: ${slot.plannedMeal.fat}g` : ""}
+                    </span>
+                  ) : null}
+                </div>
+
+                {ingredients.length > 0 ? (
+                  <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted, #8b949e)", lineHeight: 1.4 }}>
+                    🥗 {ingredients.map((ing) => `${ing.ingredientName} (${ing.grams}g)`).join(", ")}
+                  </div>
+                ) : null}
+              </div>
             ) : (
               <div style={{ marginTop: "0.5rem", fontSize: "0.85rem", opacity: 0.6 }}>
                 No meals logged yet for {displayName.toLowerCase()}.

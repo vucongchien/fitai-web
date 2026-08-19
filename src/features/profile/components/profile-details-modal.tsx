@@ -779,6 +779,7 @@ function InjuryHistoryForm({
 }) {
   const [injuries, setInjuries] = useState<InjuryItem[]>(profile.injuries || []);
   const [showReport, setShowReport] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [newInjury, setNewInjury] = useState({
     muscleGroup: "Shoulders",
     severity: "Mild",
@@ -787,29 +788,33 @@ function InjuryHistoryForm({
   const [confirmRecoverId, setConfirmRecoverId] = useState<string | null>(null);
 
   const handleSubmitInjury = async () => {
-    if (!newInjury.notes) {
-      return;
+    setIsSubmitting(true);
+    try {
+      const notesPayload = newInjury.notes.trim() || "Reported via profile";
+      const res = await reportInjuryServerAction({
+        muscleGroup: newInjury.muscleGroup,
+        severity: newInjury.severity,
+        notes: notesPayload,
+      });
+
+      const item: InjuryItem = {
+        id: res.injuryId || Date.now().toString(),
+        muscleGroup: newInjury.muscleGroup,
+        severity: newInjury.severity,
+        notes: notesPayload,
+        isRecovered: false,
+        reportedAt: new Date().toISOString().split("T")[0],
+      };
+      const updated = [...injuries, item];
+      setInjuries(updated);
+      onSave({ injuries: updated });
+      setShowReport(false);
+      setNewInjury({ muscleGroup: "Shoulders", severity: "Mild", notes: "" });
+    } catch (error) {
+      console.error("Failed to submit injury report:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const res = await reportInjuryServerAction({
-      muscleGroup: newInjury.muscleGroup,
-      severity: newInjury.severity,
-      notes: newInjury.notes,
-    });
-
-    const item: InjuryItem = {
-      id: res.injuryId || Date.now().toString(),
-      muscleGroup: newInjury.muscleGroup,
-      severity: newInjury.severity,
-      notes: newInjury.notes,
-      isRecovered: false,
-      reportedAt: new Date().toISOString().split("T")[0],
-    };
-    const updated = [...injuries, item];
-    setInjuries(updated);
-    onSave({ injuries: updated });
-    setShowReport(false);
-    setNewInjury({ muscleGroup: "Shoulders", severity: "Mild", notes: "" });
   };
 
   const handleRecover = async () => {
@@ -922,10 +927,12 @@ function InjuryHistoryForm({
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={handleSubmitInjury}
-                className="px-3.5 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl cursor-pointer"
+                disabled={isSubmitting}
+                className="px-3.5 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 rounded-xl cursor-pointer"
               >
-                Submit Report
+                {isSubmitting ? "Submitting..." : "Submit Report"}
               </button>
             </div>
           </div>

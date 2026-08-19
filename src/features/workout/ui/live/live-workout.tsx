@@ -22,26 +22,14 @@ import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog"
 import { SetConfirmDialog } from "@/features/workout/ui/live/set-confirm-dialog";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
 import { RuleVoiceModal } from "@/features/workout/ui/live/rule-voice-modal";
+import { useFullscreenScope } from "@/shared/lib/use-fullscreen-scope";
 import { toast } from "@/shared/ui/toast";
 
 /** Seconds the "+" button adds — same amount on both screens. */
 const ADD_SECONDS = 10;
 
-function toggleFullscreen() {
-  if (typeof document === "undefined") {
-    return;
-  }
-  if (document.fullscreenElement) {
-    void document.exitFullscreen();
-    return;
-  }
-  void document.documentElement.requestFullscreen?.().catch(() => {
-    // IOS Safari has no Fullscreen API on the document element. The screen is
-    // Already chrome-free, so failing quietly is the right outcome.
-  });
-}
-
 export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
+  const { toggleFullscreen } = useFullscreenScope();
   const session = useLiveSession(plan);
   const audio = useAudioCoach(plan.playlists);
   const camera = useCameraStream();

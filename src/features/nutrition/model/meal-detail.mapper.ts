@@ -54,18 +54,24 @@ export function isRealMealOption(_rawOption: string | (MealOptionRow & { isNutiF
 }
 
 function toChoice(option: MealOptionRow, index: number): MealChoice {
+  const steps = option.cookingSteps && option.cookingSteps.length > 0 ? option.cookingSteps : (option.recipeSteps || []);
   return {
     calories: Math.round(option.calories),
     carbs: Math.round(option.carbs),
+    cookingSteps: steps,
     description: option.description,
     fat: Math.round(option.fat),
-    // MealOption carries no id, so position within its slot identifies it.
-    id: `${option.mealName}-${index}`,
+    id: option.optionId || `${option.mealName}-${index}`,
+    ingredients: option.ingredients || [],
+    isLogged: option.isLogged,
+    isNutiFoodProduct: option.isNutiFoodProduct,
     name: cleanMealDisplayName(option.mealName),
+    optionId: option.optionId,
     priceTier: toPriceTier(option.priceTier),
     protein: Math.round(option.protein),
     rawName: option.mealName,
-    recipeSteps: option.recipeSteps,
+    recipeSteps: steps,
+    scheduledTime: option.scheduledTime,
   };
 }
 
@@ -96,10 +102,15 @@ export function adaptMealDetailPageData(
     (choice) => !eaten.some((meal) => sameDish(meal.name, choice.name)),
   );
 
-  const loggedMeals = eaten.map((meal) => ({
-    ...meal,
-    recipeSteps: validChoices.find((choice) => sameDish(choice.name, meal.name))?.recipeSteps ?? [],
-  }));
+  const loggedMeals = eaten.map((meal) => {
+    const match = validChoices.find((choice) => sameDish(choice.name, meal.name));
+    return {
+      ...meal,
+      cookingSteps: match?.cookingSteps ?? [],
+      ingredients: match?.ingredients ?? [],
+      recipeSteps: match?.recipeSteps ?? [],
+    };
+  });
 
   return {
     choices,

@@ -47,7 +47,7 @@ async function getRealNutritionPageData(
   const history = deduplicateMealRows([...historyRaw, ...localRows]);
 
   const todayMenu = menuRes.status === "fulfilled" && menuRes.value
-    ? (menuRes.value.meals as any)
+    ? ((menuRes.value.meals as any) || menuRes.value)
     : undefined;
 
   return adaptNutritionPageData(summary, history, today, todayMenu);

@@ -4986,6 +4986,9 @@ a.week-route__row:hover {
    --------------------------------------------------------------------------- */
 
 .live-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
   display: grid;
   grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   /* The single column MUST be declared as minmax(0, 1fr).
@@ -5100,11 +5103,6 @@ a.week-route__row:hover {
 /* Rest variant: header, media, centered info, ring block, auto-transition note. */
 .live-screen--rest {
   grid-template-rows: auto auto minmax(0, 1fr) auto auto;
-}
-
-body:has(.live-screen) {
-  overflow: hidden;
-  overscroll-behavior: none;
 }
 
 .live-media__video,

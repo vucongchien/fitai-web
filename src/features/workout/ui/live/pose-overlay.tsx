@@ -70,8 +70,8 @@ export function PoseOverlay({
       return;
     }
 
-    // The video is object-fit: cover, so mirror that maths here.
-    const scale = Math.max(width / effectiveSourceWidth, height / effectiveSourceHeight);
+    // The video is object-fit: contain, so mirror that maths here.
+    const scale = Math.min(width / effectiveSourceWidth, height / effectiveSourceHeight);
     const offsetX = (width - effectiveSourceWidth * scale) / 2;
     const offsetY = (height - effectiveSourceHeight * scale) / 2;
     const project = (x: number, y: number) => {

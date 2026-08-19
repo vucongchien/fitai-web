@@ -51,6 +51,21 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
+  async redirects() {
+    return [
+      {
+        source: "/nutri",
+        destination: "/nutrition",
+        permanent: true,
+      },
+      {
+        source: "/nutri/:path*",
+        destination: "/nutrition/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

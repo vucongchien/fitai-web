@@ -35,10 +35,12 @@ export function PullToRefresh({
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
-      if (!isEnabled || isRefreshing) {return;}
+      if (!isEnabled || isRefreshing) {
+        return;
+      }
 
-      const container = containerRef.current;
-      const scrollTop = container ? container.scrollTop : window.scrollY;
+      const scrollTop =
+        typeof window !== "undefined" ? window.scrollY || document.documentElement.scrollTop || 0 : 0;
 
       if (scrollTop <= 0 && e.touches.length === 1) {
         startYRef.current = e.touches[0].clientY;
@@ -50,7 +52,17 @@ export function PullToRefresh({
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
-      if (!isEnabled || !isPulling || isRefreshing) {return;}
+      if (!isEnabled || !isPulling || isRefreshing) {
+        return;
+      }
+
+      const scrollTop =
+        typeof window !== "undefined" ? window.scrollY || document.documentElement.scrollTop || 0 : 0;
+      if (scrollTop > 0) {
+        setIsPulling(false);
+        setPullDistance(0);
+        return;
+      }
 
       const currentY = e.touches[0].clientY;
       const deltaY = currentY - startYRef.current;
@@ -65,8 +77,15 @@ export function PullToRefresh({
     [isEnabled, isPulling, isRefreshing, maxPullDistance],
   );
 
+  const handleTouchCancel = useCallback(() => {
+    setIsPulling(false);
+    setPullDistance(0);
+  }, []);
+
   const handleTouchEnd = useCallback(async () => {
-    if (!isEnabled || !isPulling) {return;}
+    if (!isEnabled || !isPulling) {
+      return;
+    }
     setIsPulling(false);
 
     if (pullDistance >= pullThreshold && !isRefreshing) {
@@ -107,6 +126,7 @@ export function PullToRefresh({
   return (
     <div
       className="pull-to-refresh-container"
+      onTouchCancel={handleTouchCancel}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
       onTouchStart={handleTouchStart}
