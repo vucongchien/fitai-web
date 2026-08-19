@@ -48,10 +48,22 @@ export function WeekRoute({ sessions }: WeekRouteProps) {
               <span>{session.date}</span>
             </div>
             <div className="week-route__session">
-              <strong>{session.title}</strong>
+              <div className="flex items-center gap-2 flex-wrap">
+                <strong>{session.title}</strong>
+                {session.isAdapted && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-[10px] font-semibold">
+                    🛡️ Adapted
+                  </span>
+                )}
+              </div>
               <span>
                 {statusLabel[session.status]} · {session.time}
               </span>
+              {session.isAdapted && session.reasoning && (
+                <p className="text-[11px] text-indigo-900/80 mt-1 line-clamp-1 italic">
+                  &ldquo;{session.reasoning}&rdquo;
+                </p>
+              )}
             </div>
             {session.status === "rest" ? null : (
               <ChevronRight aria-hidden="true" className="week-route__chevron" size={18} />

@@ -11,6 +11,8 @@ import { NAV_FORWARD } from "@/shared/ui/transition-types";
 import { FeedbackState } from "@/shared/ui/feedback-state";
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 
+import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
+
 interface RoadmapViewProps {
   data: RoadmapPageData;
 }
@@ -79,6 +81,7 @@ export function RoadmapView({ data }: RoadmapViewProps) {
   return (
     <>
       <div className="roadmap-layout">
+        <AIAdjustmentBanner />
         <section className="content-section">
           <div className="content-section__header">
             <h2>

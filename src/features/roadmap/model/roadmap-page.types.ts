@@ -18,6 +18,8 @@ export interface SessionSummary {
   targetRpe: number;
   muscles: string[];
   status: SessionStatus;
+  reasoning?: string;
+  isAdapted?: boolean;
 }
 
 export interface ContextItem {

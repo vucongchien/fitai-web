@@ -13,6 +13,7 @@ import { MuscleGroupSelector } from "@/features/home/ui/muscle-group-selector";
 import { ProfileCompletionBanner } from "@/features/home/ui/profile-completion-banner";
 import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
 import { TodayTimeline } from "@/features/home/ui/today-timeline";
+import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
@@ -35,6 +36,9 @@ export function HomeView({ data }: HomeViewProps) {
 
   return (
     <div className="home-container space-y-6">
+      {/* Realtime AI Plan Adjustment Banner (Real Data 100%) */}
+      <AIAdjustmentBanner />
+
       {/* AI Coach Greeting & Note */}
       <CoachNote message={data.coachNote} />
 

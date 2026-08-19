@@ -201,6 +201,19 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
             ? 20
             : 40);
 
+        const reasoning = sp.reasoning?.trim() || "";
+        const isAdapted = Boolean(
+          reasoning &&
+            (reasoning.toLowerCase().includes("injury") ||
+              reasoning.toLowerCase().includes("pain") ||
+              reasoning.toLowerCase().includes("protect") ||
+              reasoning.toLowerCase().includes("strain") ||
+              reasoning.toLowerCase().includes("recover") ||
+              reasoning.toLowerCase().includes("replace") ||
+              reasoning.toLowerCase().includes("adjust") ||
+              reasoning.toLowerCase().includes("recalibrat")),
+        );
+
         currentWeekSessions.push({
           id: sp.sessionPlanId,
           day: dayStr,
@@ -211,6 +224,8 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
           targetRpe: activeWeekPlan.targetRpe || 7,
           muscles: sp.targetMuscleGroups || [],
           status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
+          reasoning: reasoning || undefined,
+          isAdapted,
         });
       }
     }
@@ -292,6 +307,19 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
                   ? 20
                   : 40));
 
+            const reasoning = sp.reasoning?.trim() || "";
+            const isAdapted = Boolean(
+              reasoning &&
+                (reasoning.toLowerCase().includes("injury") ||
+                  reasoning.toLowerCase().includes("pain") ||
+                  reasoning.toLowerCase().includes("protect") ||
+                  reasoning.toLowerCase().includes("strain") ||
+                  reasoning.toLowerCase().includes("recover") ||
+                  reasoning.toLowerCase().includes("replace") ||
+                  reasoning.toLowerCase().includes("adjust") ||
+                  reasoning.toLowerCase().includes("recalibrat")),
+            );
+
             sessions.push({
               id: sp.sessionPlanId,
               day: dayStr,
@@ -302,6 +330,8 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
               targetRpe: wp.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
               muscles: sp.targetMuscleGroups || [],
               status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
+              reasoning: reasoning || undefined,
+              isAdapted,
             });
           }
         }

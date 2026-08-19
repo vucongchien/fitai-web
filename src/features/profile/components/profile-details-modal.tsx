@@ -23,6 +23,7 @@ import {
   reportInjuryServerAction,
   updateProfileServerAction,
 } from "../server/profile-actions";
+import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
 
 export type ModalType =
   | "BODY_METRICS"
@@ -224,6 +225,10 @@ function BodyMetricsForm({
 
     onSave(updatedPayload);
     await updateProfileServerAction(updatedPayload);
+    startAIAdjustment({
+      reason: "profile_updated",
+      targetWeightKg: Number(data.targetWeightKg) || undefined,
+    });
     setIsSaving(false);
     setShowConfirm(false);
     onClose();
@@ -395,6 +400,9 @@ function GoalsForm({
 
     onSave(updatedPayload);
     await updateProfileServerAction(updatedPayload);
+    startAIAdjustment({
+      reason: "profile_updated",
+    });
     setIsSaving(false);
     setShowConfirm(false);
     onClose();
@@ -586,6 +594,9 @@ function EquipmentForm({
 
     onSave(updatedPayload);
     await updateProfileServerAction(updatedPayload);
+    startAIAdjustment({
+      reason: "profile_updated",
+    });
     setIsSaving(false);
     setShowConfirm(false);
     onClose();
@@ -668,6 +679,9 @@ function PersonalInfoForm({
 
     onSave(updatedPayload);
     await updateProfileServerAction(updatedPayload);
+    startAIAdjustment({
+      reason: "profile_updated",
+    });
     setIsSaving(false);
     onClose();
   };
@@ -780,6 +794,9 @@ function InjuryHistoryForm({
   const [injuries, setInjuries] = useState<InjuryItem[]>(profile.injuries || []);
   const [showReport, setShowReport] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmReport, setShowConfirmReport] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<"All" | "Upper Body" | "Lower Body" | "Core & Joints">("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [newInjury, setNewInjury] = useState({
     muscleGroup: "Shoulders",
     severity: "Mild",
@@ -787,8 +804,80 @@ function InjuryHistoryForm({
   });
   const [confirmRecoverId, setConfirmRecoverId] = useState<string | null>(null);
 
+  const [dynamicDbMuscles, setDynamicDbMuscles] = useState<CatalogMuscleItem[]>([]);
+
+  React.useEffect(() => {
+    let active = true;
+    async function loadCatalog() {
+      try {
+        const res = await getCatalogMetadataServerAction();
+        if (active && res.success) {
+          setDynamicDbMuscles(res.muscles || []);
+        }
+      } catch (err) {
+        console.warn("Failed to load dynamic DB muscles for injury form:", err);
+      }
+    }
+    loadCatalog();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const baseAnatomyAreas = [
+    // Upper Body
+    { name: "Shoulders", category: "Upper Body", hint: "Deltoids & Rotator Cuff" },
+    { name: "Chest", category: "Upper Body", hint: "Pectorals" },
+    { name: "Upper Back", category: "Upper Body", hint: "Rhomboids & Traps" },
+    { name: "Lats", category: "Upper Body", hint: "Latissimus Dorsi" },
+    { name: "Biceps", category: "Upper Body", hint: "Front Arm" },
+    { name: "Triceps", category: "Upper Body", hint: "Back Arm" },
+    { name: "Forearms", category: "Upper Body", hint: "Brachioradialis" },
+    { name: "Wrist", category: "Upper Body", hint: "Wrist Joint & Tendons" },
+    { name: "Elbow", category: "Upper Body", hint: "Elbow Joint" },
+    { name: "Neck", category: "Upper Body", hint: "Cervical Spine" },
+    { name: "Traps", category: "Upper Body", hint: "Upper Trapezius" },
+
+    // Lower Body
+    { name: "Knee", category: "Lower Body", hint: "Patella & Meniscus" },
+    { name: "Quadriceps", category: "Lower Body", hint: "Front Thigh" },
+    { name: "Hamstrings", category: "Lower Body", hint: "Back Thigh" },
+    { name: "Glutes", category: "Lower Body", hint: "Gluteus Maximus" },
+    { name: "Calves", category: "Lower Body", hint: "Gastrocnemius" },
+    { name: "Ankle", category: "Lower Body", hint: "Ankle Joint & Achilles" },
+    { name: "Hip", category: "Lower Body", hint: "Hip Joint & Flexors" },
+    { name: "Groin", category: "Lower Body", hint: "Adductors" },
+
+    // Core & Joints
+    { name: "Lower Back", category: "Core & Joints", hint: "Lumbar Spine" },
+    { name: "Abs", category: "Core & Joints", hint: "Rectus Abdominis" },
+    { name: "Obliques", category: "Core & Joints", hint: "Side Core" },
+  ];
+
+  // Merge DB catalog muscles seamlessly
+  const anatomyAreas = [
+    ...baseAnatomyAreas,
+    ...dynamicDbMuscles
+      .filter((dbM) => !baseAnatomyAreas.some((b) => b.name.toLowerCase() === dbM.name.toLowerCase()))
+      .map((dbM) => ({
+        name: dbM.name,
+        category: "Upper Body" as "Upper Body" | "Lower Body" | "Core & Joints",
+        hint: "From Database Catalog",
+      })),
+  ];
+
+  const filteredMuscles = anatomyAreas.filter((m) => {
+    const matchesCategory = categoryFilter === "All" || m.category === categoryFilter;
+    const matchesSearch =
+      !searchQuery.trim() ||
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.hint.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   const handleSubmitInjury = async () => {
     setIsSubmitting(true);
+    setShowConfirmReport(false);
     try {
       const notesPayload = newInjury.notes.trim() || "Reported via profile";
       const res = await reportInjuryServerAction({
@@ -808,6 +897,10 @@ function InjuryHistoryForm({
       const updated = [...injuries, item];
       setInjuries(updated);
       onSave({ injuries: updated });
+      startAIAdjustment({
+        reason: "injury_reported",
+        muscleGroup: newInjury.muscleGroup,
+      });
       setShowReport(false);
       setNewInjury({ muscleGroup: "Shoulders", severity: "Mild", notes: "" });
     } catch (error) {
@@ -822,6 +915,7 @@ function InjuryHistoryForm({
       return;
     }
 
+    const targetInj = injuries.find((i) => i.id === confirmRecoverId);
     await recoverInjuryServerAction(confirmRecoverId);
 
     const updated = injuries.map((i) =>
@@ -829,6 +923,10 @@ function InjuryHistoryForm({
     );
     setInjuries(updated);
     onSave({ injuries: updated });
+    startAIAdjustment({
+      reason: "injury_recovered",
+      muscleGroup: targetInj?.muscleGroup,
+    });
     setConfirmRecoverId(null);
   };
 
@@ -858,37 +956,77 @@ function InjuryHistoryForm({
         <div className="p-4 rounded-xl mb-6 border border-neutral-200 bg-neutral-50/50 space-y-4">
           <h3 className="text-xs font-bold text-[#101214]">Report New Injury</h3>
           <div className="space-y-3">
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-[#50565C]">Muscle Group</label>
-              <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                {["Shoulders", "Knee", "Lower Back", "Wrist", "Hip"].map((m) => {
-                  const isSelected = newInjury.muscleGroup === m;
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-[#50565C]">Muscle Group & Joint Area</label>
+                <span className="text-[11px] text-[#4B57F2] font-semibold">Selected: {newInjury.muscleGroup}</span>
+              </div>
+
+              {/* Category Filter Chips */}
+              <div className="flex flex-wrap gap-1.5">
+                {(["All", "Upper Body", "Lower Body", "Core & Joints"] as const).map((cat) => {
+                  const isCatSelected = categoryFilter === cat;
                   return (
                     <button
-                      key={m}
+                      key={cat}
                       type="button"
-                      onClick={() => setNewInjury({ ...newInjury, muscleGroup: m })}
-                      className="py-2 px-1 text-center rounded-xl text-xs font-semibold transition-colors cursor-pointer min-h-[38px]"
+                      onClick={() => setCategoryFilter(cat)}
+                      className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer ${
+                        isCatSelected
+                          ? "bg-[#4B57F2] text-white"
+                          : "bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300/70"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Search Bar */}
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search muscle or joint (e.g. Biceps, Hamstrings, Elbow...)"
+                className="w-full h-9 px-3 text-xs rounded-xl border border-neutral-200 bg-white font-body outline-none focus:border-[#4B57F2]"
+              />
+
+              {/* Muscle Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-48 overflow-y-auto pr-1">
+                {filteredMuscles.map((m) => {
+                  const isSelected = newInjury.muscleGroup === m.name;
+                  return (
+                    <button
+                      key={m.name}
+                      type="button"
+                      onClick={() => setNewInjury({ ...newInjury, muscleGroup: m.name })}
+                      className="p-2 text-left rounded-xl transition-all cursor-pointer border"
                       style={{
-                        border: "1.5px solid",
+                        borderWidth: "1.5px",
                         borderColor: isSelected ? "#4B57F2" : "#E5E7EB",
                         backgroundColor: isSelected ? "#F4F5FF" : "#FFFFFF",
-                        color: isSelected ? "#4B57F2" : "#101214",
                       }}
                     >
-                      {m}
+                      <div
+                        className="text-xs font-bold"
+                        style={{ color: isSelected ? "#4B57F2" : "#101214" }}
+                      >
+                        {m.name}
+                      </div>
+                      <div className="text-[10px] text-[#50565C] truncate">{m.hint}</div>
                     </button>
                   );
                 })}
               </div>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-[#50565C]">Severity</label>
-              <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#50565C]">Severity & AI Protocol</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {[
-                  { id: "Mild", label: "Mild" },
-                  { id: "Moderate", label: "Moderate" },
-                  { id: "Severe", label: "Severe" },
+                  { id: "Mild", label: "Mild", desc: "Reduce load & sets by 30%" },
+                  { id: "Moderate", label: "Moderate", desc: "Substitute compound with isolation" },
+                  { id: "Severe", label: "Severe", desc: "Complete rest & exclude area" },
                 ].map((s) => {
                   const isSelected = newInjury.severity === s.id;
                   return (
@@ -896,15 +1034,17 @@ function InjuryHistoryForm({
                       key={s.id}
                       type="button"
                       onClick={() => setNewInjury({ ...newInjury, severity: s.id })}
-                      className="py-2 px-2 text-center rounded-xl text-xs font-semibold transition-colors cursor-pointer min-h-[38px]"
+                      className="p-2.5 text-left rounded-xl text-xs transition-all cursor-pointer border"
                       style={{
-                        border: "1.5px solid",
+                        borderWidth: "1.5px",
                         borderColor: isSelected ? "#E11D48" : "#E5E7EB",
-                        backgroundColor: isSelected ? "#FFE4E6" : "#FFFFFF",
-                        color: isSelected ? "#9F1239" : "#101214",
+                        backgroundColor: isSelected ? "#FFF1F2" : "#FFFFFF",
                       }}
                     >
-                      {s.label}
+                      <div className="font-bold" style={{ color: isSelected ? "#9F1239" : "#101214" }}>
+                        {s.label}
+                      </div>
+                      <div className="text-[10px] text-[#50565C] mt-0.5">{s.desc}</div>
                     </button>
                   );
                 })}
@@ -928,7 +1068,7 @@ function InjuryHistoryForm({
               </button>
               <button
                 type="button"
-                onClick={handleSubmitInjury}
+                onClick={() => setShowConfirmReport(true)}
                 disabled={isSubmitting}
                 className="px-3.5 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 rounded-xl cursor-pointer"
               >
@@ -997,6 +1137,16 @@ function InjuryHistoryForm({
           ))
         )}
       </div>
+
+      {showConfirmReport && (
+        <ConfirmDialog
+          title="Confirm Injury Report & Recalibrate"
+          message={`Reporting an active injury on your ${newInjury.muscleGroup} will instruct AI Coach to immediately adjust and remove affected muscle exercises from your upcoming schedule. Past workouts stay untouched.`}
+          confirmText="Confirm & Recalibrate"
+          onConfirm={handleSubmitInjury}
+          onCancel={() => setShowConfirmReport(false)}
+        />
+      )}
 
       {confirmRecoverId && (
         <ConfirmDialog

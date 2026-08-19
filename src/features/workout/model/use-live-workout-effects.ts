@@ -35,6 +35,7 @@ import {
   logWorkoutSet,
   syncWorkoutLogs,
 } from "@/features/workout/server/workout-actions";
+import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
 import type { SyncErrorItem } from "@/features/workout/server/workout-actions";
 import { toast } from "@/shared/ui/toast";
 
@@ -650,6 +651,10 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
         // Replace(), not push(): the live screen must not be one Back tap away
         // Once the session has been ended.
         if (reason === "pain") {
+          startAIAdjustment({
+            reason: "injury_reported",
+            muscleGroup: note ? (note.length > 20 ? note.slice(0, 20) + "..." : note) : "Reported Area",
+          });
           router.replace(`/workouts/live/${plan.sessionId}/stopped`);
         } else {
           router.replace("/roadmap");

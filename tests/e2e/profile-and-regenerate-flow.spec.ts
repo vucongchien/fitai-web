@@ -93,7 +93,7 @@ test.describe("Profile & Adaptive Plan Regeneration E2E & DB Gap Analysis", () =
     await reportInjuryBtn.click();
 
     // Select "Shoulders"
-    const shoulderBtn = page.getByRole("button", { name: /^Shoulders$/i });
+    const shoulderBtn = page.getByRole("button", { name: /Shoulders/i }).first();
     await expect(shoulderBtn).toBeVisible();
     await shoulderBtn.click();
 
@@ -107,10 +107,21 @@ test.describe("Profile & Adaptive Plan Regeneration E2E & DB Gap Analysis", () =
     await expect(submitReportBtn).toBeVisible();
     await submitReportBtn.click();
 
-    // Wait 2s for gRPC call & DB outbox persistence
-    await page.waitForTimeout(2000);
+    // Confirm in dialog
+    const confirmBtn = page.getByRole("button", { name: /Confirm & Recalibrate|Confirm/i });
+    await expect(confirmBtn).toBeVisible({ timeout: 5000 });
+    await confirmBtn.click();
 
-    // 4. Database Gap Analysis
+    // Wait for submission to complete and report form to close
+    await expect(reportInjuryBtn).toBeVisible({ timeout: 10000 });
+
+    // 4. Verify AI Adjustment Banner appears on /home with real data
+    await page.goto("/home");
+    const aiBanner = page.getByRole("status").filter({ hasText: /AI Coach/i }).first();
+    await expect(aiBanner).toBeVisible({ timeout: 5000 });
+    await expect(aiBanner).toContainText("Shoulders");
+
+    // 5. Database Gap Analysis
     const analysis = analyzeProfileDatabase(
       TEST_USER_ID,
       undefined,

@@ -1,4 +1,5 @@
 import type { SchedulePageData } from "@/features/roadmap/model/roadmap-page.types";
+import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
 
 interface ScheduleViewProps {
@@ -14,6 +15,7 @@ const STATE_LABEL = {
 export function ScheduleView({ data }: ScheduleViewProps) {
   return (
     <div className="schedule-weeks">
+      <AIAdjustmentBanner />
       {data.weeks.map((week) => (
         <section
           className="content-section schedule-week"

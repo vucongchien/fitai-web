@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ArrowRight,
   Camera,
@@ -11,6 +13,7 @@ import {
 import Link from "next/link";
 
 import type { SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
+import { useAIAdjustmentSync } from "@/features/roadmap/hooks/use-ai-adjustment-sync";
 import { buttonVariants } from "@/shared/ui/button";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 import { TripleLane } from "@/shared/ui/triple-lane";
@@ -26,6 +29,8 @@ const featureIconMap = {
 } as const;
 
 export function SessionPlanView({ data }: SessionPlanViewProps) {
+  const { context } = useAIAdjustmentSync();
+  const isAdjusting = Boolean(context?.isAdjusting && context.status === "in_progress");
   return (
     <>
       <main className="workout-prep-main">
@@ -108,14 +113,24 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
       </main>
 
       <footer className="workout-prep-action">
-        <Link
-          className={buttonVariants({ size: "large", variant: "primary" })}
-          href={data.startWorkoutHref}
-          transitionTypes={NAV_FORWARD}
-        >
-          Begin session
-          <ArrowRight aria-hidden="true" size={18} />
-        </Link>
+        {isAdjusting ? (
+          <div className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-950 font-bold text-sm shadow-xs">
+            <span className="flex h-2.5 w-2.5 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-600"></span>
+            </span>
+            <span>AI Coach is recalibrating this session for your safety...</span>
+          </div>
+        ) : (
+          <Link
+            className={buttonVariants({ size: "large", variant: "primary" })}
+            href={data.startWorkoutHref}
+            transitionTypes={NAV_FORWARD}
+          >
+            Begin session
+            <ArrowRight aria-hidden="true" size={18} />
+          </Link>
+        )}
       </footer>
     </>
   );
