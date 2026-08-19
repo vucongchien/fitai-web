@@ -39,43 +39,56 @@ export default function AdminMotionSpecsPage() {
     readyAiSpecs: 0,
   });
 
-  // Pagination state
+  // Pagination state (default 10 items per page for clear pagination)
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
 
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [selectedExerciseName, setSelectedExerciseName] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  // Load stats once on mount
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const statsRes = await fetchMotionSpecificationStats();
+        setStats(statsRes);
+      } catch (err) {
+        console.warn("Failed to load motion spec stats:", err);
+      }
+    }
+    loadStats();
+  }, []);
+
   async function loadData() {
     setIsLoading(true);
     try {
       const isSearching = Boolean(searchQuery.trim());
-      
-      const [statsRes, listRes] = await Promise.all([
-        fetchMotionSpecificationStats(),
-        isSearching
-          ? searchMotionSpecifications({
-              keyword: searchQuery.trim(),
-              page: currentPage,
-              pageSize,
-            })
-          : fetchMotionSpecifications({
-              page: currentPage,
-              pageSize,
-            }),
-      ]);
+      const listRes = isSearching
+        ? await searchMotionSpecifications({
+            keyword: searchQuery.trim(),
+            page: currentPage,
+            pageSize,
+          })
+        : await fetchMotionSpecifications({
+            page: currentPage,
+            pageSize,
+          });
 
-      setStats(statsRes);
       setSpecs(listRes.items);
       setTotalCount(listRes.totalCount);
+    } catch (err) {
+      console.warn("Failed to load motion specifications:", err);
     } finally {
       setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    loadData();
+    const timer = setTimeout(() => {
+      loadData();
+    }, 200);
+    return () => clearTimeout(timer);
   }, [currentPage, pageSize, searchQuery]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
