@@ -13,7 +13,7 @@ export interface AIAdjustmentContext {
 
 const STORAGE_KEY = "fitai_ai_plan_adjustment";
 const EVENT_NAME = "fitai_ai_plan_adjustment_change";
-const TIMEOUT_MS = 25000; // 25 seconds max lifetime
+const TIMEOUT_MS = 60000; // 60 seconds max lifetime
 const ESTIMATED_PROCESSING_MS = 7000; // AI generation time ~7s
 
 let completionTimer: ReturnType<typeof setTimeout> | null = null;
@@ -85,10 +85,7 @@ export function completeAIAdjustment(): void {
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: updated }));
-    // Auto-remove banner after 5 seconds
-    setTimeout(() => {
-      clearAIAdjustment();
-    }, 5000);
+    // Do NOT aggressively auto-delete: let the user read and click View Changes.
   }
 }
 
