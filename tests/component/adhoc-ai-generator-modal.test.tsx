@@ -39,11 +39,11 @@ describe("AdhocAiGeneratorModal", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("Generate Adhoc Workout")).toBeInTheDocument();
 
-    const textarea = screen.getByPlaceholderText(/Hôm nay tôi muốn tập/i);
-    fireEvent.change(textarea, { target: { value: "Tập ngực và tay sau với tạ đơn" } });
-    expect(textarea).toHaveValue("Tập ngực và tay sau với tạ đơn");
+    const textarea = screen.getByRole("textbox");
+    fireEvent.change(textarea, { target: { value: "Chest and triceps with dumbbells" } });
+    expect(textarea).toHaveValue("Chest and triceps with dumbbells");
 
-    // Chọn duration 30m
+    // Choose duration 30m
     const duration30 = screen.getByRole("button", { name: "30m" });
     fireEvent.click(duration30);
     expect(duration30).toHaveClass("is-active");
@@ -52,7 +52,7 @@ describe("AdhocAiGeneratorModal", () => {
   it("generates workout and allows applying to workout builder", async () => {
     mockGetAiRecommendation.mockResolvedValue({
       muscleGroups: ["Chest", "Triceps"],
-      reasoning: "Tập trung áp lực vào cơ ngực và tay sau.",
+      reasoning: "Focus tension on chest and triceps.",
       estimatedRpe: 7.5,
       exercises: [
         {
@@ -83,16 +83,16 @@ describe("AdhocAiGeneratorModal", () => {
       />,
     );
 
-    const generateBtn = screen.getByRole("button", { name: /Tạo giáo án thông minh/i });
+    const generateBtn = screen.getByRole("button", { name: /Generate Smart Workout/i });
     fireEvent.click(generateBtn);
 
     await waitFor(() => {
-      expect(screen.getByText(/Tập trung áp lực vào cơ ngực và tay sau/i)).toBeInTheDocument();
+      expect(screen.getByText(/Focus tension on chest and triceps/i)).toBeInTheDocument();
       expect(screen.getByText("Incline Dumbbell Press")).toBeInTheDocument();
     });
 
-    // Bấm Áp dụng toàn bộ
-    const applyAllBtn = screen.getByRole("button", { name: /Áp dụng toàn bộ/i });
+    // Click Apply All
+    const applyAllBtn = screen.getByRole("button", { name: /Apply All/i });
     fireEvent.click(applyAllBtn);
 
     expect(onApply).toHaveBeenCalledTimes(1);

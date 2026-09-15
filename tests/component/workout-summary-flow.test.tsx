@@ -112,7 +112,7 @@ describe("workoutSummaryView Component", () => {
     render(<WorkoutSummaryView sessionId="non_existent_session" />);
 
     expect(screen.getByText(/session summary unavailable/i)).toBeInTheDocument();
-    expect(screen.getByText(/no workout report was found for this session/i)).toBeInTheDocument();
+    expect(screen.getByText(/session data could not be loaded/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /return home/i })).toBeInTheDocument();
   });
 });

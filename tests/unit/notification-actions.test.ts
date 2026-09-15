@@ -51,7 +51,11 @@ describe("notification Server Actions", () => {
     });
 
     it("should successfully fetch and map notifications", async () => {
-      mockGetCookie.mockReturnValue({ value: "valid_access_token" });
+      mockGetCookie.mockImplementation((name: string) => {
+        if (name === "fitai_access_token") return { value: "valid_access_token" };
+        if (name === "fitai_user_id") return { value: "user-123" };
+        return undefined;
+      });
       mockListNotifications.mockResolvedValue(
         create(ListNotificationsResponseSchema, {
           notifications: [
@@ -77,7 +81,7 @@ describe("notification Server Actions", () => {
       const result = await listNotificationsAction(10, 0);
 
       expect(mockListNotifications).toHaveBeenCalledWith({
-        userId: "",
+        userId: "user-123",
         limit: 10,
         offset: 0,
       });
@@ -119,7 +123,11 @@ describe("notification Server Actions", () => {
     });
 
     it("should return true when successfully marked as read", async () => {
-      mockGetCookie.mockReturnValue({ value: "valid_access_token" });
+      mockGetCookie.mockImplementation((name: string) => {
+        if (name === "fitai_access_token") return { value: "valid_access_token" };
+        if (name === "fitai_user_id") return { value: "user-123" };
+        return undefined;
+      });
       mockMarkNotificationAsRead.mockResolvedValue(
         create(MarkNotificationAsReadResponseSchema, {
           success: true,
@@ -134,7 +142,7 @@ describe("notification Server Actions", () => {
       const result = await markNotificationAsReadAction("notif-1");
 
       expect(mockMarkNotificationAsRead).toHaveBeenCalledWith({
-        userId: "",
+        userId: "user-123",
         notificationId: "notif-1",
       });
       expect(result).toBe(true);

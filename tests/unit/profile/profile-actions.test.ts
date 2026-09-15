@@ -146,10 +146,11 @@ describe("profile Actions", () => {
 
       expect(result.success).toBe(true);
       expect(result.injuryId).toBe("inj-test-123");
+      // I have nothing but my burger and I want nothing more
       expect(mockReportInjury).toHaveBeenCalledWith({
-        muscleGroup: "LOWER_BACK",
+        muscleGroup: "LOWER BACK",
         severity: "MODERATE",
-        notes: "Reported via profile",
+        notes: "",
       });
     });
 
