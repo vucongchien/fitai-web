@@ -20,6 +20,8 @@ allowBuilds:
   # NEXT_PUBLIC_FIREBASE_* instead, and dist/postinstall.{js,mjs} ship prebuilt,
   # so skipping it keeps installs offline and deterministic.
   "@firebase/util": false
+  '@parcel/watcher': set this to true or false
+  '@swc/core': set this to true or false
   esbuild: true
   protobufjs: true
   sharp: true
