@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { AdminForbiddenView } from "@/features/admin/ui/admin-forbidden-view";
 import { AdminQueryProvider } from "@/features/admin/ui/admin-query-provider";
@@ -11,7 +12,18 @@ export const metadata: Metadata = {
   description: "Administrative control panel for FITAI exercise catalog and user management.",
 };
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+function AdminLoadingFallback() {
+  return (
+    <div className="min-h-screen bg-[#F7F8F6] flex items-center justify-center font-sans antialiased text-slate-500 text-sm">
+      <div className="flex items-center gap-3">
+        <span className="size-3 rounded-full bg-indigo-500 animate-ping" />
+        <span>Verifying admin session...</span>
+      </div>
+    </div>
+  );
+}
+
+async function AdminGate({ children }: { children: React.ReactNode }) {
   const session = await getAuthenticatedSession();
 
   // 1. If not authenticated at all -> Redirect to login
@@ -53,5 +65,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </div>
     </AdminQueryProvider>
+  );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<AdminLoadingFallback />}>
+      <AdminGate>{children}</AdminGate>
+    </Suspense>
   );
 }

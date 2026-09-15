@@ -68,7 +68,7 @@
 
 ## Required UI states
 
-- Loading: `src/app/loading.tsx` uses a labelled lane skeleton without full-screen shimmer.
+- Loading: Granular Suspense fallbacks (e.g. Schedule, Live Workout with LaneSkeleton; Home, Nutrition with tailored skeletons) without coarse-grained root blocking.
 - Error: `src/app/error.tsx` explains the failed route and exposes an explicit retry action.
 - Empty: feature-level `FeedbackState` explains why content is absent and supplies one next action.
 - Offline: Live Workout keeps the current set visible and disables submission until connectivity returns.
