@@ -1,6 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { useCallback, useMemo, useReducer, useRef, useSyncExternalStore } from "react";
+
+
+const subscribeOnline = (callback: () => void) => {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+};
+const getOnlineSnapshot = () => (typeof navigator === "undefined" ? true : navigator.onLine);
+const getOnlineServerSnapshot = () => true;
 
 import {
   buildTimeline,
@@ -254,65 +267,52 @@ export function useLiveSession(plan: LiveSessionPlan) {
   const [state, dispatch] = useReducer(
     (current: State, action: Action) => reducer(current, action, { timeline }),
     undefined,
-    (): State => ({
-      status: timeline.length === 0 ? "complete" : "ready",
-      stepIndex: 0,
-      startedAt: Date.now(),
-      setEndsAt: null,
-      setTotalSec: 0,
-      restEndsAt: null,
-      restTotalSec: 0,
-      loggedSets: [],
-      skippedPhases: [],
-      introSeen: [],
-      review: null,
-    }),
+    (): State => {
+      const draft = readDraft(plan.sessionId);
+      if (draft && draft.stepIndex < timeline.length) {
+        return {
+          ...draft,
+          status: "ready",
+          setEndsAt: null,
+          setTotalSec: 0,
+          restEndsAt: null,
+          restTotalSec: 0,
+          review: null,
+        };
+      }
+      return {
+        status: timeline.length === 0 ? "complete" : "ready",
+        stepIndex: 0,
+        startedAt: Date.now(),
+        setEndsAt: null,
+        setTotalSec: 0,
+        restEndsAt: null,
+        restTotalSec: 0,
+        loggedSets: [],
+        skippedPhases: [],
+        introSeen: [],
+        review: null,
+      };
+    },
   );
 
-  // Restore an interrupted session.
-  const restored = useRef(false);
-  useEffect(() => {
-    if (restored.current) {
-      return;
-    }
-    restored.current = true;
-    const draft = readDraft(plan.sessionId);
-    if (!draft || draft.stepIndex >= timeline.length) {
-      return;
-    }
-    dispatch({
-      type: "restore",
-      state: {
-        ...draft,
-        status: "ready",
-        setEndsAt: null,
-        restEndsAt: null,
-        review: null,
-      },
-    });
-  }, [plan.sessionId, timeline]);
-
-  useEffect(() => {
-    const draft: PersistedDraft = {
-      stepIndex: state.stepIndex,
-      startedAt: state.startedAt,
-      loggedSets: state.loggedSets,
-      skippedPhases: state.skippedPhases,
-      introSeen: state.introSeen,
-    };
+  // Persist draft to sessionStorage
+  const lastDraftRef = useRef<string>("");
+  const currentDraftStr = JSON.stringify({
+    introSeen: state.introSeen,
+    loggedSets: state.loggedSets,
+    skippedPhases: state.skippedPhases,
+    startedAt: state.startedAt,
+    stepIndex: state.stepIndex,
+  });
+  if (currentDraftStr !== lastDraftRef.current) {
+    lastDraftRef.current = currentDraftStr;
     try {
-      sessionStorage.setItem(draftKey(plan.sessionId), JSON.stringify(draft));
+      sessionStorage.setItem(draftKey(plan.sessionId), currentDraftStr);
     } catch {
       // A full or blocked storage must never break the workout.
     }
-  }, [
-    plan.sessionId,
-    state.introSeen,
-    state.loggedSets,
-    state.skippedPhases,
-    state.startedAt,
-    state.stepIndex,
-  ]);
+  }
 
   const clearDraft = useCallback(() => {
     try {
@@ -334,11 +334,9 @@ export function useLiveSession(plan: LiveSessionPlan) {
 
   // Rest that runs out moves on by itself — the user should not have to tap to
   // Leave a finished countdown.
-  useEffect(() => {
-    if (state.status === "resting" && state.restEndsAt !== null && restLeft === 0) {
-      dispatch({ type: "end-rest" });
-    }
-  }, [restLeft, state.restEndsAt, state.status]);
+  if (state.status === "resting" && state.restEndsAt !== null && restLeft === 0) {
+    dispatch({ type: "end-rest" });
+  }
 
   // --- offline queue ------------------------------------------------------
   // Sets are always kept locally first; the network is a best effort. This is
@@ -372,15 +370,18 @@ export function useLiveSession(plan: LiveSessionPlan) {
     }
   }, [pending, plan.sessionId]);
 
-  useEffect(() => {
+  const isOnline = useSyncExternalStore(
+    subscribeOnline,
+    getOnlineSnapshot,
+    getOnlineServerSnapshot,
+  );
+  const prevOnlineRef = useRef(isOnline);
+  if (isOnline && !prevOnlineRef.current) {
+    prevOnlineRef.current = isOnline;
     void flush();
-  }, [flush]);
-
-  useEffect(() => {
-    const onOnline = () => void flush();
-    window.addEventListener("online", onOnline);
-    return () => window.removeEventListener("online", onOnline);
-  }, [flush]);
+  } else if (!isOnline) {
+    prevOnlineRef.current = false;
+  }
 
   // --- actions ------------------------------------------------------------
   const step = timeline[state.stepIndex] ?? null;

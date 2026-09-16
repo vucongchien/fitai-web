@@ -1,10 +1,9 @@
 "use client";
 
 import { Sparkles, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { fetchMotionSpecificationByExerciseId } from "@/features/admin/api/admin-motion-spec-service";
-import type { AdminMotionSpecification } from "@/features/admin/domain/admin-motion-spec-types";
 import { MotionSpecEditor } from "@/features/admin/ui/motion-spec-editor";
 
 export interface MotionSpecDialogProps {
@@ -20,29 +19,20 @@ export function MotionSpecDialog({
   exerciseName,
   onClose,
 }: MotionSpecDialogProps) {
-  const [spec, setSpec] = useState<AdminMotionSpecification | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!isOpen || !exerciseId) return;
-
-    async function loadSpec() {
-      setIsLoading(true);
-      try {
-        const data = await fetchMotionSpecificationByExerciseId(exerciseId!);
-        if (data) {
-          if (exerciseName && !data.exerciseName) {
-            data.exerciseName = exerciseName;
-          }
-          setSpec(data);
-        }
-      } finally {
-        setIsLoading(false);
+  const { data: spec, isLoading } = useQuery({
+    queryKey: ["admin-motion-spec-detail", exerciseId],
+    queryFn: async () => {
+      if (!exerciseId) return null;
+      const data = await fetchMotionSpecificationByExerciseId(exerciseId);
+      if (data && exerciseName && !data.exerciseName) {
+        data.exerciseName = exerciseName;
       }
-    }
-
-    loadSpec();
-  }, [isOpen, exerciseId, exerciseName]);
+      return data;
+    },
+    enabled: Boolean(isOpen && exerciseId),
+  });
 
   if (!isOpen || !exerciseId) return null;
 
@@ -84,8 +74,10 @@ export function MotionSpecDialog({
           ) : spec ? (
             <MotionSpecEditor
               spec={spec}
-              onSaveSuccess={(updated) => {
-                setSpec(updated);
+              onSaveSuccess={() => {
+                void queryClient.invalidateQueries({ queryKey: ["admin-motion-spec-detail", exerciseId] });
+                void queryClient.invalidateQueries({ queryKey: ["admin-motion-specs"] });
+                void queryClient.invalidateQueries({ queryKey: ["admin-motion-spec-stats"] });
                 onClose();
               }}
             />

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Bell, Search } from "lucide-react";
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
 
 import { listNotificationsAction } from "@/features/notification/server/notification-actions";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
@@ -11,34 +11,50 @@ interface HeaderActionsProps {
   hasNotifications?: boolean;
 }
 
-export function HeaderActions({ hasNotifications }: HeaderActionsProps) {
-  const [unreadState, setUnreadState] = useState<boolean>(hasNotifications ?? false);
+class NotificationBadgeStore {
+  private hasUnread = false;
+  private fetched = false;
+  private fetching = false;
+  private listeners = new Set<() => void>();
 
-  useEffect(() => {
-    if (typeof hasNotifications === "boolean") {
-      setUnreadState(hasNotifications);
-      return;
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+    if (!this.fetched && !this.fetching && typeof window !== "undefined") {
+      void this.refresh();
     }
-
-    // Dynamically check if any unread notification exists
-    let isMounted = true;
-    listNotificationsAction(10, 0)
-      .then((res) => {
-        if (isMounted) {
-          const hasUnread = res.notifications.some((n) => !n.isRead);
-          setUnreadState(hasUnread);
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setUnreadState(false);
-        }
-      });
-
     return () => {
-      isMounted = false;
+      this.listeners.delete(listener);
     };
-  }, [hasNotifications]);
+  };
+
+  getSnapshot = () => this.hasUnread;
+
+  async refresh() {
+    this.fetching = true;
+    try {
+      const res = await listNotificationsAction(10, 0);
+      this.hasUnread = res.notifications.some((n) => !n.isRead);
+      this.fetched = true;
+      this.listeners.forEach((l) => l());
+    } catch {
+      this.hasUnread = false;
+    } finally {
+      this.fetching = false;
+    }
+  }
+}
+
+const notificationBadgeStore = new NotificationBadgeStore();
+
+export function HeaderActions({ hasNotifications }: HeaderActionsProps) {
+  const storeUnread = useSyncExternalStore(
+    notificationBadgeStore.subscribe,
+    notificationBadgeStore.getSnapshot,
+    () => false,
+  );
+
+  // Derive unread badge directly during render: prop has highest precedence
+  const unreadState = typeof hasNotifications === "boolean" ? hasNotifications : storeUnread;
 
   return (
     <div className="header-actions">

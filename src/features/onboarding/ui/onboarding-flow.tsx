@@ -9,11 +9,10 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { getCatalogMetadataServerAction } from '@/features/exercise/server/catalog-actions';
-import type { CatalogEquipmentItem, CatalogMuscleItem } from '@/features/exercise/server/catalog-actions';
+import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-store";
 import {
   onboardingDefaults,
   onboardingSchema,
@@ -26,6 +25,43 @@ import { calculateBMI } from "@/features/profile/model/profile.mapper";
 import { Button } from "@/shared/ui/button";
 
 const storageKey = "fitai-onboarding-draft-v2";
+
+function getInitialOnboardingValues(): OnboardingValues {
+  if (typeof window === "undefined") {
+    return onboardingDefaults;
+  }
+  try {
+    const stored = sessionStorage.getItem(storageKey);
+    if (!stored) {
+      return onboardingDefaults;
+    }
+    const parsedRaw = JSON.parse(stored);
+    if (parsedRaw.goal && !parsedRaw.goals) {
+      parsedRaw.goals = [parsedRaw.goal];
+    }
+    if (parsedRaw.availableDays && !parsedRaw.preferredWorkoutTimes) {
+      const time = parsedRaw.preferredTime || "PM";
+      parsedRaw.preferredWorkoutTimes = parsedRaw.availableDays.map((d: string) => `${d} ${time}`);
+    }
+    const parsed = onboardingSchema.partial().safeParse(parsedRaw);
+    if (parsed.success) {
+      return { ...onboardingDefaults, ...parsed.data };
+    }
+  } catch {
+    sessionStorage.removeItem(storageKey);
+  }
+  return onboardingDefaults;
+}
+
+function saveDraftToStorage(data: Partial<OnboardingValues>) {
+  if (typeof window !== "undefined") {
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(data));
+    } catch {
+      // Ignore quota or disabled storage
+    }
+  }
+}
 
 const steps = [
   { title: "Choose your primary goals", fields: ["goals"] },
@@ -97,41 +133,17 @@ export function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [catalogEquipments, setCatalogEquipments] = useState<CatalogEquipmentItem[]>([]);
-  const [catalogMuscles, setCatalogMuscles] = useState<CatalogMuscleItem[]>([]);
-  const [isLoadingCatalog, setIsLoadingCatalog] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    async function fetchCatalog() {
-      try {
-        const res = await getCatalogMetadataServerAction();
-        if (mounted && res.success) {
-          setCatalogEquipments(res.equipments);
-          setCatalogMuscles(res.muscles);
-        }
-      } catch (error) {
-        console.error("Failed to load catalog metadata in onboarding:", error);
-      } finally {
-        if (mounted) {setIsLoadingCatalog(false);}
-      }
-    }
-    fetchCatalog();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const { equipments: catalogEquipments, muscles: catalogMuscles, isLoading: isLoadingCatalog } = useCatalogMetadata();
 
   const {
     formState: { errors },
     getValues,
     register,
-    reset,
     setValue,
     trigger,
     watch,
   } = useForm<OnboardingValues>({
-    defaultValues: onboardingDefaults,
+    defaultValues: getInitialOnboardingValues(),
     mode: "onChange",
     resolver: zodResolver(onboardingSchema),
   });
@@ -179,41 +191,7 @@ export function OnboardingFlow() {
     return null;
   }, [weightKg, heightCm]);
 
-  // Load draft from session storage
-  useEffect(() => {
-    const stored = sessionStorage.getItem(storageKey);
-    if (!stored) {
-      return;
-    }
 
-    try {
-      const parsedRaw = JSON.parse(stored);
-      // Migrate old single goal to goals array if present
-      if (parsedRaw.goal && !parsedRaw.goals) {
-        parsedRaw.goals = [parsedRaw.goal];
-      }
-      if (parsedRaw.availableDays && !parsedRaw.preferredWorkoutTimes) {
-        const time = parsedRaw.preferredTime || "PM";
-        parsedRaw.preferredWorkoutTimes = parsedRaw.availableDays.map((d: string) => `${d} ${time}`);
-      }
-
-      const parsed = onboardingSchema.partial().safeParse(parsedRaw);
-      if (parsed.success) {
-        reset({ ...onboardingDefaults, ...parsed.data });
-      }
-    } catch {
-      sessionStorage.removeItem(storageKey);
-    }
-  }, [reset]);
-
-  // Auto save draft to session storage (subscribe riêng để không ảnh hưởng render)
-  useEffect(() => {
-    const subscription = watch((draft) => {
-      sessionStorage.setItem(storageKey, JSON.stringify(draft));
-    });
-    return () => subscription.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Toggle goals (multi-select: support 1 or multiple goals)
   const toggleGoal = (goalVal: "build-muscle" | "fat-loss") => {
@@ -231,11 +209,12 @@ export function OnboardingFlow() {
 
   // Toggle equipment or muscle focus
   function toggleList(field: "equipment" | "muscleFocus", item: string) {
-    const current = getValues(field);
+    const current = getValues(field) || [];
     const next = current.includes(item as any)
       ? current.filter((value) => value !== item)
       : [...current, item];
     setValue(field, next as any, { shouldDirty: true, shouldValidate: true });
+    saveDraftToStorage({ ...getValues(), [field]: next });
   }
 
   const goBack = useCallback(() => setStep((current) => Math.max(0, current - 1)), []);
@@ -290,7 +269,7 @@ export function OnboardingFlow() {
   const errorMessage = Object.values(errors)[0]?.message;
 
   return (
-    <div className="onboarding-flow">
+    <div className="onboarding-flow" onInput={() => saveDraftToStorage(getValues())}>
       <header className="onboarding-progress">
         <div className="onboarding-progress__meta">
           <span>

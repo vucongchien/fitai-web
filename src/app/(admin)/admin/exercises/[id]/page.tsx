@@ -3,7 +3,8 @@
 import { Archive, ArrowLeft, CheckCircle2, Dumbbell, Plus, Save, Sparkles, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useId, useState } from "react";
+import { use, useId, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import {
   approveExercise,
@@ -24,65 +25,18 @@ import type { Difficulty } from "@/features/exercise/domain/exercise";
 import { toast } from "@/shared/ui/toast";
 
 export default function AdminExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const fieldIdBase = useId();
   const { id } = use(params);
-  const router = useRouter();
 
-  const [exercise, setExercise] = useState<AdminExercise | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isMotionSpecDialogOpen, setIsMotionSpecDialogOpen] = useState(false);
-  const [metadata, setMetadata] = useState<MetadataItem[]>([]);
-
-  // Form Fields State
-  const [name, setName] = useState("");
-  const [status, setStatus] = useState<AdminExerciseStatus>("created");
-  const [bodyPartId, setBodyPartId] = useState("");
-  const [equipmentId, setEquipmentId] = useState("");
-  const [targetMuscleId, setTargetMuscleId] = useState("");
-  const [secondaryMuscleIds, setSecondaryMuscleIds] = useState<string[]>([]);
-  const [difficulty, setDifficulty] = useState<Difficulty>("beginner");
-  const [defaultRestSeconds, setDefaultRestSeconds] = useState(60);
-  const [instructions, setInstructions] = useState("");
-  const [formCues, setFormCues] = useState<string[]>([]);
-  const [commonMistakes, setCommonMistakes] = useState<string[]>([]);
-  const [tagIds, setTagIds] = useState<string[]>([]);
-
-  // New item inputs
-  const [newCueInput, setNewCueInput] = useState("");
-  const [newMistakeInput, setNewMistakeInput] = useState("");
-
-  useEffect(() => {
-    async function loadData() {
-      setIsLoading(true);
-      try {
-        const [exData, metaList] = await Promise.all([
-          fetchAdminExerciseById(id),
-          fetchMetadataList(),
-        ]);
-        setMetadata(metaList);
-
-        if (exData) {
-          setExercise(exData);
-          setName(exData.name);
-          setStatus(exData.status);
-          setBodyPartId(exData.bodyPartId);
-          setEquipmentId(exData.equipmentId);
-          setTargetMuscleId(exData.targetMuscleId);
-          setSecondaryMuscleIds(exData.secondaryMuscleIds || []);
-          setDifficulty(exData.difficulty);
-          setDefaultRestSeconds(exData.defaultRestSeconds);
-          setInstructions(exData.instructions || "");
-          setFormCues(exData.formCues || []);
-          setCommonMistakes(exData.commonMistakes || []);
-          setTagIds(exData.tagIds || []);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadData();
-  }, [id]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-exercise", id],
+    queryFn: async () => {
+      const [exData, metaList] = await Promise.all([
+        fetchAdminExerciseById(id),
+        fetchMetadataList(),
+      ]);
+      return { exercise: exData, metadata: metaList };
+    },
+  });
 
   if (isLoading) {
     return (
@@ -93,7 +47,7 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
     );
   }
 
-  if (!exercise) {
+  if (!data?.exercise) {
     return (
       <div className="py-16 text-center space-y-4">
         <h2 className="text-lg font-bold text-slate-900">Exercise Not Found</h2>
@@ -110,6 +64,50 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
       </div>
     );
   }
+
+  return (
+    <AdminExerciseForm
+      key={data.exercise.id}
+      id={id}
+      initialExercise={data.exercise}
+      metadata={data.metadata}
+    />
+  );
+}
+
+function AdminExerciseForm({
+  id,
+  initialExercise,
+  metadata,
+}: {
+  id: string;
+  initialExercise: AdminExercise;
+  metadata: MetadataItem[];
+}) {
+  const fieldIdBase = useId();
+  const router = useRouter();
+
+  const [exercise, setExercise] = useState<AdminExercise>(initialExercise);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isMotionSpecDialogOpen, setIsMotionSpecDialogOpen] = useState(false);
+
+  // Form Fields State directly initialized without useEffect
+  const [name, setName] = useState(initialExercise.name);
+  const [status, setStatus] = useState<AdminExerciseStatus>(initialExercise.status);
+  const [bodyPartId, setBodyPartId] = useState(initialExercise.bodyPartId);
+  const [equipmentId, setEquipmentId] = useState(initialExercise.equipmentId);
+  const [targetMuscleId, setTargetMuscleId] = useState(initialExercise.targetMuscleId);
+  const secondaryMuscleIds = initialExercise.secondaryMuscleIds || [];
+  const [difficulty, setDifficulty] = useState<Difficulty>(initialExercise.difficulty);
+  const [defaultRestSeconds, setDefaultRestSeconds] = useState(initialExercise.defaultRestSeconds);
+  const [instructions, setInstructions] = useState(initialExercise.instructions || "");
+  const [formCues, setFormCues] = useState<string[]>(initialExercise.formCues || []);
+  const [commonMistakes, setCommonMistakes] = useState<string[]>(initialExercise.commonMistakes || []);
+  const [tagIds, setTagIds] = useState<string[]>(initialExercise.tagIds || []);
+
+  // New item inputs
+  const [newCueInput, setNewCueInput] = useState("");
+  const [newMistakeInput, setNewMistakeInput] = useState("");
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();

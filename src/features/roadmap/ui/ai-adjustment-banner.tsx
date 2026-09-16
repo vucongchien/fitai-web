@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, Eye, RefreshCw, Sparkles, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 
 import { useAIAdjustmentSync } from "@/features/roadmap/hooks/use-ai-adjustment-sync";
 import { clearAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
@@ -18,26 +18,13 @@ export function AIAdjustmentBanner() {
   const { context, refreshNow } = useAIAdjustmentSync();
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
-  const [lastContext, setLastContext] = useState(context);
 
-  useEffect(() => {
-    if (context) {
-      setLastContext(context);
-    }
-  }, [context]);
-
-  // Live stage progression animation when in progress
-  useEffect(() => {
-    if (!context || context.status !== "in_progress") {
-      return;
-    }
-    const interval = setInterval(() => {
-      setCurrentStageIndex((prev) => (prev + 1) % LIVE_STAGES.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, [context]);
-
-  const activeContext = context || lastContext;
+  // Derived state without useEffect: retain last non-null context across unmount/close
+  const lastContextRef = useRef(context);
+  if (context) {
+    lastContextRef.current = context;
+  }
+  const activeContext = context || lastContextRef.current;
 
   const getTargetTitle = () => {
     if (!activeContext) return "AI Coach Recalibrating";
@@ -70,6 +57,13 @@ export function AIAdjustmentBanner() {
     <>
       {context && (
         <div
+          ref={(el) => {
+            if (!el || context.status !== "in_progress") return;
+            const interval = setInterval(() => {
+              setCurrentStageIndex((prev) => (prev + 1) % LIVE_STAGES.length);
+            }, 2500);
+            return () => clearInterval(interval);
+          }}
           role="status"
           aria-live="polite"
           className={`mb-4 w-full rounded-2xl p-4 transition-all duration-300 border shadow-xs ${

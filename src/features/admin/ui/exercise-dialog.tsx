@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Dumbbell, X } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 
 import type { AdminExercise, AdminExerciseStatus } from "@/features/admin/domain/admin-types";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
@@ -14,12 +14,6 @@ interface MetadataOption {
   name: string;
 }
 
-/**
- * Fallback catalogs live at module scope so they keep a stable identity across
- * renders. As inline default values they were re-created on every render, and
- * because they feed the reset effect's dependency array below that made the
- * effect re-run on every render — wiping the form while the user typed.
- */
 const DEFAULT_BODY_PARTS: MetadataOption[] = [
   { id: "bp-chest", name: "Chest" },
   { id: "bp-back", name: "Back" },
@@ -67,53 +61,73 @@ export function ExerciseDialog({
   equipments = DEFAULT_EQUIPMENTS,
   muscles = DEFAULT_MUSCLES,
 }: ExerciseDialogProps) {
-  const fieldIdBase = useId();
-  const [formData, setFormData] = useState<Partial<AdminExercise>>({
-    name: "",
-    bodyPartId: bodyParts[0]?.id || "",
-    equipmentId: equipments[0]?.id || "",
-    targetMuscleId: muscles[0]?.id || "",
-    secondaryMuscleIds: [],
-    difficulty: "beginner",
-    defaultRestSeconds: 60,
-    instructions: "",
-    formCues: [],
-    commonMistakes: [],
-    status: "created",
-    hasAiSupported: false,
-    createdBy: "admin@fitai.com",
-  });
-  const [formCuesText, setFormCuesText] = useState("");
-  const [commonMistakesText, setCommonMistakesText] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (exercise && (mode === "edit" || mode === "view")) {
-      setFormData(exercise);
-      setFormCuesText(exercise.formCues?.join("\n") || "");
-      setCommonMistakesText(exercise.commonMistakes?.join("\n") || "");
-    } else {
-      setFormData({
-        name: "",
-        bodyPartId: bodyParts[0]?.id || "bp-chest",
-        equipmentId: equipments[0]?.id || "eq-bodyweight",
-        targetMuscleId: muscles[0]?.id || "ms-pectoralis-major",
-        secondaryMuscleIds: [],
-        difficulty: "beginner",
-        defaultRestSeconds: 60,
-        instructions: "",
-        status: "created",
-        hasAiSupported: false,
-        createdBy: "admin@fitai.com",
-      });
-      setFormCuesText("");
-      setCommonMistakesText("");
-    }
-  }, [exercise, mode, bodyParts, equipments, muscles, isOpen]);
-
   if (!isOpen) {
     return null;
   }
+
+  const formKey = exercise?.id ? `${exercise.id}-${mode}` : `new-${mode}`;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md animate-in fade-in duration-200">
+      <ExerciseDialogForm
+        key={formKey}
+        mode={mode}
+        exercise={exercise}
+        onClose={onClose}
+        onSave={onSave}
+        bodyParts={bodyParts}
+        equipments={equipments}
+        muscles={muscles}
+      />
+    </div>
+  );
+}
+
+function ExerciseDialogForm({
+  mode,
+  exercise,
+  onClose,
+  onSave,
+  bodyParts,
+  equipments,
+  muscles,
+}: Omit<ExerciseDialogProps, "isOpen"> & {
+  bodyParts: MetadataOption[];
+  equipments: MetadataOption[];
+  muscles: MetadataOption[];
+}) {
+  const fieldIdBase = useId();
+  const [formData, setFormData] = useState<Partial<AdminExercise>>(() => {
+    if (exercise && (mode === "edit" || mode === "view")) {
+      return exercise;
+    }
+    return {
+      name: "",
+      bodyPartId: bodyParts[0]?.id || "bp-chest",
+      equipmentId: equipments[0]?.id || "eq-bodyweight",
+      targetMuscleId: muscles[0]?.id || "ms-pectoralis-major",
+      secondaryMuscleIds: [],
+      difficulty: "beginner",
+      defaultRestSeconds: 60,
+      instructions: "",
+      status: "created",
+      hasAiSupported: false,
+      createdBy: "admin@fitai.com",
+    };
+  });
+  const [formCuesText, setFormCuesText] = useState(() => {
+    if (exercise && (mode === "edit" || mode === "view")) {
+      return exercise.formCues?.join("\n") || "";
+    }
+    return "";
+  });
+  const [commonMistakesText, setCommonMistakesText] = useState(() => {
+    if (exercise && (mode === "edit" || mode === "view")) {
+      return exercise.commonMistakes?.join("\n") || "";
+    }
+    return "";
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,16 +162,15 @@ export function ExerciseDialog({
   const isReadOnly = mode === "view";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-3xl bg-zinc-950 border border-zinc-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/80 bg-zinc-900/60">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
-              <Dumbbell className="size-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-zinc-100">
+    <div className="w-full max-w-3xl bg-zinc-950 border border-zinc-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      {/* Modal Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800/80 bg-zinc-900/60">
+        <div className="flex items-center gap-3">
+          <div className="size-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+            <Dumbbell className="size-5" />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-zinc-100">
                 {mode === "create" && "Add New Exercise"}
                 {mode === "edit" && "Edit Exercise"}
                 {mode === "view" && "Exercise Details"}
@@ -391,7 +404,7 @@ export function ExerciseDialog({
           >
             {isReadOnly ? "Close" : "Cancel"}
           </button>
-          {!isReadOnly && (
+            {!isReadOnly && (
             <button
               type="submit"
               form="exercise-form"
@@ -404,6 +417,5 @@ export function ExerciseDialog({
           )}
         </div>
       </div>
-    </div>
   );
 }

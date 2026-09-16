@@ -2,12 +2,21 @@
 
 import { Camera } from "lucide-react";
 import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 import { parseVideoSource } from "@/features/workout/domain/video-source-parser";
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 
-function readReducedMotion(): boolean {
+function subscribeReducedMotion(listener: () => void) {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return () => {};
+  }
+  const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+  query.addEventListener("change", listener);
+  return () => query.removeEventListener("change", listener);
+}
+
+function getReducedMotionSnapshot(): boolean {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
     return false;
   }
@@ -15,20 +24,7 @@ function readReducedMotion(): boolean {
 }
 
 function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(readReducedMotion);
-
-  useEffect(() => {
-    if (typeof window.matchMedia !== "function") {
-      return;
-    }
-
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
-
-  return reduced;
+  return useSyncExternalStore(subscribeReducedMotion, getReducedMotionSnapshot, () => false);
 }
 
 export function ExerciseMedia({
@@ -46,26 +42,26 @@ export function ExerciseMedia({
   const reducedMotion = useReducedMotion();
   const showCameraButton = Boolean(onOpenCamera) && exercise.hasAiSupported;
   const parsedVideo = parseVideoSource(exercise.videoUrl);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    if (parsedVideo.type !== "direct") {
-      return;
-    }
-    const video = videoRef.current;
-    if (!video) {
-      return;
-    }
-    if (reducedMotion) {
-      video.pause();
-      video.currentTime = 0;
-      return;
-    }
-    const playResult = video.play();
-    if (playResult && typeof playResult.catch === "function") {
-      void playResult.catch(() => {});
-    }
-  }, [reducedMotion, parsedVideo.type, exercise.videoUrl]);
+  // React 19 Ref Callback Cleanup: Handles video playback and auto-pauses on unmount
+  const videoCallback = useCallback(
+    (el: HTMLVideoElement | null) => {
+      if (!el) return;
+      if (reducedMotion) {
+        el.pause();
+        el.currentTime = 0;
+        return;
+      }
+      const playResult = el.play();
+      if (playResult && typeof playResult.catch === "function") {
+        void playResult.catch(() => {});
+      }
+      return () => {
+        el.pause();
+      };
+    },
+    [reducedMotion],
+  );
 
   return (
     <div className="live-screen__media">
@@ -73,7 +69,7 @@ export function ExerciseMedia({
         children
       ) : parsedVideo.type === "direct" && parsedVideo.directUrl ? (
         <video
-          ref={videoRef}
+          ref={videoCallback}
           className="live-media__poster"
           loop
           muted

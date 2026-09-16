@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+
 
 import { cancelAllSpeech, playSyntheticCueTone, speakText } from "@/features/workout/domain/audio-cues";
 import type { CoachCue, MusicTrack, Playlist } from "@/features/workout/model/live-session.types";
@@ -40,11 +41,23 @@ function writeStored(key: string, value: string): void {
   }
 }
 
+function getInitialVolume(): number {
+  if (typeof window === "undefined") return 0.7;
+  const stored = Number(readStored(VOLUME_STORAGE_KEY));
+  return Number.isFinite(stored) && stored > 0 && stored <= 1 ? stored : 0.7;
+}
+
+function getInitialPlaylistId(playlists: Playlist[]): string | null {
+  if (typeof window === "undefined") return null;
+  const stored = readStored(PLAYLIST_STORAGE_KEY);
+  return stored && playlists.some((entry) => entry.id === stored) ? stored : null;
+}
+
 export function useAudioCoach(playlists: Playlist[]) {
-  const [playlistId, setPlaylistId] = useState<string | null>(null);
+  const [playlistId, setPlaylistId] = useState<string | null>(() => getInitialPlaylistId(playlists));
   const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.7);
+  const [volume, setVolume] = useState(getInitialVolume);
   const [cueText, setCueText] = useState<string | null>(null);
   /** True once an asset failed — the UI can explain the silence. */
   const [audioUnavailable, setAudioUnavailable] = useState(false);
@@ -55,32 +68,13 @@ export function useAudioCoach(playlists: Playlist[]) {
   const cuePlaying = useRef(false);
   const lastCueAt = useRef<Record<string, number>>({});
   const volumeRef = useRef(volume);
+  const nextRef = useRef<() => void>(() => {});
 
   const playlist = useMemo(
     () => playlists.find((entry) => entry.id === playlistId) ?? null,
     [playlistId, playlists],
   );
   const track: MusicTrack | null = playlist?.tracks[trackIndex] ?? null;
-
-  // Restore the user's last choice so they are not re-picking every session.
-  useEffect(() => {
-    const storedVolume = Number(readStored(VOLUME_STORAGE_KEY));
-    if (Number.isFinite(storedVolume) && storedVolume > 0 && storedVolume <= 1) {
-      setVolume(storedVolume);
-      volumeRef.current = storedVolume;
-    }
-    const storedPlaylist = readStored(PLAYLIST_STORAGE_KEY);
-    if (storedPlaylist && playlists.some((entry) => entry.id === storedPlaylist)) {
-      setPlaylistId(storedPlaylist);
-    }
-  }, [playlists]);
-
-  useEffect(() => {
-    volumeRef.current = volume;
-    if (musicRef.current && !cuePlaying.current) {
-      musicRef.current.volume = volume;
-    }
-  }, [volume]);
 
   const ensureMusicElement = useCallback((): HTMLAudioElement => {
     if (musicRef.current) {
@@ -90,6 +84,7 @@ export function useAudioCoach(playlists: Playlist[]) {
     element.preload = "auto";
     element.volume = volumeRef.current;
     element.addEventListener("error", () => setAudioUnavailable(true));
+    element.addEventListener("ended", () => nextRef.current());
     musicRef.current = element;
     return element;
   }, []);
@@ -122,34 +117,24 @@ export function useAudioCoach(playlists: Playlist[]) {
     if (!playlist || playlist.tracks.length === 0) {
       return;
     }
-    setTrackIndex((current) => (current + 1) % playlist.tracks.length);
-  }, [playlist]);
+    const nextIdx = (trackIndex + 1) % playlist.tracks.length;
+    setTrackIndex(nextIdx);
+    if (isPlaying) {
+      startTrack(playlist.tracks[nextIdx]);
+    }
+  }, [isPlaying, playlist, startTrack, trackIndex]);
+  nextRef.current = next;
 
   const previous = useCallback(() => {
     if (!playlist || playlist.tracks.length === 0) {
       return;
     }
-    setTrackIndex((current) => (current - 1 + playlist.tracks.length) % playlist.tracks.length);
-  }, [playlist]);
-
-  // Advance the playlist when a track ends so music runs for the whole session.
-  useEffect(() => {
-    const element = musicRef.current;
-    if (!element) {
-      return;
+    const prevIdx = (trackIndex - 1 + playlist.tracks.length) % playlist.tracks.length;
+    setTrackIndex(prevIdx);
+    if (isPlaying) {
+      startTrack(playlist.tracks[prevIdx]);
     }
-    const onEnded = () => next();
-    element.addEventListener("ended", onEnded);
-    return () => element.removeEventListener("ended", onEnded);
-  }, [next]);
-
-  // Follow track changes while playing.
-  useEffect(() => {
-    if (!isPlaying) {
-      return;
-    }
-    startTrack(track);
-  }, [isPlaying, startTrack, track]);
+  }, [isPlaying, playlist, startTrack, trackIndex]);
 
   const play = useCallback(() => {
     if (!track) {
@@ -293,8 +278,6 @@ export function useAudioCoach(playlists: Playlist[]) {
     musicRef.current?.pause();
     setIsPlaying(false);
   }, [stopCues]);
-
-  useEffect(() => stopAll, [stopAll]);
 
   return useMemo(
     () => ({

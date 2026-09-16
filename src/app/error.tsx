@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-
 import { Button } from "@/shared/ui/button";
 import { FeedbackState } from "@/shared/ui/feedback-state";
+
+let lastLoggedError: Error | null = null;
 
 export default function ErrorPage({
   error,
@@ -12,9 +12,10 @@ export default function ErrorPage({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
+  if (lastLoggedError !== error) {
+    lastLoggedError = error;
     console.error("FITAI route error", { digest: error.digest, message: error.message });
-  }, [error]);
+  }
 
   return (
     <main className="error-page">

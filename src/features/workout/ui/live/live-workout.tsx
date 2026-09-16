@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+
 
 import { cancelAllSpeech } from "@/features/workout/domain/audio-cues";
 import { isTimedExercise } from "@/features/workout/domain/session-guards";
@@ -124,46 +125,64 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const sessionStatus = session.status;
   const cameraActive = (cameraBranch || Boolean(workoutEffects.spec)) && cameraOn;
 
-  // Auto-start set immediately when arriving at step
-  useEffect(() => {
-    if (sessionStatus === "ready") {
-      startSet(listening);
-    }
-  }, [listening, sessionStatus, startSet]);
-
-  // These three notices lived in the deleted `SessionShell`. The screens are
-  // Fixed-height with no room for a banner row, so they speak as toasts — but
-  // They must still speak: the protection note is a post-injury safety message
-  // (ux-flow-spec §6.7, BR-AC-09), not decoration.
-  // Cancel all audio playback & speech synthesis when resting or completed
-  useEffect(() => {
-    if (sessionStatus === "resting" || sessionStatus === "complete") {
-      audio.stopCues();
-    }
-  }, [audio, sessionStatus]);
-
-  useEffect(() => {
-    if (!online) {
-      toast.info("Offline Mode: You're offline. Sets are saved locally.");
-    }
-  }, [online]);
-
   const durationWarning =
     session.duration === "long" || session.duration === "very-long"
       ? "This session has run long. Want to wrap it up?"
       : null;
-  useEffect(() => {
-    if (durationWarning) {
-      toast.info(`Session Duration: ${durationWarning}`);
-    }
-  }, [durationWarning]);
-
   const { protectionNote } = plan;
-  useEffect(() => {
-    if (protectionNote) {
-      toast.info(`${protectionNote.title}: ${protectionNote.description}`);
-    }
-  }, [protectionNote]);
+
+  // Ref callback to handle stage transitions and notifications on DOM commit
+  const notifiedRef = useRef<{
+    durationWarningShown?: string | null;
+    offlineShown?: boolean;
+    protectionNoteShown?: boolean;
+  }>({});
+
+  const stageRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return;
+
+      // Auto-start set immediately when arriving at step
+      if (sessionStatus === "ready") {
+        startSet(listening);
+      }
+
+      // Cancel all audio playback & speech synthesis when resting or completed
+      if (sessionStatus === "resting" || sessionStatus === "complete") {
+        audio.stopCues();
+      }
+
+      // Offline notice
+      if (!online && !notifiedRef.current.offlineShown) {
+        notifiedRef.current.offlineShown = true;
+        toast.info("Offline Mode: You're offline. Sets are saved locally.");
+      } else if (online) {
+        notifiedRef.current.offlineShown = false;
+      }
+
+      // Duration warning
+      if (durationWarning && notifiedRef.current.durationWarningShown !== durationWarning) {
+        notifiedRef.current.durationWarningShown = durationWarning;
+        toast.info(`Session Duration: ${durationWarning}`);
+      }
+
+      // Protection note
+      if (protectionNote && !notifiedRef.current.protectionNoteShown) {
+        notifiedRef.current.protectionNoteShown = true;
+        toast.info(`${protectionNote.title}: ${protectionNote.description}`);
+      }
+
+      const cleanupEffects = workoutEffects.syncEffects(node);
+
+      return () => {
+        cleanupEffects?.();
+        audio.stopAll();
+        camera.stop();
+        motion.dispose();
+      };
+    },
+    [audio, camera, durationWarning, listening, motion, online, protectionNote, sessionStatus, startSet, workoutEffects],
+  );
 
   if (!step || !exercise) {
     return (
@@ -255,7 +274,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     }
 
     return (
-      <>
+      <div className="live-workout-root contents" ref={stageRef}>
         <RestScreen
           exerciseNumber={next.sessionPosition}
           nextExercise={next.exercise}
@@ -274,12 +293,12 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         {painDialog}
         {endDialog}
         {confirmDialog}
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="live-workout-root contents" ref={stageRef}>
       <ActiveExerciseScreen
         cameraActive={cameraActive}
         cameraSlot={cameraStage}
@@ -344,6 +363,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
       {painDialog}
       {endDialog}
-    </>
+    </div>
   );
 }

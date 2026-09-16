@@ -1,7 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
+
 
 import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
 import type { SetTelemetry } from "@/features/workout/domain/motion-engine";
@@ -38,6 +40,18 @@ import {
 import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
 import type { SyncErrorItem } from "@/features/workout/server/workout-actions";
 import { toast } from "@/shared/ui/toast";
+
+const subscribeOnline = (callback: () => void) => {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+};
+const getOnlineSnapshot = () => (typeof navigator === "undefined" ? true : navigator.onLine);
+const getOnlineServerSnapshot = () => true;
 
 export function resolveCoachingStyle(): CoachingStyle {
   if (typeof window === "undefined") {
@@ -86,15 +100,11 @@ export function useLiveWorkoutEffects({
   cameraOn?: boolean;
 }) {
   const router = useRouter();
-  const [online, setOnline] = useState(true);
-  const [manualForSet, setManualForSet] = useState(false);
+  const online = useSyncExternalStore(subscribeOnline, getOnlineSnapshot, getOnlineServerSnapshot);
   const [finishing, setFinishing] = useState(false);
-  const [voiceFeedbacks, setVoiceFeedbacks] = useState<Record<string, VoiceFeedbackMetric> | null>(null);
 
   const elapsedSecRef = useRef(session.elapsedSec);
-  useEffect(() => {
-    elapsedSecRef.current = session.elapsedSec;
-  }, [session.elapsedSec]);
+  elapsedSecRef.current = session.elapsedSec;
 
   const { step } = session;
   const exercise = step?.exercise ?? null;
@@ -146,148 +156,80 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
 };
 
   // Fetch Vietnamese dialogue Engine JSON from spec.dialogueEngineUrl dynamically when spec changes
-  useEffect(() => {
-    if (!spec?.dialogueEngineUrl) {
-      setVoiceFeedbacks(null);
-      return;
-    }
-    let cancelled = false;
-    fetch(spec.dialogueEngineUrl)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!cancelled && data?.voice_feedbacks) {
-          setVoiceFeedbacks(data.voice_feedbacks);
-        }
-      })
-      .catch(() => {
-        // Fallback silently if dialogue URL is temporarily unreachable
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [spec?.dialogueEngineUrl]);
+  const { data: fetchedVoiceFeedbacks } = useQuery({
+    queryKey: ["dialogue-engine", spec?.dialogueEngineUrl],
+    queryFn: async () => {
+      if (!spec?.dialogueEngineUrl) return null;
+      try {
+        const res = await fetch(spec.dialogueEngineUrl);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return (data?.voice_feedbacks as Record<string, VoiceFeedbackMetric>) ?? null;
+      } catch {
+        return null;
+      }
+    },
+    enabled: Boolean(spec?.dialogueEngineUrl),
+    staleTime: 5 * 60_000,
+  });
+  const voiceFeedbacks = fetchedVoiceFeedbacks ?? null;
 
   // Fetch Rule JSON spec on main thread to parse rep_type and phase_detection dynamically
-  useEffect(() => {
-    const exId = spec?.exerciseId || exercise?.exerciseId;
-    if (!spec || !exId) return;
-    let cancelled = false;
-    const ruleUrls = [
-      spec.localRulesUrl,
-      `/models/rules/${exId}.json`,
-      `/rule/${exId}.json`,
-    ].filter(Boolean) as string[];
+  const exId = spec?.exerciseId || exercise?.exerciseId;
+  useQuery({
+    queryKey: ["exercise-rules", exId],
+    queryFn: async () => {
+      if (!spec || !exId) return null;
+      const ruleUrls = [
+        spec.localRulesUrl,
+        `/models/rules/${exId}.json`,
+        `/rule/${exId}.json`,
+      ].filter(Boolean) as string[];
 
-    (async () => {
       for (const url of ruleUrls) {
         try {
           const res = await fetch(url);
           if (res.ok) {
             const data = await res.json();
-            if (!cancelled && data) {
+            if (data) {
               if (data.rep_type) spec.rep_type = data.rep_type;
               if (data.phase_detection) spec.phase_detection = data.phase_detection;
-              return;
+              return data;
             }
           }
         } catch {
           // Try next URL
         }
       }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [exercise?.exerciseId, spec]);
+      return null;
+    },
+    enabled: Boolean(spec && exId),
+    staleTime: 5 * 60_000,
+  });
 
   const cameraRef = useRef(camera);
   const motionRef = useRef(motion);
-  useEffect(() => {
-    cameraRef.current = camera;
-    motionRef.current = motion;
-  });
-
-  const cameraBranch = Boolean(spec) && !manualForSet;
-
-  // --- Network online/offline listener ---
-  useEffect(() => {
-    setOnline(typeof navigator === "undefined" ? true : navigator.onLine);
-    const goOnline = () => setOnline(true);
-    const goOffline = () => setOnline(false);
-    window.addEventListener("online", goOnline);
-    window.addEventListener("offline", goOffline);
-    return () => {
-      window.removeEventListener("online", goOnline);
-      window.removeEventListener("offline", goOffline);
-    };
-  }, []);
+  cameraRef.current = camera;
+  motionRef.current = motion;
 
   // --- Exercise reset ---
   const exerciseId = exercise?.exerciseId ?? null;
-  useEffect(() => {
+  const [prevExerciseId, setPrevExerciseId] = useState(exerciseId);
+  const [manualForSet, setManualForSet] = useState(false);
+
+  if (exerciseId !== prevExerciseId) {
+    setPrevExerciseId(exerciseId);
     setManualForSet(false);
-  }, [exerciseId]);
+  }
 
-  // --- Camera lifecycle ---
-  //
-  // Resting is excluded, not just "complete": while resting, `session.step`
-  // Already points at the *next* exercise, so an AI-supported one would spin the
-  // Camera up — permission prompt, indicator light, pose model — during the one
-  // Stretch of the session where nothing is being tracked. Rest is rest; the
-  // Camera starts when the set does.
+  const cameraBranch = Boolean(spec) && !manualForSet;
   const sessionStatus = session.status;
-  const wantCameraStream = Boolean(spec) && cameraOn && sessionStatus !== "complete" && sessionStatus !== "resting";
+  const wantCameraStream =
+    Boolean(spec) &&
+    cameraOn &&
+    sessionStatus !== "complete" &&
+    sessionStatus !== "resting";
 
-  useEffect(() => {
-    if (!wantCameraStream || !spec) {
-      cameraRef.current.stop();
-      return;
-    }
-    let cancelled = false;
-    const cam = cameraRef.current;
-    const mot = motionRef.current;
-
-    void (async () => {
-      const started = await cam.start();
-      if (cancelled) {
-        return;
-      }
-      if (!started) {
-        setManualForSet(true);
-        toast.info("Camera is unavailable — this set is logged by hand.");
-        return;
-      }
-      const kind = await mot.prepare(spec, cam.videoRef.current);
-      if (cancelled) {
-        return;
-      }
-      if (kind === "manual") {
-        setManualForSet(true);
-        toast.info("AI pose model unavailable — camera preview active with manual logging.");
-        return;
-      }
-      if (kind === "simulated") {
-        toast.info("Running camera in demo mode — pose model loading.");
-      }
-      console.log("[AI Engine] ONNX Pose model prepared successfully. Mode:", kind);
-      mot.startSet();
-    })();
-
-    return () => {
-      cancelled = true;
-      motionRef.current.stopCalibration();
-    };
-    // Keyed on set, cameraOn toggle, and spec readiness.
-  }, [exerciseId, sessionStatus, spec, wantCameraStream]);
-
-  // Release the hardware whenever camera is turned off, complete, or resting.
-  useEffect(() => {
-    if (!wantCameraStream) {
-      cameraRef.current.stop();
-    }
-  }, [wantCameraStream]);
 
   const lastCueTimesRef = useRef<Record<string, number>>({});
 
@@ -378,6 +320,19 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
   );
 
   const pendingErrorsRef = useRef<SyncErrorItem[]>([]);
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const scheduleSync = useCallback(() => {
+    if (syncTimeoutRef.current !== null) return;
+    syncTimeoutRef.current = setTimeout(() => {
+      syncTimeoutRef.current = null;
+      if (pendingErrorsRef.current.length > 0 && plan.sessionId) {
+        const toSync = [...pendingErrorsRef.current];
+        pendingErrorsRef.current = [];
+        void syncWorkoutLogs(plan.sessionId, toSync);
+      }
+    }, 15000);
+  }, [plan.sessionId]);
 
   const recordFormError = useCallback(
     (error: { code: string; message: string; severity: CueSeverity }) => {
@@ -402,26 +357,10 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
         severity: "CRITICAL",
         timestamp: new Date().toISOString(),
       });
+      scheduleSync();
     },
-    [exercise, motion.repCount, step?.setNumber],
+    [exercise, motion.repCount, scheduleSync, step?.setNumber],
   );
-
-  // Periodically flush unsynced error logs to backend every 15 seconds
-  useEffect(() => {
-    if (sessionStatus !== "working" || !plan.sessionId) {
-      return;
-    }
-    const intervalId = setInterval(() => {
-      if (pendingErrorsRef.current.length === 0) {
-        return;
-      }
-      const toSync = [...pendingErrorsRef.current];
-      pendingErrorsRef.current = [];
-      void syncWorkoutLogs(plan.sessionId, toSync);
-    }, 15000);
-
-    return () => clearInterval(intervalId);
-  }, [plan.sessionId, sessionStatus]);
 
   // --- Set actions ---
   const startSet = useCallback(
@@ -540,16 +479,6 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
     ],
   );
 
-  // Auto finish timed sets (for time-based exercises when clock hits 0)
-  useEffect(() => {
-    if (session.status !== "working" || !exercise) {
-      return;
-    }
-    if (exercise.durationSeconds > 0 && session.setLeft === 0) {
-      audio.stopCues();
-      finishSet(true);
-    }
-  }, [audio, exercise, finishSet, session.setLeft, session.status]);
 
   // --- Session report & completion ---
   const buildReport = useCallback(
@@ -667,22 +596,95 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
     [audio, camera, motion, plan.sessionId, router, session.actions],
   );
 
-  // Auto close on long timeout or complete status
+  const lastCameraKeyRef = useRef<string>("");
   const autoClosed = useRef(false);
-  useEffect(() => {
-    if (session.duration !== "auto-close" || autoClosed.current) {
-      return;
-    }
-    autoClosed.current = true;
-    void finishSession(true);
-  }, [finishSession, session.duration]);
 
-  useEffect(() => {
-    if (session.status !== "complete" || finishing) {
-      return;
-    }
-    void finishSession(false);
-  }, [finishSession, finishing, session.status]);
+  const syncEffects = useCallback(
+    (node: HTMLElement | null) => {
+      if (!node) return;
+
+      // 1. Camera & ONNX prepare lifecycle
+      const activeCameraKey =
+        wantCameraStream && spec
+          ? `${exerciseId}-${sessionStatus}-${Boolean(spec)}-${cameraOn}`
+          : "";
+
+      if (activeCameraKey !== lastCameraKeyRef.current) {
+        lastCameraKeyRef.current = activeCameraKey;
+        if (activeCameraKey) {
+          const cam = cameraRef.current;
+          const mot = motionRef.current;
+          void (async () => {
+            const started = await cam.start();
+            if (!started) {
+              setManualForSet(true);
+              toast.info("Camera is unavailable — this set is logged by hand.");
+              return;
+            }
+            const kind = await mot.prepare(spec, cam.videoRef.current);
+            if (kind === "manual") {
+              setManualForSet(true);
+              toast.info("AI pose model unavailable — camera preview active with manual logging.");
+              return;
+            }
+            if (kind === "simulated") {
+              toast.info("Running camera in demo mode — pose model loading.");
+            }
+            mot.startSet();
+          })();
+        } else {
+          cameraRef.current.stop();
+          motionRef.current.stopCalibration();
+        }
+      }
+
+      // 2. Auto finish timed sets (for time-based exercises when clock hits 0)
+      if (
+        session.status === "working" &&
+        exercise &&
+        exercise.durationSeconds > 0 &&
+        session.setLeft === 0
+      ) {
+        audio.stopCues();
+        finishSet(true);
+      }
+
+      // 3. Auto close on long timeout
+      if (session.duration === "auto-close" && !autoClosed.current) {
+        autoClosed.current = true;
+        void finishSession(true);
+      }
+
+      // 4. Complete status auto finish
+      if (session.status === "complete" && !finishing) {
+        void finishSession(false);
+      }
+
+      return () => {
+        if (syncTimeoutRef.current !== null) {
+          clearTimeout(syncTimeoutRef.current);
+          syncTimeoutRef.current = null;
+        }
+        cameraRef.current.stop();
+        motionRef.current.stopCalibration();
+      };
+    },
+    [
+      audio,
+      cameraOn,
+      exercise,
+      exerciseId,
+      finishSession,
+      finishSet,
+      finishing,
+      session.duration,
+      session.setLeft,
+      session.status,
+      sessionStatus,
+      spec,
+      wantCameraStream,
+    ],
+  );
 
   return {
     cameraBranch,
@@ -700,5 +702,6 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
     step,
     finishSession,
     abortSession,
+    syncEffects,
   };
 }

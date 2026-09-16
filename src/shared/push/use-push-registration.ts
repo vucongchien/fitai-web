@@ -1,7 +1,7 @@
 "use client";
 
 import { getToken } from "firebase/messaging";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 import { getMessagingIfSupported } from "@/shared/push/firebase-app";
 import { registerDeviceToken } from "@/shared/push/push-actions";
@@ -61,58 +61,85 @@ async function mintAndRegister(): Promise<PushStatus> {
   return (await registerDeviceToken(token)) ? "granted" : "failed";
 }
 
-export function usePushRegistration() {
-  const [status, setStatus] = useState<PushStatus>("idle");
+class PushRegistrationStore {
+  private status: PushStatus = "idle";
+  private initialized = false;
+  private listeners = new Set<() => void>();
 
-  useEffect(() => {
+  getSnapshot = (): PushStatus => this.status;
+
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+    if (!this.initialized && typeof window !== "undefined") {
+      void this.init();
+    }
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+
+  private notify() {
+    this.listeners.forEach((l) => l());
+  }
+
+  private async init() {
+    this.initialized = true;
     if (!pushSupport().supported) {
-      setStatus("unsupported");
+      this.status = "unsupported";
+      this.notify();
       return;
     }
     if (Notification.permission === "denied") {
-      setStatus("denied");
+      this.status = "denied";
+      this.notify();
       return;
     }
     if (Notification.permission !== "granted") {
       return;
     }
 
-    // Optimistic: permission is granted, so hide the opt-in immediately rather
-    // Than flashing a button for the duration of the round trip below.
-    setStatus("granted");
+    // Optimistic: permission is granted
+    this.status = "granted";
+    this.notify();
 
-    // Permission survives across sessions but the token does not: FCM rotates
-    // It, and clearing site data drops it. Without this re-mint the user stays
-    // Permanently opted in with a token the backend no longer has, and no UI
-    // Ever appears to fix it. Re-registering an unchanged token is a cheap no-op
-    // On the backend side.
-    let cancelled = false;
-    void (async () => {
-      const next = await mintAndRegister();
-      if (!cancelled) {
-        setStatus(next);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    const next = await mintAndRegister();
+    this.status = next;
+    this.notify();
+  }
 
-  const enable = useCallback(async () => {
+  async enable() {
     if (!pushSupport().supported) {
-      setStatus("unsupported");
+      this.status = "unsupported";
+      this.notify();
       return;
     }
-    setStatus("asking");
+    this.status = "asking";
+    this.notify();
 
     // Must be called from a user gesture — browsers reject a bare prompt.
     const permission = await Notification.requestPermission();
     if (permission !== "granted") {
-      setStatus("denied");
+      this.status = "denied";
+      this.notify();
       return;
     }
 
-    setStatus(await mintAndRegister());
+    this.status = await mintAndRegister();
+    this.notify();
+  }
+}
+
+const pushStore = new PushRegistrationStore();
+
+export function usePushRegistration() {
+  const status = useSyncExternalStore(
+    pushStore.subscribe,
+    pushStore.getSnapshot,
+    () => "idle" as PushStatus,
+  );
+
+  const enable = useCallback(async () => {
+    await pushStore.enable();
   }, []);
 
   return { enable, status };

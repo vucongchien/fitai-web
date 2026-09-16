@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+
 
 import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
 import type {
@@ -167,7 +168,6 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
     return (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY;
   }, []);
 
-  useEffect(() => dispose, [dispose]);
 
   return {
     kind,

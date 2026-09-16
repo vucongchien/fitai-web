@@ -1,9 +1,10 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useCallback } from "react";
 
 import { parseVideoSource } from "@/features/workout/domain/video-source-parser";
+
 
 /**
  * The exercise demo clip, played large over the live screen.
@@ -20,22 +21,24 @@ export function DemoVideoOverlay({
   name: string;
   onClose: () => void;
 }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
   const parsed = parseVideoSource(videoUrl);
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
-
-  useEffect(() => {
-    closeRef.current?.focus();
-  }, []);
+  const closeBtnRef = useCallback(
+    (node: HTMLButtonElement | null) => {
+      if (!node) return;
+      node.focus();
+      const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
+          onClose();
+        }
+      };
+      document.addEventListener("keydown", onKeyDown);
+      return () => {
+        document.removeEventListener("keydown", onKeyDown);
+      };
+    },
+    [onClose]
+  );
 
   return (
     <div
@@ -72,7 +75,7 @@ export function DemoVideoOverlay({
           aria-label="Close video"
           className="demo-video__close"
           onClick={onClose}
-          ref={closeRef}
+          ref={closeBtnRef}
           type="button"
         >
           <X aria-hidden="true" size={20} />

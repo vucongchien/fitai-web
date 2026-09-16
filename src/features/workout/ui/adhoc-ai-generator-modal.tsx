@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Clock, Info, Loader2, Plus, Sparkles, X, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
 import type { AdhocAiRecommendationOutput } from "@/features/workout/server/workout-actions";
@@ -25,18 +25,13 @@ const QUICK_PROMPTS = [
     duration: 45,
   },
   {
-    label: "🦵 Legs / Lower Body",
-    text: "Quads, hamstrings, and glutes",
-    duration: 40,
+    label: "🔥 Leg Hypertrophy",
+    text: "Quadriceps, hamstrings, and calves focus",
+    duration: 50,
   },
   {
-    label: "🔥 Full Body 30m",
-    text: "Quick full body workout activating all major muscle groups",
-    duration: 30,
-  },
-  {
-    label: "🏨 Hotel / Living Room",
-    text: "No equipment needed, bodyweight and light dumbbells",
+    label: "⏱️ 30-Min Full Body Express",
+    text: "High efficiency compound movements",
     duration: 30,
   },
 ];
@@ -49,29 +44,43 @@ export function AdhocAiGeneratorModal({
   onApplyExercises,
   currentExerciseCount,
 }: AdhocAiGeneratorModalProps) {
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <AdhocAiGeneratorModalContent
+      key="adhoc-ai-generator-open"
+      onClose={onClose}
+      onApplyExercises={onApplyExercises}
+      currentExerciseCount={currentExerciseCount}
+    />
+  );
+}
+
+function AdhocAiGeneratorModalContent({
+  onClose,
+  onApplyExercises,
+  currentExerciseCount,
+}: Omit<AdhocAiGeneratorModalProps, "isOpen">) {
   const [promptText, setPromptText] = useState("");
   const [durationMinutes, setDurationMinutes] = useState(45);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [result, setResult] = useState<AdhocAiRecommendationOutput | null>(null);
 
-  // Keyboard shortcut: Escape để đóng modal
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
+  const containerRef = (node: HTMLDivElement | null) => {
+    if (!node) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  if (!isOpen) {
-    return null;
-  }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  };
 
   const handleGenerate = async (customPrompt?: string, customDuration?: number) => {
     const textToUse = customPrompt !== undefined ? customPrompt : promptText;
@@ -125,7 +134,7 @@ export function AdhocAiGeneratorModal({
   };
 
   return (
-    <div className="exercise-edit-modal-backdrop ai-generator-modal-backdrop">
+    <div ref={containerRef} className="exercise-edit-modal-backdrop ai-generator-modal-backdrop">
       <button
         aria-label="Close AI Generator"
         className="exercise-edit-modal__scrim"

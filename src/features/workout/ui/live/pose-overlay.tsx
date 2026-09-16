@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback } from "react";
 
 import {
   KEYPOINT_NAMES,
   SKELETON_EDGES,
 } from "@/features/workout/domain/pose-metrics";
 import type { Pose } from "@/features/workout/domain/pose-metrics";
+
 
 /**
  * The 17-point skeleton drawn over the camera feed (FR-CC-01, FR-CC-04 visual half).
@@ -27,10 +28,8 @@ export function PoseOverlay({
   mirrored?: boolean;
   alert?: boolean;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
+  const drawSkeleton = useCallback(
+    (canvas: HTMLCanvasElement | null) => {
     if (!canvas) {
       return;
     }
@@ -136,7 +135,7 @@ export function PoseOverlay({
     <canvas
       aria-hidden="true"
       className="pose-overlay absolute inset-0 w-full h-full pointer-events-none z-10"
-      ref={canvasRef}
+      ref={drawSkeleton}
     />
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 
@@ -22,43 +22,38 @@ function paragraphsFor(exercise: LiveExercise): string[] {
     .filter(Boolean);
 }
 
+
 export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
-  const panelRef = useRef<HTMLElement>(null);
   const [scrollable, setScrollable] = useState(false);
 
-  const measure = useCallback(() => {
-    const panel = panelRef.current;
-    if (!panel) {
-      return;
-    }
+  const panelRefCallback = useCallback(
+    (panel: HTMLElement | null) => {
+      if (!panel) return;
+
+      const measure = () => {
+        const remaining = panel.scrollHeight - panel.clientHeight - panel.scrollTop;
+        setScrollable(remaining > BOTTOM_SLACK_PX);
+      };
+
+      measure();
+
+      if (typeof ResizeObserver === "function") {
+        const observer = new ResizeObserver(() => measure());
+        observer.observe(panel);
+        if (panel.firstElementChild) {
+          observer.observe(panel.firstElementChild);
+        }
+        return () => observer.disconnect();
+      }
+    },
+    [exercise.exerciseId]
+  );
+
+  const onScroll = useCallback((event: React.UIEvent<HTMLElement>) => {
+    const panel = event.currentTarget;
     const remaining = panel.scrollHeight - panel.clientHeight - panel.scrollTop;
     setScrollable(remaining > BOTTOM_SLACK_PX);
   }, []);
-
-  // Re-measure whenever the exercise changes — a shorter description can
-  // Remove the affordance entirely.
-  useEffect(() => {
-    measure();
-  }, [exercise.exerciseId, measure]);
-
-  // Re-measure on layout changes too — mobile browser chrome collapsing or
-  // The on-screen keyboard opening changes clientHeight with no scroll
-  // Event and no exercise change. jsdom has no ResizeObserver, so guard it.
-  useEffect(() => {
-    const panel = panelRef.current;
-    if (!panel || typeof ResizeObserver !== "function") {
-      return;
-    }
-
-    const observer = new ResizeObserver(() => measure());
-    observer.observe(panel);
-    // The list grows and shrinks with the exercise; watch it too.
-    if (panel.firstElementChild) {
-      observer.observe(panel.firstElementChild);
-    }
-
-    return () => observer.disconnect();
-  }, [measure]);
 
   return (
     <section
@@ -71,8 +66,8 @@ export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
       aria-label="Coaching instructions"
       className="live-screen__coach"
       data-scrollable={scrollable}
-      onScroll={measure}
-      ref={panelRef}
+      onScroll={onScroll}
+      ref={panelRefCallback}
       tabIndex={0}
     >
       <div className="live-coach">

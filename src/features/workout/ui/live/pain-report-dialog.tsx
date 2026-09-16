@@ -1,7 +1,6 @@
 "use client";
-
 import { HeartPulse } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useState } from "react";
 
 import { Button } from "@/shared/ui/button";
 
@@ -20,34 +19,35 @@ export function PainReportDialog({
   onStop,
 }: {
   /** Stop the session. `note` is empty when the user chose not to explain. */
-  onStop: (note: string) => void;
+  onStop: (note?: string) => void;
   /** Keep training — nothing is recorded. */
   onDismiss: () => void;
 }) {
   const [note, setNote] = useState("");
   const noteId = useId();
-  const actionsRef = useRef<HTMLDivElement>(null);
 
-  // Escape is the reflex for "I didn't mean to open this", and while in pain the
-  // User should not have to find a specific button to get back to the session.
-  useEffect(() => {
+  // React 19 Ref Callback Cleanup: Handles Escape key and initial focus on safe stop button
+  const dialogRef = (node: HTMLDivElement | null) => {
+    if (!node) return;
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onDismiss();
       }
     };
     document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onDismiss]);
 
-  // Focus lands on "Yes, stop" — the reason this dialog exists. It is not
-  // Destructive in the data sense: the safe outcome here is stopping.
-  useEffect(() => {
-    actionsRef.current?.querySelector("button")?.focus();
-  }, []);
+    // Focus lands on "Yes, stop" — the safe outcome
+    node.querySelector<HTMLButtonElement>(".pain-dialog__actions button")?.focus();
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  };
 
   return (
     <div
+      ref={dialogRef}
       aria-labelledby={`${noteId}-title`}
       aria-modal="true"
       className="live-sheet live-sheet--dialog"
@@ -80,7 +80,7 @@ export function PainReportDialog({
           />
         </div>
 
-        <div className="pain-dialog__actions" ref={actionsRef}>
+        <div className="pain-dialog__actions">
           <Button onClick={() => onStop(note.trim())} size="large" variant="danger">
             Yes, stop now
           </Button>

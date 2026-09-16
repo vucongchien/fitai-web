@@ -1,9 +1,8 @@
 "use client";
-
 import { ArrowLeft, Loader2, Search, SearchX, SlidersHorizontal, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 
 import {
   countActiveFilters,
@@ -19,7 +18,6 @@ import type {
   ExerciseFilters,
   ExerciseSummary,
 } from "@/features/exercise/domain/exercise";
-import { searchExercisesServerAction } from "@/features/exercise/server/catalog-actions";
 import { ExerciseCard } from "@/features/exercise/ui/exercise-card";
 import { FilterPanel } from "@/features/exercise/ui/filter-panel";
 import { EmptyState } from "@/shared/ui/empty-state";
@@ -153,51 +151,16 @@ export function SearchExperience({ initialExercises, exercises: legacyExercises,
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [, startTransition] = useTransition();
+  const [isSearching, startTransition] = useTransition();
 
   const searchParamsString = searchParams.toString();
 
-  const [filters, setFilters] = useState<ExerciseFilters>(() =>
-    parseFilters(new URLSearchParams(searchParamsString), catalog),
+  const filters = useMemo(
+    () => parseFilters(new URLSearchParams(searchParamsString), catalog),
+    [searchParamsString, catalog],
   );
   const [panelOpen, setPanelOpen] = useState(false);
-  const [rawExercises, setRawExercises] = useState<ExerciseSummary[]>(() => initialExercises || legacyExercises || []);
-  const [isSearching, setIsSearching] = useState(false);
-
-  useEffect(() => {
-    inputRef.current?.focus({ preventScroll: true });
-  }, []);
-
-  useEffect(() => {
-    const nextFilters = parseFilters(new URLSearchParams(searchParamsString), catalog);
-    setFilters(nextFilters);
-  }, [searchParamsString, catalog]);
-
-  // Dynamic server-side search fetch when filters change
-  useEffect(() => {
-    let isCancelled = false;
-    const timer = setTimeout(async () => {
-      setIsSearching(true);
-      try {
-        const remoteResults = await searchExercisesServerAction(filters);
-        if (!isCancelled) {
-          setRawExercises(remoteResults);
-        }
-      } catch (error) {
-        console.warn("[SearchExperience] Server search error:", error);
-      } finally {
-        if (!isCancelled) {
-          setIsSearching(false);
-        }
-      }
-    }, 250);
-
-    return () => {
-      isCancelled = true;
-      clearTimeout(timer);
-    };
-  }, [filters]);
+  const rawExercises = initialExercises || legacyExercises || [];
 
   const syncUrl = useCallback(
     (next: ExerciseFilters) => {
@@ -212,7 +175,6 @@ export function SearchExperience({ initialExercises, exercises: legacyExercises,
 
   const updateFilters = useCallback(
     (next: ExerciseFilters) => {
-      setFilters(next);
       syncUrl(next);
     },
     [syncUrl],
@@ -300,7 +262,7 @@ export function SearchExperience({ initialExercises, exercises: legacyExercises,
         <label className="search-field">
           <Search aria-hidden="true" size={18} strokeWidth={2} />
           <input
-            ref={inputRef}
+            autoFocus
             type="search"
             inputMode="search"
             placeholder="Find movements, muscles, tags"

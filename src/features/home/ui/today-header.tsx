@@ -1,7 +1,7 @@
 "use client";
 
 import { Flame } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
 interface TodayHeaderProps {
@@ -23,14 +23,12 @@ interface TodayStreakBadgeProps {
   streakDays: number;
 }
 
+const subscribeNoop = () => () => {};
+
 export function TodayStreakBadge({ streakDays }: TodayStreakBadgeProps) {
-  const [mounted, setMounted] = useState(false);
+  const isClient = useSyncExternalStore(subscribeNoop, () => true, () => false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted || streakDays <= 0) {
+  if (!isClient || streakDays <= 0) {
     return null;
   }
 

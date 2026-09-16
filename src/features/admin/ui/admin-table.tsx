@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, Inbox, Loader2, RefreshCw } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useCallback } from "react";
 
 /**
  * Placeholder rows shown before the first page arrives. They carry no domain
@@ -51,34 +51,30 @@ export function AdminTable<T>({
   emptyTitle = "No records found",
   emptyDescription = "Try adjusting your search term or filters.",
 }: AdminTableProps<T>) {
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
-
-  // IntersectionObserver trigger fetchNextPage when sentinel is visible
-  useEffect(() => {
-    if (!fetchNextPage || !hasNextPage || isFetchingNextPage || isLoading) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          fetchNextPage();
-        }
-      },
-      { rootMargin: "100px" },
-    );
-
-    const currentSentinel = sentinelRef.current;
-    if (currentSentinel) {
-      observer.observe(currentSentinel);
-    }
-
-    return () => {
-      if (currentSentinel) {
-        observer.unobserve(currentSentinel);
+  // React 19 Ref Callback Cleanup: IntersectionObserver triggers fetchNextPage when sentinel is visible
+  const sentinelCallback = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node || !fetchNextPage || !hasNextPage || isFetchingNextPage || isLoading) {
+        return;
       }
-    };
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isLoading]);
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            fetchNextPage();
+          }
+        },
+        { rootMargin: "100px" },
+      );
+
+      observer.observe(node);
+
+      return () => {
+        observer.disconnect();
+      };
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage, isLoading],
+  );
 
   return (
     <div className="w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
@@ -173,7 +169,7 @@ export function AdminTable<T>({
         )}
 
         {/* Infinite Scroll Footer Sentinel */}
-        <div ref={sentinelRef} className="py-4 px-4 flex items-center justify-center">
+        <div ref={sentinelCallback} className="py-4 px-4 flex items-center justify-center">
           {isFetchingNextPage && (
             <div className="flex items-center gap-2 text-indigo-600 text-xs font-semibold py-2">
               <Loader2 className="size-4 animate-spin" />

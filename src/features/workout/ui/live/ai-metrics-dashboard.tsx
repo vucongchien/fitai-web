@@ -1,7 +1,7 @@
 "use client";
 
 import { Activity, CheckCircle2, Flame, Gauge, ListOrdered, Target } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export interface LogRow {
   frameIndex: number;
@@ -63,40 +63,60 @@ export function AiMetricsDashboard({
     return name;
   };
 
-  // Real-time telemetry table history (max 10 recent frames)
-  const [logHistory, setLogHistory] = useState<LogRow[]>([
-    {
-      frameIndex: frameIndex || 1,
-      metricName: formatMetricName(metricName),
-      phase,
-      repCount: liveRepCount,
-      ruleAngle: endDeg,
-      startDeg,
-      userAngle: angle,
-    },
-  ]);
 
-  useEffect(() => {
-    if (!metrics) {
-      return;
-    }
-    setLogHistory((prev) => {
-      const currentFrame = metrics.frameIndex && metrics.frameIndex > 0 ? metrics.frameIndex : (prev[0]?.frameIndex ?? 0) + 1;
-      if (prev.length > 0 && prev[0]?.frameIndex === currentFrame && prev[0]?.userAngle === metrics.angle) {
-        return prev;
-      }
-      const newRow: LogRow = {
-        frameIndex: currentFrame,
-        metricName: formatMetricName(metrics.metricName ?? "knee_angle"),
+  // Real-time telemetry table history (max 10 recent frames)
+  const [historyState, setHistoryState] = useState<{
+    lastMetrics: typeof metrics;
+    history: LogRow[];
+  }>(() => ({
+    lastMetrics: metrics,
+    history: [
+      {
+        frameIndex: frameIndex || 1,
+        metricName: formatMetricName(metricName),
         phase,
-        repCount: metrics.repCount ?? liveRepCount,
+        repCount: liveRepCount,
         ruleAngle: endDeg,
         startDeg,
         userAngle: angle,
-      };
-      return [newRow, ...prev].slice(0, 10);
-    });
-  }, [angle, endDeg, frameIndex, liveRepCount, metrics, phase, startDeg]);
+      },
+    ],
+  }));
+
+  if (metrics !== historyState.lastMetrics) {
+    if (!metrics) {
+      setHistoryState({ lastMetrics: metrics, history: historyState.history });
+    } else {
+      const prev = historyState.history;
+      const currentFrame =
+        metrics.frameIndex && metrics.frameIndex > 0
+          ? metrics.frameIndex
+          : (prev[0]?.frameIndex ?? 0) + 1;
+      if (
+        prev.length > 0 &&
+        prev[0]?.frameIndex === currentFrame &&
+        prev[0]?.userAngle === metrics.angle
+      ) {
+        setHistoryState({ lastMetrics: metrics, history: prev });
+      } else {
+        const newRow: LogRow = {
+          frameIndex: currentFrame,
+          metricName: formatMetricName(metrics.metricName ?? "knee_angle"),
+          phase,
+          repCount: metrics.repCount ?? liveRepCount,
+          ruleAngle: endDeg,
+          startDeg,
+          userAngle: angle,
+        };
+        setHistoryState({
+          lastMetrics: metrics,
+          history: [newRow, ...prev].slice(0, 10),
+        });
+      }
+    }
+  }
+
+  const logHistory = historyState.history;
 
   // Render phase badge text & style based on rest -> Start, transition -> Move, active -> Peak/Target
   const getPhaseBadge = (p: string) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Clock, Dumbbell, Minus, Plus, Sparkles, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { getFatigueLevel } from "@/features/workout/domain/pose-metrics";
@@ -14,7 +14,20 @@ export interface SetConfirmData {
   rpe: number;
 }
 
-export function SetConfirmDialog({
+export function SetConfirmDialog(props: {
+  exercise: LiveExercise;
+  currentSet: number;
+  totalSets: number;
+  aiCountedReps?: number;
+  secondsElapsed?: number;
+  onConfirm: (data: SetConfirmData) => void;
+  onClose: () => void;
+}) {
+  const dialogKey = `${props.exercise.exerciseId}-${props.currentSet}-${props.aiCountedReps ?? 0}-${props.secondsElapsed ?? 0}`;
+  return <SetConfirmDialogContent key={dialogKey} {...props} />;
+}
+
+function SetConfirmDialogContent({
   exercise,
   currentSet,
   totalSets,
@@ -44,12 +57,6 @@ export function SetConfirmDialog({
   const [seconds, setSeconds] = useState<number>(initialSeconds);
   const [weightKg, setWeightKg] = useState<number>(initialWeight);
   const [fatiguePercent, setFatiguePercent] = useState<number>(80); // Default 80% fatigue (RPE 8.0)
-
-  useEffect(() => {
-    setReps(initialReps);
-    setSeconds(initialSeconds);
-    setWeightKg(initialWeight);
-  }, [initialReps, initialSeconds, initialWeight]);
 
   const [isClosing, setIsClosing] = useState(false);
 

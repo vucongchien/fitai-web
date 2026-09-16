@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, FolderTree, X } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 
 import type { MetadataItem } from "@/features/admin/domain/admin-types";
 import { toast } from "@/shared/ui/toast";
@@ -15,24 +15,38 @@ export interface MetadataDialogProps {
 }
 
 export function MetadataDialog({ isOpen, category, item, onClose, onSave }: MetadataDialogProps) {
-  const fieldIdBase = useId();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (item) {
-      setName(item.name);
-      setDescription(item.description || "");
-    } else {
-      setName("");
-      setDescription("");
-    }
-  }, [item, isOpen]);
-
   if (!isOpen) {
     return null;
   }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150">
+      <MetadataDialogForm
+        key={item?.id ?? "new"}
+        category={category}
+        item={item}
+        onClose={onClose}
+        onSave={onSave}
+      />
+    </div>
+  );
+}
+
+function MetadataDialogForm({
+  category,
+  item,
+  onClose,
+  onSave,
+}: {
+  category: MetadataItem["category"];
+  item?: MetadataItem | null;
+  onClose: () => void;
+  onSave: (data: Omit<MetadataItem, "id">) => Promise<void>;
+}) {
+  const fieldIdBase = useId();
+  const [name, setName] = useState(item?.name || "");
+  const [description, setDescription] = useState(item?.description || "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,8 +76,7 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
   }[category];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden flex flex-col">
+    <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
           <div className="flex items-center gap-3">
@@ -137,6 +150,5 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
           </button>
         </div>
       </div>
-    </div>
   );
 }

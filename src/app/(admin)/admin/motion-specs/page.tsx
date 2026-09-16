@@ -14,30 +14,22 @@ import {
   SlidersHorizontal,
   Sparkles,
 } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   fetchMotionSpecifications,
   fetchMotionSpecificationStats,
   searchMotionSpecifications,
 } from "@/features/admin/api/admin-motion-spec-service";
-import type { AdminMotionSpecification } from "@/features/admin/domain/admin-motion-spec-types";
 import { MotionSpecDialog } from "@/features/admin/ui/motion-spec-dialog";
+import { useDebounce } from "@/shared/lib/use-debounce";
 
 export default function AdminMotionSpecsPage() {
+  const queryClient = useQueryClient();
   const fieldIdBase = useId();
-  const [specs, setSpecs] = useState<AdminMotionSpecification[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Stats state (from Workout Execution Service)
-  const [stats, setStats] = useState({
-    totalExercises: 0,
-    activePoseRules: 0,
-    activeVoiceFiles: 0,
-    readyAiSpecs: 0,
-  });
+  const debouncedSearchQuery = useDebounce(searchQuery, 200);
 
   // Pagination state (default 10 items per page for clear pagination)
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,26 +39,37 @@ export default function AdminMotionSpecsPage() {
   const [selectedExerciseName, setSelectedExerciseName] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Load stats once on mount
-  useEffect(() => {
-    async function loadStats() {
+  // Stats query
+  const { data: stats = {
+    totalExercises: 0,
+    activePoseRules: 0,
+    activeVoiceFiles: 0,
+    readyAiSpecs: 0,
+  } } = useQuery({
+    queryKey: ["admin-motion-spec-stats"],
+    queryFn: async () => {
       try {
-        const statsRes = await fetchMotionSpecificationStats();
-        setStats(statsRes);
+        return await fetchMotionSpecificationStats();
       } catch (err) {
         console.warn("Failed to load motion spec stats:", err);
+        return {
+          totalExercises: 0,
+          activePoseRules: 0,
+          activeVoiceFiles: 0,
+          readyAiSpecs: 0,
+        };
       }
-    }
-    loadStats();
-  }, []);
+    },
+  });
 
-  async function loadData() {
-    setIsLoading(true);
-    try {
-      const isSearching = Boolean(searchQuery.trim());
-      const listRes = isSearching
+  // Specs query
+  const { data: listRes, isLoading } = useQuery({
+    queryKey: ["admin-motion-specs", currentPage, pageSize, debouncedSearchQuery],
+    queryFn: async () => {
+      const isSearching = Boolean(debouncedSearchQuery.trim());
+      return isSearching
         ? await searchMotionSpecifications({
-            keyword: searchQuery.trim(),
+            keyword: debouncedSearchQuery.trim(),
             page: currentPage,
             pageSize,
           })
@@ -74,22 +77,11 @@ export default function AdminMotionSpecsPage() {
             page: currentPage,
             pageSize,
           });
+    },
+  });
 
-      setSpecs(listRes.items);
-      setTotalCount(listRes.totalCount);
-    } catch (err) {
-      console.warn("Failed to load motion specifications:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadData();
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [currentPage, pageSize, searchQuery]);
+  const specs = listRes?.items || [];
+  const totalCount = listRes?.totalCount || 0;
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const validCurrentPage = Math.min(currentPage, totalPages);
@@ -121,7 +113,10 @@ export default function AdminMotionSpecsPage() {
 
         <button
           type="button"
-          onClick={loadData}
+          onClick={() => {
+            void queryClient.invalidateQueries({ queryKey: ["admin-motion-specs"] });
+            void queryClient.invalidateQueries({ queryKey: ["admin-motion-spec-stats"] });
+          }}
           disabled={isLoading}
           className="px-4 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
         >
@@ -430,7 +425,8 @@ export default function AdminMotionSpecsPage() {
         exerciseName={selectedExerciseName}
         onClose={() => {
           setIsDialogOpen(false);
-          loadData();
+          void queryClient.invalidateQueries({ queryKey: ["admin-motion-specs"] });
+          void queryClient.invalidateQueries({ queryKey: ["admin-motion-spec-stats"] });
         }}
       />
     </div>

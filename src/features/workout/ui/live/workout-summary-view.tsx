@@ -10,7 +10,7 @@ import {
   Trophy,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { getFatigueLevel } from "@/features/workout/domain/pose-metrics";
 import type { SessionReport } from "@/features/workout/model/live-session.types";
@@ -18,26 +18,46 @@ import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import { buttonVariants } from "@/shared/ui/button";
 import { PageTransition } from "@/shared/ui/page-transition";
 
-export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
-  const [report, setReport] = useState<SessionReport | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(reportStorageKey(sessionId));
-      if (raw) {
-        const parsed = JSON.parse(raw) as SessionReport;
-        setReport(parsed);
-      }
-    } catch {
-      setError("We couldn't load the summary of your session.");
-    } finally {
-      setLoaded(true);
+let lastRawReport: string | null = null;
+let cachedReport: SessionReport | null = null;
+let lastSessionId: string | null = null;
+
+function getReportSnapshot(sessionId: string): SessionReport | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(reportStorageKey(sessionId));
+    if (raw === lastRawReport && sessionId === lastSessionId) {
+      return cachedReport;
     }
-  }, [sessionId]);
+    lastRawReport = raw;
+    lastSessionId = sessionId;
+    cachedReport = raw ? (JSON.parse(raw) as SessionReport) : null;
+    return cachedReport;
+  } catch {
+    return null;
+  }
+}
 
-  if (!loaded) {
+const emptySubscribe = () => () => {};
+
+export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
+  const isClient = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+
+  const report = useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("storage", onStoreChange);
+      return () => window.removeEventListener("storage", onStoreChange);
+    },
+    () => getReportSnapshot(sessionId),
+    () => null,
+  );
+
+  if (!isClient) {
     return (
       <PageTransition className="summary-page">
         <main className="summary-main">
@@ -48,7 +68,7 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
     );
   }
 
-  if (error || !report) {
+  if (!report) {
     return (
       <PageTransition className="summary-page">
         <main className="summary-main">
@@ -58,7 +78,7 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
 
           <h1>Session Summary Unavailable</h1>
           <p className="text-sm text-[var(--color-text-muted,#50565c)] mb-6">
-            {error ?? "This session data could not be loaded."}
+            This session data could not be loaded.
           </p>
 
           <div className="summary-actions">

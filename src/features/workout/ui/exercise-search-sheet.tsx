@@ -1,11 +1,10 @@
 "use client";
 
 import { Plus, Search, X } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
 import type { ExerciseResult } from "@/features/workout/model/workout.types";
 import { searchExercises } from "@/features/workout/server/workout-actions";
-import { useDebounce } from "@/shared/lib/use-debounce";
 
 interface ExerciseSearchSheetProps {
   isOpen: boolean;
@@ -14,58 +13,66 @@ interface ExerciseSearchSheetProps {
 }
 
 export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: ExerciseSearchSheetProps) {
-  const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 250);
+  if (!isOpen) {
+    return null;
+  }
 
+  return (
+    <ExerciseSearchSheetContent
+      key="exercise-search-sheet-open"
+      onClose={onClose}
+      onAddExercise={onAddExercise}
+    />
+  );
+}
+
+function ExerciseSearchSheetContent({
+  onClose,
+  onAddExercise,
+}: Omit<ExerciseSearchSheetProps, "isOpen">) {
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState<ExerciseResult[]>([]);
   const [isPending, startTransition] = useTransition();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Search via Server Action khi debouncedQuery thay đổi (250ms delay chống lãng phí network request & server compute)
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    let isCurrent = true;
+  const containerRef = (node: HTMLDivElement | null) => {
+    if (!node) return;
 
     startTransition(async () => {
-      const data = await searchExercises(debouncedQuery);
-      if (isCurrent) {
-        setResults(data);
-      }
+      const data = await searchExercises("");
+      setResults(data);
     });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [debouncedQuery, isOpen]);
-
-  // Escape key handler cho a11y & Reset state khi đóng sheet
-  useEffect(() => {
-    if (!isOpen) {
-      setQuery("");
-      setResults([]);
-      return;
-    }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
     };
-  }, [isOpen, onClose]);
+  };
 
-  if (!isOpen) {
-    return null;
-  }
+  const handleQueryChange = (val: string) => {
+    setQuery(val);
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      startTransition(async () => {
+        const data = await searchExercises(val);
+        setResults(data);
+      });
+    }, 250);
+  };
 
   return (
-    <div className="bottom-search-sheet-container">
+    <div ref={containerRef} className="bottom-search-sheet-container">
       <div aria-hidden="true" className="bottom-search-sheet__backdrop" onClick={onClose} />
       <div
         aria-label="Add movement"
@@ -92,7 +99,7 @@ export function ExerciseSearchSheet({ isOpen, onClose, onAddExercise }: Exercise
             aria-label="Search exercise library"
             autoFocus
             className="bottom-search-sheet__input"
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => handleQueryChange(e.target.value)}
             placeholder="Search by movement or target..."
             type="text"
             value={query}

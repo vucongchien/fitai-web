@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowRight, Check, MoveHorizontal, Sun } from "lucide-react";
-import { useEffect, useRef } from "react";
 
 import type { CameraState } from "@/features/workout/model/use-camera-stream";
 import type { CalibrationStatus } from "@/features/workout/model/use-motion-engine";
@@ -19,6 +18,7 @@ import { Button } from "@/shared/ui/button";
  *
  * It never traps the user: manual logging is one tap away at all times.
  */
+
 export function CalibrationView({
   calibration,
   cameraState,
@@ -32,19 +32,12 @@ export function CalibrationView({
   onUseManual: () => void;
   onRetryPermission: () => void;
 }) {
-  const panelRef = useRef<HTMLDivElement>(null);
+  const panelRefCallback = (panel: HTMLDivElement | null) => {
+    if (!panel) return;
 
-  // A full-viewport blocking layer has to behave like one: focus moves in on
-  // Mount, comes back out on unmount, and the screen underneath is unreachable
-  // While it is up. Without this, Done, +10s, the header buttons and the
-  // Tabbable coaching panel all stayed keyboard-reachable behind the overlay.
-  useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    panelRef.current?.focus();
+    panel.focus();
 
-    // `inert` is the whole focus trap in one attribute. Browsers without it
-    // (pre-2023 Safari/Firefox) ignore the attribute and keep the old
-    // Behaviour — a degraded overlay, not a broken one.
     const background = document.querySelector(".live-screen");
     const supportsInert = typeof HTMLElement !== "undefined" && "inert" in HTMLElement.prototype;
     if (supportsInert) {
@@ -57,7 +50,7 @@ export function CalibrationView({
       }
       previouslyFocused?.focus?.();
     };
-  }, []);
+  };
 
   const blocked = cameraState === "denied" || cameraState === "unavailable";
   const distanceOk = calibration?.distance === "ok";
@@ -66,7 +59,7 @@ export function CalibrationView({
 
   return (
     <div aria-label="Camera check" aria-modal="true" className="calibration" role="dialog">
-      <div className="calibration__panel" ref={panelRef} tabIndex={-1}>
+      <div className="calibration__panel" ref={panelRefCallback} tabIndex={-1}>
         <p className="utility-label">Camera check</p>
         <p className="calibration__hint" aria-live="polite">
           {blocked

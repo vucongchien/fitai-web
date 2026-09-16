@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, Flag, HeartPulse } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { AbortReason } from "@/features/workout/model/live-session.types";
 import { Button } from "@/shared/ui/button";
@@ -14,7 +14,18 @@ const REASONS: { id: AbortReason; label: string; blurb: string }[] = [
   { blurb: "Not feeling it — that is fine.", id: "uncomfortable", label: "Doesn't feel right" },
 ];
 
-export function EndSessionDialog({
+export function EndSessionDialog(props: {
+  variant: EndDialogVariant;
+  loadRatio: number;
+  totalSets?: number;
+  onClose: () => void;
+  onFinish: (confirmOverload: boolean) => void;
+  onAbort: (reason: AbortReason) => void;
+}) {
+  return <EndSessionDialogContent key={props.variant} {...props} />;
+}
+
+function EndSessionDialogContent({
   loadRatio,
   onAbort,
   onClose,
@@ -31,10 +42,6 @@ export function EndSessionDialog({
 }) {
   const [view, setView] = useState<EndDialogVariant>(variant);
   const [reason, setReason] = useState<AbortReason | null>(null);
-
-  useEffect(() => {
-    setView(variant);
-  }, [variant]);
 
   if (view === "overload") {
     return (

@@ -1,7 +1,6 @@
 "use client";
-
 import { AlertCircle, CheckCircle2, Play, Volume2, VolumeX, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 
@@ -88,13 +87,14 @@ export function InstructionsSheet({
     }
   }, [isSpeaking, startSpeech, stopSpeech]);
 
-  // Read voice instructions automatically when opening the sheet
-  useEffect(() => {
+  // React 19 Ref Callback Cleanup: read voice instructions when sheet mounts and stop when unmounted
+  const sheetRef = (node: HTMLDivElement | null) => {
+    if (!node) return;
     startSpeech();
     return () => {
       stopSpeech();
     };
-  }, [startSpeech, stopSpeech]);
+  };
 
   const [isClosing, setIsClosing] = useState(false);
 
@@ -111,6 +111,7 @@ export function InstructionsSheet({
 
   return (
     <div
+      ref={sheetRef}
       aria-label={`How to do ${exercise.name}`}
       className={`live-sheet ${isClosing ? "live-sheet--closing" : ""}`}
       role="dialog"

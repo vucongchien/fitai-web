@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+
 
 /**
  * Camera access for the AI branch.
@@ -140,9 +141,6 @@ export function useCameraStream() {
     const nextMode: FacingMode = facingModeRef.current === "user" ? "environment" : "user";
     await start(nextMode);
   }, [start]);
-
-  // Free the camera when the screen goes away — the light should never stay on.
-  useEffect(() => stop, [stop]);
 
   // Memoised so callers can safely put the controller in an effect's dependency
   // Array. A fresh object literal here re-ran those effects on every render.

@@ -3,8 +3,10 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useState, useSyncExternalStore, useTransition } from "react";
+
 
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
 import { toAdhocExercise } from "@/features/workout/model/adhoc-types";
@@ -15,51 +17,33 @@ import {
 } from "@/features/workout/server/workout-actions";
 import { useToast } from "@/shared/ui/toast/toast-context";
 
+const emptySubscribe = () => () => {};
+
 export function useAdhocWorkout() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { showToast } = useToast();
 
-  const [mounted, setMounted] = useState(false);
-  const [exerciseList, setExerciseList] = useState<AdhocExercise[]>(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const targetId = urlParams.get("exerciseId");
-      const targetName = urlParams.get("name") || urlParams.get("exerciseName");
-      const targetPrescription = urlParams.get("prescription");
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
-      if (targetId || targetName) {
-        const matched: ExerciseResult = {
-          id: targetId || `ex-${Date.now()}`,
-          name: targetName || "Selected Movement",
-          equipmentId: "eq-standard",
-          isWeighted: true,
-          prescription: targetPrescription || "3 × 10",
-          rest: "90 sec",
-          note: "",
-        };
-        return [toAdhocExercise(matched, String(Date.now()))];
-      }
-    }
-    return [];
+  const targetExerciseId = searchParams.get("exerciseId");
+  const targetName = searchParams.get("name") || searchParams.get("exerciseName");
+  const targetPrescription = searchParams.get("prescription");
+  const hasUrlParam = Boolean(targetExerciseId || targetName);
+
+  const { data: config, isLoading: isConfigQueryLoading } = useQuery({
+    queryKey: ["adhoc-config"],
+    queryFn: () => getAdhocConfig(),
+    enabled: !hasUrlParam,
+    staleTime: 60_000,
   });
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-  const [aiReasoning, setAiReasoning] = useState<string | null>(null);
-  const [editingExercise, setEditingExercise] = useState<AdhocExercise | null>(null);
-  const [targetRpe, setTargetRpe] = useState(6.5);
 
-  const [configPending, startConfigTransition] = useTransition();
-  const [sessionPending, startSessionTransition] = useTransition();
-
-  // Mount + load initial config từ BFF / URL searchParams
-  useEffect(() => {
-    setMounted(true);
-    const targetExerciseId = searchParams.get("exerciseId");
-    const targetName = searchParams.get("name") || searchParams.get("exerciseName");
-    const targetPrescription = searchParams.get("prescription");
-
-    if (targetExerciseId || targetName) {
+  const [userExerciseList, setUserExerciseList] = useState<AdhocExercise[] | null>(() => {
+    if (hasUrlParam) {
       const matched: ExerciseResult = {
         id: targetExerciseId || `ex-${Date.now()}`,
         name: targetName || "Selected Movement",
@@ -69,17 +53,32 @@ export function useAdhocWorkout() {
         rest: "90 sec",
         note: "",
       };
-
-      setExerciseList([toAdhocExercise(matched, String(Date.now()))]);
-      return;
+      return [toAdhocExercise(matched, String(Date.now()))];
     }
+    return null;
+  });
 
-    startConfigTransition(async () => {
-      const config = await getAdhocConfig();
-      setTargetRpe(config.targetRpe);
-      setExerciseList(config.defaultExercises.map((ex) => toAdhocExercise(ex)));
-    });
-  }, [searchParams]);
+  const exerciseList =
+    userExerciseList ?? (config?.defaultExercises.map((ex) => toAdhocExercise(ex)) ?? []);
+
+  const setExerciseList = useCallback(
+    (updater: AdhocExercise[] | ((prev: AdhocExercise[]) => AdhocExercise[])) => {
+      setUserExerciseList((current) => {
+        const base = current ?? (config?.defaultExercises.map((ex) => toAdhocExercise(ex)) ?? []);
+        return typeof updater === "function" ? updater(base) : updater;
+      });
+    },
+    [config?.defaultExercises],
+  );
+
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [aiReasoning, setAiReasoning] = useState<string | null>(null);
+  const [editingExercise, setEditingExercise] = useState<AdhocExercise | null>(null);
+  const [customTargetRpe] = useState<number | null>(null);
+  const targetRpe = customTargetRpe ?? config?.targetRpe ?? 6.5;
+
+  const [sessionPending, startSessionTransition] = useTransition();
 
   // DND-Kit Sensors
   const sensors = useSensors(
@@ -226,7 +225,7 @@ export function useAdhocWorkout() {
     editingExercise,
     setEditingExercise,
     aiLoading: false,
-    configLoading: configPending,
+    configLoading: isConfigQueryLoading,
     sessionLoading: sessionPending,
     sensors,
     estimatedDuration,

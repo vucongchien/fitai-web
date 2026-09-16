@@ -1,12 +1,13 @@
 "use client";
 
 import { ArrowLeftRight, CameraOff, RefreshCw, Upload, Video, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 
 import type { Pose } from "@/features/workout/domain/pose-metrics";
 import type { CameraState } from "@/features/workout/model/use-camera-stream";
 import { PoseOverlay } from "@/features/workout/ui/live/pose-overlay";
+
 
 export function CameraStage({
   alert,
@@ -38,13 +39,16 @@ export function CameraStage({
     height: 0,
     width: 0,
   });
+  const [prevMirroredProp, setPrevMirroredProp] = useState(mirrored);
   const [isMirrored, setIsMirrored] = useState(mirrored);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Sync internal mirrored state if prop changes
-  useEffect(() => {
+  if (mirrored !== prevMirroredProp) {
+    setPrevMirroredProp(mirrored);
     setIsMirrored(mirrored);
-  }, [mirrored]);
+  }
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const activeMirrored = isCustomVideo ? false : isMirrored;
 
@@ -80,38 +84,46 @@ export function CameraStage({
     [onUploadVideo],
   );
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video && customVideoSrc) {
-      safePlay(video);
-    }
-  }, [customVideoSrc, safePlay, videoRef]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) {
-      return;
-    }
-    const syncDimensions = () => {
-      if (video.videoWidth > 0 && video.videoHeight > 0) {
-        setDimensions({ height: video.videoHeight, width: video.videoWidth });
+  const handleVideoRef = useCallback(
+    (video: HTMLVideoElement | null) => {
+      if (videoRef && "current" in videoRef) {
+        (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = video;
       }
-      if (video.paused && customVideoSrc) {
+      if (!video) {
+        return;
+      }
+
+      const syncDimensions = () => {
+        if (video.videoWidth > 0 && video.videoHeight > 0) {
+          setDimensions({ height: video.videoHeight, width: video.videoWidth });
+        }
+        if (video.paused && customVideoSrc) {
+          safePlay(video);
+        }
+      };
+
+      syncDimensions();
+      if (customVideoSrc) {
         safePlay(video);
       }
-    };
-    syncDimensions();
-    video.addEventListener("loadedmetadata", syncDimensions);
-    video.addEventListener("canplay", syncDimensions);
-    video.addEventListener("resize", syncDimensions);
-    video.addEventListener("playing", syncDimensions);
-    return () => {
-      video.removeEventListener("loadedmetadata", syncDimensions);
-      video.removeEventListener("canplay", syncDimensions);
-      video.removeEventListener("resize", syncDimensions);
-      video.removeEventListener("playing", syncDimensions);
-    };
-  }, [customVideoSrc, videoRef]);
+
+      video.addEventListener("loadedmetadata", syncDimensions);
+      video.addEventListener("canplay", syncDimensions);
+      video.addEventListener("resize", syncDimensions);
+      video.addEventListener("playing", syncDimensions);
+
+      return () => {
+        video.removeEventListener("loadedmetadata", syncDimensions);
+        video.removeEventListener("canplay", syncDimensions);
+        video.removeEventListener("resize", syncDimensions);
+        video.removeEventListener("playing", syncDimensions);
+        if (videoRef && "current" in videoRef) {
+          (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = null;
+        }
+      };
+    },
+    [customVideoSrc, safePlay, videoRef],
+  );
 
   return (
     <div
@@ -127,7 +139,7 @@ export function CameraStage({
         onCanPlay={handleLoadedMetadata}
         onLoadedMetadata={handleLoadedMetadata}
         playsInline
-        ref={videoRef}
+        ref={handleVideoRef}
         src={customVideoSrc || undefined}
         style={{ transform: activeMirrored ? "scaleX(-1)" : "none" }}
       />

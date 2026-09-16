@@ -11,9 +11,7 @@ import {
   X,
 } from "lucide-react";
 import React, { useState } from "react";
-
-import { getCatalogMetadataServerAction } from '@/features/exercise/server/catalog-actions';
-import type { CatalogEquipmentItem, CatalogMuscleItem } from '@/features/exercise/server/catalog-actions';
+import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-store";
 import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import type { PreferredWorkoutTimesMap } from "@/features/onboarding/domain/workout-times-normalizer";
 import { calculateBMI } from "../model/profile.mapper";
@@ -348,30 +346,9 @@ function GoalsForm({
   const [muscles, setMuscles] = useState<string[]>(
     profile.healthMetrics.preferredMuscleGroups || ["Chest", "Back", "Legs"],
   );
-  const [catalogMuscleGroups, setCatalogMuscleGroups] = useState<CatalogMuscleItem[]>([]);
-  const [isLoadingMuscles, setIsLoadingMuscles] = useState(true);
+  const { muscles: catalogMuscleGroups, isLoading: isLoadingMuscles } = useCatalogMetadata();
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  React.useEffect(() => {
-    let active = true;
-    async function loadMuscles() {
-      try {
-        const res = await getCatalogMetadataServerAction();
-        if (active && res.success) {
-          setCatalogMuscleGroups(res.muscles);
-        }
-      } catch (error) {
-        console.error("Failed to load catalog muscles:", error);
-      } finally {
-        if (active) {setIsLoadingMuscles(false);}
-      }
-    }
-    loadMuscles();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const toggleGoal = (item: string) => {
     if (goals.includes(item)) {
@@ -551,30 +528,9 @@ function EquipmentForm({
       ? profile.settings.availableEquipment
       : ["Full Gym"],
   );
-  const [catalogEquipments, setCatalogEquipments] = useState<CatalogEquipmentItem[]>([]);
-  const [isLoadingEquipments, setIsLoadingEquipments] = useState(true);
+  const { equipments: catalogEquipments, isLoading: isLoadingEquipments } = useCatalogMetadata();
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-
-  React.useEffect(() => {
-    let active = true;
-    async function loadEquipments() {
-      try {
-        const res = await getCatalogMetadataServerAction();
-        if (active && res.success) {
-          setCatalogEquipments(res.equipments);
-        }
-      } catch (error) {
-        console.error("Failed to load catalog equipments:", error);
-      } finally {
-        if (active) {setIsLoadingEquipments(false);}
-      }
-    }
-    loadEquipments();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const toggleEquipment = (item: string) => {
     if (equipment.includes(item)) {
@@ -804,25 +760,7 @@ function InjuryHistoryForm({
   });
   const [confirmRecoverId, setConfirmRecoverId] = useState<string | null>(null);
 
-  const [dynamicDbMuscles, setDynamicDbMuscles] = useState<CatalogMuscleItem[]>([]);
-
-  React.useEffect(() => {
-    let active = true;
-    async function loadCatalog() {
-      try {
-        const res = await getCatalogMetadataServerAction();
-        if (active && res.success) {
-          setDynamicDbMuscles(res.muscles || []);
-        }
-      } catch (err) {
-        console.warn("Failed to load dynamic DB muscles for injury form:", err);
-      }
-    }
-    loadCatalog();
-    return () => {
-      active = false;
-    };
-  }, []);
+  const { muscles: dynamicDbMuscles } = useCatalogMetadata();
 
   const baseAnatomyAreas = [
     // Upper Body

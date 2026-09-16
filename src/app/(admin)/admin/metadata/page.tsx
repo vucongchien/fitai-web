@@ -2,7 +2,8 @@
 
 import type { LucideIcon } from "lucide-react";
 import { Dumbbell, FolderTree, Layers, Pencil, Plus, Tag, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   createMetadataItem,
@@ -28,29 +29,17 @@ const TABS: MetadataTab[] = [
 ];
 
 export default function AdminMetadataPage() {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<MetadataItem["category"]>("bodyPart");
-  const [items, setItems] = useState<MetadataItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["admin-metadata", activeTab],
+    queryFn: () => fetchMetadataList(activeTab),
+  });
 
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MetadataItem | null>(null);
-
-  // UseCallback keyed on activeTab, so the effect below can depend on the
-  // Function itself without re-fetching on every render.
-  const loadMetadata = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const list = await fetchMetadataList(activeTab);
-      setItems(list);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    void loadMetadata();
-  }, [loadMetadata]);
 
   const handleOpenAdd = useCallback(() => {
     setSelectedItem(null);
@@ -67,7 +56,7 @@ export default function AdminMetadataPage() {
   const handleDelete = async (item: MetadataItem) => {
     if (confirm(`Delete metadata item "${item.name}"?`)) {
       await deleteMetadataItem(item.id);
-      loadMetadata();
+      await queryClient.invalidateQueries({ queryKey: ["admin-metadata"] });
     }
   };
 
@@ -78,9 +67,9 @@ export default function AdminMetadataPage() {
       } else {
         await createMetadataItem(data);
       }
-      loadMetadata();
+      await queryClient.invalidateQueries({ queryKey: ["admin-metadata"] });
     },
-    [selectedItem, loadMetadata],
+    [selectedItem, queryClient],
   );
 
   return (

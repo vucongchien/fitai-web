@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
 
@@ -19,8 +19,9 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
   const [weightKg, setWeightKg] = useState<number | undefined>(exercise.weightKg);
   const [rest, setRest] = useState(exercise.rest || "60 sec");
 
-  // Keyboard shortcut Escape để đóng modal (a11y)
-  useEffect(() => {
+  // React 19 Ref Cleanup: Escape key listener bound to modal lifecycle
+  const backdropRef = (node: HTMLDivElement | null) => {
+    if (!node) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
@@ -28,7 +29,7 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  };
 
   const handleSave = () => {
     onSave({
@@ -40,7 +41,7 @@ export function ExerciseEditModal({ exercise, onClose, onSave }: ExerciseEditMod
   };
 
   return (
-    <div className="exercise-edit-modal-backdrop">
+    <div ref={backdropRef} className="exercise-edit-modal-backdrop">
       {/*
         The dimmed area is a real button, not a div with onClick: it is the only
         pointer affordance for dismissing, so it needs to be reachable and

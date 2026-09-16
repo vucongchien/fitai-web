@@ -1,24 +1,31 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
+
+function subscribe(callback: () => void) {
+  if (typeof document === "undefined") {
+    return () => {};
+  }
+  document.addEventListener("fullscreenchange", callback);
+  return () => {
+    document.removeEventListener("fullscreenchange", callback);
+    // Clean up: automatically exit fullscreen when leaving/unmounting the screen
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => {});
+    }
+  };
+}
+
+function getSnapshot(): boolean {
+  return typeof document !== "undefined" && Boolean(document.fullscreenElement);
+}
+
+function getServerSnapshot(): boolean {
+  return false;
+}
 
 export function useFullscreenScope() {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
-    };
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      // Clean up: automatically exit fullscreen when leaving/unmounting the screen
-      if (typeof document !== "undefined" && document.fullscreenElement) {
-        void document.exitFullscreen().catch(() => {});
-      }
-    };
-  }, []);
+  const isFullscreen = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const toggleFullscreen = useCallback(() => {
     if (typeof document === "undefined") {
