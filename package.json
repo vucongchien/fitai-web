@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "proto:gen": "buf generate ../gym-companion/proto --template buf.gen.yaml",
+    "task:check": "node .agents/skills/task-lifecycle-sdlc/scripts/validate-task.mjs",
     "precommit": "node scripts/pre-commit.mjs",
     "prepare": "git config core.hooksPath .githooks"
   },
