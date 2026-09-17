@@ -14,15 +14,9 @@ interface CircularProgressProps {
   value: number;
 }
 
-const RADIUS = 52;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+import { DEFAULT_RADIUS, computeCircularProgress, toPercentage } from "./use-circular-progress";
 
-export function toPercentage(value: number, max: number) {
-  if (!Number.isFinite(value) || !Number.isFinite(max) || max <= 0) {
-    return 0;
-  }
-  return Math.max(0, Math.min(100, Math.round((value / max) * 100)));
-}
+export { toPercentage };
 
 /**
  * The dominant reading on Nutrition and Workout: an arc carrying the ratio, with the
@@ -40,21 +34,24 @@ export function CircularProgress({
   tone = "action",
   value,
 }: CircularProgressProps) {
-  const percentage = toPercentage(value, max);
-  const hasTarget = Number.isFinite(max) && max > 0;
+  const { circumference, hasTarget, percentage, strokeDashoffset } = computeCircularProgress(
+    value,
+    max,
+    DEFAULT_RADIUS,
+  );
 
   return (
     <div className={cn("progress-ring", `progress-ring--${tone}`)}>
       <svg aria-label={ariaLabel} role="img" viewBox="0 0 120 120">
-        <circle className="progress-ring__track" cx="60" cy="60" r={RADIUS} />
+        <circle className="progress-ring__track" cx="60" cy="60" r={DEFAULT_RADIUS} />
         {hasTarget && percentage > 0 ? (
           <circle
             className="progress-ring__value"
             cx="60"
             cy="60"
-            r={RADIUS}
-            strokeDasharray={CIRCUMFERENCE}
-            strokeDashoffset={CIRCUMFERENCE * (1 - percentage / 100)}
+            r={DEFAULT_RADIUS}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
           />
         ) : null}
       </svg>

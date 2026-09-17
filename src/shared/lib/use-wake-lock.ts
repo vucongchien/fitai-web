@@ -154,7 +154,11 @@ class WakeLockStore {
         }
       }
 
-      if (this.subscribers.size === 0 && typeof document !== "undefined" && this.visibilityAttached) {
+      if (
+        this.subscribers.size === 0 &&
+        typeof document !== "undefined" &&
+        this.visibilityAttached
+      ) {
         document.removeEventListener("visibilitychange", this.handleVisibilityChange);
         this.visibilityAttached = false;
       }
