@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     useTypeScriptCli: true,
+    optimizePackageImports: ["lucide-react", "sonner", "@tanstack/react-query"],
   },
 
   async headers() {
