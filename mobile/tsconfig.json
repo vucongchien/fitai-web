@@ -16,6 +16,8 @@
     }
   },
   "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
     "src/**/*.ts",
     "src/**/*.tsx",
     "../src/features/workout/domain/**/*.ts",

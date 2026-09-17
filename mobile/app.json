@@ -33,9 +33,7 @@
         "android.permission.WAKE_LOCK"
       ]
     },
-    "plugins": [
-      "expo-router"
-    ],
+    "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
     }
