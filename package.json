@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/copy-ort-assets.mjs && next dev",
+    "dev:mobile": "node scripts/copy-ort-assets.mjs && next dev -H 0.0.0.0",
     "build": "node scripts/copy-ort-assets.mjs && next build",
     "start": "next start",
     "ort:copy": "node scripts/copy-ort-assets.mjs",

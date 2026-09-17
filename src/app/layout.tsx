@@ -35,7 +35,16 @@ const data = localFont({
 });
 
 export const metadata: Metadata = {
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "FITAI",
+  },
   description: "A four-week training plan that adapts to your progress.",
+  icons: {
+    apple: "/icons/icon-192.png",
+    icon: "/icons/icon-192.png",
+  },
   manifest: "/manifest.webmanifest",
   title: {
     default: "FITAI",
@@ -45,7 +54,9 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: "light",
+  initialScale: 1,
   themeColor: "#f7f8f6",
+  viewportFit: "cover",
   width: "device-width",
 };
 
