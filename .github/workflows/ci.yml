@@ -48,6 +48,12 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
+      - name: Run Skills & Architecture Audit
+        run: pnpm audit:skills
+
+      - name: Run Task Lifecycle Validation
+        run: pnpm task:check
+
       - name: Run Typecheck
         run: pnpm typecheck
 

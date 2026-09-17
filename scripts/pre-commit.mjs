@@ -64,61 +64,23 @@ function getChangedFiles() {
   return files;
 }
 
-// 0. ZERO-USEEFFECT CHECK (Enforces 100% Zero-useEffect policy across all source files)
-function getAllSourceFiles(dir, out = []) {
-  if (!fs.existsSync(dir)) return out;
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  for (const entry of entries) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (entry.name !== "node_modules" && entry.name !== ".next") {
-        getAllSourceFiles(full, out);
-      }
-    } else if (/\.(ts|tsx)$/.test(entry.name)) {
-      out.push(path.relative(CWD, full).replace(/\\/g, "/"));
-    }
-  }
-  return out;
-}
-
-function runCheckNoUseEffect(changedFiles) {
-  printHeader("1/5 Checking Zero useEffect");
+// 0. SKILLS & ARCHITECTURE AUDIT (Zero-useEffect, React 19 rules, RSC hygiene, barrel imports)
+function runSkillsAudit() {
+  printHeader("1/5 Running Skills & Architecture Audit");
   const start = Date.now();
 
-  // Always audit 100% of source files in src/ on every commit run
-  const filesToCheck = getAllSourceFiles(path.join(CWD, "src"));
+  const res = spawnSync("node", ["scripts/audit-skills.mjs"], {
+    shell: true,
+    cwd: CWD,
+    encoding: "utf-8",
+  });
 
-  if (filesToCheck.length === 0) {
-    printSkip("no-use-effect", "no source files found in src/");
-    return;
+  if (res.status !== 0) {
+    const raw = cleanAnsi((res.stderr || "") + (res.stdout || ""));
+    printFailAndExit("skills-audit", raw || "Skills & Architecture audit failed.");
   }
 
-  const violations = [];
-  for (const file of filesToCheck) {
-    const content = fs.readFileSync(path.join(CWD, file), "utf-8");
-    const lines = content.split("\n");
-    lines.forEach((line, idx) => {
-      const trimmed = line.trim();
-      if (trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*")) {
-        return;
-      }
-      if (
-        /\buseEffect\s*[(<]/.test(line) ||
-        /\bimport\s+[^'"]*?\buseEffect\b[^'"]*?from/.test(line)
-      ) {
-        violations.push(`${file}:${idx + 1}: ${line.trim()}`);
-      }
-    });
-  }
-
-  if (violations.length > 0) {
-    printFailAndExit(
-      "no-use-effect",
-      `Disallowed useEffect detected in new/refactored files:\n${violations.join("\n")}\n\nPlease use React 19 alternatives: useSyncExternalStore, ref callback cleanup, or derived state/event handlers.`,
-    );
-  }
-
-  printPass("no-use-effect", Date.now() - start);
+  printPass("skills-audit", Date.now() - start);
 }
 
 // 1. LINT STEP (Runs only on changed JS/TS files)
@@ -440,7 +402,7 @@ function runBuild(changedFiles) {
 function main() {
   const totalStart = Date.now();
   process.stdout.write(
-    "Starting pre-commit pipeline: zero-use-effect -> lint -> test -> type-check -> build\n",
+    "Starting pre-commit pipeline: audit-skills -> lint -> test -> type-check -> build\n",
   );
 
   const changedFiles = getChangedFiles();
@@ -449,7 +411,7 @@ function main() {
     process.exit(0);
   }
 
-  runCheckNoUseEffect(changedFiles);
+  runSkillsAudit();
   runLint(changedFiles);
   runTest(changedFiles);
   runTypecheck(changedFiles);

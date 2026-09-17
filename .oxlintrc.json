@@ -41,7 +41,7 @@
     "nextjs/next-script-for-ga": "error",
     "nextjs/no-async-client-component": "error",
     "nextjs/no-head-element": "error",
-    "nextjs/no-img-element": "warn",
+    "nextjs/no-img-element": "error",
 
     "import/no-cycle": "error",
     "import/no-duplicates": "error",
