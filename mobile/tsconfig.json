@@ -10,6 +10,8 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
+      "react": ["./node_modules/@types/react"],
+      "react/*": ["./node_modules/@types/react/*"],
       "@/*": ["../src/*", "./src/*"],
       "@mobile/*": ["./src/*"],
       "@shared-domain/*": ["../src/features/workout/domain/*"]
@@ -21,6 +23,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "../src/features/workout/domain/**/*.ts",
-    "../src/features/workout/model/**/*.ts"
+    "../src/shared/design-system/**/*.ts",
+    "../src/shared/ui/charts/use-circular-progress.ts"
   ]
 }

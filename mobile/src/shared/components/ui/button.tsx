@@ -65,7 +65,7 @@ export function Button({
           size="small"
         />
       ) : (
-        <Text style={[styles.text, textStyles[variant], sizeTextStyles[size]]}>{children}</Text>
+        <Text style={[textStyles[variant], sizeTextStyles[size]]}>{children}</Text>
       )}
     </Pressable>
   );
