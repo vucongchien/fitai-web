@@ -1,9 +1,9 @@
+import { createClient } from "@connectrpc/connect";
+import "server-only";
 import { redirect } from "next/navigation";
 
-import "server-only";
-
-import { createClient } from "@connectrpc/connect";
-
+import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
+import type { ExerciseSummary } from "@/features/exercise/domain/exercise";
 import type {
   EvidenceItem,
   FeaturedExerciseItem,
@@ -12,23 +12,23 @@ import type {
   QuickAction,
   TodayTimelineItem,
 } from "@/features/home/model/home-page.types";
-import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
-import type { ExerciseSummary } from "@/features/exercise/domain/exercise";
-import { getProfileData } from "@/features/profile/server/get-profile-data";
+import {
+  cleanMealDisplayName,
+  normalizeTodayMenu,
+} from "@/features/nutrition/model/meal-detail.mapper";
+import { readLocalMeals } from "@/features/nutrition/server/local-meal-log";
 import type { ProfileViewModel } from "@/features/profile/model/profile.types";
-import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
+import { getProfileData } from "@/features/profile/server/get-profile-data";
+import { dayKeyFromLoggedAt, dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
+import { deduplicateMealRows, toMealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { SessionPlanStatus } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
 import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
-
-import { cleanMealDisplayName, normalizeTodayMenu } from "@/features/nutrition/model/meal-detail.mapper";
-import { readLocalMeals } from "@/features/nutrition/server/local-meal-log";
-import { dayKeyFromLoggedAt, dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
-import { deduplicateMealRows, toMealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { calculateConsecutiveStreakDays } from "@/shared/utils/streak";
 
 const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
@@ -98,7 +98,9 @@ const DEFAULT_MUSCLE_GROUPS: MuscleGroupCategoryItem[] = [
   },
 ];
 
-function buildDynamicMuscleGroups(bodyParts: Array<{ id: string; name: string }>): MuscleGroupCategoryItem[] {
+function buildDynamicMuscleGroups(
+  bodyParts: Array<{ id: string; name: string }>,
+): MuscleGroupCategoryItem[] {
   if (!bodyParts || bodyParts.length === 0) {
     return DEFAULT_MUSCLE_GROUPS;
   }
@@ -106,9 +108,17 @@ function buildDynamicMuscleGroups(bodyParts: Array<{ id: string; name: string }>
   const mapIcon = (name: string): string => {
     const n = name.toLowerCase();
     if (n.includes("arm") || n.includes("bicep") || n.includes("tricep")) return "biceps";
-    if (n.includes("leg") || n.includes("thigh") || n.includes("quad") || n.includes("glute") || n.includes("calf")) return "dumbbell";
+    if (
+      n.includes("leg") ||
+      n.includes("thigh") ||
+      n.includes("quad") ||
+      n.includes("glute") ||
+      n.includes("calf")
+    )
+      return "dumbbell";
     if (n.includes("waist") || n.includes("abs") || n.includes("core")) return "flame";
-    if (n.includes("chest") || n.includes("back") || n.includes("shoulder") || n.includes("neck")) return "target";
+    if (n.includes("chest") || n.includes("back") || n.includes("shoulder") || n.includes("neck"))
+      return "target";
     return "activity";
   };
 
@@ -125,7 +135,9 @@ function buildDynamicMuscleGroups(bodyParts: Array<{ id: string; name: string }>
 }
 
 function isUuid(str?: string): boolean {
-  if (!str) {return false;}
+  if (!str) {
+    return false;
+  }
   const trimmed = str.trim();
   return (
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
@@ -133,15 +145,44 @@ function isUuid(str?: string): boolean {
   );
 }
 
-function computeProfileCompletion(profileVm: ProfileViewModel): { rate: number; missingFields: string[] } {
+function computeProfileCompletion(profileVm: ProfileViewModel): {
+  rate: number;
+  missingFields: string[];
+} {
   let score = 0;
   const missing: string[] = [];
 
-  if (profileVm.highlights.currentWeightKg > 0) {score += 20;} else {missing.push("Weight");}
-  if (profileVm.healthMetrics.heightCm > 0) {score += 20;} else {missing.push("Height");}
-  if (profileVm.user.dateOfBirth || (profileVm.user.gender && profileVm.user.gender !== "Not set")) {score += 20;} else {missing.push("Personal Details");}
-  if (profileVm.healthMetrics.goals && profileVm.healthMetrics.goals.length > 0) {score += 20;} else {missing.push("Training Goals");}
-  if (profileVm.user.experienceLevel || (profileVm.settings.availableEquipment && profileVm.settings.availableEquipment.length > 0)) {score += 20;} else {missing.push("Equipment & Setup");}
+  if (profileVm.highlights.currentWeightKg > 0) {
+    score += 20;
+  } else {
+    missing.push("Weight");
+  }
+  if (profileVm.healthMetrics.heightCm > 0) {
+    score += 20;
+  } else {
+    missing.push("Height");
+  }
+  if (
+    profileVm.user.dateOfBirth ||
+    (profileVm.user.gender && profileVm.user.gender !== "Not set")
+  ) {
+    score += 20;
+  } else {
+    missing.push("Personal Details");
+  }
+  if (profileVm.healthMetrics.goals && profileVm.healthMetrics.goals.length > 0) {
+    score += 20;
+  } else {
+    missing.push("Training Goals");
+  }
+  if (
+    profileVm.user.experienceLevel ||
+    (profileVm.settings.availableEquipment && profileVm.settings.availableEquipment.length > 0)
+  ) {
+    score += 20;
+  } else {
+    missing.push("Equipment & Setup");
+  }
 
   return { rate: score, missingFields: missing };
 }
@@ -156,7 +197,8 @@ export async function getHomePageData(): Promise<HomePageData> {
   }
 
   const profileVm = await getProfileData();
-  const { rate: computedRate, missingFields: computedMissing } = computeProfileCompletion(profileVm);
+  const { rate: computedRate, missingFields: computedMissing } =
+    computeProfileCompletion(profileVm);
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {
@@ -202,9 +244,15 @@ export async function getHomePageData(): Promise<HomePageData> {
       const menu = menuRes.status === "fulfilled" ? menuRes.value : undefined;
       const history = historyRes.status === "fulfilled" ? historyRes.value.sessions : [];
       const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
-      const catalogData = catalog.status === "fulfilled" ? catalog.value : { bodyParts: [], muscles: [], equipments: [] };
+      const catalogData =
+        catalog.status === "fulfilled"
+          ? catalog.value
+          : { bodyParts: [], muscles: [], equipments: [] };
 
-      const nutHistoryMeals = nutHistoryRes.status === "fulfilled" && nutHistoryRes.value?.meals ? nutHistoryRes.value.meals : [];
+      const nutHistoryMeals =
+        nutHistoryRes.status === "fulfilled" && nutHistoryRes.value?.meals
+          ? nutHistoryRes.value.meals
+          : [];
       const localMeals = localMealsRes.status === "fulfilled" ? localMealsRes.value : [];
       const allMealRows = deduplicateMealRows([...nutHistoryMeals, ...localMeals]);
       const todayLoggedMeals = allMealRows.filter((row) => {
@@ -220,16 +268,28 @@ export async function getHomePageData(): Promise<HomePageData> {
       const equipmentMap = new Map(catalogData.equipments.map((e) => [e.id, e.name]));
 
       const resolveMuscleGroup = (targetId?: string, bodyPartId?: string): string => {
-        if (targetId && muscleMap.has(targetId)) {return muscleMap.get(targetId)!.toUpperCase();}
-        if (bodyPartId && bodyPartMap.has(bodyPartId)) {return bodyPartMap.get(bodyPartId)!.toUpperCase();}
-        if (targetId && !isUuid(targetId)) {return targetId.toUpperCase();}
-        if (bodyPartId && !isUuid(bodyPartId)) {return bodyPartId.toUpperCase();}
+        if (targetId && muscleMap.has(targetId)) {
+          return muscleMap.get(targetId)!.toUpperCase();
+        }
+        if (bodyPartId && bodyPartMap.has(bodyPartId)) {
+          return bodyPartMap.get(bodyPartId)!.toUpperCase();
+        }
+        if (targetId && !isUuid(targetId)) {
+          return targetId.toUpperCase();
+        }
+        if (bodyPartId && !isUuid(bodyPartId)) {
+          return bodyPartId.toUpperCase();
+        }
         return "FULL BODY";
       };
 
       const resolveEquipment = (eqId?: string): string => {
-        if (eqId && equipmentMap.has(eqId)) {return equipmentMap.get(eqId)!;}
-        if (eqId && !isUuid(eqId)) {return eqId;}
+        if (eqId && equipmentMap.has(eqId)) {
+          return equipmentMap.get(eqId)!;
+        }
+        if (eqId && !isUuid(eqId)) {
+          return eqId;
+        }
         return "";
       };
 
@@ -243,7 +303,9 @@ export async function getHomePageData(): Promise<HomePageData> {
           name: ex.name,
           muscleGroup: resolveMuscleGroup(ex.targetMuscleId, ex.bodyPartId),
           equipment: resolveEquipment(ex.equipmentId),
-          durationMins: ex.defaultRestSeconds ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60)) : 10,
+          durationMins: ex.defaultRestSeconds
+            ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
+            : 10,
           prescription: "3 × 10 reps",
           isWeighted: ex.equipmentId ? ex.equipmentId.toLowerCase() !== "bodyweight" : true,
           imageUrl: ex.thumbnailUrl || ex.mediaUrl || ex.videoUrl || undefined,
@@ -263,7 +325,9 @@ export async function getHomePageData(): Promise<HomePageData> {
           name: ex.name,
           muscleGroup: resolveMuscleGroup(ex.targetMuscleId, ex.bodyPartId),
           equipment: resolveEquipment(ex.equipmentId),
-          durationMins: ex.defaultRestSeconds ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60)) : 10,
+          durationMins: ex.defaultRestSeconds
+            ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
+            : 10,
           prescription: "3 × 10 reps",
           isWeighted: ex.equipmentId !== "bodyweight",
           imageUrl: ex.thumbnailUrl || undefined,
@@ -273,12 +337,18 @@ export async function getHomePageData(): Promise<HomePageData> {
       let completionRate = computedRate;
       let missingFields = computedMissing;
 
-      if (profileProto && typeof profileProto.completionRate === "number" && profileProto.completionRate > 0) {
-        completionRate = Math.round(profileProto.completionRate <= 1 ? profileProto.completionRate * 100 : profileProto.completionRate);
+      if (
+        profileProto &&
+        typeof profileProto.completionRate === "number" &&
+        profileProto.completionRate > 0
+      ) {
+        completionRate = Math.round(
+          profileProto.completionRate <= 1
+            ? profileProto.completionRate * 100
+            : profileProto.completionRate,
+        );
         missingFields = completionRate >= 100 ? [] : computedMissing;
       }
-
-
 
       const todayTimeline: TodayTimelineItem[] = [];
       let matchedDayPlan: any = undefined;
@@ -317,7 +387,11 @@ export async function getHomePageData(): Promise<HomePageData> {
                 id: session.sessionPlanId || `today-workout-${todayTimeline.length}`,
                 time: session.slotTime || "17:30",
                 title: session.targetMuscleGroups!.join(", "),
-                subtitle: session.reasoning || (matchedWeekPlan ? `Target RPE ${matchedWeekPlan.targetRpe || 7.5}` : "Planned Workout"),
+                subtitle:
+                  session.reasoning ||
+                  (matchedWeekPlan
+                    ? `Target RPE ${matchedWeekPlan.targetRpe || 7.5}`
+                    : "Planned Workout"),
                 category: "workout",
                 status: session.status === SessionPlanStatus.COMPLETED ? "complete" : "planned",
                 href: `/roadmap/${session.sessionPlanId}`,
@@ -336,15 +410,41 @@ export async function getHomePageData(): Promise<HomePageData> {
         category: "meal" | "snack";
         href: string;
       }> = [
-        { slot: "breakfast", time: "07:30", title: "Breakfast", category: "meal", href: "/nutrition/breakfast" },
-        { slot: "lunch", time: "12:30", title: "Lunch", category: "meal", href: "/nutrition/lunch" },
-        { slot: "snack", time: "15:30", title: "Snack", category: "snack", href: "/nutrition/snack" },
-        { slot: "dinner", time: "19:30", title: "Dinner", category: "meal", href: "/nutrition/dinner" },
+        {
+          slot: "breakfast",
+          time: "07:30",
+          title: "Breakfast",
+          category: "meal",
+          href: "/nutrition/breakfast",
+        },
+        {
+          slot: "lunch",
+          time: "12:30",
+          title: "Lunch",
+          category: "meal",
+          href: "/nutrition/lunch",
+        },
+        {
+          slot: "snack",
+          time: "15:30",
+          title: "Snack",
+          category: "snack",
+          href: "/nutrition/snack",
+        },
+        {
+          slot: "dinner",
+          time: "19:30",
+          title: "Dinner",
+          category: "meal",
+          href: "/nutrition/dinner",
+        },
       ];
 
       for (const config of mealSlotsConfig) {
         const loggedForSlot = todayLoggedMeals.find(
-          (row) => toMealSlot(row.mealType) === config.slot || toMealSlot((row as any).slot) === config.slot,
+          (row) =>
+            toMealSlot(row.mealType) === config.slot ||
+            toMealSlot((row as any).slot) === config.slot,
         );
         if (loggedForSlot) {
           todayTimeline.push({
@@ -378,10 +478,13 @@ export async function getHomePageData(): Promise<HomePageData> {
       const nowTimeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
       let nextItem = todayTimeline.find(
-        (item) => item.time >= nowTimeStr && item.status !== "complete" && item.status !== "skipped",
+        (item) =>
+          item.time >= nowTimeStr && item.status !== "complete" && item.status !== "skipped",
       );
       if (!nextItem) {
-        nextItem = todayTimeline.find((item) => item.status !== "complete" && item.status !== "skipped");
+        nextItem = todayTimeline.find(
+          (item) => item.status !== "complete" && item.status !== "skipped",
+        );
       }
       if (nextItem) {
         nextItem.status = "next";
@@ -444,16 +547,21 @@ export async function getHomePageData(): Promise<HomePageData> {
     }),
     exerciseSearchRepository.getCatalog(),
   ]);
-  const fallbackFeatured: FeaturedExerciseItem[] = fallbackRepoResults.map((ex: ExerciseSummary) => ({
-    id: ex.id,
-    name: ex.name,
-    muscleGroup: ex.bodyPartId && !isUuid(ex.bodyPartId) ? ex.bodyPartId.toUpperCase() : "FULL BODY",
-    equipment: ex.equipmentId && !isUuid(ex.equipmentId) ? ex.equipmentId : "",
-    durationMins: ex.defaultRestSeconds ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60)) : 10,
-    prescription: "3 × 10 reps",
-    isWeighted: ex.equipmentId !== "bodyweight",
-    imageUrl: ex.thumbnailUrl || undefined,
-  }));
+  const fallbackFeatured: FeaturedExerciseItem[] = fallbackRepoResults.map(
+    (ex: ExerciseSummary) => ({
+      id: ex.id,
+      name: ex.name,
+      muscleGroup:
+        ex.bodyPartId && !isUuid(ex.bodyPartId) ? ex.bodyPartId.toUpperCase() : "FULL BODY",
+      equipment: ex.equipmentId && !isUuid(ex.equipmentId) ? ex.equipmentId : "",
+      durationMins: ex.defaultRestSeconds
+        ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
+        : 10,
+      prescription: "3 × 10 reps",
+      isWeighted: ex.equipmentId !== "bodyweight",
+      imageUrl: ex.thumbnailUrl || undefined,
+    }),
+  );
 
   const localRows = await readLocalMeals();
   const todayStr = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
@@ -467,7 +575,13 @@ export async function getHomePageData(): Promise<HomePageData> {
     category: "meal" | "snack";
     href: string;
   }> = [
-    { slot: "breakfast", time: "07:30", title: "Breakfast", category: "meal", href: "/nutrition/breakfast" },
+    {
+      slot: "breakfast",
+      time: "07:30",
+      title: "Breakfast",
+      category: "meal",
+      href: "/nutrition/breakfast",
+    },
     { slot: "lunch", time: "12:30", title: "Lunch", category: "meal", href: "/nutrition/lunch" },
     { slot: "snack", time: "15:30", title: "Snack", category: "snack", href: "/nutrition/snack" },
     { slot: "dinner", time: "19:30", title: "Dinner", category: "meal", href: "/nutrition/dinner" },
@@ -493,10 +607,13 @@ export async function getHomePageData(): Promise<HomePageData> {
   const fallbackNowTimeStr = `${String(fallbackNow.getHours()).padStart(2, "0")}:${String(fallbackNow.getMinutes()).padStart(2, "0")}`;
 
   let fallbackNextItem = fallbackTodayTimeline.find(
-    (item) => item.time >= fallbackNowTimeStr && item.status !== "complete" && item.status !== "skipped",
+    (item) =>
+      item.time >= fallbackNowTimeStr && item.status !== "complete" && item.status !== "skipped",
   );
   if (!fallbackNextItem) {
-    fallbackNextItem = fallbackTodayTimeline.find((item) => item.status !== "complete" && item.status !== "skipped");
+    fallbackNextItem = fallbackTodayTimeline.find(
+      (item) => item.status !== "complete" && item.status !== "skipped",
+    );
   }
   if (fallbackNextItem) {
     fallbackNextItem.status = "next";

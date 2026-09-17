@@ -25,7 +25,7 @@ export const WEEKDAYS: WeekdayItem[] = [
 export interface TimeRange {
   id: string;
   start: string; // E.g. "06:00" or "17:30"
-  end: string;   // E.g. "07:30" or "19:00"
+  end: string; // E.g. "07:30" or "19:00"
 }
 
 export interface DayAvailability {
@@ -46,7 +46,7 @@ export interface TimeOption {
 export function buildOptions(step = 30): TimeOption[] {
   const options: TimeOption[] = [];
   const startMin = 5 * 60; // 05:00
-  const endMin = 23 * 60;  // 23:00
+  const endMin = 23 * 60; // 23:00
 
   for (let min = startMin; min <= endMin; min += step) {
     const hours = Math.floor(min / 60);
@@ -109,7 +109,9 @@ export function weekAvailabilityToMap(week: WeekAvailability): Partial<Record<Da
 /**
  * Converts any PreferredWorkoutTimesMap or array to WeekAvailability
  */
-export function mapToWeekAvailability(inputMap: Partial<Record<DayKey, string[]>> | string[] | undefined): WeekAvailability {
+export function mapToWeekAvailability(
+  inputMap: Partial<Record<DayKey, string[]>> | string[] | undefined,
+): WeekAvailability {
   const week: WeekAvailability = {
     mon: { enabled: false, ranges: [] },
     tue: { enabled: false, ranges: [] },
@@ -127,7 +129,9 @@ export function mapToWeekAvailability(inputMap: Partial<Record<DayKey, string[]>
   // Array format
   if (Array.isArray(inputMap)) {
     for (const item of inputMap) {
-      if (typeof item !== "string") {continue;}
+      if (typeof item !== "string") {
+        continue;
+      }
       const colonIdx = item.indexOf(":");
       if (colonIdx > 0) {
         const dayKey = item.slice(0, colonIdx).trim().toLowerCase() as DayKey;

@@ -111,7 +111,7 @@ function ExerciseSearchSheetContent({
             <p aria-live="polite" className="bottom-search-sheet__empty">
               Searching...
             </p>
-          ) : (results.length === 0 ? (
+          ) : results.length === 0 ? (
             <p className="bottom-search-sheet__empty">No matching movements found.</p>
           ) : (
             results.map((item) => (
@@ -136,7 +136,7 @@ function ExerciseSearchSheetContent({
                 </button>
               </div>
             ))
-          ))}
+          )}
         </div>
       </div>
     </div>

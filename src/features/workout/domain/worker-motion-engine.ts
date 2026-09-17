@@ -210,7 +210,12 @@ export class WorkerMotionEngine implements MotionEngine {
       const video = this.video;
       if (!this.pending && video && video.videoWidth > 0 && video.videoHeight > 0) {
         if (!loggedReady) {
-          console.log("[AI Engine] Camera video element ready for frame sampling:", video.videoWidth, "x", video.videoHeight);
+          console.log(
+            "[AI Engine] Camera video element ready for frame sampling:",
+            video.videoWidth,
+            "x",
+            video.videoHeight,
+          );
           loggedReady = true;
         }
         this.pending = true;

@@ -1,4 +1,5 @@
-import { it, afterEach, describe, expect, beforeEach } from 'vitest';
+import { it, afterEach, describe, expect, beforeEach } from "vitest";
+
 import type { createAuthCookieOptions } from "@/shared/auth/cookies";
 
 const mockCookieSet =

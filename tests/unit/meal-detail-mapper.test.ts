@@ -1,10 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+
 import type { DailyMenuRows } from "@/features/nutrition/model/meal-detail.mapper";
 import {
   adaptMealDetailPageData,
   normalizeTodayMenu,
   toPriceTier,
 } from "@/features/nutrition/model/meal-detail.mapper";
+
 import { getMockMealRows, MOCK_TODAY } from "../mocks/nutrition-fixtures";
 
 const menu: DailyMenuRows = {
@@ -141,29 +143,61 @@ describe(adaptMealDetailPageData, () => {
       {
         mealType: "Breakfast",
         options: [
-          { mealName: "Ức gà hấp bông cải xanh kèm cơm trắng", calories: 553.25, isNutiFoodProduct: false },
-          { mealName: "Sữa NutiFood Varna Elite Hoàng Gia", calories: 553.25, isNutiFoodProduct: true },
+          {
+            mealName: "Ức gà hấp bông cải xanh kèm cơm trắng",
+            calories: 553.25,
+            isNutiFoodProduct: false,
+          },
+          {
+            mealName: "Sữa NutiFood Varna Elite Hoàng Gia",
+            calories: 553.25,
+            isNutiFoodProduct: true,
+          },
         ],
       },
       {
         mealType: "Lunch",
         options: [
-          { mealName: "Ức gà hấp bông cải kèm cơm trắng", calories: 774.55, isNutiFoodProduct: false },
-          { mealName: "Sữa NutiFood Varna Elite Hoàng Gia", calories: 774.55, isNutiFoodProduct: true },
+          {
+            mealName: "Ức gà hấp bông cải kèm cơm trắng",
+            calories: 774.55,
+            isNutiFoodProduct: false,
+          },
+          {
+            mealName: "Sữa NutiFood Varna Elite Hoàng Gia",
+            calories: 774.55,
+            isNutiFoodProduct: true,
+          },
         ],
       },
       {
         mealType: "Dinner",
         options: [
-          { mealName: "Ức gà áp chảo ăn kèm khoai lang và bông cải xanh", calories: 663.9, isNutiFoodProduct: false },
-          { mealName: "Sữa NutiFood Varna Elite Hoàng Gia", calories: 663.9, isNutiFoodProduct: true },
+          {
+            mealName: "Ức gà áp chảo ăn kèm khoai lang và bông cải xanh",
+            calories: 663.9,
+            isNutiFoodProduct: false,
+          },
+          {
+            mealName: "Sữa NutiFood Varna Elite Hoàng Gia",
+            calories: 663.9,
+            isNutiFoodProduct: true,
+          },
         ],
       },
       {
         mealType: "Snack",
         options: [
-          { mealName: "Ức gà áp chảo sốt tiêu ăn kèm khoai lang...", calories: 221.3, isNutiFoodProduct: false },
-          { mealName: "Sữa NutiFood Varna Elite Hoàng Gia", calories: 221.3, isNutiFoodProduct: true },
+          {
+            mealName: "Ức gà áp chảo sốt tiêu ăn kèm khoai lang...",
+            calories: 221.3,
+            isNutiFoodProduct: false,
+          },
+          {
+            mealName: "Sữa NutiFood Varna Elite Hoàng Gia",
+            calories: 221.3,
+            isNutiFoodProduct: true,
+          },
         ],
       },
     ];

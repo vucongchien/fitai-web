@@ -62,7 +62,8 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
                 <span className="font-bold text-rose-950">Target Area: </span>
                 <span className="text-rose-800 font-semibold">{context.muscleGroup}</span>
                 <p className="text-rose-700 mt-0.5">
-                  Direct overload exercises targeting this muscle group are actively excluded or protected.
+                  Direct overload exercises targeting this muscle group are actively excluded or
+                  protected.
                 </p>
               </div>
             </div>
@@ -74,7 +75,8 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
               <div>
                 <strong className="text-neutral-900">Medical Safety Rule (BR-AC-09):</strong>
                 <p className="text-neutral-600 mt-0.5">
-                  Upcoming session plans have been revised to eliminate joint strain and prevent aggravation.
+                  Upcoming session plans have been revised to eliminate joint strain and prevent
+                  aggravation.
                 </p>
               </div>
             </div>
@@ -84,7 +86,8 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
               <div>
                 <strong className="text-neutral-900">History Preservation (Rule D3):</strong>
                 <p className="text-neutral-600 mt-0.5">
-                  100% of your completed workout sessions in the past remain untouched and preserved.
+                  100% of your completed workout sessions in the past remain untouched and
+                  preserved.
                 </p>
               </div>
             </div>
@@ -94,7 +97,8 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
               <div>
                 <strong className="text-neutral-900">Dynamic Volume & RPE Re-indexing:</strong>
                 <p className="text-neutral-600 mt-0.5">
-                  Effort targets (RPE) across the remaining weeks have been recalculated for optimal recovery.
+                  Effort targets (RPE) across the remaining weeks have been recalculated for optimal
+                  recovery.
                 </p>
               </div>
             </div>

@@ -1,5 +1,4 @@
 import "server-only";
-
 import { createClient } from "@connectrpc/connect";
 
 import { adaptNutritionPageData } from "@/features/nutrition/model/nutrition-page.mapper";
@@ -9,7 +8,6 @@ import { deduplicateMealRows } from "@/shared/api/bff/aggregate/nutrition-daily"
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
-
 
 import { readLocalMeals } from "./local-meal-log";
 
@@ -39,16 +37,31 @@ async function getRealNutritionPageData(
     client.getTodayMenu({ userId }),
   ]);
 
-  console.info("[getRealNutritionPageData] summaryRes status:", summaryRes.status, summaryRes.status === "rejected" ? summaryRes.reason : "");
-  console.info("[getRealNutritionPageData] historyRes status:", historyRes.status, historyRes.status === "rejected" ? historyRes.reason : "");
-  console.info("[getRealNutritionPageData] menuRes status:", menuRes.status, menuRes.status === "rejected" ? menuRes.reason : "");
-  const summary = summaryRes.status === "fulfilled" && summaryRes.value ? summaryRes.value : DEFAULT_SUMMARY;
-  const historyRaw = historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
+  console.info(
+    "[getRealNutritionPageData] summaryRes status:",
+    summaryRes.status,
+    summaryRes.status === "rejected" ? summaryRes.reason : "",
+  );
+  console.info(
+    "[getRealNutritionPageData] historyRes status:",
+    historyRes.status,
+    historyRes.status === "rejected" ? historyRes.reason : "",
+  );
+  console.info(
+    "[getRealNutritionPageData] menuRes status:",
+    menuRes.status,
+    menuRes.status === "rejected" ? menuRes.reason : "",
+  );
+  const summary =
+    summaryRes.status === "fulfilled" && summaryRes.value ? summaryRes.value : DEFAULT_SUMMARY;
+  const historyRaw =
+    historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
   const history = deduplicateMealRows([...historyRaw, ...localRows]);
 
-  const todayMenu = menuRes.status === "fulfilled" && menuRes.value
-    ? ((menuRes.value.meals as any) || menuRes.value)
-    : undefined;
+  const todayMenu =
+    menuRes.status === "fulfilled" && menuRes.value
+      ? (menuRes.value.meals as any) || menuRes.value
+      : undefined;
 
   return adaptNutritionPageData(summary, history, today, todayMenu);
 }
@@ -58,7 +71,12 @@ export async function getNutritionPageData(): Promise<NutritionPageData> {
   const localRows = await readLocalMeals();
   const today = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
 
-  console.info("[getNutritionPageData] accessToken present:", Boolean(accessToken), "userId:", userId);
+  console.info(
+    "[getNutritionPageData] accessToken present:",
+    Boolean(accessToken),
+    "userId:",
+    userId,
+  );
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {

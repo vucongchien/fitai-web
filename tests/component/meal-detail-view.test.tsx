@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest';
 import { render, screen } from "@testing-library/react";
-import { MealDetailView } from "@/features/nutrition/ui/meal-detail-view";
+import { describe, expect, it } from "vitest";
+
 import type { MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";
+import { MealDetailView } from "@/features/nutrition/ui/meal-detail-view";
 
 const MOCK_DATA_WITH_RECIPE: MealDetailPageData = {
   slot: "breakfast",
@@ -104,7 +105,7 @@ describe(MealDetailView, () => {
           loggedCalories: 0,
           choices: [],
         }}
-      />
+      />,
     );
 
     expect(screen.getByText(/Nothing logged for/)).toBeInTheDocument();

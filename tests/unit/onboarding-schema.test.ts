@@ -1,5 +1,4 @@
-import { describe, expect, it } from 'vitest';
-
+import { describe, expect, it } from "vitest";
 
 import {
   onboardingDefaults,
@@ -151,7 +150,9 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         preferredWorkoutTimes: [],
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0]?.message).toBe("Choose at least one preferred workout time window.");
+      expect(result.error?.issues[0]?.message).toBe(
+        "Choose at least one preferred workout time window.",
+      );
     });
 
     it("rejects empty workout time map with no slots", () => {
@@ -160,7 +161,9 @@ describe("onboarding Zod Schema & Validation Rules", () => {
         preferredWorkoutTimes: {},
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues[0]?.message).toBe("Choose at least one preferred workout time window.");
+      expect(result.error?.issues[0]?.message).toBe(
+        "Choose at least one preferred workout time window.",
+      );
     });
   });
 

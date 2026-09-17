@@ -8,16 +8,17 @@ export const instant = false;
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams?: SearchParams;
-}) {
+export default async function SearchPage({ searchParams }: { searchParams?: SearchParams }) {
   await connection();
   const rawParams = searchParams ? await searchParams : {};
   const catalog = await exerciseSearchRepository.getCatalog();
 
-  const q = typeof rawParams.q === "string" ? rawParams.q : (typeof rawParams.query === "string" ? rawParams.query : "");
+  const q =
+    typeof rawParams.q === "string"
+      ? rawParams.q
+      : typeof rawParams.query === "string"
+        ? rawParams.query
+        : "";
   const bodyPartIds = Array.isArray(rawParams.body)
     ? rawParams.body
     : typeof rawParams.body === "string"

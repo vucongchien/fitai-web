@@ -9,7 +9,11 @@
  * ux-flow-spec §5.5: ending with no logged set asks to cancel instead of saving empty.
  */
 
-import type { LiveExercise, MotionSpec, SetLogDraft } from "@/features/workout/model/live-session.types";
+import type {
+  LiveExercise,
+  MotionSpec,
+  SetLogDraft,
+} from "@/features/workout/model/live-session.types";
 
 export const SESSION_WARN_MIN = 90;
 export const SESSION_LONG_WARN_MIN = 180;

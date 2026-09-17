@@ -1,4 +1,8 @@
-import type { LoggedMeal, MealIngredient, MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
+import type {
+  LoggedMeal,
+  MealIngredient,
+  MealSlot,
+} from "@/shared/api/bff/aggregate/nutrition-daily";
 
 /** `MealOption.price_tier` carries "LOW" | "MEDIUM" | "HIGH" as a bare string. */
 export type PriceTier = "high" | "low" | "medium";

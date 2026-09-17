@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import type { SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { useAIAdjustmentSync } from "@/features/roadmap/hooks/use-ai-adjustment-sync";
+import type { SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { buttonVariants } from "@/shared/ui/button";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 import { TripleLane } from "@/shared/ui/triple-lane";

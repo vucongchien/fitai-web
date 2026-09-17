@@ -2,11 +2,14 @@
 
 import { useCallback, useRef, useState } from "react";
 
-
 import { cancelAllSpeech } from "@/features/workout/domain/audio-cues";
-import { isTimedExercise } from "@/features/workout/domain/session-guards";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
-import { isAnomalousLoad, loadRatio, sessionVolumeKg } from "@/features/workout/domain/training-load";
+import { isTimedExercise } from "@/features/workout/domain/session-guards";
+import {
+  isAnomalousLoad,
+  loadRatio,
+  sessionVolumeKg,
+} from "@/features/workout/domain/training-load";
 import type { LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useAudioCoach } from "@/features/workout/model/use-audio-coach";
 import { useCameraStream } from "@/features/workout/model/use-camera-stream";
@@ -20,10 +23,12 @@ import type { EndDialogVariant } from "@/features/workout/ui/live/end-session-di
 import { EndSessionDialog } from "@/features/workout/ui/live/end-session-dialog";
 import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
 import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
-import { SetConfirmDialog } from "@/features/workout/ui/live/set-confirm-dialog";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
 import { RuleVoiceModal } from "@/features/workout/ui/live/rule-voice-modal";
+import { SetConfirmDialog } from "@/features/workout/ui/live/set-confirm-dialog";
+import { hapticFeedback } from "@/shared/lib/haptic-feedback";
 import { useFullscreenScope } from "@/shared/lib/use-fullscreen-scope";
+import { useWakeLock } from "@/shared/lib/use-wake-lock";
 import { toast } from "@/shared/ui/toast";
 
 /** Seconds the "+" button adds — same amount on both screens. */
@@ -34,6 +39,9 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const session = useLiveSession(plan);
   const audio = useAudioCoach(plan.playlists);
   const camera = useCameraStream();
+
+  const isWorkoutActive = session.status === "working" || session.status === "resting";
+  useWakeLock({ enabled: isWorkoutActive });
 
   const [listening, setListening] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
@@ -59,6 +67,11 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     },
     onFormError: (error) => {
       workoutEffects.recordFormError(error);
+      if (error.severity === 2) {
+        hapticFeedback.formDanger();
+      } else {
+        hapticFeedback.formWarning();
+      }
       if (!listening || confirmSetOpen || session.status !== "working") {
         return;
       }
@@ -68,29 +81,24 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       audio.speakText(cueText, "en-US", { cooldownGapSec: gapSec, priority: "error" });
     },
     onRep: (rep) => {
-      if (rep.counted && listening && !confirmSetOpen && session.status === "working") {
-        const isTimed = isTimedExercise(workoutEffects.exercise, workoutEffects.spec);
+      if (rep.counted && session.status === "working") {
+        hapticFeedback.repSuccess();
+        if (listening && !confirmSetOpen) {
+          const isTimed = isTimedExercise(workoutEffects.exercise, workoutEffects.spec);
 
-        if (isTimed) {
-          audio.speakText(String(rep.count), "en-US", { priority: "normal" });
-        } else {
-          audio.speakText(`Rep ${rep.count} completed`, "en-US", { priority: "normal" });
+          if (isTimed) {
+            audio.speakText(String(rep.count), "en-US", { priority: "normal" });
+          } else {
+            audio.speakText(`Rep ${rep.count} completed`, "en-US", { priority: "normal" });
+          }
         }
       }
     },
   });
 
   const workoutEffects = useLiveWorkoutEffects({ audio, camera, cameraOn, motion, plan, session });
-  const {
-    abortSession,
-    cameraBranch,
-    exercise,
-    finishSet,
-    finishSession,
-    online,
-    startSet,
-    step,
-  } = workoutEffects;
+  const { abortSession, cameraBranch, exercise, finishSet, finishSession, online, startSet, step } =
+    workoutEffects;
 
   // Back always asks first — mid-set or mid-rest, no exceptions. Leaving a
   // Running session is not something a single stray tap should be able to do,
@@ -181,7 +189,18 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         motion.dispose();
       };
     },
-    [audio, camera, durationWarning, listening, motion, online, protectionNote, sessionStatus, startSet, workoutEffects],
+    [
+      audio,
+      camera,
+      durationWarning,
+      listening,
+      motion,
+      online,
+      protectionNote,
+      sessionStatus,
+      startSet,
+      workoutEffects,
+    ],
   );
 
   if (!step || !exercise) {
@@ -208,7 +227,8 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       videoRef={camera.videoRef}
     />
   ) : null;
-  const onToggleCamera = (cameraBranch || Boolean(workoutEffects.spec)) ? () => setCameraOn((value) => !value) : undefined;
+  const onToggleCamera =
+    cameraBranch || Boolean(workoutEffects.spec) ? () => setCameraOn((value) => !value) : undefined;
 
   // The confirmation behind the Back button. With nothing logged there is no
   // Session worth saving, so the dialog offers to cancel instead of "finish".
@@ -246,26 +266,27 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     />
   ) : null;
 
-  const confirmDialog = confirmSetOpen && exercise ? (
-    <SetConfirmDialog
-      aiCountedReps={cameraActive ? (motion.repCount ?? 0) : 0}
-      currentSet={step.setNumber}
-      exercise={exercise}
-      onClose={() => setConfirmSetOpen(false)}
-      onConfirm={(data) => {
-        audio.stopCues();
-        setConfirmSetOpen(false);
-        finishSet(listening, {
-          actualReps: data.actualReps,
-          actualSeconds: data.actualSeconds,
-          weightKg: data.weightKg,
-          rpe: data.rpe,
-        });
-      }}
-      secondsElapsed={session.setTotal > 0 ? session.setTotal - session.setLeft : 0}
-      totalSets={Math.max(1, exercise.targetSets)}
-    />
-  ) : null;
+  const confirmDialog =
+    confirmSetOpen && exercise ? (
+      <SetConfirmDialog
+        aiCountedReps={cameraActive ? (motion.repCount ?? 0) : 0}
+        currentSet={step.setNumber}
+        exercise={exercise}
+        onClose={() => setConfirmSetOpen(false)}
+        onConfirm={(data) => {
+          audio.stopCues();
+          setConfirmSetOpen(false);
+          finishSet(listening, {
+            actualReps: data.actualReps,
+            actualSeconds: data.actualSeconds,
+            weightKg: data.weightKg,
+            rpe: data.rpe,
+          });
+        }}
+        secondsElapsed={session.setTotal > 0 ? session.setTotal - session.setLeft : 0}
+        totalSets={Math.max(1, exercise.targetSets)}
+      />
+    ) : null;
 
   if (session.status === "resting") {
     const next = session.step;
@@ -336,7 +357,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         keeps it strictly pre-set, so it can never cover a running one. Manual
         logging is one tap away, so the camera can never trap the user here.
       */}
-
 
       {guideOpen ? (
         <InstructionsSheet

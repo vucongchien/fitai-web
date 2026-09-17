@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   GetNutritionHistoryResponseSchema,
@@ -106,9 +105,8 @@ describe("nutrition gRPC Actions & Services", () => {
       }),
     );
 
-    const { getNutritionPageData } = await import(
-      "@/features/nutrition/server/get-nutrition-page-data"
-    );
+    const { getNutritionPageData } =
+      await import("@/features/nutrition/server/get-nutrition-page-data");
     const data = await getNutritionPageData();
 
     expect(mockGetNutritionSummary).toHaveBeenCalledWith({ userId: "usr-nutri-888" });
@@ -125,9 +123,7 @@ describe("nutrition gRPC Actions & Services", () => {
       }),
     );
 
-    const { logMeal } = await import(
-      "@/features/nutrition/server/nutrition-actions"
-    );
+    const { logMeal } = await import("@/features/nutrition/server/nutrition-actions");
     const result = await logMeal({
       slot: "lunch",
       mealName: "Salmon Salad",
@@ -156,9 +152,8 @@ describe("nutrition gRPC Actions & Services", () => {
       }),
     );
 
-    const { recalibratePantryAction } = await import(
-      "@/features/nutrition/server/nutrition-actions"
-    );
+    const { recalibratePantryAction } =
+      await import("@/features/nutrition/server/nutrition-actions");
     const res = await recalibratePantryAction(["Eggs", "Spinach", "Tofu"]);
 
     expect(mockRecalibratePlanWithPantry).toHaveBeenCalledWith({

@@ -120,4 +120,3 @@ export async function searchExercisesServerAction(
   const { exerciseSearchRepository } = await import("@/features/exercise/api/search-repository");
   return exerciseSearchRepository.search(filters);
 }
-

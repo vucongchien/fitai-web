@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+
 import {
   seedProfileAndRoadmapForTest,
   seedActiveInjury,
@@ -15,7 +16,9 @@ test.describe("Profile & Adaptive Plan Regeneration E2E & DB Gap Analysis", () =
     seedProfileAndRoadmapForTest(TEST_USER_ID);
   });
 
-  test("Flow 4.1: Update Body Metrics, Anti-Overwrite Check & ProfileUpdated Outbox Event", async ({ page }) => {
+  test("Flow 4.1: Update Body Metrics, Anti-Overwrite Check & ProfileUpdated Outbox Event", async ({
+    page,
+  }) => {
     test.setTimeout(120000);
 
     // 1. Login Dev New User
@@ -55,12 +58,7 @@ test.describe("Profile & Adaptive Plan Regeneration E2E & DB Gap Analysis", () =
     await page.waitForTimeout(2000);
 
     // 4. Database Gap Analysis
-    const analysis = analyzeProfileDatabase(
-      TEST_USER_ID,
-      75,
-      72,
-      16,
-    );
+    const analysis = analyzeProfileDatabase(TEST_USER_ID, 75, 72, 16);
 
     // Assert 0 Data Gaps
     expect(analysis.gaps).toHaveLength(0);
@@ -71,7 +69,9 @@ test.describe("Profile & Adaptive Plan Regeneration E2E & DB Gap Analysis", () =
     expect(analysis.pastCompletedPlans[0].status).toBe("COMPLETED");
   });
 
-  test("Flow 4.2: Report Active Injury (Shoulders) & Verify InjuryReported Event", async ({ page }) => {
+  test("Flow 4.2: Report Active Injury (Shoulders) & Verify InjuryReported Event", async ({
+    page,
+  }) => {
     test.setTimeout(120000);
 
     // 1. Login Dev New User
@@ -117,7 +117,10 @@ test.describe("Profile & Adaptive Plan Regeneration E2E & DB Gap Analysis", () =
 
     // 4. Verify AI Adjustment Banner appears on /home with real data
     await page.goto("/home");
-    const aiBanner = page.getByRole("status").filter({ hasText: /AI Coach/i }).first();
+    const aiBanner = page
+      .getByRole("status")
+      .filter({ hasText: /AI Coach/i })
+      .first();
     await expect(aiBanner).toBeVisible({ timeout: 5000 });
     await expect(aiBanner).toContainText("Shoulders");
 
@@ -132,7 +135,9 @@ test.describe("Profile & Adaptive Plan Regeneration E2E & DB Gap Analysis", () =
 
     expect(analysis.gaps).toHaveLength(0);
     expect(analysis.injuries.length).toBeGreaterThanOrEqual(1);
-    const shoulderInjury = analysis.injuries.find((i) => i.muscle_group?.toUpperCase() === "SHOULDERS");
+    const shoulderInjury = analysis.injuries.find(
+      (i) => i.muscle_group?.toUpperCase() === "SHOULDERS",
+    );
     expect(shoulderInjury).toBeDefined();
     expect(shoulderInjury.is_recovered).toBe(false);
   });
@@ -199,13 +204,19 @@ test.describe("Profile & Adaptive Plan Regeneration E2E & DB Gap Analysis", () =
     if (await reportPainBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
       await reportPainBtn.click();
     } else {
-      const endSessionBtn = page.locator("button:has-text('End Session'), button[aria-label='End Session'], button:has-text('Exit')").first();
+      const endSessionBtn = page
+        .locator(
+          "button:has-text('End Session'), button[aria-label='End Session'], button:has-text('Exit')",
+        )
+        .first();
       if (await endSessionBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
         await endSessionBtn.click();
         const painReasonBtn = page.locator("button:has-text('Pain'), [data-reason='pain']").first();
         if (await painReasonBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
           await painReasonBtn.click();
-          const confirmAbortBtn = page.getByRole("button", { name: /End Workout|Confirm|End Session/i }).first();
+          const confirmAbortBtn = page
+            .getByRole("button", { name: /End Workout|Confirm|End Session/i })
+            .first();
           if (await confirmAbortBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
             await confirmAbortBtn.click();
           }

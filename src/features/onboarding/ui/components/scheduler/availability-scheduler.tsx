@@ -1,17 +1,14 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { cn } from "@/shared/lib/cn";
-import { DayRow } from "./day-row";
-import { WEEKDAYS, buildOptions, defaultWeek } from './types';
-import type { DayAvailability, DayKey, WeekAvailability } from './types';
 
-export type {
-  DayAvailability,
-  DayKey,
-  TimeRange,
-  WeekAvailability,
-} from "./types";
+import { cn } from "@/shared/lib/cn";
+
+import { DayRow } from "./day-row";
+import { WEEKDAYS, buildOptions, defaultWeek } from "./types";
+import type { DayAvailability, DayKey, WeekAvailability } from "./types";
+
+export type { DayAvailability, DayKey, TimeRange, WeekAvailability } from "./types";
 export { defaultWeek } from "./types";
 
 export interface AvailabilitySchedulerProps {
@@ -32,15 +29,15 @@ export function AvailabilityScheduler({
 }: AvailabilitySchedulerProps) {
   const options = useMemo(() => buildOptions(step), [step]);
 
-  const [internal, setInternal] = useState<WeekAvailability>(
-    () => defaultValue ?? defaultWeek(),
-  );
+  const [internal, setInternal] = useState<WeekAvailability>(() => defaultValue ?? defaultWeek());
   const controlled = value !== undefined;
   const week = controlled ? value : internal;
 
   const commit = useCallback(
     (next: WeekAvailability) => {
-      if (!controlled) {setInternal(next);}
+      if (!controlled) {
+        setInternal(next);
+      }
       onChange?.(next);
     },
     [controlled, onChange],
@@ -54,7 +51,12 @@ export function AvailabilityScheduler({
   );
 
   return (
-    <div className={cn("w-full max-w-xl divide-y divide-neutral-200 border border-neutral-200 rounded-2xl bg-white shadow-xs overflow-hidden", className)}>
+    <div
+      className={cn(
+        "w-full max-w-xl divide-y divide-neutral-200 border border-neutral-200 rounded-2xl bg-white shadow-xs overflow-hidden",
+        className,
+      )}
+    >
       {WEEKDAYS.map(({ key, label }, i) => (
         <DayRow
           key={key}

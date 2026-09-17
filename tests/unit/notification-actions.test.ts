@@ -1,6 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
-
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   ListNotificationsResponseSchema,
@@ -9,7 +8,7 @@ import {
 
 // Mock cookies từ next/headers
 const mockGetCookie = vi.fn();
-vi.mock<typeof import('next/headers')>(import('next/headers'), () => ({
+vi.mock<typeof import("next/headers")>(import("next/headers"), () => ({
   cookies: async () => ({
     get: mockGetCookie,
   }),
@@ -19,7 +18,7 @@ vi.mock<typeof import('next/headers')>(import('next/headers'), () => ({
 const mockListNotifications = vi.fn();
 const mockMarkNotificationAsRead = vi.fn();
 
-vi.mock<typeof import('@connectrpc/connect')>(import('@connectrpc/connect'), () => ({
+vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () => ({
   createClient: () => ({
     listNotifications: mockListNotifications,
     markNotificationAsRead: mockMarkNotificationAsRead,
@@ -27,9 +26,12 @@ vi.mock<typeof import('@connectrpc/connect')>(import('@connectrpc/connect'), () 
 }));
 
 // Mock Server Transport
-vi.mock<typeof import('@/shared/api/server/transport')>(import('@/shared/api/server/transport'), () => ({
-  createServerTransport: vi.fn(() => ({})),
-}));
+vi.mock<typeof import("@/shared/api/server/transport")>(
+  import("@/shared/api/server/transport"),
+  () => ({
+    createServerTransport: vi.fn(() => ({})),
+  }),
+);
 
 describe("notification Server Actions", () => {
   beforeEach(() => {
@@ -43,9 +45,8 @@ describe("notification Server Actions", () => {
     it("should throw UNAUTHENTICATED error when access token is missing", async () => {
       mockGetCookie.mockReturnValue();
 
-      const { listNotificationsAction } = await import(
-        "@/features/notification/server/notification-actions"
-      );
+      const { listNotificationsAction } =
+        await import("@/features/notification/server/notification-actions");
 
       await expect(listNotificationsAction()).rejects.toThrow("UNAUTHENTICATED");
     });
@@ -74,9 +75,8 @@ describe("notification Server Actions", () => {
         }),
       );
 
-      const { listNotificationsAction } = await import(
-        "@/features/notification/server/notification-actions"
-      );
+      const { listNotificationsAction } =
+        await import("@/features/notification/server/notification-actions");
 
       const result = await listNotificationsAction(10, 0);
 
@@ -103,9 +103,8 @@ describe("notification Server Actions", () => {
       mockGetCookie.mockReturnValue({ value: "valid_access_token" });
       mockListNotifications.mockRejectedValue(new Error("gRPC failure"));
 
-      const { listNotificationsAction } = await import(
-        "@/features/notification/server/notification-actions"
-      );
+      const { listNotificationsAction } =
+        await import("@/features/notification/server/notification-actions");
 
       await expect(listNotificationsAction()).rejects.toThrow("FAILED_TO_FETCH_NOTIFICATIONS");
     });
@@ -115,9 +114,8 @@ describe("notification Server Actions", () => {
     it("should throw UNAUTHENTICATED error when access token is missing", async () => {
       mockGetCookie.mockReturnValue();
 
-      const { markNotificationAsReadAction } = await import(
-        "@/features/notification/server/notification-actions"
-      );
+      const { markNotificationAsReadAction } =
+        await import("@/features/notification/server/notification-actions");
 
       await expect(markNotificationAsReadAction("notif-1")).rejects.toThrow("UNAUTHENTICATED");
     });
@@ -135,9 +133,8 @@ describe("notification Server Actions", () => {
         }),
       );
 
-      const { markNotificationAsReadAction } = await import(
-        "@/features/notification/server/notification-actions"
-      );
+      const { markNotificationAsReadAction } =
+        await import("@/features/notification/server/notification-actions");
 
       const result = await markNotificationAsReadAction("notif-1");
 
@@ -157,9 +154,8 @@ describe("notification Server Actions", () => {
         }),
       );
 
-      const { markNotificationAsReadAction } = await import(
-        "@/features/notification/server/notification-actions"
-      );
+      const { markNotificationAsReadAction } =
+        await import("@/features/notification/server/notification-actions");
 
       const result = await markNotificationAsReadAction("notif-1");
 
@@ -170,9 +166,8 @@ describe("notification Server Actions", () => {
       mockGetCookie.mockReturnValue({ value: "valid_access_token" });
       mockMarkNotificationAsRead.mockRejectedValue(new Error("gRPC crash"));
 
-      const { markNotificationAsReadAction } = await import(
-        "@/features/notification/server/notification-actions"
-      );
+      const { markNotificationAsReadAction } =
+        await import("@/features/notification/server/notification-actions");
 
       const result = await markNotificationAsReadAction("notif-1");
 

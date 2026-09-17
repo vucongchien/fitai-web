@@ -3,7 +3,8 @@
 import { Plus, Trash2 } from "lucide-react";
 
 import { cn } from "@/shared/lib/cn";
-import type { DayAvailability, DayKey, TimeOption, TimeRange } from './types';
+
+import type { DayAvailability, DayKey, TimeOption, TimeRange } from "./types";
 
 interface DayRowProps {
   day: DayKey;
@@ -15,13 +16,7 @@ interface DayRowProps {
   onChange: (next: DayAvailability) => void;
 }
 
-export function DayRow({
-  day,
-  label,
-  state,
-  options,
-  onChange,
-}: DayRowProps) {
+export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
   const handleToggle = () => {
     if (state.enabled) {
       onChange({ enabled: false, ranges: [] });
@@ -177,9 +172,7 @@ export function DayRow({
             ))}
           </div>
         ) : (
-          <span className="text-xs text-neutral-400 font-medium py-1.5 select-none">
-            Rest
-          </span>
+          <span className="text-xs text-neutral-400 font-medium py-1.5 select-none">Rest</span>
         )}
       </div>
     </div>

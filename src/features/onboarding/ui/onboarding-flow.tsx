@@ -1,13 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Scale,
-  ShieldAlert,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Scale, ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -19,8 +13,8 @@ import {
 } from "@/features/onboarding/domain/onboarding-schema";
 import type { OnboardingValues } from "@/features/onboarding/domain/onboarding-schema";
 import { calculateWeeklyScheduleStats } from "@/features/onboarding/domain/workout-times-normalizer";
-import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { saveOnboardingProfileServerAction } from "@/features/onboarding/server/onboarding-actions";
+import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { calculateBMI } from "@/features/profile/model/profile.mapper";
 import { Button } from "@/shared/ui/button";
 
@@ -89,11 +83,7 @@ const goalOptions = [
     "Build Muscle",
     "Focus on hypertrophy, muscle growth, and progressive overload.",
   ],
-  [
-    "fat-loss",
-    "Lose Fat",
-    "Focus on calorie burn, metabolic density, and lean body composition.",
-  ],
+  ["fat-loss", "Lose Fat", "Focus on calorie burn, metabolic density, and lean body composition."],
   [
     "strength",
     "Strength",
@@ -133,7 +123,11 @@ export function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { equipments: catalogEquipments, muscles: catalogMuscles, isLoading: isLoadingCatalog } = useCatalogMetadata();
+  const {
+    equipments: catalogEquipments,
+    muscles: catalogMuscles,
+    isLoading: isLoadingCatalog,
+  } = useCatalogMetadata();
 
   const {
     formState: { errors },
@@ -191,17 +185,15 @@ export function OnboardingFlow() {
     return null;
   }, [weightKg, heightCm]);
 
-
-
   // Toggle goals (multi-select: support 1 or multiple goals)
   const toggleGoal = (goalVal: "build-muscle" | "fat-loss") => {
     const current = getValues("goals") || [];
     const next = current.includes(goalVal)
-      ? (current.length > 1
+      ? current.length > 1
         ? current.filter((g) => g !== goalVal)
-        : current)
+        : current
       : [...current, goalVal];
-    setValue("goals", next as [("build-muscle" | "fat-loss"), ...("build-muscle" | "fat-loss")[]], {
+    setValue("goals", next as ["build-muscle" | "fat-loss", ...("build-muscle" | "fat-loss")[]], {
       shouldDirty: true,
       shouldValidate: true,
     });
@@ -290,7 +282,9 @@ export function OnboardingFlow() {
         {step === 0 ? (
           <section aria-labelledby="goal-heading">
             <h1 id="goal-heading">What are your primary goals?</h1>
-            <p>Select one or both goals. Your AI coach will optimize training volume accordingly.</p>
+            <p>
+              Select one or both goals. Your AI coach will optimize training volume accordingly.
+            </p>
             <div className="choice-grid">
               {goalOptions.map(([value, label, description]) => {
                 const isSelected = (goals || []).includes(value as any);
@@ -480,9 +474,7 @@ export function OnboardingFlow() {
           <section aria-labelledby="week-heading" className="space-y-4">
             <div>
               <h1 id="week-heading">Shape your weekly schedule.</h1>
-              <p>
-                Select your workout hours. Unselected days remain rest days.
-              </p>
+              <p>Select your workout hours. Unselected days remain rest days.</p>
             </div>
 
             <WorkoutSchedulePicker
@@ -503,7 +495,7 @@ export function OnboardingFlow() {
           <section aria-labelledby="setup-heading">
             <h1 id="setup-heading">Build around what you have.</h1>
             <p>The plan will only prescribe exercises matching your equipment setup.</p>
-            
+
             {isLoadingCatalog ? (
               <div className="py-8 text-center text-xs font-semibold text-[#50565C] animate-pulse space-y-2">
                 <div className="h-6 w-32 bg-neutral-200 rounded mx-auto" />
@@ -692,7 +684,9 @@ export function OnboardingFlow() {
                 <dd>
                   {(() => {
                     const stats = calculateWeeklyScheduleStats(preferredWorkoutTimes as any);
-                    if (stats.activeDaysCount === 0) {return "No schedule selected";}
+                    if (stats.activeDaysCount === 0) {
+                      return "No schedule selected";
+                    }
                     return `${stats.activeDaysCount} days / week (${stats.totalSlotsCount} sessions) • ~${stats.avgDurationMinutes}m avg`;
                   })()}
                 </dd>
@@ -725,9 +719,9 @@ export function OnboardingFlow() {
         </Button>
         <Button onClick={continueFlow} disabled={isSubmitting} size="large" type="button">
           {step === steps.length - 1
-            ? (isSubmitting
+            ? isSubmitting
               ? "Generating via gRPC..."
-              : "Generate my plan")
+              : "Generate my plan"
             : "Continue"}
           <ArrowRight aria-hidden="true" size={18} />
         </Button>

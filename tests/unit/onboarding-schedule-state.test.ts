@@ -1,21 +1,21 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { SaveHealthProfileResponseSchema } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
-import type { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
-import {
-  formatWorkoutTimesToProto,
-  normalizeWorkoutTimes,
-} from "@/features/onboarding/domain/workout-times-normalizer";
 import {
   onboardingDefaults,
   onboardingSchema,
 } from "@/features/onboarding/domain/onboarding-schema";
 import {
+  formatWorkoutTimesToProto,
+  normalizeWorkoutTimes,
+} from "@/features/onboarding/domain/workout-times-normalizer";
+import {
   mapToWeekAvailability,
   weekAvailabilityToMap,
 } from "@/features/onboarding/ui/components/scheduler/types";
+import { SaveHealthProfileResponseSchema } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
+import type { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 
 type ProfileClient = Client<typeof ProfileService>;
 const mockSaveHealthProfile = vi.fn<ProfileClient["saveHealthProfile"]>();
@@ -152,9 +152,8 @@ describe("Onboarding Schedule State & Serialization Verification", () => {
         }),
       );
 
-      const { saveOnboardingProfileServerAction } = await import(
-        "@/features/onboarding/server/onboarding-actions"
-      );
+      const { saveOnboardingProfileServerAction } =
+        await import("@/features/onboarding/server/onboarding-actions");
 
       const customTimesMap = {
         mon: ["06:00-07:30", "17:30-19:00"],
@@ -193,9 +192,8 @@ describe("Onboarding Schedule State & Serialization Verification", () => {
         }),
       );
 
-      const { saveOnboardingProfileServerAction } = await import(
-        "@/features/onboarding/server/onboarding-actions"
-      );
+      const { saveOnboardingProfileServerAction } =
+        await import("@/features/onboarding/server/onboarding-actions");
 
       // Trường hợp form values bị mất state hoặc rỗng
       await saveOnboardingProfileServerAction({

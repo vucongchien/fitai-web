@@ -286,9 +286,7 @@ export function mapRawDataToProfileViewModel(raw: {
     bmiCategory: bmiInfo.category,
     targetBodyFatPercent: profile.targetBodyFatPercent || 0,
     goals: (profile.goals || []).map(translateGoal),
-    preferredMuscleGroups: (profile.preferredMuscleGroups || []).map(
-      translateMuscleGroup,
-    ),
+    preferredMuscleGroups: (profile.preferredMuscleGroups || []).map(translateMuscleGroup),
   };
 
   const userName = raw.user?.name || profile.fullName || "Athlete";

@@ -1,4 +1,3 @@
-
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { AvailabilityScheduler } from "../../src/features/onboarding/ui/components/scheduler/availability-scheduler";

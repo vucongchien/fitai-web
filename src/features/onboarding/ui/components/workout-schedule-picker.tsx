@@ -1,13 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  AvailabilityScheduler,
-} from "./scheduler/availability-scheduler";
-import { mapToWeekAvailability, weekAvailabilityToMap } from './scheduler/types';
-import type { WeekAvailability } from './scheduler/types';
-import { calculateWeeklyScheduleStats } from '../../domain/workout-times-normalizer';
-import type { DayOfWeekKey, PreferredWorkoutTimesMap } from '../../domain/workout-times-normalizer';
+
+import { calculateWeeklyScheduleStats } from "../../domain/workout-times-normalizer";
+import type { DayOfWeekKey, PreferredWorkoutTimesMap } from "../../domain/workout-times-normalizer";
+import { AvailabilityScheduler } from "./scheduler/availability-scheduler";
+import { mapToWeekAvailability, weekAvailabilityToMap } from "./scheduler/types";
+import type { WeekAvailability } from "./scheduler/types";
 
 interface WorkoutSchedulePickerProps {
   value: Partial<Record<DayOfWeekKey, string[]>> | string[] | Record<string, string[]> | undefined;
@@ -34,22 +33,17 @@ export function WorkoutSchedulePicker({
   const stats = useMemo(() => calculateWeeklyScheduleStats(mapValue), [mapValue]);
 
   const handleSchedulerChange = (nextWeek: WeekAvailability) => {
-    if (disabled) {return;}
+    if (disabled) {
+      return;
+    }
     const nextMap = weekAvailabilityToMap(nextWeek);
     onChange(nextMap);
   };
 
   return (
-    <div
-      className={`space-y-3 font-body ${className}`}
-      data-testid="workout-schedule-picker"
-    >
+    <div className={`space-y-3 font-body ${className}`} data-testid="workout-schedule-picker">
       {/* Row-by-Row Availability Scheduler */}
-      <AvailabilityScheduler
-        value={weekState}
-        onChange={handleSchedulerChange}
-        step={30}
-      />
+      <AvailabilityScheduler value={weekState} onChange={handleSchedulerChange} step={30} />
 
       {/* Minimal Single-Line Stats Summary */}
       <div className="px-3.5 py-2 rounded-xl bg-neutral-50 border border-neutral-200/80 flex items-center justify-between text-xs text-neutral-600">
@@ -60,7 +54,9 @@ export function WorkoutSchedulePicker({
                 {stats.activeDaysCount} {stats.activeDaysCount === 1 ? "day" : "days"} / week
               </span>
               <span className="text-neutral-300">•</span>
-              <span>{stats.totalSlotsCount} {stats.totalSlotsCount === 1 ? "session" : "sessions"}</span>
+              <span>
+                {stats.totalSlotsCount} {stats.totalSlotsCount === 1 ? "session" : "sessions"}
+              </span>
               <span className="text-neutral-300">•</span>
               <span>~{stats.avgDurationMinutes}m avg</span>
             </>

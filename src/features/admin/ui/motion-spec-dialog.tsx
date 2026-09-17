@@ -1,7 +1,7 @@
 "use client";
 
-import { Sparkles, X } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Sparkles, X } from "lucide-react";
 
 import { fetchMotionSpecificationByExerciseId } from "@/features/admin/api/admin-motion-spec-service";
 import { MotionSpecEditor } from "@/features/admin/ui/motion-spec-editor";
@@ -50,7 +50,10 @@ export function MotionSpecDialog({
                 Update AI Rules & Voice Files
               </h2>
               <p className="text-xs text-slate-500 font-medium">
-                Exercise: <span className="font-bold text-indigo-600">{exerciseName && exerciseName !== exerciseId ? exerciseName : "No data"}</span>
+                Exercise:{" "}
+                <span className="font-bold text-indigo-600">
+                  {exerciseName && exerciseName !== exerciseId ? exerciseName : "No data"}
+                </span>
               </p>
             </div>
           </div>
@@ -75,7 +78,9 @@ export function MotionSpecDialog({
             <MotionSpecEditor
               spec={spec}
               onSaveSuccess={() => {
-                void queryClient.invalidateQueries({ queryKey: ["admin-motion-spec-detail", exerciseId] });
+                void queryClient.invalidateQueries({
+                  queryKey: ["admin-motion-spec-detail", exerciseId],
+                });
                 void queryClient.invalidateQueries({ queryKey: ["admin-motion-specs"] });
                 void queryClient.invalidateQueries({ queryKey: ["admin-motion-spec-stats"] });
                 onClose();

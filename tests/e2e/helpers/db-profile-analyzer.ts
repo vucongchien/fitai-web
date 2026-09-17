@@ -14,10 +14,11 @@ export interface ProfileAnalysisReport {
 function queryJson(sql: string): any[] {
   try {
     const wrappedSql = `SELECT COALESCE(json_agg(t), '[]'::json) FROM (${sql}) t;`;
-    const output = execSync(
-      "docker exec -i fitai-postgres-test psql -U postgres -d fitai -t -A",
-      { input: wrappedSql, encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] },
-    );
+    const output = execSync("docker exec -i fitai-postgres-test psql -U postgres -d fitai -t -A", {
+      input: wrappedSql,
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
     const trimmed = output.trim();
     if (!trimmed) return [];
     return JSON.parse(trimmed);
@@ -43,7 +44,9 @@ function execSql(sql: string): void {
 /**
  * Seed profile ban đầu và Roadmap cho user dev_user_new
  */
-export function seedProfileAndRoadmapForTest(userId: string = "00000000-0000-0000-0000-000000000001") {
+export function seedProfileAndRoadmapForTest(
+  userId: string = "00000000-0000-0000-0000-000000000001",
+) {
   const sql = `
     -- 1. Xóa dữ liệu cũ của user
     DELETE FROM profile.body_metrics WHERE user_id = '${userId}';
@@ -136,7 +139,9 @@ export function seedProfileAndRoadmapForTest(userId: string = "00000000-0000-000
     );
   `;
   execSql(sql);
-  console.log(`👤 [DB Profile Cleaner] Successfully seeded baseline profile & roadmap for ${userId}`);
+  console.log(
+    `👤 [DB Profile Cleaner] Successfully seeded baseline profile & roadmap for ${userId}`,
+  );
 }
 
 /**
@@ -154,10 +159,18 @@ export function analyzeProfileDatabase(
   console.log(`================================================================`);
 
   const users = queryJson(`SELECT * FROM profile.users WHERE user_id = '${userId}'`);
-  const metrics = queryJson(`SELECT * FROM profile.body_metrics WHERE user_id = '${userId}' ORDER BY logged_at DESC`);
-  const injuries = queryJson(`SELECT * FROM profile.injuries WHERE user_id = '${userId}' ORDER BY reported_at DESC`);
-  const outboxEvents = queryJson(`SELECT * FROM profile.outbox WHERE payload::text LIKE '%${userId}%' ORDER BY created_at DESC`);
-  const sessionPlans = queryJson(`SELECT * FROM coaching.session_plans WHERE user_id = '${userId}' ORDER BY scheduled_date ASC`);
+  const metrics = queryJson(
+    `SELECT * FROM profile.body_metrics WHERE user_id = '${userId}' ORDER BY logged_at DESC`,
+  );
+  const injuries = queryJson(
+    `SELECT * FROM profile.injuries WHERE user_id = '${userId}' ORDER BY reported_at DESC`,
+  );
+  const outboxEvents = queryJson(
+    `SELECT * FROM profile.outbox WHERE payload::text LIKE '%${userId}%' ORDER BY created_at DESC`,
+  );
+  const sessionPlans = queryJson(
+    `SELECT * FROM coaching.session_plans WHERE user_id = '${userId}' ORDER BY scheduled_date ASC`,
+  );
 
   const gaps: string[] = [];
   const findings: string[] = [];
@@ -175,16 +188,22 @@ export function analyzeProfileDatabase(
     // 1. Kiểm tra Weight update
     if (expectedWeight !== undefined) {
       if (!latestMetrics || Math.abs(Number(latestMetrics.weight_kg) - expectedWeight) > 0.01) {
-        gaps.push(`[GAP-PROF-02] Cân nặng chưa cập nhật: kỳ vọng ${expectedWeight}kg, trong DB là ${latestMetrics?.weight_kg}kg`);
+        gaps.push(
+          `[GAP-PROF-02] Cân nặng chưa cập nhật: kỳ vọng ${expectedWeight}kg, trong DB là ${latestMetrics?.weight_kg}kg`,
+        );
       } else {
-        findings.push(`✅ [Weight Updated] Cân nặng đã cập nhật chính xác: ${latestMetrics.weight_kg}kg`);
+        findings.push(
+          `✅ [Weight Updated] Cân nặng đã cập nhật chính xác: ${latestMetrics.weight_kg}kg`,
+        );
       }
     }
 
     // 2. Kiểm tra Target Weight
     if (expectedTargetWeight !== undefined) {
       if (Math.abs(Number(user.target_weight_kg) - expectedTargetWeight) > 0.01) {
-        gaps.push(`[GAP-PROF-03] Target Weight chưa khớp: kỳ vọng ${expectedTargetWeight}kg, trong DB là ${user.target_weight_kg}kg`);
+        gaps.push(
+          `[GAP-PROF-03] Target Weight chưa khớp: kỳ vọng ${expectedTargetWeight}kg, trong DB là ${user.target_weight_kg}kg`,
+        );
       } else {
         findings.push(`✅ [Target Weight Updated] Cân nặng mục tiêu: ${user.target_weight_kg}kg`);
       }
@@ -192,8 +211,13 @@ export function analyzeProfileDatabase(
 
     // 3. Kiểm tra Body Fat %
     if (expectedBodyFat !== undefined) {
-      if (!latestMetrics || Math.abs(Number(latestMetrics.body_fat_percent) - expectedBodyFat) > 0.01) {
-        gaps.push(`[GAP-PROF-04] Body Fat % chưa khớp: kỳ vọng ${expectedBodyFat}%, trong DB là ${latestMetrics?.body_fat_percent}%`);
+      if (
+        !latestMetrics ||
+        Math.abs(Number(latestMetrics.body_fat_percent) - expectedBodyFat) > 0.01
+      ) {
+        gaps.push(
+          `[GAP-PROF-04] Body Fat % chưa khớp: kỳ vọng ${expectedBodyFat}%, trong DB là ${latestMetrics?.body_fat_percent}%`,
+        );
       } else {
         findings.push(`✅ [Body Fat Updated] Tỉ lệ mỡ: ${latestMetrics.body_fat_percent}%`);
       }
@@ -201,37 +225,56 @@ export function analyzeProfileDatabase(
 
     // 4. Anti Data-Overwrite Check (Đảm bảo các trường mảng không bị rỗng do merge lỗi)
     if (!user.goals || (Array.isArray(user.goals) && user.goals.length === 0)) {
-      gaps.push(`[GAP-PROF-05] Mất dữ liệu 'goals' (bị overwrite thành rỗng) khi cập nhật Profile!`);
+      gaps.push(
+        `[GAP-PROF-05] Mất dữ liệu 'goals' (bị overwrite thành rỗng) khi cập nhật Profile!`,
+      );
     } else {
-      findings.push(`✅ [Anti-Overwrite Passed] 'goals' được bảo toàn: ${JSON.stringify(user.goals)}`);
+      findings.push(
+        `✅ [Anti-Overwrite Passed] 'goals' được bảo toàn: ${JSON.stringify(user.goals)}`,
+      );
     }
 
-    if (!user.available_equipment || (Array.isArray(user.available_equipment) && user.available_equipment.length === 0)) {
+    if (
+      !user.available_equipment ||
+      (Array.isArray(user.available_equipment) && user.available_equipment.length === 0)
+    ) {
       gaps.push(`[GAP-PROF-06] Mất dữ liệu 'available_equipment' (bị overwrite thành rỗng)!`);
     } else {
-      findings.push(`✅ [Anti-Overwrite Passed] 'available_equipment' được bảo toàn: ${JSON.stringify(user.available_equipment)}`);
+      findings.push(
+        `✅ [Anti-Overwrite Passed] 'available_equipment' được bảo toàn: ${JSON.stringify(user.available_equipment)}`,
+      );
     }
   }
 
   // 5. Kiểm tra Injury History
   if (expectedInjuryMuscle) {
     const matchedInjury = injuries.find(
-      (i) => i.muscle_group?.toUpperCase() === expectedInjuryMuscle.toUpperCase() || i.notes?.includes(expectedInjuryMuscle),
+      (i) =>
+        i.muscle_group?.toUpperCase() === expectedInjuryMuscle.toUpperCase() ||
+        i.notes?.includes(expectedInjuryMuscle),
     );
     if (!matchedInjury) {
-      gaps.push(`[GAP-PROF-07] Không tìm thấy bản ghi chấn thương cho nhóm cơ '${expectedInjuryMuscle}' trong profile.injuries`);
+      gaps.push(
+        `[GAP-PROF-07] Không tìm thấy bản ghi chấn thương cho nhóm cơ '${expectedInjuryMuscle}' trong profile.injuries`,
+      );
     } else {
-      findings.push(`✅ [Injury Recorded] Đã lưu chấn thương: ${matchedInjury.muscle_group} | Severity: ${matchedInjury.severity} | Notes: ${matchedInjury.notes}`);
+      findings.push(
+        `✅ [Injury Recorded] Đã lưu chấn thương: ${matchedInjury.muscle_group} | Severity: ${matchedInjury.severity} | Notes: ${matchedInjury.notes}`,
+      );
     }
   }
 
   // 6. Kiểm tra Outbox CloudEvents
-  findings.push(`📨 [Profile Outbox] Đã sinh ${outboxEvents.length} CloudEvents trong profile.outbox:`);
+  findings.push(
+    `📨 [Profile Outbox] Đã sinh ${outboxEvents.length} CloudEvents trong profile.outbox:`,
+  );
   outboxEvents.forEach((e) => {
     findings.push(`   - Event: ${e.event_type} | Published: ${e.published}`);
   });
 
-  const hasProfileUpdated = outboxEvents.some((e) => e.event_type.includes("profileUpdated") || e.event_type.includes("ProfileUpdated"));
+  const hasProfileUpdated = outboxEvents.some(
+    (e) => e.event_type.includes("profileUpdated") || e.event_type.includes("ProfileUpdated"),
+  );
   if (!hasProfileUpdated && expectedWeight !== undefined) {
     gaps.push(`[GAP-PROF-08] Thiếu sự kiện Outbox 'ProfileUpdated' trong profile.outbox`);
   }
@@ -240,9 +283,13 @@ export function analyzeProfileDatabase(
   if (pastCompletedPlans.length > 0) {
     const isUntouched = pastCompletedPlans.every((s) => s.status === "COMPLETED");
     if (!isUntouched) {
-      gaps.push(`[GAP-PROF-09] Lịch sử buổi tập trong quá khứ bị sửa đổi sai lệch trạng thái COMPLETED!`);
+      gaps.push(
+        `[GAP-PROF-09] Lịch sử buổi tập trong quá khứ bị sửa đổi sai lệch trạng thái COMPLETED!`,
+      );
     } else {
-      findings.push(`✅ [History Invariant Preserved] ${pastCompletedPlans.length} buổi tập COMPLETED trong quá khứ được giữ nguyên vẹn 100%.`);
+      findings.push(
+        `✅ [History Invariant Preserved] ${pastCompletedPlans.length} buổi tập COMPLETED trong quá khứ được giữ nguyên vẹn 100%.`,
+      );
     }
   }
 
@@ -283,7 +330,9 @@ export function seedActiveInjury(
     ON CONFLICT (id) DO UPDATE SET is_recovered = false, recovered_at = NULL;
   `;
   execSql(sql);
-  console.log(`🩹 [DB Profile Cleaner] Seeded active injury '${injuryId}' on '${muscleGroup}' for ${userId}`);
+  console.log(
+    `🩹 [DB Profile Cleaner] Seeded active injury '${injuryId}' on '${muscleGroup}' for ${userId}`,
+  );
 }
 
 /**
@@ -313,7 +362,9 @@ export function analyzeInjuryRecovery(
   } else if (!recovered.is_recovered) {
     gaps.push(`[GAP-RECOV-02] Trạng thái is_recovered chưa chuyển sang true cho ${muscleGroup}`);
   } else {
-    findings.push(`✅ [Injury Recovered in DB] Chấn thương ${muscleGroup} đã được đánh dấu is_recovered=true (recovered_at: ${recovered.recovered_at})`);
+    findings.push(
+      `✅ [Injury Recovered in DB] Chấn thương ${muscleGroup} đã được đánh dấu is_recovered=true (recovered_at: ${recovered.recovered_at})`,
+    );
   }
 
   const recEvent = outboxEvents.find(
@@ -322,7 +373,9 @@ export function analyzeInjuryRecovery(
   if (!recEvent) {
     gaps.push(`[GAP-RECOV-03] Thiếu sự kiện Outbox 'InjuryRecovered' trong profile.outbox`);
   } else {
-    findings.push(`✅ [InjuryRecovered Event Emitted] Event ID: ${recEvent.event_id} | Type: ${recEvent.event_type}`);
+    findings.push(
+      `✅ [InjuryRecovered Event Emitted] Event ID: ${recEvent.event_id} | Type: ${recEvent.event_type}`,
+    );
   }
 
   findings.forEach((f) => console.log(f));
@@ -343,19 +396,29 @@ export function analyzeWorkoutAbortAndHistory(
   console.log(`🔍 [DB Profile Analyzer] GAP ANALYSIS FOR WORKOUT ABORT & D3 INVARIANT (${userId})`);
   console.log(`================================================================`);
 
-  const sessions = queryJson(`SELECT * FROM coaching.session_plans WHERE user_id = '${userId}' ORDER BY scheduled_date ASC`);
+  const sessions = queryJson(
+    `SELECT * FROM coaching.session_plans WHERE user_id = '${userId}' ORDER BY scheduled_date ASC`,
+  );
   const gaps: string[] = [];
   const findings: string[] = [];
 
   const aborted = sessions.find((s) => s.session_plan_id === abortedSessionPlanId) || null;
-  const pastCompleted = sessions.filter((s) => s.scheduled_date < (new Date().toISOString().split("T")[0]));
+  const pastCompleted = sessions.filter(
+    (s) => s.scheduled_date < new Date().toISOString().split("T")[0],
+  );
 
   if (!aborted) {
-    gaps.push(`[GAP-ABORT-01] Không tìm thấy session ${abortedSessionPlanId} trong coaching.session_plans`);
+    gaps.push(
+      `[GAP-ABORT-01] Không tìm thấy session ${abortedSessionPlanId} trong coaching.session_plans`,
+    );
   } else if (aborted.status !== "ABORTED" && aborted.status !== "PENDING") {
-    findings.push(`ℹ️ [Session Status] Session ${abortedSessionPlanId} status is: ${aborted.status}`);
+    findings.push(
+      `ℹ️ [Session Status] Session ${abortedSessionPlanId} status is: ${aborted.status}`,
+    );
   } else {
-    findings.push(`✅ [Session Plan Found] Session: ${abortedSessionPlanId} | Status: ${aborted.status}`);
+    findings.push(
+      `✅ [Session Plan Found] Session: ${abortedSessionPlanId} | Status: ${aborted.status}`,
+    );
   }
 
   // D3 Invariant Check
@@ -364,7 +427,9 @@ export function analyzeWorkoutAbortAndHistory(
     if (!untouched) {
       gaps.push(`[GAP-ABORT-02] Dữ liệu lịch sử bị thay đổi sai lệch (Vi phạm nguyên tắc D3)`);
     } else {
-      findings.push(`✅ [Rule D3 Invariant] Tất cả ${pastCompleted.length} buổi tập quá khứ giữ nguyên status COMPLETED`);
+      findings.push(
+        `✅ [Rule D3 Invariant] Tất cả ${pastCompleted.length} buổi tập quá khứ giữ nguyên status COMPLETED`,
+      );
     }
   }
 

@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 
-
 /**
  * Camera access for the AI branch.
  *
@@ -82,49 +81,52 @@ export function useCameraStream() {
     [cleanupObjectUrl],
   );
 
-  const start = useCallback(async (mode: FacingMode = facingModeRef.current): Promise<boolean> => {
-    if (isCustomVideoRef.current) {
-      return true;
-    }
-    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-      setState("unavailable");
-      return false;
-    }
-
-    cleanupObjectUrl();
-    isCustomVideoRef.current = false;
-    setIsCustomVideo(false);
-    setState("requesting");
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-          facingMode: mode,
-          frameRate: { ideal: 30 },
-          height: { ideal: 720 },
-          width: { ideal: 1280 },
-        },
-      });
-      streamRef.current?.getTracks().forEach((track) => track.stop());
-      streamRef.current = stream;
-      facingModeRef.current = mode;
-      setFacingMode(mode);
-
-      const video = videoRef.current;
-      if (video) {
-        video.removeAttribute("src");
-        video.srcObject = stream;
-        video.muted = true;
-        await video.play().catch(() => {});
+  const start = useCallback(
+    async (mode: FacingMode = facingModeRef.current): Promise<boolean> => {
+      if (isCustomVideoRef.current) {
+        return true;
       }
-      setState("ready");
-      return true;
-    } catch (error) {
-      const name = error instanceof DOMException ? error.name : "";
-      setState(name === "NotAllowedError" || name === "SecurityError" ? "denied" : "unavailable");
-      return false;
-    }
-  }, [cleanupObjectUrl]);
+      if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+        setState("unavailable");
+        return false;
+      }
+
+      cleanupObjectUrl();
+      isCustomVideoRef.current = false;
+      setIsCustomVideo(false);
+      setState("requesting");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: mode,
+            frameRate: { ideal: 30 },
+            height: { ideal: 720 },
+            width: { ideal: 1280 },
+          },
+        });
+        streamRef.current?.getTracks().forEach((track) => track.stop());
+        streamRef.current = stream;
+        facingModeRef.current = mode;
+        setFacingMode(mode);
+
+        const video = videoRef.current;
+        if (video) {
+          video.removeAttribute("src");
+          video.srcObject = stream;
+          video.muted = true;
+          await video.play().catch(() => {});
+        }
+        setState("ready");
+        return true;
+      } catch (error) {
+        const name = error instanceof DOMException ? error.name : "";
+        setState(name === "NotAllowedError" || name === "SecurityError" ? "denied" : "unavailable");
+        return false;
+      }
+    },
+    [cleanupObjectUrl],
+  );
 
   const clearCustomVideo = useCallback(async () => {
     isCustomVideoRef.current = false;
@@ -157,7 +159,17 @@ export function useCameraStream() {
       stop,
       videoRef,
     }),
-    [clearCustomVideo, customVideoSrc, facingMode, flip, isCustomVideo, loadVideoFile, start, state, stop],
+    [
+      clearCustomVideo,
+      customVideoSrc,
+      facingMode,
+      flip,
+      isCustomVideo,
+      loadVideoFile,
+      start,
+      state,
+      stop,
+    ],
   );
 }
 

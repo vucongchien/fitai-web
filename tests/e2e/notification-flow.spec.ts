@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+
 import {
   seedNotificationsForTest,
   analyzeNotificationDatabase,
@@ -10,7 +11,9 @@ test.describe("Notification System E2E & Database Gap Analysis", () => {
     seedNotificationsForTest("00000000-0000-0000-0000-000000000001");
   });
 
-  test("Flow 3: Notification Listing, Unread Indicators, Mark As Read & DB Gap Analysis", async ({ page }) => {
+  test("Flow 3: Notification Listing, Unread Indicators, Mark As Read & DB Gap Analysis", async ({
+    page,
+  }) => {
     test.setTimeout(90000);
 
     // A. Login Dev New User
@@ -21,7 +24,9 @@ test.describe("Notification System E2E & Database Gap Analysis", () => {
     await page.goto("/home");
     await page.waitForLoadState("networkidle");
 
-    const notifBtn = page.locator("a[href='/notifications'], button:has-text('Notifications')").first();
+    const notifBtn = page
+      .locator("a[href='/notifications'], button:has-text('Notifications')")
+      .first();
     await expect(notifBtn).toBeVisible({ timeout: 15000 });
 
     // C. Điều hướng tới màn hình /notifications
@@ -59,6 +64,6 @@ test.describe("Notification System E2E & Database Gap Analysis", () => {
     expect(analysis.gaps).toHaveLength(0);
     expect(analysis.notifications).toHaveLength(3);
     expect(analysis.unreadCount).toBe(1); // Ban đầu có 2 unread, click 1 cái -> còn 1 unread
-    expect(analysis.readCount).toBe(2);   // Ban đầu có 1 read, giờ thành 2 read
+    expect(analysis.readCount).toBe(2); // Ban đầu có 1 read, giờ thành 2 read
   });
 });

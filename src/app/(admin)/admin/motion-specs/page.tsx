@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2,
   ChevronLeft,
@@ -15,7 +16,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useId, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   fetchMotionSpecifications,
@@ -40,12 +40,14 @@ export default function AdminMotionSpecsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Stats query
-  const { data: stats = {
-    totalExercises: 0,
-    activePoseRules: 0,
-    activeVoiceFiles: 0,
-    readyAiSpecs: 0,
-  } } = useQuery({
+  const {
+    data: stats = {
+      totalExercises: 0,
+      activePoseRules: 0,
+      activeVoiceFiles: 0,
+      readyAiSpecs: 0,
+    },
+  } = useQuery({
     queryKey: ["admin-motion-spec-stats"],
     queryFn: async () => {
       try {
@@ -107,7 +109,8 @@ export default function AdminMotionSpecsPage() {
             AI Motion Rules & Voice Management
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Configure pose rules (`local_rules_url`), AI Coach dialogue scripts (`dialogue_engine_url`), and ONNX models via Admin Workout Service.
+            Configure pose rules (`local_rules_url`), AI Coach dialogue scripts
+            (`dialogue_engine_url`), and ONNX models via Admin Workout Service.
           </p>
         </div>
 
@@ -150,7 +153,9 @@ export default function AdminMotionSpecsPage() {
             <span className="text-xs font-semibold">Voice & Audio Files</span>
             <Mic className="size-4 text-indigo-600" />
           </div>
-          <p className="text-2xl font-bold text-indigo-600 font-display">{stats.activeVoiceFiles}</p>
+          <p className="text-2xl font-bold text-indigo-600 font-display">
+            {stats.activeVoiceFiles}
+          </p>
           <p className="text-[11px] text-slate-500">Loaded `dialogue_engine_url`</p>
         </div>
 
@@ -277,8 +282,12 @@ export default function AdminMotionSpecsPage() {
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {specs.map((item) => {
-                    const hasRule = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
-                    const hasVoice = Boolean(item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0);
+                    const hasRule = Boolean(
+                      item.localRulesUrl && item.localRulesUrl.trim().length > 0,
+                    );
+                    const hasVoice = Boolean(
+                      item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0,
+                    );
 
                     return (
                       <tr key={item.exerciseId} className="hover:bg-slate-50/80 transition-colors">
@@ -288,7 +297,9 @@ export default function AdminMotionSpecsPage() {
                               ? item.exerciseName
                               : "No data"}
                           </div>
-                          <div className="text-[11px] text-slate-400 font-mono">ID: {item.exerciseId}</div>
+                          <div className="text-[11px] text-slate-400 font-mono">
+                            ID: {item.exerciseId}
+                          </div>
                         </td>
 
                         <td className="p-4 max-w-xs truncate">
@@ -346,7 +357,14 @@ export default function AdminMotionSpecsPage() {
                         <td className="p-4 text-right">
                           <button
                             type="button"
-                            onClick={() => handleOpenEdit(item.exerciseId, item.exerciseName && item.exerciseName !== item.exerciseId ? item.exerciseName : "")}
+                            onClick={() =>
+                              handleOpenEdit(
+                                item.exerciseId,
+                                item.exerciseName && item.exerciseName !== item.exerciseId
+                                  ? item.exerciseName
+                                  : "",
+                              )
+                            }
                             className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
                           >
                             <Sparkles className="size-3.5" />
@@ -363,9 +381,13 @@ export default function AdminMotionSpecsPage() {
             {/* Bottom Pagination Controls Bar */}
             <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-wrap gap-3 text-xs">
               <div className="text-slate-500 font-medium">
-                Showing <span className="font-bold text-slate-900">{totalCount > 0 ? startIndex + 1 : 0}</span> to{" "}
-                <span className="font-bold text-slate-900">{endIndex}</span> of{" "}
-                <span className="font-bold text-indigo-600">{totalCount}</span> exercises (Workout Module)
+                Showing{" "}
+                <span className="font-bold text-slate-900">
+                  {totalCount > 0 ? startIndex + 1 : 0}
+                </span>{" "}
+                to <span className="font-bold text-slate-900">{endIndex}</span> of{" "}
+                <span className="font-bold text-indigo-600">{totalCount}</span> exercises (Workout
+                Module)
               </div>
 
               <div className="flex items-center gap-1">

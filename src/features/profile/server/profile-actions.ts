@@ -2,19 +2,14 @@
 
 import { createClient } from "@connectrpc/connect";
 
+import { formatWorkoutTimesToProto } from "@/features/onboarding/domain/workout-times-normalizer";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
 
+import { mapCoachStyleToEnum, mapEquipmentToEnum, mapGoalToEnum } from "../model/profile.mapper";
 import type { ProfileViewModel } from "../model/profile.types";
 import { getProfileData } from "./get-profile-data";
-
-import { formatWorkoutTimesToProto } from "@/features/onboarding/domain/workout-times-normalizer";
-import {
-  mapCoachStyleToEnum,
-  mapEquipmentToEnum,
-  mapGoalToEnum,
-} from "../model/profile.mapper";
 
 /**
  * Server Action gọi gRPC ProfileService.UpdateProfile
@@ -38,8 +33,7 @@ export async function updateProfileServerAction(
 
     const weightKg =
       updated.highlights?.currentWeightKg ?? current?.highlights.currentWeightKg ?? 70;
-    const heightCm =
-      updated.healthMetrics?.heightCm ?? current?.healthMetrics.heightCm ?? 175;
+    const heightCm = updated.healthMetrics?.heightCm ?? current?.healthMetrics.heightCm ?? 175;
     const targetWeightKg =
       updated.highlights?.targetWeightKg ?? current?.highlights.targetWeightKg ?? 68;
     const bodyFatPercent =
@@ -48,37 +42,32 @@ export async function updateProfileServerAction(
       updated.healthMetrics?.targetBodyFatPercent ??
       current?.healthMetrics.targetBodyFatPercent ??
       15;
-    const dateOfBirth =
-      updated.user?.dateOfBirth ?? current?.user.dateOfBirth ?? "1998-05-15";
-    const gender =
-      (updated.user?.gender ?? current?.user.gender ?? "FEMALE").toUpperCase();
-    const experienceLevel =
-      (updated.user?.experienceLevel ?? current?.user.experienceLevel ?? "INTERMEDIATE").toUpperCase();
+    const dateOfBirth = updated.user?.dateOfBirth ?? current?.user.dateOfBirth ?? "1998-05-15";
+    const gender = (updated.user?.gender ?? current?.user.gender ?? "FEMALE").toUpperCase();
+    const experienceLevel = (
+      updated.user?.experienceLevel ??
+      current?.user.experienceLevel ??
+      "INTERMEDIATE"
+    ).toUpperCase();
 
-    const rawGoals =
-      updated.healthMetrics?.goals ?? current?.healthMetrics.goals ?? ["BUILD_MUSCLE"];
+    const rawGoals = updated.healthMetrics?.goals ??
+      current?.healthMetrics.goals ?? ["BUILD_MUSCLE"];
     const goalsEnum = await Promise.all(rawGoals.map(mapGoalToEnum));
 
-    const rawEquipment =
-      updated.settings?.availableEquipment ??
-      current?.settings.availableEquipment ??
-      ["FULL_GYM"];
+    const rawEquipment = updated.settings?.availableEquipment ??
+      current?.settings.availableEquipment ?? ["FULL_GYM"];
     const equipmentEnum = await Promise.all(rawEquipment.map(mapEquipmentToEnum));
 
-    const rawMuscles =
-      updated.healthMetrics?.preferredMuscleGroups ??
-      current?.healthMetrics.preferredMuscleGroups ??
-      ["CHEST", "BACK", "LEGS"];
+    const rawMuscles = updated.healthMetrics?.preferredMuscleGroups ??
+      current?.healthMetrics.preferredMuscleGroups ?? ["CHEST", "BACK", "LEGS"];
     const muscleGroupsEnum = rawMuscles.map((m) => m.replaceAll(/\s+/g, "_").toUpperCase());
 
     const coachStyleStr =
       updated.settings?.coachStyle ?? current?.settings.coachStyle ?? "MOTIVATIONAL";
     const coachStyleEnum = await mapCoachStyleToEnum(coachStyleStr);
 
-    const rawPreferredTimes =
-      updated.settings?.preferredWorkoutTimes ??
-      current?.settings.preferredWorkoutTimes ??
-      ["Mon PM", "Wed PM", "Fri PM"];
+    const rawPreferredTimes = updated.settings?.preferredWorkoutTimes ??
+      current?.settings.preferredWorkoutTimes ?? ["Mon PM", "Wed PM", "Fri PM"];
     const preferredWorkoutTimes = formatWorkoutTimesToProto(rawPreferredTimes as any);
 
     const res = await client.updateProfile({

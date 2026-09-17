@@ -72,7 +72,9 @@ export function LogMealForm({ slot, slotLabel }: LogMealFormProps) {
           ref={nameRef}
           placeholder={`Your own ${slotLabel.toLowerCase()}`}
           onChange={() => {
-            if (validationError) {setValidationError(null);}
+            if (validationError) {
+              setValidationError(null);
+            }
           }}
           type="text"
           className={validationError ? "log-form__input--error" : undefined}

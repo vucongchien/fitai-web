@@ -1,9 +1,9 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { LucideIcon } from "lucide-react";
 import { Dumbbell, FolderTree, Layers, Pencil, Plus, Tag, Trash2 } from "lucide-react";
 import { useCallback, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   createMetadataItem,
@@ -121,7 +121,7 @@ export default function AdminMetadataPage() {
         <div className="py-12 text-center text-xs text-slate-400 font-semibold">
           Loading catalog metadata...
         </div>
-      ) : (items.length === 0 ? (
+      ) : items.length === 0 ? (
         <div className="py-12 text-center text-xs text-slate-400 font-medium bg-white border border-slate-200 rounded-2xl">
           No items found in this category. Click Add to create one.
         </div>
@@ -158,7 +158,7 @@ export default function AdminMetadataPage() {
             </div>
           ))}
         </div>
-      ))}
+      )}
 
       {/* Add / Edit Metadata Dialog */}
       <MetadataDialog

@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+
 import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
 import type {
   CatalogBodyPartItem,
@@ -89,6 +90,6 @@ export function useCatalogMetadata(): CatalogMetadataState {
   return useSyncExternalStore(
     catalogMetadataStore.subscribe,
     catalogMetadataStore.getSnapshot,
-    catalogMetadataStore.getServerSnapshot
+    catalogMetadataStore.getServerSnapshot,
   );
 }

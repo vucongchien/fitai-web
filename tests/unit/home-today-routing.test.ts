@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getHomePageData } from "@/features/home/server/get-home-page-data";
-import { RoadmapPhase, SessionPlanStatus } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import {
+  RoadmapPhase,
+  SessionPlanStatus,
+} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 
 const mockGetActiveRoadmap = vi.fn();
 const mockGetTodayMenu = vi.fn();
@@ -122,7 +125,9 @@ describe("Home Page Today Timeline Routing & Filtering", () => {
       meals: [
         {
           mealType: "Breakfast",
-          options: [{ mealName: "550a1b2c-1111-2222-3333-444455556666-Pho Bo Dac Biet", calories: 450 }],
+          options: [
+            { mealName: "550a1b2c-1111-2222-3333-444455556666-Pho Bo Dac Biet", calories: 450 },
+          ],
         },
         {
           mealType: "Lunch",

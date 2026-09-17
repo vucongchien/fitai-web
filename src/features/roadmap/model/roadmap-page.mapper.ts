@@ -34,7 +34,11 @@ export function formatDate(dateProto?: { day: number; month: number; year: numbe
   return { dayStr, dateStr };
 }
 
-export function formatWeekDateRange(startDateProto?: { day: number; month: number; year: number }): string {
+export function formatWeekDateRange(startDateProto?: {
+  day: number;
+  month: number;
+  year: number;
+}): string {
   if (!startDateProto || !startDateProto.year) {
     return "";
   }
@@ -160,7 +164,8 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
         dp.scheduledDate.day === curDay
       ) {
         const pending = (dp.sessionPlans || []).find(
-          (sp) => sp.status === SessionPlanStatus.PENDING && (sp.targetMuscleGroups?.length ?? 0) > 0,
+          (sp) =>
+            sp.status === SessionPlanStatus.PENDING && (sp.targetMuscleGroups?.length ?? 0) > 0,
         );
         if (pending) {
           targetNextSessionId = pending.sessionPlanId;
@@ -197,21 +202,21 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
                 ...(sp.prescription.coolDowns || []),
               ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
             ) || 45
-          : (isRest
+          : isRest
             ? 20
-            : 40);
+            : 40;
 
         const reasoning = sp.reasoning?.trim() || "";
         const isAdapted = Boolean(
           reasoning &&
-            (reasoning.toLowerCase().includes("injury") ||
-              reasoning.toLowerCase().includes("pain") ||
-              reasoning.toLowerCase().includes("protect") ||
-              reasoning.toLowerCase().includes("strain") ||
-              reasoning.toLowerCase().includes("recover") ||
-              reasoning.toLowerCase().includes("replace") ||
-              reasoning.toLowerCase().includes("adjust") ||
-              reasoning.toLowerCase().includes("recalibrat")),
+          (reasoning.toLowerCase().includes("injury") ||
+            reasoning.toLowerCase().includes("pain") ||
+            reasoning.toLowerCase().includes("protect") ||
+            reasoning.toLowerCase().includes("strain") ||
+            reasoning.toLowerCase().includes("recover") ||
+            reasoning.toLowerCase().includes("replace") ||
+            reasoning.toLowerCase().includes("adjust") ||
+            reasoning.toLowerCase().includes("recalibrat")),
         );
 
         currentWeekSessions.push({
@@ -261,81 +266,82 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
 
 export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
   const roadmapData = adaptRoadmapPageData(roadmap);
-  const {activeWeek} = roadmapData;
+  const { activeWeek } = roadmapData;
 
   const weeks: ScheduleWeek[] = (roadmap.weekPlans || []).map((wp) => {
     const dateRange = formatWeekDateRange(wp.startDate as any);
 
     const sessions: SessionSummary[] = [];
-      if (wp.dayPlans) {
-        let nextFound = false;
-        for (const dp of wp.dayPlans) {
-          const { dayStr, dateStr } = formatDate(dp.scheduledDate as any);
-          if (!dp.sessionPlans || dp.sessionPlans.length === 0) {
-            sessions.push({
-              id: dp.dayPlanId || `rest-${dayStr}-${dateStr}`,
-              day: dayStr,
-              date: dateStr,
-              title: "Recovery Day",
-              time: "All day",
-              duration: 20,
-              targetRpe: wp.targetRpe || 6,
-              muscles: [],
-              status: "rest",
-            });
-            continue;
+    if (wp.dayPlans) {
+      let nextFound = false;
+      for (const dp of wp.dayPlans) {
+        const { dayStr, dateStr } = formatDate(dp.scheduledDate as any);
+        if (!dp.sessionPlans || dp.sessionPlans.length === 0) {
+          sessions.push({
+            id: dp.dayPlanId || `rest-${dayStr}-${dateStr}`,
+            day: dayStr,
+            date: dateStr,
+            title: "Recovery Day",
+            time: "All day",
+            duration: 20,
+            targetRpe: wp.targetRpe || 6,
+            muscles: [],
+            status: "rest",
+          });
+          continue;
+        }
+        for (const sp of dp.sessionPlans || []) {
+          const isRest = sp.targetMuscleGroups?.length === 0;
+          const isPending = sp.status === SessionPlanStatus.PENDING;
+          const isNext = isPending && !isRest && !nextFound && wp.weekNumber === activeWeek;
+          if (isNext) {
+            nextFound = true;
           }
-          for (const sp of dp.sessionPlans || []) {
-            const isRest = sp.targetMuscleGroups?.length === 0;
-            const isPending = sp.status === SessionPlanStatus.PENDING;
-            const isNext = isPending && !isRest && !nextFound && wp.weekNumber === activeWeek;
-            if (isNext) {
-              nextFound = true;
-            }
 
-            const duration =
-              (sp as any).estimatedDurationMinutes ??
-              (sp.prescription
-                ? Math.round(
-                    [
-                      ...(sp.prescription.warmUps || []),
-                      ...(sp.prescription.mainExercises || []),
-                      ...(sp.prescription.coolDowns || []),
-                    ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-                  ) || 45
-                : (isRest
-                  ? 20
-                  : 40));
+          const duration =
+            (sp as any).estimatedDurationMinutes ??
+            (sp.prescription
+              ? Math.round(
+                  [
+                    ...(sp.prescription.warmUps || []),
+                    ...(sp.prescription.mainExercises || []),
+                    ...(sp.prescription.coolDowns || []),
+                  ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
+                ) || 45
+              : isRest
+                ? 20
+                : 40);
 
-            const reasoning = sp.reasoning?.trim() || "";
-            const isAdapted = Boolean(
-              reasoning &&
-                (reasoning.toLowerCase().includes("injury") ||
-                  reasoning.toLowerCase().includes("pain") ||
-                  reasoning.toLowerCase().includes("protect") ||
-                  reasoning.toLowerCase().includes("strain") ||
-                  reasoning.toLowerCase().includes("recover") ||
-                  reasoning.toLowerCase().includes("replace") ||
-                  reasoning.toLowerCase().includes("adjust") ||
-                  reasoning.toLowerCase().includes("recalibrat")),
-            );
+          const reasoning = sp.reasoning?.trim() || "";
+          const isAdapted = Boolean(
+            reasoning &&
+            (reasoning.toLowerCase().includes("injury") ||
+              reasoning.toLowerCase().includes("pain") ||
+              reasoning.toLowerCase().includes("protect") ||
+              reasoning.toLowerCase().includes("strain") ||
+              reasoning.toLowerCase().includes("recover") ||
+              reasoning.toLowerCase().includes("replace") ||
+              reasoning.toLowerCase().includes("adjust") ||
+              reasoning.toLowerCase().includes("recalibrat")),
+          );
 
-            sessions.push({
-              id: sp.sessionPlanId,
-              day: dayStr,
-              date: dateStr,
-              title: sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
-              time: sp.slotTime || "18:30",
-              duration,
-              targetRpe: wp.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
-              muscles: sp.targetMuscleGroups || [],
-              status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
-              reasoning: reasoning || undefined,
-              isAdapted,
-            });
-          }
+          sessions.push({
+            id: sp.sessionPlanId,
+            day: dayStr,
+            date: dateStr,
+            title:
+              sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
+            time: sp.slotTime || "18:30",
+            duration,
+            targetRpe: wp.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
+            muscles: sp.targetMuscleGroups || [],
+            status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
+            reasoning: reasoning || undefined,
+            isAdapted,
+          });
         }
       }
+    }
 
     const weekSummary = roadmapData.weeks.find((w) => w.number === wp.weekNumber);
     const state = weekSummary ? weekSummary.state : "planned";
@@ -403,7 +409,8 @@ export function adaptSessionPlanPageData(
     date: dateStr,
     duration,
     targetRpe: sessionRes.prescription?.mainExercises?.[0]?.targetRpe || 7, //Hard code: default RPE fallback
-    sessionDescription: sessionRes.reasoning || "Personalized workout session tailored for your roadmap.", //Hard code: fallback reasoning string
+    sessionDescription:
+      sessionRes.reasoning || "Personalized workout session tailored for your roadmap.", //Hard code: fallback reasoning string
     exercises,
     readinessNote,
     featureNotes: [

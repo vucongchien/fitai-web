@@ -1,4 +1,13 @@
-import { AlertCircle, ArrowLeft, ArrowRight, Camera, CheckCircle2, Dumbbell, Play, Video } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  Camera,
+  CheckCircle2,
+  Dumbbell,
+  Play,
+  Video,
+} from "lucide-react";
 import Link from "next/link";
 
 import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
@@ -13,7 +22,9 @@ interface ExerciseDetailProps {
 }
 
 function isUuid(str?: string): boolean {
-  if (!str) {return false;}
+  if (!str) {
+    return false;
+  }
   const trimmed = str.trim();
   return (
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
@@ -22,12 +33,17 @@ function isUuid(str?: string): boolean {
 }
 
 function findName(pool: { id: string; name: string }[], id: string): string | undefined {
-  if (!id || isUuid(id)) {return undefined;}
-  return pool.find((entry) => entry.id === id || entry.name.toLowerCase() === id.toLowerCase())?.name;
+  if (!id || isUuid(id)) {
+    return undefined;
+  }
+  return pool.find((entry) => entry.id === id || entry.name.toLowerCase() === id.toLowerCase())
+    ?.name;
 }
 
 function parseInstructionSteps(raw?: string): string[] {
-  if (!raw) {return [];}
+  if (!raw) {
+    return [];
+  }
   const splitSteps = raw
     .split(/(?=\b\d+\.\s+)/g)
     .map((s) => s.trim())
@@ -65,9 +81,15 @@ function formatYouTubeEmbedUrl(url: string): string | null {
 }
 
 export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
-  const bodyPart = findName(catalog.bodyParts, exercise.bodyPartId) || (isUuid(exercise.bodyPartId) ? undefined : exercise.bodyPartId);
-  const equipment = findName(catalog.equipments, exercise.equipmentId) || (isUuid(exercise.equipmentId) ? undefined : exercise.equipmentId);
-  const targetMuscle = findName(catalog.muscles, exercise.targetMuscleId) || (isUuid(exercise.targetMuscleId) ? undefined : exercise.targetMuscleId);
+  const bodyPart =
+    findName(catalog.bodyParts, exercise.bodyPartId) ||
+    (isUuid(exercise.bodyPartId) ? undefined : exercise.bodyPartId);
+  const equipment =
+    findName(catalog.equipments, exercise.equipmentId) ||
+    (isUuid(exercise.equipmentId) ? undefined : exercise.equipmentId);
+  const targetMuscle =
+    findName(catalog.muscles, exercise.targetMuscleId) ||
+    (isUuid(exercise.targetMuscleId) ? undefined : exercise.targetMuscleId);
   const secondaryMuscles = (exercise.secondaryMuscleIds || [])
     .map((id) => findName(catalog.muscles, id) || (isUuid(id) ? undefined : id))
     .filter((name): name is string => Boolean(name));
@@ -99,7 +121,7 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
         <div className="detail-thumb">
           {exercise.thumbnailUrl ? (
             <img alt={exercise.name} className="detail-thumb__img" src={exercise.thumbnailUrl} />
-          ) : (videoMediaUrl ? (
+          ) : videoMediaUrl ? (
             <div className="detail-thumb__fallback">
               <Video size={56} strokeWidth={1.2} />
             </div>
@@ -107,7 +129,7 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
             <div className="detail-thumb__fallback">
               <Dumbbell size={56} strokeWidth={1.2} />
             </div>
-          ))}
+          )}
 
           {exercise.hasAiSupported ? (
             <span className="ex-card__ai detail-thumb__ai">
@@ -139,7 +161,8 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
             </div>
           ) : (
             <p className="detail-body detail-body--muted">
-              Maintain proper posture and perform controlled reps focusing on full muscle range of motion.
+              Maintain proper posture and perform controlled reps focusing on full muscle range of
+              motion.
             </p>
           )}
         </section>

@@ -7,7 +7,10 @@ class DebounceStore<T> {
   private timer: ReturnType<typeof setTimeout> | null = null;
   private listeners = new Set<() => void>();
 
-  constructor(initial: T, private delayMs: number) {
+  constructor(
+    initial: T,
+    private delayMs: number,
+  ) {
     this.current = initial;
   }
 

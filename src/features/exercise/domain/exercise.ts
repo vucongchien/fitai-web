@@ -15,7 +15,16 @@ export interface CatalogMetadata {
 }
 
 export const GROUP_SYNONYMS: Record<string, string[]> = {
-  "arms-shoulders": ["arms", "shoulders", "upper arms", "lower arms", "biceps", "triceps", "deltoids", "forearms"],
+  "arms-shoulders": [
+    "arms",
+    "shoulders",
+    "upper arms",
+    "lower arms",
+    "biceps",
+    "triceps",
+    "deltoids",
+    "forearms",
+  ],
   arms: ["arms", "upper arms", "lower arms", "biceps", "triceps", "forearms"],
   shoulders: ["shoulders", "deltoids"],
 
@@ -23,7 +32,16 @@ export const GROUP_SYNONYMS: Record<string, string[]> = {
   chest: ["chest", "pectorals"],
   back: ["back", "lats", "traps", "latissimus"],
 
-  "legs-glutes": ["legs", "glutes", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves", "thighs"],
+  "legs-glutes": [
+    "legs",
+    "glutes",
+    "upper legs",
+    "lower legs",
+    "quadriceps",
+    "hamstrings",
+    "calves",
+    "thighs",
+  ],
   legs: ["legs", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves"],
 
   "core-abs": ["core", "abs", "waist", "abdominals", "midsection"],
@@ -91,15 +109,21 @@ export const SORT_LABEL: Record<SortMode, string> = {
   difficulty: "Easier first",
 };
 
-export function countActiveFilters(
-  filters: ExerciseFilters,
-  catalog?: CatalogMetadata,
-): number {
+export function countActiveFilters(filters: ExerciseFilters, catalog?: CatalogMetadata): number {
   let bodyPartCount = filters.bodyPartIds.length;
 
   if (catalog && catalog.bodyParts && filters.bodyPartIds.length > 0) {
     const groupSynonyms: Record<string, string[]> = {
-      "arms-shoulders": ["arms", "shoulders", "upper arms", "lower arms", "biceps", "triceps", "deltoids", "forearms"],
+      "arms-shoulders": [
+        "arms",
+        "shoulders",
+        "upper arms",
+        "lower arms",
+        "biceps",
+        "triceps",
+        "deltoids",
+        "forearms",
+      ],
       arms: ["arms", "upper arms", "lower arms", "biceps", "triceps", "forearms"],
       shoulders: ["shoulders", "deltoids"],
 
@@ -107,7 +131,16 @@ export function countActiveFilters(
       chest: ["chest", "pectorals"],
       back: ["back", "lats", "traps", "latissimus"],
 
-      "legs-glutes": ["legs", "glutes", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves", "thighs"],
+      "legs-glutes": [
+        "legs",
+        "glutes",
+        "upper legs",
+        "lower legs",
+        "quadriceps",
+        "hamstrings",
+        "calves",
+        "thighs",
+      ],
       legs: ["legs", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves"],
 
       "core-abs": ["core", "abs", "waist", "abdominals", "midsection"],
@@ -193,12 +226,26 @@ export function filterExercises(
           return true;
         }
         const idLower = id.toLowerCase();
-        if (exBp === idLower || exBpName === idLower || exBp.includes(idLower) || idLower.includes(exBp)) {
+        if (
+          exBp === idLower ||
+          exBpName === idLower ||
+          exBp.includes(idLower) ||
+          idLower.includes(exBp)
+        ) {
           return true;
         }
 
         const groupSynonyms: Record<string, string[]> = {
-          "arms-shoulders": ["arms", "shoulders", "upper arms", "lower arms", "biceps", "triceps", "deltoids", "forearms"],
+          "arms-shoulders": [
+            "arms",
+            "shoulders",
+            "upper arms",
+            "lower arms",
+            "biceps",
+            "triceps",
+            "deltoids",
+            "forearms",
+          ],
           arms: ["arms", "upper arms", "lower arms", "biceps", "triceps", "forearms"],
           shoulders: ["shoulders", "deltoids"],
 
@@ -206,7 +253,16 @@ export function filterExercises(
           chest: ["chest", "pectorals"],
           back: ["back", "lats", "traps", "latissimus"],
 
-          "legs-glutes": ["legs", "glutes", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves", "thighs"],
+          "legs-glutes": [
+            "legs",
+            "glutes",
+            "upper legs",
+            "lower legs",
+            "quadriceps",
+            "hamstrings",
+            "calves",
+            "thighs",
+          ],
           legs: ["legs", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves"],
 
           "core-abs": ["core", "abs", "waist", "abdominals", "midsection"],

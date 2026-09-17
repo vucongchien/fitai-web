@@ -1,6 +1,6 @@
-import { it, afterEach, describe, expect, beforeEach } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
+import { it, afterEach, describe, expect, beforeEach } from "vitest";
 
 import {
   GetOAuthLoginURLResponseSchema,

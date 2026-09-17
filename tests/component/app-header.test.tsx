@@ -1,14 +1,14 @@
-import { describe, expect, it } from 'vitest';
 import { render, screen } from "@testing-library/react";
 import { usePathname } from "next/navigation";
+import { describe, expect, it } from "vitest";
 
 import { AppHeader } from "@/shared/ui/app-header";
 
-vi.mock<typeof import('next/navigation')>(import('next/navigation'), () => ({
+vi.mock<typeof import("next/navigation")>(import("next/navigation"), () => ({
   usePathname: vi.fn(),
 }));
 
-vi.mock<typeof import('next/link')>(import('next/link'), () => ({
+vi.mock<typeof import("next/link")>(import("next/link"), () => ({
   default: ({ children, href, ...props }: React.ComponentPropsWithRef<"a">) => (
     <a href={href as string} {...props}>
       {children}
@@ -17,11 +17,11 @@ vi.mock<typeof import('next/link')>(import('next/link'), () => ({
 }));
 
 // HeaderActions and BrandMark are not under test here
-vi.mock<typeof import('@/shared/ui/header-actions')>(import('@/shared/ui/header-actions'), () => ({
+vi.mock<typeof import("@/shared/ui/header-actions")>(import("@/shared/ui/header-actions"), () => ({
   HeaderActions: () => <div data-testid="header-actions" />,
 }));
 
-vi.mock<typeof import('@/shared/ui/brand-mark')>(import('@/shared/ui/brand-mark'), () => ({
+vi.mock<typeof import("@/shared/ui/brand-mark")>(import("@/shared/ui/brand-mark"), () => ({
   BrandMark: () => <span data-testid="brand-mark" />,
 }));
 

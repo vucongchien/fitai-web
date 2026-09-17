@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+
 import { listNotificationsAction } from "@/features/notification/server/notification-actions";
 import { NotificationsView } from "@/features/notification/ui/notifications-view";
 import type { NotificationItem } from "@/features/notification/ui/notifications-view";

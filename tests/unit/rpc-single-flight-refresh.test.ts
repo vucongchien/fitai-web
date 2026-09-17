@@ -1,7 +1,6 @@
-import { beforeEach, vi, afterEach, describe, expect, it } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-
+import { beforeEach, vi, afterEach, describe, expect, it } from "vitest";
 
 import { RefreshTokenResponseSchema } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 import type { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
@@ -209,11 +208,12 @@ describe("bFF /rpc/[...path] Single-flight Token Refresh", () => {
       return;
     });
 
-    const fetchMock = vi.fn().mockImplementation(async () => 
-      new Response(new Uint8Array([]), {
-        status: 401,
-        statusText: "Unauthorized",
-      })
+    const fetchMock = vi.fn().mockImplementation(
+      async () =>
+        new Response(new Uint8Array([]), {
+          status: 401,
+          statusText: "Unauthorized",
+        }),
     );
     vi.stubGlobal("fetch", fetchMock);
 

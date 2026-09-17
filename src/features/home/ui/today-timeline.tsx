@@ -13,7 +13,13 @@ interface TodayTimelineProps {
   isGeneratingRoadmap?: boolean;
 }
 
-function EventIcon({ category, isComplete }: { category: TodayItemCategory; isComplete?: boolean }) {
+function EventIcon({
+  category,
+  isComplete,
+}: {
+  category: TodayItemCategory;
+  isComplete?: boolean;
+}) {
   if (isComplete) {
     return <Check aria-hidden="true" size={16} strokeWidth={2.5} />;
   }
@@ -38,7 +44,9 @@ export function TodayTimeline({
           <Sparkles size={20} />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[var(--color-text)]">No meals or workouts scheduled for today</h3>
+          <h3 className="text-sm font-bold text-[var(--color-text)]">
+            No meals or workouts scheduled for today
+          </h3>
           <p className="text-xs text-[var(--color-text-muted)] mt-1">
             Enjoy active recovery today, or view your full weekly schedule in Roadmap.
           </p>
@@ -77,7 +85,10 @@ export function TodayTimeline({
 
   let progressPercent = 0;
   if (endMins > startMins) {
-    progressPercent = Math.min(100, Math.max(0, ((currentMinutes - startMins) / (endMins - startMins)) * 100));
+    progressPercent = Math.min(
+      100,
+      Math.max(0, ((currentMinutes - startMins) / (endMins - startMins)) * 100),
+    );
   } else if (currentMinutes >= startMins) {
     progressPercent = 100;
   }
@@ -125,12 +136,13 @@ export function TodayTimeline({
         );
 
         return (
-          <li className={cn("week-route__item", `week-route__item--${effectiveStatus}`)} key={item.id}>
+          <li
+            className={cn("week-route__item", `week-route__item--${effectiveStatus}`)}
+            key={item.id}
+          >
             {item.href ? (
               <Link
-                aria-label={
-                  item.category === "workout" ? "Begin session" : `View ${item.title}`
-                }
+                aria-label={item.category === "workout" ? "Begin session" : `View ${item.title}`}
                 className="week-route__row"
                 href={item.href}
                 transitionTypes={NAV_FORWARD}

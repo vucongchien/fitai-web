@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
+import { afterEach, describe, expect, it } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";

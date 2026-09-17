@@ -1,6 +1,4 @@
-
 import { fireEvent, render, screen } from "@testing-library/react";
-
 
 import { ProfileContent } from "../../../src/features/profile/components/profile-content";
 import { mapRawDataToProfileViewModel } from "../../../src/features/profile/model/profile.mapper";
@@ -61,7 +59,9 @@ describe("profile UI Components", () => {
     const item = screen.getAllByText("Available Equipment")[0];
     fireEvent.click(item);
 
-    expect(screen.getByText("Select what gear you have access to for workouts")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select what gear you have access to for workouts"),
+    ).toBeInTheDocument();
   });
 
   it("opens Injury Management modal when clicking Injury Management menu item", () => {

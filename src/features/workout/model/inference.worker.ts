@@ -122,10 +122,20 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
 
   // Load all 4 resources in parallel (Detector, Skeleton, Rules JSON, Dialogue JSON)
   const [detectorRes, skeletonBuffer, rulesRes, dialogueRes] = await Promise.all([
-    next.onnxDetectorUrl ? fetchModel(next.onnxDetectorUrl).catch(() => null) : Promise.resolve(null),
+    next.onnxDetectorUrl
+      ? fetchModel(next.onnxDetectorUrl).catch(() => null)
+      : Promise.resolve(null),
     fetchModel(next.onnxSkeletonUrl),
-    next.localRulesUrl ? fetch(next.localRulesUrl).then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null),
-    next.dialogueEngineUrl ? fetch(next.dialogueEngineUrl).then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null),
+    next.localRulesUrl
+      ? fetch(next.localRulesUrl)
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null)
+      : Promise.resolve(null),
+    next.dialogueEngineUrl
+      ? fetch(next.dialogueEngineUrl)
+          .then((r) => (r.ok ? r.json() : null))
+          .catch(() => null)
+      : Promise.resolve(null),
   ]);
 
   if (rulesRes) {
@@ -162,12 +172,15 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
   poseSession = await ort.InferenceSession.create(skeletonBuffer, options);
   sampler = new BitmapSampler(MODEL_IO.inputWidth, MODEL_IO.inputHeight);
 
-  console.log("[AI Worker] All 4 AI files (Detector, Skeleton, Rules, Dialogue) loaded successfully!", {
-    detectorLoaded: Boolean(detectorRes),
-    dialogueCuesCount: spec.cues.length,
-    exerciseId: next.exerciseId,
-    rulesCount: spec.rules.length,
-  });
+  console.log(
+    "[AI Worker] All 4 AI files (Detector, Skeleton, Rules, Dialogue) loaded successfully!",
+    {
+      detectorLoaded: Boolean(detectorRes),
+      dialogueCuesCount: spec.cues.length,
+      exerciseId: next.exerciseId,
+      rulesCount: spec.rules.length,
+    },
+  );
 }
 
 async function inferPose(frame: LetterboxedFrame): Promise<Pose | null> {
@@ -351,14 +364,25 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
     }
   }
 
-  const { phase: detectedPhase, startDeg, endDeg, metricName } = detectPhaseFromRuleJson(genericRule, pose);
+  const {
+    phase: detectedPhase,
+    startDeg,
+    endDeg,
+    metricName,
+  } = detectPhaseFromRuleJson(genericRule, pose);
 
-  const joints: [string, string, string] = (spec.romRange?.joints as [string, string, string]) ?? ["hip", "knee", "ankle"];
-  const detectedAngle = angleOfJoints(pose, joints) ?? angleOfJoints(pose, ["hip", "knee", "ankle"]);
+  const joints: [string, string, string] = (spec.romRange?.joints as [string, string, string]) ?? [
+    "hip",
+    "knee",
+    "ankle",
+  ];
+  const detectedAngle =
+    angleOfJoints(pose, joints) ?? angleOfJoints(pose, ["hip", "knee", "ankle"]);
 
   const angle = Math.round(detectedAngle ?? startDeg);
-  const rom = detectedAngle !== null ? Math.round(romPercent(angle, { endDeg, joints, startDeg })) : 0;
-  
+  const rom =
+    detectedAngle !== null ? Math.round(romPercent(angle, { endDeg, joints, startDeg })) : 0;
+
   const jointAngles: Record<string, number> = {};
   if (metricName && detectedAngle !== null) {
     jointAngles[metricName] = angle;
@@ -373,7 +397,9 @@ async function runSetFrame(frame: LetterboxedFrame): Promise<void> {
     // Pause counting seconds when form is Danger (maxSeverity 2 - "sai nặng").
     if (maxSeverity <= 1) {
       const now = Date.now();
-      const deltaMs = accumulator.lastValidFrameTimeMs ? Math.min(200, now - accumulator.lastValidFrameTimeMs) : 33;
+      const deltaMs = accumulator.lastValidFrameTimeMs
+        ? Math.min(200, now - accumulator.lastValidFrameTimeMs)
+        : 33;
       accumulator.validHoldTimeMs = (accumulator.validHoldTimeMs ?? 0) + deltaMs;
       accumulator.lastValidFrameTimeMs = now;
       const currentValidSeconds = Math.floor(accumulator.validHoldTimeMs / 1000);

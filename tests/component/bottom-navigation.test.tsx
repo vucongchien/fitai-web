@@ -1,14 +1,14 @@
-import { describe, expect, it } from 'vitest';
 import { render, screen } from "@testing-library/react";
 import { usePathname } from "next/navigation";
+import { describe, expect, it } from "vitest";
 
 import { BottomNavigation } from "@/shared/ui/bottom-navigation";
 
-vi.mock<typeof import('next/navigation')>(import('next/navigation'), () => ({
+vi.mock<typeof import("next/navigation")>(import("next/navigation"), () => ({
   usePathname: vi.fn(),
 }));
 
-vi.mock<typeof import('next/link')>(import('next/link'), () => ({
+vi.mock<typeof import("next/link")>(import("next/link"), () => ({
   default: ({ children, href, ...props }: React.ComponentPropsWithRef<"a">) => (
     <a href={href as string} {...props}>
       {children}

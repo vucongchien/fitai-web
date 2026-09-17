@@ -30,7 +30,13 @@ export default function AdhocWorkoutPage() {
       </header>
 
       <main className="workout-prep-main">
-        <Suspense fallback={<div className="p-8 text-center text-sm text-neutral-400">Loading workout builder...</div>}>
+        <Suspense
+          fallback={
+            <div className="p-8 text-center text-sm text-neutral-400">
+              Loading workout builder...
+            </div>
+          }
+        >
           <AdhocWorkoutBuilder />
         </Suspense>
       </main>

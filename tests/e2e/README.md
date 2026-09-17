@@ -6,17 +6,18 @@ Tài liệu này tổng hợp mục tiêu kiểm thử, kiến trúc kiểm th�
 
 ## 🎯 Mục Tiêu & Tiêu Chuẩn Kiểm Thử
 
-| Tiêu Chí | Mô Tả Yêu Cầu |
-| :--- | :--- |
-| **Mục tiêu cốt lõi** | Kiểm tra trọn vẹn dòng chảy nghiệp vụ từ UI $\rightarrow$ Next.js Server Actions $\rightarrow$ gRPC Gateway / Service $\rightarrow$ PostgreSQL $\rightarrow$ Transactional Outbox $\rightarrow$ Change Propagation. |
+| Tiêu Chí                | Mô Tả Yêu Cầu                                                                                                                                                                                                                                                                |
+| :---------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mục tiêu cốt lõi**    | Kiểm tra trọn vẹn dòng chảy nghiệp vụ từ UI $\rightarrow$ Next.js Server Actions $\rightarrow$ gRPC Gateway / Service $\rightarrow$ PostgreSQL $\rightarrow$ Transactional Outbox $\rightarrow$ Change Propagation.                                                          |
 | **Tiêu chuẩn Data Gap** | Mỗi kịch bản bắt buộc chạy hàm **Database Gap Analyzer** trực tiếp trên PostgreSQL container (`fitai-postgres-test`). Yêu cầu **0 DATA GAPS** (không thiếu trường, không sai lệch kiểu dữ liệu, không ghi đè mất mát mảng JSON, bảo toàn tính bất biến của lịch sử quá khứ). |
-| **Định danh UUID** | Chuẩn hóa UUID thuần túy (`00000000-0000-0000-0000-000000000001`) theo đúng chuẩn thiết kế Bounded Context `profile.users`, `profile.body_metrics`, `profile.injuries`. |
+| **Định danh UUID**      | Chuẩn hóa UUID thuần túy (`00000000-0000-0000-0000-000000000001`) theo đúng chuẩn thiết kế Bounded Context `profile.users`, `profile.body_metrics`, `profile.injuries`.                                                                                                      |
 
 ---
 
 ## 📑 Danh Mục Các Luồng Kiểm Thử (E2E Test Suites)
 
 ### 1. Luồng 1: Tập Tự Do / Kế Hoạch Tuỳ Biến (Ad-hoc Workout Execution)
+
 - **File test**: [`workout-ad-hoc-and-plan.spec.ts`](file:///e:/LEARN/a/forange/tests/e2e/workout-ad-hoc-and-plan.spec.ts)
 - **Helper phân tích DB**: [`helpers/db-workout-analyzer.ts`](file:///e:/LEARN/a/forange/tests/e2e/helpers/db-workout-analyzer.ts)
 - **Mục tiêu**:
@@ -28,6 +29,7 @@ Tài liệu này tổng hợp mục tiêu kiểm thử, kiến trúc kiểm th�
 ---
 
 ### 2. Luồng 2: Tập Theo Kế Hoạch AI Lộ Trình (Plan-based Workout Execution)
+
 - **File test**: [`workout-ad-hoc-and-plan.spec.ts`](file:///e:/LEARN/a/forange/tests/e2e/workout-ad-hoc-and-plan.spec.ts)
 - **Helper phân tích DB**: [`helpers/db-workout-analyzer.ts`](file:///e:/LEARN/a/forange/tests/e2e/helpers/db-workout-analyzer.ts)
 - **Mục tiêu**:
@@ -39,6 +41,7 @@ Tài liệu này tổng hợp mục tiêu kiểm thử, kiến trúc kiểm th�
 ---
 
 ### 3. Luồng 3: Hệ Thống Thông Báo Nội Bộ (In-App Notification Flow)
+
 - **File test**: [`notification-flow.spec.ts`](file:///e:/LEARN/a/forange/tests/e2e/notification-flow.spec.ts)
 - **Helper phân tích DB**: [`helpers/db-notification-analyzer.ts`](file:///e:/LEARN/a/forange/tests/e2e/helpers/db-notification-analyzer.ts)
 - **Mục tiêu**:
@@ -50,6 +53,7 @@ Tài liệu này tổng hợp mục tiêu kiểm thử, kiến trúc kiểm th�
 ---
 
 ### 4. Luồng 4: Cập Nhật Profile & Tái Tạo Lịch Tập Thích Ứng (Profile & Adaptive Plan Regeneration)
+
 - **File test**: [`profile-and-regenerate-flow.spec.ts`](file:///e:/LEARN/a/forange/tests/e2e/profile-and-regenerate-flow.spec.ts)
 - **Helper phân tích DB**: [`helpers/db-profile-analyzer.ts`](file:///e:/LEARN/a/forange/tests/e2e/helpers/db-profile-analyzer.ts)
 - **Mục tiêu**:

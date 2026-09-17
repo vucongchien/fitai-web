@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   AlertCircle,
   ChevronRight,
@@ -11,6 +10,7 @@ import {
   Target,
   User,
 } from "lucide-react";
+import { useState } from "react";
 
 import type { ProfileViewModel } from "../model/profile.types";
 
@@ -33,7 +33,9 @@ export function ProfileMenuList({ profile, onOpenModal }: ProfileMenuListProps) 
   const activeInjuries = profile.injuries.filter((i) => !i.isRecovered);
 
   const handleLogout = async () => {
-    if (isLoggingOut) {return;}
+    if (isLoggingOut) {
+      return;
+    }
     setIsLoggingOut(true);
     try {
       const response = await fetch("/api/auth/logout", {

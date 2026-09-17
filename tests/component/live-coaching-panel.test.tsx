@@ -1,9 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-
 import { act, fireEvent, render } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CoachingPanel } from "@/features/workout/ui/live/coaching-panel";
 import type { LiveExercise } from "@/features/workout/domain/session-flow";
+import { CoachingPanel } from "@/features/workout/ui/live/coaching-panel";
 
 function makeExercise(): LiveExercise {
   return {

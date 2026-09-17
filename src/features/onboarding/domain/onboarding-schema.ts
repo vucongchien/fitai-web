@@ -1,9 +1,13 @@
 import { z } from "zod";
 
 export function validateAgeBetween(dobString?: string, minAge = 14, maxAge = 90): boolean {
-  if (!dobString) {return false;}
+  if (!dobString) {
+    return false;
+  }
   const birthDate = new Date(dobString);
-  if (isNaN(birthDate.getTime())) {return false;}
+  if (isNaN(birthDate.getTime())) {
+    return false;
+  }
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const m = today.getMonth() - birthDate.getMonth();
@@ -40,14 +44,15 @@ export const onboardingSchema = z.object({
       message: "Age must be between 14 and 90 years old.",
     }),
   preferredWorkoutTimes: z
-    .union([
-      z.record(z.string(), z.array(z.string())),
-      z.array(z.string()),
-    ])
+    .union([z.record(z.string(), z.array(z.string())), z.array(z.string())])
     .refine(
       (val) => {
-        if (!val) {return false;}
-        if (Array.isArray(val)) {return val.length > 0;}
+        if (!val) {
+          return false;
+        }
+        if (Array.isArray(val)) {
+          return val.length > 0;
+        }
         if (typeof val === "object") {
           return Object.values(val).some((slots) => Array.isArray(slots) && slots.length > 0);
         }

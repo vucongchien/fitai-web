@@ -1,5 +1,4 @@
 import "server-only";
-
 import { createClient } from "@connectrpc/connect";
 
 import type { SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";

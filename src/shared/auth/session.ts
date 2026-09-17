@@ -6,7 +6,11 @@ function parseJWTRole(token?: string): string | undefined {
     const parts = token.split(".");
     if (parts.length === 3) {
       const payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf-8"));
-      return payload.role || payload.Role || payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+      return (
+        payload.role ||
+        payload.Role ||
+        payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+      );
     }
   } catch {
     // Ignore error

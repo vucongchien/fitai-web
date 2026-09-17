@@ -58,11 +58,18 @@ export async function fetchMotionSpecificationStats(): Promise<MotionSpecStats> 
         };
       }
 
-      const res: any = await (client as any).listMotionSpecifications({ pageSize: 500, pageToken: "" });
+      const res: any = await (client as any).listMotionSpecifications({
+        pageSize: 500,
+        pageToken: "",
+      });
       const items = res?.motionSpecifications || [];
-      
-      const activeRules = items.filter((s: any) => Boolean(s.localRulesUrl && s.localRulesUrl.trim().length > 0)).length;
-      const activeVoice = items.filter((s: any) => Boolean(s.dialogueEngineUrl && s.dialogueEngineUrl.trim().length > 0)).length;
+
+      const activeRules = items.filter((s: any) =>
+        Boolean(s.localRulesUrl && s.localRulesUrl.trim().length > 0),
+      ).length;
+      const activeVoice = items.filter((s: any) =>
+        Boolean(s.dialogueEngineUrl && s.dialogueEngineUrl.trim().length > 0),
+      ).length;
       const readySpecs = items.filter(
         (s: any) =>
           Boolean(s.localRulesUrl && s.localRulesUrl.trim().length > 0) &&
@@ -105,11 +112,19 @@ export async function fetchMotionSpecifications({
       if (res.motionSpecifications) {
         const items: AdminMotionSpecification[] = res.motionSpecifications.map((item: any) => {
           const hasRules = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
-          const hasVoice = Boolean(item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0);
+          const hasVoice = Boolean(
+            item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0,
+          );
           const hasOnnx = Boolean(item.onnxDetectorUrl && item.onnxDetectorUrl.trim().length > 0);
 
           const rawName = item.exerciseName || item.exercise_name || item.name || "";
-          const isUuid = (str?: string) => Boolean(str && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str));
+          const isUuid = (str?: string) =>
+            Boolean(
+              str &&
+              /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+                str,
+              ),
+            );
           const cleanName = rawName && !isUuid(rawName) ? rawName : rawName;
 
           return {
@@ -119,7 +134,8 @@ export async function fetchMotionSpecifications({
             onnxSkeletonUrl: item.onnxSkeletonUrl || item.onnx_skeleton_url || "",
             localRulesUrl: item.localRulesUrl || item.local_rules_url || "",
             dialogueEngineUrl: item.dialogueEngineUrl || item.dialogue_engine_url || "",
-            recommendedCameraAngle: item.recommendedCameraAngle || item.recommended_camera_angle || "",
+            recommendedCameraAngle:
+              item.recommendedCameraAngle || item.recommended_camera_angle || "",
             isReady: hasRules && hasVoice && hasOnnx,
             updatedAt: new Date().toISOString(),
           };
@@ -172,10 +188,18 @@ export async function searchMotionSpecifications({
       if (res.motionSpecifications) {
         let items: AdminMotionSpecification[] = res.motionSpecifications.map((item: any) => {
           const hasRules = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
-          const hasVoice = Boolean(item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0);
+          const hasVoice = Boolean(
+            item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0,
+          );
           const hasOnnx = Boolean(item.onnxDetectorUrl && item.onnxDetectorUrl.trim().length > 0);
           const rawName = item.exerciseName || item.exercise_name || item.name || "";
-          const isUuid = (str?: string) => Boolean(str && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(str));
+          const isUuid = (str?: string) =>
+            Boolean(
+              str &&
+              /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
+                str,
+              ),
+            );
           const cleanName = rawName && !isUuid(rawName) ? rawName : rawName;
 
           return {
@@ -275,7 +299,10 @@ export async function fetchMotionSpecificationByExerciseId(
         spec.poseRules = json as PoseRuleConfig;
       }
     } catch (err) {
-      console.warn(`[fetchMotionSpecificationByExerciseId] Failed fetching rules JSON from ${spec.localRulesUrl}:`, err);
+      console.warn(
+        `[fetchMotionSpecificationByExerciseId] Failed fetching rules JSON from ${spec.localRulesUrl}:`,
+        err,
+      );
     }
   }
 
@@ -287,7 +314,10 @@ export async function fetchMotionSpecificationByExerciseId(
         spec.dialogueEngine = json as DialogueEngineConfig;
       }
     } catch (err) {
-      console.warn(`[fetchMotionSpecificationByExerciseId] Failed fetching dialogue JSON from ${spec.dialogueEngineUrl}:`, err);
+      console.warn(
+        `[fetchMotionSpecificationByExerciseId] Failed fetching dialogue JSON from ${spec.dialogueEngineUrl}:`,
+        err,
+      );
     }
   }
 
@@ -312,7 +342,9 @@ export async function updateMotionSpecification(
       });
     } catch (err) {
       console.error("[updateMotionSpecification] RPC failed:", err);
-      throw new Error(`Cập nhật trên gRPC Server thất bại: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error(
+        `Cập nhật trên gRPC Server thất bại: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
@@ -356,11 +388,15 @@ export async function patchMotionSpecificationAsset(
 
       return {
         fileUrl: res.fileUrl,
-        updatedAt: res.updatedAt ? new Date(Number(res.updatedAt.seconds) * 1000).toISOString() : new Date().toISOString(),
+        updatedAt: res.updatedAt
+          ? new Date(Number(res.updatedAt.seconds) * 1000).toISOString()
+          : new Date().toISOString(),
       };
     } catch (err) {
       console.error("[patchMotionSpecificationAsset] RPC failed:", err);
-      throw new Error(`Patch asset lên gRPC Server thất bại: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error(
+        `Patch asset lên gRPC Server thất bại: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 

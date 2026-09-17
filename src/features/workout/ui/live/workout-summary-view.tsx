@@ -18,7 +18,6 @@ import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import { buttonVariants } from "@/shared/ui/button";
 import { PageTransition } from "@/shared/ui/page-transition";
 
-
 let lastRawReport: string | null = null;
 let cachedReport: SessionReport | null = null;
 let lastSessionId: string | null = null;
@@ -116,9 +115,10 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
             wall of stats buries the one thing the user came here to see. */}
         {/* Calculate fatigue percentage on a 100% scale */}
         {(() => {
-          const fatiguePct = report.averageRpe && report.averageRpe > 0
-            ? Math.min(100, Math.max(10, Math.round((report.averageRpe / 10) * 100)))
-            : Math.min(100, Math.max(30, Math.round((report.totalSets / 10) * 75)));
+          const fatiguePct =
+            report.averageRpe && report.averageRpe > 0
+              ? Math.min(100, Math.max(10, Math.round((report.averageRpe / 10) * 100)))
+              : Math.min(100, Math.max(30, Math.round((report.totalSets / 10) * 75)));
 
           const { color, label } = getFatigueLevel(fatiguePct);
 
@@ -158,11 +158,29 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
                   marginTop: "8px",
                 }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "14px", fontWeight: 600, marginBottom: "8px" }}>
-                  <span style={{ color: "var(--color-text-main, #1e293b)" }}>Physical Exertion Index</span>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    marginBottom: "8px",
+                  }}
+                >
+                  <span style={{ color: "var(--color-text-main, #1e293b)" }}>
+                    Physical Exertion Index
+                  </span>
                   <span style={{ color, fontWeight: 700 }}>{label}</span>
                 </div>
-                <div style={{ width: "100%", height: "10px", background: "#e2e8f0", borderRadius: "999px", overflow: "hidden" }}>
+                <div
+                  style={{
+                    width: "100%",
+                    height: "10px",
+                    background: "#e2e8f0",
+                    borderRadius: "999px",
+                    overflow: "hidden",
+                  }}
+                >
                   <div
                     style={{
                       width: `${fatiguePct}%`,
@@ -182,11 +200,11 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
           <section className="summary-compare" data-direction={comparison.direction}>
             {comparison.direction === "up" ? (
               <TrendingUp aria-hidden="true" size={20} />
-            ) : (comparison.direction === "down" ? (
+            ) : comparison.direction === "down" ? (
               <TrendingDown aria-hidden="true" size={20} />
             ) : (
               <Minus aria-hidden="true" size={20} />
-            ))}
+            )}
             <p>{comparison.text}</p>
           </section>
         ) : null}

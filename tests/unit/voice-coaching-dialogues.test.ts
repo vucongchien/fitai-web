@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import type { VoiceFeedbackMetric } from "@/features/workout/model/live-session.types";
 
 describe("Voice Coaching Dialogues & Persona Styles Engine", () => {
@@ -22,7 +23,9 @@ describe("Voice Coaching Dialogues & Persona Styles Engine", () => {
           styles: {
             normal: { text: "Võng lưng quá nặng, tư thế plank không còn tác dụng." },
             strict: { text: "Đau thắt lưng đấy! Hạ mông xuống hoặc nâng hông lên ngay!" },
-            gentle: { text: "Hãy hạ gối xuống nghỉ chút nào, hông bị lệch nhiều làm đau lưng đấy." },
+            gentle: {
+              text: "Hãy hạ gối xuống nghỉ chút nào, hông bị lệch nhiều làm đau lưng đấy.",
+            },
           },
         },
       },

@@ -5,7 +5,6 @@ import { useCallback } from "react";
 
 import { parseVideoSource } from "@/features/workout/domain/video-source-parser";
 
-
 /**
  * The exercise demo clip, played large over the live screen.
  * Supports both YouTube Embed and Direct MP4 files.
@@ -37,7 +36,7 @@ export function DemoVideoOverlay({
         document.removeEventListener("keydown", onKeyDown);
       };
     },
-    [onClose]
+    [onClose],
   );
 
   return (
@@ -49,7 +48,11 @@ export function DemoVideoOverlay({
       onClick={onClose}
       style={{ cursor: "pointer" }}
     >
-      <div className="demo-video__panel" onClick={(e) => e.stopPropagation()} style={{ cursor: "default" }}>
+      <div
+        className="demo-video__panel"
+        onClick={(e) => e.stopPropagation()}
+        style={{ cursor: "default" }}
+      >
         {parsed.type === "youtube" ? (
           <iframe
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

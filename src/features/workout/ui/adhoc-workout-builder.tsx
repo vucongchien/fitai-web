@@ -2,7 +2,16 @@
 
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { ArrowRight, Dumbbell, GripVertical, Pencil, Plus, ShieldCheck, Sparkles, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  Dumbbell,
+  GripVertical,
+  Pencil,
+  Plus,
+  ShieldCheck,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 import { useMemo } from "react";
 
 import { useAdhocWorkout } from "@/features/workout/model/use-adhoc-workout";
@@ -60,7 +69,10 @@ export function AdhocWorkoutBuilder() {
                 <Dumbbell size={28} />
               </div>
               <h3>No exercises selected yet</h3>
-              <p>Add movements manually from the library or let AI Coach build a tailored workout for you.</p>
+              <p>
+                Add movements manually from the library or let AI Coach build a tailored workout for
+                you.
+              </p>
               <div className="adhoc-empty-state__actions">
                 <button
                   type="button"

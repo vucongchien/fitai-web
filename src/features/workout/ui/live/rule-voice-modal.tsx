@@ -43,7 +43,8 @@ export function RuleVoiceModal({
           const json = JSON.parse(evt.target?.result as string);
           const loadedRules: FormRule[] = json.rules || json.form_rules || [];
           const loadedCues: CoachCue[] = json.cues || json.coach_cues || [];
-          const loadedCooldowns: Record<string, number> = json.cueCooldownSec || json.cooldowns || {};
+          const loadedCooldowns: Record<string, number> =
+            json.cueCooldownSec || json.cooldowns || {};
 
           setRules(loadedRules);
           setCues(loadedCues);
@@ -94,7 +95,10 @@ export function RuleVoiceModal({
             borderColor: "var(--color-border)",
           }}
         >
-          <div className="flex items-center gap-2 font-semibold text-base" style={{ color: "var(--color-text)" }}>
+          <div
+            className="flex items-center gap-2 font-semibold text-base"
+            style={{ color: "var(--color-text)" }}
+          >
             <Sliders size={18} style={{ color: "var(--color-action)" }} />
             <span>Configure Rule & TTS Voice</span>
           </div>
@@ -110,7 +114,10 @@ export function RuleVoiceModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 overflow-y-auto space-y-6 flex-1 text-sm" style={{ color: "var(--color-text)" }}>
+        <div
+          className="p-5 overflow-y-auto space-y-6 flex-1 text-sm"
+          style={{ color: "var(--color-text)" }}
+        >
           {/* Section 1: Upload Custom Rule JSON */}
           <div
             className="p-4 rounded-xl border space-y-3"
@@ -120,7 +127,10 @@ export function RuleVoiceModal({
             }}
           >
             <div className="flex items-center justify-between">
-              <span className="font-semibold flex items-center gap-1.5" style={{ color: "var(--color-action-ink)" }}>
+              <span
+                className="font-semibold flex items-center gap-1.5"
+                style={{ color: "var(--color-action-ink)" }}
+              >
                 <FileCheck size={16} />
                 <span>Load Rule File (Rule JSON)</span>
               </span>
@@ -141,22 +151,31 @@ export function RuleVoiceModal({
               </button>
             </div>
             <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
-              Upload a JSON rule file to redefine joint thresholds (`thresholdDeg`), pose check types, and cue alerts.
+              Upload a JSON rule file to redefine joint thresholds (`thresholdDeg`), pose check
+              types, and cue alerts.
             </p>
           </div>
 
           {/* Section 2: Text-To-Speech Controls */}
           <div className="space-y-4">
-            <h4 className="font-semibold flex items-center gap-1.5" style={{ color: "var(--color-text)" }}>
+            <h4
+              className="font-semibold flex items-center gap-1.5"
+              style={{ color: "var(--color-text)" }}
+            >
               <Volume2 size={16} style={{ color: "var(--color-action)" }} />
               <span>TTS Voice Settings (Text-To-Speech)</span>
             </h4>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium flex justify-between" style={{ color: "var(--color-text-muted)" }}>
+                <label
+                  className="text-xs font-medium flex justify-between"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
                   <span>Speech Rate</span>
-                  <span className="font-semibold" style={{ color: "var(--color-text)" }}>{ttsRate}x</span>
+                  <span className="font-semibold" style={{ color: "var(--color-text)" }}>
+                    {ttsRate}x
+                  </span>
                 </label>
                 <input
                   className="w-full"
@@ -171,9 +190,14 @@ export function RuleVoiceModal({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium flex justify-between" style={{ color: "var(--color-text-muted)" }}>
+                <label
+                  className="text-xs font-medium flex justify-between"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
                   <span>Pitch</span>
-                  <span className="font-semibold" style={{ color: "var(--color-text)" }}>{ttsPitch}</span>
+                  <span className="font-semibold" style={{ color: "var(--color-text)" }}>
+                    {ttsPitch}
+                  </span>
                 </label>
                 <input
                   className="w-full"
@@ -198,14 +222,20 @@ export function RuleVoiceModal({
               }}
               type="button"
             >
-              <Play size={14} style={{ color: "var(--color-action)", fill: "var(--color-action)" }} />
+              <Play
+                size={14}
+                style={{ color: "var(--color-action)", fill: "var(--color-action)" }}
+              />
               <span>Test TTS Voice</span>
             </button>
           </div>
 
           {/* Section 3: Active Rules & Cues List */}
           <div className="space-y-3">
-            <h4 className="font-semibold text-xs uppercase tracking-wider" style={{ color: "var(--color-text-muted)" }}>
+            <h4
+              className="font-semibold text-xs uppercase tracking-wider"
+              style={{ color: "var(--color-text-muted)" }}
+            >
               Active Rules ({rules.length}) & Cues ({cues.length})
             </h4>
             {rules.length === 0 ? (
@@ -232,7 +262,10 @@ export function RuleVoiceModal({
                     <span className="font-medium" style={{ color: "var(--color-text)" }}>
                       {rule.message || rule.code}
                     </span>
-                    <span className="font-mono text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                    <span
+                      className="font-mono text-[11px]"
+                      style={{ color: "var(--color-text-muted)" }}
+                    >
                       {rule.kind} ({rule.thresholdDeg}°)
                     </span>
                   </div>

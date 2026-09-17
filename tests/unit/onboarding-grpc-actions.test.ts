@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { SaveHealthProfileResponseSchema } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
 import type { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
@@ -49,9 +48,8 @@ describe("onboarding Server Actions & Enum Normalization", () => {
       }),
     );
 
-    const { saveOnboardingProfileServerAction } = await import(
-      "@/features/onboarding/server/onboarding-actions"
-    );
+    const { saveOnboardingProfileServerAction } =
+      await import("@/features/onboarding/server/onboarding-actions");
 
     const result = await saveOnboardingProfileServerAction({
       weightKg: 75,
@@ -119,9 +117,8 @@ describe("onboarding Server Actions & Enum Normalization", () => {
       }),
     );
 
-    const { saveOnboardingProfileServerAction } = await import(
-      "@/features/onboarding/server/onboarding-actions"
-    );
+    const { saveOnboardingProfileServerAction } =
+      await import("@/features/onboarding/server/onboarding-actions");
 
     await saveOnboardingProfileServerAction({
       weightKg: 65,
@@ -160,9 +157,8 @@ describe("onboarding Server Actions & Enum Normalization", () => {
       }),
     );
 
-    const { saveOnboardingProfileServerAction } = await import(
-      "@/features/onboarding/server/onboarding-actions"
-    );
+    const { saveOnboardingProfileServerAction } =
+      await import("@/features/onboarding/server/onboarding-actions");
 
     await saveOnboardingProfileServerAction({
       weightKg: 70,
@@ -199,9 +195,8 @@ describe("onboarding Server Actions & Enum Normalization", () => {
   it("recovers gracefully when gRPC SaveHealthProfile throws", async () => {
     mockSaveHealthProfile.mockRejectedValue(new Error("Connection reset"));
 
-    const { saveOnboardingProfileServerAction } = await import(
-      "@/features/onboarding/server/onboarding-actions"
-    );
+    const { saveOnboardingProfileServerAction } =
+      await import("@/features/onboarding/server/onboarding-actions");
 
     const result = await saveOnboardingProfileServerAction({
       weightKg: 80,

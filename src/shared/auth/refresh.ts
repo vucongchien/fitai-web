@@ -4,10 +4,7 @@ import { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/
 import { createServerTransport } from "@/shared/api/server/transport";
 
 // Single-flight deduplication map for concurrent token refresh operations
-const refreshFlightMap = new Map<
-  string,
-  Promise<{ accessToken: string; refreshToken: string }>
->();
+const refreshFlightMap = new Map<string, Promise<{ accessToken: string; refreshToken: string }>>();
 
 /**
  * Deduplicated token refresh operation.

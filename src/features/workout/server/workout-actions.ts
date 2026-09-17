@@ -2,6 +2,7 @@
 
 import { createClient } from "@connectrpc/connect";
 
+import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
 import {
   averageFormScore,
   averageRpe,
@@ -9,16 +10,11 @@ import {
   sessionVolumeKg,
 } from "@/features/workout/domain/training-load";
 import type { AbortReason, SetLogDraft } from "@/features/workout/model/live-session.types";
-import type {
-  AdhocConfig,
-  ExerciseResult,
-} from "@/features/workout/model/workout.types";
+import type { AdhocConfig, ExerciseResult } from "@/features/workout/model/workout.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
-
-import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
 
 /**
  * Search exercise library.
@@ -77,9 +73,8 @@ export async function getAdhocConfig(): Promise<AdhocConfig> {
 }
 
 import { create } from "@bufbuild/protobuf";
-import {
-  AdHocHintSchema,
-} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+
+import { AdHocHintSchema } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 
 export interface AdhocAiRecommendationOutput {
   muscleGroups: string[];
@@ -214,7 +209,10 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
     });
     planId = adhocPlan.sessionPlan?.sessionPlanId || "";
   } catch (error: any) {
-    console.warn("[beginWorkoutSession] createAdhocSessionPlan failed, attempting auto-initiate roadmap:", error?.message);
+    console.warn(
+      "[beginWorkoutSession] createAdhocSessionPlan failed, attempting auto-initiate roadmap:",
+      error?.message,
+    );
     try {
       await coachingClient.initiateRoadmap({ userId });
       const retryPlan = await coachingClient.createAdhocSessionPlan({
@@ -397,7 +395,10 @@ export async function completeWorkoutSession(
         weightUpdateKg: localTotals.totalVolumeKg,
       });
     } catch (err: any) {
-      if (err?.message?.includes("exceeds 250%") || err?.message?.includes("confirmation required")) {
+      if (
+        err?.message?.includes("exceeds 250%") ||
+        err?.message?.includes("confirmation required")
+      ) {
         res = await executionClient.completeWorkoutSession({
           sessionId,
           confirmOverload: true,
@@ -417,7 +418,10 @@ export async function completeWorkoutSession(
       oneRepMaxByExercise: localTotals.oneRepMaxByExercise,
     };
   } catch (error) {
-    console.warn("completeWorkoutSession RPC failed or session already finished, using local totals:", error);
+    console.warn(
+      "completeWorkoutSession RPC failed or session already finished, using local totals:",
+      error,
+    );
     return localTotals;
   }
 }

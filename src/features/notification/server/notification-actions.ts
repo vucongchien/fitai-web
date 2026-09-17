@@ -4,7 +4,6 @@ import { createClient } from "@connectrpc/connect";
 
 import { NotificationService } from "@/shared/api/gen/contracts/generic/notification/v1/service/notification_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
-
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
 export interface NotificationItemDTO {
@@ -41,9 +40,7 @@ export async function listNotificationsAction(
       body: item.body,
       isRead: item.isRead,
       createdAt: item.createdAt,
-      data: Object.fromEntries(
-        Object.entries(item.data || {}).map(([k, v]) => [k, String(v)]),
-      ),
+      data: Object.fromEntries(Object.entries(item.data || {}).map(([k, v]) => [k, String(v)])),
     }));
 
     return {
@@ -73,7 +70,10 @@ export async function markNotificationAsReadAction(notificationId: string): Prom
 
     return response.success;
   } catch (error) {
-    console.error(`[markNotificationAsReadAction] Failed to mark ${notificationId} as read:`, error);
+    console.error(
+      `[markNotificationAsReadAction] Failed to mark ${notificationId} as read:`,
+      error,
+    );
     return false;
   }
 }

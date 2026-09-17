@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
 import {
   WorkoutStatsPanel,
@@ -37,7 +37,7 @@ describe(WorkoutStatsPanel, () => {
     const { container } = render(
       <WorkoutStatsPanel data={mockData}>
         <div data-testid="week-1-content">Week 1 Sessions</div>
-      </WorkoutStatsPanel>
+      </WorkoutStatsPanel>,
     );
 
     const childrenNode = screen.getByTestId("week-1-content");
@@ -53,10 +53,10 @@ describe(WorkoutStatsPanel, () => {
 
     // Verify children appears after ring and before volume header in DOM order
     expect(
-      ring!.compareDocumentPosition(childrenNode) & Node.DOCUMENT_POSITION_FOLLOWING
+      ring!.compareDocumentPosition(childrenNode) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
     expect(
-      childrenNode.compareDocumentPosition(volumeHeader) & Node.DOCUMENT_POSITION_FOLLOWING
+      childrenNode.compareDocumentPosition(volumeHeader) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
 
@@ -69,7 +69,7 @@ describe(WorkoutStatsPanel, () => {
     render(
       <WorkoutStatsPanel data={errorData}>
         <div data-testid="week-1-fallback">Week 1 Fallback Content</div>
-      </WorkoutStatsPanel>
+      </WorkoutStatsPanel>,
     );
 
     expect(screen.getByTestId("week-1-fallback")).toBeInTheDocument();

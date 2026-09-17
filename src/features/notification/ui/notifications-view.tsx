@@ -40,20 +40,20 @@ export function NotificationsView({ initialNotifications }: NotificationsViewPro
 
     // Optimistic UI update
     setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, read: true } : item))
+      prev.map((item) => (item.id === id ? { ...item, read: true } : item)),
     );
 
     try {
       const success = await markNotificationAsReadAction(id);
       if (!success) {
         setNotifications((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, read: false } : item))
+          prev.map((item) => (item.id === id ? { ...item, read: false } : item)),
         );
       }
     } catch (error) {
       console.error("[NotificationsView] failed to mark as read:", error);
       setNotifications((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, read: false } : item))
+        prev.map((item) => (item.id === id ? { ...item, read: false } : item)),
       );
     }
   };
@@ -91,7 +91,9 @@ export function NotificationsView({ initialNotifications }: NotificationsViewPro
           <header className="page-hero">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <h1 className="page-hero__title" style={{ margin: 0 }}>Notifications</h1>
+                <h1 className="page-hero__title" style={{ margin: 0 }}>
+                  Notifications
+                </h1>
                 {unreadCount > 0 && (
                   <span
                     style={{

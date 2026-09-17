@@ -2,8 +2,8 @@
 
 import { Dumbbell } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import { useCallback, useRef, useState } from "react";
+import type { ReactNode } from "react";
 
 interface PullToRefreshProps {
   children: ReactNode;
@@ -40,7 +40,9 @@ export function PullToRefresh({
       }
 
       const scrollTop =
-        typeof window !== "undefined" ? window.scrollY || document.documentElement.scrollTop || 0 : 0;
+        typeof window !== "undefined"
+          ? window.scrollY || document.documentElement.scrollTop || 0
+          : 0;
 
       if (scrollTop <= 0 && e.touches.length === 1) {
         startYRef.current = e.touches[0].clientY;
@@ -57,7 +59,9 @@ export function PullToRefresh({
       }
 
       const scrollTop =
-        typeof window !== "undefined" ? window.scrollY || document.documentElement.scrollTop || 0 : 0;
+        typeof window !== "undefined"
+          ? window.scrollY || document.documentElement.scrollTop || 0
+          : 0;
       if (scrollTop > 0) {
         setIsPulling(false);
         setPullDistance(0);
@@ -191,7 +195,7 @@ export function PullToRefresh({
             {/* Muscle/Dumbbell Icon */}
             <div className="pull-to-refresh-indicator__icon-wrap">
               <Dumbbell
-                className={`pull-to-refresh-indicator__icon ${isRefreshing ? "animate-pulse text-action" : (isReadyToTrigger ? "text-action scale-110" : "text-muted")}`}
+                className={`pull-to-refresh-indicator__icon ${isRefreshing ? "animate-pulse text-action" : isReadyToTrigger ? "text-action scale-110" : "text-muted"}`}
                 size={19}
                 style={{
                   transform: isRefreshing

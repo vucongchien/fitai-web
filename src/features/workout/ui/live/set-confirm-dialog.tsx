@@ -3,8 +3,8 @@
 import { Check, Clock, Dumbbell, Minus, Plus, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 
-import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { getFatigueLevel } from "@/features/workout/domain/pose-metrics";
+import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { Button } from "@/shared/ui/button";
 
 export interface SetConfirmData {
@@ -106,10 +106,25 @@ function SetConfirmDialogContent({
       <div
         className="end-dialog set-confirm-dialog"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: "440px", width: "100%", padding: "24px", background: "var(--color-surface)", borderRadius: "20px", boxShadow: "var(--shadow-float, 0 20px 25px -5px rgba(0, 0, 0, 0.3))", cursor: "default" }}
+        style={{
+          maxWidth: "440px",
+          width: "100%",
+          padding: "24px",
+          background: "var(--color-surface)",
+          borderRadius: "20px",
+          boxShadow: "var(--shadow-float, 0 20px 25px -5px rgba(0, 0, 0, 0.3))",
+          cursor: "default",
+        }}
       >
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "16px",
+          }}
+        >
           <div>
             <span
               style={{
@@ -122,7 +137,16 @@ function SetConfirmDialogContent({
             >
               Companion · Set {currentSet}/{totalSets}
             </span>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, margin: "4px 0 0 0", color: "var(--color-text)" }}>{exercise.name}</h2>
+            <h2
+              style={{
+                fontSize: "20px",
+                fontWeight: 700,
+                margin: "4px 0 0 0",
+                color: "var(--color-text)",
+              }}
+            >
+              {exercise.name}
+            </h2>
           </div>
           <button
             onClick={() => triggerClose()}
@@ -161,15 +185,33 @@ function SetConfirmDialogContent({
         )}
 
         {/* Quantity Controls */}
-        <div style={{ background: "var(--color-surface-subtle)", borderRadius: "16px", padding: "20px", marginBottom: "16px" }}>
+        <div
+          style={{
+            background: "var(--color-surface-subtle)",
+            borderRadius: "16px",
+            padding: "20px",
+            marginBottom: "16px",
+          }}
+        >
           {!timed ? (
             /* Reps Input */
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}
+              >
                 <Dumbbell size={18} style={{ color: "var(--color-action)" }} />
-                <span style={{ fontWeight: 600, fontSize: "15px", color: "var(--color-text)" }}>Actual Completed Reps</span>
+                <span style={{ fontWeight: 600, fontSize: "15px", color: "var(--color-text)" }}>
+                  Actual Completed Reps
+                </span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "16px",
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setReps((r) => Math.max(1, r - 1))}
@@ -228,7 +270,9 @@ function SetConfirmDialogContent({
                 </button>
               </div>
               {/* Quick Rep Adjustments */}
-              <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "12px" }}>
+              <div
+                style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "12px" }}
+              >
                 {[-5, -1, 1, 5].map((delta) => (
                   <button
                     key={delta}
@@ -253,11 +297,22 @@ function SetConfirmDialogContent({
           ) : (
             /* Time Input */
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}
+              >
                 <Clock size={18} style={{ color: "var(--color-recovery)" }} />
-                <span style={{ fontWeight: 600, fontSize: "15px", color: "var(--color-text)" }}>Actual Duration (seconds)</span>
+                <span style={{ fontWeight: 600, fontSize: "15px", color: "var(--color-text)" }}>
+                  Actual Duration (seconds)
+                </span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "16px",
+                }}
+              >
                 <button
                   type="button"
                   onClick={() => setSeconds((s) => Math.max(1, s - 5))}
@@ -312,7 +367,9 @@ function SetConfirmDialogContent({
                 </button>
               </div>
               {/* Quick Seconds Adjustments */}
-              <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "12px" }}>
+              <div
+                style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "12px" }}
+              >
                 {[-10, -5, 5, 10].map((delta) => (
                   <button
                     key={delta}
@@ -348,7 +405,9 @@ function SetConfirmDialogContent({
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text)" }}>Weight (kg)</span>
+              <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text)" }}>
+                Weight (kg)
+              </span>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <button
                   type="button"
@@ -415,7 +474,14 @@ function SetConfirmDialogContent({
                 border: "1px solid var(--color-border)",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "10px",
+                }}
+              >
                 <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text)" }}>
                   Perceived Exertion
                 </span>
@@ -464,9 +530,18 @@ function SetConfirmDialogContent({
                       borderRadius: "8px",
                       fontSize: "12px",
                       fontWeight: 600,
-                      border: fatiguePercent === p.val ? "2px solid var(--color-action)" : "1px solid var(--color-border)",
-                      background: fatiguePercent === p.val ? "var(--color-action-soft)" : "var(--color-surface)",
-                      color: fatiguePercent === p.val ? "var(--color-action-ink)" : "var(--color-text-muted)",
+                      border:
+                        fatiguePercent === p.val
+                          ? "2px solid var(--color-action)"
+                          : "1px solid var(--color-border)",
+                      background:
+                        fatiguePercent === p.val
+                          ? "var(--color-action-soft)"
+                          : "var(--color-surface)",
+                      color:
+                        fatiguePercent === p.val
+                          ? "var(--color-action-ink)"
+                          : "var(--color-text-muted)",
                       cursor: "pointer",
                     }}
                   >

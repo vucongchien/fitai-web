@@ -3768,7 +3768,11 @@ a.week-route__row:hover {
 }
 
 .adhoc-empty-btn--primary {
-  background: linear-gradient(135deg, var(--color-action) 0%, color-mix(in srgb, var(--color-action) 80%, #ff8c00) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-action) 0%,
+    color-mix(in srgb, var(--color-action) 80%, #ff8c00) 100%
+  );
   color: #fff;
   border: none;
   box-shadow: 0 4px 14px color-mix(in srgb, var(--color-action) 35%, transparent);
@@ -4383,7 +4387,9 @@ a.week-route__row:hover {
   line-height: 1.45;
   resize: vertical;
   min-height: 4.8rem;
-  transition: border-color var(--duration-state) ease, box-shadow var(--duration-state) ease;
+  transition:
+    border-color var(--duration-state) ease,
+    box-shadow var(--duration-state) ease;
 }
 
 .ai-prompt-textarea:focus {
@@ -6955,7 +6961,9 @@ details[open] > .meal-recipe__summary::after {
   border-radius: var(--radius-input);
   font-family: var(--font-body);
   font-size: 0.95rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .log-form__field input:focus-visible {
@@ -7143,7 +7151,9 @@ details[open] > .meal-recipe__summary::after {
   border: 1px solid color-mix(in srgb, var(--color-action) 20%, transparent);
   border-radius: var(--radius-surface, 1rem);
   backdrop-filter: blur(16px);
-  transition: transform var(--duration-state) ease, border-color var(--duration-state) ease;
+  transition:
+    transform var(--duration-state) ease,
+    border-color var(--duration-state) ease;
 }
 
 @media (min-width: 48rem) {
@@ -7286,7 +7296,9 @@ details[open] > .meal-recipe__summary::after {
   border-radius: 0.85rem;
   color: var(--color-text);
   text-decoration: none;
-  transition: background-color 150ms ease, border-color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
 }
 
 .muscle-category-card:hover {
@@ -7478,6 +7490,3 @@ details[open] > .meal-recipe__summary::after {
 .exercise-showcase-card__add-btn:hover {
   opacity: 0.9;
 }
-
-
-

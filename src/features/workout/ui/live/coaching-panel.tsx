@@ -22,7 +22,6 @@ function paragraphsFor(exercise: LiveExercise): string[] {
     .filter(Boolean);
 }
 
-
 export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
   const [scrollable, setScrollable] = useState(false);
 
@@ -46,7 +45,7 @@ export function CoachingPanel({ exercise }: { exercise: LiveExercise }) {
         return () => observer.disconnect();
       }
     },
-    [exercise.exerciseId]
+    [exercise.exerciseId],
   );
 
   const onScroll = useCallback((event: React.UIEvent<HTMLElement>) => {

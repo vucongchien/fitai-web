@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
 import type { NutritionPageData } from "@/features/nutrition/model/nutrition-page.types";
 import { NutritionView } from "@/features/nutrition/ui/nutrition-view";

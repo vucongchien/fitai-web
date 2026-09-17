@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useReducer, useRef, useSyncExternalStore } from "react";
 
-
 const subscribeOnline = (callback: () => void) => {
   if (typeof window === "undefined") return () => {};
   window.addEventListener("online", callback);
@@ -204,7 +203,9 @@ function reducer(state: State, action: Action, context: Context): State {
 
     case "add-set-time": {
       // Only meaningful for a timed hold; a rep-based set has no clock to extend.
-      if (state.setEndsAt === null) {return state;}
+      if (state.setEndsAt === null) {
+        return state;
+      }
       return {
         ...state,
         setEndsAt: Math.max(state.setEndsAt, Date.now()) + action.seconds * 1000,

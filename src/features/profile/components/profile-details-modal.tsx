@@ -11,9 +11,12 @@ import {
   X,
 } from "lucide-react";
 import React, { useState } from "react";
+
 import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-store";
-import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import type { PreferredWorkoutTimesMap } from "@/features/onboarding/domain/workout-times-normalizer";
+import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
+import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
+
 import { calculateBMI } from "../model/profile.mapper";
 import type { InjuryItem, ProfileViewModel } from "../model/profile.types";
 import {
@@ -21,7 +24,6 @@ import {
   reportInjuryServerAction,
   updateProfileServerAction,
 } from "../server/profile-actions";
-import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
 
 export type ModalType =
   | "BODY_METRICS"
@@ -751,7 +753,9 @@ function InjuryHistoryForm({
   const [showReport, setShowReport] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmReport, setShowConfirmReport] = useState(false);
-  const [categoryFilter, setCategoryFilter] = useState<"All" | "Upper Body" | "Lower Body" | "Core & Joints">("All");
+  const [categoryFilter, setCategoryFilter] = useState<
+    "All" | "Upper Body" | "Lower Body" | "Core & Joints"
+  >("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [newInjury, setNewInjury] = useState({
     muscleGroup: "Shoulders",
@@ -796,7 +800,9 @@ function InjuryHistoryForm({
   const anatomyAreas = [
     ...baseAnatomyAreas,
     ...dynamicDbMuscles
-      .filter((dbM) => !baseAnatomyAreas.some((b) => b.name.toLowerCase() === dbM.name.toLowerCase()))
+      .filter(
+        (dbM) => !baseAnatomyAreas.some((b) => b.name.toLowerCase() === dbM.name.toLowerCase()),
+      )
       .map((dbM) => ({
         name: dbM.name,
         category: "Upper Body" as "Upper Body" | "Lower Body" | "Core & Joints",
@@ -896,8 +902,12 @@ function InjuryHistoryForm({
           <div className="space-y-3">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-[#50565C]">Muscle Group & Joint Area</label>
-                <span className="text-[11px] text-[#4B57F2] font-semibold">Selected: {newInjury.muscleGroup}</span>
+                <label className="text-xs font-semibold text-[#50565C]">
+                  Muscle Group & Joint Area
+                </label>
+                <span className="text-[11px] text-[#4B57F2] font-semibold">
+                  Selected: {newInjury.muscleGroup}
+                </span>
               </div>
 
               {/* Category Filter Chips */}
@@ -979,7 +989,10 @@ function InjuryHistoryForm({
                         backgroundColor: isSelected ? "#FFF1F2" : "#FFFFFF",
                       }}
                     >
-                      <div className="font-bold" style={{ color: isSelected ? "#9F1239" : "#101214" }}>
+                      <div
+                        className="font-bold"
+                        style={{ color: isSelected ? "#9F1239" : "#101214" }}
+                      >
                         {s.label}
                       </div>
                       <div className="text-[10px] text-[#50565C] mt-0.5">{s.desc}</div>

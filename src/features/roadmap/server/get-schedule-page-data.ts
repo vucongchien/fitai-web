@@ -1,5 +1,4 @@
 import "server-only";
-
 import { createClient } from "@connectrpc/connect";
 
 import type { SchedulePageData } from "@/features/roadmap/model/roadmap-page.types";
@@ -14,7 +13,10 @@ const EMPTY_SCHEDULE_DATA: SchedulePageData = {
   weeks: [],
 };
 
-async function getRealSchedulePageData(accessToken: string, userId: string): Promise<SchedulePageData> {
+async function getRealSchedulePageData(
+  accessToken: string,
+  userId: string,
+): Promise<SchedulePageData> {
   const client = createClient(CoachingService, createServerTransport(accessToken));
   const res = await client.getActiveRoadmap({ userId });
   if (!res.roadmap) {

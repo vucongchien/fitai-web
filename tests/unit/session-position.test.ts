@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+
 import { buildTimeline, totalExerciseCount } from "@/features/workout/domain/session-flow";
 import type { LiveExercise, LiveSessionPlan } from "@/features/workout/model/live-session.types";
 

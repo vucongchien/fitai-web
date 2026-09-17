@@ -1,10 +1,20 @@
 "use client";
 
-import { Archive, ArrowLeft, CheckCircle2, Dumbbell, Plus, Save, Sparkles, Trash2, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Archive,
+  ArrowLeft,
+  CheckCircle2,
+  Dumbbell,
+  Plus,
+  Save,
+  Sparkles,
+  Trash2,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useId, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 
 import {
   approveExercise,
@@ -102,7 +112,9 @@ function AdminExerciseForm({
   const [defaultRestSeconds, setDefaultRestSeconds] = useState(initialExercise.defaultRestSeconds);
   const [instructions, setInstructions] = useState(initialExercise.instructions || "");
   const [formCues, setFormCues] = useState<string[]>(initialExercise.formCues || []);
-  const [commonMistakes, setCommonMistakes] = useState<string[]>(initialExercise.commonMistakes || []);
+  const [commonMistakes, setCommonMistakes] = useState<string[]>(
+    initialExercise.commonMistakes || [],
+  );
   const [tagIds, setTagIds] = useState<string[]>(initialExercise.tagIds || []);
 
   // New item inputs

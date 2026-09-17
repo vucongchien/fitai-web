@@ -11,7 +11,9 @@ interface ExerciseCardProps {
 }
 
 function isUuid(str?: string): boolean {
-  if (!str) {return false;}
+  if (!str) {
+    return false;
+  }
   const trimmed = str.trim();
   return (
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
@@ -20,13 +22,20 @@ function isUuid(str?: string): boolean {
 }
 
 function findName(pool: { id: string; name: string }[], id: string): string | undefined {
-  if (!id || isUuid(id)) {return undefined;}
-  return pool.find((entry) => entry.id === id || entry.name.toLowerCase() === id.toLowerCase())?.name;
+  if (!id || isUuid(id)) {
+    return undefined;
+  }
+  return pool.find((entry) => entry.id === id || entry.name.toLowerCase() === id.toLowerCase())
+    ?.name;
 }
 
 export function ExerciseCard({ exercise, catalog }: ExerciseCardProps) {
-  const bodyPart = findName(catalog.bodyParts, exercise.bodyPartId) || (isUuid(exercise.bodyPartId) ? undefined : exercise.bodyPartId);
-  const equipment = findName(catalog.equipments, exercise.equipmentId) || (isUuid(exercise.equipmentId) ? undefined : exercise.equipmentId);
+  const bodyPart =
+    findName(catalog.bodyParts, exercise.bodyPartId) ||
+    (isUuid(exercise.bodyPartId) ? undefined : exercise.bodyPartId);
+  const equipment =
+    findName(catalog.equipments, exercise.equipmentId) ||
+    (isUuid(exercise.equipmentId) ? undefined : exercise.equipmentId);
   const diffLabel = DIFFICULTY_LABEL[exercise.difficulty];
 
   const metaParts = [bodyPart, equipment, diffLabel].filter(Boolean);

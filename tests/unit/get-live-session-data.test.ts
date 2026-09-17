@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "@bufbuild/protobuf";
 import type { Transport } from "@connectrpc/connect";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GetSessionPlanResponseSchema } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import { GetExerciseResponseSchema } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
@@ -42,7 +42,8 @@ vi.mock("@/shared/api/server/transport", () => ({
 }));
 
 vi.mock("@/shared/auth/session", () => ({
-  getAuthenticatedSession: () => Promise.resolve({ accessToken: "mock_jwt_token", userId: "usr_123" }),
+  getAuthenticatedSession: () =>
+    Promise.resolve({ accessToken: "mock_jwt_token", userId: "usr_123" }),
 }));
 
 describe("getLiveSessionData gRPC Live Session Execution", () => {
@@ -104,9 +105,7 @@ describe("getLiveSessionData gRPC Live Session Execution", () => {
       }),
     );
 
-    const { getLiveSessionData } = await import(
-      "@/features/workout/server/get-live-session-data"
-    );
+    const { getLiveSessionData } = await import("@/features/workout/server/get-live-session-data");
 
     const plan = await getLiveSessionData("plan_bench_squat");
 
@@ -125,9 +124,7 @@ describe("getLiveSessionData gRPC Live Session Execution", () => {
   it("triggers notFound when session plan is not found on backend", async () => {
     mockGetSessionPlan.mockRejectedValue(new Error("rpc error: code = NotFound"));
 
-    const { getLiveSessionData } = await import(
-      "@/features/workout/server/get-live-session-data"
-    );
+    const { getLiveSessionData } = await import("@/features/workout/server/get-live-session-data");
 
     await expect(getLiveSessionData("invalid_plan_id")).rejects.toThrow("NEXT_NOT_FOUND");
     expect(mockNotFound).toHaveBeenCalledTimes(1);

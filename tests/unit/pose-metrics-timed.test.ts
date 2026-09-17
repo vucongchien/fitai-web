@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import {
   detectPhaseFromRuleJson,
   evaluateGenericRuleJson,
@@ -122,13 +123,32 @@ describe("Dynamic Rule Calculation & Metric Evaluation Engine", () => {
           description: "Độ lệch hông so với đường thẳng vai-cổ chân",
           evaluation_type: "absolute_upper_bound",
           ranges: [
-            { severity: 0, status: "Correct", min: 0.0, max: 0.09, comment: "≤9cm: hông thẳng hàng" },
-            { severity: 1, status: "Warning", min: 0.09, max: 0.18, comment: "9-18cm: hông bắt đầu mất alignment" },
-            { severity: 2, status: "Danger", min: 0.18, max: null, comment: ">18cm: mất kiểm soát hoàn toàn" },
+            {
+              severity: 0,
+              status: "Correct",
+              min: 0.0,
+              max: 0.09,
+              comment: "≤9cm: hông thẳng hàng",
+            },
+            {
+              severity: 1,
+              status: "Warning",
+              min: 0.09,
+              max: 0.18,
+              comment: "9-18cm: hông bắt đầu mất alignment",
+            },
+            {
+              severity: 2,
+              status: "Danger",
+              min: 0.18,
+              max: null,
+              comment: ">18cm: mất kiểm soát hoàn toàn",
+            },
           ],
           calculation: {
             landmarks: ["Shoulder (P5, P6)", "Hip (P11, P12)", "Ankle (P15, P16)"],
-            formula: "signed_hip_y_diff = signed_distance_point_to_line(P_hip_mid, P_shoulder_mid, P_ankle_mid) / torso_length",
+            formula:
+              "signed_hip_y_diff = signed_distance_point_to_line(P_hip_mid, P_shoulder_mid, P_ankle_mid) / torso_length",
           },
         },
       ],

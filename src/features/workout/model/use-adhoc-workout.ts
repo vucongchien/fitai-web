@@ -7,14 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore, useTransition } from "react";
 
-
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
 import { toAdhocExercise } from "@/features/workout/model/adhoc-types";
 import type { ExerciseResult } from "@/features/workout/model/workout.types";
-import {
-  beginWorkoutSession,
-  getAdhocConfig,
-} from "@/features/workout/server/workout-actions";
+import { beginWorkoutSession, getAdhocConfig } from "@/features/workout/server/workout-actions";
 import { useToast } from "@/shared/ui/toast/toast-context";
 
 const emptySubscribe = () => () => {};
@@ -59,12 +55,12 @@ export function useAdhocWorkout() {
   });
 
   const exerciseList =
-    userExerciseList ?? (config?.defaultExercises.map((ex) => toAdhocExercise(ex)) ?? []);
+    userExerciseList ?? config?.defaultExercises.map((ex) => toAdhocExercise(ex)) ?? [];
 
   const setExerciseList = useCallback(
     (updater: AdhocExercise[] | ((prev: AdhocExercise[]) => AdhocExercise[])) => {
       setUserExerciseList((current) => {
-        const base = current ?? (config?.defaultExercises.map((ex) => toAdhocExercise(ex)) ?? []);
+        const base = current ?? config?.defaultExercises.map((ex) => toAdhocExercise(ex)) ?? [];
         return typeof updater === "function" ? updater(base) : updater;
       });
     },
@@ -200,9 +196,7 @@ export function useAdhocWorkout() {
       return;
     }
 
-    const exerciseIds = exerciseList.map(
-      (ex) => ex.exerciseId || ex.id.split("__")[0] || ex.id,
-    );
+    const exerciseIds = exerciseList.map((ex) => ex.exerciseId || ex.id.split("__")[0] || ex.id);
     startSessionTransition(async () => {
       try {
         const { sessionId } = await beginWorkoutSession(exerciseIds);

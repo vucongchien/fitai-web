@@ -116,18 +116,22 @@ export function ActiveExerciseScreen({
   const hasInstrument = timed || tracking;
 
   const display = timed
-    ? (repCount && repCount > 0
-        ? `${repCount}s / ${durationTarget}s`
-        : formatCountdown(Math.max(0, secondsLeft)))
+    ? repCount && repCount > 0
+      ? `${repCount}s / ${durationTarget}s`
+      : formatCountdown(Math.max(0, secondsLeft))
     : `${repCount ?? 0} / ${exercise.targetReps}`;
 
   const ringLabel = timed ? "Time remaining in this set" : "Reps completed in this set";
   const setTotal = setTotalSeconds > 0 ? setTotalSeconds : durationTarget;
   const progress = timed
-    ? (repCount && repCount > 0
-        ? Math.min(1, repCount / setTotal)
-        : (setTotal > 0 ? Math.max(0, secondsLeft) / setTotal : null))
-    : (tracking ? repCount! / exercise.targetReps : null);
+    ? repCount && repCount > 0
+      ? Math.min(1, repCount / setTotal)
+      : setTotal > 0
+        ? Math.max(0, secondsLeft) / setTotal
+        : null
+    : tracking
+      ? repCount! / exercise.targetReps
+      : null;
 
   return (
     <div className="live-screen" data-camera-active={cameraActive}>

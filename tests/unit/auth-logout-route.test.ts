@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LogoutResponseSchema } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 import type { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";

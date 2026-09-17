@@ -36,11 +36,7 @@ export function ExerciseMetaRow({
       <div className="live-meta__top">
         <p className="live-meta__name">
           <span>{name}</span>
-          {angleLabel ? (
-            <span className="live-meta__angle-badge">
-              ({angleLabel})
-            </span>
-          ) : null}
+          {angleLabel ? <span className="live-meta__angle-badge">({angleLabel})</span> : null}
         </p>
 
         {/* Spaces sit inside the spans, not in a flex gap */}

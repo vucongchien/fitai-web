@@ -148,14 +148,18 @@ export function deduplicateMealRows(rows: readonly MealLogRow[]): MealLogRow[] {
 
   for (const row of rows) {
     const cleanName = (row.mealName || "")
-      .replace(/^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-/, "")
+      .replace(
+        /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-/,
+        "",
+      )
       .trim()
       .toLowerCase();
     const slot = (toMealSlot(row.mealType) || "").toLowerCase();
     const day = dayKeyFromLoggedAt(row.loggedAt) || (row.loggedAt ? row.loggedAt.slice(0, 10) : "");
 
     const contentKey = `${cleanName}_${slot}_${day}`;
-    const idKey = row.mealLogId && !row.mealLogId.startsWith("local-meal-") ? row.mealLogId : contentKey;
+    const idKey =
+      row.mealLogId && !row.mealLogId.startsWith("local-meal-") ? row.mealLogId : contentKey;
 
     if (seenKeys.has(idKey) || seenKeys.has(contentKey)) {
       continue;
@@ -341,7 +345,12 @@ export function groupMealsBySlot(
           fat: Math.round(validPlannedItem.fat),
           ingredients: validPlannedItem.ingredients,
           isLogged: validPlannedItem.isLogged,
-          name: validPlannedItem.mealName.replace(/^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-/, "").trim(),
+          name: validPlannedItem.mealName
+            .replace(
+              /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-/,
+              "",
+            )
+            .trim(),
           optionId: validPlannedItem.optionId,
           options: slotMenu,
           protein: Math.round(validPlannedItem.protein),

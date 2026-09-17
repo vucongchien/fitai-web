@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   CreateAdhocSessionPlanResponseSchema,
@@ -59,9 +58,8 @@ describe("planning & Coaching gRPC Actions", () => {
       }),
     );
 
-    const { initiateRoadmapServerAction } = await import(
-      "@/features/roadmap/server/coaching-actions"
-    );
+    const { initiateRoadmapServerAction } =
+      await import("@/features/roadmap/server/coaching-actions");
     const res = await initiateRoadmapServerAction();
 
     expect(mockInitiateRoadmap).toHaveBeenCalledWith({ userId: "usr-plan-456" });
@@ -76,9 +74,8 @@ describe("planning & Coaching gRPC Actions", () => {
       }),
     );
 
-    const { regenerateScheduleServerAction } = await import(
-      "@/features/roadmap/server/coaching-actions"
-    );
+    const { regenerateScheduleServerAction } =
+      await import("@/features/roadmap/server/coaching-actions");
     const res = await regenerateScheduleServerAction("rdm-999", "Injury reported");
 
     expect(mockRegenerateSchedule).toHaveBeenCalledWith({
@@ -96,9 +93,8 @@ describe("planning & Coaching gRPC Actions", () => {
       }),
     );
 
-    const { createAdhocSessionPlanServerAction } = await import(
-      "@/features/roadmap/server/coaching-actions"
-    );
+    const { createAdhocSessionPlanServerAction } =
+      await import("@/features/roadmap/server/coaching-actions");
     const res = await createAdhocSessionPlanServerAction(["ex-bench", "ex-squat"]);
 
     expect(mockCreateAdhocSessionPlan).toHaveBeenCalledWith({

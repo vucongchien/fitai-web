@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
-import { getMockMealRows, MOCK_TODAY } from "../mocks/nutrition-fixtures";
 import { MealTimeline } from "@/features/nutrition/ui/meal-timeline";
 import { groupMealsBySlot } from "@/shared/api/bff/aggregate/nutrition-daily";
+
+import { getMockMealRows, MOCK_TODAY } from "../mocks/nutrition-fixtures";
 
 // This project's vitest config does not enable `globals`, so RTL auto-cleanup is off.
 afterEach(cleanup);

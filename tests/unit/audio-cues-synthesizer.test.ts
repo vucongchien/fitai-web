@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-
 import { playSyntheticCueTone, speakText } from "@/features/workout/domain/audio-cues";
 
 describe("audio Cues Web Audio & SpeechSynthesizer Fallback", () => {

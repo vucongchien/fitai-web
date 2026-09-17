@@ -1,5 +1,5 @@
-
 import { fireEvent, render, screen } from "@testing-library/react";
+
 import { LogMealForm } from "@/features/nutrition/ui/log-meal-form";
 
 describe(LogMealForm, () => {
@@ -22,9 +22,7 @@ describe(LogMealForm, () => {
 
     expect(screen.getByLabelText(/what did you eat\?/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/calories/i)).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /add protein, carbs and fat/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /add protein, carbs and fat/i })).toBeInTheDocument();
   });
 
   it("expands macros input fields when 'Add protein, carbs and fat' is clicked", () => {
@@ -56,9 +54,7 @@ describe(LogMealForm, () => {
     const cancelBtn = screen.getByRole("button", { name: /cancel/i });
     fireEvent.click(cancelBtn);
 
-    expect(
-      screen.getByRole("button", { name: /log custom meal/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /log custom meal/i })).toBeInTheDocument();
     expect(screen.queryByLabelText(/what did you eat\?/i)).not.toBeInTheDocument();
   });
 

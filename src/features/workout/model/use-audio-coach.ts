@@ -2,8 +2,11 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 
-
-import { cancelAllSpeech, playSyntheticCueTone, speakText } from "@/features/workout/domain/audio-cues";
+import {
+  cancelAllSpeech,
+  playSyntheticCueTone,
+  speakText,
+} from "@/features/workout/domain/audio-cues";
 import type { CoachCue, MusicTrack, Playlist } from "@/features/workout/model/live-session.types";
 
 /**
@@ -54,7 +57,9 @@ function getInitialPlaylistId(playlists: Playlist[]): string | null {
 }
 
 export function useAudioCoach(playlists: Playlist[]) {
-  const [playlistId, setPlaylistId] = useState<string | null>(() => getInitialPlaylistId(playlists));
+  const [playlistId, setPlaylistId] = useState<string | null>(() =>
+    getInitialPlaylistId(playlists),
+  );
   const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(getInitialVolume);

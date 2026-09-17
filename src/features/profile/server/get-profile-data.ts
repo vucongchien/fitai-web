@@ -1,18 +1,16 @@
-import { redirect } from "next/navigation";
-
-import "server-only";
-
 import { createClient } from "@connectrpc/connect";
+import "server-only";
+import { redirect } from "next/navigation";
 
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
 import { NotificationService } from "@/shared/api/gen/contracts/generic/notification/v1/service/notification_service_pb";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
+import { calculateConsecutiveStreakDays } from "@/shared/utils/streak";
 
 import { mapRawDataToProfileViewModel } from "../model/profile.mapper";
 import type { ProfileViewModel } from "../model/profile.types";
-import { calculateConsecutiveStreakDays } from "@/shared/utils/streak";
 
 export async function getProfileData(): Promise<ProfileViewModel> {
   const { accessToken, userId, userName } = await getAuthenticatedSession();
@@ -45,14 +43,17 @@ export async function getProfileData(): Promise<ProfileViewModel> {
           : Promise.resolve({ sessions: [] }),
       ]);
 
-      console.info("[getProfileData] profileRes status:", profileRes.status, profileRes.status === "fulfilled" ? profileRes.value : profileRes.reason);
+      console.info(
+        "[getProfileData] profileRes status:",
+        profileRes.status,
+        profileRes.status === "fulfilled" ? profileRes.value : profileRes.reason,
+      );
 
       const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
       const prListProto = prsRes.status === "fulfilled" ? prsRes.value.records : [];
       const notificationProto =
         notificationRes.status === "fulfilled" ? notificationRes.value : undefined;
-      const historySessions =
-        historyRes.status === "fulfilled" ? historyRes.value.sessions : [];
+      const historySessions = historyRes.status === "fulfilled" ? historyRes.value.sessions : [];
 
       if (profileProto) {
         const totalWorkouts = historySessions.length;
@@ -68,7 +69,9 @@ export async function getProfileData(): Promise<ProfileViewModel> {
             let name = pr.exerciseId;
             try {
               if (typeof workoutClient.getMotionSpecification === "function") {
-                const spec = await workoutClient.getMotionSpecification({ exerciseId: pr.exerciseId });
+                const spec = await workoutClient.getMotionSpecification({
+                  exerciseId: pr.exerciseId,
+                });
                 if (spec?.exerciseName) {
                   name = spec.exerciseName;
                 }

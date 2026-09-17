@@ -1,10 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  SuggestAdHocSessionResponseSchema,
-} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import { SuggestAdHocSessionResponseSchema } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import type { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 
 type CoachingClient = Client<typeof CoachingService>;
@@ -84,9 +82,7 @@ describe("Adhoc AI Recommendation Server Action", () => {
       }),
     );
 
-    const { getAiRecommendation } = await import(
-      "@/features/workout/server/workout-actions"
-    );
+    const { getAiRecommendation } = await import("@/features/workout/server/workout-actions");
 
     const res = await getAiRecommendation({
       freeText: "Tập ngực với tạ đơn",
@@ -107,9 +103,7 @@ describe("Adhoc AI Recommendation Server Action", () => {
   it("throws error when gRPC returns error directly without offline fallback", async () => {
     mockSuggestAdHocSession.mockRejectedValue(new Error("ConnectRPC connection timeout"));
 
-    const { getAiRecommendation } = await import(
-      "@/features/workout/server/workout-actions"
-    );
+    const { getAiRecommendation } = await import("@/features/workout/server/workout-actions");
 
     await expect(
       getAiRecommendation({

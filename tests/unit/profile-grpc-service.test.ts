@@ -1,15 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-
-import {
-  GetPersonalRecordsResponseSchema,
-} from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
+import { GetPersonalRecordsResponseSchema } from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
 import type { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
-import {
-  GetNotificationSettingsResponseSchema,
-} from "@/shared/api/gen/contracts/generic/notification/v1/message/notification_messages_pb";
+import { GetNotificationSettingsResponseSchema } from "@/shared/api/gen/contracts/generic/notification/v1/message/notification_messages_pb";
 import type { NotificationService } from "@/shared/api/gen/contracts/generic/notification/v1/service/notification_service_pb";
 import {
   GetProfileResponseSchema,
@@ -169,9 +164,7 @@ describe("user Health Profile gRPC Services & Actions", () => {
       create(UpdateProfileResponseSchema, { success: true, message: "Updated" }),
     );
 
-    const { updateProfileServerAction } = await import(
-      "@/features/profile/server/profile-actions"
-    );
+    const { updateProfileServerAction } = await import("@/features/profile/server/profile-actions");
     const res = await updateProfileServerAction({
       highlights: { currentWeightKg: 72, bodyFatPercent: 17, targetWeightKg: 68 },
       healthMetrics: {
@@ -204,9 +197,8 @@ describe("user Health Profile gRPC Services & Actions", () => {
       }),
     );
 
-    const { logBodyMetricsServerAction } = await import(
-      "@/features/profile/server/profile-actions"
-    );
+    const { logBodyMetricsServerAction } =
+      await import("@/features/profile/server/profile-actions");
     const res = await logBodyMetricsServerAction({
       weightKg: 71.5,
       bodyFatPercent: 16.5,
@@ -235,9 +227,8 @@ describe("user Health Profile gRPC Services & Actions", () => {
       create(RecoverInjuryResponseSchema, { success: true, message: "Recovered" }),
     );
 
-    const { reportInjuryServerAction, recoverInjuryServerAction } = await import(
-      "@/features/profile/server/profile-actions"
-    );
+    const { reportInjuryServerAction, recoverInjuryServerAction } =
+      await import("@/features/profile/server/profile-actions");
 
     const reportRes = await reportInjuryServerAction({
       muscleGroup: "Knee",

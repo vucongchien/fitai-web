@@ -4,8 +4,16 @@ import type {
   PriceTier,
 } from "@/features/nutrition/model/meal-detail.types";
 import type { DayKey } from "@/shared/api/bff/aggregate/day-key";
-import type { MealLogRow, MealSlot, MealOptionRow } from "@/shared/api/bff/aggregate/nutrition-daily";
-import { groupMealsBySlot, MEAL_SLOT_LABELS, normalizeTodayMenu } from "@/shared/api/bff/aggregate/nutrition-daily";
+import type {
+  MealLogRow,
+  MealSlot,
+  MealOptionRow,
+} from "@/shared/api/bff/aggregate/nutrition-daily";
+import {
+  groupMealsBySlot,
+  MEAL_SLOT_LABELS,
+  normalizeTodayMenu,
+} from "@/shared/api/bff/aggregate/nutrition-daily";
 
 export type { MealOptionRow };
 export { normalizeTodayMenu };
@@ -42,19 +50,27 @@ function optionsForSlot(menu: DailyMenuRows, slot: MealSlot): MealOptionRow[] {
 }
 
 export function cleanMealDisplayName(rawName: string): string {
-  const match = /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-(.+)$/.exec(rawName.trim());
+  const match =
+    /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})-(.+)$/.exec(
+      rawName.trim(),
+    );
   if (match && match[2]) {
     return match[2].trim();
   }
   return rawName.trim();
 }
 
-export function isRealMealOption(_rawOption: string | (MealOptionRow & { isNutiFoodProduct?: boolean })): boolean {
+export function isRealMealOption(
+  _rawOption: string | (MealOptionRow & { isNutiFoodProduct?: boolean }),
+): boolean {
   return true;
 }
 
 function toChoice(option: MealOptionRow, index: number): MealChoice {
-  const steps = option.cookingSteps && option.cookingSteps.length > 0 ? option.cookingSteps : (option.recipeSteps || []);
+  const steps =
+    option.cookingSteps && option.cookingSteps.length > 0
+      ? option.cookingSteps
+      : option.recipeSteps || [];
   return {
     calories: Math.round(option.calories),
     carbs: Math.round(option.carbs),

@@ -1,13 +1,12 @@
 import "server-only";
-
 import { createClient } from "@connectrpc/connect";
 
 import type { WorkoutStatsData } from "@/features/workout-stats/model/workout-stats.types";
+import { toDayKey } from "@/shared/api/bff/aggregate/day-key";
+import { flattenSessionPlans } from "@/shared/api/bff/aggregate/workout-adherence";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
-import { toDayKey } from "@/shared/api/bff/aggregate/day-key";
-import { flattenSessionPlans } from "@/shared/api/bff/aggregate/workout-adherence";
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
 import { adaptWorkoutStatsData } from "../model/workout-stats.mapper";

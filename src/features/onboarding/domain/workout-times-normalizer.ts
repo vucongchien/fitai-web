@@ -180,7 +180,9 @@ export function calculateSlotDurationMinutes(slotStr: string, defaultMinutes = 6
 }
 
 function parseTimeToMinutes(timeStr: string): number | null {
-  if (!timeStr) {return null;}
+  if (!timeStr) {
+    return null;
+  }
   const cleaned = timeStr.trim();
   const [hourStr, minStr] = cleaned.split(":");
   const hours = parseInt(hourStr, 10);
@@ -227,7 +229,9 @@ export function validateTimeSlot(
  * Normalizes day abbreviation to DayOfWeekKey ("mon", "tue", etc.)
  */
 export function normalizeDayKey(rawDay: string): DayOfWeekKey | null {
-  if (!rawDay || typeof rawDay !== "string") {return null;}
+  if (!rawDay || typeof rawDay !== "string") {
+    return null;
+  }
   const cleaned = rawDay.trim().toLowerCase();
 
   if (cleaned.startsWith("mon") || cleaned === "t2" || cleaned === "m" || cleaned === "monday") {
@@ -248,7 +252,13 @@ export function normalizeDayKey(rawDay: string): DayOfWeekKey | null {
   if (cleaned.startsWith("sat") || cleaned === "t7" || cleaned === "sa" || cleaned === "saturday") {
     return "sat";
   }
-  if (cleaned.startsWith("sun") || cleaned === "cn" || cleaned === "su" || cleaned === "sunday" || cleaned.startsWith("chủ")) {
+  if (
+    cleaned.startsWith("sun") ||
+    cleaned === "cn" ||
+    cleaned === "su" ||
+    cleaned === "sunday" ||
+    cleaned.startsWith("chủ")
+  ) {
     return "sun";
   }
 
@@ -271,7 +281,9 @@ export function normalizeWorkoutTimes(input: unknown): PreferredWorkoutTimesMap 
   if (typeof input === "object" && !Array.isArray(input)) {
     for (const [key, value] of Object.entries(input as Record<string, unknown>)) {
       const dayKey = normalizeDayKey(key);
-      if (!dayKey) {continue;}
+      if (!dayKey) {
+        continue;
+      }
 
       if (Array.isArray(value)) {
         const validSlots = value
@@ -290,9 +302,13 @@ export function normalizeWorkoutTimes(input: unknown): PreferredWorkoutTimesMap 
   // Case 2: Array format
   if (Array.isArray(input)) {
     for (const item of input) {
-      if (typeof item !== "string") {continue;}
+      if (typeof item !== "string") {
+        continue;
+      }
       const trimmed = item.trim();
-      if (!trimmed) {continue;}
+      if (!trimmed) {
+        continue;
+      }
 
       // 2.1: JSON stringified map
       if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
@@ -300,7 +316,7 @@ export function normalizeWorkoutTimes(input: unknown): PreferredWorkoutTimesMap 
           const parsed = JSON.parse(trimmed);
           const nested = normalizeWorkoutTimes(parsed);
           for (const [d, slots] of Object.entries(nested) as [DayOfWeekKey, string[]][]) {
-            result[d] = [...new Set([...result[d] || [], ...slots])];
+            result[d] = [...new Set([...(result[d] || []), ...slots])];
           }
           continue;
         } catch {
@@ -316,7 +332,7 @@ export function normalizeWorkoutTimes(input: unknown): PreferredWorkoutTimesMap 
 
         if (dayKey) {
           const slot = normalizeSlotTime(trimmed.slice(colonIdx + 1));
-          result[dayKey] = [...new Set([...result[dayKey] || [], slot])];
+          result[dayKey] = [...new Set([...(result[dayKey] || []), slot])];
           continue;
         }
       }
@@ -330,7 +346,7 @@ export function normalizeWorkoutTimes(input: unknown): PreferredWorkoutTimesMap 
 
         if (dayKey) {
           const slot = normalizeLegacySlot(timePart);
-          result[dayKey] = [...new Set([...result[dayKey] || [], slot])];
+          result[dayKey] = [...new Set([...(result[dayKey] || []), slot])];
           continue;
         }
       }
@@ -338,7 +354,7 @@ export function normalizeWorkoutTimes(input: unknown): PreferredWorkoutTimesMap 
       // 2.4: Day name only
       const dayKeyOnly = normalizeDayKey(trimmed);
       if (dayKeyOnly) {
-        result[dayKeyOnly] = [...new Set([...result[dayKeyOnly] || [], '17:30-19:00'])];
+        result[dayKeyOnly] = [...new Set([...(result[dayKeyOnly] || []), "17:30-19:00"])];
       }
     }
   }

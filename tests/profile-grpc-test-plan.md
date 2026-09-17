@@ -21,6 +21,7 @@ Tài liệu này mô tả chi tiết mục lục, kịch bản kiểm thử (Tes
 ## 2. Mục lục Ca Kiểm thử (Test Scenarios Index)
 
 ### 2.1. Khai báo Hồ sơ Onboarding (`SaveHealthProfile`)
+
 - **TC-PROF-01**: Khai báo Onboarding thành công với đầy đủ chỉ số (chiều cao, cân nặng, mục tiêu, ngày sinh, chấn thương) $\rightarrow$ Gửi gRPC `SaveHealthProfile`, nhận `completionRate`, kích hoạt `aiCoachActivated`.
 - **TC-PROF-02**: Chuẩn hóa Enum & Mapping:
   - Goal `"build-muscle"` $\rightarrow$ `["BUILD_MUSCLE"]`.
@@ -31,11 +32,13 @@ Tài liệu này mô tả chi tiết mục lục, kịch bản kiểm thử (Tes
 - **TC-PROF-04**: Xử lý khi gRPC backend lỗi kết nối $\rightarrow$ Trả về mã lỗi rõ ràng để UI hiển thị thông báo.
 
 ### 2.2. Lấy Thông tin Hồ sơ Chi tiết (`getProfileData`)
+
 - **TC-PROF-05**: Lấy dữ liệu hồ sơ gRPC thành công $\rightarrow$ Tổng hợp đúng ViewModel gồm user info, health metrics, 1RM PRs, streak và notification settings.
 - **TC-PROF-06**: Xử lý khi chưa có Access Token $\rightarrow$ Fallback an toàn hoặc yêu cầu đăng nhập lại.
 - **TC-PROF-07**: Xử lý khi `GetPersonalRecords` hoặc `GetNotificationSettings` rỗng $\rightarrow$ Cung cấp mảng rỗng mặc định mà không làm vỡ giao diện.
 
 ### 2.3. Cập nhật Chỉ số & Quản lý Chấn thương (Server Actions)
+
 - **TC-PROF-08**: `updateGoalsAndStyleAction` $\rightarrow$ Gọi gRPC `ProfileService.UpdateProfile` thành công.
 - **TC-PROF-09**: `logBodyMetricsAction` $\rightarrow$ Gọi gRPC `ProfileService.LogPeriodicMetrics` với cân nặng, body fat %.
 - **TC-PROF-10**: `reportInjuryAction` $\rightarrow$ Gọi gRPC `ProfileService.ReportInjury` và lưu vết chấn thương.
@@ -45,9 +48,9 @@ Tài liệu này mô tả chi tiết mục lục, kịch bản kiểm thử (Tes
 
 ## 3. Danh sách File Kiểm thử Liên quan
 
-| File Kiểm thử | Phạm vi Kiểm thử |
-| :--- | :--- |
-| `tests/unit/profile-grpc-service.test.ts` | gRPC Profile Service, Data Aggregation, 1RM, Notifications |
-| `tests/unit/onboarding-grpc-actions.test.ts` | Onboarding Server Actions, Enum Mapping, Validation |
-| `tests/unit/profile/profile-mapper.test.ts` | Mapping từ Protobuf Response sang Profile ViewModel |
-| `tests/component/profile-setup.test.tsx` | UI Profile Setup, Availability, Equipment & Injury Managers |
+| File Kiểm thử                                | Phạm vi Kiểm thử                                            |
+| :------------------------------------------- | :---------------------------------------------------------- |
+| `tests/unit/profile-grpc-service.test.ts`    | gRPC Profile Service, Data Aggregation, 1RM, Notifications  |
+| `tests/unit/onboarding-grpc-actions.test.ts` | Onboarding Server Actions, Enum Mapping, Validation         |
+| `tests/unit/profile/profile-mapper.test.ts`  | Mapping từ Protobuf Response sang Profile ViewModel         |
+| `tests/component/profile-setup.test.tsx`     | UI Profile Setup, Availability, Equipment & Injury Managers |

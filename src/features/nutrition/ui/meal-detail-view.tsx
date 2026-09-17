@@ -1,10 +1,10 @@
 import { Check, ChefHat, Clock, Flame, Salad, Sparkles, Utensils } from "lucide-react";
 
 import type { MealChoice, MealDetailPageData } from "@/features/nutrition/model/meal-detail.types";
-import type { MealIngredient } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { LogMealButton } from "@/features/nutrition/ui/log-meal-button";
 import { LogMealForm } from "@/features/nutrition/ui/log-meal-form";
 import { PantryRecalibrateCard } from "@/features/nutrition/ui/pantry-recalibrate-card";
+import type { MealIngredient } from "@/shared/api/bff/aggregate/nutrition-daily";
 
 interface MealDetailViewProps {
   data: MealDetailPageData;
@@ -36,7 +36,16 @@ function IngredientsList({ ingredients }: { ingredients: MealIngredient[] }) {
       >
         <Salad size={13} aria-hidden="true" /> Ingredients & Portions
       </div>
-      <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
+      <ul
+        style={{
+          listStyle: "none",
+          padding: 0,
+          margin: 0,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.35rem",
+        }}
+      >
         {ingredients.map((ing, idx) => (
           <li
             key={`ing-${idx}`}
@@ -52,10 +61,15 @@ function IngredientsList({ ingredients }: { ingredients: MealIngredient[] }) {
             }}
           >
             <span style={{ fontWeight: 500 }}>{ing.ingredientName}</span>
-            <span className="data-value" style={{ fontWeight: 700, color: "var(--color-primary, #e25c38)" }}>
+            <span
+              className="data-value"
+              style={{ fontWeight: 700, color: "var(--color-primary, #e25c38)" }}
+            >
               {ing.grams}g
             </span>
-            {ing.isSupplementary ? <span style={{ fontSize: "0.65rem", opacity: 0.6 }}>(optional)</span> : null}
+            {ing.isSupplementary ? (
+              <span style={{ fontSize: "0.65rem", opacity: 0.6 }}>(optional)</span>
+            ) : null}
           </li>
         ))}
       </ul>
@@ -92,15 +106,21 @@ function RecipeSteps({ id, steps }: { id: string; steps: string[] }) {
         <ol className="meal-recipe__steps">
           <li>
             <span className="meal-recipe__step-num">1</span>
-            <span className="meal-recipe__step-text">Prepare ingredients and portion to your target serving size.</span>
+            <span className="meal-recipe__step-text">
+              Prepare ingredients and portion to your target serving size.
+            </span>
           </li>
           <li>
             <span className="meal-recipe__step-num">2</span>
-            <span className="meal-recipe__step-text">Cook or assemble to your preferred method.</span>
+            <span className="meal-recipe__step-text">
+              Cook or assemble to your preferred method.
+            </span>
           </li>
           <li>
             <span className="meal-recipe__step-num">3</span>
-            <span className="meal-recipe__step-text">Serve fresh and log any macro adjustments if needed.</span>
+            <span className="meal-recipe__step-text">
+              Serve fresh and log any macro adjustments if needed.
+            </span>
           </li>
         </ol>
       )}
@@ -174,7 +194,8 @@ export function MealDetailView({ data }: MealDetailViewProps) {
         <div className="meal-empty-card">
           <Utensils size={24} className="meal-empty-card__icon" />
           <p className="meal-empty">
-            Nothing logged for <strong>{data.slotLabel.toLowerCase()}</strong> yet. Choose from today&rsquo;s chef suggestions below or add a custom meal.
+            Nothing logged for <strong>{data.slotLabel.toLowerCase()}</strong> yet. Choose from
+            today&rsquo;s chef suggestions below or add a custom meal.
           </p>
         </div>
       )}
@@ -226,7 +247,9 @@ export function MealDetailView({ data }: MealDetailViewProps) {
                   </div>
                 </div>
 
-                {choice.description ? <p className="meal-choice__description">{choice.description}</p> : null}
+                {choice.description ? (
+                  <p className="meal-choice__description">{choice.description}</p>
+                ) : null}
 
                 <MacroLine choice={choice} />
 

@@ -11,10 +11,11 @@ export interface NotificationAnalysisReport {
 function queryJson(sql: string): any[] {
   try {
     const wrappedSql = `SELECT COALESCE(json_agg(t), '[]'::json) FROM (${sql}) t;`;
-    const output = execSync(
-      "docker exec -i fitai-postgres-test psql -U postgres -d fitai -t -A",
-      { input: wrappedSql, encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"] },
-    );
+    const output = execSync("docker exec -i fitai-postgres-test psql -U postgres -d fitai -t -A", {
+      input: wrappedSql,
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
     const trimmed = output.trim();
     if (!trimmed) return [];
     return JSON.parse(trimmed);
@@ -99,7 +100,9 @@ export function analyzeNotificationDatabase(
   const unreadCount = notifications.filter((n) => !n.is_read).length;
   const readCount = notifications.filter((n) => n.is_read).length;
 
-  findings.push(`Tổng số thông báo trong DB: ${notifications.length} (Chưa đọc: ${unreadCount}, Đã đọc: ${readCount})`);
+  findings.push(
+    `Tổng số thông báo trong DB: ${notifications.length} (Chưa đọc: ${unreadCount}, Đã đọc: ${readCount})`,
+  );
 
   if (notifications.length === 0) {
     gaps.push(`[GAP-NOTIF-01] Không tìm thấy bất kỳ thông báo nào cho user ${userId}`);
@@ -119,7 +122,9 @@ export function analyzeNotificationDatabase(
     if (!item.data || typeof item.data !== "object" || Object.keys(item.data).length === 0) {
       gaps.push(`[GAP-NOTIF-05] Thông báo ${item.id} thiếu cấu trúc JSONB metadata 'data'`);
     } else {
-      findings.push(`✅ [Metadata Valid] ID: ${item.id} | Type: ${item.data.type || "N/A"} | IsRead: ${item.is_read}`);
+      findings.push(
+        `✅ [Metadata Valid] ID: ${item.id} | Type: ${item.data.type || "N/A"} | IsRead: ${item.is_read}`,
+      );
     }
   }
 
@@ -129,9 +134,13 @@ export function analyzeNotificationDatabase(
     if (!target) {
       gaps.push(`[GAP-NOTIF-06] Không tìm thấy thông báo kỳ vọng ID: ${expectedReadId}`);
     } else if (!target.is_read) {
-      gaps.push(`[GAP-NOTIF-07] Thông báo ${expectedReadId} chưa được cập nhật 'is_read = true' trong DB!`);
+      gaps.push(
+        `[GAP-NOTIF-07] Thông báo ${expectedReadId} chưa được cập nhật 'is_read = true' trong DB!`,
+      );
     } else {
-      findings.push(`✅ [Mark As Read Verified] Thông báo ${expectedReadId} đã cập nhật 'is_read = true' thành công trong DB.`);
+      findings.push(
+        `✅ [Mark As Read Verified] Thông báo ${expectedReadId} đã cập nhật 'is_read = true' thành công trong DB.`,
+      );
     }
   }
 

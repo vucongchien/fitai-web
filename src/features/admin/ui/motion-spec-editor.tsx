@@ -53,9 +53,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
   const [poseRules, setPoseRules] = useState<PoseRuleConfig | null>(spec.poseRules || null);
 
   // Dialogue Engine state
-  const [personalityId, setPersonalityId] = useState(
-    spec.dialogueEngine?.personalityId || "",
-  );
+  const [personalityId, setPersonalityId] = useState(spec.dialogueEngine?.personalityId || "");
   const [cooldowns, setCooldowns] = useState<Record<string, number>>(
     spec.dialogueEngine?.cooldowns || {},
   );
@@ -106,7 +104,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
     setIsUploadingRuleFile(true);
     try {
       const presigned = await getPresignedUploadUrl(file.name, file.type || "application/json");
-      
+
       // Parse local JSON to state preview
       const fileText = await file.text();
       try {
@@ -133,8 +131,12 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
 
     setIsUploadingVoiceFile(true);
     try {
-      const isAudio = file.type.startsWith("audio/") || file.name.endsWith(".mp3") || file.name.endsWith(".wav");
-      const presigned = await getPresignedUploadUrl(file.name, file.type || (isAudio ? "audio/mpeg" : "application/json"));
+      const isAudio =
+        file.type.startsWith("audio/") || file.name.endsWith(".mp3") || file.name.endsWith(".wav");
+      const presigned = await getPresignedUploadUrl(
+        file.name,
+        file.type || (isAudio ? "audio/mpeg" : "application/json"),
+      );
 
       if (!isAudio) {
         // Dialogue JSON
@@ -299,7 +301,8 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               AI Rules & Voice Coaching Configuration
             </h3>
             <p className="text-xs text-slate-500">
-              Exercise ID: <code className="text-indigo-600 font-mono font-bold">{spec.exerciseId}</code>
+              Exercise ID:{" "}
+              <code className="text-indigo-600 font-mono font-bold">{spec.exerciseId}</code>
             </p>
           </div>
         </div>
@@ -462,11 +465,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="flex items-center gap-3">
                 <FileJson className="size-6 text-amber-600" />
                 <div>
-                  <h4 className="text-xs font-bold text-amber-900">
-                    Local Pose Rules (JSON)
-                  </h4>
+                  <h4 className="text-xs font-bold text-amber-900">Local Pose Rules (JSON)</h4>
                   <p className="text-[11px] text-amber-700">
-                    Defines rep counting thresholds, form penalty scores, joint angle limits, and camera distances.
+                    Defines rep counting thresholds, form penalty scores, joint angle limits, and
+                    camera distances.
                   </p>
                 </div>
               </div>
@@ -499,14 +501,22 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-amber-300 bg-amber-50/50 rounded-2xl space-y-3">
                 <FileJson className="size-8 text-amber-500 mx-auto" />
                 <div>
-                  <p className="font-bold text-slate-800 text-sm">No Pose Rules File data (`local_rules_url` not loaded)</p>
-                  <p className="text-slate-500 mt-1">This exercise does not have a rule JSON file or pose rule configuration yet.</p>
+                  <p className="font-bold text-slate-800 text-sm">
+                    No Pose Rules File data (`local_rules_url` not loaded)
+                  </p>
+                  <p className="text-slate-500 mt-1">
+                    This exercise does not have a rule JSON file or pose rule configuration yet.
+                  </p>
                 </div>
                 <button
                   type="button"
                   onClick={() =>
                     setPoseRules({
-                      calibration: { minDistanceMeters: 1.5, maxDistanceMeters: 3.0, targetAngle: 90 },
+                      calibration: {
+                        minDistanceMeters: 1.5,
+                        maxDistanceMeters: 3.0,
+                        targetAngle: 90,
+                      },
                       repCounting: { minRomPercentage: 80 },
                       formScoring: { penaltyPerError: 10 },
                       errorRules: {},
@@ -520,208 +530,207 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               </div>
             ) : (
               <>
+                {/* Threshold & Calibration Parameters */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                    <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <Sliders className="size-3.5 text-indigo-600" />
+                      <span>Camera Calibration</span>
+                    </h5>
+                    <div>
+                      <label
+                        htmlFor={`${fieldIdBase}-minDistanceMeters`}
+                        className="text-[11px] text-slate-500 font-medium"
+                      >
+                        Minimum Distance (meters):
+                      </label>
+                      <input
+                        id={`${fieldIdBase}-minDistanceMeters`}
+                        type="number"
+                        step="0.1"
+                        value={poseRules.calibration.minDistanceMeters}
+                        onChange={(e) =>
+                          setPoseRules({
+                            ...poseRules,
+                            calibration: {
+                              ...poseRules.calibration,
+                              minDistanceMeters: Number.parseFloat(e.target.value) || 1.0,
+                            },
+                          })
+                        }
+                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor={`${fieldIdBase}-maxDistanceMeters`}
+                        className="text-[11px] text-slate-500 font-medium"
+                      >
+                        Maximum Distance (meters):
+                      </label>
+                      <input
+                        id={`${fieldIdBase}-maxDistanceMeters`}
+                        type="number"
+                        step="0.1"
+                        value={poseRules.calibration.maxDistanceMeters}
+                        onChange={(e) =>
+                          setPoseRules({
+                            ...poseRules,
+                            calibration: {
+                              ...poseRules.calibration,
+                              maxDistanceMeters: Number.parseFloat(e.target.value) || 3.0,
+                            },
+                          })
+                        }
+                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
+                      />
+                    </div>
+                  </div>
 
-            {/* Threshold & Calibration Parameters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <Sliders className="size-3.5 text-indigo-600" />
-                  <span>Camera Calibration</span>
-                </h5>
-                <div>
-                  <label
-                    htmlFor={`${fieldIdBase}-minDistanceMeters`}
-                    className="text-[11px] text-slate-500 font-medium"
-                  >
-                    Minimum Distance (meters):
-                  </label>
-                  <input
-                    id={`${fieldIdBase}-minDistanceMeters`}
-                    type="number"
-                    step="0.1"
-                    value={poseRules.calibration.minDistanceMeters}
-                    onChange={(e) =>
-                      setPoseRules({
-                        ...poseRules,
-                        calibration: {
-                          ...poseRules.calibration,
-                          minDistanceMeters: Number.parseFloat(e.target.value) || 1.0,
-                        },
-                      })
-                    }
-                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
-                  />
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                    <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <CheckCircle2 className="size-3.5 text-emerald-600" />
+                      <span>Rep Counting Rules</span>
+                    </h5>
+                    <div>
+                      <label
+                        htmlFor={`${fieldIdBase}-minRomPercentage`}
+                        className="text-[11px] text-slate-500 font-medium"
+                      >
+                        Minimum Range of Motion (ROM %):
+                      </label>
+                      <input
+                        id={`${fieldIdBase}-minRomPercentage`}
+                        type="number"
+                        step="1"
+                        value={poseRules.repCounting.minRomPercentage}
+                        onChange={(e) =>
+                          setPoseRules({
+                            ...poseRules,
+                            repCounting: {
+                              minRomPercentage: Number.parseFloat(e.target.value) || 70,
+                            },
+                          })
+                        }
+                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                    <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <AlertCircle className="size-3.5 text-rose-600" />
+                      <span>Form Scoring & Penalties</span>
+                    </h5>
+                    <div>
+                      <label
+                        htmlFor={`${fieldIdBase}-penaltyPerError`}
+                        className="text-[11px] text-slate-500 font-medium"
+                      >
+                        Penalty points per form error:
+                      </label>
+                      <input
+                        id={`${fieldIdBase}-penaltyPerError`}
+                        type="number"
+                        step="1"
+                        value={poseRules.formScoring.penaltyPerError}
+                        onChange={(e) =>
+                          setPoseRules({
+                            ...poseRules,
+                            formScoring: {
+                              penaltyPerError: Number.parseFloat(e.target.value) || 10,
+                            },
+                          })
+                        }
+                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label
-                    htmlFor={`${fieldIdBase}-maxDistanceMeters`}
-                    className="text-[11px] text-slate-500 font-medium"
-                  >
-                    Maximum Distance (meters):
-                  </label>
-                  <input
-                    id={`${fieldIdBase}-maxDistanceMeters`}
-                    type="number"
-                    step="0.1"
-                    value={poseRules.calibration.maxDistanceMeters}
-                    onChange={(e) =>
-                      setPoseRules({
-                        ...poseRules,
-                        calibration: {
-                          ...poseRules.calibration,
-                          maxDistanceMeters: Number.parseFloat(e.target.value) || 3.0,
-                        },
-                      })
-                    }
-                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
-                  />
+
+                {/* Error Rules Table */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                      Pose Error Rules List
+                    </h5>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Error code (e.g. ERR_KNEE_VALGUS)"
+                        value={newErrorCode}
+                        onChange={(e) => setNewErrorCode(e.target.value)}
+                        className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 w-52 font-mono uppercase"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Pose error description"
+                        value={newErrorDesc}
+                        onChange={(e) => setNewErrorDesc(e.target.value)}
+                        className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 w-64"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddErrorCode}
+                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1 cursor-pointer"
+                      >
+                        <Plus className="size-3.5" />
+                        <span>Add</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 overflow-hidden">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-100 border-b border-slate-200 font-bold text-slate-700">
+                        <tr>
+                          <th className="p-3">Error Code</th>
+                          <th className="p-3">Description</th>
+                          <th className="p-3">Tracked Joint</th>
+                          <th className="p-3">Deviation Threshold (°)</th>
+                          <th className="p-3 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200">
+                        {Object.entries(poseRules.errorRules || {}).map(([code, item]) => (
+                          <tr key={code} className="hover:bg-slate-50">
+                            <td className="p-3 font-mono font-bold text-indigo-600">{code}</td>
+                            <td className="p-3 font-medium text-slate-800">{item.description}</td>
+                            <td className="p-3">
+                              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[11px]">
+                                {item.joint}
+                              </span>
+                            </td>
+                            <td className="p-3 font-bold text-slate-700">
+                              {item.thresholdDegrees || 15}°
+                            </td>
+                            <td className="p-3 text-right">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveErrorCode(code)}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                              >
+                                <Trash2 className="size-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <CheckCircle2 className="size-3.5 text-emerald-600" />
-                  <span>Rep Counting Rules</span>
-                </h5>
-                <div>
-                  <label
-                    htmlFor={`${fieldIdBase}-minRomPercentage`}
-                    className="text-[11px] text-slate-500 font-medium"
-                  >
-                    Minimum Range of Motion (ROM %):
-                  </label>
-                  <input
-                    id={`${fieldIdBase}-minRomPercentage`}
-                    type="number"
-                    step="1"
-                    value={poseRules.repCounting.minRomPercentage}
-                    onChange={(e) =>
-                      setPoseRules({
-                        ...poseRules,
-                        repCounting: {
-                          minRomPercentage: Number.parseFloat(e.target.value) || 70,
-                        },
-                      })
-                    }
-                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
-                  />
+                {/* Live JSON Preview */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                    <Code2 className="size-4 text-indigo-600" />
+                    <span>Preview Standard Rule JSON (Live Rules JSON)</span>
+                  </div>
+                  <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto max-h-60 leading-relaxed border border-slate-800">
+                    {JSON.stringify(poseRules, null, 2)}
+                  </pre>
                 </div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                  <AlertCircle className="size-3.5 text-rose-600" />
-                  <span>Form Scoring & Penalties</span>
-                </h5>
-                <div>
-                  <label
-                    htmlFor={`${fieldIdBase}-penaltyPerError`}
-                    className="text-[11px] text-slate-500 font-medium"
-                  >
-                    Penalty points per form error:
-                  </label>
-                  <input
-                    id={`${fieldIdBase}-penaltyPerError`}
-                    type="number"
-                    step="1"
-                    value={poseRules.formScoring.penaltyPerError}
-                    onChange={(e) =>
-                      setPoseRules({
-                        ...poseRules,
-                        formScoring: {
-                          penaltyPerError: Number.parseFloat(e.target.value) || 10,
-                        },
-                      })
-                    }
-                    className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Error Rules Table */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Pose Error Rules List
-                </h5>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Error code (e.g. ERR_KNEE_VALGUS)"
-                    value={newErrorCode}
-                    onChange={(e) => setNewErrorCode(e.target.value)}
-                    className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 w-52 font-mono uppercase"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Pose error description"
-                    value={newErrorDesc}
-                    onChange={(e) => setNewErrorDesc(e.target.value)}
-                    className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 w-64"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddErrorCode}
-                    className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus className="size-3.5" />
-                    <span>Add</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-slate-200 overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-100 border-b border-slate-200 font-bold text-slate-700">
-                    <tr>
-                      <th className="p-3">Error Code</th>
-                      <th className="p-3">Description</th>
-                      <th className="p-3">Tracked Joint</th>
-                      <th className="p-3">Deviation Threshold (°)</th>
-                      <th className="p-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                    {Object.entries(poseRules.errorRules || {}).map(([code, item]) => (
-                      <tr key={code} className="hover:bg-slate-50">
-                        <td className="p-3 font-mono font-bold text-indigo-600">{code}</td>
-                        <td className="p-3 font-medium text-slate-800">{item.description}</td>
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[11px]">
-                            {item.joint}
-                          </span>
-                        </td>
-                        <td className="p-3 font-bold text-slate-700">
-                          {item.thresholdDegrees || 15}°
-                        </td>
-                        <td className="p-3 text-right">
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveErrorCode(code)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="size-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Live JSON Preview */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                <Code2 className="size-4 text-indigo-600" />
-                <span>Preview Standard Rule JSON (Live Rules JSON)</span>
-              </div>
-              <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto max-h-60 leading-relaxed border border-slate-800">
-                {JSON.stringify(poseRules, null, 2)}
-              </pre>
-            </div>
-            </>
+              </>
             )}
           </div>
         )}
@@ -738,7 +747,8 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                     Voice Files & AI Coach Feedback Scripts
                   </h4>
                   <p className="text-[11px] text-indigo-700">
-                    Defines voice dialogue cues, audio `.mp3` files, and cooldown buffers for each error severity level.
+                    Defines voice dialogue cues, audio `.mp3` files, and cooldown buffers for each
+                    error severity level.
                   </p>
                 </div>
               </div>
@@ -746,7 +756,9 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="flex items-center gap-2">
                 <label className="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
                   <UploadCloud className="size-4" />
-                  <span>{isUploadingVoiceFile ? "Uploading..." : "Upload Audio / Dialogue (.json)"}</span>
+                  <span>
+                    {isUploadingVoiceFile ? "Uploading..." : "Upload Audio / Dialogue (.json)"}
+                  </span>
                   <input
                     type="file"
                     accept=".mp3,.wav,.json,audio/*,application/json"
@@ -786,7 +798,9 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               </div>
 
               <div className="text-xs text-slate-500">
-                Each Coach (e.g., <code className="font-bold text-slate-700">coach_alex</code>, <code className="font-bold text-slate-700">coach_sarah</code>) uses a dedicated voice set.
+                Each Coach (e.g., <code className="font-bold text-slate-700">coach_alex</code>,{" "}
+                <code className="font-bold text-slate-700">coach_sarah</code>) uses a dedicated
+                voice set.
               </div>
             </div>
 
@@ -800,8 +814,13 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                 <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-indigo-200 bg-indigo-50/30 rounded-2xl space-y-3">
                   <Mic className="size-8 text-indigo-500 mx-auto" />
                   <div>
-                    <p className="font-bold text-slate-800 text-sm">No Voice File data (`dialogue_engine_url` not loaded)</p>
-                    <p className="text-slate-500 mt-1">This exercise does not have a voice audio file or AI Coach dialogue script yet.</p>
+                    <p className="font-bold text-slate-800 text-sm">
+                      No Voice File data (`dialogue_engine_url` not loaded)
+                    </p>
+                    <p className="text-slate-500 mt-1">
+                      This exercise does not have a voice audio file or AI Coach dialogue script
+                      yet.
+                    </p>
                   </div>
                   <button
                     type="button"
@@ -867,7 +886,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                     </div>
 
                     {item.severity1.map((opt, idx) => (
-                      <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                      <div
+                        key={idx}
+                        className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center"
+                      >
                         <input
                           type="text"
                           value={opt.text}
@@ -920,7 +942,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                     </div>
 
                     {item.severity2.map((opt, idx) => (
-                      <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+                      <div
+                        key={idx}
+                        className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center"
+                      >
                         <input
                           type="text"
                           value={opt.text}

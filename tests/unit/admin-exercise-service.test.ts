@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   ApproveExerciseResponseSchema,
@@ -103,7 +103,10 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const { archiveExercise } = await import("@/features/admin/api/admin-exercise-service");
     const res = await archiveExercise("ex-1");
 
-    expect(mockUpdateExercise).toHaveBeenCalledWith({ id: "ex-1", status: ExerciseStatus.ARCHIVED });
+    expect(mockUpdateExercise).toHaveBeenCalledWith({
+      id: "ex-1",
+      status: ExerciseStatus.ARCHIVED,
+    });
     expect(res.status).toBe("archived");
   });
 

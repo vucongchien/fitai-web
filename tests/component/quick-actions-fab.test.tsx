@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 
 import type { QuickAction } from "@/features/home/model/home-page.types";
 import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";

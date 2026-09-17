@@ -1,11 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-
-import {
-  CreateAdhocSessionPlanResponseSchema,
-} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import { CreateAdhocSessionPlanResponseSchema } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import type { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import {
   AbortWorkoutSessionResponseSchema,
@@ -100,9 +97,7 @@ describe("workout Execution gRPC Actions", () => {
       }),
     );
 
-    const { beginWorkoutSession } = await import(
-      "@/features/workout/server/workout-actions"
-    );
+    const { beginWorkoutSession } = await import("@/features/workout/server/workout-actions");
     const res = await beginWorkoutSession(["ex-squat"]);
 
     expect(mockCreateAdhocSessionPlan).toHaveBeenCalledWith({
@@ -117,9 +112,7 @@ describe("workout Execution gRPC Actions", () => {
       create(LogWorkoutSetResponseSchema, { setLogId: "set-log-555" }),
     );
 
-    const { logWorkoutSet } = await import(
-      "@/features/workout/server/workout-actions"
-    );
+    const { logWorkoutSet } = await import("@/features/workout/server/workout-actions");
     const res = await logWorkoutSet("sess-live-888", {
       exerciseId: "bench",
       setNumber: 1,
@@ -166,13 +159,9 @@ describe("workout Execution gRPC Actions", () => {
   });
 
   it("syncWorkoutLogs flushes real-time posture errors to gRPC", async () => {
-    mockSyncWorkoutLogs.mockResolvedValue(
-      create(SyncWorkoutLogsResponseSchema, {}),
-    );
+    mockSyncWorkoutLogs.mockResolvedValue(create(SyncWorkoutLogsResponseSchema, {}));
 
-    const { syncWorkoutLogs } = await import(
-      "@/features/workout/server/workout-actions"
-    );
+    const { syncWorkoutLogs } = await import("@/features/workout/server/workout-actions");
     const res = await syncWorkoutLogs("sess-live-888", [
       {
         errorCode: "ERR_BAR_TRAPPED",
@@ -212,9 +201,7 @@ describe("workout Execution gRPC Actions", () => {
       }),
     );
 
-    const { completeWorkoutSession } = await import(
-      "@/features/workout/server/workout-actions"
-    );
+    const { completeWorkoutSession } = await import("@/features/workout/server/workout-actions");
     const res = await completeWorkoutSession(
       "sess-live-888",
       [
@@ -251,9 +238,7 @@ describe("workout Execution gRPC Actions", () => {
       }),
     );
 
-    const { getPersonalRecords } = await import(
-      "@/features/workout/server/workout-actions"
-    );
+    const { getPersonalRecords } = await import("@/features/workout/server/workout-actions");
     const prs = await getPersonalRecords(["deadlift", "squat"]);
 
     expect(prs).toStrictEqual({

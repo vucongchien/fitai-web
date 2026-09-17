@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+
 import type { MealLogRow } from "@/shared/api/bff/aggregate/nutrition-daily";
 import {
   averageDailyProtein,

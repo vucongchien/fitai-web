@@ -97,7 +97,9 @@ function AdhocAiGeneratorModalContent({
       });
       setResult(res);
     } catch (err: any) {
-      setErrorMsg(err?.message || "Unable to generate workout recommendations right now. Please try again.");
+      setErrorMsg(
+        err?.message || "Unable to generate workout recommendations right now. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }

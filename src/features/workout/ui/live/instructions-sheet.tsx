@@ -11,13 +11,19 @@ function parseInstructions(text: string): string[] {
   const hasStepNumbers = /(?:\d+\.\s+)/.test(text);
 
   if (hasStepNumbers) {
-    const parts = text.split(/(?=\d+\.\s+)/).map((s) => s.trim()).filter(Boolean);
+    const parts = text
+      .split(/(?=\d+\.\s+)/)
+      .map((s) => s.trim())
+      .filter(Boolean);
     if (parts.length > 1) {
       return parts.map((p) => p.replace(/^\d+\.\s*/, "").trim());
     }
   }
 
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
   if (lines.length > 1) {
     return lines;
   }
@@ -53,7 +59,8 @@ export function InstructionsSheet({
     }
 
     const steps = parseInstructions(exercise.instructions || "");
-    const formattedSteps = steps.length > 0 ? steps.map((s, idx) => `Step ${idx + 1}: ${s}`).join(". ") : "";
+    const formattedSteps =
+      steps.length > 0 ? steps.map((s, idx) => `Step ${idx + 1}: ${s}`).join(". ") : "";
 
     const textToRead = [
       `Exercise ${exercise.name}.`,
@@ -118,7 +125,11 @@ export function InstructionsSheet({
       onClick={handleClose}
       style={{ cursor: "pointer" }}
     >
-      <div className="live-sheet__panel" onClick={(e) => e.stopPropagation()} style={{ cursor: "default" }}>
+      <div
+        className="live-sheet__panel"
+        onClick={(e) => e.stopPropagation()}
+        style={{ cursor: "default" }}
+      >
         <header className="live-sheet__header">
           <div>
             <p className="utility-label">How to do it</p>
@@ -141,7 +152,11 @@ export function InstructionsSheet({
                   : undefined
               }
             >
-              {isSpeaking ? <VolumeX aria-hidden="true" size={18} /> : <Volume2 aria-hidden="true" size={18} />}
+              {isSpeaking ? (
+                <VolumeX aria-hidden="true" size={18} />
+              ) : (
+                <Volume2 aria-hidden="true" size={18} />
+              )}
             </button>
             {onWatchVideo && exercise.videoUrl ? (
               <button
@@ -157,7 +172,12 @@ export function InstructionsSheet({
                 <Play aria-hidden="true" size={18} />
               </button>
             ) : null}
-            <button aria-label="Close" className="workout-close" onClick={handleClose} type="button">
+            <button
+              aria-label="Close"
+              className="workout-close"
+              onClick={handleClose}
+              type="button"
+            >
               <X aria-hidden="true" size={19} />
             </button>
           </div>
@@ -207,7 +227,15 @@ export function InstructionsSheet({
                     >
                       {idx + 1}
                     </span>
-                    <p style={{ margin: 0, fontSize: "15px", lineHeight: "1.5", color: "var(--color-text-main, #1e293b)", fontWeight: 500 }}>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "15px",
+                        lineHeight: "1.5",
+                        color: "var(--color-text-main, #1e293b)",
+                        fontWeight: 500,
+                      }}
+                    >
                       {step}
                     </p>
                   </li>

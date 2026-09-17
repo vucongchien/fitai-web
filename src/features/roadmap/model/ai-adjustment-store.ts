@@ -101,7 +101,9 @@ export function clearAIAdjustment(): void {
   window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: null }));
 }
 
-export function subscribeAIAdjustment(callback: (ctx: AIAdjustmentContext | null) => void): () => void {
+export function subscribeAIAdjustment(
+  callback: (ctx: AIAdjustmentContext | null) => void,
+): () => void {
   if (typeof window === "undefined") {
     return () => {};
   }

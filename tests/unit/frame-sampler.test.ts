@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+
 import { letterboxLayout, toSourceCoords } from "@/features/workout/domain/frame-sampler";
 
 describe(letterboxLayout, () => {

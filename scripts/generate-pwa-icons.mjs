@@ -22,17 +22,17 @@ const root = join(import.meta.dirname, "..");
 const outDir = join(root, "public", "icons");
 
 // Src/shared/design-system/tokens.css
-const PAPER = [0xF7, 0xF8, 0xF6];
-const RELAY_BLUE = [0x4B, 0x57, 0xF2];
-const SPRINT_CORAL = [0xFF, 0x5A, 0x47];
-const FIELD_GREEN = [0x25, 0xC7, 0x7A];
+const PAPER = [0xf7, 0xf8, 0xf6];
+const RELAY_BLUE = [0x4b, 0x57, 0xf2];
+const SPRINT_CORAL = [0xff, 0x5a, 0x47];
+const FIELD_GREEN = [0x25, 0xc7, 0x7a];
 
 const crcTable = (() => {
   const table = new Int32Array(256);
   for (let n = 0; n < 256; n += 1) {
     let c = n;
     for (let k = 0; k < 8; k += 1) {
-      c = c & 1 ? 0xED_B8_83_20 ^ (c >>> 1) : c >>> 1;
+      c = c & 1 ? 0xed_b8_83_20 ^ (c >>> 1) : c >>> 1;
     }
     table[n] = c;
   }
@@ -42,7 +42,7 @@ const crcTable = (() => {
 function crc32(buf) {
   let c = -1;
   for (const byte of buf) {
-    c = crcTable[(c ^ byte) & 0xFF] ^ (c >>> 8);
+    c = crcTable[(c ^ byte) & 0xff] ^ (c >>> 8);
   }
   return (c ^ -1) >>> 0;
 }
@@ -73,7 +73,7 @@ function encodePng(size, pixels) {
   }
 
   return Buffer.concat([
-    Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
     chunk("IHDR", ihdr),
     chunk("IDAT", deflateSync(raw, { level: 9 })),
     chunk("IEND", Buffer.alloc(0)),

@@ -1,5 +1,3 @@
-
-
 import {
   applyWeeklyPreset,
   calculateSlotDurationMinutes,
@@ -80,7 +78,9 @@ describe("workout Times Normalizer & Schedule Engine", () => {
     it("rejects duration under 20 minutes", () => {
       const result = validateTimeSlot("06:00", "06:10");
       expect(result.isValid).toBeFalsy();
-      expect(result.message).toMatch(/minimum workout duration is 20 minutes|at least 20 minutes|tối thiểu là 20 phút/i);
+      expect(result.message).toMatch(
+        /minimum workout duration is 20 minutes|at least 20 minutes|tối thiểu là 20 phút/i,
+      );
     });
 
     it("rejects duration over 4 hours (240 minutes)", () => {

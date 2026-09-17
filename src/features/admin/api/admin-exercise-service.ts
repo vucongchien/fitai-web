@@ -76,18 +76,198 @@ export interface FetchExercisesParams {
 
 const nowIso = new Date().toISOString();
 const MOCK_EXERCISES_CATALOG: AdminExercise[] = [
-  { id: "squat", name: "Barbell Back Squat", bodyPartId: "bp-legs", equipmentId: "eq-barbell", targetMuscleId: "ms-quadriceps", secondaryMuscleIds: [], tagIds: [], difficulty: "intermediate", defaultRestSeconds: 90, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "bench_press", name: "Barbell Bench Press", bodyPartId: "bp-chest", equipmentId: "eq-barbell", targetMuscleId: "ms-pectoralis-major", secondaryMuscleIds: [], tagIds: [], difficulty: "intermediate", defaultRestSeconds: 90, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "bicep_curl", name: "Dumbbell Bicep Curl", bodyPartId: "bp-arms", equipmentId: "eq-dumbbell", targetMuscleId: "ms-biceps", secondaryMuscleIds: [], tagIds: [], difficulty: "beginner", defaultRestSeconds: 60, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "lateral_raise", name: "Dumbbell Lateral Raise", bodyPartId: "bp-shoulders", equipmentId: "eq-dumbbell", targetMuscleId: "ms-shoulders", secondaryMuscleIds: [], tagIds: [], difficulty: "beginner", defaultRestSeconds: 60, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "lunge", name: "Walking Lunge", bodyPartId: "bp-legs", equipmentId: "eq-bodyweight", targetMuscleId: "ms-quadriceps", secondaryMuscleIds: [], tagIds: [], difficulty: "beginner", defaultRestSeconds: 60, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "plank", name: "Bodyweight Core Plank", bodyPartId: "bp-core", equipmentId: "eq-bodyweight", targetMuscleId: "ms-abs", secondaryMuscleIds: [], tagIds: [], difficulty: "beginner", defaultRestSeconds: 45, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "pullup", name: "Wide Grip Pull-up", bodyPartId: "bp-back", equipmentId: "eq-bodyweight", targetMuscleId: "ms-latissimus-dorsi", secondaryMuscleIds: [], tagIds: [], difficulty: "intermediate", defaultRestSeconds: 90, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "pushup", name: "Standard Bodyweight Push-up", bodyPartId: "bp-chest", equipmentId: "eq-bodyweight", targetMuscleId: "ms-pectoralis-major", secondaryMuscleIds: [], tagIds: [], difficulty: "beginner", defaultRestSeconds: 60, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "shoulder_press", name: "Dumbbell Overhead Shoulder Press", bodyPartId: "bp-shoulders", equipmentId: "eq-dumbbell", targetMuscleId: "ms-shoulders", secondaryMuscleIds: [], tagIds: [], difficulty: "intermediate", defaultRestSeconds: 75, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "situp", name: "Abdominal Sit-up", bodyPartId: "bp-core", equipmentId: "eq-bodyweight", targetMuscleId: "ms-abs", secondaryMuscleIds: [], tagIds: [], difficulty: "beginner", defaultRestSeconds: 45, status: "approved", hasAiSupported: true, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "deadlift", name: "Barbell Conventional Deadlift", bodyPartId: "bp-back", equipmentId: "eq-barbell", targetMuscleId: "ms-latissimus-dorsi", secondaryMuscleIds: [], tagIds: [], difficulty: "advanced", defaultRestSeconds: 120, status: "approved", hasAiSupported: false, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
-  { id: "barbell_row", name: "Bent Over Barbell Row", bodyPartId: "bp-back", equipmentId: "eq-barbell", targetMuscleId: "ms-latissimus-dorsi", secondaryMuscleIds: [], tagIds: [], difficulty: "intermediate", defaultRestSeconds: 90, status: "approved", hasAiSupported: false, createdBy: "admin@fitai.com", createdAt: nowIso, updatedAt: nowIso },
+  {
+    id: "squat",
+    name: "Barbell Back Squat",
+    bodyPartId: "bp-legs",
+    equipmentId: "eq-barbell",
+    targetMuscleId: "ms-quadriceps",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "intermediate",
+    defaultRestSeconds: 90,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "bench_press",
+    name: "Barbell Bench Press",
+    bodyPartId: "bp-chest",
+    equipmentId: "eq-barbell",
+    targetMuscleId: "ms-pectoralis-major",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "intermediate",
+    defaultRestSeconds: 90,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "bicep_curl",
+    name: "Dumbbell Bicep Curl",
+    bodyPartId: "bp-arms",
+    equipmentId: "eq-dumbbell",
+    targetMuscleId: "ms-biceps",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "beginner",
+    defaultRestSeconds: 60,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "lateral_raise",
+    name: "Dumbbell Lateral Raise",
+    bodyPartId: "bp-shoulders",
+    equipmentId: "eq-dumbbell",
+    targetMuscleId: "ms-shoulders",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "beginner",
+    defaultRestSeconds: 60,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "lunge",
+    name: "Walking Lunge",
+    bodyPartId: "bp-legs",
+    equipmentId: "eq-bodyweight",
+    targetMuscleId: "ms-quadriceps",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "beginner",
+    defaultRestSeconds: 60,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "plank",
+    name: "Bodyweight Core Plank",
+    bodyPartId: "bp-core",
+    equipmentId: "eq-bodyweight",
+    targetMuscleId: "ms-abs",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "beginner",
+    defaultRestSeconds: 45,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "pullup",
+    name: "Wide Grip Pull-up",
+    bodyPartId: "bp-back",
+    equipmentId: "eq-bodyweight",
+    targetMuscleId: "ms-latissimus-dorsi",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "intermediate",
+    defaultRestSeconds: 90,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "pushup",
+    name: "Standard Bodyweight Push-up",
+    bodyPartId: "bp-chest",
+    equipmentId: "eq-bodyweight",
+    targetMuscleId: "ms-pectoralis-major",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "beginner",
+    defaultRestSeconds: 60,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "shoulder_press",
+    name: "Dumbbell Overhead Shoulder Press",
+    bodyPartId: "bp-shoulders",
+    equipmentId: "eq-dumbbell",
+    targetMuscleId: "ms-shoulders",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "intermediate",
+    defaultRestSeconds: 75,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "situp",
+    name: "Abdominal Sit-up",
+    bodyPartId: "bp-core",
+    equipmentId: "eq-bodyweight",
+    targetMuscleId: "ms-abs",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "beginner",
+    defaultRestSeconds: 45,
+    status: "approved",
+    hasAiSupported: true,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "deadlift",
+    name: "Barbell Conventional Deadlift",
+    bodyPartId: "bp-back",
+    equipmentId: "eq-barbell",
+    targetMuscleId: "ms-latissimus-dorsi",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "advanced",
+    defaultRestSeconds: 120,
+    status: "approved",
+    hasAiSupported: false,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
+  {
+    id: "barbell_row",
+    name: "Bent Over Barbell Row",
+    bodyPartId: "bp-back",
+    equipmentId: "eq-barbell",
+    targetMuscleId: "ms-latissimus-dorsi",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    difficulty: "intermediate",
+    defaultRestSeconds: 90,
+    status: "approved",
+    hasAiSupported: false,
+    createdBy: "admin@fitai.com",
+    createdAt: nowIso,
+    updatedAt: nowIso,
+  },
 ];
 
 export async function fetchAdminExercises({
@@ -105,7 +285,8 @@ export async function fetchAdminExercises({
       const keyword = filters?.q || "";
       const bodyPartId = filters?.bodyPartId || "";
       const equipmentId = filters?.equipmentId || "";
-      const difficulty = filters?.difficulty && filters.difficulty !== "all" ? filters.difficulty : "";
+      const difficulty =
+        filters?.difficulty && filters.difficulty !== "all" ? filters.difficulty : "";
 
       const res = await client.searchExercises({
         keyword,
@@ -143,7 +324,9 @@ export async function fetchAdminExercises({
 
   const keyword = (filters?.q || "").toLowerCase().trim();
   if (keyword) {
-    exercisesList = exercisesList.filter((ex) => ex.name.toLowerCase().includes(keyword) || ex.id.toLowerCase().includes(keyword));
+    exercisesList = exercisesList.filter(
+      (ex) => ex.name.toLowerCase().includes(keyword) || ex.id.toLowerCase().includes(keyword),
+    );
   }
 
   if (filters?.status && filters.status !== "all") {
@@ -161,7 +344,8 @@ export async function fetchAdminExercises({
 
   const paginatedItems = exercisesList.slice(startIndex, startIndex + limit);
   const hasMore = startIndex + limit < exercisesList.length;
-  const nextCursor = hasMore && paginatedItems.length > 0 ? (paginatedItems.at(-1)?.id ?? null) : null;
+  const nextCursor =
+    hasMore && paginatedItems.length > 0 ? (paginatedItems.at(-1)?.id ?? null) : null;
 
   return {
     items: paginatedItems,
@@ -437,9 +621,8 @@ export async function createMetadataItem(item: Omit<MetadataItem, "id">): Promis
     const res = await client.createMuscle({ name: item.name, bodyPartId: "" });
     return { id: res.muscle?.id || "", name: res.muscle?.name || "", category: "muscle" };
   }
-    const res = await client.createTag({ name: item.name });
-    return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
-  
+  const res = await client.createTag({ name: item.name });
+  return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
 }
 
 export async function updateMetadataItem(
@@ -459,9 +642,8 @@ export async function updateMetadataItem(
     const res = await client.updateMuscle({ id, name: data.name, bodyPartId: "" });
     return { id: res.muscle?.id || "", name: res.muscle?.name || "", category: "muscle" };
   }
-    const res = await client.updateTag({ id, name: data.name });
-    return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
-  
+  const res = await client.updateTag({ id, name: data.name });
+  return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
 }
 
 export async function deleteMetadataItem(id: string): Promise<boolean> {

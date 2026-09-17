@@ -13,7 +13,7 @@ interface NutritionViewProps {
 const MACRO_ICONS = [Beef, Wheat, Droplet] as const;
 
 export function NutritionView({ data }: NutritionViewProps) {
-  const todayCalories = data.todayStats?.calories ?? (data.caloriesAverage ?? 0);
+  const todayCalories = data.todayStats?.calories ?? data.caloriesAverage ?? 0;
 
   return (
     <>
@@ -45,7 +45,8 @@ export function NutritionView({ data }: NutritionViewProps) {
         <div className="content-section__header">
           <h2>7-Day Calorie Trend</h2>
           <p>
-            Logged <span className="data-value">{data.daysLogged}</span> of the last {WEEK_DAYS} days
+            Logged <span className="data-value">{data.daysLogged}</span> of the last {WEEK_DAYS}{" "}
+            days
           </p>
         </div>
         <TrendLineChart

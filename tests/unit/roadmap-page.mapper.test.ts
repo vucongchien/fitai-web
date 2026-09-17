@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from "vitest";
+
 import {
   adaptRoadmapPageData,
   formatDate,
@@ -55,7 +56,11 @@ describe("adaptRoadmapPageData", () => {
 
   it("sets future pending sessions to planned status (grey) and only sets today pending sessions to next (green)", () => {
     const today = new Date();
-    const todayScheduledDate = { day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear() };
+    const todayScheduledDate = {
+      day: today.getDate(),
+      month: today.getMonth() + 1,
+      year: today.getFullYear(),
+    };
 
     const roadmapMock: Partial<Roadmap> = {
       weekPlans: [

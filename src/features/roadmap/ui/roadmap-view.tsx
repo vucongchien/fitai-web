@@ -6,12 +6,11 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
-import { WeekRoute } from "@/features/roadmap/ui/week-route";
-import { NAV_FORWARD } from "@/shared/ui/transition-types";
-import { FeedbackState } from "@/shared/ui/feedback-state";
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
-
 import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
+import { WeekRoute } from "@/features/roadmap/ui/week-route";
+import { FeedbackState } from "@/shared/ui/feedback-state";
+import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 interface RoadmapViewProps {
   data: RoadmapPageData;
@@ -67,9 +66,9 @@ export function RoadmapView({ data }: RoadmapViewProps) {
             actionLabel={
               isPending
                 ? "Generating roadmap..."
-                : (isNoRoadmap
-                ? "Click to generate roadmap"
-                : "Click to retry")
+                : isNoRoadmap
+                  ? "Click to generate roadmap"
+                  : "Click to retry"
             }
             onActionClick={isNoRoadmap ? handleCreateRoadmap : handleRetry}
           />

@@ -34,7 +34,10 @@ export function MealTimeline({ slots }: MealTimelineProps) {
               {logged ? <Check size={13} /> : <Plus size={13} />}
             </span>
 
-            <div className="meal-timeline__head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div
+              className="meal-timeline__head"
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <strong>{displayName}</strong>
                 {scheduledTime ? (
@@ -58,9 +61,13 @@ export function MealTimeline({ slots }: MealTimelineProps) {
 
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 {logged ? (
-                  <span className="data-value" style={{ fontWeight: 700 }}>{slot.calories} kcal</span>
+                  <span className="data-value" style={{ fontWeight: 700 }}>
+                    {slot.calories} kcal
+                  </span>
                 ) : slot.plannedMeal ? (
-                  <span className="data-value" style={{ opacity: 0.85, fontWeight: 600 }}>{slot.plannedMeal.calories} kcal</span>
+                  <span className="data-value" style={{ opacity: 0.85, fontWeight: 600 }}>
+                    {slot.plannedMeal.calories} kcal
+                  </span>
                 ) : (
                   <span className="meal-timeline__pending">Not logged</span>
                 )}
@@ -87,22 +94,53 @@ export function MealTimeline({ slots }: MealTimelineProps) {
             {logged ? (
               <ul className="meal-timeline__meals" style={{ marginTop: "0.5rem" }}>
                 {slot.meals.map((meal) => (
-                  <li key={meal.id} style={{ display: "flex", justifyContent: "space-between", padding: "0.35rem 0" }}>
+                  <li
+                    key={meal.id}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "0.35rem 0",
+                    }}
+                  >
                     <span>
-                      {meal.time ? <span className="data-value" style={{ marginRight: "0.5rem" }}>{meal.time}</span> : null}
-                      <span className="meal-timeline__name" style={{ fontWeight: 600 }}>{meal.name}</span>
+                      {meal.time ? (
+                        <span className="data-value" style={{ marginRight: "0.5rem" }}>
+                          {meal.time}
+                        </span>
+                      ) : null}
+                      <span className="meal-timeline__name" style={{ fontWeight: 600 }}>
+                        {meal.name}
+                      </span>
                     </span>
-                    <span className="data-value" style={{ fontWeight: 600 }}>{meal.calories} kcal</span>
+                    <span className="data-value" style={{ fontWeight: 600 }}>
+                      {meal.calories} kcal
+                    </span>
                   </li>
                 ))}
               </ul>
             ) : slot.plannedMeal ? (
-              <div style={{ marginTop: "0.5rem", display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                  <span className="meal-timeline__name" style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+              <div
+                style={{
+                  marginTop: "0.5rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.35rem",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                  }}
+                >
+                  <span
+                    className="meal-timeline__name"
+                    style={{ fontWeight: 600, fontSize: "0.95rem" }}
+                  >
                     {slot.plannedMeal.name}
                   </span>
-                  {(slot.plannedMeal.protein || slot.plannedMeal.carbs || slot.plannedMeal.fat) ? (
+                  {slot.plannedMeal.protein || slot.plannedMeal.carbs || slot.plannedMeal.fat ? (
                     <span style={{ fontSize: "0.75rem", opacity: 0.75 }}>
                       {slot.plannedMeal.protein ? `P: ${slot.plannedMeal.protein}g ` : ""}
                       {slot.plannedMeal.carbs ? `C: ${slot.plannedMeal.carbs}g ` : ""}
@@ -112,8 +150,15 @@ export function MealTimeline({ slots }: MealTimelineProps) {
                 </div>
 
                 {ingredients.length > 0 ? (
-                  <div style={{ fontSize: "0.8rem", color: "var(--color-text-muted, #8b949e)", lineHeight: 1.4 }}>
-                    🥗 {ingredients.map((ing) => `${ing.ingredientName} (${ing.grams}g)`).join(", ")}
+                  <div
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "var(--color-text-muted, #8b949e)",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    🥗{" "}
+                    {ingredients.map((ing) => `${ing.ingredientName} (${ing.grams}g)`).join(", ")}
                   </div>
                 ) : null}
               </div>

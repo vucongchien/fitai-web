@@ -1,14 +1,11 @@
-import { describe, expect, it, vi } from 'vitest';
-
+import { describe, expect, it, vi } from "vitest";
 
 import {
   mapCoachStyleToEnum,
   mapEquipmentToEnum,
   mapGoalToEnum,
 } from "../../../src/features/profile/model/profile.mapper";
-import {
-  updateProfileServerAction,
-} from "../../../src/features/profile/server/profile-actions";
+import { updateProfileServerAction } from "../../../src/features/profile/server/profile-actions";
 
 vi.mock("@/shared/auth/session", () => ({
   getAccessToken: vi.fn().mockResolvedValue("mock-access-token"),
@@ -134,9 +131,8 @@ describe("profile Actions", () => {
         reportInjury: mockReportInjury,
       } as any);
 
-      const { reportInjuryServerAction } = await import(
-        "../../../src/features/profile/server/profile-actions"
-      );
+      const { reportInjuryServerAction } =
+        await import("../../../src/features/profile/server/profile-actions");
 
       const result = await reportInjuryServerAction({
         muscleGroup: "Lower Back",
@@ -164,9 +160,8 @@ describe("profile Actions", () => {
         recoverInjury: mockRecoverInjury,
       } as any);
 
-      const { recoverInjuryServerAction } = await import(
-        "../../../src/features/profile/server/profile-actions"
-      );
+      const { recoverInjuryServerAction } =
+        await import("../../../src/features/profile/server/profile-actions");
 
       const result = await recoverInjuryServerAction("inj-test-123");
 

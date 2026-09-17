@@ -88,10 +88,9 @@ function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): Exerci
     }
   });
 
-  const targetMuscleIds = [
-    ...params.getAll("targetMuscle"),
-    ...params.getAll("muscle"),
-  ].filter((id) => Boolean(id));
+  const targetMuscleIds = [...params.getAll("targetMuscle"), ...params.getAll("muscle")].filter(
+    (id) => Boolean(id),
+  );
 
   const equipmentIds = params
     .getAll("equipment")
@@ -147,7 +146,11 @@ function toSearchString(filters: ExerciseFilters): string {
   return params.toString();
 }
 
-export function SearchExperience({ initialExercises, exercises: legacyExercises, catalog }: SearchExperienceProps) {
+export function SearchExperience({
+  initialExercises,
+  exercises: legacyExercises,
+  catalog,
+}: SearchExperienceProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -303,7 +306,11 @@ export function SearchExperience({ initialExercises, exercises: legacyExercises,
             {results.length} of {rawExercises.length} movements
           </span>
           {activeCount > 0 ? (
-            <button className="text-button text-xs font-semibold text-[var(--color-action)]" onClick={clearFacets} type="button">
+            <button
+              className="text-button text-xs font-semibold text-[var(--color-action)]"
+              onClick={clearFacets}
+              type="button"
+            >
               Reset filters
             </button>
           ) : null}

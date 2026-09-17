@@ -2,7 +2,6 @@
 
 import { useCallback, useRef, useState } from "react";
 
-
 import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
 import type {
   MotionEngine,
@@ -90,7 +89,9 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
         break;
       }
       case "rep": {
-        if (event.counted) {setRepCount(event.count);}
+        if (event.counted) {
+          setRepCount(event.count);
+        }
         handlers.current.onRep?.(event);
         break;
       }
@@ -167,7 +168,6 @@ export function useMotionEngine(options: MotionEngineOptions = {}) {
     setLastError(null);
     return (await engineRef.current?.stopSet()) ?? EMPTY_TELEMETRY;
   }, []);
-
 
   return {
     kind,

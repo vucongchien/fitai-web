@@ -1,5 +1,5 @@
-import { it, afterEach, describe, expect, beforeEach } from 'vitest';
 import { act, renderHook } from "@testing-library/react";
+import { it, afterEach, describe, expect, beforeEach } from "vitest";
 
 import type { LiveExercise, LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useLiveSession } from "@/features/workout/model/use-live-session";

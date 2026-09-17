@@ -1,5 +1,4 @@
 import "server-only";
-
 import { createClient } from "@connectrpc/connect";
 
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
@@ -18,7 +17,10 @@ const EMPTY_ROADMAP_DATA: RoadmapPageData = {
   contextItems: [],
 };
 
-async function getRealRoadmapPageData(accessToken: string, userId: string): Promise<RoadmapPageData> {
+async function getRealRoadmapPageData(
+  accessToken: string,
+  userId: string,
+): Promise<RoadmapPageData> {
   const client = createClient(CoachingService, createServerTransport(accessToken));
   const res = await client.getActiveRoadmap({ userId });
   if (!res.roadmap) {

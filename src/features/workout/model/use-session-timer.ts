@@ -2,7 +2,6 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 
-
 class TickerStore {
   private listeners = new Set<() => void>();
   private worker: Worker | null = null;

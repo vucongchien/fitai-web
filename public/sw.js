@@ -25,7 +25,9 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  if (!event.data) {return;}
+  if (!event.data) {
+    return;
+  }
 
   let payload = {};
   try {

@@ -1,5 +1,5 @@
-import type { PrescribedExercise } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import type { ExerciseResult } from "@/features/workout/model/workout.types";
+import type { PrescribedExercise } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 
 export interface AdhocExercise {
   id: string;

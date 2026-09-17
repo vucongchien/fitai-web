@@ -1,5 +1,4 @@
 import "server-only";
-
 import { createClient } from "@connectrpc/connect";
 
 import { adaptMealDetailPageData } from "@/features/nutrition/model/meal-detail.mapper";
@@ -20,8 +19,6 @@ const EMPTY_DAILY_MENU: DailyMenuRows = {
   dinner: [],
   snack: [],
 };
-
-
 
 /**
  * Fetches meal detail from live gRPC backend.
@@ -47,7 +44,8 @@ export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageD
         }),
       ]);
 
-      const history = historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
+      const history =
+        historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
       const rows = deduplicateMealRows([...history, ...localRows]);
 
       if (menuRes.status === "fulfilled" && menuRes.value) {

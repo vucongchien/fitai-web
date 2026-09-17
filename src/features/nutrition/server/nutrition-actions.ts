@@ -105,7 +105,6 @@ function validate(input: LogMealInput): string | null {
   return null;
 }
 
-
 import { cleanMealDisplayName } from "@/features/nutrition/model/meal-detail.mapper";
 
 /**

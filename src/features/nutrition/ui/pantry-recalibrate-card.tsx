@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { ChefHat, Plus, Refrigerator, RotateCcw, Sparkles, X } from "lucide-react";
-import type { PantryMealOption, PantryRecalibrateResult } from "@/features/nutrition/server/nutrition-actions";
+import { useState, useTransition } from "react";
+
+import type {
+  PantryMealOption,
+  PantryRecalibrateResult,
+} from "@/features/nutrition/server/nutrition-actions";
 import { recalibratePantryAction } from "@/features/nutrition/server/nutrition-actions";
 import { LogMealButton } from "@/features/nutrition/ui/log-meal-button";
 
@@ -26,7 +30,8 @@ const PRICE_LABEL: Record<string, string> = {
 
 function isPantryOption(option: PantryMealOption, pantryIngs: string[]): boolean {
   if (pantryIngs.length === 0) return true;
-  const text = `${option.mealName} ${option.description || ""} ${(option.recipeSteps || []).join(" ")}`.toLowerCase();
+  const text =
+    `${option.mealName} ${option.description || ""} ${(option.recipeSteps || []).join(" ")}`.toLowerCase();
   return pantryIngs.some((ing) => {
     const trimmed = ing.trim().toLowerCase();
     if (!trimmed) return false;
@@ -44,7 +49,9 @@ export function PantryRecalibrateCard() {
   ]);
   const [inputVal, setInputVal] = useState("");
   const [isPending, startTransition] = useTransition();
-  const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [statusMsg, setStatusMsg] = useState<{ type: "success" | "error"; text: string } | null>(
+    null,
+  );
 
   const [generatedMenu, setGeneratedMenu] = useState<PantryRecalibrateResult["meals"] | null>(null);
 
@@ -92,8 +99,16 @@ export function PantryRecalibrateCard() {
   };
 
   if (generatedMenu) {
-    const slots: ("breakfast" | "lunch" | "dinner" | "snack")[] = ["breakfast", "lunch", "dinner", "snack"];
-    const allRawItems: { option: PantryMealOption; slotKey: "breakfast" | "lunch" | "dinner" | "snack" }[] = [];
+    const slots: ("breakfast" | "lunch" | "dinner" | "snack")[] = [
+      "breakfast",
+      "lunch",
+      "dinner",
+      "snack",
+    ];
+    const allRawItems: {
+      option: PantryMealOption;
+      slotKey: "breakfast" | "lunch" | "dinner" | "snack";
+    }[] = [];
 
     for (const s of slots) {
       const opts = generatedMenu[s] || [];
@@ -106,7 +121,10 @@ export function PantryRecalibrateCard() {
     const itemsToDisplay = filteredItems.length > 0 ? filteredItems : allRawItems;
 
     const seenNames = new Set<string>();
-    const uniqueDisplayItems: { option: PantryMealOption; slotKey: "breakfast" | "lunch" | "dinner" | "snack" }[] = [];
+    const uniqueDisplayItems: {
+      option: PantryMealOption;
+      slotKey: "breakfast" | "lunch" | "dinner" | "snack";
+    }[] = [];
     for (const item of itemsToDisplay) {
       const nameKey = item.option.mealName.trim().toLowerCase();
       if (!seenNames.has(nameKey)) {
@@ -132,7 +150,9 @@ export function PantryRecalibrateCard() {
                 </h2>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Generated optimal recipes from {ingredients.length} pantry ingredients:{" "}
-                  <strong className="text-emerald-700 font-semibold">{ingredients.join(", ")}</strong>
+                  <strong className="text-emerald-700 font-semibold">
+                    {ingredients.join(", ")}
+                  </strong>
                 </p>
               </div>
             </div>
@@ -193,7 +213,9 @@ export function PantryRecalibrateCard() {
                         <ChefHat size={14} aria-hidden="true" /> How to cook it
                       </span>
                       {hasSteps ? (
-                        <span className="meal-recipe__count">{option.recipeSteps!.length} steps</span>
+                        <span className="meal-recipe__count">
+                          {option.recipeSteps!.length} steps
+                        </span>
                       ) : (
                         <span className="meal-recipe__count">Quick prep</span>
                       )}
@@ -211,15 +233,21 @@ export function PantryRecalibrateCard() {
                       <ol className="meal-recipe__steps">
                         <li>
                           <span className="meal-recipe__step-num">1</span>
-                          <span className="meal-recipe__step-text">Prepare ingredients and portion to your target serving size.</span>
+                          <span className="meal-recipe__step-text">
+                            Prepare ingredients and portion to your target serving size.
+                          </span>
                         </li>
                         <li>
                           <span className="meal-recipe__step-num">2</span>
-                          <span className="meal-recipe__step-text">Cook or assemble to your preferred method.</span>
+                          <span className="meal-recipe__step-text">
+                            Cook or assemble to your preferred method.
+                          </span>
                         </li>
                         <li>
                           <span className="meal-recipe__step-num">3</span>
-                          <span className="meal-recipe__step-text">Serve fresh and log any macro adjustments if needed.</span>
+                          <span className="meal-recipe__step-text">
+                            Serve fresh and log any macro adjustments if needed.
+                          </span>
                         </li>
                       </ol>
                     )}
@@ -239,7 +267,8 @@ export function PantryRecalibrateCard() {
           </ul>
         ) : (
           <div className="p-8 text-center text-xs text-slate-400 italic bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
-            No meal options found from pantry ingredients. Please click &quot;Change ingredients&quot;.
+            No meal options found from pantry ingredients. Please click &quot;Change
+            ingredients&quot;.
           </div>
         )}
       </section>
@@ -342,7 +371,11 @@ export function PantryRecalibrateCard() {
             }`}
           >
             <span>{statusMsg.text}</span>
-            <button type="button" onClick={() => setStatusMsg(null)} className="p-1 hover:opacity-75">
+            <button
+              type="button"
+              onClick={() => setStatusMsg(null)}
+              className="p-1 hover:opacity-75"
+            >
               <X size={14} />
             </button>
           </div>

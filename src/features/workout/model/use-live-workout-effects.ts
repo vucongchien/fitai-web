@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
-
+import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
 import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
 import type { SetTelemetry } from "@/features/workout/domain/motion-engine";
 import { formScore } from "@/features/workout/domain/pose-metrics";
@@ -37,7 +37,6 @@ import {
   logWorkoutSet,
   syncWorkoutLogs,
 } from "@/features/workout/server/workout-actions";
-import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
 import type { SyncErrorItem } from "@/features/workout/server/workout-actions";
 import { toast } from "@/shared/ui/toast";
 
@@ -58,8 +57,7 @@ export function resolveCoachingStyle(): CoachingStyle {
     return "normal";
   }
   const directStyle =
-    localStorage.getItem("fitai-coaching-style") ||
-    localStorage.getItem("fitai-coach-style");
+    localStorage.getItem("fitai-coaching-style") || localStorage.getItem("fitai-coach-style");
 
   if (directStyle) {
     const s = directStyle.toLowerCase();
@@ -74,8 +72,10 @@ export function resolveCoachingStyle(): CoachingStyle {
       const parsed = JSON.parse(onboarding);
       const coachStyle = (parsed?.coachStyle || "").toString().toLowerCase();
       if (coachStyle === "strict" || coachStyle === "direct") return "strict";
-      if (coachStyle === "motivational" || coachStyle === "calm" || coachStyle === "gentle") return "gentle";
-      if (coachStyle === "scientific" || coachStyle === "balanced" || coachStyle === "normal") return "normal";
+      if (coachStyle === "motivational" || coachStyle === "calm" || coachStyle === "gentle")
+        return "gentle";
+      if (coachStyle === "scientific" || coachStyle === "balanced" || coachStyle === "normal")
+        return "normal";
     }
   } catch {
     // Ignore parse error
@@ -113,47 +113,47 @@ export function useLiveWorkoutEffects({
     [exercise, plan.motionSpecs],
   );
 
-const FALLBACK_VIETNAMESE_DIALOGUES: Record<
-  string,
-  Record<"warning" | "danger", Record<CoachingStyle, string>>
-> = {
-  signed_hip_y_diff: {
-    warning: {
-      normal: "Hông hơi võng hoặc nhô cao, hãy siết chặt mông và bụng để giữ thẳng.",
-      strict: "Gồng cơ bụng ngay! Không được để sụp hông khi plank!",
-      gentle: "Hơi võng hông rồi bạn ơi, gồng nhẹ bụng đẩy hông lên bằng vai nhé.",
+  const FALLBACK_VIETNAMESE_DIALOGUES: Record<
+    string,
+    Record<"warning" | "danger", Record<CoachingStyle, string>>
+  > = {
+    signed_hip_y_diff: {
+      warning: {
+        normal: "Hông hơi võng hoặc nhô cao, hãy siết chặt mông và bụng để giữ thẳng.",
+        strict: "Gồng cơ bụng ngay! Không được để sụp hông khi plank!",
+        gentle: "Hơi võng hông rồi bạn ơi, gồng nhẹ bụng đẩy hông lên bằng vai nhé.",
+      },
+      danger: {
+        normal: "Võng lưng hoặc chổng mông quá nặng, tư thế plank không còn tác dụng.",
+        strict: "Đau thắt lưng đấy! Hạ mông xuống hoặc nâng hông lên đường thẳng ngay!",
+        gentle: "Hãy hạ gối xuống nghỉ chút nào, hông bị lệch nhiều làm đau lưng dưới đó.",
+      },
     },
-    danger: {
-      normal: "Võng lưng hoặc chổng mông quá nặng, tư thế plank không còn tác dụng.",
-      strict: "Đau thắt lưng đấy! Hạ mông xuống hoặc nâng hông lên đường thẳng ngay!",
-      gentle: "Hãy hạ gối xuống nghỉ chút nào, hông bị lệch nhiều làm đau lưng dưới đó.",
+    knee_angle: {
+      warning: {
+        normal: "Đầu gối chưa đạt độ sâu chuẩn, hãy hạ thấp mông thêm chút nữa.",
+        strict: "Xuống sâu hơn nữa! Đưa mông xuống ngang tầm đầu gối!",
+        gentle: "Hạ mông thấp hơn một chút nữa để tập vào đùi tốt hơn bạn nhé.",
+      },
+      danger: {
+        normal: "Đầu gối vượt quá mũi chân hoặc khuỳnh ra ngoài quá nhiều.",
+        strict: "Chỉnh lại chân ngay! Đừng để đầu gối chịu toàn bộ áp lực!",
+        gentle: "Chú ý điều chỉnh hướng đầu gối theo chiều mũi chân để bảo vệ khớp nhé.",
+      },
     },
-  },
-  knee_angle: {
-    warning: {
-      normal: "Đầu gối chưa đạt độ sâu chuẩn, hãy hạ thấp mông thêm chút nữa.",
-      strict: "Xuống sâu hơn nữa! Đưa mông xuống ngang tầm đầu gối!",
-      gentle: "Hạ mông thấp hơn một chút nữa để tập vào đùi tốt hơn bạn nhé.",
+    elbow_angle: {
+      warning: {
+        normal: "Góc khuỷu tay chưa chuẩn, hãy điều chỉnh góc gập tay.",
+        strict: "Điều chỉnh khuỷu tay ngay! Đặt tay đúng vị trí chịu lực!",
+        gentle: "Điều chỉnh nhẹ tay một chút cho thoải mái và vững hơn bạn nhé.",
+      },
+      danger: {
+        normal: "Khớp khuỷu tay bị áp lực quá mức, hãy dừng lại kiểm tra vị trí tay.",
+        strict: "Dừng lại chỉnh tay ngay! Tránh chấn thương khớp khuỷu tay!",
+        gentle: "Nghỉ tay một chút và đặt lại góc khuỷu tay vuông góc nhé.",
+      },
     },
-    danger: {
-      normal: "Đầu gối vượt quá mũi chân hoặc khuỳnh ra ngoài quá nhiều.",
-      strict: "Chỉnh lại chân ngay! Đừng để đầu gối chịu toàn bộ áp lực!",
-      gentle: "Chú ý điều chỉnh hướng đầu gối theo chiều mũi chân để bảo vệ khớp nhé.",
-    },
-  },
-  elbow_angle: {
-    warning: {
-      normal: "Góc khuỷu tay chưa chuẩn, hãy điều chỉnh góc gập tay.",
-      strict: "Điều chỉnh khuỷu tay ngay! Đặt tay đúng vị trí chịu lực!",
-      gentle: "Điều chỉnh nhẹ tay một chút cho thoải mái và vững hơn bạn nhé.",
-    },
-    danger: {
-      normal: "Khớp khuỷu tay bị áp lực quá mức, hãy dừng lại kiểm tra vị trí tay.",
-      strict: "Dừng lại chỉnh tay ngay! Tránh chấn thương khớp khuỷu tay!",
-      gentle: "Nghỉ tay một chút và đặt lại góc khuỷu tay vuông góc nhé.",
-    },
-  },
-};
+  };
 
   // Fetch Vietnamese dialogue Engine JSON from spec.dialogueEngineUrl dynamically when spec changes
   const { data: fetchedVoiceFeedbacks } = useQuery({
@@ -225,11 +225,7 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
   const cameraBranch = Boolean(spec) && !manualForSet;
   const sessionStatus = session.status;
   const wantCameraStream =
-    Boolean(spec) &&
-    cameraOn &&
-    sessionStatus !== "complete" &&
-    sessionStatus !== "resting";
-
+    Boolean(spec) && cameraOn && sessionStatus !== "complete" && sessionStatus !== "resting";
 
   const lastCueTimesRef = useRef<Record<string, number>>({});
 
@@ -401,8 +397,8 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
         isCamera && telemetry.countedReps > 0
           ? telemetry.countedReps
           : motion.repCount > 0
-          ? motion.repCount
-          : (exercise.targetReps ?? 10);
+            ? motion.repCount
+            : (exercise.targetReps ?? 10);
       if (timed) {
         actualReps = customData?.actualSeconds ?? exercise.durationSeconds ?? 30;
       } else if (customData?.actualReps !== undefined) {
@@ -478,7 +474,6 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
       step,
     ],
   );
-
 
   // --- Session report & completion ---
   const buildReport = useCallback(
@@ -582,7 +577,11 @@ const FALLBACK_VIETNAMESE_DIALOGUES: Record<
         if (reason === "pain") {
           startAIAdjustment({
             reason: "injury_reported",
-            muscleGroup: note ? (note.length > 20 ? note.slice(0, 20) + "..." : note) : "Reported Area",
+            muscleGroup: note
+              ? note.length > 20
+                ? note.slice(0, 20) + "..."
+                : note
+              : "Reported Area",
           });
           router.replace(`/workouts/live/${plan.sessionId}/stopped`);
         } else {

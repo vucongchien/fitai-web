@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
-
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   GetCatalogMetadataResponseSchema,
@@ -62,16 +61,12 @@ describe("exercise Catalog gRPC Repository", () => {
       }),
     );
 
-    const { exerciseSearchRepository } = await import(
-      "@/features/exercise/api/search-repository"
-    );
+    const { exerciseSearchRepository } = await import("@/features/exercise/api/search-repository");
     const results = await exerciseSearchRepository.search({
       query: "bench",
     });
 
-    expect(mockSearchExercises).toHaveBeenCalledWith(
-      expect.objectContaining({ keyword: "bench" }),
-    );
+    expect(mockSearchExercises).toHaveBeenCalledWith(expect.objectContaining({ keyword: "bench" }));
     expect(results).toHaveLength(1);
     expect(results[0].id).toBe("ex-bench-press");
     expect(results[0].hasAiSupported).toBe(true);
@@ -87,9 +82,7 @@ describe("exercise Catalog gRPC Repository", () => {
       }),
     );
 
-    const { exerciseSearchRepository } = await import(
-      "@/features/exercise/api/search-repository"
-    );
+    const { exerciseSearchRepository } = await import("@/features/exercise/api/search-repository");
     const catalog = await exerciseSearchRepository.getCatalog();
 
     expect(mockGetCatalogMetadata).toHaveBeenCalled();
@@ -109,9 +102,7 @@ describe("exercise Catalog gRPC Repository", () => {
       }),
     );
 
-    const { exerciseSearchRepository } = await import(
-      "@/features/exercise/api/search-repository"
-    );
+    const { exerciseSearchRepository } = await import("@/features/exercise/api/search-repository");
     const ex = await exerciseSearchRepository.getById("ex-deadlift");
 
     expect(mockGetExercise).toHaveBeenCalledWith({ id: "ex-deadlift" });

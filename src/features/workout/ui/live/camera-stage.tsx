@@ -8,7 +8,6 @@ import type { Pose } from "@/features/workout/domain/pose-metrics";
 import type { CameraState } from "@/features/workout/model/use-camera-stream";
 import { PoseOverlay } from "@/features/workout/ui/live/pose-overlay";
 
-
 export function CameraStage({
   alert,
   children,
@@ -224,7 +223,9 @@ export function CameraStage({
                 : "bg-[var(--color-surface,#ffffff)] text-[var(--color-text,#101214)] hover:bg-[var(--color-surface-subtle,#eceef0)]"
             }`}
             onClick={() => setIsMirrored((prev) => !prev)}
-            title={activeMirrored ? "Đang bật lật gương (Bấm để tắt)" : "Đang tắt lật gương (Bấm để bật)"}
+            title={
+              activeMirrored ? "Đang bật lật gương (Bấm để tắt)" : "Đang tắt lật gương (Bấm để bật)"
+            }
             type="button"
           >
             <ArrowLeftRight aria-hidden="true" size={16} />

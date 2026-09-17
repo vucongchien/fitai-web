@@ -28,9 +28,13 @@ export function ProfileHighlightCards({ highlights }: ProfileHighlightCardsProps
         </div>
         <span className="text-sm font-bold font-mono" style={{ color: "var(--color-text)" }}>
           {highlights.currentWeightKg}{" "}
-          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>kg</span>
+          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>
+            kg
+          </span>
         </span>
-        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>Weight</span>
+        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+          Weight
+        </span>
       </div>
 
       {/* Body Fat Percentage */}
@@ -52,9 +56,13 @@ export function ProfileHighlightCards({ highlights }: ProfileHighlightCardsProps
         </div>
         <span className="text-sm font-bold font-mono" style={{ color: "var(--color-text)" }}>
           {highlights.bodyFatPercent}{" "}
-          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>%</span>
+          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>
+            %
+          </span>
         </span>
-        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>Body Fat</span>
+        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+          Body Fat
+        </span>
       </div>
 
       {/* Target Weight */}
@@ -76,9 +84,13 @@ export function ProfileHighlightCards({ highlights }: ProfileHighlightCardsProps
         </div>
         <span className="text-sm font-bold font-mono" style={{ color: "var(--color-text)" }}>
           {highlights.targetWeightKg}{" "}
-          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>kg</span>
+          <span className="text-[11px] font-normal" style={{ color: "var(--color-text-muted)" }}>
+            kg
+          </span>
         </span>
-        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>Target</span>
+        <span className="mt-0.5 text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+          Target
+        </span>
       </div>
     </div>
   );

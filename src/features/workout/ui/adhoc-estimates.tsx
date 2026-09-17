@@ -15,12 +15,10 @@ export function AdhocEstimates({
     return (
       <div className="session-facts adhoc-estimates-bottom">
         <span>
-          <Clock3 aria-hidden="true" size={17} />
-          0 min estimated
+          <Clock3 aria-hidden="true" size={17} />0 min estimated
         </span>
         <span>
-          <Gauge aria-hidden="true" size={17} />
-          0 movements
+          <Gauge aria-hidden="true" size={17} />0 movements
         </span>
         <span>Target -- RPE</span>
       </div>

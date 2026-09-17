@@ -72,7 +72,9 @@ export function cleanUserDatabase(): void {
       encoding: "utf-8",
       stdio: ["pipe", "pipe", "pipe"],
     });
-    console.log("🧹 [DB Cleaner] Successfully truncated user tables & seeded active roadmap for E2E tests.");
+    console.log(
+      "🧹 [DB Cleaner] Successfully truncated user tables & seeded active roadmap for E2E tests.",
+    );
   } catch (error) {
     console.warn("⚠️ [DB Cleaner] Warning while cleaning DB:", error);
   }

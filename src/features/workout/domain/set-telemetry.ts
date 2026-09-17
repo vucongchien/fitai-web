@@ -60,7 +60,8 @@ export function feedCounter(
 
   accumulator.reps.push({
     errorCodes: [...accumulator.pendingErrors],
-    jointAngles: jointAngles ?? (accumulator.lastJointAngles ? { ...accumulator.lastJointAngles } : {}),
+    jointAngles:
+      jointAngles ?? (accumulator.lastJointAngles ? { ...accumulator.lastJointAngles } : {}),
     repNumber: accumulator.reps.length + 1,
     romPercentage: tick.completedRep.romPercentage,
   });

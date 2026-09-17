@@ -57,25 +57,31 @@ export function FilterPanel({
     return null;
   }
 
-  const musclesList = catalog.muscles && catalog.muscles.length > 0 ? catalog.muscles : [
-    { id: "quadriceps", name: "Quadriceps", bodyPartId: "legs" },
-    { id: "glutes", name: "Glutes", bodyPartId: "legs" },
-    { id: "hamstrings", name: "Hamstrings", bodyPartId: "legs" },
-    { id: "pectorals", name: "Pectorals", bodyPartId: "chest" },
-    { id: "latissimus", name: "Lats", bodyPartId: "back" },
-    { id: "abs", name: "Abs", bodyPartId: "core" },
-    { id: "biceps", name: "Biceps", bodyPartId: "arms" },
-    { id: "triceps", name: "Triceps", bodyPartId: "arms" },
-    { id: "deltoids", name: "Deltoids", bodyPartId: "shoulders" },
-  ];
+  const musclesList =
+    catalog.muscles && catalog.muscles.length > 0
+      ? catalog.muscles
+      : [
+          { id: "quadriceps", name: "Quadriceps", bodyPartId: "legs" },
+          { id: "glutes", name: "Glutes", bodyPartId: "legs" },
+          { id: "hamstrings", name: "Hamstrings", bodyPartId: "legs" },
+          { id: "pectorals", name: "Pectorals", bodyPartId: "chest" },
+          { id: "latissimus", name: "Lats", bodyPartId: "back" },
+          { id: "abs", name: "Abs", bodyPartId: "core" },
+          { id: "biceps", name: "Biceps", bodyPartId: "arms" },
+          { id: "triceps", name: "Triceps", bodyPartId: "arms" },
+          { id: "deltoids", name: "Deltoids", bodyPartId: "shoulders" },
+        ];
 
-  const tagsList = catalog.tags && catalog.tags.length > 0 ? catalog.tags : [
-    { id: "strength", name: "Strength" },
-    { id: "hypertrophy", name: "Hypertrophy" },
-    { id: "home-friendly", name: "Home Friendly" },
-    { id: "no-equipment", name: "No Equipment" },
-    { id: "warm-up", name: "Warm-up" },
-  ];
+  const tagsList =
+    catalog.tags && catalog.tags.length > 0
+      ? catalog.tags
+      : [
+          { id: "strength", name: "Strength" },
+          { id: "hypertrophy", name: "Hypertrophy" },
+          { id: "home-friendly", name: "Home Friendly" },
+          { id: "no-equipment", name: "No Equipment" },
+          { id: "warm-up", name: "Warm-up" },
+        ];
 
   return (
     <div className="filter-sheet">

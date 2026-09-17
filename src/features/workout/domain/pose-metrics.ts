@@ -114,9 +114,12 @@ export function keypoint(pose: Pose, name: string): Keypoint | null {
 
 /** A pose is usable when at least 1 shoulder and 1 hip are tracked (supports side-view exercises like Sit-up & Push-up). */
 export function isPoseUsable(pose: Pose): boolean {
-  const hasLeftUpper = keypoint(pose, "left_shoulder") !== null && keypoint(pose, "left_hip") !== null;
-  const hasRightUpper = keypoint(pose, "right_shoulder") !== null && keypoint(pose, "right_hip") !== null;
-  const hasAnyShoulder = keypoint(pose, "left_shoulder") !== null || keypoint(pose, "right_shoulder") !== null;
+  const hasLeftUpper =
+    keypoint(pose, "left_shoulder") !== null && keypoint(pose, "left_hip") !== null;
+  const hasRightUpper =
+    keypoint(pose, "right_shoulder") !== null && keypoint(pose, "right_hip") !== null;
+  const hasAnyShoulder =
+    keypoint(pose, "left_shoulder") !== null || keypoint(pose, "right_shoulder") !== null;
   const hasAnyHip = keypoint(pose, "left_hip") !== null || keypoint(pose, "right_hip") !== null;
 
   return hasLeftUpper || hasRightUpper || (hasAnyShoulder && hasAnyHip);
@@ -209,10 +212,10 @@ export interface RepCounterState {
 }
 
 /** Hysteresis thresholds for strict 5-step sequential phase transitions. */
-const START_ROM_MAX = 30;       // Below 30% ROM is considered START position
-const MOVING_START_MIN = 20;     // Moving above 20% transitions to MOVING_TO_TARGET
-const TARGET_REACH_MIN = 60;     // Reaching >= 60% ROM reaches TARGET_REACHED
-const MOVING_START_MAX = 70;     // Dropping below 70% after target reached transitions to MOVING_TO_START
+const START_ROM_MAX = 30; // Below 30% ROM is considered START position
+const MOVING_START_MIN = 20; // Moving above 20% transitions to MOVING_TO_TARGET
+const TARGET_REACH_MIN = 60; // Reaching >= 60% ROM reaches TARGET_REACHED
+const MOVING_START_MAX = 70; // Dropping below 70% after target reached transitions to MOVING_TO_START
 
 export function createRepCounter(): RepCounterState {
   return { phase: "start", count: 0, peakRom: 0, completedRoms: [] };
@@ -362,7 +365,7 @@ export function formScore(input: FormScoreInput): number {
   const alignmentPart = Math.max(0, 20 - errorsPerRep * 20);
 
   const tempo = input.secondsPerRep ?? 2.5;
-  const tempoPenalty = tempo < 1.5 ? (1.5 - tempo) * 6 : (tempo > 4 ? (tempo - 4) * 3 : 0);
+  const tempoPenalty = tempo < 1.5 ? (1.5 - tempo) * 6 : tempo > 4 ? (tempo - 4) * 3 : 0;
   const tempoPart = Math.max(0, 10 - tempoPenalty);
 
   return Math.round(Math.min(100, Math.max(0, romPart + alignmentPart + tempoPart)));
@@ -425,7 +428,10 @@ export interface GenericRuleFile {
   notes?: string;
   phase_detection?: {
     metric?: string;
-    thresholds?: Record<string, { gt?: number; gte?: number; lt?: number; lte?: number; comment?: string }>;
+    thresholds?: Record<
+      string,
+      { gt?: number; gte?: number; lt?: number; lte?: number; comment?: string }
+    >;
     calculation?: {
       landmarks?: string[];
       formula?: string;
@@ -441,12 +447,8 @@ export function resolveLandmarkPoint(
   if (!pose || !descriptor) {
     return null;
   }
-  const clean = descriptor
-    .split("(")[0]
-    ?.trim()
-    .toLowerCase()
-    .replace("mid-", "")
-    .replace("mid_", "") ?? "";
+  const clean =
+    descriptor.split("(")[0]?.trim().toLowerCase().replace("mid-", "").replace("mid_", "") ?? "";
 
   let keyName: KeypointName = "nose";
   if (clean.includes("shoulder")) keyName = "left_shoulder";
@@ -517,8 +519,8 @@ export function signedHipYDiff(pose: Pose): number | null {
 }
 
 /**
-  * Dynamic metric evaluation driven by the `calculation` spec (landmarks, formula) in each rule JSON file.
-  */
+ * Dynamic metric evaluation driven by the `calculation` spec (landmarks, formula) in each rule JSON file.
+ */
 export function evaluateMetricValue(
   metricName: string,
   landmarks: string[] | undefined,
@@ -598,9 +600,7 @@ export function evaluateMetricValue(
 
     const dx = Math.abs(p2.x - p1.x);
     const torsoLen =
-      p1 && hip
-        ? Math.hypot(hip.x - p1.x, hip.y - p1.y)
-        : Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      p1 && hip ? Math.hypot(hip.x - p1.x, hip.y - p1.y) : Math.hypot(p2.x - p1.x, p2.y - p1.y);
     if (torsoLen === 0) return 0;
 
     return dx / torsoLen;
@@ -731,9 +731,11 @@ export function evaluateGenericRuleJson(
           continue;
         }
 
-        if ((range.min !== null && range.max !== null && value >= range.min && value <= range.max) ||
-            (range.min !== null && range.max === null && value >= range.min) ||
-            (range.min === null && range.max !== null && value <= range.max)) {
+        if (
+          (range.min !== null && range.max !== null && value >= range.min && value <= range.max) ||
+          (range.min !== null && range.max === null && value >= range.min) ||
+          (range.min === null && range.max !== null && value <= range.max)
+        ) {
           violations.push({
             code: rule.metric,
             message: range.comment || rule.description || `Form error: ${rule.metric}`,
@@ -782,4 +784,3 @@ export function getFatigueLevel(pct: number): FatigueLevel {
   if (pct >= 50) return { label: "Moderate", color: "var(--color-recovery)" };
   return { label: "Light", color: "var(--color-action)" };
 }
-

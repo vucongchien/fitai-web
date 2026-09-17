@@ -17,4 +17,3 @@ export interface AdhocConfig {
   targetRpe: number;
   defaultExercises: ExerciseResult[];
 }
-

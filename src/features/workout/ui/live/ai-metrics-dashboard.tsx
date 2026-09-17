@@ -63,7 +63,6 @@ export function AiMetricsDashboard({
     return name;
   };
 
-
   // Real-time telemetry table history (max 10 recent frames)
   const [historyState, setHistoryState] = useState<{
     lastMetrics: typeof metrics;
@@ -123,31 +122,51 @@ export function AiMetricsDashboard({
     switch (p) {
       case "always":
         return {
-          style: { background: "var(--color-recovery-soft)", color: "var(--color-recovery-strong)", borderColor: "var(--color-recovery)" },
+          style: {
+            background: "var(--color-recovery-soft)",
+            color: "var(--color-recovery-strong)",
+            borderColor: "var(--color-recovery)",
+          },
           icon: <CheckCircle2 size={14} />,
           label: "Hold Pose",
         };
       case "moving_to_target":
         return {
-          style: { background: "var(--color-action-soft)", color: "var(--color-action)", borderColor: "var(--color-action)" },
+          style: {
+            background: "var(--color-action-soft)",
+            color: "var(--color-action)",
+            borderColor: "var(--color-action)",
+          },
           icon: <Activity className="animate-pulse" size={14} />,
           label: "Moving",
         };
       case "target_reached":
         return {
-          style: { background: "var(--color-recovery-soft)", color: "var(--color-recovery-strong)", borderColor: "var(--color-recovery)" },
+          style: {
+            background: "var(--color-recovery-soft)",
+            color: "var(--color-recovery-strong)",
+            borderColor: "var(--color-recovery)",
+          },
           icon: <CheckCircle2 size={14} />,
           label: "Target Reached",
         };
       case "moving_to_start":
         return {
-          style: { background: "var(--color-effort-soft)", color: "var(--color-effort)", borderColor: "var(--color-effort)" },
+          style: {
+            background: "var(--color-effort-soft)",
+            color: "var(--color-effort)",
+            borderColor: "var(--color-effort)",
+          },
           icon: <Activity className="animate-pulse" size={14} />,
           label: "Returning",
         };
       default:
         return {
-          style: { background: "var(--color-surface-subtle)", color: "var(--color-text-muted)", borderColor: "var(--color-border)" },
+          style: {
+            background: "var(--color-surface-subtle)",
+            color: "var(--color-text-muted)",
+            borderColor: "var(--color-border)",
+          },
           icon: <Target size={14} />,
           label: "Start",
         };
@@ -171,11 +190,17 @@ export function AiMetricsDashboard({
         style={{ borderBottom: "1px solid var(--color-border)" }}
       >
         <div className="flex items-center gap-3">
-          <h3 className="font-bold text-base md:text-lg flex items-center gap-2" style={{ color: "var(--color-text)" }}>
+          <h3
+            className="font-bold text-base md:text-lg flex items-center gap-2"
+            style={{ color: "var(--color-text)" }}
+          >
             <span>{exerciseName}</span>
             <span
               className="text-xs px-2.5 py-0.5 rounded-full font-medium"
-              style={{ background: "var(--color-surface-subtle)", color: "var(--color-text-muted)" }}
+              style={{
+                background: "var(--color-surface-subtle)",
+                color: "var(--color-text-muted)",
+              }}
             >
               Set {currentSet} / {totalSets}
             </span>
@@ -191,7 +216,9 @@ export function AiMetricsDashboard({
             }}
           >
             <Flame size={14} style={{ color: "var(--color-recovery)" }} />
-            <span>Reps: {liveRepCount} / {targetReps}</span>
+            <span>
+              Reps: {liveRepCount} / {targetReps}
+            </span>
           </div>
         </div>
 
@@ -231,7 +258,10 @@ export function AiMetricsDashboard({
 
         <div className="overflow-x-auto max-h-48 overflow-y-auto pr-1">
           <table className="w-full text-left text-xs" style={{ color: "var(--color-text)" }}>
-            <tbody className="divide-y font-mono text-[11px]" style={{ borderColor: "var(--color-border)" }}>
+            <tbody
+              className="divide-y font-mono text-[11px]"
+              style={{ borderColor: "var(--color-border)" }}
+            >
               {logHistory.map((row) => {
                 const b = getPhaseBadge(row.phase);
                 return (
@@ -240,17 +270,27 @@ export function AiMetricsDashboard({
                     key={row.frameIndex}
                     style={{ borderBottom: "1px solid var(--color-border)" }}
                   >
-                    <td className="py-2 px-2.5 font-semibold" style={{ color: "var(--color-text)" }}>
+                    <td
+                      className="py-2 px-2.5 font-semibold"
+                      style={{ color: "var(--color-text)" }}
+                    >
                       Frame #{row.frameIndex}
                     </td>
                     <td className="py-2 px-2.5 font-bold" style={{ color: "var(--color-effort)" }}>
                       {row.metricName}: {row.userAngle}°
                     </td>
                     <td className="py-2 px-2.5" style={{ color: "var(--color-text-muted)" }}>
-                      Target: <span className="font-bold" style={{ color: "var(--color-recovery)" }}>≤{row.ruleAngle}°</span> | Start: &gt;{row.startDeg}°
+                      Target:{" "}
+                      <span className="font-bold" style={{ color: "var(--color-recovery)" }}>
+                        ≤{row.ruleAngle}°
+                      </span>{" "}
+                      | Start: &gt;{row.startDeg}°
                     </td>
                     <td className="py-2 px-2.5 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-semibold border" style={b.style}>
+                      <span
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-semibold border"
+                        style={b.style}
+                      >
                         {b.label}
                       </span>
                       <span
@@ -282,11 +322,16 @@ export function AiMetricsDashboard({
             borderColor: "var(--color-border)",
           }}
         >
-          <div className="text-xs flex items-center gap-1.5 font-medium" style={{ color: "var(--color-text-muted)" }}>
+          <div
+            className="text-xs flex items-center gap-1.5 font-medium"
+            style={{ color: "var(--color-text-muted)" }}
+          >
             <Gauge size={15} style={{ color: "var(--color-effort)" }} />
             {formatMetricName(metricName)}
           </div>
-          <div className="text-xl font-bold" style={{ color: "var(--color-effort)" }}>{angle}°</div>
+          <div className="text-xl font-bold" style={{ color: "var(--color-effort)" }}>
+            {angle}°
+          </div>
         </div>
 
         {/* Card 2: Live ROM % */}
@@ -297,11 +342,16 @@ export function AiMetricsDashboard({
             borderColor: "var(--color-border)",
           }}
         >
-          <div className="text-xs flex items-center gap-1.5 font-medium" style={{ color: "var(--color-text-muted)" }}>
+          <div
+            className="text-xs flex items-center gap-1.5 font-medium"
+            style={{ color: "var(--color-text-muted)" }}
+          >
             <Flame size={15} style={{ color: "var(--color-recovery)" }} />
             Range of Motion (ROM)
           </div>
-          <div className="text-xl font-bold" style={{ color: "var(--color-recovery)" }}>{rom}%</div>
+          <div className="text-xl font-bold" style={{ color: "var(--color-recovery)" }}>
+            {rom}%
+          </div>
         </div>
 
         {/* Card 3: Rep Counter & Finish Button */}

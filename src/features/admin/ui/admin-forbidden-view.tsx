@@ -26,7 +26,8 @@ export function AdminForbiddenView({ userName, role }: AdminForbiddenViewProps) 
             Access Denied
           </h1>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Administrative privileges are required to access the FITAI Control Plane and Exercise Management Console.
+            Administrative privileges are required to access the FITAI Control Plane and Exercise
+            Management Console.
           </p>
         </div>
 

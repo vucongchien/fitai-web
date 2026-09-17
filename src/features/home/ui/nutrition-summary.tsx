@@ -13,7 +13,8 @@ export function NutritionSummary({ summary }: NutritionSummaryProps) {
       <div>
         <strong>Today&rsquo;s nutrition</strong>
         <span>
-          {summary.loggedKcal.toLocaleString("en-US")} of {summary.targetKcal.toLocaleString("en-US")} kcal logged
+          {summary.loggedKcal.toLocaleString("en-US")} of{" "}
+          {summary.targetKcal.toLocaleString("en-US")} kcal logged
         </span>
       </div>
     </section>

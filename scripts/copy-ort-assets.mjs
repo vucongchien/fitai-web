@@ -29,4 +29,3 @@ if (filesToCopy.length === 0) {
 await mkdir(to, { recursive: true });
 await Promise.all(filesToCopy.map((name) => copyFile(join(from, name), join(to, name))));
 console.log(`[copy-ort-assets] copied ${filesToCopy.length} files to public/ort/`);
-

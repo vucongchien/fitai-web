@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { OnboardingFlow } from "@/features/onboarding/ui/onboarding-flow";
 import * as onboardingActions from "@/features/onboarding/server/onboarding-actions";
+import { OnboardingFlow } from "@/features/onboarding/ui/onboarding-flow";
 
 // Mock next/navigation
 const mockPush = vi.fn();
@@ -36,11 +36,13 @@ describe("OnboardingFlow Component & Schedule State Lifecycle", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     sessionStorage.clear();
-    saveActionSpy = vi.spyOn(onboardingActions, "saveOnboardingProfileServerAction").mockResolvedValue({
-      success: true,
-      message: "Success",
-      aiCoachActivated: true,
-    });
+    saveActionSpy = vi
+      .spyOn(onboardingActions, "saveOnboardingProfileServerAction")
+      .mockResolvedValue({
+        success: true,
+        message: "Success",
+        aiCoachActivated: true,
+      });
   });
 
   afterEach(() => {
@@ -52,7 +54,8 @@ describe("OnboardingFlow Component & Schedule State Lifecycle", () => {
 
     const clickNext = () => {
       const continueBtns = screen.getAllByRole("button", { name: /continue/i });
-      const footerContinue = continueBtns.find((b) => b.classList.contains("ui-button--primary")) || continueBtns[0];
+      const footerContinue =
+        continueBtns.find((b) => b.classList.contains("ui-button--primary")) || continueBtns[0];
       fireEvent.click(footerContinue);
     };
 

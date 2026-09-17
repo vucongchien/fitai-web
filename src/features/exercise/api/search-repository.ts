@@ -137,10 +137,18 @@ export const exerciseSearchRepository: ExerciseSearchRepository = {
         const client = createClient(ExerciseService, createServerTransport(accessToken));
         const res = await client.getCatalogMetadata({});
 
-        const bodyParts = dedupeCatalogEntries((res.bodyParts || []).map((b) => ({ id: b.id, name: b.name })));
-        const equipments = dedupeCatalogEntries((res.equipments || []).map((e) => ({ id: e.id, name: e.name })));
-        const muscles = dedupeCatalogEntries((res.muscles || []).map((m) => ({ id: m.id, name: m.name, bodyPartId: m.bodyPartId })));
-        const tags = dedupeCatalogEntries((res.tags || []).map((t) => ({ id: t.id, name: t.name })));
+        const bodyParts = dedupeCatalogEntries(
+          (res.bodyParts || []).map((b) => ({ id: b.id, name: b.name })),
+        );
+        const equipments = dedupeCatalogEntries(
+          (res.equipments || []).map((e) => ({ id: e.id, name: e.name })),
+        );
+        const muscles = dedupeCatalogEntries(
+          (res.muscles || []).map((m) => ({ id: m.id, name: m.name, bodyPartId: m.bodyPartId })),
+        );
+        const tags = dedupeCatalogEntries(
+          (res.tags || []).map((t) => ({ id: t.id, name: t.name })),
+        );
 
         return {
           bodyParts: bodyParts.length > 0 ? bodyParts : DEFAULT_CATALOG.bodyParts,
@@ -187,8 +195,18 @@ export const exerciseSearchRepository: ExerciseSearchRepository = {
     }
 
     try {
-      const all = await this.search({ q: "", bodyPartIds: [], targetMuscleIds: [], equipmentIds: [], difficulty: [], tagIds: [], aiOnly: false });
-      const found = all.find((item) => item.id === id || item.id.toLowerCase() === id.toLowerCase());
+      const all = await this.search({
+        q: "",
+        bodyPartIds: [],
+        targetMuscleIds: [],
+        equipmentIds: [],
+        difficulty: [],
+        tagIds: [],
+        aiOnly: false,
+      });
+      const found = all.find(
+        (item) => item.id === id || item.id.toLowerCase() === id.toLowerCase(),
+      );
       if (found) {
         return found;
       }

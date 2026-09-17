@@ -26,7 +26,11 @@ interface TodayStreakBadgeProps {
 const subscribeNoop = () => () => {};
 
 export function TodayStreakBadge({ streakDays }: TodayStreakBadgeProps) {
-  const isClient = useSyncExternalStore(subscribeNoop, () => true, () => false);
+  const isClient = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
 
   if (!isClient || streakDays <= 0) {
     return null;
