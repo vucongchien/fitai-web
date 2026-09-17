@@ -45,14 +45,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - **Phân loại Task**: Khi người dùng đưa ra yêu cầu thuộc dạng Task (tính năng mới, sửa lỗi, refactor, tích hợp hệ thống/API):
   1. Tạo thư mục task theo chuẩn: `tasks/YYYY-MM-DD-<slug>/` (ví dụ: `tasks/2026-09-17-expo-mobile-architecture/`).
-  2. Tạo 3 file tài liệu bắt buộc theo đúng format của skill `task-lifecycle-sdlc`:
-     - `intent.md`: Ngắn gọn, cô đọng, review trong 60s. Ghi nhận `Status: Draft | In Progress | Completed`, `Problem` (4 dòng ngắn), `Desired Outcome` (3-5 mục P0/P1/P2), `Business & Technical References`, và 3 mục: `Gaps`, `Working Assumptions` (kèm căn cứ code), `Open Questions` (tối đa 3 câu).
-     - `plan.md`: Kế hoạch thực thi kỹ thuật gồm `Files that change` (`(new)`, `(modify)`, `(delete)`), `Solution` duy nhất theo Simplicity First, `Order of work`, `Risks & Mitigations`, và `Proof`. BẮT BUỘC gọi `view_file` đọc lại `intent.md` trước khi viết `plan.md`.
-     - `todo.md`: Checklist công việc chi tiết theo từng phase/step. Cập nhật tick `[x]` ngay sau khi hoàn thành MỖI step trong lúc thi công.
+  2. Tạo 3 file tài liệu theo đúng trình tự vòng đời của skill `task-lifecycle-sdlc`:
+     - `intent.md` (Pha 1): Ngắn gọn, cô đọng, review trong 60s. Ghi nhận `Status: Draft | In Progress | Completed` (ban đầu là `Draft`), `Problem` (4 dòng ngắn), `Desired Outcome` (3-5 mục P0/P1/P2), `Business & Technical References`, `Gaps`, `Working Assumptions` (kèm căn cứ code), và `Open Questions` (tối đa 3 câu).
+     - `plan.md` (Pha 2): Kế hoạch thực thi kỹ thuật gồm `Files that change` (`(new)`, `(modify)`, `(delete)`), `Solution` duy nhất theo Simplicity First, `Order of work`, `Risks & Mitigations`, và `Proof`. BẮT BUỘC gọi `view_file` đọc lại `intent.md` trước khi viết `plan.md`.
+     - `todo.md` (Pha 4 - **BẮT BUỘC: PHẢI CÓ PLAN.MD MỚI CÓ TODO.MD**): Checklist công việc trích xuất trực tiếp từ danh sách các bước trong `Order of work` của `plan.md` sau khi Auditor duyệt. Tuyệt đối không tạo `todo.md` trước khi có `plan.md`. Cập nhật tick `[x]` ngay sau khi hoàn thành MỖI step trong lúc thi công.
 - **Quy tắc Dừng sau mỗi bước (Stop & Checkpoints)**:
   - Agent tuyệt đối không tự ý chạy dồn dập từ đầu đến cuối trong một lượt. Phải dừng lại báo cáo tại các checkpoint:
-    - *Checkpoint 1*: Sau khi soạn xong `intent.md` và `todo.md` -> Dừng lại báo cáo mục tiêu và checklist.
-    - *Checkpoint 2*: Sau khi viết `plan.md` và Subagent Auditor APPROVED -> Dừng lại báo cáo giải pháp và xin phép thực thi.
+    - *Checkpoint 1*: Sau khi soạn xong `intent.md` -> Dừng lại báo cáo mục tiêu và tiêu chí kỹ thuật.
+    - *Checkpoint 2*: Sau khi viết `plan.md`, Subagent Auditor APPROVED và khởi tạo `todo.md` -> Dừng lại báo cáo giải pháp, checklist thi công và xin phép thực thi.
     - *Checkpoint 3*: Trong lúc thi công, tick `[x]` sau mỗi step trong `todo.md` -> Nhắc nhở còn việc chưa xong thì chưa được dừng.
     - *Checkpoint 4*: Sau khi verification pass 100% và todo.md tick 100% -> Chuyển Status thành Completed và báo cáo nghiệm thu.
 - **Khóa trạng thái hoàn tất (Strict Status Gate)**:

@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
 import { refreshSessionTokens } from "@/shared/auth/refresh";

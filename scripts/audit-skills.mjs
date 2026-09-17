@@ -59,7 +59,9 @@ function auditNoUseEffect() {
         `\n👉 Use React 19 alternatives: useSyncExternalStore, ref callbacks, event handlers, or derived state.\n\n`,
     );
   } else {
-    process.stdout.write(`✅ [PASS] Zero useEffect detected across ${allSourceFiles.length} source files.\n`);
+    process.stdout.write(
+      `✅ [PASS] Zero useEffect detected across ${allSourceFiles.length} source files.\n`,
+    );
   }
 }
 
@@ -78,10 +80,16 @@ function auditReact19Standards() {
       if (trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*")) {
         return;
       }
-      if (/\bforwardRef\s*[(<]/.test(line) || /\bimport\s+[^'"]*?\bforwardRef\b[^'"]*?from/.test(line)) {
+      if (
+        /\bforwardRef\s*[(<]/.test(line) ||
+        /\bimport\s+[^'"]*?\bforwardRef\b[^'"]*?from/.test(line)
+      ) {
         forwardRefViolations.push(`${file}:${idx + 1}: ${trimmed}`);
       }
-      if (/\buseContext\s*\(/.test(line) || /\bimport\s+[^'"]*?\buseContext\b[^'"]*?from/.test(line)) {
+      if (
+        /\buseContext\s*\(/.test(line) ||
+        /\bimport\s+[^'"]*?\buseContext\b[^'"]*?from/.test(line)
+      ) {
         useContextViolations.push(`${file}:${idx + 1}: ${trimmed}`);
       }
       if (/\.defaultProps\s*=/.test(line) || /ReactDOM\.(render|hydrate)\s*\(/.test(line)) {
@@ -139,7 +147,9 @@ function auditRscBoundaries() {
         `❌ [FAIL] src/app/layout.tsx MUST NOT have 'use client'. Root layout must be a Server Component for streaming & metadata.\n\n`,
       );
     } else {
-      process.stdout.write(`✅ [PASS] Root layout (src/app/layout.tsx) is a clean Server Component.\n`);
+      process.stdout.write(
+        `✅ [PASS] Root layout (src/app/layout.tsx) is a clean Server Component.\n`,
+      );
     }
   }
 }
@@ -193,7 +203,9 @@ function auditNextConfigOptimizations() {
         `Skill vercel-react-best-practices requires optimizing barrel packages (like lucide-react) to prevent cold start delays.\n\n`,
     );
   } else {
-    process.stdout.write(`✅ [PASS] next.config.ts has optimizePackageImports enabled for lucide-react.\n`);
+    process.stdout.write(
+      `✅ [PASS] next.config.ts has optimizePackageImports enabled for lucide-react.\n`,
+    );
   }
 }
 
@@ -245,7 +257,9 @@ function main() {
   const duration = ((Date.now() - start) / 1000).toFixed(2);
   process.stdout.write("\n----------------------------------------------------\n");
   if (hasErrors) {
-    process.stderr.write(`❌ Skill audit FAILED (${duration}s). Fix violations before proceeding.\n\n`);
+    process.stderr.write(
+      `❌ Skill audit FAILED (${duration}s). Fix violations before proceeding.\n\n`,
+    );
     process.exit(1);
   } else {
     process.stdout.write(`🎉 All skill & architecture checks PASSED (${duration}s).\n\n`);

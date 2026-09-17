@@ -1,10 +1,12 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import os from 'node:os';
-import { describe, expect, it, afterEach } from 'vitest';
-import { validateTask } from '../../.agents/skills/task-lifecycle-sdlc/scripts/validate-task.mjs';
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 
-describe('SDLC Task Validator & Status Gate', () => {
+import { describe, expect, it, afterEach } from "vitest";
+
+import { validateTask } from "../../.agents/skills/task-lifecycle-sdlc/scripts/validate-task.mjs";
+
+describe("SDLC Task Validator & Status Gate", () => {
   const tempDirs: string[] = [];
 
   function createMockTaskDir(options: {
@@ -14,10 +16,10 @@ describe('SDLC Task Validator & Status Gate', () => {
     hasIntent?: boolean;
     hasPlan?: boolean;
   }) {
-    const tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'sdlc-test-'));
+    const tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), "sdlc-test-"));
     tempDirs.push(tmpBase);
 
-    const taskDir = path.join(tmpBase, '2026-09-17-test-feature');
+    const taskDir = path.join(tmpBase, "2026-09-17-test-feature");
     fs.mkdirSync(taskDir, { recursive: true });
 
     if (options.hasIntent !== false) {
@@ -25,7 +27,7 @@ describe('SDLC Task Validator & Status Gate', () => {
 
 - **Date**: 2026-09-17
 - **Owner**: Test Agent
-- **Status**: ${options.status || 'Draft'}
+- **Status**: ${options.status || "Draft"}
 
 ## Problem
 1. **Triệu chứng**: Lỗi thử nghiệm
@@ -56,7 +58,7 @@ describe('SDLC Task Validator & Status Gate', () => {
    - **B**: Phương án B
    - *Giả định tạm thời*: Tạm chọn A.
 `;
-      fs.writeFileSync(path.join(taskDir, 'intent.md'), intentContent, 'utf8');
+      fs.writeFileSync(path.join(taskDir, "intent.md"), intentContent, "utf8");
     }
 
     if (options.hasPlan !== false) {
@@ -79,7 +81,7 @@ describe('SDLC Task Validator & Status Gate', () => {
 ## Proof
 - File test: tests/unit/sdlc-task-validator.test.ts
 `;
-      fs.writeFileSync(path.join(taskDir, 'plan.md'), planContent, 'utf8');
+      fs.writeFileSync(path.join(taskDir, "plan.md"), planContent, "utf8");
     }
 
     if (options.hasTodo !== false) {
@@ -94,7 +96,7 @@ describe('SDLC Task Validator & Status Gate', () => {
 ## Phase 3: Verification
 - [x] Run test
 `;
-      fs.writeFileSync(path.join(taskDir, 'todo.md'), options.todoContent || defaultTodo, 'utf8');
+      fs.writeFileSync(path.join(taskDir, "todo.md"), options.todoContent || defaultTodo, "utf8");
     }
 
     return { taskDir, tmpBase };
@@ -111,15 +113,68 @@ describe('SDLC Task Validator & Status Gate', () => {
     tempDirs.length = 0;
   });
 
-  it('fails when todo.md is missing', () => {
-    const { taskDir, tmpBase } = createMockTaskDir({ hasTodo: false });
+  it("fails when todo.md exists without plan.md (rule: phai co plan moi co todo.md)", () => {
+    const { taskDir, tmpBase } = createMockTaskDir({ hasPlan: false, hasTodo: true });
     const result = validateTask(taskDir, tmpBase);
 
     expect(result.valid).toBe(false);
-    expect(result.errors.some((e: string) => e.includes('Thiếu file bắt buộc: todo.md'))).toBe(true);
+    expect(
+      result.errors.some(
+        (e: string) =>
+          e.includes("Lỗi trình tự SDLC") && e.includes("Phải có plan.md mới có todo.md"),
+      ),
+    ).toBe(true);
   });
 
-  it('fails when Status is Completed but todo.md has unchecked items [ ]', () => {
+  it("fails when Status is In Progress but todo.md is missing", () => {
+    const { taskDir, tmpBase } = createMockTaskDir({ status: "In Progress", hasTodo: false });
+    const result = validateTask(taskDir, tmpBase);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e: string) => e.includes("Thiếu file bắt buộc: todo.md"))).toBe(
+      true,
+    );
+  });
+
+  it("fails when Status is In Progress but plan.md is missing", () => {
+    const { taskDir, tmpBase } = createMockTaskDir({
+      status: "In Progress",
+      hasPlan: false,
+      hasTodo: false,
+    });
+    const result = validateTask(taskDir, tmpBase);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e: string) => e.includes("Thiếu file bắt buộc: plan.md"))).toBe(
+      true,
+    );
+  });
+
+  it("passes for a Draft task with only intent.md (Phase 1 Checkpoint 1)", () => {
+    const { taskDir, tmpBase } = createMockTaskDir({
+      status: "Draft",
+      hasPlan: false,
+      hasTodo: false,
+    });
+    const result = validateTask(taskDir, tmpBase);
+
+    expect(result.valid).toBe(true);
+    expect(result.status).toBe("Draft");
+  });
+
+  it("passes for a Draft task with intent.md and plan.md (Phase 2 Planning)", () => {
+    const { taskDir, tmpBase } = createMockTaskDir({
+      status: "Draft",
+      hasPlan: true,
+      hasTodo: false,
+    });
+    const result = validateTask(taskDir, tmpBase);
+
+    expect(result.valid).toBe(true);
+    expect(result.status).toBe("Draft");
+  });
+
+  it("fails when Status is Completed but todo.md has unchecked items [ ]", () => {
     const pendingTodo = `# Todo: Test Feature
 
 ## Phase 1: Planning
@@ -129,17 +184,21 @@ describe('SDLC Task Validator & Status Gate', () => {
 - [ ] Step 1 not yet completed
 `;
     const { taskDir, tmpBase } = createMockTaskDir({
-      status: 'Completed',
+      status: "Completed",
       hasTodo: true,
       todoContent: pendingTodo,
     });
     const result = validateTask(taskDir, tmpBase);
 
     expect(result.valid).toBe(false);
-    expect(result.errors.some((e: string) => e.includes('PEN-TODO') && e.includes('mục chưa hoàn thành'))).toBe(true);
+    expect(
+      result.errors.some(
+        (e: string) => e.includes("PEN-TODO") && e.includes("mục chưa hoàn thành"),
+      ),
+    ).toBe(true);
   });
 
-  it('passes when Status is In Progress even if todo.md has unchecked items [ ]', () => {
+  it("passes when Status is In Progress even if todo.md has unchecked items [ ]", () => {
     const inProgressTodo = `# Todo: Test Feature
 
 ## Phase 1: Planning
@@ -149,19 +208,19 @@ describe('SDLC Task Validator & Status Gate', () => {
 - [ ] Step 1 in progress
 `;
     const { taskDir, tmpBase } = createMockTaskDir({
-      status: 'In Progress',
+      status: "In Progress",
       hasTodo: true,
       todoContent: inProgressTodo,
     });
     const result = validateTask(taskDir, tmpBase);
 
     expect(result.valid).toBe(true);
-    expect(result.status).toBe('In Progress');
+    expect(result.status).toBe("In Progress");
     expect(result.todoStats.completed).toBe(1);
     expect(result.todoStats.pending).toBe(1);
   });
 
-  it('passes when Status is Completed and all items in todo.md are checked [x]', () => {
+  it("passes when Status is Completed and all items in todo.md are checked [x]", () => {
     const completedTodo = `# Todo: Test Feature
 
 ## Phase 1: Planning
@@ -172,14 +231,14 @@ describe('SDLC Task Validator & Status Gate', () => {
 - [x] Step 2 finished
 `;
     const { taskDir, tmpBase } = createMockTaskDir({
-      status: 'Completed',
+      status: "Completed",
       hasTodo: true,
       todoContent: completedTodo,
     });
     const result = validateTask(taskDir, tmpBase);
 
     expect(result.valid).toBe(true);
-    expect(result.status).toBe('Completed');
+    expect(result.status).toBe("Completed");
     expect(result.todoStats.pending).toBe(0);
     expect(result.todoStats.completed).toBe(3);
   });

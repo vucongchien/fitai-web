@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 describe("Expo Mobile Architecture Configuration", () => {
@@ -11,7 +12,7 @@ describe("Expo Mobile Architecture Configuration", () => {
     expect(fs.existsSync(workspaceYamlPath)).toBe(true);
 
     const content = fs.readFileSync(workspaceYamlPath, "utf-8");
-    expect(content).toContain('packages:');
+    expect(content).toContain("packages:");
     expect(content).toMatch(/-\s*["']\.["']/);
     expect(content).toMatch(/-\s*["']mobile["']/);
   });

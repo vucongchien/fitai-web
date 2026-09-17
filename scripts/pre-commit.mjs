@@ -192,11 +192,7 @@ function runTest(changedFiles) {
       return;
     }
     if (testableFiles.join(" ").length > 3000) {
-      testArgs = [
-        "run",
-        "--reporter=json",
-        `--outputFile=${VITEST_OUTPUT_FILE}`,
-      ];
+      testArgs = ["run", "--reporter=json", `--outputFile=${VITEST_OUTPUT_FILE}`];
     } else {
       // vitest related runs only tests affected by the changed files
       testArgs = [
