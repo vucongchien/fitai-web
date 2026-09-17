@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-native",
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../src/*", "./src/*"],
+      "@mobile/*": ["./src/*"],
+      "@shared-domain/*": ["../src/features/workout/domain/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "../src/features/workout/domain/**/*.ts",
+    "../src/features/workout/model/**/*.ts"
+  ]
+}

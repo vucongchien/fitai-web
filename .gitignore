@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/mobile/node_modules
+/mobile/.expo
 /.pnpm-store
 /.pnp
 .pnp.*
@@ -44,6 +46,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+.agent-perf
 .agents
 .codex
 .github/skills
