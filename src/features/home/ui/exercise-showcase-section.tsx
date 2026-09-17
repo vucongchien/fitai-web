@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Clock, Play } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import type { FeaturedExerciseItem } from "@/features/home/model/home-page.types";
@@ -57,7 +58,13 @@ export function ExerciseShowcaseSection({ exercises }: ExerciseShowcaseSectionPr
             <div className="exercise-showcase-card" key={ex.id}>
               <div className="exercise-showcase-card__media">
                 {ex.imageUrl ? (
-                  <img alt={ex.name} className="exercise-showcase-card__img" src={ex.imageUrl} />
+                  <Image
+                    alt={ex.name}
+                    className="exercise-showcase-card__img"
+                    fill
+                    sizes="(max-width: 640px) 100vw, 320px"
+                    src={ex.imageUrl}
+                  />
                 ) : (
                   <div className="exercise-showcase-card__fallback-img" />
                 )}

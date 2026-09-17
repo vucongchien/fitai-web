@@ -1,4 +1,5 @@
 import { Camera, Clock, Dumbbell } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
@@ -50,7 +51,13 @@ export function ExerciseCard({ exercise, catalog }: ExerciseCardProps) {
     >
       <div className="ex-card__thumb">
         {exercise.thumbnailUrl ? (
-          <img alt={exercise.name} className="ex-card__img" src={exercise.thumbnailUrl} />
+          <Image
+            alt={exercise.name}
+            className="ex-card__img"
+            fill
+            sizes="(max-width: 640px) 100vw, 320px"
+            src={exercise.thumbnailUrl}
+          />
         ) : (
           <div className="ex-card__icon-fallback">
             <Dumbbell size={32} strokeWidth={1.3} />

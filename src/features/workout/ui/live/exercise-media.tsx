@@ -1,6 +1,7 @@
 "use client";
 
 import { Camera } from "lucide-react";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { useCallback, useSyncExternalStore } from "react";
 
@@ -77,8 +78,14 @@ export function ExerciseMedia({
           src={parsedVideo.directUrl}
         />
       ) : exercise.thumbnailUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img alt={exercise.name} className="live-media__poster" src={exercise.thumbnailUrl} />
+        <Image
+          alt={exercise.name}
+          className="live-media__poster"
+          fill
+          priority
+          sizes="(max-width: 640px) 100vw, 400px"
+          src={exercise.thumbnailUrl}
+        />
       ) : (
         <div aria-hidden="true" className="live-media__fallback">
           <span>{exercise.name.charAt(0)}</span>

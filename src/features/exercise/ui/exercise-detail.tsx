@@ -8,6 +8,7 @@ import {
   Play,
   Video,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
@@ -120,7 +121,14 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
       <main className="focused-main detail-main">
         <div className="detail-thumb">
           {exercise.thumbnailUrl ? (
-            <img alt={exercise.name} className="detail-thumb__img" src={exercise.thumbnailUrl} />
+            <Image
+              alt={exercise.name}
+              className="detail-thumb__img"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 600px"
+              src={exercise.thumbnailUrl}
+            />
           ) : videoMediaUrl ? (
             <div className="detail-thumb__fallback">
               <Video size={56} strokeWidth={1.2} />

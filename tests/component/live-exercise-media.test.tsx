@@ -56,7 +56,7 @@ describe(ExerciseMedia, () => {
 
     expect(screen.getByRole("img", { name: "Plank Hold" })).toHaveAttribute(
       "src",
-      "/demo/plank.jpg",
+      expect.stringContaining("plank.jpg"),
     );
   });
 

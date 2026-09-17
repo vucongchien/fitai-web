@@ -1,4 +1,5 @@
 import { Dumbbell, Flame, Trophy, Zap } from "lucide-react";
+import Image from "next/image";
 
 import type { BestPersonalRecord, ProfileQuickStats, ProfileUser } from "../model/profile.types";
 
@@ -18,10 +19,13 @@ export function ProfileHeroCard({ user, bestPr, stats }: ProfileHeroCardProps) {
     <div className="py-2 text-center">
       {/* Avatar Container */}
       <div className="relative mx-auto mb-3 h-20 w-20">
-        <img
+        <Image
           src={user.avatarUrl}
           alt={user.name}
-          className="h-full w-full rounded-full object-cover ring-2 ring-[#4B57F2] ring-offset-2 ring-offset-[#F7F8F6]"
+          fill
+          priority
+          sizes="80px"
+          className="rounded-full object-cover ring-2 ring-[#4B57F2] ring-offset-2 ring-offset-[#F7F8F6]"
         />
         <span className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#4B57F2] text-[11px] font-bold text-white shadow-xs">
           {user.level}

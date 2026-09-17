@@ -76,7 +76,7 @@ describe("profile UI Components", () => {
   it("calls fetch to log out when clicking Log Out button", async () => {
     const mockFetch = vi.fn().mockResolvedValue({ ok: true });
     vi.stubGlobal("fetch", mockFetch);
-    const mockLocation = { href: "" };
+    const mockLocation = { href: "http://localhost/profile" };
     vi.stubGlobal("location", mockLocation);
 
     render(<ProfileContent profile={mockProfileData} />);
