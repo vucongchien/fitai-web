@@ -82,3 +82,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **Hook & Kiểm tra tự động**:
   - Chạy `pnpm run task:check` hoặc `node .agents/skills/task-lifecycle-sdlc/scripts/validate-task.mjs` để đối soát tự động đường dẫn file, điểm số và todo checklist. Lifecycle hook (`.agents/skills/task-lifecycle-sdlc/scripts/validate-task-hook.mjs`) sẽ chặn hoàn tất nếu vi phạm format hoặc dính lỗi phạt.
 
+## 7. Quy chuẩn Kiến trúc React & Next.js Hiện đại (Mandatory Skills Reference)
+
+Khi viết, sửa hoặc refactor mã nguồn UI/Fullstack, **bắt buộc tuân thủ và đối soát** với 3 bộ kỹ năng chuẩn đặt tại `.agents/skills/`:
+1. **`vercel-react-best-practices`**:
+   - **Tuyệt đối tránh lạm dụng `useEffect`**: Không dùng `useEffect` để tính toán derived state (tính trực tiếp trong render) hoặc xử lý hành vi người dùng (đặt trực tiếp trong event handler).
+   - **Triệt tiêu Data Waterfall**: Dùng `Promise.all`, Suspense boundaries, và fetch song song thay vì cascading fetches.
+2. **`vercel-composition-patterns`**:
+   - **Composition over Boolean Props**: Không mở rộng component bằng cách nhồi cờ boolean; dùng compound components và composition.
+   - **React 19 Conventions**: Không dùng `forwardRef` (dùng `ref` như prop chuẩn), ưu tiên hook `use()` thay cho `useContext()`.
+3. **`next-best-practices`**:
+   - **Tối ưu ranh giới RSC**: Mặc định là Server Component; chỉ đẩy `'use client'` xuống các component lá (leaf components) có tương tác DOM / state.
+   - **Chuẩn Async APIs**: Tuân thủ chuẩn async mới trong Next.js 15+ (`cookies()`, `headers()`, `params`, `searchParams`).
