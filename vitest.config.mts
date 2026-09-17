@@ -8,6 +8,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("src", import.meta.url)),
+      react: fileURLToPath(new URL("node_modules/react", import.meta.url)),
+      "react-dom": fileURLToPath(new URL("node_modules/react-dom", import.meta.url)),
+      "react-native": fileURLToPath(new URL("tests/mocks/react-native.tsx", import.meta.url)),
       "server-only": fileURLToPath(new URL("tests/mocks/server-only.ts", import.meta.url)),
     },
   },
