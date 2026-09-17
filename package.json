@@ -19,6 +19,7 @@
     "proto:gen": "buf generate ../gym-companion/proto --template buf.gen.yaml",
     "task:check": "node .agents/skills/task-lifecycle-sdlc/scripts/validate-task.mjs",
     "audit:skills": "node scripts/audit-skills.mjs",
+    "audit:comments": "node scripts/audit-comments.mjs",
     "precommit": "node scripts/pre-commit.mjs",
     "prepare": "git config core.hooksPath .githooks"
   },

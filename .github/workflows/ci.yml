@@ -51,6 +51,9 @@ jobs:
       - name: Run Skills & Architecture Audit
         run: pnpm audit:skills
 
+      - name: Run Comment Policy Audit (AGENTS.md Rule 5)
+        run: pnpm audit:comments
+
       - name: Run Task Lifecycle Validation
         run: pnpm task:check
 

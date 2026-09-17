@@ -1,9 +1,3 @@
-/**
- * FITAI Design Tokens (Headless TypeScript constants)
- * Shared between Next.js (Web) and React Native / Expo (Mobile).
- * Source of truth mapped to src/shared/design-system/tokens.css.
- */
-
 export const tokens = {
   colors: {
     // Signature Triple Lane Palette

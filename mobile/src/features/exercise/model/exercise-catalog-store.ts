@@ -1,8 +1,3 @@
-/**
- * Exercise Catalog Store
- * In-memory searchable index of exercises with 0ms latency filtering.
- */
-
 import { useSyncExternalStore } from "react";
 
 export interface ExerciseDefinition {

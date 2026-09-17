@@ -1,9 +1,3 @@
-/**
- * Hardware Secure Storage Adapter
- * Wraps expo-secure-store (iOS Keychain / Android Keystore) for sensitive tokens.
- * Automatically falls back to isolated in-memory storage in test runners.
- */
-
 export const SECURE_KEYS = {
   ACCESS_TOKEN: "fitai_access_token",
   REFRESH_TOKEN: "fitai_refresh_token",

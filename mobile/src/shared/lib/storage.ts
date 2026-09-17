@@ -1,10 +1,3 @@
-/**
- * Key-Value Storage Adapter (MMKV / Synchronous In-Memory)
- * Provides 0ms synchronous read/write operations for crash recovery,
- * offline queues, and local user preferences.
- * Automatically falls back to in-memory map in test/node environments.
- */
-
 export interface KeyValueStorage {
   getString(key: string): string | null;
   set(key: string, value: string): void;

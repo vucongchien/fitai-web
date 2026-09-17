@@ -1,9 +1,3 @@
-/**
- * ConnectRPC Native Client Transport
- * Connects directly to gym-companion gRPC backend.
- * Automatically injects Bearer token from secureStorage and handles single-flight auto-refresh.
- */
-
 import type { Interceptor } from "@connectrpc/connect";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";

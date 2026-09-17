@@ -1,9 +1,3 @@
-/**
- * Today Dashboard Store
- * Aggregates streak, today's workout, daily macro progress, and meal timeline.
- * Zero-useEffect compliant with useSyncExternalStore.
- */
-
 import { useSyncExternalStore } from "react";
 
 export interface MacroTarget {

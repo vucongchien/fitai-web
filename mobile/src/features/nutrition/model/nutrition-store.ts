@@ -1,8 +1,3 @@
-/**
- * Nutrition Store
- * Manages daily meal logs, macro targets, and optimistic offline logging.
- */
-
 import { useSyncExternalStore } from "react";
 
 import { offlineQueue } from "../../../shared/lib/offline-queue";

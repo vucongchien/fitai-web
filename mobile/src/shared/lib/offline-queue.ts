@@ -1,9 +1,3 @@
-/**
- * Offline Sync Outbox Queue
- * Ensures zero-data-loss in gyms with weak/no cell reception (basements).
- * Enqueues mutations into local storage and drains them automatically when online.
- */
-
 import { appStorage, STORAGE_KEYS } from "./storage";
 
 export type OfflineActionType = "LOG_SET" | "LOG_MEAL" | "UPDATE_PROFILE";

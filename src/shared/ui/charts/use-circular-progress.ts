@@ -1,9 +1,3 @@
-/**
- * Headless Circular Progress Logic
- * Pure mathematical computation for circular progress rings and gauges.
- * Usable across Web (SVG) and React Native / Expo (react-native-svg or custom gauge).
- */
-
 export const DEFAULT_RADIUS = 52;
 export const DEFAULT_CIRCUMFERENCE = 2 * Math.PI * DEFAULT_RADIUS;
 

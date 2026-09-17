@@ -66,7 +66,7 @@ function getChangedFiles() {
 
 // 0. SKILLS & ARCHITECTURE AUDIT (Zero-useEffect, React 19 rules, RSC hygiene, barrel imports)
 function runSkillsAudit() {
-  printHeader("1/5 Running Skills & Architecture Audit");
+  printHeader("1/6 Running Skills & Architecture Audit");
   const start = Date.now();
 
   const res = spawnSync("node", ["scripts/audit-skills.mjs"], {
@@ -83,9 +83,28 @@ function runSkillsAudit() {
   printPass("skills-audit", Date.now() - start);
 }
 
+// 0b. COMMENT POLICY AUDIT (AGENTS.md Rule 5: Lazy write comment in code)
+function runCommentsAudit() {
+  printHeader("2/6 Running Comments Policy Audit (No verbose/redundant comments)");
+  const start = Date.now();
+
+  const res = spawnSync("node", ["scripts/audit-comments.mjs", isAll ? "--all" : "--staged"], {
+    shell: true,
+    cwd: CWD,
+    encoding: "utf-8",
+  });
+
+  if (res.status !== 0) {
+    const raw = cleanAnsi((res.stderr || "") + (res.stdout || ""));
+    printFailAndExit("comments-audit", raw || "Comment policy audit failed. Xóa comment đi!");
+  }
+
+  printPass("comments-audit", Date.now() - start);
+}
+
 // 1. LINT STEP (Runs only on changed JS/TS files)
 function runLint(changedFiles) {
-  printHeader("2/5 Running Lint (oxlint)");
+  printHeader("3/6 Running Lint (oxlint)");
   const start = Date.now();
 
   let targetArgs = ["."];
@@ -178,7 +197,7 @@ function cleanVitestFailure(rawMsg) {
 }
 
 function runTest(changedFiles) {
-  printHeader("3/5 Running Tests (vitest)");
+  printHeader("4/6 Running Tests (vitest)");
   const start = Date.now();
 
   let testArgs = ["run", "--reporter=json", `--outputFile=${VITEST_OUTPUT_FILE}`];
@@ -292,7 +311,7 @@ function runTest(changedFiles) {
 
 // 3. TYPECHECK STEP (Runs only when TypeScript files or configs change)
 function runTypecheck(changedFiles) {
-  printHeader("4/5 Running Type-check (tsc)");
+  printHeader("5/6 Running Type-check (tsc)");
   const start = Date.now();
 
   if (!isAll) {
@@ -331,7 +350,7 @@ function runTypecheck(changedFiles) {
 
 // 4. BUILD STEP (Runs only when production app files or build configs change)
 function runBuild(changedFiles) {
-  printHeader("5/5 Running Production Build (next build)");
+  printHeader("6/6 Running Production Build (next build)");
   const start = Date.now();
 
   if (process.env.SKIP_BUILD === "1" || process.env.FAST === "1") {
@@ -360,10 +379,11 @@ function runBuild(changedFiles) {
     encoding: "utf-8",
   });
   if (ortRes.status !== 0) {
-    printFailAndExit("build (copy-ort-assets)", (ortRes.stderr || ortRes.stdout || "").trim());
+    const raw = cleanAnsi((ortRes.stderr || "") + (ortRes.stdout || ""));
+    printFailAndExit("build", raw || "Failed to copy ONNX runtime assets");
   }
 
-  // 2. Next build
+  // 2. Run next build
   const res = spawnSync("npx", ["--no-install", "next", "build"], {
     shell: true,
     cwd: CWD,
@@ -371,17 +391,12 @@ function runBuild(changedFiles) {
   });
 
   if (res.status !== 0) {
-    const raw = cleanAnsi((res.stdout || "") + (res.stderr || ""));
+    const raw = cleanAnsi((res.stderr || "") + (res.stdout || ""));
     const lines = raw.split("\n");
-
-    const filtered = lines.filter((line) => {
-      const trimmed = line.trim();
+    const filtered = lines.filter((l) => {
+      const trimmed = l.trim();
       if (!trimmed) return false;
-      if (/^[┌├│└○◐ƒ▲✓\-]/.test(trimmed)) return false;
-      if (trimmed.startsWith("Route (app)")) return false;
-      if (trimmed.includes("Collecting page data")) return false;
-      if (trimmed.includes("Generating static pages")) return false;
-      if (trimmed.includes("Finalizing page optimization")) return false;
+      if (trimmed.includes("Next.js ")) return false;
       if (trimmed.includes("Creating an optimized production build")) return false;
       if (trimmed.includes("[copy-ort-assets]")) return false;
       return true;
@@ -398,7 +413,7 @@ function runBuild(changedFiles) {
 function main() {
   const totalStart = Date.now();
   process.stdout.write(
-    "Starting pre-commit pipeline: audit-skills -> lint -> test -> type-check -> build\n",
+    "Starting pre-commit pipeline: audit-skills -> audit-comments -> lint -> test -> type-check -> build\n",
   );
 
   const changedFiles = getChangedFiles();
@@ -408,6 +423,7 @@ function main() {
   }
 
   runSkillsAudit();
+  runCommentsAudit();
   runLint(changedFiles);
   runTest(changedFiles);
   runTypecheck(changedFiles);

@@ -1,9 +1,3 @@
-/**
- * Rest Timer for In-Gym Workout Intervals
- * Based on absolute timestamps so countdown never drifts when phone sleeps.
- * Triggers hardware haptic vibration when timer hits 0.
- */
-
 import { useSyncExternalStore } from "react";
 
 import { formatClock, secondsLeft } from "@/features/workout/domain/session-timer-math";

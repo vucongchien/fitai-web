@@ -1,9 +1,3 @@
-/**
- * Mobile Authentication Store
- * Zero-useEffect compliant state store backed by secureStorage (Keychain / Keystore).
- * Supports Fast Dev Login and production email/password credentials.
- */
-
 import { useSyncExternalStore } from "react";
 
 import { secureStorage } from "../../../shared/lib/secure-storage";

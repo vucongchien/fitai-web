@@ -1,8 +1,3 @@
-/**
- * 4-Week Training Cycle & Roadmap Store
- * Manages mesocycle progression, weekly session calendar, and cycle state.
- */
-
 import { useSyncExternalStore } from "react";
 
 export interface RoadmapSession {

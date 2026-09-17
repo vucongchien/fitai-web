@@ -1,9 +1,3 @@
-/**
- * Active Workout Session Store with Crash Recovery
- * Zero-useEffect compliant state store backed by synchronous MMKV storage.
- * Automatically persists after every set to protect against app crashes or battery depletion.
- */
-
 import { useSyncExternalStore } from "react";
 
 import { nativeHaptics } from "../../../shared/lib/haptics";

@@ -1,8 +1,3 @@
-/**
- * Profile & Injury Recovery Store
- * Manages athlete biometric stats, pain tracking, and audio/haptic preferences.
- */
-
 import { useSyncExternalStore } from "react";
 
 import { appStorage, STORAGE_KEYS } from "../../../shared/lib/storage";

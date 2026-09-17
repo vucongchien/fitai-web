@@ -1,8 +1,3 @@
-/**
- * Mobile Design System Theme Constants
- * Maps directly to shared design tokens.
- */
-
 import { tokens } from "@/shared/design-system/tokens";
 
 export const theme = {
