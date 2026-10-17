@@ -23,7 +23,6 @@
     "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
-    "@base-ui/react": "1.6.0",
     "@bufbuild/protobuf": "2.13.0",
     "@connectrpc/connect": "2.1.2",
     "@connectrpc/connect-web": "2.1.2",
@@ -34,7 +33,6 @@
     "@opentelemetry/api": "1.9.1",
     "@opentelemetry/resources": "2.10.0",
     "@opentelemetry/sdk-node": "0.221.0",
-    "@opentelemetry/sdk-trace-base": "2.10.0",
     "@opentelemetry/semantic-conventions": "1.43.0",
     "@tanstack/charts": "0.6.5",
     "@tanstack/charts-scales": "^0.6.5",
@@ -45,7 +43,6 @@
     "firebase": "^12.17.1",
     "lucide-react": "1.28.0",
     "next": "16.3.0",
-    "next-intl": "^4.14.5",
     "onnxruntime-web": "^1.27.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
