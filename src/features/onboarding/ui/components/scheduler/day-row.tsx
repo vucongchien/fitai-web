@@ -77,7 +77,7 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
   };
 
   return (
-    <div className="py-2.5 px-3 sm:px-4 flex items-center justify-between gap-3 text-xs transition-colors hover:bg-neutral-50/50">
+    <div className="py-2.5 px-3 sm:px-4 flex items-center justify-between gap-3 text-xs transition-colors hover:bg-[var(--color-surface-subtle)]">
       {/* Day Label (3 letters) & iOS Toggle Switch */}
       <div className="flex items-center gap-2.5 w-20 sm:w-24 shrink-0">
         <button
@@ -86,14 +86,14 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
           role="switch"
           aria-checked={state.enabled}
           className={cn(
-            "w-8 h-4.5 rounded-full transition-colors relative cursor-pointer p-0.5 shrink-0 focus:outline-none focus:ring-1 focus:ring-neutral-400",
-            state.enabled ? "bg-neutral-900" : "bg-neutral-200",
+            "w-8 h-4.5 rounded-full transition-colors relative cursor-pointer p-0.5 shrink-0 focus:outline-none focus:ring-1 focus:ring-[var(--color-action)]",
+            state.enabled ? "bg-[var(--color-action)]" : "bg-[var(--color-border)]",
           )}
           aria-label={`Toggle availability for ${label}`}
         >
           <div
             className={cn(
-              "w-3.5 h-3.5 rounded-full bg-white shadow-xs transition-transform duration-200 ease-in-out",
+              "w-3.5 h-3.5 rounded-full bg-[var(--color-surface)] shadow-xs transition-transform duration-200 ease-in-out",
               state.enabled ? "translate-x-3.5" : "translate-x-0",
             )}
           />
@@ -102,7 +102,7 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
         <span
           className={cn(
             "font-semibold tracking-wide select-none",
-            state.enabled ? "text-neutral-900" : "text-neutral-400",
+            state.enabled ? "text-[var(--color-text)]" : "text-[var(--color-text-muted)]",
           )}
         >
           {label}
@@ -119,7 +119,7 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
                 <select
                   value={range.start}
                   onChange={(e) => handleUpdateRange(range.id, "start", e.target.value)}
-                  className="h-8.5 px-2.5 rounded-lg border border-neutral-200 bg-white text-xs font-mono font-medium text-neutral-800 shadow-2xs focus:outline-none focus:border-neutral-900 cursor-pointer"
+                  className="h-8.5 px-2.5 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-mono font-medium text-[var(--color-text)] shadow-2xs focus:outline-none focus:border-[var(--color-action)] cursor-pointer"
                   aria-label={`Start time for ${label}`}
                 >
                   {options.map((opt) => (
@@ -129,13 +129,13 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
                   ))}
                 </select>
 
-                <span className="text-neutral-400 text-xs font-medium">to</span>
+                <span className="text-[var(--color-text-muted)] text-xs font-medium">to</span>
 
                 {/* End Time Select */}
                 <select
                   value={range.end}
                   onChange={(e) => handleUpdateRange(range.id, "end", e.target.value)}
-                  className="h-8.5 px-2.5 rounded-lg border border-neutral-200 bg-white text-xs font-mono font-medium text-neutral-800 shadow-2xs focus:outline-none focus:border-neutral-900 cursor-pointer"
+                  className="h-8.5 px-2.5 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-xs font-mono font-medium text-[var(--color-text)] shadow-2xs focus:outline-none focus:border-[var(--color-action)] cursor-pointer"
                   aria-label={`End time for ${label}`}
                 >
                   {options.map((opt) => (
@@ -145,23 +145,23 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
                   ))}
                 </select>
 
-                {/* Delete Slot Button (Easy to click) */}
+                {/* Delete Slot Button */}
                 <button
                   type="button"
                   onClick={() => handleRemoveRange(range.id)}
-                  className="h-8.5 w-8.5 inline-flex items-center justify-center rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-neutral-100 transition-colors cursor-pointer"
+                  className="h-8.5 w-8.5 inline-flex items-center justify-center rounded-[var(--radius-input)] text-[var(--color-text-muted)] hover:text-[var(--color-danger)] hover:bg-[var(--color-surface-subtle)] transition-colors cursor-pointer"
                   title="Remove time slot"
                   aria-label="Remove time slot"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
 
-                {/* Add Next Slot Button (Easy to click, only on last range) */}
+                {/* Add Next Slot Button */}
                 {index === state.ranges.length - 1 && (
                   <button
                     type="button"
                     onClick={handleAddRange}
-                    className="h-8.5 w-8.5 inline-flex items-center justify-center rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors cursor-pointer"
+                    className="h-8.5 w-8.5 inline-flex items-center justify-center rounded-[var(--radius-input)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)] transition-colors cursor-pointer"
                     title="Add another time window"
                     aria-label="Add another time window"
                   >
@@ -172,7 +172,7 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
             ))}
           </div>
         ) : (
-          <span className="text-xs text-neutral-400 font-medium py-1.5 select-none">Rest</span>
+          <span className="text-xs text-[var(--color-text-muted)] font-medium py-1.5 select-none">Rest</span>
         )}
       </div>
     </div>

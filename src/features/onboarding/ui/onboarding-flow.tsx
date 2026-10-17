@@ -518,7 +518,7 @@ export function OnboardingFlow() {
                     ))}
                   </div>
                   {errors.equipment ? (
-                    <p className="mt-2 text-xs font-semibold text-rose-600" role="alert">
+                    <p className="mt-2 text-xs font-semibold text-[var(--color-danger)]" role="alert">
                       {errors.equipment.message}
                     </p>
                   ) : null}

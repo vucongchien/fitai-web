@@ -116,15 +116,13 @@ export function InstructionsSheet({
     <div
       ref={sheetRef}
       aria-label={`How to do ${exercise.name}`}
-      className={`live-sheet ${isClosing ? "live-sheet--closing" : ""}`}
+      className={`live-sheet ${isClosing ? "live-sheet--closing" : ""} cursor-pointer`}
       role="dialog"
       onClick={handleClose}
-      style={{ cursor: "pointer" }}
     >
       <div
-        className="live-sheet__panel"
+        className="live-sheet__panel cursor-default"
         onClick={(e) => e.stopPropagation()}
-        style={{ cursor: "default" }}
       >
         <header className="live-sheet__header">
           <div>
@@ -134,19 +132,14 @@ export function InstructionsSheet({
           <div className="flex items-center gap-2">
             <button
               aria-label={isSpeaking ? "Mute audio (Playing)" : "Read instructions aloud"}
-              className={`live-media__control ${isSpeaking ? "bg-red-500 text-white" : ""}`}
+              className={`live-media__control transition-colors ${
+                isSpeaking
+                  ? "bg-[var(--color-action)] text-[var(--color-action-contrast)] shadow-[0_0_12px_var(--color-action-soft)]"
+                  : ""
+              }`}
               onClick={toggleSpeech}
               title={isSpeaking ? "Mute audio (Playing)" : "Read instructions aloud"}
               type="button"
-              style={
-                isSpeaking
-                  ? {
-                      background: "var(--color-action)",
-                      color: "var(--color-action-contrast)",
-                      boxShadow: "0 0 10px var(--color-action-soft)",
-                    }
-                  : undefined
-              }
             >
               {isSpeaking ? (
                 <VolumeX aria-hidden="true" size={18} />
@@ -183,55 +176,16 @@ export function InstructionsSheet({
           {steps.length > 1 ? (
             <div className="detail-section">
               <h3>Execution Steps</h3>
-              <ol
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                  padding: 0,
-                  margin: "12px 0 20px 0",
-                  listStyle: "none",
-                }}
-              >
+              <ol className="flex flex-col gap-3 p-0 my-3 mb-5 list-none">
                 {steps.map((step, idx) => (
                   <li
                     key={idx}
-                    style={{
-                      display: "flex",
-                      gap: "14px",
-                      alignItems: "flex-start",
-                      background: "var(--color-surface-subtle)",
-                      padding: "14px 16px",
-                      borderRadius: "var(--radius-card)",
-                      border: "1px solid var(--color-border)",
-                    }}
+                    className="flex gap-3.5 items-start bg-[var(--color-surface-subtle)] px-4 py-3.5 rounded-[var(--radius-card)] border border-[var(--color-border)]"
                   >
-                    <span
-                      style={{
-                        minWidth: "26px",
-                        height: "26px",
-                        borderRadius: "50%",
-                        background: "var(--color-action)",
-                        color: "var(--color-action-contrast)",
-                        fontWeight: 700,
-                        fontSize: "13px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
+                    <span className="min-w-[26px] h-[26px] rounded-full bg-[var(--color-action)] text-[var(--color-action-contrast)] font-bold text-xs flex items-center justify-center shrink-0">
                       {idx + 1}
                     </span>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "15px",
-                        lineHeight: "1.5",
-                        color: "var(--color-text)",
-                        fontWeight: 500,
-                      }}
-                    >
+                    <p className="m-0 text-sm leading-relaxed text-[var(--color-text)] font-medium">
                       {step}
                     </p>
                   </li>

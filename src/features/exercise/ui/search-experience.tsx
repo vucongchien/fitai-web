@@ -274,7 +274,7 @@ export function SearchExperience({
             aria-label="Search exercises"
           />
           {isSearching ? (
-            <Loader2 className="animate-spin text-slate-400" size={16} />
+            <Loader2 className="animate-spin text-[var(--color-text-muted)]" size={16} />
           ) : filters.q ? (
             <button
               aria-label="Clear search"
@@ -347,7 +347,7 @@ export function SearchExperience({
 
             {rawExercises.length > 0 ? (
               <section className="search-recommendations border-t border-[var(--color-border)] pt-4">
-                <h3 className="text-sm font-bold mb-3 text-[var(--color-text-main)]">
+                <h3 className="text-sm font-bold mb-3 text-[var(--color-text)]">
                   Suggested movements
                 </h3>
                 <ol className="ex-grid">

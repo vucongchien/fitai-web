@@ -84,77 +84,29 @@ function SetConfirmDialogContent({
     <div
       aria-label="Confirm completed set"
       aria-modal="true"
-      className={`live-sheet live-sheet--dialog ${isClosing ? "live-sheet--closing" : ""}`}
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/65 backdrop-blur-xs p-4 cursor-pointer ${isClosing ? "opacity-0 transition-opacity duration-200" : ""}`}
       role="dialog"
       onClick={() => triggerClose()}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9999,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.65)",
-        backdropFilter: "blur(6px)",
-        padding: "16px",
-        cursor: "pointer",
-      }}
     >
       <div
-        className="end-dialog set-confirm-dialog"
+        className="w-full max-w-[440px] p-6 rounded-[var(--radius-hero)] bg-[var(--color-surface)] shadow-[var(--shadow-float,0_20px_25px_-5px_rgba(0,0,0,0.3))] border border-[var(--color-border)] cursor-default"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          maxWidth: "440px",
-          width: "100%",
-          padding: "24px",
-          background: "var(--color-surface)",
-          borderRadius: "20px",
-          boxShadow: "var(--shadow-float, 0 20px 25px -5px rgba(0, 0, 0, 0.3))",
-          cursor: "default",
-        }}
       >
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "16px",
-          }}
-        >
+        <div className="flex justify-between items-center mb-4">
           <div>
-            <span
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-                color: "var(--color-action)",
-              }}
-            >
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-action)]">
               Companion · Set {currentSet}/{totalSets}
             </span>
-            <h2
-              style={{
-                fontSize: "20px",
-                fontWeight: 700,
-                margin: "4px 0 0 0",
-                color: "var(--color-text)",
-              }}
-            >
+            <h2 className="text-xl font-bold mt-1 text-[var(--color-text)]">
               {exercise.name}
             </h2>
           </div>
           <button
             onClick={() => triggerClose()}
             type="button"
-            style={{
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
-              padding: "4px",
-              color: "var(--color-text-muted)",
-            }}
+            className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
+            aria-label="Close dialog"
           >
             <X size={20} />
           </button>
@@ -162,70 +114,29 @@ function SetConfirmDialogContent({
 
         {/* AI Badge if AI tracked */}
         {aiCountedReps > 0 && !timed && (
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "6px 12px",
-              borderRadius: "20px",
-              background: "var(--color-action-soft)",
-              color: "var(--color-action)",
-              fontSize: "13px",
-              fontWeight: 600,
-              marginBottom: "16px",
-            }}
-          >
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)] text-xs font-semibold mb-4">
             <Sparkles size={14} />
             AI counted: {aiCountedReps} reps
           </div>
         )}
 
         {/* Quantity Controls */}
-        <div
-          style={{
-            background: "var(--color-surface-subtle)",
-            borderRadius: "16px",
-            padding: "20px",
-            marginBottom: "16px",
-          }}
-        >
+        <div className="bg-[var(--color-surface-subtle)] rounded-[var(--radius-card)] p-5 mb-4 border border-[var(--color-border)]">
           {!timed ? (
             /* Reps Input */
             <div>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}
-              >
-                <Dumbbell size={18} style={{ color: "var(--color-action)" }} />
-                <span style={{ fontWeight: 600, fontSize: "15px", color: "var(--color-text)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <Dumbbell size={18} className="text-[var(--color-action)]" />
+                <span className="font-semibold text-sm text-[var(--color-text)]">
                   Actual Completed Reps
                 </span>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "16px",
-                }}
-              >
+              <div className="flex items-center justify-center gap-4">
                 <button
                   type="button"
                   onClick={() => setReps((r) => Math.max(1, r - 1))}
-                  style={{
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "50%",
-                    border: "1px solid var(--color-border)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                  }}
+                  className="w-11 h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center text-lg font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
+                  aria-label="Decrease reps"
                 >
                   <Minus size={18} />
                 </button>
@@ -233,58 +144,25 @@ function SetConfirmDialogContent({
                   type="number"
                   value={reps}
                   onChange={(e) => setReps(parseInt(e.target.value, 10) || 0)}
-                  style={{
-                    width: "90px",
-                    height: "48px",
-                    fontSize: "26px",
-                    fontWeight: 800,
-                    textAlign: "center",
-                    borderRadius: "12px",
-                    border: "2px solid var(--color-action)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                  }}
+                  className="w-[90px] h-12 text-2xl font-bold text-center rounded-[var(--radius-input)] border-2 border-[var(--color-action)] bg-[var(--color-surface)] text-[var(--color-text)] font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setReps((r) => r + 1)}
-                  style={{
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "50%",
-                    border: "1px solid var(--color-border)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                  }}
+                  className="w-11 h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center text-lg font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
+                  aria-label="Increase reps"
                 >
                   <Plus size={18} />
                 </button>
               </div>
               {/* Quick Rep Adjustments */}
-              <div
-                style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "12px" }}
-              >
+              <div className="flex justify-center gap-2 mt-3">
                 {[-5, -1, 1, 5].map((delta) => (
                   <button
                     key={delta}
                     type="button"
                     onClick={() => setReps((r) => Math.max(1, r + delta))}
-                    style={{
-                      padding: "4px 12px",
-                      borderRadius: "8px",
-                      background: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-text)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
+                    className="px-3 py-1 rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] text-xs font-semibold cursor-pointer hover:border-[var(--color-action)]"
                   >
                     {delta > 0 ? `+${delta}` : delta}
                   </button>
@@ -294,37 +172,18 @@ function SetConfirmDialogContent({
           ) : (
             /* Time Input */
             <div>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}
-              >
-                <Clock size={18} style={{ color: "var(--color-recovery)" }} />
-                <span style={{ fontWeight: 600, fontSize: "15px", color: "var(--color-text)" }}>
+              <div className="flex items-center gap-2 mb-3">
+                <Clock size={18} className="text-[var(--color-recovery)]" />
+                <span className="font-semibold text-sm text-[var(--color-text)]">
                   Actual Duration (seconds)
                 </span>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "16px",
-                }}
-              >
+              <div className="flex items-center justify-center gap-4">
                 <button
                   type="button"
                   onClick={() => setSeconds((s) => Math.max(1, s - 5))}
-                  style={{
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "50%",
-                    border: "1px solid var(--color-border)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                  }}
+                  className="w-11 h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-surface-subtle)]"
+                  aria-label="Decrease seconds"
                 >
                   <Minus size={18} />
                 </button>
@@ -332,56 +191,25 @@ function SetConfirmDialogContent({
                   type="number"
                   value={seconds}
                   onChange={(e) => setSeconds(parseInt(e.target.value, 10) || 0)}
-                  style={{
-                    width: "90px",
-                    height: "48px",
-                    fontSize: "26px",
-                    fontWeight: 800,
-                    textAlign: "center",
-                    borderRadius: "12px",
-                    border: "2px solid var(--color-recovery)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                  }}
+                  className="w-[90px] h-12 text-2xl font-bold text-center rounded-[var(--radius-input)] border-2 border-[var(--color-recovery)] bg-[var(--color-surface)] text-[var(--color-text)] font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setSeconds((s) => s + 5)}
-                  style={{
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "50%",
-                    border: "1px solid var(--color-border)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                  }}
+                  className="w-11 h-11 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center cursor-pointer hover:bg-[var(--color-surface-subtle)]"
+                  aria-label="Increase seconds"
                 >
                   <Plus size={18} />
                 </button>
               </div>
               {/* Quick Seconds Adjustments */}
-              <div
-                style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "12px" }}
-              >
+              <div className="flex justify-center gap-2 mt-3">
                 {[-10, -5, 5, 10].map((delta) => (
                   <button
                     key={delta}
                     type="button"
                     onClick={() => setSeconds((s) => Math.max(1, s + delta))}
-                    style={{
-                      padding: "4px 12px",
-                      borderRadius: "8px",
-                      background: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-text)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
+                    className="px-3 py-1 rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] text-xs font-semibold cursor-pointer hover:border-[var(--color-action)]"
                   >
                     {delta > 0 ? `+${delta}s` : `${delta}s`}
                   </button>
@@ -391,33 +219,19 @@ function SetConfirmDialogContent({
           )}
         </div>
 
-        {/* Weight Input (Cho phép chỉnh mức tạ cho mọi bài tập theo rep) */}
+        {/* Weight Input */}
         {!timed && (
-          <div
-            style={{
-              background: "var(--color-surface-subtle)",
-              borderRadius: "16px",
-              padding: "16px",
-              marginBottom: "20px",
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text)" }}>
+          <div className="bg-[var(--color-surface-subtle)] rounded-[var(--radius-card)] p-4 mb-4 border border-[var(--color-border)]">
+            <div className="flex justify-between items-center">
+              <span className="font-semibold text-sm text-[var(--color-text)]">
                 Weight (kg)
               </span>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setWeightKg((w) => Math.max(0, parseFloat((w - 1).toFixed(1))))}
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    border: "1px solid var(--color-border)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                    cursor: "pointer",
-                  }}
+                  className="w-8 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
+                  aria-label="Decrease weight"
                 >
                   -
                 </button>
@@ -426,30 +240,13 @@ function SetConfirmDialogContent({
                   step="0.5"
                   value={weightKg}
                   onChange={(e) => setWeightKg(parseFloat(e.target.value) || 0)}
-                  style={{
-                    width: "70px",
-                    height: "36px",
-                    fontSize: "16px",
-                    fontWeight: 700,
-                    textAlign: "center",
-                    borderRadius: "8px",
-                    border: "1px solid var(--color-border)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                  }}
+                  className="w-[70px] h-9 text-base font-bold text-center rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] font-mono"
                 />
                 <button
                   type="button"
                   onClick={() => setWeightKg((w) => parseFloat((w + 1).toFixed(1)))}
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    borderRadius: "50%",
-                    border: "1px solid var(--color-border)",
-                    background: "var(--color-surface)",
-                    color: "var(--color-text)",
-                    cursor: "pointer",
-                  }}
+                  className="w-8 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
+                  aria-label="Increase weight"
                 >
                   +
                 </button>
@@ -462,33 +259,12 @@ function SetConfirmDialogContent({
         {(() => {
           const { color, label } = getFatigueLevel(fatiguePercent);
           return (
-            <div
-              style={{
-                background: "var(--color-surface-subtle)",
-                borderRadius: "16px",
-                padding: "16px",
-                marginBottom: "20px",
-                border: "1px solid var(--color-border)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "10px",
-                }}
-              >
-                <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text)" }}>
+            <div className="bg-[var(--color-surface-subtle)] rounded-[var(--radius-card)] p-4 mb-5 border border-[var(--color-border)]">
+              <div className="flex justify-between items-center mb-2.5">
+                <span className="font-semibold text-sm text-[var(--color-text)]">
                   Perceived Exertion
                 </span>
-                <span
-                  style={{
-                    fontWeight: 800,
-                    fontSize: "15px",
-                    color,
-                  }}
-                >
+                <span className="font-extrabold text-sm font-mono" style={{ color }}>
                   {fatiguePercent}% ({label})
                 </span>
               </div>
@@ -501,90 +277,51 @@ function SetConfirmDialogContent({
                 step="5"
                 value={fatiguePercent}
                 onChange={(e) => setFatiguePercent(parseInt(e.target.value, 10))}
-                style={{
-                  width: "100%",
-                  accentColor: "var(--color-action)",
-                  cursor: "pointer",
-                  marginBottom: "10px",
-                }}
+                className="w-full accent-[var(--color-action)] cursor-pointer mb-2.5"
               />
 
               {/* Quick Presets */}
-              <div style={{ display: "flex", justifyContent: "space-between", gap: "6px" }}>
+              <div className="flex justify-between gap-1.5">
                 {[
                   { label: "Light (40%)", val: 40 },
                   { label: "Moderate (60%)", val: 60 },
                   { label: "High (80%)", val: 80 },
                   { label: "Max (100%)", val: 100 },
-                ].map((p) => (
-                  <button
-                    key={p.val}
-                    type="button"
-                    onClick={() => setFatiguePercent(p.val)}
-                    style={{
-                      flex: 1,
-                      padding: "6px 2px",
-                      borderRadius: "8px",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      border:
-                        fatiguePercent === p.val
-                          ? "2px solid var(--color-action)"
-                          : "1px solid var(--color-border)",
-                      background:
-                        fatiguePercent === p.val
-                          ? "var(--color-action-soft)"
-                          : "var(--color-surface)",
-                      color:
-                        fatiguePercent === p.val
-                          ? "var(--color-action-ink)"
-                          : "var(--color-text-muted)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {p.label}
-                  </button>
-                ))}
+                ].map((p) => {
+                  const isActive = fatiguePercent === p.val;
+                  return (
+                    <button
+                      key={p.val}
+                      type="button"
+                      onClick={() => setFatiguePercent(p.val)}
+                      className={`flex-1 py-1.5 px-0.5 rounded-[var(--radius-input)] text-xs font-semibold cursor-pointer border transition-colors ${
+                        isActive
+                          ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)] font-bold"
+                          : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:border-[var(--color-action)]"
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           );
         })()}
 
         {/* Action Buttons */}
-        <div style={{ display: "flex", gap: "12px" }}>
+        <div className="flex gap-3">
           <button
             type="button"
             onClick={() => triggerClose()}
-            style={{
-              flex: 1,
-              height: "48px",
-              borderRadius: "12px",
-              border: "1px solid var(--color-border)",
-              background: "var(--color-surface)",
-              color: "var(--color-text)",
-              fontWeight: 600,
-              fontSize: "15px",
-              cursor: "pointer",
-            }}
+            className="flex-1 h-12 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] font-semibold text-sm cursor-pointer hover:bg-[var(--color-surface-subtle)]"
           >
             Retry Set
           </button>
           <Button
             onClick={handleConfirm}
             size="large"
-            style={{
-              flex: 2,
-              height: "48px",
-              borderRadius: "var(--radius-input)",
-              background: "var(--color-action)",
-              color: "var(--color-action-contrast)",
-              fontWeight: 700,
-              fontSize: "15px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-            }}
+            className="flex-2 h-12 rounded-[var(--radius-input)] bg-[var(--color-action)] text-[var(--color-action-contrast)] font-bold text-sm flex items-center justify-center gap-2"
           >
             <Check size={18} />
             Confirm & Save Set

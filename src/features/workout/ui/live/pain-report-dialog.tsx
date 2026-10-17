@@ -7,13 +7,7 @@ import { Button } from "@/shared/ui/button";
 /** Free-text is a courtesy, not an interrogation — keep it short. */
 const NOTE_MAX = 300;
 
-/**
- * "Something hurts" — raised from the live screen while a set is running.
- *
- * Pain is the one interruption that must not cost a second thought, so this
- * asks exactly one question and offers a place to say why. The note is
- * optional: someone who needs to stop should never be blocked on typing.
- */
+// Safe exit dialog when a user encounters pain during a live set
 export function PainReportDialog({
   onDismiss,
   onStop,
@@ -50,15 +44,13 @@ export function PainReportDialog({
       ref={dialogRef}
       aria-labelledby={`${noteId}-title`}
       aria-modal="true"
-      className="live-sheet live-sheet--dialog"
+      className="live-sheet live-sheet--dialog cursor-pointer"
       role="dialog"
       onClick={onDismiss}
-      style={{ cursor: "pointer" }}
     >
       <div
-        className="pain-dialog"
+        className="pain-dialog cursor-default"
         onClick={(e) => e.stopPropagation()}
-        style={{ cursor: "default" }}
       >
         <div className="pain-dialog__mark" aria-hidden="true">
           <HeartPulse size={26} />

@@ -114,10 +114,10 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
 
       <footer className="workout-prep-action">
         {isAdjusting ? (
-          <div className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-950 font-bold text-sm shadow-xs">
+          <div className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-[var(--radius-card)] bg-[var(--color-action-soft)] border border-[color-mix(in_srgb,var(--color-action)_25%,transparent)] text-[var(--color-text)] font-semibold text-sm shadow-xs">
             <span className="flex h-2.5 w-2.5 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-600"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-action)] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--color-action)]" />
             </span>
             <span>AI Coach is recalibrating this session for your safety...</span>
           </div>
