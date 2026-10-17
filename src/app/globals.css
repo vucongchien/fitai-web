@@ -1733,7 +1733,7 @@ a.week-route__row:hover {
   border-radius: 8px !important;
   font-weight: 600 !important;
   font-size: 0.95rem !important;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-action) 35%, transparent);
+  box-shadow: none;
   cursor: pointer;
   transition: all var(--duration-fast, 0.15s) var(--ease-out);
 }
@@ -1742,7 +1742,7 @@ a.week-route__row:hover {
 .auth-submit-btn:hover:not(:disabled) {
   background: var(--color-action-hover) !important;
   border-color: var(--color-action-hover) !important;
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--color-action) 45%, transparent);
+  box-shadow: none;
 }
 
 .auth-submit-btn--primary:active:not(:disabled),
