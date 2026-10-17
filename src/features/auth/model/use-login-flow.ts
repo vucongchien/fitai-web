@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useState } from "react";
 
 import {
   detectIdentifierType,
@@ -21,7 +21,7 @@ export function useLoginFlow() {
   const [identifier, setIdentifier] = useState("");
   const [otpToken, setOtpToken] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   const identifierType = detectIdentifierType(identifier);
   const isIdentifierValid = identifierType !== "invalid";
@@ -33,56 +33,54 @@ export function useLoginFlow() {
       return false;
     }
     setErrorMessage(null);
-
-    let ok = false;
-    await new Promise<void>((resolve) => {
-      startTransition(async () => {
-        try {
-          const result = await sendOtpAction(identifier, "login");
-          if (result.success) {
-            setOtpToken(result.data.otpToken);
-            setSubStep("OTP");
-            ok = true;
-          } else {
-            setErrorMessage(result.error);
-            ok = false;
-          }
-        } finally {
-          resolve();
-        }
-      });
-    });
-    return ok;
+    setIsPending(true);
+    try {
+      const result = await sendOtpAction(identifier, "login");
+      if (result.success) {
+        setOtpToken(result.data.otpToken);
+        setSubStep("OTP");
+        return true;
+      }
+      setErrorMessage(result.error);
+      return false;
+    } finally {
+      setIsPending(false);
+    }
   };
 
-  const handleVerifyOtp = (code: string) => {
+  const handleVerifyOtp = async (code: string) => {
     setErrorMessage(null);
-    startTransition(async () => {
+    setIsPending(true);
+    try {
       const result = await verifyOtpAction(otpToken, code);
       if (result.success) {
         router.push("/home");
       } else {
         setErrorMessage(result.error);
       }
-    });
+    } finally {
+      setIsPending(false);
+    }
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent, password: string) => {
+  const handlePasswordSubmit = async (e: React.FormEvent, password: string) => {
     e.preventDefault();
     if (!identifier || !password) {
       setErrorMessage("Vui lòng điền đầy đủ số điện thoại/email và mật khẩu.");
       return;
     }
     setErrorMessage(null);
-
-    startTransition(async () => {
+    setIsPending(true);
+    try {
       const result = await loginWithPasswordAction(identifier, password);
       if (result.success) {
         router.push(result.data.redirectUrl);
       } else {
         setErrorMessage(result.error);
       }
-    });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   const handleGoogleLogin = useCallback(() => {

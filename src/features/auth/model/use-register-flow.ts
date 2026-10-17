@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 
 import {
   detectIdentifierType,
@@ -21,7 +21,7 @@ export function useRegisterFlow() {
   const [identifier, setIdentifier] = useState("");
   const [otpToken, setOtpToken] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   const identifierType = detectIdentifierType(identifier);
   const isIdentifierValid = identifierType !== "invalid";
@@ -33,41 +33,37 @@ export function useRegisterFlow() {
       return false;
     }
     setErrorMessage(null);
-
-    let ok = false;
-    await new Promise<void>((resolve) => {
-      startTransition(async () => {
-        try {
-          const result = await sendOtpAction(identifier, "register");
-          if (result.success) {
-            setOtpToken(result.data.otpToken);
-            setIsOtpSent(true);
-            ok = true;
-          } else {
-            setErrorMessage(result.error);
-            ok = false;
-          }
-        } finally {
-          resolve();
-        }
-      });
-    });
-    return ok;
+    setIsPending(true);
+    try {
+      const result = await sendOtpAction(identifier, "register");
+      if (result.success) {
+        setOtpToken(result.data.otpToken);
+        setIsOtpSent(true);
+        return true;
+      }
+      setErrorMessage(result.error);
+      return false;
+    } finally {
+      setIsPending(false);
+    }
   };
 
-  const handleVerifyOtp = (code: string) => {
+  const handleVerifyOtp = async (code: string) => {
     setErrorMessage(null);
-    startTransition(async () => {
+    setIsPending(true);
+    try {
       const result = await verifyOtpAction(otpToken, code);
       if (result.success) {
         setSubStep("PROFILE_DETAILS");
       } else {
         setErrorMessage(result.error);
       }
-    });
+    } finally {
+      setIsPending(false);
+    }
   };
 
-  const handleProfileSubmit = (
+  const handleProfileSubmit = async (
     e: React.FormEvent,
     data: {
       fullName: string;
@@ -87,8 +83,8 @@ export function useRegisterFlow() {
       return;
     }
     setErrorMessage(null);
-
-    startTransition(async () => {
+    setIsPending(true);
+    try {
       const result = await registerAction({
         identifier,
         password: data.password,
@@ -103,7 +99,9 @@ export function useRegisterFlow() {
       } else {
         setErrorMessage(result.error);
       }
-    });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   const resetToIdentifier = () => {
