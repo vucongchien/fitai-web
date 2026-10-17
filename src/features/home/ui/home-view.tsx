@@ -53,7 +53,6 @@ export function HomeView({ data }: HomeViewProps) {
         <section className="content-section home-week">
           <div className="content-section__header">
             <h2>Today&rsquo;s Schedule</h2>
-            <p>Meals and sessions in order</p>
           </div>
 
           <TodayTimeline
