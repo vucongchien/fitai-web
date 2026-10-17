@@ -31,10 +31,6 @@ function parseInstructions(text: string): string[] {
   return [text];
 }
 
-/**
- * "Read the guide" — instructions, form cues and common mistakes for the current
- * movement. Same content shape as the exercise detail page so the two never drift.
- */
 export function InstructionsSheet({
   exercise,
   onClose,
@@ -145,9 +141,9 @@ export function InstructionsSheet({
               style={
                 isSpeaking
                   ? {
-                      background: "var(--color-primary-600, #2563eb)",
-                      color: "#ffffff",
-                      boxShadow: "0 0 10px rgba(37, 99, 235, 0.5)",
+                      background: "var(--color-action)",
+                      color: "var(--color-action-contrast)",
+                      boxShadow: "0 0 10px var(--color-action-soft)",
                     }
                   : undefined
               }
@@ -204,10 +200,10 @@ export function InstructionsSheet({
                       display: "flex",
                       gap: "14px",
                       alignItems: "flex-start",
-                      background: "var(--color-bg-subtle, #f8fafc)",
+                      background: "var(--color-surface-subtle)",
                       padding: "14px 16px",
-                      borderRadius: "14px",
-                      border: "1px solid var(--color-border, #e2e8f0)",
+                      borderRadius: "var(--radius-card)",
+                      border: "1px solid var(--color-border)",
                     }}
                   >
                     <span
@@ -215,8 +211,8 @@ export function InstructionsSheet({
                         minWidth: "26px",
                         height: "26px",
                         borderRadius: "50%",
-                        background: "var(--color-primary-600, #2563eb)",
-                        color: "#ffffff",
+                        background: "var(--color-action)",
+                        color: "var(--color-action-contrast)",
                         fontWeight: 700,
                         fontSize: "13px",
                         display: "flex",
@@ -232,7 +228,7 @@ export function InstructionsSheet({
                         margin: 0,
                         fontSize: "15px",
                         lineHeight: "1.5",
-                        color: "var(--color-text-main, #1e293b)",
+                        color: "var(--color-text)",
                         fontWeight: 500,
                       }}
                     >

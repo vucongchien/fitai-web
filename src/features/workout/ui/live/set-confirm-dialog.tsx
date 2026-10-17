@@ -46,9 +46,6 @@ function SetConfirmDialogContent({
 }) {
   const timed = exercise.durationSeconds > 0;
 
-  // Initial values:
-  // Reps: AI counted if > 0, otherwise targetReps (or default 10)
-  // Seconds: elapsed seconds if > 0, otherwise target durationSeconds
   const initialReps = aiCountedReps > 0 ? aiCountedReps : exercise.targetReps || 10;
   const initialSeconds = secondsElapsed > 0 ? secondsElapsed : exercise.durationSeconds || 30;
   const initialWeight = exercise.targetWeightKg || 0;
@@ -578,9 +575,9 @@ function SetConfirmDialogContent({
             style={{
               flex: 2,
               height: "48px",
-              borderRadius: "12px",
+              borderRadius: "var(--radius-input)",
               background: "var(--color-action)",
-              color: "#fff",
+              color: "var(--color-action-contrast)",
               fontWeight: 700,
               fontSize: "15px",
               display: "flex",

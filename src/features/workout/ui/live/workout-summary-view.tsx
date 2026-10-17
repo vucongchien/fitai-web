@@ -60,7 +60,7 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
     return (
       <PageTransition className="summary-page">
         <main className="summary-main">
-          <div className="completion-mark bg-[var(--color-surface-subtle,#eceef0)] animate-pulse" />
+          <div className="completion-mark bg-[var(--color-surface-subtle)] animate-pulse" />
           <p className="utility-label">Loading session summary...</p>
         </main>
       </PageTransition>
@@ -71,12 +71,12 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
     return (
       <PageTransition className="summary-page">
         <main className="summary-main">
-          <div className="completion-mark bg-[var(--color-surface-subtle,#eceef0)] text-[var(--color-danger,#c92f42)]">
+          <div className="completion-mark bg-[var(--color-surface-subtle)] text-[var(--color-danger)]">
             <AlertCircle aria-hidden="true" size={30} />
           </div>
 
           <h1>Session Summary Unavailable</h1>
-          <p className="text-sm text-[var(--color-text-muted,#50565c)] mb-6">
+          <p className="text-sm text-[var(--color-text-muted)] mb-6">
             This session data could not be loaded.
           </p>
 
@@ -96,8 +96,6 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
   return (
     <PageTransition className="summary-page">
       <main className="summary-main">
-        {/* The summary is a destination, not a trap: it needs a way out that is
-            not "Done". Back goes home, same as Done, but reads as reversible. */}
         <Link aria-label="Back to home" className="summary-back" href="/home">
           <ArrowLeft aria-hidden="true" size={20} />
         </Link>
@@ -110,9 +108,6 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
 
         <h1>Session complete.</h1>
 
-        {/* Two numbers, not five. Duration and volume are what the session
-            actually was; RPE and form score were self-reported or absent, and a
-            wall of stats buries the one thing the user came here to see. */}
         {/* Calculate fatigue percentage on a 100% scale */}
         {(() => {
           const fatiguePct =
@@ -150,10 +145,10 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
               {/* Visual Fatigue Progress Bar */}
               <div
                 style={{
-                  background: "var(--color-bg-subtle, #f8fafc)",
+                  background: "var(--color-surface-subtle)",
                   padding: "14px 18px",
-                  borderRadius: "16px",
-                  border: "1px solid var(--color-border, #e2e8f0)",
+                  borderRadius: "var(--radius-card)",
+                  border: "1px solid var(--color-border)",
                   marginBottom: "32px",
                   marginTop: "8px",
                 }}
@@ -167,7 +162,7 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
                     marginBottom: "8px",
                   }}
                 >
-                  <span style={{ color: "var(--color-text-main, #1e293b)" }}>
+                  <span style={{ color: "var(--color-text)" }}>
                     Physical Exertion Index
                   </span>
                   <span style={{ color, fontWeight: 700 }}>{label}</span>
@@ -176,7 +171,7 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
                   style={{
                     width: "100%",
                     height: "10px",
-                    background: "#e2e8f0",
+                    background: "var(--color-border)",
                     borderRadius: "999px",
                     overflow: "hidden",
                   }}
@@ -231,13 +226,6 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
   );
 }
 
-/**
- * How this session compares with the user's recent average volume.
- *
- * Returns null when there is no history to compare against — an invented
- * baseline would make "up 100%" out of a first-ever session. Within ±5% counts
- * as holding steady rather than a change worth a percentage.
- */
 function volumeComparison(
   volumeKg: number,
   recentAvgKg: number,

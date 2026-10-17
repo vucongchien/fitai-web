@@ -156,7 +156,7 @@ export function CameraStage({
         {onUploadVideo && !isCustomVideo ? (
           <>
             <input
-              accept="video/*"
+              accept="video/mp4,video/webm,video/quicktime"
               className="hidden"
               onChange={handleFileChange}
               ref={fileInputRef}
@@ -198,10 +198,10 @@ export function CameraStage({
         <div className="camera-stage__placeholder relative z-10 flex flex-col items-center justify-center p-4 text-center">
           <CameraOff
             aria-hidden="true"
-            className="text-[var(--color-text-muted,#50565c)] mb-2"
+            className="text-[var(--color-text-muted)] mb-2"
             size={26}
           />
-          <p className="text-xs font-medium text-[var(--color-text-muted,#50565c)]">
+          <p className="text-xs font-medium text-[var(--color-text-muted)]">
             {state === "requesting"
               ? "Waiting for camera…"
               : state === "denied"
@@ -219,8 +219,8 @@ export function CameraStage({
             aria-pressed={activeMirrored}
             className={`camera-stage__mirror p-2.5 rounded-full shadow-md backdrop-blur-md active:scale-95 transition-all ${
               activeMirrored
-                ? "bg-slate-900 text-white hover:bg-slate-800"
-                : "bg-[var(--color-surface,#ffffff)] text-[var(--color-text,#101214)] hover:bg-[var(--color-surface-subtle,#eceef0)]"
+                ? "bg-[var(--color-action)] text-[var(--color-action-contrast)]"
+                : "bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]"
             }`}
             onClick={() => setIsMirrored((prev) => !prev)}
             title={
@@ -235,7 +235,7 @@ export function CameraStage({
         {onFlip && !isCustomVideo && state === "ready" ? (
           <button
             aria-label="Switch camera"
-            className="camera-stage__flip p-2.5 rounded-full bg-[var(--color-surface,#ffffff)] text-[var(--color-text,#101214)] shadow-md hover:bg-[var(--color-surface-subtle,#eceef0)] active:scale-95 transition-all"
+            className="camera-stage__flip p-2.5 rounded-full bg-[var(--color-surface)] text-[var(--color-text)] shadow-md hover:bg-[var(--color-surface-subtle)] active:scale-95 transition-all"
             onClick={onFlip}
             title="Đổi camera trước / sau"
             type="button"
