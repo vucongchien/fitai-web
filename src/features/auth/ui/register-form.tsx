@@ -29,6 +29,42 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
   return (
     <div className="register-form-container">
+      {subStep === "VERIFY_IDENTIFIER" && !isOtpSent && (
+        <div className="login-form-header">
+          <h2 id="sign-in-title">Create your account</h2>
+        </div>
+      )}
+
+      {subStep === "VERIFY_IDENTIFIER" && isOtpSent && (
+        <div className="login-form-header">
+          <h2 id="sign-in-title">
+            {identifier.includes("@") ? "Check your email" : "Check your phone"}
+          </h2>
+          <p className="auth-step-desc">
+            Enter the 6-digit code sent to{" "}
+            <span className="auth-identifier-badge">
+              <strong>{maskIdentifier(identifier)}</strong>
+              {identifier.toLowerCase().includes("@") && <GmailMark size={16} />}
+            </span>
+            {" · "}
+            <button
+              className="auth-inline-change-btn"
+              disabled={isPending}
+              onClick={resetToIdentifier}
+              type="button"
+            >
+              Change
+            </button>
+          </p>
+        </div>
+      )}
+
+      {subStep === "PROFILE_DETAILS" && (
+        <div className="login-form-header">
+          <h2 id="sign-in-title">Complete your profile</h2>
+        </div>
+      )}
+
       {errorMessage && (
         <div className="auth-alert auth-alert--error" role="alert">
           <span>{errorMessage}</span>
@@ -90,27 +126,6 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             </div>
           ) : (
             <div className="auth-step-otp">
-              <div className="auth-step-header">
-                <h3 className="auth-step-title">Verify your account</h3>
-                <p className="auth-step-desc">
-                  Verification code sent to{" "}
-                  <span className="auth-identifier-badge">
-                    <strong>{maskIdentifier(identifier)}</strong>
-                    {identifier.toLowerCase().includes("@") && <GmailMark size={16} />}
-                  </span>
-                  <Button
-                    className="auth-change-identifier-btn"
-                    disabled={isPending}
-                    onClick={resetToIdentifier}
-                    size="medium"
-                    type="button"
-                    variant="quiet"
-                  >
-                    Change
-                  </Button>
-                </p>
-              </div>
-
               <OtpInputGroup
                 disabled={isPending}
                 errorMessage={errorMessage}

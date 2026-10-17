@@ -29,6 +29,10 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
   return (
     <div className="login-form-container">
+      <div className="login-form-header">
+        <h2 id="sign-in-title">Log in</h2>
+      </div>
+
       {errorMessage ? (
         <div className="auth-alert auth-alert--error" role="alert">
           <span>{errorMessage}</span>

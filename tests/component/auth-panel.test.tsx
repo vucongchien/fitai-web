@@ -52,4 +52,52 @@ describe("AuthPanel component", () => {
     fireEvent.click(screen.getByRole("button", { name: /^Log in$/i }));
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Log in");
   });
+
+  it("renders 'Check your phone' as single header when OTP is sent for phone", async () => {
+    const { sendOtpAction } = await import("@/features/auth/server/auth-actions");
+    (sendOtpAction as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      success: true,
+      data: { otpToken: "dummy-token", expiresInSeconds: 60 },
+    });
+
+    render(<AuthPanel />);
+    fireEvent.click(screen.getByRole("button", { name: /Create your account/i }));
+
+    const input = screen.getByLabelText(/Email or phone/i);
+    fireEvent.change(input, { target: { value: "0912345678" } });
+
+    const sendBtn = screen.getByRole("button", { name: /Send verification code/i });
+    fireEvent.click(sendBtn);
+
+    const title = await screen.findByRole("heading", { level: 2, name: /Check your phone/i });
+    expect(title).toBeInTheDocument();
+    // Ensure no redundant h3 exists
+    expect(screen.queryByRole("heading", { level: 3 })).not.toBeInTheDocument();
+    // Ensure inline Change button exists
+    expect(screen.getByRole("button", { name: /Change/i })).toBeInTheDocument();
+  });
+
+  it("renders 'Check your email' when OTP is sent for email and allows changing identifier", async () => {
+    const { sendOtpAction } = await import("@/features/auth/server/auth-actions");
+    (sendOtpAction as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      success: true,
+      data: { otpToken: "dummy-token", expiresInSeconds: 60 },
+    });
+
+    render(<AuthPanel />);
+    fireEvent.click(screen.getByRole("button", { name: /Create your account/i }));
+
+    const input = screen.getByLabelText(/Email or phone/i);
+    fireEvent.change(input, { target: { value: "test@gmail.com" } });
+
+    const sendBtn = screen.getByRole("button", { name: /Send verification code/i });
+    fireEvent.click(sendBtn);
+
+    const title = await screen.findByRole("heading", { level: 2, name: /Check your email/i });
+    expect(title).toBeInTheDocument();
+
+    // Click Change to go back
+    fireEvent.click(screen.getByRole("button", { name: /Change/i }));
+    expect(await screen.findByRole("heading", { level: 2, name: /Create your account/i })).toBeInTheDocument();
+  });
 });

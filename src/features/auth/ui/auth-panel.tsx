@@ -13,11 +13,6 @@ export function AuthPanel() {
 
   return (
     <div className="auth-panel">
-      <div className="login-form-header">
-        <h2 id="sign-in-title">
-          {mode === "login" ? "Log in" : "Create your account"}
-        </h2>
-      </div>
       <Suspense fallback={null}>
         <LoginErrorAlert />
       </Suspense>

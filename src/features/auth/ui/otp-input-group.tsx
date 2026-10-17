@@ -123,11 +123,11 @@ export function OtpInputGroup({
             type="button"
             variant="quiet"
           >
-            Gửi lại mã xác thực
+            Resend code
           </Button>
         ) : (
           <span className="otp-countdown-text">
-            Gửi lại mã sau <strong>{remainingSeconds}s</strong>
+            Resend code in <strong>{remainingSeconds}s</strong>
           </span>
         )}
       </div>
