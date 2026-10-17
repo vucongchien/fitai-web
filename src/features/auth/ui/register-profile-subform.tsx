@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import type { Gender } from "@/features/auth/model/auth.types";
+import { Gender } from "@/features/auth/model/auth.types";
 import { Button } from "@/shared/ui/button";
 
 const AvatarCreator = dynamic(
@@ -38,7 +38,7 @@ export function RegisterProfileSubform({
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [gender, setGender] = useState<Gender>("MALE");
+  const [gender, setGender] = useState<Gender>(Gender.MALE);
   const [dateOfBirth, setDateOfBirth] = useState("2000-01-01");
   const [avatarUrl, setAvatarUrl] = useState("");
 
@@ -113,7 +113,7 @@ export function RegisterProfileSubform({
         <div className="auth-field">
           <label className="auth-label">Giới tính</label>
           <div className="auth-gender-pills">
-            {(["MALE", "FEMALE", "OTHER"] as const).map((g) => (
+            {([Gender.MALE, Gender.FEMALE] as const).map((g) => (
               <button
                 key={g}
                 className={`auth-gender-pill ${gender === g ? "auth-gender-pill--active" : ""}`}
@@ -121,7 +121,7 @@ export function RegisterProfileSubform({
                 onClick={() => setGender(g)}
                 type="button"
               >
-                {g === "MALE" ? "Nam" : g === "FEMALE" ? "Nữ" : "Khác"}
+                {g === Gender.MALE ? "Nam" : "Nữ"}
               </button>
             ))}
           </div>

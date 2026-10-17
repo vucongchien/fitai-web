@@ -4,7 +4,9 @@ export type RegisterSubStep = "VERIFY_IDENTIFIER" | "PROFILE_DETAILS";
 
 export type IdentifierType = "phone" | "email" | "invalid";
 
-export type Gender = "MALE" | "FEMALE" | "OTHER";
+import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
+
+export { Gender };
 
 export interface RegisterFormState {
   identifier: string;
