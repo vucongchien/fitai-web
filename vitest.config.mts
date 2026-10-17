@@ -44,8 +44,6 @@ export default defineConfig({
         "src/**/*.d.ts",
         "src/instrumentation.ts",
         "src/app/**/(loading|error|not-found).{ts,tsx}",
-        // Demo/fixture data – not production logic
-        "src/shared/lib/demo-data.ts",
         // Server actions & route handlers – tested via e2e or dedicated unit with mocks
         "src/**/server/**",
         "src/app/api/**",
