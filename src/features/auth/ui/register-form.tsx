@@ -3,6 +3,7 @@
 import { maskIdentifier } from "@/features/auth/model/auth-validation";
 import { useRegisterFlow } from "@/features/auth/model/use-register-flow";
 import { OtpInputGroup } from "@/features/auth/ui/otp-input-group";
+import { GmailMark } from "@/features/auth/ui/provider-marks";
 import { RegisterProfileSubform } from "@/features/auth/ui/register-profile-subform";
 import { Button } from "@/shared/ui/button";
 
@@ -20,7 +21,6 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setErrorMessage,
     isPending,
     isIdentifierValid,
-    mailUrl,
     handleSendOtp,
     handleVerifyOtp,
     handleProfileSubmit,
@@ -93,7 +93,11 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               <div className="auth-step-header">
                 <h3 className="auth-step-title">Verify your account</h3>
                 <p className="auth-step-desc">
-                  Verification code sent to <strong>{maskIdentifier(identifier)}</strong>
+                  Verification code sent to{" "}
+                  <span className="auth-identifier-badge">
+                    <strong>{maskIdentifier(identifier)}</strong>
+                    {identifier.toLowerCase().includes("@") && <GmailMark size={16} />}
+                  </span>
                   <Button
                     className="auth-change-identifier-btn"
                     disabled={isPending}
@@ -106,22 +110,6 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                   </Button>
                 </p>
               </div>
-
-              {mailUrl && (
-                <div className="auth-mail-shortcut">
-                  <a
-                    className="auth-shortcut-btn"
-                    href={mailUrl}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Open email app
-                  </a>
-                  <span className="auth-shortcut-tip">
-                    Be sure to check your Spam folder if you don&apos;t see the code.
-                  </span>
-                </div>
-              )}
 
               <OtpInputGroup
                 disabled={isPending}

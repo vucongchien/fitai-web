@@ -35,3 +35,37 @@ export function FacebookMark() {
     </svg>
   );
 }
+
+export function GmailMark({ size = 16 }: { size?: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className="provider-mark provider-mark--gmail"
+      height={size}
+      viewBox="0 0 24 24"
+      width={size}
+    >
+      <path
+        d="M2 7v10.5C2 18.88 3.12 20 4.5 20H7V10.8L2 7z"
+        fill="#4285F4"
+      />
+      <path
+        d="M17 20h2.5c1.38 0 2.5-1.12 2.5-2.5V7l-5 3.8V20z"
+        fill="#34A853"
+      />
+      <path
+        d="M17 5.5v5.3L12 14.5l-5-3.7V5.5c0-.9.98-1.45 1.74-.96L12 6.8l3.26-2.26c.76-.49 1.74.06 1.74.96z"
+        fill="#EA4335"
+      />
+      <path
+        d="M19.5 4H17v1.5l5 3.7V6.5C22 5.12 20.88 4 19.5 4z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M4.5 4H7v1.5L2 9.2V6.5C2 5.12 3.12 4 4.5 4z"
+        fill="#C5221F"
+      />
+    </svg>
+  );
+}
+

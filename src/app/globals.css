@@ -1880,40 +1880,39 @@ a.week-route__row:hover {
   flex-wrap: wrap;
 }
 
+.auth-identifier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-text);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.15rem 0.5rem;
+  font-size: var(--text-xs);
+  vertical-align: middle;
+}
+
+.auth-identifier-badge strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
 .auth-change-identifier-btn {
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  padding: 0.1rem 0.5rem;
-  color: var(--color-primary);
-  font-size: var(--text-xs);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.auth-mail-shortcut {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.75rem 1rem;
-  background: var(--color-surface-subtle);
-  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
-  border-radius: var(--radius-md);
-  margin-bottom: 1.25rem;
-}
-
-.auth-shortcut-btn {
-  display: inline-block;
-  color: var(--color-primary);
-  font-weight: 600;
-  font-size: var(--text-sm);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.auth-shortcut-tip {
-  font-size: var(--text-xs);
+  padding: 0.15rem 0.5rem;
   color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.auth-change-identifier-btn:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
 }
 
 .otp-container {
@@ -1973,7 +1972,13 @@ a.week-route__row:hover {
   color: var(--color-primary);
   font-weight: 600;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
+  transition: opacity var(--duration-fast);
+}
+
+.otp-resend-btn:hover {
+  text-decoration: none;
+  opacity: 0.82;
 }
 
 .otp-countdown-text {

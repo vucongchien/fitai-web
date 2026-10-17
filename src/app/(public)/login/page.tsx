@@ -1,8 +1,5 @@
 import { ArrowDown } from "lucide-react";
-import { Suspense } from "react";
-
 import { AuthPanel } from "@/features/auth/ui/auth-panel";
-import { LoginErrorAlert } from "@/features/auth/ui/login-error-alert";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { PageTransition } from "@/shared/ui/page-transition";
 import { TripleLane } from "@/shared/ui/triple-lane";
@@ -32,12 +29,6 @@ export default function LoginPage() {
         </section>
 
         <section aria-labelledby="sign-in-title" className="login-form-panel">
-          <div className="login-form-header">
-            <h2 id="sign-in-title">Log in</h2>
-          </div>
-          <Suspense fallback={null}>
-            <LoginErrorAlert />
-          </Suspense>
           <AuthPanel />
           <p className="login-terms">
             By continuing, you agree to use FITAI as fitness guidance, not medical advice.
