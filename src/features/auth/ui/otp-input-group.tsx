@@ -10,7 +10,7 @@ interface OtpInputGroupProps {
   expiresInSeconds?: number;
   disabled?: boolean;
   onComplete: (code: string) => void;
-  onResend: () => void | Promise<void>;
+  onResend: () => Promise<boolean>;
   errorMessage?: string | null;
 }
 
@@ -80,10 +80,12 @@ export function OtpInputGroup({
     }
     setIsResending(true);
     try {
-      await onResend();
-      setDigits(Array(length).fill(""));
-      restart(expiresInSeconds);
-      inputsRef.current[0]?.focus();
+      const ok = await onResend();
+      if (ok) {
+        setDigits(Array(length).fill(""));
+        restart(expiresInSeconds);
+        inputsRef.current[0]?.focus();
+      }
     } finally {
       setIsResending(false);
     }

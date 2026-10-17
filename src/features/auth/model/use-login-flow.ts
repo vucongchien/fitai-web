@@ -27,22 +27,32 @@ export function useLoginFlow() {
   const isIdentifierValid = identifierType !== "invalid";
   const mailUrl = getEmailProviderUrl(identifier);
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async (): Promise<boolean> => {
     if (!isIdentifierValid) {
       setErrorMessage("Vui lòng nhập đúng định dạng số điện thoại hoặc email.");
-      return;
+      return false;
     }
     setErrorMessage(null);
 
-    startTransition(async () => {
-      const result = await sendOtpAction(identifier, "login");
-      if (result.success) {
-        setOtpToken(result.data.otpToken);
-        setSubStep("OTP");
-      } else {
-        setErrorMessage(result.error);
-      }
+    let ok = false;
+    await new Promise<void>((resolve) => {
+      startTransition(async () => {
+        try {
+          const result = await sendOtpAction(identifier, "login");
+          if (result.success) {
+            setOtpToken(result.data.otpToken);
+            setSubStep("OTP");
+            ok = true;
+          } else {
+            setErrorMessage(result.error);
+            ok = false;
+          }
+        } finally {
+          resolve();
+        }
+      });
     });
+    return ok;
   };
 
   const handleVerifyOtp = (code: string) => {

@@ -27,22 +27,32 @@ export function useRegisterFlow() {
   const isIdentifierValid = identifierType !== "invalid";
   const mailUrl = getEmailProviderUrl(identifier);
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async (): Promise<boolean> => {
     if (!isIdentifierValid) {
       setErrorMessage("Vui lòng nhập số điện thoại hoặc email hợp lệ để đăng ký.");
-      return;
+      return false;
     }
     setErrorMessage(null);
 
-    startTransition(async () => {
-      const result = await sendOtpAction(identifier, "register");
-      if (result.success) {
-        setOtpToken(result.data.otpToken);
-        setIsOtpSent(true);
-      } else {
-        setErrorMessage(result.error);
-      }
+    let ok = false;
+    await new Promise<void>((resolve) => {
+      startTransition(async () => {
+        try {
+          const result = await sendOtpAction(identifier, "register");
+          if (result.success) {
+            setOtpToken(result.data.otpToken);
+            setIsOtpSent(true);
+            ok = true;
+          } else {
+            setErrorMessage(result.error);
+            ok = false;
+          }
+        } finally {
+          resolve();
+        }
+      });
     });
+    return ok;
   };
 
   const handleVerifyOtp = (code: string) => {
