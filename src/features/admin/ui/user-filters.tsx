@@ -16,16 +16,16 @@ export interface UserFiltersProps {
 
 export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-xs">
+    <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-card)] p-4 space-y-3 shadow-xs">
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-600">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--color-action)]">
           <Filter className="size-3.5" />
           <span>User Filters & Search</span>
         </div>
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-transparent hover:border-slate-200 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[var(--radius-input)] text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)] border border-transparent hover:border-[var(--color-border)] transition-colors cursor-pointer"
         >
           <RotateCcw className="size-3" />
           <span>Reset</span>
@@ -35,13 +35,13 @@ export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* Search Input */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[var(--color-text-dim)]" />
           <input
             type="text"
             placeholder="Search by name, email, ID..."
             value={filters.q}
             onChange={(e) => onChange({ ...filters, q: e.target.value })}
-            className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all"
+            className="w-full pl-9 pr-3 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] transition-all"
           />
         </div>
 
@@ -52,7 +52,7 @@ export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
             onChange={(e) =>
               onChange({ ...filters, role: e.target.value as AdminUserRole | "all" })
             }
-            className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
+            className="w-full px-3 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] transition-all cursor-pointer"
           >
             <option value="all">All Roles</option>
             <option value="admin">Administrator</option>
@@ -68,7 +68,7 @@ export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
             onChange={(e) =>
               onChange({ ...filters, status: e.target.value as AdminUserStatus | "all" })
             }
-            className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
+            className="w-full px-3 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] transition-all cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="active">Active</option>

@@ -17,7 +17,7 @@ import { UserAvatar } from "@/features/admin/ui/user-avatar";
 import { UserDialog } from "@/features/admin/ui/user-dialog";
 import { UserFilters } from "@/features/admin/ui/user-filters";
 
-/** Closes over nothing, so it lives at module scope with one stable identity. */
+// Stable key extractor for user rows.
 const userKey = (user: AdminUser) => user.userId;
 
 interface UserColumnHandlers {
@@ -26,11 +26,7 @@ interface UserColumnHandlers {
   isToggling: boolean;
 }
 
-/**
- * Column definitions live at module scope so the `cell` renderers are created
- * once rather than on every render of the page. Defining them inline also reads
- * to React tooling as declaring components during render.
- */
+// Column definitions kept at module scope to avoid re-creation on render.
 function buildUserColumns({
   isToggling,
   onToggleStatus,
@@ -41,12 +37,12 @@ function buildUserColumns({
       header: "Member Info",
       cell: (u) => (
         <div className="flex items-center gap-3">
-          <div className="size-9 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs shrink-0 overflow-hidden shadow-xs">
+          <div className="size-9 rounded-full bg-[var(--color-action)] flex items-center justify-center text-[var(--color-action-contrast)] font-bold text-xs shrink-0 overflow-hidden shadow-xs">
             <UserAvatar alt={u.displayName} size={36} src={u.avatarUrl} />
           </div>
           <div className="min-w-0">
-            <h4 className="font-bold text-slate-900 text-sm truncate">{u.displayName}</h4>
-            <p className="text-xs text-slate-500 truncate">{u.email}</p>
+            <h4 className="font-bold text-[var(--color-text)] text-sm truncate">{u.displayName}</h4>
+            <p className="text-xs text-[var(--color-text-muted)] truncate">{u.email}</p>
           </div>
         </div>
       ),
@@ -54,8 +50,8 @@ function buildUserColumns({
     {
       header: "Role",
       cell: (u) => (
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-          <Shield className="size-3 text-indigo-600" />
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-[var(--color-action-soft)] text-[var(--color-action)] border border-[var(--color-action)]/20">
+          <Shield className="size-3 text-[var(--color-action)]" />
           <span>{USER_ROLE_LABEL[u.role]}</span>
         </span>
       ),
@@ -66,8 +62,8 @@ function buildUserColumns({
         <span
           className={`inline-flex items-center gap-1 py-0.5 px-2.5 rounded-full text-xs font-bold border ${
             u.status === "active"
-              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-              : "bg-rose-50 text-rose-700 border-rose-200"
+              ? "bg-[var(--color-recovery-soft)] text-[var(--color-recovery)] border-[var(--color-recovery)]/30"
+              : "bg-[var(--color-effort-soft)] text-[var(--color-effort)] border-[var(--color-effort)]/30"
           }`}
         >
           <span className="size-1.5 rounded-full bg-current" />
@@ -78,7 +74,7 @@ function buildUserColumns({
     {
       header: "Height / Weight",
       cell: (u) => (
-        <span className="text-xs text-slate-700 font-mono">
+        <span className="text-xs text-[var(--color-text)] font-mono">
           {u.biologicalMetrics.heightCm}cm / {u.biologicalMetrics.weightKg}kg
         </span>
       ),
@@ -86,7 +82,7 @@ function buildUserColumns({
     {
       header: "Completion Rate",
       cell: (u) => (
-        <span className="text-xs font-bold text-indigo-600 font-mono">
+        <span className="text-xs font-bold text-[var(--color-action)] font-mono">
           {Math.round(u.completionRate * 100)}%
         </span>
       ),
@@ -104,7 +100,7 @@ function buildUserColumns({
               e.stopPropagation();
               onView(u);
             }}
-            className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
+            className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-action-soft)] text-[var(--color-text-muted)] hover:text-[var(--color-action)] transition-colors cursor-pointer"
           >
             <Eye className="size-4" />
           </button>
@@ -118,10 +114,10 @@ function buildUserColumns({
               e.stopPropagation();
               onToggleStatus(u.userId);
             }}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold inline-flex items-center gap-1 border transition-colors cursor-pointer ${
+            className={`px-2.5 py-1.5 rounded-[var(--radius-input)] text-xs font-bold inline-flex items-center gap-1 border transition-colors cursor-pointer ${
               u.status === "active"
-                ? "bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200"
-                : "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200"
+                ? "bg-[var(--color-effort-soft)] hover:bg-[var(--color-effort)]/20 text-[var(--color-effort)] border-[var(--color-effort)]/30"
+                : "bg-[var(--color-recovery-soft)] hover:bg-[var(--color-recovery)]/20 text-[var(--color-recovery)] border-[var(--color-recovery)]/30"
             }`}
           >
             {u.status === "active" ? (
@@ -219,13 +215,13 @@ export default function AdminUsersPage() {
       {/* Top Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2 font-display">
+          <h1 className="text-xl font-bold text-[var(--color-text)] flex items-center gap-2 font-display">
             <span>User Management</span>
-            <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-200">
+            <span className="px-2.5 py-0.5 rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)] text-xs font-bold border border-[var(--color-action)]/20">
               {totalCount} Members
             </span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-[var(--color-text-muted)] mt-1">
             View user profiles, biological metrics, role assignments, and ban status.
           </p>
         </div>

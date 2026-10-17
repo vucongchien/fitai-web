@@ -3,11 +3,7 @@
 import { AlertCircle, Inbox, Loader2, RefreshCw } from "lucide-react";
 import { useCallback } from "react";
 
-/**
- * Placeholder rows shown before the first page arrives. They carry no domain
- * identity, so they get fixed synthetic keys from a module-scope constant
- * rather than an array index.
- */
+// Fixed synthetic keys for placeholder skeleton rows.
 const SKELETON_ROW_KEYS = [
   "skeleton-row-1",
   "skeleton-row-2",
@@ -77,12 +73,12 @@ export function AdminTable<T>({
   );
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+    <div className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] overflow-hidden shadow-xs">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm border-collapse">
           {/* Header */}
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-semibold text-xs uppercase tracking-wider">
+            <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)] font-semibold text-xs uppercase tracking-wider">
               {columns.map((col) => (
                 <th key={col.header} className={`py-3.5 px-4 ${col.className || ""}`}>
                   {col.header}
@@ -92,22 +88,19 @@ export function AdminTable<T>({
           </thead>
 
           {/* Body */}
-          <tbody className="divide-y divide-slate-100 text-slate-800">
+          <tbody className="divide-y divide-[var(--color-border)] text-[var(--color-text)]">
             {/* First Page Loading State */}
             {isLoading &&
               data.length === 0 &&
               SKELETON_ROW_KEYS.map((rowKey) => (
                 <tr key={rowKey} className="animate-pulse" aria-hidden="true">
                   {columns.map((col) => (
-                    // Aria-hidden on the cell as well as the row: the cell holds a
-                    // Decorative bar, not data, so it should not read as an
-                    // Unlabelled table cell to a screen reader.
                     <td
                       aria-hidden="true"
                       className={`py-4 px-4 ${col.className || ""}`}
                       key={col.header}
                     >
-                      <div className="h-4 bg-slate-200 rounded-md w-3/4" />
+                      <div className="h-4 bg-[var(--color-surface-subtle)] rounded-[var(--radius-input)] w-3/4" />
                     </td>
                   ))}
                 </tr>
@@ -121,7 +114,7 @@ export function AdminTable<T>({
                   key={keyExtractor(item)}
                   onClick={() => onRowClick && onRowClick(item)}
                   className={`transition-colors duration-150 group ${
-                    onRowClick ? "cursor-pointer hover:bg-indigo-50/40" : "hover:bg-slate-50"
+                    onRowClick ? "cursor-pointer hover:bg-[var(--color-action-soft)]/50" : "hover:bg-[var(--color-surface-subtle)]"
                   }`}
                 >
                   {columns.map((col) => (
@@ -137,18 +130,18 @@ export function AdminTable<T>({
         {/* Error State */}
         {error && !isLoading && (
           <div className="py-12 px-4 flex flex-col items-center justify-center text-center">
-            <div className="size-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mb-3 border border-rose-200">
+            <div className="size-12 rounded-full bg-[var(--color-danger-soft)] text-[var(--color-danger)] flex items-center justify-center mb-3 border border-[color-mix(in_srgb,var(--color-danger)_25%,transparent)]">
               <AlertCircle className="size-6" />
             </div>
-            <p className="text-slate-900 font-bold text-sm mb-1">Failed to load data</p>
-            <p className="text-slate-500 text-xs max-w-sm mb-4">
+            <p className="text-[var(--color-text)] font-bold text-sm mb-1">Failed to load data</p>
+            <p className="text-[var(--color-text-muted)] text-xs max-w-sm mb-4">
               {error.message || "Please check your connection and try again."}
             </p>
             {onRetry && (
               <button
                 type="button"
                 onClick={onRetry}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold border border-slate-300 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] hover:bg-[var(--color-surface)] text-[var(--color-text)] text-xs font-semibold border border-[var(--color-border)] transition-colors cursor-pointer"
               >
                 <RefreshCw className="size-3.5" />
                 <span>Retry</span>
@@ -160,25 +153,25 @@ export function AdminTable<T>({
         {/* Empty State */}
         {!isLoading && !error && data.length === 0 && (
           <div className="py-16 px-4 flex flex-col items-center justify-center text-center">
-            <div className="size-14 rounded-2xl bg-slate-100 border border-slate-200 text-slate-400 flex items-center justify-center mb-4">
+            <div className="size-14 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-[var(--color-text-muted)] flex items-center justify-center mb-4">
               <Inbox className="size-7" />
             </div>
-            <h3 className="text-slate-900 font-bold text-sm mb-1">{emptyTitle}</h3>
-            <p className="text-slate-500 text-xs max-w-sm">{emptyDescription}</p>
+            <h3 className="text-[var(--color-text)] font-bold text-sm mb-1">{emptyTitle}</h3>
+            <p className="text-[var(--color-text-muted)] text-xs max-w-sm">{emptyDescription}</p>
           </div>
         )}
 
         {/* Infinite Scroll Footer Sentinel */}
         <div ref={sentinelCallback} className="py-4 px-4 flex items-center justify-center">
           {isFetchingNextPage && (
-            <div className="flex items-center gap-2 text-indigo-600 text-xs font-semibold py-2">
+            <div className="flex items-center gap-2 text-[var(--color-action)] text-xs font-semibold py-2">
               <Loader2 className="size-4 animate-spin" />
               <span>Loading more records...</span>
             </div>
           )}
 
           {!hasNextPage && data.length > 0 && !isLoading && (
-            <span className="text-slate-400 text-xs font-medium py-2">
+            <span className="text-[var(--color-text-muted)] text-xs font-medium py-2">
               — Showing all {data.length} items —
             </span>
           )}

@@ -289,32 +289,32 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+    <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-xs overflow-hidden">
       {/* Editor Tab Navigation */}
-      <div className="border-b border-slate-200 bg-slate-50/80 px-6 py-3 flex items-center justify-between flex-wrap gap-3">
+      <div className="border-b border-[var(--color-border)] bg-[var(--color-surface-subtle)] px-6 py-3 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          <div className="size-9 rounded-xl bg-indigo-600/10 text-indigo-600 flex items-center justify-center font-bold">
+          <div className="size-9 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] text-[var(--color-action)] flex items-center justify-center font-bold">
             <Sparkles className="size-5" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 text-sm font-display">
+            <h3 className="font-bold text-[var(--color-text)] text-sm font-display">
               AI Rules & Voice Coaching Configuration
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[var(--color-text-muted)]">
               Exercise ID:{" "}
-              <code className="text-indigo-600 font-mono font-bold">{spec.exerciseId}</code>
+              <code className="text-[var(--color-action)] font-mono font-bold">{spec.exerciseId}</code>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 bg-slate-200/70 p-1 rounded-xl text-xs font-semibold">
+        <div className="flex items-center gap-1.5 bg-[var(--color-surface-subtle)] p-1 rounded-[var(--radius-input)] border border-[var(--color-border)] text-xs font-semibold">
           <button
             type="button"
             onClick={() => setActiveTab("general")}
-            className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-[var(--radius-input)] transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === "general"
-                ? "bg-white text-indigo-600 shadow-xs font-bold"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-[var(--color-surface)] text-[var(--color-action)] shadow-xs font-bold border border-[var(--color-border)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             }`}
           >
             <Sliders className="size-3.5" />
@@ -324,10 +324,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
           <button
             type="button"
             onClick={() => setActiveTab("rules")}
-            className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-[var(--radius-input)] transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === "rules"
-                ? "bg-white text-indigo-600 shadow-xs font-bold"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-[var(--color-surface)] text-[var(--color-action)] shadow-xs font-bold border border-[var(--color-border)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             }`}
           >
             <FileCode className="size-3.5" />
@@ -337,10 +337,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
           <button
             type="button"
             onClick={() => setActiveTab("voice")}
-            className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 py-1.5 rounded-[var(--radius-input)] transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === "voice"
-                ? "bg-white text-indigo-600 shadow-xs font-bold"
-                : "text-slate-600 hover:text-slate-900"
+                ? "bg-[var(--color-surface)] text-[var(--color-action)] shadow-xs font-bold border border-[var(--color-border)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             }`}
           >
             <Mic className="size-3.5" />
@@ -357,7 +357,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div>
                 <label
                   htmlFor={`${fieldIdBase}-onnxDetectorUrl`}
-                  className="block text-xs font-bold text-slate-700 mb-1"
+                  className="block text-xs font-bold text-[var(--color-text)] mb-1"
                 >
                   ONNX Object Detector Model URL
                 </label>
@@ -367,14 +367,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   value={onnxDetectorUrl}
                   onChange={(e) => setOnnxDetectorUrl(e.target.value)}
                   placeholder="https://storage.fitai.com/models/yolov8_detector.onnx"
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-mono"
+                  className="w-full text-xs px-3 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:outline-hidden focus:ring-2 focus:ring-[var(--color-action-soft)] font-mono"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor={`${fieldIdBase}-onnxSkeletonUrl`}
-                  className="block text-xs font-bold text-slate-700 mb-1"
+                  className="block text-xs font-bold text-[var(--color-text)] mb-1"
                 >
                   ONNX Pose Skeleton Landmarker URL
                 </label>
@@ -384,14 +384,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   value={onnxSkeletonUrl}
                   onChange={(e) => setOnnxSkeletonUrl(e.target.value)}
                   placeholder="https://storage.fitai.com/models/pose_landmarker.onnx"
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-mono"
+                  className="w-full text-xs px-3 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:outline-hidden focus:ring-2 focus:ring-[var(--color-action-soft)] font-mono"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor={`${fieldIdBase}-localRulesUrl`}
-                  className="block text-xs font-bold text-slate-700 mb-1"
+                  className="block text-xs font-bold text-[var(--color-text)] mb-1"
                 >
                   Pose Rules File URL (`local_rules_url`)
                 </label>
@@ -401,14 +401,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   value={localRulesUrl}
                   onChange={(e) => setLocalRulesUrl(e.target.value)}
                   placeholder="https://storage.fitai.com/rules/pose_rules.json"
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-mono"
+                  className="w-full text-xs px-3 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:outline-hidden focus:ring-2 focus:ring-[var(--color-action-soft)] font-mono"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor={`${fieldIdBase}-dialogueEngineUrl`}
-                  className="block text-xs font-bold text-slate-700 mb-1"
+                  className="block text-xs font-bold text-[var(--color-text)] mb-1"
                 >
                   Dialogue Script File URL (`dialogue_engine_url`)
                 </label>
@@ -418,14 +418,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   value={dialogueEngineUrl}
                   onChange={(e) => setDialogueEngineUrl(e.target.value)}
                   placeholder="https://storage.fitai.com/dialogue/coach_dialogue.json"
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 font-mono"
+                  className="w-full text-xs px-3 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:outline-hidden focus:ring-2 focus:ring-[var(--color-action-soft)] font-mono"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor={`${fieldIdBase}-recommendedCameraAngle`}
-                  className="block text-xs font-bold text-slate-700 mb-1"
+                  className="block text-xs font-bold text-[var(--color-text)] mb-1"
                 >
                   Recommended Camera Angle
                 </label>
@@ -433,7 +433,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   id={`${fieldIdBase}-recommendedCameraAngle`}
                   value={recommendedCameraAngle}
                   onChange={(e) => setRecommendedCameraAngle(e.target.value)}
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white font-semibold cursor-pointer"
+                  className="w-full text-xs px-3 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-hidden focus:ring-2 focus:ring-[var(--color-action-soft)] font-semibold cursor-pointer"
                 >
                   <option value="side">Side View (90°)</option>
                   <option value="front">Front View (0°)</option>
@@ -443,12 +443,12 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               </div>
             </div>
 
-            <div className="flex items-center justify-end pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-end pt-4 border-t border-[var(--color-border)]">
               <button
                 type="button"
                 onClick={handleSaveGeneral}
                 disabled={isSavingGeneral}
-                className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                className="px-5 py-2.5 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] font-bold text-xs transition-colors shadow-xs flex items-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <Save className="size-4" />
                 <span>{isSavingGeneral ? "Saving..." : "Save Motion Spec"}</span>
@@ -461,12 +461,12 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
         {activeTab === "rules" && (
           <div className="space-y-6">
             {/* Header Action Upload */}
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between flex-wrap gap-3">
+            <div className="p-4 rounded-[var(--radius-card)] bg-[var(--color-effort-soft)]/50 border border-[var(--color-effort)]/20 flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <FileJson className="size-6 text-amber-600" />
+                <FileJson className="size-6 text-[var(--color-effort)]" />
                 <div>
-                  <h4 className="text-xs font-bold text-amber-900">Local Pose Rules (JSON)</h4>
-                  <p className="text-[11px] text-amber-700">
+                  <h4 className="text-xs font-bold text-[var(--color-text)]">Local Pose Rules (JSON)</h4>
+                  <p className="text-[11px] text-[var(--color-text-muted)]">
                     Defines rep counting thresholds, form penalty scores, joint angle limits, and
                     camera distances.
                   </p>
@@ -474,7 +474,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               </div>
 
               <div className="flex items-center gap-2">
-                <label className="cursor-pointer px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
+                <label className="cursor-pointer px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-effort)] hover:opacity-90 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
                   <UploadCloud className="size-4" />
                   <span>{isUploadingRuleFile ? "Uploading..." : "Upload Rule File (.json)"}</span>
                   <input
@@ -489,7 +489,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   type="button"
                   onClick={handlePatchPoseRules}
                   disabled={isPatchingRules || !poseRules}
-                  className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+                  className="px-4 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
                 >
                   <Save className="size-4" />
                   <span>{isPatchingRules ? "Patching..." : "Patch Rule File to S3"}</span>
@@ -498,13 +498,13 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             </div>
 
             {!poseRules ? (
-              <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-amber-300 bg-amber-50/50 rounded-2xl space-y-3">
-                <FileJson className="size-8 text-amber-500 mx-auto" />
+              <div className="p-8 text-center text-xs text-[var(--color-text-dim)] border border-dashed border-[var(--color-effort)]/40 bg-[var(--color-effort-soft)]/20 rounded-[var(--radius-card)] space-y-3">
+                <FileJson className="size-8 text-[var(--color-effort)] mx-auto" />
                 <div>
-                  <p className="font-bold text-slate-800 text-sm">
+                  <p className="font-bold text-[var(--color-text)] text-sm">
                     No Pose Rules File data (`local_rules_url` not loaded)
                   </p>
-                  <p className="text-slate-500 mt-1">
+                  <p className="text-[var(--color-text-muted)] mt-1">
                     This exercise does not have a rule JSON file or pose rule configuration yet.
                   </p>
                 </div>
@@ -522,7 +522,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                       errorRules: {},
                     })
                   }
-                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="px-4 py-2 rounded-[var(--radius-input)] bg-[var(--color-effort)] hover:opacity-90 text-white font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Plus className="size-4" />
                   <span>Initialize New Pose Rules</span>
@@ -532,15 +532,15 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <>
                 {/* Threshold & Calibration Parameters */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                    <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Sliders className="size-3.5 text-indigo-600" />
+                  <div className="p-4 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-3">
+                    <h5 className="text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5">
+                      <Sliders className="size-3.5 text-[var(--color-action)]" />
                       <span>Camera Calibration</span>
                     </h5>
                     <div>
                       <label
                         htmlFor={`${fieldIdBase}-minDistanceMeters`}
-                        className="text-[11px] text-slate-500 font-medium"
+                        className="text-[11px] text-[var(--color-text-muted)] font-medium"
                       >
                         Minimum Distance (meters):
                       </label>
@@ -558,13 +558,13 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                             },
                           })
                         }
-                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
+                        className="w-full text-xs px-2.5 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] mt-1 font-bold"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor={`${fieldIdBase}-maxDistanceMeters`}
-                        className="text-[11px] text-slate-500 font-medium"
+                        className="text-[11px] text-[var(--color-text-muted)] font-medium"
                       >
                         Maximum Distance (meters):
                       </label>
@@ -582,20 +582,20 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                             },
                           })
                         }
-                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
+                        className="w-full text-xs px-2.5 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] mt-1 font-bold"
                       />
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                    <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <CheckCircle2 className="size-3.5 text-emerald-600" />
+                  <div className="p-4 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-3">
+                    <h5 className="text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5">
+                      <CheckCircle2 className="size-3.5 text-[var(--color-recovery)]" />
                       <span>Rep Counting Rules</span>
                     </h5>
                     <div>
                       <label
                         htmlFor={`${fieldIdBase}-minRomPercentage`}
-                        className="text-[11px] text-slate-500 font-medium"
+                        className="text-[11px] text-[var(--color-text-muted)] font-medium"
                       >
                         Minimum Range of Motion (ROM %):
                       </label>
@@ -612,20 +612,20 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                             },
                           })
                         }
-                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
+                        className="w-full text-xs px-2.5 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] mt-1 font-bold"
                       />
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
-                    <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <AlertCircle className="size-3.5 text-rose-600" />
+                  <div className="p-4 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-3">
+                    <h5 className="text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5">
+                      <AlertCircle className="size-3.5 text-[var(--color-effort)]" />
                       <span>Form Scoring & Penalties</span>
                     </h5>
                     <div>
                       <label
                         htmlFor={`${fieldIdBase}-penaltyPerError`}
-                        className="text-[11px] text-slate-500 font-medium"
+                        className="text-[11px] text-[var(--color-text-muted)] font-medium"
                       >
                         Penalty points per form error:
                       </label>
@@ -642,7 +642,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                             },
                           })
                         }
-                        className="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 mt-1 font-bold"
+                        className="w-full text-xs px-2.5 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] mt-1 font-bold"
                       />
                     </div>
                   </div>
@@ -651,7 +651,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                 {/* Error Rules Table */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between flex-wrap gap-2">
-                    <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    <h5 className="text-xs font-bold text-[var(--color-text)] uppercase tracking-wider">
                       Pose Error Rules List
                     </h5>
                     <div className="flex items-center gap-2">
@@ -660,19 +660,19 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                         placeholder="Error code (e.g. ERR_KNEE_VALGUS)"
                         value={newErrorCode}
                         onChange={(e) => setNewErrorCode(e.target.value)}
-                        className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 w-52 font-mono uppercase"
+                        className="text-xs px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] w-52 font-mono uppercase"
                       />
                       <input
                         type="text"
                         placeholder="Pose error description"
                         value={newErrorDesc}
                         onChange={(e) => setNewErrorDesc(e.target.value)}
-                        className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 w-64"
+                        className="text-xs px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] w-64"
                       />
                       <button
                         type="button"
                         onClick={handleAddErrorCode}
-                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1 cursor-pointer"
+                        className="px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] text-xs font-bold flex items-center gap-1 cursor-pointer"
                       >
                         <Plus className="size-3.5" />
                         <span>Add</span>
@@ -680,9 +680,9 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                     </div>
                   </div>
 
-                  <div className="rounded-xl border border-slate-200 overflow-hidden">
+                  <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden">
                     <table className="w-full text-left text-xs">
-                      <thead className="bg-slate-100 border-b border-slate-200 font-bold text-slate-700">
+                      <thead className="bg-[var(--color-surface-subtle)] border-b border-[var(--color-border)] font-bold text-[var(--color-text-muted)]">
                         <tr>
                           <th className="p-3">Error Code</th>
                           <th className="p-3">Description</th>
@@ -691,24 +691,24 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                           <th className="p-3 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-200">
+                      <tbody className="divide-y divide-[var(--color-border)]">
                         {Object.entries(poseRules.errorRules || {}).map(([code, item]) => (
-                          <tr key={code} className="hover:bg-slate-50">
-                            <td className="p-3 font-mono font-bold text-indigo-600">{code}</td>
-                            <td className="p-3 font-medium text-slate-800">{item.description}</td>
+                          <tr key={code} className="hover:bg-[var(--color-surface-subtle)]/60">
+                            <td className="p-3 font-mono font-bold text-[var(--color-action)]">{code}</td>
+                            <td className="p-3 font-medium text-[var(--color-text)]">{item.description}</td>
                             <td className="p-3">
-                              <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[11px]">
+                              <span className="px-2 py-0.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] text-[var(--color-text)] border border-[var(--color-border)] font-mono text-[11px]">
                                 {item.joint}
                               </span>
                             </td>
-                            <td className="p-3 font-bold text-slate-700">
+                            <td className="p-3 font-bold text-[var(--color-text)]">
                               {item.thresholdDegrees || 15}°
                             </td>
                             <td className="p-3 text-right">
                               <button
                                 type="button"
                                 onClick={() => handleRemoveErrorCode(code)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                                className="p-1.5 rounded-[var(--radius-input)] text-[var(--color-text-muted)] hover:text-[var(--color-effort)] hover:bg-[var(--color-effort-soft)] transition-colors cursor-pointer"
                               >
                                 <Trash2 className="size-4" />
                               </button>
@@ -722,11 +722,11 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
 
                 {/* Live JSON Preview */}
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                    <Code2 className="size-4 text-indigo-600" />
+                  <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-text)]">
+                    <Code2 className="size-4 text-[var(--color-action)]" />
                     <span>Preview Standard Rule JSON (Live Rules JSON)</span>
                   </div>
-                  <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto max-h-60 leading-relaxed border border-slate-800">
+                  <pre className="p-4 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] text-[var(--color-text)] font-mono text-xs overflow-x-auto max-h-60 leading-relaxed border border-[var(--color-border)]">
                     {JSON.stringify(poseRules, null, 2)}
                   </pre>
                 </div>
@@ -739,14 +739,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
         {activeTab === "voice" && (
           <div className="space-y-6">
             {/* Header Action Upload */}
-            <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between flex-wrap gap-3">
+            <div className="p-4 rounded-[var(--radius-card)] bg-[var(--color-action-soft)]/50 border border-[var(--color-action)]/20 flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <Mic className="size-6 text-indigo-600" />
+                <Mic className="size-6 text-[var(--color-action)]" />
                 <div>
-                  <h4 className="text-xs font-bold text-indigo-900">
+                  <h4 className="text-xs font-bold text-[var(--color-text)]">
                     Voice Files & AI Coach Feedback Scripts
                   </h4>
-                  <p className="text-[11px] text-indigo-700">
+                  <p className="text-[11px] text-[var(--color-text-muted)]">
                     Defines voice dialogue cues, audio `.mp3` files, and cooldown buffers for each
                     error severity level.
                   </p>
@@ -754,14 +754,14 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               </div>
 
               <div className="flex items-center gap-2">
-                <label className="cursor-pointer px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
+                <label className="cursor-pointer px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
                   <UploadCloud className="size-4" />
                   <span>
                     {isUploadingVoiceFile ? "Uploading..." : "Upload Audio / Dialogue (.json)"}
                   </span>
                   <input
                     type="file"
-                    accept=".mp3,.wav,.json,audio/*,application/json"
+                    accept=".mp3,.wav,.ogg,.json,audio/mpeg,audio/wav,application/json"
                     onChange={handleVoiceFileUpload}
                     className="hidden"
                   />
@@ -771,7 +771,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   type="button"
                   onClick={handlePatchDialogueConfig}
                   disabled={isPatchingVoice}
-                  className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+                  className="px-4 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-recovery)] hover:opacity-90 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
                 >
                   <Save className="size-4" />
                   <span>{isPatchingVoice ? "Patching..." : "Patch Dialogue Script to S3"}</span>
@@ -780,11 +780,11 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             </div>
 
             {/* Coach Personality ID */}
-            <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <div className="flex items-center gap-4 bg-[var(--color-surface-subtle)] p-4 rounded-[var(--radius-card)] border border-[var(--color-border)]">
               <div>
                 <label
                   htmlFor={`${fieldIdBase}-personalityId`}
-                  className="block text-xs font-bold text-slate-700 mb-1"
+                  className="block text-xs font-bold text-[var(--color-text)] mb-1"
                 >
                   AI Coach Personality ID:
                 </label>
@@ -793,31 +793,31 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                   type="text"
                   value={personalityId}
                   onChange={(e) => setPersonalityId(e.target.value)}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-bold text-indigo-600 bg-white w-56"
+                  className="text-xs px-3 py-1.5 rounded-[var(--radius-input)] border border-[var(--color-border)] font-bold text-[var(--color-action)] bg-[var(--color-surface)] w-56"
                 />
               </div>
 
-              <div className="text-xs text-slate-500">
-                Each Coach (e.g., <code className="font-bold text-slate-700">coach_alex</code>,{" "}
-                <code className="font-bold text-slate-700">coach_sarah</code>) uses a dedicated
+              <div className="text-xs text-[var(--color-text-muted)]">
+                Each Coach (e.g., <code className="font-bold text-[var(--color-text)]">coach_alex</code>,{" "}
+                <code className="font-bold text-[var(--color-text)]">coach_sarah</code>) uses a dedicated
                 voice set.
               </div>
             </div>
 
             {/* Dialogue Map Cards */}
             <div className="space-y-4">
-              <h5 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+              <h5 className="text-xs font-bold text-[var(--color-text)] uppercase tracking-wider">
                 Dialogue Scripts & Voice Audio Files by Error Code
               </h5>
 
               {Object.keys(dialogueMap).length === 0 && (
-                <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-indigo-200 bg-indigo-50/30 rounded-2xl space-y-3">
-                  <Mic className="size-8 text-indigo-500 mx-auto" />
+                <div className="p-8 text-center text-xs text-[var(--color-text-dim)] border border-dashed border-[var(--color-action)]/30 bg-[var(--color-action-soft)]/20 rounded-[var(--radius-card)] space-y-3">
+                  <Mic className="size-8 text-[var(--color-action)] mx-auto" />
                   <div>
-                    <p className="font-bold text-slate-800 text-sm">
+                    <p className="font-bold text-[var(--color-text)] text-sm">
                       No Voice File data (`dialogue_engine_url` not loaded)
                     </p>
-                    <p className="text-slate-500 mt-1">
+                    <p className="text-[var(--color-text-muted)] mt-1">
                       This exercise does not have a voice audio file or AI Coach dialogue script
                       yet.
                     </p>
@@ -834,7 +834,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                       });
                       setCooldowns({ ERR_FORM_NOTICE: 3.0 });
                     }}
-                    className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    className="px-4 py-2 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] font-bold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                   >
                     <Plus className="size-4" />
                     <span>Initialize New Dialogue Script</span>
@@ -845,15 +845,15 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               {Object.entries(dialogueMap).map(([code, item]) => (
                 <div
                   key={code}
-                  className="p-4 rounded-2xl border border-slate-200 bg-white shadow-xs space-y-4"
+                  className="p-4 rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-xs space-y-4"
                 >
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-3">
                     <div className="flex items-center gap-3">
-                      <span className="font-mono font-bold text-indigo-600 text-xs px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200">
+                      <span className="font-mono font-bold text-[var(--color-action)] text-xs px-2.5 py-1 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] border border-[var(--color-action)]/20">
                         {code}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500 font-medium">Cooldown (s):</span>
+                        <span className="text-xs text-[var(--color-text-muted)] font-medium">Cooldown (s):</span>
                         <input
                           type="number"
                           step="0.5"
@@ -864,7 +864,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                               [code]: Number.parseFloat(e.target.value) || 3.0,
                             })
                           }
-                          className="w-20 text-xs px-2 py-1 rounded-md border border-slate-200 font-bold"
+                          className="w-20 text-xs px-2 py-1 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface-subtle)] text-[var(--color-text)] font-bold"
                         />
                       </div>
                     </div>
@@ -872,7 +872,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                     <button
                       type="button"
                       onClick={() => handleRemoveErrorCode(code)}
-                      className="text-xs text-rose-600 hover:text-rose-700 font-semibold cursor-pointer"
+                      className="text-xs text-[var(--color-effort)] hover:opacity-80 font-semibold cursor-pointer"
                     >
                       Delete this error script
                     </button>
@@ -880,7 +880,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
 
                   {/* Severity 1 */}
                   <div className="space-y-2">
-                    <div className="text-xs font-bold text-amber-700 flex items-center gap-1.5">
+                    <div className="text-xs font-bold text-[var(--color-effort)] flex items-center gap-1.5">
                       <Volume2 className="size-4" />
                       <span>Severity 1 (Minor Cue / Reminder):</span>
                     </div>
@@ -902,7 +902,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                             });
                           }}
                           placeholder="Reminder dialogue..."
-                          className="md:col-span-6 text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-medium"
+                          className="md:col-span-6 text-xs px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-[var(--color-text)] font-medium"
                         />
                         <input
                           type="text"
@@ -916,16 +916,16 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                             });
                           }}
                           placeholder="Voice audio file URL (.mp3)"
-                          className="md:col-span-5 text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-mono"
+                          className="md:col-span-5 text-xs px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-[var(--color-text)] font-mono"
                         />
                         <button
                           type="button"
                           onClick={() => handlePlayAudio(opt.audioUrl)}
-                          className="md:col-span-1 p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center cursor-pointer"
+                          className="md:col-span-1 p-1.5 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] hover:bg-[var(--color-action)]/20 text-[var(--color-action)] flex items-center justify-center cursor-pointer"
                           title="Preview audio"
                         >
                           {playingAudioUrl === opt.audioUrl ? (
-                            <Pause className="size-4 text-indigo-700 animate-pulse" />
+                            <Pause className="size-4 text-[var(--color-action)] animate-pulse" />
                           ) : (
                             <Play className="size-4" />
                           )}
@@ -936,7 +936,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
 
                   {/* Severity 2 */}
                   <div className="space-y-2 pt-2">
-                    <div className="text-xs font-bold text-rose-700 flex items-center gap-1.5">
+                    <div className="text-xs font-bold text-[var(--color-effort)] flex items-center gap-1.5">
                       <Volume2 className="size-4" />
                       <span>Severity 2 (Major Warning):</span>
                     </div>
@@ -958,7 +958,7 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                             });
                           }}
                           placeholder="Critical warning dialogue..."
-                          className="md:col-span-6 text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-medium"
+                          className="md:col-span-6 text-xs px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-[var(--color-text)] font-medium"
                         />
                         <input
                           type="text"
@@ -972,16 +972,16 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                             });
                           }}
                           placeholder="Voice audio file URL (.mp3)"
-                          className="md:col-span-5 text-xs px-3 py-1.5 rounded-lg border border-slate-200 font-mono"
+                          className="md:col-span-5 text-xs px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-[var(--color-text)] font-mono"
                         />
                         <button
                           type="button"
                           onClick={() => handlePlayAudio(opt.audioUrl)}
-                          className="md:col-span-1 p-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center cursor-pointer"
+                          className="md:col-span-1 p-1.5 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] hover:bg-[var(--color-action)]/20 text-[var(--color-action)] flex items-center justify-center cursor-pointer"
                           title="Preview audio"
                         >
                           {playingAudioUrl === opt.audioUrl ? (
-                            <Pause className="size-4 text-indigo-700 animate-pulse" />
+                            <Pause className="size-4 text-[var(--color-action)] animate-pulse" />
                           ) : (
                             <Play className="size-4" />
                           )}
@@ -995,11 +995,11 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
 
             {/* Dialogue Live JSON Preview */}
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
-                <Code2 className="size-4 text-indigo-600" />
+              <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-text)]">
+                <Code2 className="size-4 text-[var(--color-action)]" />
                 <span>Preview Standard Dialogue Engine Config JSON</span>
               </div>
-              <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto max-h-60 leading-relaxed border border-slate-800">
+              <pre className="p-4 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] text-[var(--color-text)] font-mono text-xs overflow-x-auto max-h-60 leading-relaxed border border-[var(--color-border)]">
                 {JSON.stringify(
                   {
                     personalityId,

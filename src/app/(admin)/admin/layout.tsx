@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 
 function AdminLoadingFallback() {
   return (
-    <div className="min-h-screen bg-[#F7F8F6] flex items-center justify-center font-sans antialiased text-slate-500 text-sm">
+    <div className="min-h-screen bg-[var(--color-canvas)] flex items-center justify-center font-sans antialiased text-[var(--color-text-muted)] text-sm">
       <div className="flex items-center gap-3">
-        <span className="size-3 rounded-full bg-indigo-500 animate-ping" />
+        <span className="size-3 rounded-full bg-[var(--color-action)] animate-ping" />
         <span>Verifying admin session...</span>
       </div>
     </div>
@@ -40,21 +40,21 @@ async function AdminGate({ children }: { children: React.ReactNode }) {
   // 3. User is authorized ADMIN -> Render Admin Dashboard
   return (
     <AdminQueryProvider>
-      <div className="min-h-screen bg-[#F7F8F6] text-slate-900 flex font-sans selection:bg-indigo-100 antialiased">
+      <div className="min-h-screen bg-[var(--color-canvas)] text-[var(--color-text)] flex font-sans selection:bg-[var(--color-action-soft)] antialiased">
         {/* Sidebar */}
         <AdminSidebar pendingApprovalCount={3} />
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Top Bar */}
-          <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+          <header className="h-16 border-b border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
             <div className="flex items-center gap-2">
-              <span className="size-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-semibold text-slate-600">System Operational</span>
+              <span className="size-2.5 rounded-full bg-[var(--color-recovery)] animate-pulse" />
+              <span className="text-xs font-semibold text-[var(--color-text-muted)]">System Operational</span>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
+              <div className="px-3 py-1 rounded-full bg-[var(--color-action-soft)] border border-[color-mix(in_srgb,var(--color-action)_25%,transparent)] text-[var(--color-action)] text-xs font-bold">
                 Admin Mode Active ({session.userName || "Admin"})
               </div>
             </div>

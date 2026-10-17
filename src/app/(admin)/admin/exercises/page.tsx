@@ -35,11 +35,7 @@ interface ExerciseColumnHandlers {
   isArchiving: boolean;
 }
 
-/**
- * Column definitions live at module scope so the `cell` renderers are created
- * once rather than on every render of the page. Defining them inline also reads
- * to React tooling as declaring components during render.
- */
+// Column definitions kept at module scope to avoid re-creation on render.
 function buildExerciseColumns({
   isApproving,
   isArchiving,
@@ -53,14 +49,14 @@ function buildExerciseColumns({
       header: "Exercise Name",
       cell: (ex) => (
         <div className="flex items-center gap-3">
-          <div className="size-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 font-bold">
+          <div className="size-9 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] border border-[color-mix(in_srgb,var(--color-action)_20%,transparent)] flex items-center justify-center text-[var(--color-action)] shrink-0 font-bold">
             <Dumbbell className="size-4.5" />
           </div>
           <div className="min-w-0">
-            <h4 className="font-bold text-slate-900 text-sm truncate group-hover:text-indigo-600 transition-colors">
+            <h4 className="font-bold text-[var(--color-text)] text-sm truncate group-hover:text-[var(--color-action)] transition-colors">
               {ex.name}
             </h4>
-            <p className="text-xs text-slate-500 truncate">Created by: {ex.createdBy}</p>
+            <p className="text-xs text-[var(--color-text-muted)] truncate">Created by: {ex.createdBy}</p>
           </div>
         </div>
       ),
@@ -82,7 +78,7 @@ function buildExerciseColumns({
     {
       header: "Difficulty",
       cell: (ex) => (
-        <span className="text-xs text-slate-700 font-semibold capitalize">
+        <span className="text-xs text-[var(--color-text)] font-semibold capitalize">
           {DIFFICULTY_LABEL[ex.difficulty] || ex.difficulty}
         </span>
       ),
@@ -90,7 +86,7 @@ function buildExerciseColumns({
     {
       header: "Rest Time",
       cell: (ex) => (
-        <span className="text-xs text-slate-600 font-mono">{ex.defaultRestSeconds}s</span>
+        <span className="text-xs text-[var(--color-text-muted)] font-mono">{ex.defaultRestSeconds}s</span>
       ),
     },
     {
@@ -108,7 +104,7 @@ function buildExerciseColumns({
                 e.stopPropagation();
                 onApprove(ex.id);
               }}
-              className="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+              className="px-2.5 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-recovery-soft)] hover:opacity-90 text-[var(--color-recovery-ink)] border border-[color-mix(in_srgb,var(--color-recovery)_25%,transparent)] text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
             >
               <CheckCircle2 className="size-3.5" />
               <span>Approve</span>
@@ -125,7 +121,7 @@ function buildExerciseColumns({
                 e.stopPropagation();
                 onArchive(ex.id);
               }}
-              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+              className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
             >
               <Archive className="size-4" />
             </button>
@@ -139,7 +135,7 @@ function buildExerciseColumns({
               e.stopPropagation();
               onEdit(ex.id);
             }}
-            className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition-colors cursor-pointer"
+            className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-action-soft)] text-[var(--color-text-muted)] hover:text-[var(--color-action)] transition-colors cursor-pointer"
           >
             <Pencil className="size-4" />
           </button>
@@ -149,7 +145,7 @@ function buildExerciseColumns({
             type="button"
             title="Delete Exercise"
             onClick={(e) => onDelete(e, ex)}
-            className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+            className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-danger-soft)] text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors cursor-pointer"
           >
             <Trash2 className="size-4" />
           </button>
@@ -286,13 +282,13 @@ export default function AdminExercisesPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2 font-display">
+          <h1 className="text-xl font-bold text-[var(--color-text)] flex items-center gap-2 font-display">
             <span>Exercise Catalog</span>
-            <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-200">
+            <span className="px-2.5 py-0.5 rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)] text-xs font-bold border border-[color-mix(in_srgb,var(--color-action)_25%,transparent)]">
               {totalCount} Items
             </span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-[var(--color-text-muted)] mt-1">
             Manage exercise entries, approve pending submissions, and edit details.
           </p>
         </div>
@@ -300,7 +296,7 @@ export default function AdminExercisesPage() {
         <button
           type="button"
           onClick={handleCreateNew}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] font-bold text-xs shadow-md shadow-[var(--color-action-soft)] transition-all cursor-pointer shrink-0"
         >
           <Plus className="size-4" />
           <span>Add New Exercise</span>

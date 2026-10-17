@@ -50,8 +50,8 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
 
   if (isLoading) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center text-slate-500 space-y-3">
-        <Dumbbell className="size-8 animate-bounce text-indigo-600" />
+      <div className="py-20 flex flex-col items-center justify-center text-[var(--color-text-muted)] space-y-3">
+        <Dumbbell className="size-8 animate-bounce text-[var(--color-action)]" />
         <p className="text-xs font-semibold">Loading exercise details...</p>
       </div>
     );
@@ -60,13 +60,13 @@ export default function AdminExerciseDetailPage({ params }: { params: Promise<{ 
   if (!data?.exercise) {
     return (
       <div className="py-16 text-center space-y-4">
-        <h2 className="text-lg font-bold text-slate-900">Exercise Not Found</h2>
-        <p className="text-xs text-slate-500">
+        <h2 className="text-lg font-bold text-[var(--color-text)]">Exercise Not Found</h2>
+        <p className="text-xs text-[var(--color-text-muted)]">
           The requested exercise with ID `{id}` does not exist.
         </p>
         <Link
           href="/admin/exercises"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] hover:bg-[var(--color-surface)] text-[var(--color-text)] text-xs font-bold border border-[var(--color-border)] transition-colors"
         >
           <ArrowLeft className="size-4" />
           <span>Back to Catalog</span>
@@ -208,13 +208,13 @@ function AdminExerciseForm({
         <div className="space-y-1">
           <Link
             href="/admin/exercises"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-action)] transition-colors"
           >
             <ArrowLeft className="size-3.5" />
             <span>Back to Exercise Catalog</span>
           </Link>
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-slate-900 font-display">{name}</h1>
+            <h1 className="text-xl font-bold text-[var(--color-text)] font-display">{name}</h1>
             <span
               className={`px-3 py-0.5 rounded-full text-xs font-bold border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
             >
@@ -228,9 +228,9 @@ function AdminExerciseForm({
           <button
             type="button"
             onClick={() => setIsMotionSpecDialogOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] hover:opacity-90 text-[var(--color-action)] border border-[color-mix(in_srgb,var(--color-action)_25%,transparent)] text-xs font-bold transition-colors cursor-pointer"
           >
-            <Sparkles className="size-4 text-indigo-600" />
+            <Sparkles className="size-4 text-[var(--color-action)]" />
             <span>AI Rules & Voice</span>
           </button>
 
@@ -238,7 +238,7 @@ function AdminExerciseForm({
             <button
               type="button"
               onClick={handleApprove}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-[var(--radius-input)] bg-[var(--color-recovery-soft)] hover:opacity-90 text-[var(--color-recovery-ink)] border border-[color-mix(in_srgb,var(--color-recovery)_25%,transparent)] text-xs font-bold transition-colors cursor-pointer"
             >
               <CheckCircle2 className="size-4" />
               <span>Approve Entry</span>
@@ -249,7 +249,7 @@ function AdminExerciseForm({
             <button
               type="button"
               onClick={handleArchive}
-              className="p-2 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 text-xs font-bold transition-colors cursor-pointer"
+              className="p-2 rounded-[var(--radius-input)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)] border border-[var(--color-border)] text-xs font-bold transition-colors cursor-pointer"
               title="Archive Exercise"
             >
               <Archive className="size-4" />
@@ -259,7 +259,7 @@ function AdminExerciseForm({
           <button
             type="button"
             onClick={handleDelete}
-            className="p-2 rounded-xl bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 text-xs font-bold transition-colors cursor-pointer"
+            className="p-2 rounded-[var(--radius-input)] bg-[var(--color-surface)] hover:bg-[var(--color-danger-soft)] text-[var(--color-text-muted)] hover:text-[var(--color-danger)] border border-[var(--color-border)] text-xs font-bold transition-colors cursor-pointer"
             title="Delete Exercise"
           >
             <Trash2 className="size-4" />
@@ -268,7 +268,7 @@ function AdminExerciseForm({
           <button
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] font-bold text-xs shadow-md shadow-[var(--color-action-soft)] transition-all cursor-pointer disabled:opacity-50"
           >
             <Save className="size-4" />
             <span>{isSaving ? "Saving..." : "Save Changes"}</span>
@@ -281,14 +281,14 @@ function AdminExerciseForm({
         {/* Left Column: Basic Info & Metadata Selects (2 cols) */}
         <div className="lg:col-span-2 space-y-6">
           {/* General Information Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-6 space-y-4 shadow-xs">
+            <h3 className="text-sm font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-3">
               General Exercise Settings
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-1`}>
+                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-1`}>
                   Exercise Title *
                 </label>
                 <input
@@ -296,19 +296,19 @@ function AdminExerciseForm({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all"
+                  className="w-full px-3.5 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none transition-all"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-2`}>
+                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-2`}>
                   Status
                 </label>
                 <select
                   id={`${fieldIdBase}-2`}
                   value={status}
                   onChange={(e) => setStatus(e.target.value as AdminExerciseStatus)}
-                  className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
+                  className="w-full px-3.5 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="created">Draft</option>
                   <option value="submittedForApproval">Pending Approval</option>
@@ -318,14 +318,14 @@ function AdminExerciseForm({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-3`}>
+                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-3`}>
                   Difficulty Level
                 </label>
                 <select
                   id={`${fieldIdBase}-3`}
                   value={difficulty}
                   onChange={(e) => setDifficulty(e.target.value as Difficulty)}
-                  className="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
+                  className="w-full px-3.5 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
@@ -336,14 +336,14 @@ function AdminExerciseForm({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-4`}>
+                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-4`}>
                   Primary Body Part *
                 </label>
                 <select
                   id={`${fieldIdBase}-4`}
                   value={bodyPartId}
                   onChange={(e) => setBodyPartId(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none cursor-pointer"
+                  className="w-full px-3 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none cursor-pointer"
                 >
                   {bodyPartOptions.map((bp) => (
                     <option key={bp.id} value={bp.id}>
@@ -354,14 +354,14 @@ function AdminExerciseForm({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-5`}>
+                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-5`}>
                   Equipment *
                 </label>
                 <select
                   id={`${fieldIdBase}-5`}
                   value={equipmentId}
                   onChange={(e) => setEquipmentId(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none cursor-pointer"
+                  className="w-full px-3 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none cursor-pointer"
                 >
                   {equipmentOptions.map((eq) => (
                     <option key={eq.id} value={eq.id}>
@@ -372,14 +372,14 @@ function AdminExerciseForm({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-6`}>
+                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-6`}>
                   Target Muscle *
                 </label>
                 <select
                   id={`${fieldIdBase}-6`}
                   value={targetMuscleId}
                   onChange={(e) => setTargetMuscleId(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-800 focus:outline-none cursor-pointer"
+                  className="w-full px-3 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none cursor-pointer"
                 >
                   {muscleOptions.map((ms) => (
                     <option key={ms.id} value={ms.id}>
@@ -391,7 +391,7 @@ function AdminExerciseForm({
             </div>
 
             <div className="space-y-1.5 pt-2">
-              <label className="text-xs font-bold text-slate-700" htmlFor={`${fieldIdBase}-7`}>
+              <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-7`}>
                 Default Rest Time (Seconds)
               </label>
               <input
@@ -399,20 +399,20 @@ function AdminExerciseForm({
                 type="number"
                 value={defaultRestSeconds}
                 onChange={(e) => setDefaultRestSeconds(Number(e.target.value))}
-                className="w-full max-w-xs px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-900 focus:outline-none"
+                className="w-full max-w-xs px-3.5 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none"
               />
             </div>
           </div>
 
           {/* Detailed Instructions Textarea */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-3 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-900">Step-by-Step Instructions</h3>
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-6 space-y-3 shadow-xs">
+            <h3 className="text-sm font-bold text-[var(--color-text)]">Step-by-Step Instructions</h3>
             <textarea
               rows={5}
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Provide a detailed execution guide for coaches and members..."
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:bg-white rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none"
+              className="w-full px-3.5 py-2.5 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
             />
           </div>
         </div>
@@ -420,23 +420,23 @@ function AdminExerciseForm({
         {/* Right Column: Arrays (Form Cues, Common Mistakes, Secondary Muscles, Tags) */}
         <div className="space-y-6">
           {/* Form Cues Array */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center justify-between">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
+            <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center justify-between">
               <span>Form Cues (Array)</span>
-              <span className="text-xs text-indigo-600 font-mono">{formCues.length} Cues</span>
+              <span className="text-xs text-[var(--color-action)] font-mono">{formCues.length} Cues</span>
             </h3>
 
             <div className="space-y-2">
               {formCues.map((cue, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between gap-2"
+                  className="p-2.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-xs flex items-center justify-between gap-2"
                 >
-                  <span className="text-slate-800 font-medium">{cue}</span>
+                  <span className="text-[var(--color-text)] font-medium">{cue}</span>
                   <button
                     type="button"
                     onClick={() => removeFormCue(idx)}
-                    className="text-slate-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
+                    className="text-[var(--color-text-muted)] hover:text-[var(--color-danger)] p-1 transition-colors cursor-pointer"
                   >
                     <X className="size-3.5" />
                   </button>
@@ -456,12 +456,12 @@ function AdminExerciseForm({
                   }
                 }}
                 placeholder="Add form cue..."
-                className="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                className="flex-1 px-3 py-1.5 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
               />
               <button
                 type="button"
                 onClick={addFormCue}
-                className="p-2 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold text-xs transition-colors cursor-pointer"
+                className="p-2 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] text-[var(--color-action)] hover:bg-[var(--color-action)] hover:text-[var(--color-action-contrast)] font-bold text-xs transition-colors cursor-pointer"
               >
                 <Plus className="size-4" />
               </button>
@@ -469,23 +469,23 @@ function AdminExerciseForm({
           </div>
 
           {/* Common Mistakes Array */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center justify-between">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
+            <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center justify-between">
               <span>Common Mistakes (Array)</span>
-              <span className="text-xs text-rose-600 font-mono">{commonMistakes.length} Items</span>
+              <span className="text-xs text-[var(--color-danger)] font-mono">{commonMistakes.length} Items</span>
             </h3>
 
             <div className="space-y-2">
               {commonMistakes.map((mistake, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 rounded-xl bg-rose-50/60 border border-rose-100 text-xs flex items-center justify-between gap-2"
+                  className="p-2.5 rounded-[var(--radius-input)] bg-[var(--color-danger-soft)] border border-[color-mix(in_srgb,var(--color-danger)_20%,transparent)] text-xs flex items-center justify-between gap-2"
                 >
-                  <span className="text-rose-900 font-medium">{mistake}</span>
+                  <span className="text-[var(--color-danger)] font-medium">{mistake}</span>
                   <button
                     type="button"
                     onClick={() => removeCommonMistake(idx)}
-                    className="text-rose-400 hover:text-rose-700 p-1 transition-colors cursor-pointer"
+                    className="text-[var(--color-danger)] hover:opacity-70 p-1 transition-colors cursor-pointer"
                   >
                     <X className="size-3.5" />
                   </button>
@@ -505,12 +505,12 @@ function AdminExerciseForm({
                   }
                 }}
                 placeholder="Add common mistake..."
-                className="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none"
+                className="flex-1 px-3 py-1.5 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
               />
               <button
                 type="button"
                 onClick={addCommonMistake}
-                className="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold text-xs transition-colors cursor-pointer"
+                className="p-2 rounded-[var(--radius-input)] bg-[var(--color-danger-soft)] text-[var(--color-danger)] hover:bg-[var(--color-danger)] hover:text-[var(--color-action-contrast)] font-bold text-xs transition-colors cursor-pointer"
               >
                 <Plus className="size-4" />
               </button>
@@ -518,8 +518,8 @@ function AdminExerciseForm({
           </div>
 
           {/* Category Tags Multi-select */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-xs">
-            <h3 className="text-sm font-bold text-slate-900">Category Tags</h3>
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
+            <h3 className="text-sm font-bold text-[var(--color-text)]">Category Tags</h3>
             <div className="flex flex-wrap gap-1.5">
               {tagOptions.map((t) => {
                 const isSelected = tagIds.includes(t.id);
@@ -534,10 +534,10 @@ function AdminExerciseForm({
                         setTagIds([...tagIds, t.id]);
                       }
                     }}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                    className={`px-2.5 py-1 rounded-[var(--radius-input)] text-xs font-semibold transition-all border cursor-pointer ${
                       isSelected
-                        ? "bg-indigo-600 text-white border-indigo-600"
-                        : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
+                        ? "bg-[var(--color-action)] text-[var(--color-action-contrast)] border-[var(--color-action)]"
+                        : "bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)] border-[var(--color-border)] hover:text-[var(--color-text)]"
                     }`}
                   >
                     #{t.name}

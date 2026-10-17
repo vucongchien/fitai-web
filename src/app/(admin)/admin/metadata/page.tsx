@@ -20,7 +20,7 @@ interface MetadataTab {
   icon: LucideIcon;
 }
 
-/** Static tab definitions — no closure over props or state, so module scope. */
+// Static tab definitions kept at module scope.
 const TABS: MetadataTab[] = [
   { category: "bodyPart", label: "Body Parts", icon: Layers },
   { category: "equipment", label: "Equipments", icon: Dumbbell },
@@ -77,8 +77,8 @@ export default function AdminMetadataPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900 font-display">Catalog Metadata</h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <h1 className="text-xl font-bold text-[var(--color-text)] font-display">Catalog Metadata</h1>
+          <p className="text-xs text-[var(--color-text-muted)] mt-1">
             Manage exercise classifications, equipment types, muscle groups, and tags.
           </p>
         </div>
@@ -86,7 +86,7 @@ export default function AdminMetadataPage() {
         <button
           type="button"
           onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] font-bold text-xs shadow-md shadow-[var(--color-action)]/20 transition-all cursor-pointer shrink-0"
         >
           <Plus className="size-4" />
           <span>Add {TABS.find((t) => t.category === activeTab)?.label.slice(0, -1)}</span>
@@ -94,7 +94,7 @@ export default function AdminMetadataPage() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
+      <div className="flex items-center gap-2 border-b border-[var(--color-border)] pb-2">
         {TABS.map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.category;
@@ -103,10 +103,10 @@ export default function AdminMetadataPage() {
               key={t.category}
               type="button"
               onClick={() => setActiveTab(t.category)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-[var(--radius-input)] text-xs font-bold transition-all cursor-pointer ${
                 isActive
-                  ? "bg-white text-indigo-600 border border-slate-200 shadow-xs"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/50"
+                  ? "bg-[var(--color-surface)] text-[var(--color-action)] border border-[var(--color-border)] shadow-xs"
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]"
               }`}
             >
               <Icon className="size-4" />
@@ -118,11 +118,11 @@ export default function AdminMetadataPage() {
 
       {/* Grid of Items */}
       {isLoading ? (
-        <div className="py-12 text-center text-xs text-slate-400 font-semibold">
+        <div className="py-12 text-center text-xs text-[var(--color-text-dim)] font-semibold">
           Loading catalog metadata...
         </div>
       ) : items.length === 0 ? (
-        <div className="py-12 text-center text-xs text-slate-400 font-medium bg-white border border-slate-200 rounded-2xl">
+        <div className="py-12 text-center text-xs text-[var(--color-text-dim)] font-medium bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-card)]">
           No items found in this category. Click Add to create one.
         </div>
       ) : (
@@ -130,11 +130,11 @@ export default function AdminMetadataPage() {
           {items.map((item) => (
             <div
               key={item.id}
-              className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-indigo-200 transition-all flex items-center justify-between group"
+              className="p-4 rounded-[var(--radius-card)] bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xs hover:border-[var(--color-action)]/50 transition-all flex items-center justify-between group"
             >
               <div className="min-w-0 pr-2">
-                <h4 className="font-bold text-slate-900 text-sm truncate">{item.name}</h4>
-                <p className="text-[11px] text-slate-400 font-mono truncate">ID: {item.id}</p>
+                <h4 className="font-bold text-[var(--color-text)] text-sm truncate">{item.name}</h4>
+                <p className="text-[11px] text-[var(--color-text-dim)] font-mono truncate">ID: {item.id}</p>
               </div>
 
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -142,7 +142,7 @@ export default function AdminMetadataPage() {
                   type="button"
                   title="Edit Item"
                   onClick={() => handleOpenEdit(item)}
-                  className="p-1.5 rounded-lg hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-action-soft)] text-[var(--color-text-muted)] hover:text-[var(--color-action)] transition-colors cursor-pointer"
                 >
                   <Pencil className="size-3.5" />
                 </button>
@@ -150,7 +150,7 @@ export default function AdminMetadataPage() {
                   type="button"
                   title="Delete Item"
                   onClick={() => handleDelete(item)}
-                  className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-effort-soft)] text-[var(--color-text-muted)] hover:text-[var(--color-effort)] transition-colors cursor-pointer"
                 >
                   <Trash2 className="size-3.5" />
                 </button>

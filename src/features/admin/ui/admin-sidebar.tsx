@@ -45,18 +45,18 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
   ];
 
   return (
-    <aside className="w-64 shrink-0 border-r border-slate-200 bg-[#F7F8F6] min-h-screen flex flex-col justify-between p-4 selection:bg-indigo-100">
+    <aside className="w-64 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-surface)] min-h-screen flex flex-col justify-between p-4 selection:bg-[var(--color-action-soft)]">
       <div className="space-y-6">
         {/* Brand Header */}
         <div className="flex items-center gap-3 px-3 py-2">
-          <div className="size-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/20">
+          <div className="size-10 rounded-[var(--radius-input)] bg-[var(--color-action)] flex items-center justify-center text-[var(--color-action-contrast)] font-bold shadow-md shadow-[var(--color-action-soft)]">
             <LayoutDashboard className="size-5" />
           </div>
           <div>
-            <h1 className="font-bold text-slate-900 tracking-tight text-base font-display">
+            <h1 className="font-bold text-[var(--color-text)] tracking-tight text-base font-display">
               FITAI Admin
             </h1>
-            <p className="text-xs text-indigo-600 font-semibold flex items-center gap-1">
+            <p className="text-xs text-[var(--color-action)] font-semibold flex items-center gap-1">
               <Shield className="size-3" /> Control Panel
             </p>
           </div>
@@ -64,7 +64,7 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
 
         {/* Navigation List */}
         <nav className="space-y-1.5">
-          <div className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <div className="px-3 text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
             Admin Menu
           </div>
           {navItems.map((item) => {
@@ -75,16 +75,16 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-[var(--radius-input)] text-sm font-medium transition-all duration-150 ${
                   isActive
-                    ? "bg-white text-indigo-600 border border-slate-200 shadow-sm font-semibold"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                    ? "bg-[var(--color-surface-subtle)] text-[var(--color-action)] border border-[var(--color-border)] shadow-2xs font-semibold"
+                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon
                     className={`size-4.5 transition-colors ${
-                      isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-700"
+                      isActive ? "text-[var(--color-action)]" : "text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]"
                     }`}
                   />
                   <span>{item.label}</span>
@@ -92,13 +92,13 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
 
                 <div className="flex items-center gap-2">
                   {item.badge !== undefined && (
-                    <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200">
+                    <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)] border border-[color-mix(in_srgb,var(--color-action)_25%,transparent)]">
                       {item.badge}
                     </span>
                   )}
                   <ChevronRight
                     className={`size-3.5 opacity-0 group-hover:opacity-100 transition-opacity ${
-                      isActive ? "opacity-100 text-indigo-600" : "text-slate-400"
+                      isActive ? "opacity-100 text-[var(--color-action)]" : "text-[var(--color-text-muted)]"
                     }`}
                   />
                 </div>
@@ -109,20 +109,20 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
       </div>
 
       {/* Footer Info & Back to Client App */}
-      <div className="pt-4 border-t border-slate-200 space-y-3">
-        <div className="px-3 py-2 rounded-xl bg-white border border-slate-200 flex items-center gap-3 shadow-xs">
-          <div className="size-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs border border-indigo-200">
+      <div className="pt-4 border-t border-[var(--color-border)] space-y-3">
+        <div className="px-3 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] flex items-center gap-3 shadow-2xs">
+          <div className="size-8 rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)] font-bold flex items-center justify-center text-xs border border-[color-mix(in_srgb,var(--color-action)_25%,transparent)]">
             AD
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-slate-900 truncate">System Administrator</p>
-            <p className="text-[11px] text-slate-500 truncate">admin@fitai.com</p>
+            <p className="text-xs font-bold text-[var(--color-text)] truncate">System Administrator</p>
+            <p className="text-[11px] text-[var(--color-text-muted)] truncate">admin@fitai.com</p>
           </div>
         </div>
 
         <Link
           href="/"
-          className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200 transition-colors shadow-xs"
+          className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-[var(--radius-input)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text)] text-xs font-semibold border border-[var(--color-border)] transition-colors shadow-2xs"
         >
           <ArrowLeft className="size-3.5" />
           <span>Return to Client App</span>

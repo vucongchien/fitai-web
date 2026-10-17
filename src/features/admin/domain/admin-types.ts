@@ -14,24 +14,24 @@ export const EXERCISE_STATUS_STYLE: Record<
   { bg: string; text: string; border: string }
 > = {
   created: {
-    bg: "bg-amber-50",
-    text: "text-amber-700",
-    border: "border-amber-200",
+    bg: "bg-[var(--color-effort-soft)]",
+    text: "text-[var(--color-effort-ink)]",
+    border: "border-[color-mix(in_srgb,var(--color-effort)_25%,transparent)]",
   },
   submittedForApproval: {
-    bg: "bg-blue-50",
-    text: "text-blue-700",
-    border: "border-blue-200",
+    bg: "bg-[var(--color-action-soft)]",
+    text: "text-[var(--color-action)]",
+    border: "border-[color-mix(in_srgb,var(--color-action)_25%,transparent)]",
   },
   approved: {
-    bg: "bg-emerald-50",
-    text: "text-emerald-700",
-    border: "border-emerald-200",
+    bg: "bg-[var(--color-recovery-soft)]",
+    text: "text-[var(--color-recovery-ink)]",
+    border: "border-[color-mix(in_srgb,var(--color-recovery)_25%,transparent)]",
   },
   archived: {
-    bg: "bg-slate-100",
-    text: "text-slate-600",
-    border: "border-slate-300",
+    bg: "bg-[var(--color-surface-subtle)]",
+    text: "text-[var(--color-text-muted)]",
+    border: "border-[var(--color-border)]",
   },
 };
 
