@@ -21,11 +21,11 @@ export function useLoginFlow() {
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!identifier.trim() || !password) {
-      setErrorMessage("Vui lòng điền đầy đủ số điện thoại/email và mật khẩu.");
+      setErrorMessage("Please enter your email or phone number and password.");
       return;
     }
     if (!isIdentifierValid) {
-      setErrorMessage("Số điện thoại hoặc email không đúng định dạng.");
+      setErrorMessage("Please enter a valid email or 10-digit phone number.");
       return;
     }
     setErrorMessage(null);
@@ -46,6 +46,10 @@ export function useLoginFlow() {
     openOAuthPopup("google");
   }, []);
 
+  const handleFacebookLogin = useCallback(() => {
+    openOAuthPopup("facebook");
+  }, []);
+
   return {
     identifier,
     setIdentifier,
@@ -59,5 +63,6 @@ export function useLoginFlow() {
     isIdentifierValid,
     handlePasswordSubmit,
     handleGoogleLogin,
+    handleFacebookLogin,
   };
 }

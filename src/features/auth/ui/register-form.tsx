@@ -6,7 +6,11 @@ import { OtpInputGroup } from "@/features/auth/ui/otp-input-group";
 import { RegisterProfileSubform } from "@/features/auth/ui/register-profile-subform";
 import { Button } from "@/shared/ui/button";
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  onSwitchToLogin: () => void;
+}
+
+export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const {
     subStep,
     isOtpSent,
@@ -36,7 +40,7 @@ export function RegisterForm() {
           {!isOtpSent ? (
             <div className="auth-field">
               <label className="auth-label" htmlFor="register-identifier">
-                Số điện thoại hoặc Email để đăng ký
+                Email or phone
               </label>
               <input
                 id="register-identifier"
@@ -52,33 +56,44 @@ export function RegisterForm() {
                     handleSendOtp();
                   }
                 }}
-                placeholder="VD: 0912 345 678 hoặc user@gmail.com"
+                placeholder="name@example.com or 09..."
                 type="text"
                 value={identifier}
               />
               {identifier && !isIdentifierValid && (
                 <p className="auth-field-hint auth-field-hint--error">
-                  Định dạng chưa đúng (VD: SĐT 10 số 09... hoặc user@domain.com)
+                  Please enter a valid email or 10-digit phone number.
                 </p>
               )}
 
               <Button
-                className="auth-submit-btn"
+                className="auth-submit-btn auth-submit-btn--dark"
                 disabled={!isIdentifierValid || isPending}
                 loading={isPending}
                 onClick={handleSendOtp}
                 size="large"
                 type="button"
               >
-                Gửi mã xác nhận đăng ký
+                Send verification code
               </Button>
+
+              <div className="auth-switch-footer">
+                <span>Already have an account?</span>
+                <button
+                  className="auth-switch-link"
+                  onClick={onSwitchToLogin}
+                  type="button"
+                >
+                  Log in
+                </button>
+              </div>
             </div>
           ) : (
             <div className="auth-step-otp">
               <div className="auth-step-header">
-                <h3 className="auth-step-title">Xác minh tài khoản mới</h3>
+                <h3 className="auth-step-title">Verify your account</h3>
                 <p className="auth-step-desc">
-                  Mã xác thực đã gửi tới <strong>{maskIdentifier(identifier)}</strong>
+                  Verification code sent to <strong>{maskIdentifier(identifier)}</strong>
                   <Button
                     className="auth-change-identifier-btn"
                     disabled={isPending}
@@ -87,7 +102,7 @@ export function RegisterForm() {
                     type="button"
                     variant="quiet"
                   >
-                    Sửa
+                    Change
                   </Button>
                 </p>
               </div>
@@ -100,10 +115,10 @@ export function RegisterForm() {
                     rel="noreferrer"
                     target="_blank"
                   >
-                    Mở ứng dụng thư điện tử
+                    Open email app
                   </a>
                   <span className="auth-shortcut-tip">
-                    Kiểm tra cả hòm thư Spam nếu chưa thấy mã.
+                    Be sure to check your Spam folder if you don&apos;t see the code.
                   </span>
                 </div>
               )}
@@ -115,6 +130,16 @@ export function RegisterForm() {
                 onComplete={handleVerifyOtp}
                 onResend={handleSendOtp}
               />
+
+              <div className="auth-switch-footer">
+                <button
+                  className="auth-switch-link"
+                  onClick={resetToIdentifier}
+                  type="button"
+                >
+                  ← Back to phone / email
+                </button>
+              </div>
             </div>
           )}
         </div>

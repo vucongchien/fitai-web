@@ -55,9 +55,9 @@ export function RegisterProfileSubform({
   return (
     <form className="auth-step-profile-details" onSubmit={handleSubmit}>
       <div className="auth-profile-header">
-        <h3 className="auth-step-title">Thiết lập tài khoản</h3>
+        <h3 className="auth-step-title">Set up your profile</h3>
         <p className="auth-step-desc">
-          Tạo hồ sơ và chọn phong cách hình đại diện riêng của bạn.
+          Create your profile and choose your unique avatar style.
         </p>
       </div>
 
@@ -69,7 +69,7 @@ export function RegisterProfileSubform({
 
       <div className="auth-field">
         <label className="auth-label" htmlFor="register-fullname">
-          Họ và tên
+          Full name
         </label>
         <input
           id="register-fullname"
@@ -77,7 +77,7 @@ export function RegisterProfileSubform({
           className="auth-input"
           disabled={isPending}
           onChange={(e) => setFullName(e.target.value)}
-          placeholder="VD: Nguyễn Văn An"
+          placeholder="e.g. Alex Morgan"
           type="text"
           value={fullName}
         />
@@ -86,7 +86,7 @@ export function RegisterProfileSubform({
       <div className="auth-field">
         <div className="auth-label-row">
           <label className="auth-label" htmlFor="register-password">
-            Mật khẩu đăng nhập
+            Password
           </label>
           <button
             className="auth-toggle-pwd-btn"
@@ -94,7 +94,7 @@ export function RegisterProfileSubform({
             tabIndex={-1}
             type="button"
           >
-            {showPassword ? "Ẩn" : "Hiện"}
+            {showPassword ? "Hide" : "Show"}
           </button>
         </div>
         <input
@@ -103,7 +103,7 @@ export function RegisterProfileSubform({
           className="auth-input"
           disabled={isPending}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Tối thiểu 8 ký tự"
+          placeholder="At least 8 characters"
           type={showPassword ? "text" : "password"}
           value={password}
         />
@@ -111,7 +111,7 @@ export function RegisterProfileSubform({
 
       <div className="auth-form-row">
         <div className="auth-field">
-          <label className="auth-label">Giới tính</label>
+          <label className="auth-label">Gender</label>
           <div className="auth-gender-pills">
             {([Gender.MALE, Gender.FEMALE] as const).map((g) => (
               <button
@@ -121,7 +121,7 @@ export function RegisterProfileSubform({
                 onClick={() => setGender(g)}
                 type="button"
               >
-                {g === Gender.MALE ? "Nam" : "Nữ"}
+                {g === Gender.MALE ? "Male" : "Female"}
               </button>
             ))}
           </div>
@@ -129,7 +129,7 @@ export function RegisterProfileSubform({
 
         <div className="auth-field">
           <label className="auth-label" htmlFor="register-dob">
-            Ngày sinh
+            Date of birth
           </label>
           <input
             id="register-dob"
@@ -144,13 +144,13 @@ export function RegisterProfileSubform({
       </div>
 
       <Button
-        className="auth-submit-btn"
+        className="auth-submit-btn auth-submit-btn--dark"
         disabled={!fullName.trim() || !password || isPending}
         loading={isPending}
         size="large"
         type="submit"
       >
-        Hoàn tất tạo tài khoản
+        Complete registration
       </Button>
     </form>
   );

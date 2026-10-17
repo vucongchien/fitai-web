@@ -1,3 +1,4 @@
+import { ArrowDown } from "lucide-react";
 import { Suspense } from "react";
 
 import { AuthPanel } from "@/features/auth/ui/auth-panel";
@@ -25,19 +26,22 @@ export default function LoginPage() {
             </p>
           </div>
           <TripleLane labelled />
+          <span aria-hidden="true" className="login-scroll-cue">
+            <ArrowDown size={17} />
+          </span>
         </section>
 
         <section aria-labelledby="sign-in-title" className="login-form-panel">
           <div>
-            <h2 id="sign-in-title">Bắt đầu cùng FITAI</h2>
-            <p>Dữ liệu và lộ trình bài tập được đồng bộ liền mạch trên mọi thiết bị.</p>
+            <h2 id="sign-in-title">Start with your account</h2>
+            <p>Your training details stay connected when you switch devices.</p>
           </div>
           <Suspense fallback={null}>
             <LoginErrorAlert />
           </Suspense>
           <AuthPanel />
           <p className="login-terms">
-            Bằng việc tiếp tục, bạn đồng ý sử dụng FITAI như một ứng dụng hỗ trợ luyện tập cá nhân.
+            By continuing, you agree to use FITAI as fitness guidance, not medical advice.
           </p>
         </section>
       </main>
