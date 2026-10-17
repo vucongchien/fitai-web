@@ -56,3 +56,6 @@ skills-lock.json
 
 # Playwright MCP session artifacts
 /.playwright-mcp/
+
+# Stitch capture artifacts
+/.stitch/
