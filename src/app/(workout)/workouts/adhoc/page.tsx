@@ -1,7 +1,10 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+import { Suspense } from "react";
+
 import { AdhocWorkoutBuilder } from "@/features/workout/ui/adhoc-workout-builder";
+import { getAdhocConfig } from "@/features/workout/server/workout-actions";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
 import { PageTransition } from "@/shared/ui/page-transition";
@@ -11,7 +14,10 @@ export const metadata = { title: "Adhoc Workout — Custom Plan" };
 /** Hoisted so the array identity is stable across renders. */
 const NAV_BACK = ["nav-back"];
 
-import { Suspense } from "react";
+async function AdhocWorkoutContent() {
+  const config = await getAdhocConfig();
+  return <AdhocWorkoutBuilder initialConfig={config} />;
+}
 
 export default function AdhocWorkoutPage() {
   return (
@@ -32,12 +38,12 @@ export default function AdhocWorkoutPage() {
       <main className="workout-prep-main">
         <Suspense
           fallback={
-            <div className="p-8 text-center text-sm text-neutral-400">
+            <div className="p-8 text-center text-sm text-[var(--color-text-muted)]">
               Loading workout builder...
             </div>
           }
         >
-          <AdhocWorkoutBuilder />
+          <AdhocWorkoutContent />
         </Suspense>
       </main>
     </PageTransition>

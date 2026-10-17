@@ -23,8 +23,13 @@ import { ExerciseEditModal } from "@/features/workout/ui/exercise-edit-modal";
 import { ExerciseSearchSheet } from "@/features/workout/ui/exercise-search-sheet";
 import { SortableAdhocItem } from "@/features/workout/ui/sortable-adhoc-item";
 import { buttonVariants } from "@/shared/ui/button";
+import type { AdhocConfig } from "@/features/workout/model/workout.types";
 
-export function AdhocWorkoutBuilder() {
+interface AdhocWorkoutBuilderProps {
+  initialConfig?: AdhocConfig;
+}
+
+export function AdhocWorkoutBuilder({ initialConfig }: AdhocWorkoutBuilderProps = {}) {
   const {
     mounted,
     exerciseList,
@@ -46,7 +51,7 @@ export function AdhocWorkoutBuilder() {
     handleApplyAiExercises,
     handleSaveEdit,
     handleBeginSession,
-  } = useAdhocWorkout();
+  } = useAdhocWorkout({ initialConfig });
 
   // `SortableContext` re-derives its internal ordering whenever `items` changes
   // Identity, so a fresh array on every render defeats its own memoisation.

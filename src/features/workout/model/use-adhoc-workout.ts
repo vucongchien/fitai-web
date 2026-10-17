@@ -3,19 +3,22 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore, useTransition } from "react";
 
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
 import { toAdhocExercise } from "@/features/workout/model/adhoc-types";
-import type { ExerciseResult } from "@/features/workout/model/workout.types";
-import { beginWorkoutSession, getAdhocConfig } from "@/features/workout/server/workout-actions";
+import type { AdhocConfig, ExerciseResult } from "@/features/workout/model/workout.types";
+import { beginWorkoutSession } from "@/features/workout/server/workout-actions";
 import { useToast } from "@/shared/ui/toast/toast-context";
 
 const emptySubscribe = () => () => {};
 
-export function useAdhocWorkout() {
+interface UseAdhocWorkoutOptions {
+  initialConfig?: AdhocConfig;
+}
+
+export function useAdhocWorkout(options: UseAdhocWorkoutOptions = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { showToast } = useToast();
@@ -31,12 +34,7 @@ export function useAdhocWorkout() {
   const targetPrescription = searchParams.get("prescription");
   const hasUrlParam = Boolean(targetExerciseId || targetName);
 
-  const { data: config, isLoading: isConfigQueryLoading } = useQuery({
-    queryKey: ["adhoc-config"],
-    queryFn: () => getAdhocConfig(),
-    enabled: !hasUrlParam,
-    staleTime: 60_000,
-  });
+  const config = options.initialConfig;
 
   const [userExerciseList, setUserExerciseList] = useState<AdhocExercise[] | null>(() => {
     if (hasUrlParam) {
@@ -219,7 +217,7 @@ export function useAdhocWorkout() {
     editingExercise,
     setEditingExercise,
     aiLoading: false,
-    configLoading: isConfigQueryLoading,
+    configLoading: false,
     sessionLoading: sessionPending,
     sensors,
     estimatedDuration,
