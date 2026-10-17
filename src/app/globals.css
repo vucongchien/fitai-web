@@ -1917,13 +1917,29 @@ a.week-route__row:hover {
   text-align: left;
 }
 
+.auth-recipient-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.auth-provider-logo-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+
 .auth-recipient-row {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   gap: 0.45rem;
-  margin-top: 0.35rem;
 }
 
 .auth-identifier-badge {

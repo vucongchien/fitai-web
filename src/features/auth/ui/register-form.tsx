@@ -40,21 +40,27 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             <p className="auth-step-instruction">
               Enter the 6-digit code sent to
             </p>
-            <div className="auth-recipient-row">
-              <span className="auth-identifier-badge">
-                <strong>{maskIdentifier(identifier)}</strong>
-                {identifier.toLowerCase().includes("@") && <GmailMark size={16} />}
-              </span>
-              <button
-                aria-label="Change phone or email"
-                className="auth-inline-change-btn"
-                disabled={isPending}
-                onClick={resetToIdentifier}
-                title="Change phone or email"
-                type="button"
-              >
-                <Pencil aria-hidden="true" size={13} />
-              </button>
+            <div className="auth-recipient-center">
+              {identifier.toLowerCase().includes("@") && (
+                <div className="auth-provider-logo-top">
+                  <GmailMark size={28} />
+                </div>
+              )}
+              <div className="auth-recipient-row">
+                <span className="auth-identifier-badge">
+                  <strong>{maskIdentifier(identifier)}</strong>
+                </span>
+                <button
+                  aria-label="Change phone or email"
+                  className="auth-inline-change-btn"
+                  disabled={isPending}
+                  onClick={resetToIdentifier}
+                  title="Change phone or email"
+                  type="button"
+                >
+                  <Pencil aria-hidden="true" size={13} />
+                </button>
+              </div>
             </div>
           </div>
 
