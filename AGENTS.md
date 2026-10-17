@@ -20,6 +20,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **Tư duy luồng dữ liệu (Data Flow)**: Thiết kế rõ ràng từ Client -> Server Component / Action -> Database / Service. Xác định bottleneck và điểm dễ đứt gãy.
 - **Xử lý trạng thái đầy đủ**: Mọi UI/Module phải xử lý đủ 3 trạng thái: `Loading`, `Error`, và `Empty`.
 - **Logging & Debuggability**: Các module core cần có log rõ ràng để dễ truy vết sự cố.
+- **Quy chuẩn Functional Immutability & Return Values**: Tuyệt đối không dùng mutable flag (`let ok = false ... return ok;`). Mọi giá trị trả về phải trực tiếp `return true` hoặc `return false` (early return), triệt tiêu các biến tạm thời bị mutate qua closure hoặc async blocks. (Được kiểm tra tự động qua `pnpm audit:skills` trong pre-commit và CI/CD).
 
 ## 3. Testing & Verification
 

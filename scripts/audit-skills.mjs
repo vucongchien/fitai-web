@@ -302,6 +302,49 @@ function auditDesignTokens() {
   }
 }
 
+// 9. Functional Immutability & Return Values (AGENTS.md: No mutable return flags)
+function auditNoMutableReturnFlags() {
+  printHeader("Checking Functional Immutability (No 'let flag = false ... return flag')");
+  const violations = [];
+
+  for (const file of allSourceFiles) {
+    const content = fs.readFileSync(path.join(CWD, file), "utf-8");
+    const lines = content.split("\n");
+
+    for (let idx = 0; idx < lines.length; idx++) {
+      const line = lines[idx].trim();
+      if (line.startsWith("//") || line.startsWith("/*") || line.startsWith("*")) continue;
+
+      const letMatch = line.match(/\blet\s+([a-zA-Z0-9_$]+)\s*=\s*(false|true)\s*;/);
+      if (letMatch) {
+        const varName = letMatch[1];
+        const lookAheadMax = Math.min(lines.length, idx + 40);
+        for (let j = idx + 1; j < lookAheadMax; j++) {
+          const ahead = lines[j].trim();
+          if (new RegExp(`\\breturn\\s+${varName}\\s*;`).test(ahead)) {
+            violations.push(`${file}:${idx + 1}: '${letMatch[0]}' returned at line ${j + 1}`);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  if (violations.length > 0) {
+    hasErrors = true;
+    process.stderr.write(
+      `❌ [FAIL] Mutable return flag detected (Anti-pattern: let flag = false ... return flag).\n` +
+        `Found ${violations.length} violation(s):\n` +
+        violations.map((v) => `  - ${v}`).join("\n") +
+        `\n👉 Enforce Functional Immutability: Return directly with 'return true' / 'return false' or early return instead of mutating a 'let' flag.\n\n`,
+    );
+  } else {
+    process.stdout.write(
+      `✅ [PASS] 100% Immutability Policy (Zero mutable return flags detected).\n`,
+    );
+  }
+}
+
 function main() {
   const start = Date.now();
   process.stdout.write("====================================================\n");
@@ -316,6 +359,7 @@ function main() {
   auditNoNativeImg();
   auditComponentSize();
   auditDesignTokens();
+  auditNoMutableReturnFlags();
 
   const duration = ((Date.now() - start) / 1000).toFixed(2);
   process.stdout.write("\n----------------------------------------------------\n");
