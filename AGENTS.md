@@ -94,3 +94,14 @@ Khi viết, sửa hoặc refactor mã nguồn UI/Fullstack, **bắt buộc tuân
 3. **`next-best-practices`**:
    - **Tối ưu ranh giới RSC**: Mặc định là Server Component; chỉ đẩy `'use client'` xuống các component lá (leaf components) có tương tác DOM / state.
    - **Chuẩn Async APIs**: Tuân thủ chuẩn async mới trong Next.js 15+ (`cookies()`, `headers()`, `params`, `searchParams`).
+
+## 8. Chuẩn kết nối API & Wire Authority (ConnectRPC / gRPC First)
+
+- **Wire Authority duy nhất**: Toàn bộ dữ liệu nghiệp vụ trao đổi với backend `gym-companion` **BẮT BUỘC** sử dụng ConnectRPC client và các hợp đồng Protobuf sinh sẵn tại `src/shared/api/gen/`.
+- **Nghiêm cấm tự biên tự diễn (No Raw HTTP / No Custom REST)**:
+  - Tuyệt đối **KHÔNG** cài đặt hoặc sử dụng các thư viện HTTP bên ngoài (`axios`, `got`, `superagent`, `ky`...).
+  - Tuyệt đối **KHÔNG** viết hàm `fetch()` trực tiếp đến backend URLs hoặc endpoint ngoài (chỉ cho phép `fetch()` để tải static assets nội bộ `.json`, `.wasm`, `.onnx` hoặc gọi internal BFF route `/api/*`).
+  - Tuyệt đối **KHÔNG** tự tạo mock store, dummy in-memory state hay tự định nghĩa interface DTO bằng tay cho API responses. Mọi request/response model phải được import trực tiếp từ contract `*_pb.ts` trong `src/shared/api/gen/`.
+- **Chuẩn khởi tạo Client**:
+  - Tại Server Component / Server Action: Sử dụng `createClient(ServiceName, createServerTransport(accessToken))`.
+  - Khi backend thay đổi schema, chạy `pnpm proto:gen` để đồng bộ hợp đồng gRPC trước khi viết code giao diện.
