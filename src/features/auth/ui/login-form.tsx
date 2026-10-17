@@ -20,7 +20,6 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     errorMessage,
     setErrorMessage,
     isPending,
-    isIdentifierValid,
     handlePasswordSubmit,
     handleGoogleLogin,
     handleFacebookLogin,
@@ -77,9 +76,10 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           </label>
           <input
             autoComplete="username"
-            className={`auth-input ${identifier && !isIdentifierValid ? "auth-input--invalid" : ""}`}
+            className="auth-input"
             disabled={isPending}
             id="login-identifier"
+            name="identifier"
             onChange={(e) => {
               setIdentifier(e.target.value);
               setErrorMessage(null);
@@ -88,11 +88,6 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             type="text"
             value={identifier}
           />
-          {identifier && !isIdentifierValid ? (
-            <p className="auth-field-hint auth-field-hint--error">
-              Please enter a valid email or 10-digit phone number.
-            </p>
-          ) : null}
         </div>
 
         <div className="auth-field">
@@ -114,6 +109,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               className="auth-input"
               disabled={isPending}
               id="login-password"
+              name="password"
               onChange={(e) => {
                 setPassword(e.target.value);
                 setErrorMessage(null);
@@ -135,13 +131,12 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
         <div className="auth-submit-wrapper">
           <button
-            className="auth-submit-btn auth-submit-btn--dark"
-            disabled={!identifier || !password || !isIdentifierValid || isPending}
+            className="auth-submit-btn auth-submit-btn--primary"
+            disabled={isPending}
             type="submit"
           >
             {isPending ? "Logging in..." : "Log in"}
           </button>
-          <span className="auth-last-used-badge">Last used</span>
         </div>
 
         <div className="auth-switch-footer">

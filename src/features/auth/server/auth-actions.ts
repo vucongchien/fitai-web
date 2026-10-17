@@ -134,7 +134,7 @@ export async function loginWithPasswordAction(
 ): Promise<AuthActionResult<{ redirectUrl: string }>> {
   const identifier = formatIdentifier(rawIdentifier);
   if (!identifier || !password) {
-    return { success: false, error: "Vui lòng nhập đầy đủ thông tin đăng nhập." };
+    return { success: false, error: "Please enter your email or phone number and password." };
   }
 
   if (!process.env.FITAI_RPC_URL) {
@@ -148,9 +148,9 @@ export async function loginWithPasswordAction(
     await persistSessionCookies(response.accessToken, response.refreshToken, response.userId);
     const redirectUrl = await resolvePostLoginRoute(response.accessToken, response.userId);
     return { success: true, data: { redirectUrl } };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Đăng nhập thất bại. Vui lòng kiểm tra lại.";
-    return { success: false, error: message };
+  } catch {
+    // Security: Mask login errors to generic message to prevent account enumeration
+    return { success: false, error: "Invalid email, phone number, or password. Please try again." };
   }
 }
 

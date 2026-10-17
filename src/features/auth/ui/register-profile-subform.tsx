@@ -144,7 +144,7 @@ export function RegisterProfileSubform({
       </div>
 
       <Button
-        className="auth-submit-btn auth-submit-btn--dark"
+        className="auth-submit-btn auth-submit-btn--primary"
         disabled={!fullName.trim() || !password || isPending}
         loading={isPending}
         size="large"

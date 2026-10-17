@@ -18,20 +18,28 @@ export function useLoginFlow() {
   const identifierType = detectIdentifierType(identifier);
   const isIdentifierValid = identifierType !== "invalid";
 
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!identifier.trim() || !password) {
+    const form = e.currentTarget;
+    const idInput = form?.elements?.namedItem("identifier") as HTMLInputElement | null;
+    const pwdInput = form?.elements?.namedItem("password") as HTMLInputElement | null;
+
+    const effectiveIdentifier = (idInput?.value || identifier).trim();
+    const effectivePassword = pwdInput?.value || password;
+
+    if (!effectiveIdentifier || !effectivePassword) {
       setErrorMessage("Please enter your email or phone number and password.");
       return;
     }
-    if (!isIdentifierValid) {
+    const idType = detectIdentifierType(effectiveIdentifier);
+    if (idType === "invalid") {
       setErrorMessage("Please enter a valid email or 10-digit phone number.");
       return;
     }
     setErrorMessage(null);
     setIsPending(true);
     try {
-      const result = await loginWithPasswordAction(identifier, password);
+      const result = await loginWithPasswordAction(effectiveIdentifier, effectivePassword);
       if (result.success) {
         router.push(result.data.redirectUrl);
       } else {

@@ -1720,35 +1720,43 @@ a.week-route__row:hover {
   margin-top: 0.5rem;
 }
 
+.auth-submit-btn--primary,
 .auth-submit-btn {
-  width: 100%;
-}
-
-.auth-submit-btn--dark {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 2.75rem;
-  background: #18181b !important;
+  background: var(--color-action) !important;
   color: #ffffff !important;
-  border: 1px solid #18181b !important;
+  border: 1px solid var(--color-action) !important;
   border-radius: 8px !important;
   font-weight: 600 !important;
-  font-size: 0.92rem !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  font-size: 0.95rem !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-action) 35%, transparent);
   cursor: pointer;
   transition: all var(--duration-fast, 0.15s) var(--ease-out);
 }
 
-.auth-submit-btn--dark:hover:not(:disabled) {
-  background: #27272a !important;
-  border-color: #27272a !important;
+.auth-submit-btn--primary:hover:not(:disabled),
+.auth-submit-btn:hover:not(:disabled) {
+  background: var(--color-action-hover) !important;
+  border-color: var(--color-action-hover) !important;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--color-action) 45%, transparent);
 }
 
-.auth-submit-btn--dark:disabled {
-  opacity: 0.45;
+.auth-submit-btn--primary:active:not(:disabled),
+.auth-submit-btn:active:not(:disabled) {
+  background: var(--color-action-pressed) !important;
+  border-color: var(--color-action-pressed) !important;
+  transform: scale(0.99);
+}
+
+.auth-submit-btn--primary:disabled,
+.auth-submit-btn:disabled {
+  opacity: 0.52;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .auth-last-used-badge {

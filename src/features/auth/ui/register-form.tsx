@@ -67,7 +67,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               )}
 
               <Button
-                className="auth-submit-btn auth-submit-btn--dark"
+                className="auth-submit-btn auth-submit-btn--primary"
                 disabled={!isIdentifierValid || isPending}
                 loading={isPending}
                 onClick={handleSendOtp}

@@ -33,8 +33,7 @@ export default function LoginPage() {
 
         <section aria-labelledby="sign-in-title" className="login-form-panel">
           <div className="login-form-header">
-            <h2 id="sign-in-title">Start with your account</h2>
-            <p>Your training details stay connected when you switch devices.</p>
+            <h2 id="sign-in-title">Log in</h2>
           </div>
           <Suspense fallback={null}>
             <LoginErrorAlert />
