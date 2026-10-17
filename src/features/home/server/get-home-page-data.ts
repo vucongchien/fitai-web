@@ -187,9 +187,6 @@ function computeProfileCompletion(profileVm: ProfileViewModel): {
   return { rate: score, missingFields: missing };
 }
 
-/**
- * Server Action lấy dữ liệu trang chủ thật từ các gRPC Services
- */
 export async function getHomePageData(): Promise<HomePageData> {
   const { accessToken, userId, userName } = await getAuthenticatedSession();
   if (!accessToken) {
@@ -515,6 +512,7 @@ export async function getHomePageData(): Promise<HomePageData> {
       const streakDays = calculateConsecutiveStreakDays(history);
 
       return {
+        hasActiveRoadmap: Boolean(roadmap?.weekPlans?.length),
         streak: { days: streakDays },
         coachNote,
         userName,
@@ -620,6 +618,7 @@ export async function getHomePageData(): Promise<HomePageData> {
   }
 
   return {
+    hasActiveRoadmap: false,
     streak: { days: 0 },
     coachNote: null,
     userName,

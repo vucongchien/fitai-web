@@ -56,6 +56,7 @@ export function HomeView({ data }: HomeViewProps) {
           </div>
 
           <TodayTimeline
+            hasActiveRoadmap={data.hasActiveRoadmap}
             isGeneratingRoadmap={isPending}
             items={data.todayTimeline}
             onGenerateRoadmap={handleGenerateRoadmap}

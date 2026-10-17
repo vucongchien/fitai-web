@@ -5,11 +5,12 @@ import Link from "next/link";
 
 import type { TodayItemCategory, TodayTimelineItem } from "@/features/home/model/home-page.types";
 import { cn } from "@/shared/lib/cn";
-import { buttonVariants } from "@/shared/ui/button";
+import { Button, buttonVariants } from "@/shared/ui/button";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 interface TodayTimelineProps {
   items: TodayTimelineItem[];
+  hasActiveRoadmap?: boolean;
   onGenerateRoadmap?: () => void;
   isGeneratingRoadmap?: boolean;
 }
@@ -35,19 +36,70 @@ function EventIcon({
 
 export function TodayTimeline({
   items,
-  onGenerateRoadmap: _onGenerateRoadmap,
-  isGeneratingRoadmap: _isGeneratingRoadmap = false,
+  hasActiveRoadmap = false,
+  onGenerateRoadmap,
+  isGeneratingRoadmap = false,
 }: TodayTimelineProps) {
   if (items.length === 0) {
+    if (!hasActiveRoadmap) {
+      return (
+        <div className="timeline-empty-card">
+          <div className="timeline-empty-card__icon">
+            <Sparkles size={20} />
+          </div>
+          <div>
+            <h3>No active training plan yet</h3>
+            <p>
+              Build your personalized 4-week roadmap to schedule daily workouts and meals tailored to your body.
+            </p>
+          </div>
+          <div className="timeline-empty-card__actions">
+            {onGenerateRoadmap ? (
+              <Button
+                loading={isGeneratingRoadmap}
+                onClick={onGenerateRoadmap}
+                size="medium"
+                variant="primary"
+              >
+                <Sparkles size={15} />
+                <span>Build 4-Week Roadmap</span>
+              </Button>
+            ) : (
+              <Link
+                className={buttonVariants({ variant: "primary", size: "medium" })}
+                href="/roadmap"
+                transitionTypes={NAV_FORWARD}
+              >
+                <span className="ui-button__label">
+                  <Sparkles size={15} />
+                  Build 4-Week Roadmap
+                </span>
+              </Link>
+            )}
+            <Link
+              className={buttonVariants({ variant: "secondary", size: "medium" })}
+              href="/workouts/adhoc"
+              transitionTypes={NAV_FORWARD}
+            >
+              <span className="ui-button__label">
+                <Dumbbell size={15} />
+                Start Extra Workout
+              </span>
+            </Link>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="timeline-empty-card">
         <div className="timeline-empty-card__icon">
           <Sparkles size={20} />
         </div>
         <div>
-          <h3>No meals or workouts scheduled for today</h3>
+          <h3>Rest Day &amp; Active Recovery</h3>
           <p>
-            Enjoy active recovery today, or view your full weekly schedule in Roadmap.
+            No workouts or meals scheduled for today. Enjoy active recovery, or review your schedule in Roadmap.
           </p>
         </div>
         <div className="timeline-empty-card__actions">
