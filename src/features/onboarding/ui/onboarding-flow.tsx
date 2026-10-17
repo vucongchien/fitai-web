@@ -17,6 +17,7 @@ import { saveOnboardingProfileServerAction } from "@/features/onboarding/server/
 import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { calculateBMI } from "@/features/profile/model/profile.mapper";
 import { Button } from "@/shared/ui/button";
+import { cn } from "@/shared/lib/cn";
 
 const storageKey = "fitai-onboarding-draft-v2";
 
@@ -402,18 +403,18 @@ export function OnboardingFlow() {
 
             {/* Live BMI Calculation Badge */}
             {bmiInfo && (
-              <div className="mt-4 p-4 rounded-xl bg-blue-50/70 border border-blue-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="mt-4 p-4 rounded-[var(--radius-card)] bg-[var(--color-action-soft)] border border-[color-mix(in_srgb,var(--color-action)_20%,transparent)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <Scale className="h-4 w-4 text-[#4B57F2]" />
-                  <span className="text-xs font-semibold text-[#50565C]">
+                  <Scale className="h-4 w-4 text-[var(--color-action)]" />
+                  <span className="text-xs font-semibold text-[var(--color-text-muted)]">
                     Calculated Body Mass Index (BMI)
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-base font-bold font-mono text-[#4B57F2]">
+                  <span className="text-base font-bold font-mono text-[var(--color-action)]">
                     {bmiInfo.bmi}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white border border-blue-200 text-[#4B57F2]">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--color-surface)] border border-[color-mix(in_srgb,var(--color-action)_30%,transparent)] text-[var(--color-action)]">
                     {bmiInfo.category}
                   </span>
                 </div>
@@ -497,8 +498,8 @@ export function OnboardingFlow() {
             <p>The plan will only prescribe exercises matching your equipment setup.</p>
 
             {isLoadingCatalog ? (
-              <div className="py-8 text-center text-xs font-semibold text-[#50565C] animate-pulse space-y-2">
-                <div className="h-6 w-32 bg-neutral-200 rounded mx-auto" />
+              <div className="py-8 text-center text-xs font-semibold text-[var(--color-text-muted)] animate-pulse space-y-2">
+                <div className="h-6 w-32 bg-[var(--color-surface-subtle)] rounded-[var(--radius-input)] mx-auto" />
                 <p>Loading real equipment & muscle catalog from server...</p>
               </div>
             ) : (
@@ -577,8 +578,8 @@ export function OnboardingFlow() {
             </div>
 
             {injuryStatus !== "none" && (
-              <div className="mt-4 p-4 rounded-xl border border-rose-200 bg-rose-50/50 space-y-3 text-left">
-                <label className="block text-xs font-semibold text-rose-900">
+              <div className="mt-4 p-4 rounded-[var(--radius-card)] border border-[color-mix(in_srgb,var(--color-danger)_20%,transparent)] bg-[var(--color-danger-soft)] space-y-3 text-left">
+                <label className="block text-xs font-semibold text-[var(--color-danger)]">
                   Target Injury Muscle Area
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
@@ -589,27 +590,26 @@ export function OnboardingFlow() {
                         key={m}
                         type="button"
                         onClick={() => setValue("injuryMuscleGroup", m)}
-                        className="py-2 px-1 text-center rounded-xl text-xs font-semibold transition-colors cursor-pointer min-h-[38px]"
-                        style={{
-                          border: "1.5px solid",
-                          borderColor: isSelected ? "#E11D48" : "#E5E7EB",
-                          backgroundColor: isSelected ? "#FFE4E6" : "#FFFFFF",
-                          color: isSelected ? "#9F1239" : "#101214",
-                        }}
+                        className={cn(
+                          "py-2 px-1 text-center rounded-[var(--radius-input)] text-xs font-semibold transition-colors cursor-pointer min-h-[38px] border-[1.5px]",
+                          isSelected
+                            ? "border-[var(--color-danger)] bg-[var(--color-surface)] text-[var(--color-danger)]"
+                            : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
+                        )}
                       >
                         {m}
                       </button>
                     );
                   })}
                 </div>
-                <label className="block text-xs font-semibold text-rose-900">
+                <label className="block text-xs font-semibold text-[var(--color-danger)]">
                   Notes for AI Coach
                 </label>
                 <input
                   value={injuryNotes || ""}
                   onChange={(e) => setValue("injuryNotes", e.target.value)}
                   placeholder="e.g. Avoid heavy overhead presses..."
-                  className="w-full h-10 px-3 text-xs rounded-xl border border-neutral-200 bg-white"
+                  className="w-full h-10 px-3 text-xs rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] outline-none focus:border-[var(--color-action)]"
                 />
               </div>
             )}
