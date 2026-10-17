@@ -29,130 +29,129 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
   return (
     <div className="register-form-container">
-      {subStep === "VERIFY_IDENTIFIER" && !isOtpSent && (
-        <div className="login-form-header">
-          <h2 id="sign-in-title">Create your account</h2>
-        </div>
-      )}
+      {subStep === "VERIFY_IDENTIFIER" && isOtpSent ? (
+        <div className="auth-otp-screen">
+          <div className="auth-otp-header">
+            <h2 id="sign-in-title">
+              {identifier.includes("@") ? "Check your email" : "Check your phone"}
+            </h2>
+            <p className="auth-step-instruction">
+              Enter the 6-digit code sent to
+            </p>
+            <div className="auth-recipient-row">
+              <span className="auth-identifier-badge">
+                <strong>{maskIdentifier(identifier)}</strong>
+                {identifier.toLowerCase().includes("@") && <GmailMark size={16} />}
+              </span>
+              <span aria-hidden="true" className="auth-recipient-dot">·</span>
+              <button
+                className="auth-inline-change-btn"
+                disabled={isPending}
+                onClick={resetToIdentifier}
+                type="button"
+              >
+                Change
+              </button>
+            </div>
+          </div>
 
-      {subStep === "VERIFY_IDENTIFIER" && isOtpSent && (
-        <div className="login-form-header">
-          <h2 id="sign-in-title">
-            {identifier.includes("@") ? "Check your email" : "Check your phone"}
-          </h2>
-          <p className="auth-step-desc">
-            Enter the 6-digit code sent to{" "}
-            <span className="auth-identifier-badge">
-              <strong>{maskIdentifier(identifier)}</strong>
-              {identifier.toLowerCase().includes("@") && <GmailMark size={16} />}
-            </span>
-            {" · "}
+          <OtpInputGroup
+            disabled={isPending}
+            errorMessage={errorMessage}
+            expiresInSeconds={60}
+            onComplete={handleVerifyOtp}
+            onResend={handleSendOtp}
+          />
+
+          <div className="auth-otp-footer">
             <button
-              className="auth-inline-change-btn"
-              disabled={isPending}
+              className="auth-switch-link"
               onClick={resetToIdentifier}
               type="button"
             >
-              Change
+              ← Back to phone / email
             </button>
-          </p>
+          </div>
         </div>
-      )}
+      ) : (
+        <>
+          {subStep === "VERIFY_IDENTIFIER" && (
+            <div className="auth-step-register-verify">
+              <div className="login-form-header">
+                <h2 id="sign-in-title">Create your account</h2>
+              </div>
 
-      {subStep === "PROFILE_DETAILS" && (
-        <div className="login-form-header">
-          <h2 id="sign-in-title">Complete your profile</h2>
-        </div>
-      )}
-
-      {errorMessage && (
-        <div className="auth-alert auth-alert--error" role="alert">
-          <span>{errorMessage}</span>
-        </div>
-      )}
-
-      {subStep === "VERIFY_IDENTIFIER" && (
-        <div className="auth-step-register-verify">
-          {!isOtpSent ? (
-            <div className="auth-field">
-              <label className="auth-label" htmlFor="register-identifier">
-                Email or phone
-              </label>
-              <input
-                id="register-identifier"
-                autoComplete="username"
-                className={`auth-input ${identifier && !isIdentifierValid ? "auth-input--invalid" : ""}`}
-                disabled={isPending}
-                onChange={(e) => {
-                  setIdentifier(e.target.value);
-                  setErrorMessage(null);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && isIdentifierValid) {
-                    handleSendOtp();
-                  }
-                }}
-                placeholder="name@example.com or 09..."
-                type="text"
-                value={identifier}
-              />
-              {identifier && !isIdentifierValid && (
-                <p className="auth-field-hint auth-field-hint--error">
-                  Please enter a valid email or 10-digit phone number.
-                </p>
+              {errorMessage && (
+                <div className="auth-alert auth-alert--error" role="alert">
+                  <span>{errorMessage}</span>
+                </div>
               )}
 
-              <Button
-                className="auth-submit-btn auth-submit-btn--primary"
-                disabled={!isIdentifierValid || isPending}
-                loading={isPending}
-                onClick={handleSendOtp}
-                size="large"
-                type="button"
-              >
-                Send verification code
-              </Button>
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="register-identifier">
+                  Email or phone
+                </label>
+                <input
+                  id="register-identifier"
+                  autoComplete="username"
+                  className={`auth-input ${identifier && !isIdentifierValid ? "auth-input--invalid" : ""}`}
+                  disabled={isPending}
+                  onChange={(e) => {
+                    setIdentifier(e.target.value);
+                    setErrorMessage(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && isIdentifierValid) {
+                      handleSendOtp();
+                    }
+                  }}
+                  placeholder="name@example.com or 09..."
+                  type="text"
+                  value={identifier}
+                />
+                {identifier && !isIdentifierValid && (
+                  <p className="auth-field-hint auth-field-hint--error">
+                    Please enter a valid email or 10-digit phone number.
+                  </p>
+                )}
 
-              <div className="auth-switch-footer">
-                <span>Already have an account?</span>
-                <button
-                  className="auth-switch-link"
-                  onClick={onSwitchToLogin}
+                <Button
+                  className="auth-submit-btn auth-submit-btn--primary"
+                  disabled={!isIdentifierValid || isPending}
+                  loading={isPending}
+                  onClick={handleSendOtp}
+                  size="large"
                   type="button"
                 >
-                  Log in
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="auth-step-otp">
-              <OtpInputGroup
-                disabled={isPending}
-                errorMessage={errorMessage}
-                expiresInSeconds={60}
-                onComplete={handleVerifyOtp}
-                onResend={handleSendOtp}
-              />
+                  Send verification code
+                </Button>
 
-              <div className="auth-switch-footer">
-                <button
-                  className="auth-switch-link"
-                  onClick={resetToIdentifier}
-                  type="button"
-                >
-                  ← Back to phone / email
-                </button>
+                <div className="auth-switch-footer">
+                  <span>Already have an account?</span>
+                  <button
+                    className="auth-switch-link"
+                    onClick={onSwitchToLogin}
+                    type="button"
+                  >
+                    Log in
+                  </button>
+                </div>
               </div>
             </div>
           )}
-        </div>
-      )}
 
-      {subStep === "PROFILE_DETAILS" && (
-        <RegisterProfileSubform
-          isPending={isPending}
-          onSubmit={handleProfileSubmit}
-        />
+          {subStep === "PROFILE_DETAILS" && (
+            <>
+              <div className="login-form-header">
+                <h2 id="sign-in-title">Complete your profile</h2>
+              </div>
+              <RegisterProfileSubform
+                isPending={isPending}
+                onSubmit={handleProfileSubmit}
+              />
+            </>
+          )}
+        </>
       )}
     </div>
   );
