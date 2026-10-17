@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { useOtpCountdown } from "@/features/auth/model/use-otp-countdown";
 import { Button } from "@/shared/ui/button";
@@ -10,7 +10,7 @@ interface OtpInputGroupProps {
   expiresInSeconds?: number;
   disabled?: boolean;
   onComplete: (code: string) => void;
-  onResend: () => Promise<boolean>;
+  onResend: () => void | Promise<unknown>;
   errorMessage?: string | null;
 }
 
@@ -22,10 +22,21 @@ export function OtpInputGroup({
   onResend,
   errorMessage,
 }: OtpInputGroupProps) {
-  const [digits, setDigits] = useState<string[]>(Array(length).fill(""));
-  const [isResending, setIsResending] = useState(false);
+  const [digits, setDigits] = useState<string[]>(() => Array(length).fill(""));
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
   const { remainingSeconds, canResend, restart } = useOtpCountdown(expiresInSeconds);
+
+  const handleResend = async () => {
+    if (!canResend || disabled) {
+      return;
+    }
+    const result = await onResend();
+    if (result !== false) {
+      setDigits(Array(length).fill(""));
+      restart(expiresInSeconds);
+      inputsRef.current[0]?.focus();
+    }
+  };
 
   const handleDigitChange = (index: number, value: string) => {
     const char = value.slice(-1);
@@ -33,16 +44,17 @@ export function OtpInputGroup({
       return;
     }
 
-    const nextDigits = [...digits];
-    nextDigits[index] = char;
-    setDigits(nextDigits);
+    setDigits((prev) => {
+      const next = [...prev];
+      next[index] = char;
+      if (next.every((d) => d.length === 1)) {
+        onComplete(next.join(""));
+      }
+      return next;
+    });
 
     if (char && index < length - 1) {
       inputsRef.current[index + 1]?.focus();
-    }
-
-    if (nextDigits.every((d) => d.length === 1)) {
-      onComplete(nextDigits.join(""));
     }
   };
 
@@ -60,7 +72,7 @@ export function OtpInputGroup({
       return;
     }
 
-    const nextDigits = [...digits];
+    const nextDigits = Array(length).fill("");
     for (let i = 0; i < numbersOnly.length; i++) {
       nextDigits[i] = numbersOnly[i];
     }
@@ -69,27 +81,10 @@ export function OtpInputGroup({
     const focusIndex = Math.min(numbersOnly.length, length - 1);
     inputsRef.current[focusIndex]?.focus();
 
-    if (nextDigits.every((d) => d.length === 1)) {
-      onComplete(nextDigits.join(""));
+    if (numbersOnly.length === length) {
+      onComplete(numbersOnly);
     }
   };
-
-  const handleResendClick = useCallback(async () => {
-    if (!canResend || isResending) {
-      return;
-    }
-    setIsResending(true);
-    try {
-      const ok = await onResend();
-      if (ok) {
-        setDigits(Array(length).fill(""));
-        restart(expiresInSeconds);
-        inputsRef.current[0]?.focus();
-      }
-    } finally {
-      setIsResending(false);
-    }
-  }, [canResend, isResending, length, onResend, restart, expiresInSeconds]);
 
   return (
     <div className="otp-container">
@@ -115,15 +110,15 @@ export function OtpInputGroup({
         ))}
       </div>
 
-      {errorMessage && <p className="otp-error-msg">{errorMessage}</p>}
+      {errorMessage ? <p className="otp-error-msg">{errorMessage}</p> : null}
 
       <div className="otp-footer">
         {canResend ? (
           <Button
             className="otp-resend-btn"
-            disabled={disabled || isResending}
-            loading={isResending}
-            onClick={handleResendClick}
+            disabled={disabled}
+            loading={disabled}
+            onClick={handleResend}
             size="medium"
             type="button"
             variant="quiet"

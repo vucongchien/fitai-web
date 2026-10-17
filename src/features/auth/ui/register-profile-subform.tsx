@@ -1,10 +1,24 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import type { Gender } from "@/features/auth/model/auth.types";
-import { AvatarCreator } from "@/features/auth/ui/avatar-creator";
 import { Button } from "@/shared/ui/button";
+
+const AvatarCreator = dynamic(
+  () => import("@/features/auth/ui/avatar-creator").then((mod) => mod.AvatarCreator),
+  {
+    ssr: false,
+    loading: () => (
+      <div aria-busy="true" className="avatar-creator avatar-creator--loading">
+        <div className="avatar-creator__stage">
+          <div className="avatar-creator__circle" />
+        </div>
+      </div>
+    ),
+  },
+);
 
 interface RegisterProfileSubformProps {
   isPending: boolean;

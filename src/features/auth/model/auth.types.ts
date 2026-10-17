@@ -1,7 +1,5 @@
 export type AuthTab = "login" | "register";
 
-export type LoginSubStep = "IDENTIFIER" | "OTP" | "PASSWORD";
-
 export type RegisterSubStep = "VERIFY_IDENTIFIER" | "PROFILE_DETAILS";
 
 export type IdentifierType = "phone" | "email" | "invalid";

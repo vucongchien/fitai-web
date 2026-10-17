@@ -2,56 +2,66 @@
 
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
-class CountdownStore {
-  private listeners = new Set<() => void>();
-  private intervalId: number | null = null;
-  private endTime = 0;
+function createTimerStore(initialSeconds: number) {
+  let endTime = Date.now() + initialSeconds * 1000;
+  let remaining = initialSeconds;
+  let timerId: ReturnType<typeof setInterval> | null = null;
+  const listeners = new Set<() => void>();
 
-  subscribe = (listener: () => void) => {
-    this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
-      if (this.listeners.size === 0 && this.intervalId !== null) {
-        clearInterval(this.intervalId);
-        this.intervalId = null;
+  const tick = () => {
+    const next = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+    if (next !== remaining) {
+      remaining = next;
+      for (const listener of listeners) {
+        listener();
       }
-    };
-  };
-
-  getSnapshot = () => {
-    if (this.endTime === 0) {
-      return 0;
     }
-    const remaining = Math.max(0, Math.ceil((this.endTime - Date.now()) / 1000));
-    if (remaining === 0 && this.intervalId !== null) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
-    return remaining;
-  };
-
-  start = (seconds: number) => {
-    this.endTime = Date.now() + seconds * 1000;
-    this.notify();
-    if (this.intervalId === null && typeof window !== "undefined") {
-      this.intervalId = window.setInterval(this.notify, 1000);
+    if (next === 0 && timerId !== null) {
+      clearInterval(timerId);
+      timerId = null;
     }
   };
 
-  private notify = () => {
-    for (const listener of this.listeners) {
-      listener();
+  const startTimer = () => {
+    if (timerId === null && remaining > 0 && typeof window !== "undefined") {
+      timerId = setInterval(tick, 1000);
     }
+  };
+
+  return {
+    subscribe(listener: () => void) {
+      listeners.add(listener);
+      startTimer();
+      return () => {
+        listeners.delete(listener);
+        if (listeners.size === 0 && timerId !== null) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+      };
+    },
+    getSnapshot() {
+      return remaining;
+    },
+    restart(seconds: number) {
+      endTime = Date.now() + seconds * 1000;
+      remaining = seconds;
+      for (const listener of listeners) {
+        listener();
+      }
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+      startTimer();
+    },
   };
 }
 
 export function useOtpCountdown(initialSeconds = 60) {
-  const storeRef = useRef<CountdownStore | null>(null);
+  const storeRef = useRef<ReturnType<typeof createTimerStore> | null>(null);
   if (!storeRef.current) {
-    storeRef.current = new CountdownStore();
-    if (initialSeconds > 0) {
-      storeRef.current.start(initialSeconds);
-    }
+    storeRef.current = createTimerStore(initialSeconds);
   }
 
   const remainingSeconds = useSyncExternalStore(
@@ -60,9 +70,12 @@ export function useOtpCountdown(initialSeconds = 60) {
     () => initialSeconds,
   );
 
-  const restart = useCallback((seconds: number) => {
-    storeRef.current?.start(seconds);
-  }, []);
+  const restart = useCallback(
+    (seconds: number = initialSeconds) => {
+      storeRef.current?.restart(seconds);
+    },
+    [initialSeconds],
+  );
 
   return {
     remainingSeconds,

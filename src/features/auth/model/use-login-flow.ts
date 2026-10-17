@@ -3,70 +3,29 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import {
-  detectIdentifierType,
-  getEmailProviderUrl,
-} from "@/features/auth/model/auth-validation";
-import type { LoginSubStep } from "@/features/auth/model/auth.types";
-import {
-  loginWithPasswordAction,
-  sendOtpAction,
-  verifyOtpAction,
-} from "@/features/auth/server/auth-actions";
+import { detectIdentifierType } from "@/features/auth/model/auth-validation";
+import { loginWithPasswordAction } from "@/features/auth/server/auth-actions";
 import { openOAuthPopup } from "@/features/auth/ui/login-actions";
 
 export function useLoginFlow() {
   const router = useRouter();
-  const [subStep, setSubStep] = useState<LoginSubStep>("IDENTIFIER");
   const [identifier, setIdentifier] = useState("");
-  const [otpToken, setOtpToken] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
 
   const identifierType = detectIdentifierType(identifier);
   const isIdentifierValid = identifierType !== "invalid";
-  const mailUrl = getEmailProviderUrl(identifier);
 
-  const handleSendOtp = async (): Promise<boolean> => {
-    if (!isIdentifierValid) {
-      setErrorMessage("Vui lòng nhập đúng định dạng số điện thoại hoặc email.");
-      return false;
-    }
-    setErrorMessage(null);
-    setIsPending(true);
-    try {
-      const result = await sendOtpAction(identifier, "login");
-      if (result.success) {
-        setOtpToken(result.data.otpToken);
-        setSubStep("OTP");
-        return true;
-      }
-      setErrorMessage(result.error);
-      return false;
-    } finally {
-      setIsPending(false);
-    }
-  };
-
-  const handleVerifyOtp = async (code: string) => {
-    setErrorMessage(null);
-    setIsPending(true);
-    try {
-      const result = await verifyOtpAction(otpToken, code);
-      if (result.success) {
-        router.push("/home");
-      } else {
-        setErrorMessage(result.error);
-      }
-    } finally {
-      setIsPending(false);
-    }
-  };
-
-  const handlePasswordSubmit = async (e: React.FormEvent, password: string) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!identifier || !password) {
+    if (!identifier.trim() || !password) {
       setErrorMessage("Vui lòng điền đầy đủ số điện thoại/email và mật khẩu.");
+      return;
+    }
+    if (!isIdentifierValid) {
+      setErrorMessage("Số điện thoại hoặc email không đúng định dạng.");
       return;
     }
     setErrorMessage(null);
@@ -87,30 +46,18 @@ export function useLoginFlow() {
     openOAuthPopup("google");
   }, []);
 
-  const switchToPassword = () => {
-    setSubStep("PASSWORD");
-    setErrorMessage(null);
-  };
-
-  const switchToIdentifier = () => {
-    setSubStep("IDENTIFIER");
-    setErrorMessage(null);
-  };
-
   return {
-    subStep,
     identifier,
     setIdentifier,
+    password,
+    setPassword,
+    showPassword,
+    setShowPassword,
     errorMessage,
     setErrorMessage,
     isPending,
     isIdentifierValid,
-    mailUrl,
-    handleSendOtp,
-    handleVerifyOtp,
     handlePasswordSubmit,
     handleGoogleLogin,
-    switchToPassword,
-    switchToIdentifier,
   };
 }
