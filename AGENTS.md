@@ -41,48 +41,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   - Write comment only when necessary if comment not explain well remove it.
   - Short comment is best.
 
-## 6. SDLC Task Lifecycle & Planning Rules
-
-- **Phân loại Task**: Khi người dùng đưa ra yêu cầu thuộc dạng Task (tính năng mới, sửa lỗi, refactor, tích hợp hệ thống/API):
-  1. Tạo thư mục task theo chuẩn: `tasks/YYYY-MM-DD-<slug>/` (ví dụ: `tasks/2026-09-17-expo-mobile-architecture/`).
-  2. Tạo 3 file tài liệu theo đúng trình tự vòng đời của skill `task-lifecycle-sdlc`:
-     - `intent.md` (Pha 1): Ngắn gọn, cô đọng, review trong 60s. Ghi nhận `Status: Draft | In Progress | Completed` (ban đầu là `Draft`), `Problem` (4 dòng ngắn), `Desired Outcome` (3-5 mục P0/P1/P2), `Business & Technical References`, `Gaps`, `Working Assumptions` (kèm căn cứ code), và `Open Questions` (tối đa 3 câu).
-     - `plan.md` (Pha 2): Kế hoạch thực thi kỹ thuật gồm `Files that change` (`(new)`, `(modify)`, `(delete)`), `Solution` duy nhất theo Simplicity First, `Order of work`, `Risks & Mitigations`, và `Proof`. BẮT BUỘC gọi `view_file` đọc lại `intent.md` trước khi viết `plan.md`.
-     - `todo.md` (Pha 4 - **BẮT BUỘC: PHẢI CÓ PLAN.MD MỚI CÓ TODO.MD**): Checklist công việc trích xuất trực tiếp từ danh sách các bước trong `Order of work` của `plan.md` sau khi Auditor duyệt. Tuyệt đối không tạo `todo.md` trước khi có `plan.md`. Cập nhật tick `[x]` ngay sau khi hoàn thành MỖI step trong lúc thi công.
-- **Quy tắc Dừng sau mỗi bước (Stop & Checkpoints)**:
-  - Agent tuyệt đối không tự ý chạy dồn dập từ đầu đến cuối trong một lượt. Phải dừng lại báo cáo tại các checkpoint:
-    - *Checkpoint 1*: Sau khi soạn xong `intent.md` -> Dừng lại báo cáo mục tiêu và tiêu chí kỹ thuật.
-    - *Checkpoint 2*: Sau khi viết `plan.md`, Subagent Auditor APPROVED và khởi tạo `todo.md` -> Dừng lại báo cáo giải pháp, checklist thi công và xin phép thực thi.
-    - *Checkpoint 3*: Trong lúc thi công, tick `[x]` sau mỗi step trong `todo.md` -> Nhắc nhở còn việc chưa xong thì chưa được dừng.
-    - *Checkpoint 4*: Sau khi verification pass 100% và todo.md tick 100% -> Chuyển Status thành Completed và báo cáo nghiệm thu.
-- **Khóa trạng thái hoàn tất (Strict Status Gate)**:
-  - `intent.md` **CHỈ ĐƯỢC PHÉP** chuyển sang `Status: Completed` khi **100% các mục trong `todo.md` đã được tick `[x]`**.
-  - Validator và Lifecycle Hook sẽ **CHẶN ĐỨNG** Agent dừng lại nếu `Status: Completed` mà `todo.md` còn bất kỳ mục `- [ ]` nào.
-- **Kiểm toán độc lập qua Subagent (Cưỡng chế 100% bằng Hook)**:
-  - Sau khi lập `plan.md`, Agent chính **BẮT BUỘC** gọi `invoke_subagent` với `TypeName: "self"` và `Role: "SDLC Auditor & Architect"` để đối soát mã nguồn thực tế và phản hồi kết quả trực tiếp theo SDLC Rubric (không tạo file thừa trên ổ đĩa).
-  - Lifecycle Hook `Stop` (`validate-task-hook.mjs`) sẽ tự động quét transcript và **CHẶN ĐỨNG** Agent dừng lại nếu `plan.md` vừa được tạo/sửa mà chưa gọi subagent này.
-  - Nếu REJECTED: Agent chính sửa trực tiếp `intent.md` / `plan.md` theo Action Items rồi gọi lại auditor kiểm tra lại.
-- **Giao thức Đọc File (Exact File Inspection)**:
-  - Không suy đoán đường dẫn file. Trước khi lập plan hoặc kiểm toán:
-    1. Đọc file cấu hình gốc: `package.json` (để xác định đúng Next.js/React và test runner `vitest`), `tsconfig.json`.
-    2. File `(modify)` / `(delete)`: Phải dùng `view_file` đọc nội dung hiện tại và `grep_search` tìm toàn bộ Caller đang import nó để tránh breaking changes.
-    3. File `(new)`: Phải kiểm tra thư mục cha có thực sự tồn tại trong repo (ví dụ: `src/features/...`, `src/app/...`, `mobile/...`).
-    4. File trong `References`: Phải thực sự tồn tại trong repo và được đọc đối soát.
-- **Bảng Điểm Trừ Vi Phạm (Strict Penalties)**:
-  - Áp dụng trừ điểm khi kiểm toán:
-    - **PEN-01 (-25đ)**: Phantom Path (đường dẫn không tồn tại).
-    - **PEN-02 (-25đ)**: Tech Stack Mismatch (đề xuất sai lệch công nghệ so với `package.json`, ví dụ: pytest/python trong repo Next.js/Vitest).
-    - **PEN-03 (-20đ)**: Lỗ hổng bảo mật (IDOR, thiếu kiểm tra sở hữu dữ liệu, bypass auth).
-    - **PEN-04 (-15đ)**: Thiếu file test tương ứng cho code logic/UI mới.
-    - **PEN-05 (-15đ)**: Thiếu 1 trong 3 trạng thái giao diện bắt buộc (`Loading`, `Error`, `Empty`).
-    - **PEN-06 (-15đ)**: Lệnh test không khả thi trên máy hoặc kiểm thử thủ công chung chung.
-    - **PEN-TODO (-25đ)**: Chuyển trạng thái `Completed` trái phép khi `todo.md` chưa hoàn tất 100%.
-- **Tiêu chuẩn phê duyệt (Approval Gate)**:
-  - Task chỉ được `APPROVED` khi điểm sau khi trừ $\ge 80/100$, không có tiêu chí nào $< 10/20$, và không dính bất kỳ lỗi phạt nặng $\ge 20$đ.
-- **Hook & Kiểm tra tự động**:
-  - Chạy `pnpm run task:check` hoặc `node .agents/skills/task-lifecycle-sdlc/scripts/validate-task.mjs` để đối soát tự động đường dẫn file, điểm số và todo checklist. Lifecycle hook (`.agents/skills/task-lifecycle-sdlc/scripts/validate-task-hook.mjs`) sẽ chặn hoàn tất nếu vi phạm format hoặc dính lỗi phạt.
-
-## 7. Quy chuẩn Kiến trúc React & Next.js Hiện đại (Mandatory Skills Reference)
+## 6. Quy chuẩn Kiến trúc React & Next.js Hiện đại (Mandatory Skills Reference)
 
 Khi viết, sửa hoặc refactor mã nguồn UI/Fullstack, **bắt buộc tuân thủ và đối soát** với 3 bộ kỹ năng chuẩn đặt tại `.agents/skills/`:
 1. **`vercel-react-best-practices`**:
@@ -95,7 +54,7 @@ Khi viết, sửa hoặc refactor mã nguồn UI/Fullstack, **bắt buộc tuân
    - **Tối ưu ranh giới RSC**: Mặc định là Server Component; chỉ đẩy `'use client'` xuống các component lá (leaf components) có tương tác DOM / state.
    - **Chuẩn Async APIs**: Tuân thủ chuẩn async mới trong Next.js 15+ (`cookies()`, `headers()`, `params`, `searchParams`).
 
-## 8. Chuẩn kết nối API & Wire Authority (ConnectRPC / gRPC First)
+## 7. Chuẩn kết nối API & Wire Authority (ConnectRPC / gRPC First)
 
 - **Wire Authority duy nhất**: Toàn bộ dữ liệu nghiệp vụ trao đổi với backend `gym-companion` **BẮT BUỘC** sử dụng ConnectRPC client và các hợp đồng Protobuf sinh sẵn tại `src/shared/api/gen/`.
 - **Nghiêm cấm tự biên tự diễn (No Raw HTTP / No Custom REST)**:
