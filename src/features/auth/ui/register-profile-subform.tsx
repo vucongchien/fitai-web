@@ -1,0 +1,143 @@
+"use client";
+
+import { useState } from "react";
+
+import type { Gender } from "@/features/auth/model/auth.types";
+import { AvatarCreator } from "@/features/auth/ui/avatar-creator";
+import { Button } from "@/shared/ui/button";
+
+interface RegisterProfileSubformProps {
+  isPending: boolean;
+  onSubmit: (e: React.FormEvent, data: {
+    fullName: string;
+    password: string;
+    gender: Gender;
+    dateOfBirth: string;
+    avatarUrl: string;
+  }) => void;
+}
+
+export function RegisterProfileSubform({
+  isPending,
+  onSubmit,
+}: RegisterProfileSubformProps) {
+  const [fullName, setFullName] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [gender, setGender] = useState<Gender>("MALE");
+  const [dateOfBirth, setDateOfBirth] = useState("2000-01-01");
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    onSubmit(e, {
+      fullName,
+      password,
+      gender,
+      dateOfBirth,
+      avatarUrl,
+    });
+  };
+
+  return (
+    <form className="auth-step-profile-details" onSubmit={handleSubmit}>
+      <div className="auth-profile-header">
+        <h3 className="auth-step-title">Thiết lập tài khoản</h3>
+        <p className="auth-step-desc">
+          Tạo hồ sơ và chọn phong cách hình đại diện riêng của bạn.
+        </p>
+      </div>
+
+      <AvatarCreator
+        disabled={isPending}
+        name={fullName}
+        onAvatarChange={setAvatarUrl}
+      />
+
+      <div className="auth-field">
+        <label className="auth-label" htmlFor="register-fullname">
+          Họ và tên
+        </label>
+        <input
+          id="register-fullname"
+          autoComplete="name"
+          className="auth-input"
+          disabled={isPending}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder="VD: Nguyễn Văn An"
+          type="text"
+          value={fullName}
+        />
+      </div>
+
+      <div className="auth-field">
+        <div className="auth-label-row">
+          <label className="auth-label" htmlFor="register-password">
+            Mật khẩu đăng nhập
+          </label>
+          <button
+            className="auth-toggle-pwd-btn"
+            onClick={() => setShowPassword(!showPassword)}
+            tabIndex={-1}
+            type="button"
+          >
+            {showPassword ? "Ẩn" : "Hiện"}
+          </button>
+        </div>
+        <input
+          id="register-password"
+          autoComplete="new-password"
+          className="auth-input"
+          disabled={isPending}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Tối thiểu 8 ký tự"
+          type={showPassword ? "text" : "password"}
+          value={password}
+        />
+      </div>
+
+      <div className="auth-form-row">
+        <div className="auth-field">
+          <label className="auth-label">Giới tính</label>
+          <div className="auth-gender-pills">
+            {(["MALE", "FEMALE", "OTHER"] as const).map((g) => (
+              <button
+                key={g}
+                className={`auth-gender-pill ${gender === g ? "auth-gender-pill--active" : ""}`}
+                disabled={isPending}
+                onClick={() => setGender(g)}
+                type="button"
+              >
+                {g === "MALE" ? "Nam" : g === "FEMALE" ? "Nữ" : "Khác"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="auth-field">
+          <label className="auth-label" htmlFor="register-dob">
+            Ngày sinh
+          </label>
+          <input
+            id="register-dob"
+            className="auth-input"
+            disabled={isPending}
+            max={new Date().toISOString().split("T")[0]}
+            onChange={(e) => setDateOfBirth(e.target.value)}
+            type="date"
+            value={dateOfBirth}
+          />
+        </div>
+      </div>
+
+      <Button
+        className="auth-submit-btn"
+        disabled={!fullName.trim() || !password || isPending}
+        loading={isPending}
+        size="large"
+        type="submit"
+      >
+        Hoàn tất tạo tài khoản
+      </Button>
+    </form>
+  );
+}
