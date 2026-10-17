@@ -66,17 +66,19 @@ export function AIAdjustmentBanner() {
           }}
           role="status"
           aria-live="polite"
-          className={`mb-4 w-full rounded-2xl p-4 transition-all duration-300 border shadow-xs ${
+          className={`mb-4 w-full rounded-[var(--radius-card)] p-4 transition-all duration-300 border shadow-xs ${
             isCompleted
-              ? "bg-emerald-50/90 border-emerald-200 text-emerald-950"
-              : "bg-indigo-50/90 border-indigo-200/80 text-indigo-950"
+              ? "bg-[var(--color-recovery-soft)] border-[color-mix(in_srgb,var(--color-recovery-strong)_30%,transparent)] text-[var(--color-text)]"
+              : "bg-[var(--color-action-soft)] border-[color-mix(in_srgb,var(--color-action)_30%,transparent)] text-[var(--color-text)]"
           }`}
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-start sm:items-center gap-3">
               <div
-                className={`p-2.5 rounded-xl shrink-0 ${
-                  isCompleted ? "bg-emerald-100 text-emerald-700" : "bg-indigo-100 text-indigo-700"
+                className={`p-2.5 rounded-[var(--radius-input)] shrink-0 ${
+                  isCompleted
+                    ? "bg-[var(--color-surface)] text-[var(--color-recovery-strong)] border border-[color-mix(in_srgb,var(--color-recovery-strong)_20%,transparent)]"
+                    : "bg-[var(--color-surface)] text-[var(--color-action)] border border-[color-mix(in_srgb,var(--color-action)_20%,transparent)]"
                 }`}
               >
                 {isCompleted ? (
@@ -93,8 +95,8 @@ export function AIAdjustmentBanner() {
                   </span>
                   {!isCompleted && (
                     <span className="flex h-2 w-2 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-action)] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--color-action)]"></span>
                     </span>
                   )}
                 </div>
@@ -109,7 +111,7 @@ export function AIAdjustmentBanner() {
                 <button
                   type="button"
                   onClick={() => setIsChangesModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-100/60 transition-colors cursor-pointer shadow-xs"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[color-mix(in_srgb,var(--color-recovery-strong)_40%,transparent)] text-[var(--color-recovery-strong)] hover:bg-[var(--color-recovery-soft)] transition-colors cursor-pointer shadow-xs"
                 >
                   <Eye className="h-3.5 w-3.5" />
                   <span>View Changes</span>
@@ -118,7 +120,7 @@ export function AIAdjustmentBanner() {
                 <button
                   type="button"
                   onClick={refreshNow}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition-colors cursor-pointer shadow-xs"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[color-mix(in_srgb,var(--color-action)_40%,transparent)] text-[var(--color-action)] hover:bg-[var(--color-action-soft)] transition-colors cursor-pointer shadow-xs"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   <span>Check status</span>
@@ -129,7 +131,7 @@ export function AIAdjustmentBanner() {
                 type="button"
                 onClick={clearAIAdjustment}
                 aria-label="Dismiss notification"
-                className="p-1.5 rounded-lg opacity-60 hover:opacity-100 transition-opacity cursor-pointer"
+                className="p-1.5 rounded-[var(--radius-input)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)] transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>

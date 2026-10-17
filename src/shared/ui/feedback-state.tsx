@@ -1,6 +1,8 @@
 import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
+import { Button } from "@/shared/ui/button";
+
 interface FeedbackStateProps {
   actionHref?: string;
   actionLabel?: string;
@@ -30,15 +32,15 @@ export function FeedbackState({
         <p>{description}</p>
       </div>
       {onActionClick && actionLabel ? (
-        <button
-          className="ui-button ui-button--secondary ui-button--medium text-action"
+        <Button
+          className="text-action"
           onClick={onActionClick}
           type="button"
-          style={{ marginTop: "1rem", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}
+          variant="secondary"
         >
           {actionLabel}
           <ArrowRight aria-hidden="true" size={17} />
-        </button>
+        </Button>
       ) : actionHref && actionLabel ? (
         <Link className="text-action" href={actionHref}>
           {actionLabel}

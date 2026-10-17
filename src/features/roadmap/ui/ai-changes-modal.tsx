@@ -3,6 +3,7 @@
 import { CheckCircle2, ShieldAlert, Sparkles, X } from "lucide-react";
 
 import type { AIAdjustmentContext } from "@/features/roadmap/model/ai-adjustment-store";
+import { Button } from "@/shared/ui/button";
 
 interface AIChangesModalProps {
   isOpen: boolean;
@@ -34,34 +35,34 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
       aria-modal="true"
       className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200"
     >
-      <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-5 border border-neutral-200 relative">
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] p-6 max-w-lg w-full shadow-2xl space-y-5 border border-[var(--color-border)] relative">
         <button
           type="button"
           onClick={onClose}
           aria-label="Close modal"
-          className="absolute top-4 right-4 p-1.5 rounded-xl text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-1.5 rounded-[var(--radius-input)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)] transition-colors cursor-pointer"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="flex items-center gap-3 pr-8">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 shrink-0">
+          <div className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-action-soft)] text-[var(--color-action)] shrink-0">
             <Sparkles className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-[#101214] font-display">{getTitle()}</h3>
-            <p className="text-xs text-[#50565C]">Automated coaching adaptation details</p>
+            <h3 className="text-base font-bold text-[var(--color-text)] font-display">{getTitle()}</h3>
+            <p className="text-xs text-[var(--color-text-muted)]">Automated coaching adaptation details</p>
           </div>
         </div>
 
         <div className="space-y-3">
           {context.muscleGroup && (
-            <div className="p-3.5 rounded-xl bg-rose-50/60 border border-rose-100 flex items-center gap-3">
-              <ShieldAlert className="h-5 w-5 text-rose-600 shrink-0" />
+            <div className="p-3.5 rounded-[var(--radius-input)] bg-[var(--color-danger-soft)] border border-[color-mix(in_srgb,var(--color-danger)_20%,transparent)] flex items-center gap-3">
+              <ShieldAlert className="h-5 w-5 text-[var(--color-danger)] shrink-0" />
               <div className="text-xs">
-                <span className="font-bold text-rose-950">Target Area: </span>
-                <span className="text-rose-800 font-semibold">{context.muscleGroup}</span>
-                <p className="text-rose-700 mt-0.5">
+                <span className="font-bold text-[var(--color-text)]">Target Area: </span>
+                <span className="text-[var(--color-danger)] font-semibold">{context.muscleGroup}</span>
+                <p className="text-[var(--color-text-muted)] mt-0.5">
                   Direct overload exercises targeting this muscle group are actively excluded or
                   protected.
                 </p>
@@ -69,12 +70,12 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
             </div>
           )}
 
-          <div className="rounded-xl border border-neutral-200 divide-y divide-neutral-100 text-xs">
+          <div className="rounded-[var(--radius-input)] border border-[var(--color-border)] divide-y divide-[var(--color-border)] text-xs">
             <div className="p-3.5 flex items-start gap-2.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+              <CheckCircle2 className="h-4 w-4 text-[var(--color-recovery-strong)] shrink-0 mt-0.5" />
               <div>
-                <strong className="text-neutral-900">Medical Safety Rule (BR-AC-09):</strong>
-                <p className="text-neutral-600 mt-0.5">
+                <strong className="text-[var(--color-text)]">Medical Safety Rule (BR-AC-09):</strong>
+                <p className="text-[var(--color-text-muted)] mt-0.5">
                   Upcoming session plans have been revised to eliminate joint strain and prevent
                   aggravation.
                 </p>
@@ -82,10 +83,10 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
             </div>
 
             <div className="p-3.5 flex items-start gap-2.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+              <CheckCircle2 className="h-4 w-4 text-[var(--color-recovery-strong)] shrink-0 mt-0.5" />
               <div>
-                <strong className="text-neutral-900">History Preservation (Rule D3):</strong>
-                <p className="text-neutral-600 mt-0.5">
+                <strong className="text-[var(--color-text)]">History Preservation (Rule D3):</strong>
+                <p className="text-[var(--color-text-muted)] mt-0.5">
                   100% of your completed workout sessions in the past remain untouched and
                   preserved.
                 </p>
@@ -93,10 +94,10 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
             </div>
 
             <div className="p-3.5 flex items-start gap-2.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+              <CheckCircle2 className="h-4 w-4 text-[var(--color-recovery-strong)] shrink-0 mt-0.5" />
               <div>
-                <strong className="text-neutral-900">Dynamic Volume & RPE Re-indexing:</strong>
-                <p className="text-neutral-600 mt-0.5">
+                <strong className="text-[var(--color-text)]">Dynamic Volume & RPE Re-indexing:</strong>
+                <p className="text-[var(--color-text-muted)] mt-0.5">
                   Effort targets (RPE) across the remaining weeks have been recalculated for optimal
                   recovery.
                 </p>
@@ -106,13 +107,14 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
         </div>
 
         <div className="flex justify-end pt-2">
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-2.5 text-xs font-bold rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white transition-colors cursor-pointer"
+            className="w-full sm:w-auto"
+            variant="primary"
           >
             Understood & Close
-          </button>
+          </Button>
         </div>
       </div>
     </div>

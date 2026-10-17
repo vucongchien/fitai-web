@@ -53,7 +53,7 @@ export function WeekRoute({ sessions }: WeekRouteProps) {
                 {statusLabel[session.status]} · {session.time}
               </span>
               {session.isAdapted && session.reasoning && (
-                <p className="text-[11px] text-indigo-900/80 mt-1 line-clamp-1 italic">
+                <p className="text-[11px] text-[var(--color-action)] mt-1 line-clamp-1 italic">
                   &ldquo;{session.reasoning}&rdquo;
                 </p>
               )}

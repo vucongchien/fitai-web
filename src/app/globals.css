@@ -641,6 +641,10 @@ button {
 .feedback-state .text-action {
   grid-column: 2;
   justify-self: start;
+  margin-top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .metric-trace {
@@ -1260,6 +1264,11 @@ a.week-route__row:hover {
 
 .roadmap-layout {
   display: grid;
+}
+
+.roadmap-layout > .content-section:only-child {
+  grid-column: 1 / -1;
+  max-width: 48rem;
 }
 
 .roadmap-context {
