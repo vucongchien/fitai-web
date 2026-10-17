@@ -97,8 +97,8 @@ export function NotificationsView({ initialNotifications }: NotificationsViewPro
                 {unreadCount > 0 && (
                   <span
                     style={{
-                      background: "var(--color-primary)",
-                      color: "#fff",
+                      background: "var(--color-action)",
+                      color: "var(--color-action-contrast)",
                       fontSize: "12px",
                       fontWeight: 700,
                       padding: "2px 8px",
@@ -116,7 +116,7 @@ export function NotificationsView({ initialNotifications }: NotificationsViewPro
                   style={{
                     background: "transparent",
                     border: "none",
-                    color: "var(--color-text-secondary)",
+                    color: "var(--color-text-muted)",
                     fontSize: "13px",
                     fontWeight: 600,
                     cursor: "pointer",

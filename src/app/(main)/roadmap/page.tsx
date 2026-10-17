@@ -30,8 +30,8 @@ function StatsSkeleton() {
 function RoadmapSkeleton() {
   return (
     <div className="roadmap-skeleton mt-4">
-      <div className="skeleton-box h-12 w-full mb-4 rounded-[10px] bg-[var(--color-surface-hover,#eee)]" />
-      <div className="skeleton-box h-[300px] w-full rounded-[14px] bg-[var(--color-surface-hover,#eee)]" />
+      <div className="skeleton-box h-12 w-full mb-4 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)]" />
+      <div className="skeleton-box h-[300px] w-full rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)]" />
     </div>
   );
 }

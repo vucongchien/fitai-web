@@ -27,7 +27,7 @@ function IngredientsList({ ingredients }: { ingredients: MealIngredient[] }) {
         style={{
           fontSize: "0.8rem",
           fontWeight: 600,
-          color: "var(--color-text-muted, #8b949e)",
+          color: "var(--color-text-muted)",
           marginBottom: "0.35rem",
           display: "flex",
           alignItems: "center",
@@ -55,15 +55,15 @@ function IngredientsList({ ingredients }: { ingredients: MealIngredient[] }) {
               gap: "0.35rem",
               fontSize: "0.8rem",
               padding: "0.2rem 0.5rem",
-              borderRadius: "0.375rem",
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
+              borderRadius: "var(--radius-input)",
+              backgroundColor: "var(--color-surface-subtle)",
+              border: "1px solid var(--color-border)",
             }}
           >
             <span style={{ fontWeight: 500 }}>{ing.ingredientName}</span>
             <span
               className="data-value"
-              style={{ fontWeight: 700, color: "var(--color-primary, #e25c38)" }}
+              style={{ fontWeight: 700, color: "var(--color-effort)" }}
             >
               {ing.grams}g
             </span>
@@ -226,7 +226,7 @@ export function MealDetailView({ data }: MealDetailViewProps) {
                           alignItems: "center",
                           gap: "0.25rem",
                           fontSize: "0.75rem",
-                          color: "var(--color-text-muted, #8b949e)",
+                          color: "var(--color-text-muted)",
                         }}
                       >
                         <Clock size={12} /> Scheduled: {choice.scheduledTime}

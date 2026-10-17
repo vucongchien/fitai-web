@@ -26,7 +26,7 @@ function SummarySkeleton() {
       aria-label="Loading workout summary"
       className="workout-prep-skeleton px-4 py-8"
     >
-      <div className="skeleton-box h-48 w-full rounded-[14px] bg-[var(--color-surface-hover,#eee)]" />
+      <div className="skeleton-box h-48 w-full rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)]" />
     </div>
   );
 }

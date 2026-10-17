@@ -26,8 +26,8 @@ async function PrepContent({
 function PrepSkeleton() {
   return (
     <div className="workout-prep-skeleton px-4 py-8">
-      <div className="skeleton-box h-[180px] w-full rounded-[14px] mb-4 bg-[var(--color-surface-hover,#eee)]" />
-      <div className="skeleton-box h-60 w-full rounded-[14px] bg-[var(--color-surface-hover,#eee)]" />
+      <div className="skeleton-box h-[180px] w-full rounded-[var(--radius-card)] mb-4 bg-[var(--color-surface-subtle)]" />
+      <div className="skeleton-box h-60 w-full rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)]" />
     </div>
   );
 }
