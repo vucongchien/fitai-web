@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import type { TodayItemCategory, TodayTimelineItem } from "@/features/home/model/home-page.types";
 import { cn } from "@/shared/lib/cn";
+import { buttonVariants } from "@/shared/ui/button";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 interface TodayTimelineProps {
@@ -39,33 +40,33 @@ export function TodayTimeline({
 }: TodayTimelineProps) {
   if (items.length === 0) {
     return (
-      <div className="p-6 text-center rounded-2xl border border-dashed border-neutral-200 bg-white space-y-3">
-        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-[var(--color-action)]">
+      <div className="timeline-empty-card">
+        <div className="timeline-empty-card__icon">
           <Sparkles size={20} />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[var(--color-text)]">
-            No meals or workouts scheduled for today
-          </h3>
-          <p className="text-xs text-[var(--color-text-muted)] mt-1">
+          <h3>No meals or workouts scheduled for today</h3>
+          <p>
             Enjoy active recovery today, or view your full weekly schedule in Roadmap.
           </p>
         </div>
-        <div className="pt-1 flex flex-wrap items-center justify-center gap-2">
+        <div className="timeline-empty-card__actions">
           <Link
+            className={buttonVariants({ variant: "primary", size: "medium" })}
             href="/roadmap"
             transitionTypes={NAV_FORWARD}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-[var(--color-action)] text-white hover:bg-[var(--color-action-hover)] transition-colors flex items-center gap-1.5"
           >
-            <span>View Weekly Roadmap</span>
+            <span className="ui-button__label">View Weekly Roadmap</span>
           </Link>
           <Link
+            className={buttonVariants({ variant: "secondary", size: "medium" })}
             href="/workouts/adhoc"
             transitionTypes={NAV_FORWARD}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-100 text-[var(--color-text-muted)] hover:bg-neutral-200 transition-colors flex items-center gap-1.5"
           >
-            <Dumbbell size={14} />
-            <span>Start Extra Workout</span>
+            <span className="ui-button__label">
+              <Dumbbell size={15} />
+              Start Extra Workout
+            </span>
           </Link>
         </div>
       </div>
@@ -124,7 +125,7 @@ export function TodayTimeline({
               <div className="flex flex-wrap items-center gap-2">
                 <h3>{item.title}</h3>
                 {item.status === "next" ? (
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-md bg-blue-100 text-[var(--color-action)] uppercase tracking-wider">
+                  <span className="timeline-next-badge">
                     Next up
                   </span>
                 ) : null}

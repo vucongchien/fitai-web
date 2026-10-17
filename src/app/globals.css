@@ -919,6 +919,61 @@ a.week-route__row:hover {
   color: var(--color-text-muted);
 }
 
+.timeline-empty-card {
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: var(--radius-hero);
+  border: 1px dashed var(--color-border);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.timeline-empty-card__icon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-action);
+  background: var(--color-action-soft);
+}
+
+.timeline-empty-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.timeline-empty-card p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.timeline-empty-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.timeline-next-badge {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 750;
+  border-radius: var(--radius-input);
+  background: var(--color-action-soft);
+  color: var(--color-action);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .evidence-list__item,
 .roadmap-context__item,
 .nutrition-line {
@@ -6366,6 +6421,72 @@ a.week-route__row:hover {
 
 .meal-timeline__name {
   color: var(--color-text);
+}
+
+.meal-timeline__time-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-input);
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.meal-timeline__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-input);
+  background: var(--color-surface-subtle);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color var(--duration-state) ease,
+    border-color var(--duration-state) ease,
+    color var(--duration-state) ease;
+}
+
+.meal-timeline__action:hover {
+  background: var(--color-surface);
+  border-color: var(--color-action);
+  color: var(--color-action);
+}
+
+.meal-timeline__empty-note {
+  margin-top: 0.45rem;
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+}
+
+.meal-timeline__planned {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.meal-timeline__planned-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.meal-timeline__macros {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.meal-timeline__ingredients {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
 }
 
 .nutrition-skeleton {
