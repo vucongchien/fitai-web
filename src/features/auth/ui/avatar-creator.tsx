@@ -8,6 +8,7 @@ import {
   generateRandomSeed,
   svgToDataUri,
 } from "@/features/auth/model/use-multiavatar";
+import { Button } from "@/shared/ui/button";
 
 interface AvatarCreatorProps {
   name: string;
@@ -95,33 +96,39 @@ export function AvatarCreator({ name, onAvatarChange, disabled = false }: Avatar
       </div>
 
       <div className="avatar-creator__actions">
-        <button
+        <Button
           className="avatar-action-btn"
           disabled={disabled}
           onClick={handleRandomize}
+          size="medium"
           type="button"
+          variant="secondary"
         >
           Đổi mẫu ngẫu nhiên
-        </button>
+        </Button>
 
-        <button
+        <Button
           className="avatar-action-btn avatar-action-btn--secondary"
           disabled={disabled}
           onClick={() => fileInputRef.current?.click()}
+          size="medium"
           type="button"
+          variant="secondary"
         >
           Tải ảnh cá nhân
-        </button>
+        </Button>
 
         {(customImage || activeSeed) && (
-          <button
+          <Button
             className="avatar-action-btn avatar-action-btn--ghost"
             disabled={disabled}
             onClick={handleRevertToName}
+            size="medium"
             type="button"
+            variant="quiet"
           >
             Dùng theo tên
-          </button>
+          </Button>
         )}
 
         <input
@@ -138,15 +145,17 @@ export function AvatarCreator({ name, onAvatarChange, disabled = false }: Avatar
         <span className="avatar-presets-label">Gợi ý phong cách:</span>
         <div className="avatar-presets-list">
           {PRESET_SEEDS.map((seed, idx) => (
-            <button
+            <Button
               key={seed}
               className={`avatar-preset-chip ${activeSeed === seed ? "avatar-preset-chip--active" : ""}`}
               disabled={disabled}
               onClick={() => handlePresetSelect(seed)}
+              size="medium"
               type="button"
+              variant={activeSeed === seed ? "primary" : "quiet"}
             >
               Mẫu {idx + 1}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

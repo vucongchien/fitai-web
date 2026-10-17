@@ -1,104 +1,27 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-
-import {
-  detectIdentifierType,
-  getEmailProviderUrl,
-  maskIdentifier,
-} from "@/features/auth/model/auth-validation";
-import type { Gender, RegisterSubStep } from "@/features/auth/model/auth.types";
-import {
-  registerAction,
-  sendOtpAction,
-  verifyOtpAction,
-} from "@/features/auth/server/auth-actions";
+import { maskIdentifier } from "@/features/auth/model/auth-validation";
+import { useRegisterFlow } from "@/features/auth/model/use-register-flow";
 import { OtpInputGroup } from "@/features/auth/ui/otp-input-group";
 import { RegisterProfileSubform } from "@/features/auth/ui/register-profile-subform";
 import { Button } from "@/shared/ui/button";
 
 export function RegisterForm() {
-  const router = useRouter();
-  const [subStep, setSubStep] = useState<RegisterSubStep>("VERIFY_IDENTIFIER");
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [identifier, setIdentifier] = useState("");
-  const [otpToken, setOtpToken] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-
-  const identifierType = detectIdentifierType(identifier);
-  const isIdentifierValid = identifierType !== "invalid";
-  const mailUrl = getEmailProviderUrl(identifier);
-
-  const handleSendOtp = () => {
-    if (!isIdentifierValid) {
-      setErrorMessage("Vui lòng nhập số điện thoại hoặc email hợp lệ để đăng ký.");
-      return;
-    }
-    setErrorMessage(null);
-
-    startTransition(async () => {
-      const result = await sendOtpAction(identifier, "register");
-      if (result.success) {
-        setOtpToken(result.data.otpToken);
-        setIsOtpSent(true);
-      } else {
-        setErrorMessage(result.error);
-      }
-    });
-  };
-
-  const handleVerifyOtp = (code: string) => {
-    setErrorMessage(null);
-    startTransition(async () => {
-      const result = await verifyOtpAction(otpToken, code);
-      if (result.success) {
-        setSubStep("PROFILE_DETAILS");
-      } else {
-        setErrorMessage(result.error);
-      }
-    });
-  };
-
-  const handleProfileSubmit = (
-    e: React.FormEvent,
-    data: {
-      fullName: string;
-      password: string;
-      gender: Gender;
-      dateOfBirth: string;
-      avatarUrl: string;
-    },
-  ) => {
-    e.preventDefault();
-    if (!data.fullName.trim() || !data.password || !data.dateOfBirth) {
-      setErrorMessage("Vui lòng điền đầy đủ họ tên, mật khẩu và ngày sinh.");
-      return;
-    }
-    if (data.password.length < 8) {
-      setErrorMessage("Mật khẩu phải có tối thiểu 8 ký tự.");
-      return;
-    }
-    setErrorMessage(null);
-
-    startTransition(async () => {
-      const result = await registerAction({
-        identifier,
-        password: data.password,
-        fullName: data.fullName.trim(),
-        gender: data.gender,
-        dateOfBirth: data.dateOfBirth,
-        avatarUrl: data.avatarUrl || undefined,
-      });
-
-      if (result.success) {
-        router.push(result.data.redirectUrl);
-      } else {
-        setErrorMessage(result.error);
-      }
-    });
-  };
+  const {
+    subStep,
+    isOtpSent,
+    identifier,
+    setIdentifier,
+    errorMessage,
+    setErrorMessage,
+    isPending,
+    isIdentifierValid,
+    mailUrl,
+    handleSendOtp,
+    handleVerifyOtp,
+    handleProfileSubmit,
+    resetToIdentifier,
+  } = useRegisterFlow();
 
   return (
     <div className="register-form-container">
@@ -156,17 +79,16 @@ export function RegisterForm() {
                 <h3 className="auth-step-title">Xác minh tài khoản mới</h3>
                 <p className="auth-step-desc">
                   Mã xác thực đã gửi tới <strong>{maskIdentifier(identifier)}</strong>
-                  <button
+                  <Button
                     className="auth-change-identifier-btn"
                     disabled={isPending}
-                    onClick={() => {
-                      setIsOtpSent(false);
-                      setErrorMessage(null);
-                    }}
+                    onClick={resetToIdentifier}
+                    size="medium"
                     type="button"
+                    variant="quiet"
                   >
                     Sửa
-                  </button>
+                  </Button>
                 </p>
               </div>
 
@@ -191,12 +113,7 @@ export function RegisterForm() {
                 errorMessage={errorMessage}
                 expiresInSeconds={60}
                 onComplete={handleVerifyOtp}
-                onResend={async () => {
-                  const res = await sendOtpAction(identifier, "register");
-                  if (res.success) {
-                    setOtpToken(res.data.otpToken);
-                  }
-                }}
+                onResend={handleSendOtp}
               />
             </div>
           )}

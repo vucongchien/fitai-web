@@ -1,88 +1,29 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useCallback, useState, useTransition } from "react";
-
-import {
-  detectIdentifierType,
-  getEmailProviderUrl,
-  maskIdentifier,
-} from "@/features/auth/model/auth-validation";
-import type { LoginSubStep } from "@/features/auth/model/auth.types";
-import {
-  loginWithPasswordAction,
-  sendOtpAction,
-  verifyOtpAction,
-} from "@/features/auth/server/auth-actions";
-import { openOAuthPopup } from "@/features/auth/ui/login-actions";
+import { maskIdentifier } from "@/features/auth/model/auth-validation";
+import { useLoginFlow } from "@/features/auth/model/use-login-flow";
 import { OtpInputGroup } from "@/features/auth/ui/otp-input-group";
 import { PasswordLoginSubform } from "@/features/auth/ui/password-login-subform";
 import { GoogleMark } from "@/features/auth/ui/provider-marks";
 import { Button } from "@/shared/ui/button";
 
 export function LoginForm() {
-  const router = useRouter();
-  const [subStep, setSubStep] = useState<LoginSubStep>("IDENTIFIER");
-  const [identifier, setIdentifier] = useState("");
-  const [otpToken, setOtpToken] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
-
-  const identifierType = detectIdentifierType(identifier);
-  const isIdentifierValid = identifierType !== "invalid";
-  const mailUrl = getEmailProviderUrl(identifier);
-
-  const handleSendOtp = () => {
-    if (!isIdentifierValid) {
-      setErrorMessage("Vui lòng nhập đúng định dạng số điện thoại hoặc email.");
-      return;
-    }
-    setErrorMessage(null);
-
-    startTransition(async () => {
-      const result = await sendOtpAction(identifier, "login");
-      if (result.success) {
-        setOtpToken(result.data.otpToken);
-        setSubStep("OTP");
-      } else {
-        setErrorMessage(result.error);
-      }
-    });
-  };
-
-  const handleVerifyOtp = (code: string) => {
-    setErrorMessage(null);
-    startTransition(async () => {
-      const result = await verifyOtpAction(otpToken, code);
-      if (result.success) {
-        router.push("/home");
-      } else {
-        setErrorMessage(result.error);
-      }
-    });
-  };
-
-  const handlePasswordSubmit = (e: React.FormEvent, password: string) => {
-    e.preventDefault();
-    if (!identifier || !password) {
-      setErrorMessage("Vui lòng điền đầy đủ số điện thoại/email và mật khẩu.");
-      return;
-    }
-    setErrorMessage(null);
-
-    startTransition(async () => {
-      const result = await loginWithPasswordAction(identifier, password);
-      if (result.success) {
-        router.push(result.data.redirectUrl);
-      } else {
-        setErrorMessage(result.error);
-      }
-    });
-  };
-
-  const handleGoogleLogin = useCallback(() => {
-    openOAuthPopup("google");
-  }, []);
+  const {
+    subStep,
+    identifier,
+    setIdentifier,
+    errorMessage,
+    setErrorMessage,
+    isPending,
+    isIdentifierValid,
+    mailUrl,
+    handleSendOtp,
+    handleVerifyOtp,
+    handlePasswordSubmit,
+    handleGoogleLogin,
+    switchToPassword,
+    switchToIdentifier,
+  } = useLoginFlow();
 
   return (
     <div className="login-form-container">
@@ -100,6 +41,7 @@ export function LoginForm() {
             onClick={handleGoogleLogin}
             size="large"
             type="button"
+            variant="secondary"
           >
             <span aria-hidden="true" className="login-provider__mark">
               <GoogleMark />
@@ -154,17 +96,16 @@ export function LoginForm() {
           </Button>
 
           <div className="auth-alt-actions">
-            <button
+            <Button
               className="auth-link-btn"
               disabled={isPending}
-              onClick={() => {
-                setSubStep("PASSWORD");
-                setErrorMessage(null);
-              }}
+              onClick={switchToPassword}
+              size="medium"
               type="button"
+              variant="quiet"
             >
               Đăng nhập bằng mật khẩu
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -175,17 +116,16 @@ export function LoginForm() {
             <h3 className="auth-step-title">Xác thực mã OTP</h3>
             <p className="auth-step-desc">
               Mã xác thực đã gửi tới <strong>{maskIdentifier(identifier)}</strong>
-              <button
+              <Button
                 className="auth-change-identifier-btn"
                 disabled={isPending}
-                onClick={() => {
-                  setSubStep("IDENTIFIER");
-                  setErrorMessage(null);
-                }}
+                onClick={switchToIdentifier}
+                size="medium"
                 type="button"
+                variant="quiet"
               >
                 Sửa
-              </button>
+              </Button>
             </p>
           </div>
 
@@ -210,26 +150,20 @@ export function LoginForm() {
             errorMessage={errorMessage}
             expiresInSeconds={60}
             onComplete={handleVerifyOtp}
-            onResend={async () => {
-              const res = await sendOtpAction(identifier, "login");
-              if (res.success) {
-                setOtpToken(res.data.otpToken);
-              }
-            }}
+            onResend={handleSendOtp}
           />
 
           <div className="auth-alt-actions">
-            <button
+            <Button
               className="auth-link-btn"
               disabled={isPending}
-              onClick={() => {
-                setSubStep("IDENTIFIER");
-                setErrorMessage(null);
-              }}
+              onClick={switchToIdentifier}
+              size="medium"
               type="button"
+              variant="quiet"
             >
               Quay lại bước trước
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -240,10 +174,7 @@ export function LoginForm() {
           isPending={isPending}
           onIdentifierChange={setIdentifier}
           onSubmit={handlePasswordSubmit}
-          onSwitchToOtp={() => {
-            setSubStep("IDENTIFIER");
-            setErrorMessage(null);
-          }}
+          onSwitchToOtp={switchToIdentifier}
         />
       )}
     </div>

@@ -3,13 +3,14 @@
 import { useCallback, useRef, useState } from "react";
 
 import { useOtpCountdown } from "@/features/auth/model/use-otp-countdown";
+import { Button } from "@/shared/ui/button";
 
 interface OtpInputGroupProps {
   length?: number;
   expiresInSeconds?: number;
   disabled?: boolean;
   onComplete: (code: string) => void;
-  onResend: () => Promise<void>;
+  onResend: () => void | Promise<void>;
   errorMessage?: string | null;
 }
 
@@ -116,14 +117,17 @@ export function OtpInputGroup({
 
       <div className="otp-footer">
         {canResend ? (
-          <button
+          <Button
             className="otp-resend-btn"
             disabled={disabled || isResending}
+            loading={isResending}
             onClick={handleResendClick}
+            size="medium"
             type="button"
+            variant="quiet"
           >
-            {isResending ? "Đang gửi..." : "Gửi lại mã xác thực"}
-          </button>
+            Gửi lại mã xác thực
+          </Button>
         ) : (
           <span className="otp-countdown-text">
             Gửi lại mã sau <strong>{remainingSeconds}s</strong>

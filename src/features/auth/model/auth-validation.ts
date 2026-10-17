@@ -2,10 +2,17 @@ import type { IdentifierType } from "./auth.types";
 
 const VN_DOMESTIC_REGEX = /^0[35789]\d{8}$/;
 const VN_E164_REGEX = /^\+84[35789]\d{8}$/;
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
 
 function sanitizePhone(raw: string): string {
-  return raw.replace(/[\s\-().]/g, "");
+  let cleaned = raw.replace(/[\s\-().]/g, "");
+  if (cleaned.startsWith("+840")) {
+    cleaned = `+84${cleaned.slice(4)}`;
+  } else if (cleaned.startsWith("84") && cleaned.length === 11) {
+    cleaned = `+${cleaned}`;
+  }
+  return cleaned;
 }
 
 export function isValidVietnamesePhone(phone: string): boolean {
