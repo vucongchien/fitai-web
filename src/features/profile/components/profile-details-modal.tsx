@@ -16,6 +16,7 @@ import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-s
 import type { PreferredWorkoutTimesMap } from "@/features/onboarding/domain/workout-times-normalizer";
 import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
+import { cn } from "@/shared/lib/cn";
 
 import { calculateBMI } from "../model/profile.mapper";
 import type { InjuryItem, ProfileViewModel } from "../model/profile.types";
@@ -53,11 +54,11 @@ export function ProfileDetailsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-xs p-0 sm:p-4 transition-opacity">
-      <div className="relative w-full max-h-[90vh] max-w-xl overflow-y-auto bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl border border-neutral-200/80 font-body">
+      <div className="relative w-full max-h-[90vh] max-w-xl overflow-y-auto bg-[var(--color-surface)] rounded-t-[var(--radius-card)] sm:rounded-[var(--radius-card)] shadow-2xl border border-[var(--color-border)] font-body">
         {/* Header Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors z-10"
+          className="absolute top-4 right-4 p-2 rounded-[var(--radius-input)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)] transition-colors z-10 cursor-pointer"
           aria-label="Close modal"
         >
           <X className="h-5 w-5" />
@@ -86,9 +87,7 @@ export function ProfileDetailsModal({
   );
 }
 
-/* ==========================================
-   CONFIRM DIALOG COMPONENT
-   ========================================== */
+
 function ConfirmDialog({
   title = "Confirm Changes",
   message,
@@ -104,19 +103,19 @@ function ConfirmDialog({
 }) {
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-      <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-neutral-200">
-        <h3 className="text-base font-bold text-[#101214] font-display">{title}</h3>
-        <p className="text-xs text-[#50565C] leading-relaxed">{message}</p>
+      <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] p-6 max-w-md w-full shadow-2xl space-y-4 border border-[var(--color-border)]">
+        <h3 className="text-base font-bold text-[var(--color-text)] font-display">{title}</h3>
+        <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">{message}</p>
         <div className="flex justify-end gap-3 pt-2">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-xs font-semibold rounded-xl border border-neutral-200 text-[#50565C] hover:bg-neutral-100 transition-colors"
+            className="px-4 py-2 text-xs font-semibold rounded-[var(--radius-input)] border border-[var(--color-border)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#4B57F2] text-white hover:bg-[#3945DC] transition-colors"
+            className="px-4 py-2 text-xs font-semibold rounded-[var(--radius-input)] bg-[var(--color-action)] text-[var(--color-action-contrast)] hover:bg-[var(--color-action-strong)] transition-colors cursor-pointer"
           >
             {confirmText}
           </button>
@@ -126,9 +125,7 @@ function ConfirmDialog({
   );
 }
 
-/* ==========================================
-   SELECTION TILE COMPONENT
-   ========================================== */
+
 function SelectableTile({
   label,
   description,
@@ -144,31 +141,35 @@ function SelectableTile({
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-center justify-between p-4 rounded-xl text-left transition-colors cursor-pointer min-h-[64px]"
-      style={{
-        border: "1.5px solid",
-        borderColor: selected ? "#4B57F2" : "#E5E7EB",
-        backgroundColor: selected ? "#F4F5FF" : "#FFFFFF",
-      }}
+      className={cn(
+        "w-full flex items-center justify-between p-4 rounded-[var(--radius-card)] text-left transition-colors cursor-pointer min-h-[64px] border-[1.5px]",
+        selected
+          ? "border-[var(--color-action)] bg-[var(--color-action-soft)]"
+          : "border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)]",
+      )}
     >
       <div>
-        <div className="text-sm font-semibold" style={{ color: selected ? "#4B57F2" : "#101214" }}>
+        <div
+          className={cn(
+            "text-sm font-semibold transition-colors",
+            selected ? "text-[var(--color-action)]" : "text-[var(--color-text)]",
+          )}
+        >
           {label}
         </div>
         {description && (
-          <div className="text-xs mt-0.5" style={{ color: "#50565C" }}>
+          <div className="text-xs mt-0.5 text-[var(--color-text-muted)]">
             {description}
           </div>
         )}
       </div>
       <div
-        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors ml-3"
-        style={{
-          border: "2px solid",
-          borderColor: selected ? "#4B57F2" : "#D1D5DB",
-          backgroundColor: selected ? "#4B57F2" : "#FFFFFF",
-          color: selected ? "#FFFFFF" : "transparent",
-        }}
+        className={cn(
+          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors ml-3 border-2",
+          selected
+            ? "border-[var(--color-action)] bg-[var(--color-action)] text-[var(--color-action-contrast)]"
+            : "border-[var(--color-border)] bg-[var(--color-surface)] text-transparent",
+        )}
       >
         <Check className="h-3.5 w-3.5" />
       </div>
@@ -176,9 +177,7 @@ function SelectableTile({
   );
 }
 
-/* ==========================================
-   FORM 1: BODY METRICS
-   ========================================== */
+
 function BodyMetricsForm({
   profile,
   onSave,
@@ -237,77 +236,77 @@ function BodyMetricsForm({
   return (
     <>
       <div className="flex items-center gap-3 mb-6 pr-8">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-[#4B57F2]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-action-soft)] text-[var(--color-action)]">
           <Scale className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[#101214] font-display">Body Metrics</h2>
-          <p className="text-xs text-[#50565C]">Update your physical status and target goals</p>
+          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Body Metrics</h2>
+          <p className="text-xs text-[var(--color-text-muted)]">Update your physical status and target goals</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-[#50565C]">Current Weight (kg)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Current Weight (kg)</label>
           <input
             type="number"
             step="0.1"
             value={data.currentWeightKg}
             onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, currentWeightKg: e.target.value })}
-            className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
+            className="w-full h-11 px-3.5 text-sm font-data rounded-[var(--radius-input)] border border-[var(--color-border)] outline-none focus:border-[var(--color-action)] bg-[var(--color-surface)] text-[var(--color-text)]"
           />
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-[#50565C]">Target Weight (kg)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Target Weight (kg)</label>
           <input
             type="number"
             step="0.1"
             value={data.targetWeightKg}
             onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, targetWeightKg: e.target.value })}
-            className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
+            className="w-full h-11 px-3.5 text-sm font-data rounded-[var(--radius-input)] border border-[var(--color-border)] outline-none focus:border-[var(--color-action)] bg-[var(--color-surface)] text-[var(--color-text)]"
           />
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-[#50565C]">Height (cm)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Height (cm)</label>
           <input
             type="number"
             value={data.heightCm}
             onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, heightCm: e.target.value })}
-            className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
+            className="w-full h-11 px-3.5 text-sm font-data rounded-[var(--radius-input)] border border-[var(--color-border)] outline-none focus:border-[var(--color-action)] bg-[var(--color-surface)] text-[var(--color-text)]"
           />
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-[#50565C]">Body Fat (%)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Body Fat (%)</label>
           <input
             type="number"
             step="0.1"
             value={data.bodyFatPercent}
             onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, bodyFatPercent: e.target.value })}
-            className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
+            className="w-full h-11 px-3.5 text-sm font-data rounded-[var(--radius-input)] border border-[var(--color-border)] outline-none focus:border-[var(--color-action)] bg-[var(--color-surface)] text-[var(--color-text)]"
           />
         </div>
         <div className="space-y-1 sm:col-span-2">
-          <label className="text-xs font-semibold text-[#50565C]">Target Body Fat (%)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Target Body Fat (%)</label>
           <input
             type="number"
             step="0.1"
             value={data.targetBodyFatPercent}
             onInvalid={(e) => e.preventDefault()}
             onChange={(e) => setData({ ...data, targetBodyFatPercent: e.target.value })}
-            className="w-full h-11 px-3.5 text-sm font-data rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30"
+            className="w-full h-11 px-3.5 text-sm font-data rounded-[var(--radius-input)] border border-[var(--color-border)] outline-none focus:border-[var(--color-action)] bg-[var(--color-surface)] text-[var(--color-text)]"
           />
         </div>
       </div>
 
       {bmi && (
-        <div className="p-3.5 rounded-xl mb-6 bg-blue-50/60 border border-blue-100 flex items-center justify-between">
-          <span className="text-xs text-[#50565C]">Calculated Body Mass Index (BMI)</span>
-          <span className="text-sm font-bold font-data text-[#4B57F2]">
-            {bmi.bmi} <span className="text-xs font-normal text-[#50565C]">({bmi.category})</span>
+        <div className="p-3.5 rounded-[var(--radius-input)] mb-6 bg-[var(--color-action-soft)] border border-[color-mix(in_srgb,var(--color-action)_20%,transparent)] flex items-center justify-between">
+          <span className="text-xs text-[var(--color-text-muted)]">Calculated Body Mass Index (BMI)</span>
+          <span className="text-sm font-bold font-data text-[var(--color-action)]">
+            {bmi.bmi} <span className="text-xs font-normal text-[var(--color-text-muted)]">({bmi.category})</span>
           </span>
         </div>
       )}
@@ -315,7 +314,7 @@ function BodyMetricsForm({
       <button
         onClick={() => setShowConfirm(true)}
         disabled={isSaving}
-        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
+        className="w-full h-12 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:bg-[var(--color-action-strong)] text-[var(--color-action-contrast)] font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
       >
         {isSaving ? "Saving via gRPC..." : "Save Changes"}
       </button>
@@ -331,9 +330,7 @@ function BodyMetricsForm({
   );
 }
 
-/* ==========================================
-   FORM 2: TRAINING GOALS (Dedicated)
-   ========================================== */
+
 function GoalsForm({
   profile,
   onSave,
@@ -397,12 +394,12 @@ function GoalsForm({
   return (
     <>
       <div className="flex items-center gap-3 mb-6 pr-8">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-recovery-soft)] text-[var(--color-recovery-strong)]">
           <Target className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[#101214] font-display">Training Goals</h2>
-          <p className="text-xs text-[#50565C]">
+          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Training Goals</h2>
+          <p className="text-xs text-[var(--color-text-muted)]">
             Customize your focus, target muscles & experience level
           </p>
         </div>
@@ -411,7 +408,7 @@ function GoalsForm({
       <div className="space-y-6 mb-8">
         {/* Experience Level */}
         <div>
-          <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
+          <label className="block text-xs font-semibold text-[var(--color-text-muted)] mb-2.5">
             Experience Level
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -422,13 +419,12 @@ function GoalsForm({
                   key={level}
                   type="button"
                   onClick={() => setExperience(level)}
-                  className="py-3 px-2 rounded-xl text-xs font-semibold text-center transition-colors cursor-pointer min-h-[44px]"
-                  style={{
-                    border: "1.5px solid",
-                    borderColor: isSelected ? "#4B57F2" : "#E5E7EB",
-                    backgroundColor: isSelected ? "#F4F5FF" : "#FFFFFF",
-                    color: isSelected ? "#4B57F2" : "#101214",
-                  }}
+                  className={cn(
+                    "py-3 px-2 rounded-[var(--radius-input)] text-xs font-semibold text-center transition-colors cursor-pointer min-h-[44px] border-[1.5px]",
+                    isSelected
+                      ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)]"
+                      : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
+                  )}
                 >
                   {level}
                 </button>
@@ -439,7 +435,7 @@ function GoalsForm({
 
         {/* Primary Goals */}
         <div>
-          <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
+          <label className="block text-xs font-semibold text-[var(--color-text-muted)] mb-2.5">
             Primary Goals (Select at least 1)
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -457,11 +453,11 @@ function GoalsForm({
 
         {/* Preferred Muscle Groups from DB Catalog */}
         <div>
-          <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
+          <label className="block text-xs font-semibold text-[var(--color-text-muted)] mb-2.5">
             Preferred Muscle Groups (Optional)
           </label>
           {isLoadingMuscles ? (
-            <div className="py-4 text-center text-xs text-[#50565C] animate-pulse">
+            <div className="py-4 text-center text-xs text-[var(--color-text-muted)] animate-pulse">
               Loading muscles catalog from server...
             </div>
           ) : (
@@ -473,17 +469,14 @@ function GoalsForm({
                     key={mg.id}
                     type="button"
                     onClick={() => toggleMuscle(mg.name)}
-                    className="flex items-center justify-center p-3 rounded-xl text-center transition-colors cursor-pointer min-h-[48px]"
-                    style={{
-                      border: "1.5px solid",
-                      borderColor: isSelected ? "#4B57F2" : "#E5E7EB",
-                      backgroundColor: isSelected ? "#F4F5FF" : "#FFFFFF",
-                    }}
+                    className={cn(
+                      "flex items-center justify-center p-3 rounded-[var(--radius-input)] text-center transition-colors cursor-pointer min-h-[48px] border-[1.5px]",
+                      isSelected
+                        ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)]"
+                        : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
+                    )}
                   >
-                    <span
-                      className="text-xs font-semibold"
-                      style={{ color: isSelected ? "#4B57F2" : "#101214" }}
-                    >
+                    <span className="text-xs font-semibold">
                       {mg.name}
                     </span>
                   </button>
@@ -497,7 +490,7 @@ function GoalsForm({
       <button
         onClick={() => setShowConfirm(true)}
         disabled={isSaving}
-        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
+        className="w-full h-12 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:bg-[var(--color-action-strong)] text-[var(--color-action-contrast)] font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
       >
         {isSaving ? "Saving via gRPC..." : "Save Goal Plan"}
       </button>
@@ -513,9 +506,7 @@ function GoalsForm({
   );
 }
 
-/* ==========================================
-   FORM 3: AVAILABLE EQUIPMENT (Dedicated)
-   ========================================== */
+
 function EquipmentForm({
   profile,
   onSave,
@@ -563,17 +554,17 @@ function EquipmentForm({
   return (
     <>
       <div className="flex items-center gap-3 mb-6 pr-8">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-action-soft)] text-[var(--color-action)]">
           <Dumbbell className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[#101214] font-display">Available Equipment</h2>
-          <p className="text-xs text-[#50565C]">Select what gear you have access to for workouts</p>
+          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Available Equipment</h2>
+          <p className="text-xs text-[var(--color-text-muted)]">Select what gear you have access to for workouts</p>
         </div>
       </div>
 
       {isLoadingEquipments ? (
-        <div className="py-8 text-center text-xs font-semibold text-[#50565C] animate-pulse">
+        <div className="py-8 text-center text-xs font-semibold text-[var(--color-text-muted)] animate-pulse">
           Loading equipment catalog from server...
         </div>
       ) : (
@@ -592,7 +583,7 @@ function EquipmentForm({
       <button
         onClick={() => setShowConfirm(true)}
         disabled={isSaving}
-        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
+        className="w-full h-12 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:bg-[var(--color-action-strong)] text-[var(--color-action-contrast)] font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
       >
         {isSaving ? "Saving via gRPC..." : "Save Equipment"}
       </button>
@@ -608,9 +599,7 @@ function EquipmentForm({
   );
 }
 
-/* ==========================================
-   FORM 4: PERSONAL INFO
-   ========================================== */
+
 function PersonalInfoForm({
   profile,
   onSave,
@@ -647,29 +636,29 @@ function PersonalInfoForm({
   return (
     <>
       <div className="flex items-center gap-3 mb-6 pr-8">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-action-soft)] text-[var(--color-action)]">
           <User className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[#101214] font-display">Personal Info</h2>
-          <p className="text-xs text-[#50565C]">Manage profile details & coach preferences</p>
+          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Personal Info</h2>
+          <p className="text-xs text-[var(--color-text-muted)]">Manage profile details & coach preferences</p>
         </div>
       </div>
 
       <div className="space-y-6 mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-[#50565C]">Date of Birth</label>
+            <label className="text-xs font-semibold text-[var(--color-text-muted)]">Date of Birth</label>
             <input
               type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
-              className="w-full h-11 px-3.5 text-sm rounded-xl border border-neutral-200 outline-none focus:border-[#4B57F2] bg-neutral-50/30 font-body"
+              className="w-full h-11 px-3.5 text-sm rounded-[var(--radius-input)] border border-[var(--color-border)] outline-none focus:border-[var(--color-action)] bg-[var(--color-surface)] text-[var(--color-text)] font-body"
             />
           </div>
           {/* Gender: Male, Female, Other */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-[#50565C]">Gender</label>
+            <label className="text-xs font-semibold text-[var(--color-text-muted)]">Gender</label>
             <div className="grid grid-cols-3 gap-2">
               {["Male", "Female", "Other"].map((g) => {
                 const isSelected = gender === g;
@@ -678,13 +667,12 @@ function PersonalInfoForm({
                     key={g}
                     type="button"
                     onClick={() => setGender(g)}
-                    className="h-11 px-2 rounded-xl text-xs font-semibold text-center transition-colors cursor-pointer"
-                    style={{
-                      border: "1.5px solid",
-                      borderColor: isSelected ? "#4B57F2" : "#E5E7EB",
-                      backgroundColor: isSelected ? "#F4F5FF" : "#FFFFFF",
-                      color: isSelected ? "#4B57F2" : "#101214",
-                    }}
+                    className={cn(
+                      "h-11 px-2 rounded-[var(--radius-input)] text-xs font-semibold text-center transition-colors cursor-pointer border-[1.5px]",
+                      isSelected
+                        ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)]"
+                        : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
+                    )}
                   >
                     {g}
                   </button>
@@ -695,7 +683,7 @@ function PersonalInfoForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
+          <label className="block text-xs font-semibold text-[var(--color-text-muted)] mb-2.5">
             Preferred Workout Schedule
           </label>
           <WorkoutSchedulePicker
@@ -707,7 +695,7 @@ function PersonalInfoForm({
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-[#50565C] mb-2.5">
+          <label className="block text-xs font-semibold text-[var(--color-text-muted)] mb-2.5">
             AI Coach Style
           </label>
           <div className="grid grid-cols-3 gap-2.5">
@@ -731,7 +719,7 @@ function PersonalInfoForm({
       <button
         onClick={handleSave}
         disabled={isSaving}
-        className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
+        className="w-full h-12 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:bg-[var(--color-action-strong)] text-[var(--color-action-contrast)] font-bold text-sm transition-colors cursor-pointer disabled:opacity-60"
       >
         {isSaving ? "Saving via gRPC..." : "Save Personal Info"}
       </button>
@@ -739,9 +727,7 @@ function PersonalInfoForm({
   );
 }
 
-/* ==========================================
-   FORM 5: INJURY MANAGEMENT (Clean Custom Dropdowns)
-   ========================================== */
+
 function InjuryHistoryForm({
   profile,
   onSave,
@@ -878,18 +864,18 @@ function InjuryHistoryForm({
     <>
       <div className="flex items-center justify-between mb-6 pr-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
+          <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-danger-soft)] text-[var(--color-danger)]">
             <AlertCircle className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#101214] font-display">Injury Management</h2>
-            <p className="text-xs text-[#50565C]">Track pain areas so AI Coach protects you</p>
+            <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Injury Management</h2>
+            <p className="text-xs text-[var(--color-text-muted)]">Track pain areas so AI Coach protects you</p>
           </div>
         </div>
         {!showReport && (
           <button
             onClick={() => setShowReport(true)}
-            className="text-xs font-bold px-3.5 py-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors cursor-pointer shrink-0"
+            className="text-xs font-bold px-3.5 py-2 rounded-[var(--radius-input)] bg-[var(--color-danger-soft)] text-[var(--color-danger)] hover:bg-[color-mix(in_srgb,var(--color-danger)_20%,transparent)] transition-colors cursor-pointer shrink-0"
           >
             + Report Injury
           </button>
@@ -897,15 +883,15 @@ function InjuryHistoryForm({
       </div>
 
       {showReport && (
-        <div className="p-4 rounded-xl mb-6 border border-neutral-200 bg-neutral-50/50 space-y-4">
-          <h3 className="text-xs font-bold text-[#101214]">Report New Injury</h3>
+        <div className="p-4 rounded-[var(--radius-card)] mb-6 border border-[var(--color-border)] bg-[var(--color-surface-subtle)] space-y-4">
+          <h3 className="text-xs font-bold text-[var(--color-text)]">Report New Injury</h3>
           <div className="space-y-3">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-[#50565C]">
+                <label className="text-xs font-semibold text-[var(--color-text-muted)]">
                   Muscle Group & Joint Area
                 </label>
-                <span className="text-[11px] text-[#4B57F2] font-semibold">
+                <span className="text-[11px] text-[var(--color-action)] font-semibold">
                   Selected: {newInjury.muscleGroup}
                 </span>
               </div>
@@ -919,11 +905,12 @@ function InjuryHistoryForm({
                       key={cat}
                       type="button"
                       onClick={() => setCategoryFilter(cat)}
-                      className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer ${
+                      className={cn(
+                        "px-2.5 py-1 text-[11px] font-semibold rounded-[var(--radius-input)] transition-colors cursor-pointer",
                         isCatSelected
-                          ? "bg-[#4B57F2] text-white"
-                          : "bg-neutral-200/70 text-neutral-700 hover:bg-neutral-300/70"
-                      }`}
+                          ? "bg-[var(--color-action)] text-[var(--color-action-contrast)]"
+                          : "bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
+                      )}
                     >
                       {cat}
                     </button>
@@ -937,7 +924,7 @@ function InjuryHistoryForm({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search muscle or joint (e.g. Biceps, Hamstrings, Elbow...)"
-                className="w-full h-9 px-3 text-xs rounded-xl border border-neutral-200 bg-white font-body outline-none focus:border-[#4B57F2]"
+                className="w-full h-9 px-3 text-xs rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] font-body outline-none focus:border-[var(--color-action)]"
               />
 
               {/* Muscle Grid */}
@@ -949,27 +936,29 @@ function InjuryHistoryForm({
                       key={m.name}
                       type="button"
                       onClick={() => setNewInjury({ ...newInjury, muscleGroup: m.name })}
-                      className="p-2 text-left rounded-xl transition-all cursor-pointer border"
-                      style={{
-                        borderWidth: "1.5px",
-                        borderColor: isSelected ? "#4B57F2" : "#E5E7EB",
-                        backgroundColor: isSelected ? "#F4F5FF" : "#FFFFFF",
-                      }}
+                      className={cn(
+                        "p-2 text-left rounded-[var(--radius-input)] transition-all cursor-pointer border-[1.5px]",
+                        isSelected
+                          ? "border-[var(--color-action)] bg-[var(--color-action-soft)]"
+                          : "border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)]",
+                      )}
                     >
                       <div
-                        className="text-xs font-bold"
-                        style={{ color: isSelected ? "#4B57F2" : "#101214" }}
+                        className={cn(
+                          "text-xs font-bold",
+                          isSelected ? "text-[var(--color-action)]" : "text-[var(--color-text)]",
+                        )}
                       >
                         {m.name}
                       </div>
-                      <div className="text-[10px] text-[#50565C] truncate">{m.hint}</div>
+                      <div className="text-[10px] text-[var(--color-text-muted)] truncate">{m.hint}</div>
                     </button>
                   );
                 })}
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[#50565C]">Severity & AI Protocol</label>
+              <label className="text-xs font-semibold text-[var(--color-text-muted)]">Severity & AI Protocol</label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {[
                   { id: "Mild", label: "Mild", desc: "Reduce load & sets by 30%" },
@@ -982,38 +971,40 @@ function InjuryHistoryForm({
                       key={s.id}
                       type="button"
                       onClick={() => setNewInjury({ ...newInjury, severity: s.id })}
-                      className="p-2.5 text-left rounded-xl text-xs transition-all cursor-pointer border"
-                      style={{
-                        borderWidth: "1.5px",
-                        borderColor: isSelected ? "#E11D48" : "#E5E7EB",
-                        backgroundColor: isSelected ? "#FFF1F2" : "#FFFFFF",
-                      }}
+                      className={cn(
+                        "p-2.5 text-left rounded-[var(--radius-input)] text-xs transition-all cursor-pointer border-[1.5px]",
+                        isSelected
+                          ? "border-[var(--color-danger)] bg-[var(--color-danger-soft)]"
+                          : "border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)]",
+                      )}
                     >
                       <div
-                        className="font-bold"
-                        style={{ color: isSelected ? "#9F1239" : "#101214" }}
+                        className={cn(
+                          "font-bold",
+                          isSelected ? "text-[var(--color-danger)]" : "text-[var(--color-text)]",
+                        )}
                       >
                         {s.label}
                       </div>
-                      <div className="text-[10px] text-[#50565C] mt-0.5">{s.desc}</div>
+                      <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5">{s.desc}</div>
                     </button>
                   );
                 })}
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-medium text-[#50565C]">Notes</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Notes</label>
               <input
                 value={newInjury.notes}
                 onChange={(e) => setNewInjury({ ...newInjury, notes: e.target.value })}
                 placeholder="e.g. Pain during overhead press..."
-                className="w-full h-11 px-3.5 text-xs rounded-xl border border-neutral-200 bg-white font-body outline-none focus:border-[#4B57F2]"
+                className="w-full h-11 px-3.5 text-xs rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] font-body outline-none focus:border-[var(--color-action)]"
               />
             </div>
             <div className="flex justify-end gap-2 pt-1">
               <button
                 onClick={() => setShowReport(false)}
-                className="px-3.5 py-1.5 text-xs font-medium text-[#50565C] hover:bg-neutral-200/60 rounded-xl cursor-pointer"
+                className="px-3.5 py-1.5 text-xs font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)] rounded-[var(--radius-input)] cursor-pointer"
               >
                 Cancel
               </button>
@@ -1021,7 +1012,7 @@ function InjuryHistoryForm({
                 type="button"
                 onClick={() => setShowConfirmReport(true)}
                 disabled={isSubmitting}
-                className="px-3.5 py-1.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 disabled:opacity-50 rounded-xl cursor-pointer"
+                className="px-3.5 py-1.5 text-xs font-bold text-[var(--color-action-contrast)] bg-[var(--color-danger)] hover:bg-[color-mix(in_srgb,var(--color-danger)_90%,black)] disabled:opacity-50 rounded-[var(--radius-input)] cursor-pointer"
               >
                 {isSubmitting ? "Submitting..." : "Submit Report"}
               </button>
@@ -1032,9 +1023,9 @@ function InjuryHistoryForm({
 
       <div className="space-y-3">
         {injuries.length === 0 ? (
-          <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50/60 border border-emerald-100">
-            <Shield className="h-5 w-5 text-emerald-600 shrink-0" />
-            <span className="text-xs font-medium text-emerald-800">
+          <div className="flex items-center gap-3 p-4 rounded-[var(--radius-card)] bg-[var(--color-recovery-soft)] border border-[color-mix(in_srgb,var(--color-recovery-strong)_20%,transparent)]">
+            <Shield className="h-5 w-5 text-[var(--color-recovery-strong)] shrink-0" />
+            <span className="text-xs font-medium text-[var(--color-recovery-strong)]">
               All clear! No active injuries reported.
             </span>
           </div>
@@ -1042,35 +1033,39 @@ function InjuryHistoryForm({
           injuries.map((injury) => (
             <div
               key={injury.id}
-              className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+              className={cn(
+                "p-4 rounded-[var(--radius-card)] border flex flex-col sm:flex-row sm:items-center justify-between gap-3",
                 injury.isRecovered
-                  ? "bg-neutral-50/60 border-neutral-200 opacity-60"
-                  : "bg-rose-50/40 border-rose-100"
-              }`}
+                  ? "bg-[var(--color-surface-subtle)] border-[var(--color-border)] opacity-60"
+                  : "bg-[var(--color-danger-soft)] border-[color-mix(in_srgb,var(--color-danger)_20%,transparent)]",
+              )}
             >
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span
-                    className={`text-sm font-bold ${
-                      injury.isRecovered ? "text-neutral-500 line-through" : "text-rose-900"
-                    }`}
+                    className={cn(
+                      "text-sm font-bold",
+                      injury.isRecovered ? "text-[var(--color-text-muted)] line-through" : "text-[var(--color-danger)]",
+                    )}
                   >
                     {injury.muscleGroup}
                   </span>
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                    className={cn(
+                      "text-[10px] px-2 py-0.5 rounded-full font-semibold",
                       injury.isRecovered
-                        ? "bg-neutral-200 text-neutral-600"
-                        : "bg-rose-100 text-rose-700"
-                    }`}
+                        ? "bg-[var(--color-surface)] text-[var(--color-text-muted)] border border-[var(--color-border)]"
+                        : "bg-[var(--color-surface)] text-[var(--color-danger)] border border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)]",
+                    )}
                   >
                     {injury.severity}
                   </span>
                 </div>
                 <p
-                  className={`text-xs ${
-                    injury.isRecovered ? "text-neutral-400 line-through" : "text-rose-700"
-                  }`}
+                  className={cn(
+                    "text-xs",
+                    injury.isRecovered ? "text-[var(--color-text-muted)] line-through" : "text-[var(--color-danger)]",
+                  )}
                 >
                   {injury.notes}
                 </p>
@@ -1079,7 +1074,7 @@ function InjuryHistoryForm({
               {!injury.isRecovered && (
                 <button
                   onClick={() => setConfirmRecoverId(injury.id)}
-                  className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors shrink-0 cursor-pointer"
+                  className="px-3.5 py-2 text-xs font-semibold rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-recovery-strong)] hover:bg-[var(--color-recovery-soft)] transition-colors shrink-0 cursor-pointer"
                 >
                   Mark as Recovered
                 </button>
@@ -1112,9 +1107,7 @@ function InjuryHistoryForm({
   );
 }
 
-/* ==========================================
-   FORM 6: FEEDBACK FORM
-   ========================================== */
+
 function FeedbackForm({ onClose }: { onClose: () => void }) {
   const [feedback, setFeedback] = useState("");
   const [sent, setSent] = useState(false);
@@ -1132,20 +1125,20 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
   return (
     <>
       <div className="flex items-center gap-3 mb-6 pr-8">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-input)] bg-[var(--color-action-soft)] text-[var(--color-action)]">
           <HelpCircle className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[#101214] font-display">Send Feedback</h2>
-          <p className="text-xs text-[#50565C]">Help the FITAI team improve your experience</p>
+          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Send Feedback</h2>
+          <p className="text-xs text-[var(--color-text-muted)]">Help the FITAI team improve your experience</p>
         </div>
       </div>
 
       {sent ? (
         <div className="p-8 text-center space-y-2">
-          <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
-          <h3 className="text-sm font-bold text-[#101214]">Thank You!</h3>
-          <p className="text-xs text-[#50565C]">Your feedback has been submitted to the team.</p>
+          <CheckCircle2 className="h-10 w-10 text-[var(--color-recovery-strong)] mx-auto" />
+          <h3 className="text-sm font-bold text-[var(--color-text)]">Thank You!</h3>
+          <p className="text-xs text-[var(--color-text-muted)]">Your feedback has been submitted to the team.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -1153,11 +1146,11 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Share your thoughts, suggestions, or issues..."
-            className="w-full p-3.5 border border-neutral-200 rounded-xl min-h-[120px] outline-none text-xs focus:border-[#4B57F2] font-body bg-neutral-50/30"
+            className="w-full p-3.5 border border-[var(--color-border)] rounded-[var(--radius-input)] min-h-[120px] outline-none text-xs focus:border-[var(--color-action)] font-body bg-[var(--color-surface)] text-[var(--color-text)]"
           />
           <button
             onClick={handleSubmit}
-            className="w-full h-12 rounded-xl bg-[#4B57F2] hover:bg-[#3945DC] text-white font-bold text-sm transition-colors cursor-pointer"
+            className="w-full h-12 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:bg-[var(--color-action-strong)] text-[var(--color-action-contrast)] font-bold text-sm transition-colors cursor-pointer"
           >
             Submit Feedback
           </button>
