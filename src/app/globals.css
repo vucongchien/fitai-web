@@ -1361,11 +1361,11 @@ a.week-route__row:hover {
 .login-form-panel {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   min-height: 100%;
   width: 100%;
-  padding: 2.5rem 1.25rem max(2rem, env(safe-area-inset-bottom));
+  padding: 3rem 1.5rem max(2rem, env(safe-area-inset-bottom));
   background: var(--color-surface);
   box-sizing: border-box;
 }
@@ -1379,24 +1379,26 @@ a.week-route__row:hover {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
 }
 
 .login-form-header {
-  margin-bottom: 0.25rem;
+  margin-bottom: 1.5rem;
   text-align: left;
+  width: 100%;
 }
 
 .login-form-header h2,
 .login-form-panel h2 {
   margin: 0 0 0.35rem;
   font-family: var(--font-display);
-  font-size: 1.55rem;
+  font-size: 1.65rem;
   font-variation-settings: "wdth" 92;
   font-weight: 700;
   letter-spacing: -0.025em;
   color: var(--color-text);
+  text-align: left;
 }
 
 .login-error {
@@ -1916,10 +1918,12 @@ a.week-route__row:hover {
 }
 
 .auth-recipient-row {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
 }
 
 .auth-identifier-badge {
@@ -1927,6 +1931,7 @@ a.week-route__row:hover {
   align-items: center;
   gap: 0.35rem;
   color: var(--color-text);
+  font-size: 1.05rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -1940,21 +1945,19 @@ a.week-route__row:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-subtle);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: none;
   color: var(--color-text-muted);
   cursor: pointer;
-  padding: 0;
-  transition: color var(--duration-fast), border-color var(--duration-fast), background-color var(--duration-fast);
+  padding: 0.2rem;
+  border-radius: var(--radius-sm);
+  transition: color var(--duration-fast), transform var(--duration-fast);
 }
 
 .auth-inline-change-btn:hover {
   color: var(--color-primary);
-  border-color: var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  background: transparent;
+  transform: scale(1.1);
   text-decoration: none;
 }
 
