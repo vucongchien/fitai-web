@@ -241,6 +241,67 @@ function auditNoNativeImg() {
   }
 }
 
+// 7. Component Size Guard (Clean Code / Single Responsibility)
+function auditComponentSize() {
+  printHeader("Checking Component Size & Modularity (Max 400 lines guideline)");
+  const oversizedFiles = [];
+
+  for (const file of allSourceFiles.filter((f) => f.endsWith(".tsx"))) {
+    const content = fs.readFileSync(path.join(CWD, file), "utf-8");
+    const lineCount = content.split("\n").length;
+    if (lineCount > 400) {
+      oversizedFiles.push({ file, lineCount });
+    }
+  }
+
+  if (oversizedFiles.length > 0) {
+    oversizedFiles.sort((a, b) => b.lineCount - a.lineCount);
+    process.stdout.write(
+      `⚠️  [WARN] ${oversizedFiles.length} oversized UI component file(s) detected (> 400 lines):\n` +
+        oversizedFiles.map((f) => `  - ${f.file} (${f.lineCount} lines)`).join("\n") +
+        `\n👉 Tech Lead Recommendation: Decompose oversized files into smaller sub-components or custom hooks.\n`,
+    );
+  } else {
+    process.stdout.write(
+      `✅ [PASS] All UI components are under 400 lines (clean modularity).\n`,
+    );
+  }
+}
+
+// 8. Design System Drift Check (Triple Lane Tokens vs Arbitrary Hex)
+function auditDesignTokens() {
+  printHeader("Checking Design System Token Usage (Arbitrary Hex Warning)");
+  const hexViolations = [];
+
+  for (const file of allSourceFiles.filter((f) => f.endsWith(".tsx"))) {
+    const content = fs.readFileSync(path.join(CWD, file), "utf-8");
+    const lines = content.split("\n");
+    lines.forEach((line, idx) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*")) {
+        return;
+      }
+      if (/(?:bg|text|border|ring|fill|stroke)-\[#[0-9a-fA-F]{3,8}\]/.test(line)) {
+        hexViolations.push(`${file}:${idx + 1}`);
+      }
+    });
+  }
+
+  if (hexViolations.length > 0) {
+    process.stdout.write(
+      `⚠️  [WARN] Found ${hexViolations.length} instance(s) of arbitrary hex colors in JSX className.\n` +
+        `  Samples:\n` +
+        hexViolations.slice(0, 5).map((v) => `    - ${v}`).join("\n") +
+        (hexViolations.length > 5 ? `\n    ... and ${hexViolations.length - 5} more.` : "") +
+        `\n👉 Recommendation: Use CSS custom properties from tokens.css (e.g. var(--color-action), var(--color-text)).\n`,
+    );
+  } else {
+    process.stdout.write(
+      `✅ [PASS] 100% Design Token conformance (Zero arbitrary hex colors in JSX).\n`,
+    );
+  }
+}
+
 function main() {
   const start = Date.now();
   process.stdout.write("====================================================\n");
@@ -253,6 +314,8 @@ function main() {
   auditBarrelImports();
   auditNextConfigOptimizations();
   auditNoNativeImg();
+  auditComponentSize();
+  auditDesignTokens();
 
   const duration = ((Date.now() - start) / 1000).toFixed(2);
   process.stdout.write("\n----------------------------------------------------\n");
