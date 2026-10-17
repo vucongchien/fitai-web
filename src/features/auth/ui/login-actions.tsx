@@ -29,12 +29,12 @@ export function openOAuthPopup(provider: OAuthProvider) {
 const DEV_PANEL_STYLE = {
   marginTop: "1rem",
   paddingTop: "1rem",
-  borderTop: "1px dashed #ccc",
+  borderTop: "1px dashed var(--color-border)",
   display: "flex",
   flexDirection: "column" as const,
   gap: "0.5rem",
 };
-const DEV_LABEL_STYLE = { color: "#888", fontWeight: 600 };
+const DEV_LABEL_STYLE = { color: "var(--color-text-muted)", fontWeight: 600 };
 const DEV_ROW_STYLE = { display: "flex", gap: "0.5rem" };
 
 const devLoginAsNew = () => window.location.assign("/api/auth/dev-login?target=new");
