@@ -118,24 +118,6 @@ export function getTargetFiles() {
 
   const filesToScan = new Set();
 
-  // Always scan all files in mobile/ (100% policy enforcement)
-  function scanMobile(dir) {
-    if (!fs.existsSync(dir)) return;
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        if (entry.name !== "node_modules" && entry.name !== ".expo") {
-          scanMobile(full);
-        }
-      } else if (/\.(ts|tsx|js|mjs)$/.test(entry.name)) {
-        filesToScan.add(path.relative(CWD, full).replace(/\\/g, "/"));
-      }
-    }
-  }
-  scanMobile(path.join(CWD, "mobile", "src"));
-  scanMobile(path.join(CWD, "mobile", "app"));
-
   if (isAll) {
     // Scan all src files
     function scanSrc(dir) {

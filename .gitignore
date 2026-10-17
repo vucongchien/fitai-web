@@ -2,8 +2,6 @@
 
 # dependencies
 /node_modules
-/mobile/node_modules
-/mobile/.expo
 /.pnpm-store
 /.pnp
 .pnp.*

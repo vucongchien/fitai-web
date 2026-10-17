@@ -79,6 +79,6 @@ console.log(val);
     expect(isIgnoredPath("src/types.d.ts")).toBe(true);
     expect(isIgnoredPath("tests/unit/some.test.ts")).toBe(true);
     expect(isIgnoredPath("src/component.tsx")).toBe(false);
-    expect(isIgnoredPath("mobile/src/lib/storage.ts")).toBe(false);
+    expect(isIgnoredPath("src/features/workout/domain/motion-engine.ts")).toBe(false);
   });
 });
