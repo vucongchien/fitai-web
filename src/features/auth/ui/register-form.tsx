@@ -1,5 +1,7 @@
 "use client";
 
+import { Pencil } from "lucide-react";
+
 import { maskIdentifier } from "@/features/auth/model/auth-validation";
 import { useRegisterFlow } from "@/features/auth/model/use-register-flow";
 import { OtpInputGroup } from "@/features/auth/ui/otp-input-group";
@@ -43,14 +45,15 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                 <strong>{maskIdentifier(identifier)}</strong>
                 {identifier.toLowerCase().includes("@") && <GmailMark size={16} />}
               </span>
-              <span aria-hidden="true" className="auth-recipient-dot">·</span>
               <button
+                aria-label="Change phone or email"
                 className="auth-inline-change-btn"
                 disabled={isPending}
                 onClick={resetToIdentifier}
+                title="Change phone or email"
                 type="button"
               >
-                Change
+                <Pencil aria-hidden="true" size={13} />
               </button>
             </div>
           </div>

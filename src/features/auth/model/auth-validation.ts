@@ -52,9 +52,10 @@ export function maskIdentifier(value: string): string {
 
   if (type === "phone") {
     const normalized = normalizePhoneNumber(trimmed);
-    const prefix = normalized.slice(0, 6);
-    const suffix = normalized.slice(-3);
-    return `${prefix.slice(0, 3)} ${prefix.slice(3)} ••• ${suffix}`;
+    const domestic = `0${normalized.replace(/^\+84/, "")}`;
+    const prefix = domestic.slice(0, 4);
+    const suffix = domestic.slice(-3);
+    return `${prefix} ••• ${suffix}`;
   }
 
   if (type === "email") {

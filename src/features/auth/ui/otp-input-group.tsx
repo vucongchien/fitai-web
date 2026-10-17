@@ -1,5 +1,6 @@
 "use client";
 
+import { RotateCcw } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { useOtpCountdown } from "@/features/auth/model/use-otp-countdown";
@@ -114,20 +115,24 @@ export function OtpInputGroup({
 
       <div className="otp-footer">
         {canResend ? (
-          <Button
-            className="otp-resend-btn"
-            disabled={disabled}
-            loading={disabled}
-            onClick={handleResend}
-            size="medium"
-            type="button"
-            variant="quiet"
-          >
-            Resend code
-          </Button>
+          <div className="otp-resend-action">
+            <span className="otp-resend-tip">Didn&apos;t receive code?</span>
+            <Button
+              className="otp-resend-btn"
+              disabled={disabled}
+              loading={disabled}
+              onClick={handleResend}
+              size="medium"
+              type="button"
+              variant="quiet"
+            >
+              <RotateCcw aria-hidden="true" size={13} />
+              <span>Resend code</span>
+            </Button>
+          </div>
         ) : (
           <span className="otp-countdown-text">
-            Resend code in <strong>{remainingSeconds}s</strong>
+            Didn&apos;t receive code? Resend in <strong>{remainingSeconds}s</strong>
           </span>
         )}
       </div>

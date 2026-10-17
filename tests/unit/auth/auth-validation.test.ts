@@ -156,9 +156,9 @@ describe("auth-validation edge cases & security tests", () => {
 
   describe("maskIdentifier", () => {
     it("masks phone numbers into spaced format with center dots", () => {
-      expect(maskIdentifier("+84901234567")).toBe("+84 901 ••• 567");
-      expect(maskIdentifier("0901234567")).toBe("+84 901 ••• 567");
-      expect(maskIdentifier("  0987654321  ")).toBe("+84 987 ••• 321");
+      expect(maskIdentifier("+84901234567")).toBe("0901 ••• 567");
+      expect(maskIdentifier("0901234567")).toBe("0901 ••• 567");
+      expect(maskIdentifier("  0987654321  ")).toBe("0987 ••• 321");
     });
 
     it("masks emails preserving first char and full domain", () => {

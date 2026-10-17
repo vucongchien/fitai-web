@@ -1371,7 +1371,7 @@ a.week-route__row:hover {
 }
 
 .login-form-panel > * {
-  max-width: 360px;
+  max-width: 400px;
   width: 100%;
 }
 
@@ -1799,9 +1799,10 @@ a.week-route__row:hover {
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  margin-top: 1.1rem;
-  font-size: 0.85rem;
-  color: var(--color-text-muted, #71717a);
+  margin-top: 1.25rem;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
 .auth-switch-link {
@@ -1882,19 +1883,17 @@ a.week-route__row:hover {
 .auth-otp-screen {
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
-  max-width: 360px;
+  max-width: 400px;
   margin: 0 auto;
-  text-align: center;
 }
 
 .auth-otp-header {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 1.75rem;
+  align-items: flex-start;
+  text-align: left;
+  margin-bottom: 2rem;
   width: 100%;
 }
 
@@ -1905,6 +1904,7 @@ a.week-route__row:hover {
   font-weight: 700;
   letter-spacing: -0.025em;
   color: var(--color-text);
+  text-align: left;
 }
 
 .auth-step-instruction {
@@ -1912,19 +1912,14 @@ a.week-route__row:hover {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
   line-height: 1.45;
+  text-align: left;
 }
 
 .auth-recipient-row {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  flex-wrap: wrap;
-}
-
-.auth-recipient-dot {
-  color: var(--color-text-muted);
-  font-weight: bold;
+  justify-content: flex-start;
+  gap: 0.5rem;
 }
 
 .auth-identifier-badge {
@@ -1942,21 +1937,25 @@ a.week-route__row:hover {
 }
 
 .auth-inline-change-btn {
-  background: transparent;
-  border: none;
-  color: var(--color-primary);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  padding: 0.2rem 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: var(--radius-sm);
-  text-decoration: none;
-  transition: opacity var(--duration-fast);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--duration-fast), border-color var(--duration-fast), background-color var(--duration-fast);
 }
 
 .auth-inline-change-btn:hover {
-  text-decoration: underline;
-  opacity: 0.85;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  text-decoration: none;
 }
 
 .auth-otp-footer {
@@ -1979,7 +1978,7 @@ a.week-route__row:hover {
   grid-template-columns: repeat(6, 1fr);
   gap: clamp(0.35rem, 2vw, 0.625rem);
   width: 100%;
-  max-width: 340px;
+  max-width: 350px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -2024,23 +2023,43 @@ a.week-route__row:hover {
   align-items: center;
   min-height: 2.25rem;
   font-size: var(--text-sm);
+  width: 100%;
+}
+
+.otp-resend-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.otp-resend-tip {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }
 
 .otp-resend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   background: transparent;
-  border: none;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
   color: var(--color-primary);
   font-weight: 600;
+  font-size: var(--text-xs);
   cursor: pointer;
   text-decoration: none;
-  padding: 0.35rem 0.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: var(--radius-sm);
-  transition: opacity var(--duration-fast);
+  transition: background-color var(--duration-fast), border-color var(--duration-fast), opacity var(--duration-fast);
 }
 
 .otp-resend-btn:hover {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  border-color: var(--color-primary);
   text-decoration: none;
-  opacity: 0.82;
+  opacity: 1;
 }
 
 .otp-countdown-text {
