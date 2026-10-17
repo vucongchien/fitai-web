@@ -30,6 +30,7 @@ vi.mock("@/shared/api/server/transport", () => ({
   createServerTransport: vi.fn(() => ({})),
 }));
 
+import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 import {
   loginWithPasswordAction,
   registerAction,
@@ -137,7 +138,7 @@ describe("auth-actions", () => {
         identifier: "0901234567",
         password: "secure_pass_123",
         fullName: "Nguyen Van A",
-        gender: "MALE",
+        gender: Gender.MALE,
         dateOfBirth: "1995-01-01",
       });
 
@@ -149,7 +150,7 @@ describe("auth-actions", () => {
         identifier: "+84901234567",
         password: "secure_pass_123",
         fullName: "Nguyen Van A",
-        gender: "MALE",
+        gender: Gender.MALE,
         dateOfBirth: "1995-01-01",
       });
     });

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { AuthTab } from "@/features/auth/model/auth.types";
+export type AuthTab = "login" | "register";
 import { LoginForm } from "@/features/auth/ui/login-form";
 import { RegisterForm } from "@/features/auth/ui/register-form";
 import { Button } from "@/shared/ui/button";

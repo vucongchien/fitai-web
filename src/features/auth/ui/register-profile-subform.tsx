@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
-import { Gender } from "@/features/auth/model/auth.types";
+import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 import { Button } from "@/shared/ui/button";
 
 const AvatarCreator = dynamic(

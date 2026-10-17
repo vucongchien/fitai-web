@@ -1,4 +1,4 @@
-import type { IdentifierType } from "./auth.types";
+export type IdentifierType = "phone" | "email" | "invalid";
 
 const VN_DOMESTIC_REGEX = /^0[35789]\d{8}$/;
 const VN_E164_REGEX = /^\+84[35789]\d{8}$/;

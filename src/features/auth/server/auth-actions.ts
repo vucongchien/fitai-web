@@ -12,7 +12,11 @@ import {
   detectIdentifierType,
   normalizePhoneNumber,
 } from "@/features/auth/model/auth-validation";
-import type { AuthActionResult, Gender } from "@/features/auth/model/auth.types";
+import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
+
+export type AuthActionResult<T = void> =
+  | { success: true; data: T }
+  | { success: false; error: string; code?: string };
 
 const ACCESS_TOKEN_MAX_AGE = 60 * 15;
 const REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24 * 30;

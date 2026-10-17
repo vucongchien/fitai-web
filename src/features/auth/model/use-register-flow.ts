@@ -7,7 +7,8 @@ import {
   detectIdentifierType,
   getEmailProviderUrl,
 } from "@/features/auth/model/auth-validation";
-import type { Gender, RegisterSubStep } from "@/features/auth/model/auth.types";
+import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
+export type RegisterSubStep = "VERIFY_IDENTIFIER" | "PROFILE_DETAILS";
 import {
   registerAction,
   sendOtpAction,
