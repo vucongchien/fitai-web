@@ -304,7 +304,7 @@ export function OnboardingFlow() {
               })}
             </div>
             {errors.goals ? (
-              <p className="mt-3 text-xs font-semibold text-rose-600" role="alert">
+              <p className="mt-3 text-xs font-semibold text-[var(--color-effort)]" role="alert">
                 {errors.goals.message}
               </p>
             ) : null}

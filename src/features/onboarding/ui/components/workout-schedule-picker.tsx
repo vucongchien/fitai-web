@@ -72,7 +72,7 @@ export function WorkoutSchedulePicker({
 
       {/* Error Message */}
       {error && (
-        <p className="text-xs font-medium text-rose-600 mt-1" role="alert">
+        <p className="text-xs font-medium text-[var(--color-effort)] mt-1" role="alert">
           {error}
         </p>
       )}

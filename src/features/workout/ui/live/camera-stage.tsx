@@ -164,12 +164,12 @@ export function CameraStage({
             />
             <button
               aria-label="Upload video for tracking"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/90 hover:bg-white text-slate-900 shadow-lg text-xs font-semibold backdrop-blur-md active:scale-95 transition-all border border-slate-200"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[var(--color-surface)]/90 hover:bg-[var(--color-surface)] text-[var(--color-text)] shadow-lg text-xs font-semibold backdrop-blur-md active:scale-95 transition-all border border-[var(--color-border)] cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
               title="Upload video file from your device for AI tracking & rep counting"
               type="button"
             >
-              <Upload aria-hidden="true" className="text-emerald-600" size={15} />
+              <Upload aria-hidden="true" className="text-[var(--color-recovery)]" size={15} />
               <span>Upload Video</span>
             </button>
           </>
@@ -177,7 +177,7 @@ export function CameraStage({
 
         {isCustomVideo ? (
           <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-black/80 backdrop-blur-md text-white text-xs font-semibold shadow-lg border border-white/20">
-            <Video className="text-emerald-400" size={14} />
+            <Video className="text-[var(--color-recovery)]" size={14} />
             <span>Tracking from Video</span>
             {onClearCustomVideo ? (
               <button

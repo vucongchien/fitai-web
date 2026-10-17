@@ -135,22 +135,22 @@ export function PantryRecalibrateCard() {
 
     return (
       <section className="content-section">
-        <div className="flex items-center justify-between flex-wrap gap-3 border-b border-slate-100 pb-4 mb-4">
+        <div className="flex items-center justify-between flex-wrap gap-3 border-b border-[var(--color-border)] pb-4 mb-4">
           <div>
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-emerald-100 text-emerald-700">
+              <div className="p-2 rounded-[var(--radius-input)] bg-[var(--color-recovery-soft)] text-[var(--color-recovery)]">
                 <ChefHat size={20} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <h2 className="text-lg font-bold text-[var(--color-text)] flex items-center gap-2">
                   Pantry Recipes
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500 text-white font-medium">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[var(--color-recovery)] text-[var(--color-action-contrast)] font-medium">
                     AI Generated
                   </span>
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
                   Generated optimal recipes from {ingredients.length} pantry ingredients:{" "}
-                  <strong className="text-emerald-700 font-semibold">
+                  <strong className="text-[var(--color-recovery)] font-semibold">
                     {ingredients.join(", ")}
                   </strong>
                 </p>
@@ -161,7 +161,7 @@ export function PantryRecalibrateCard() {
           <button
             type="button"
             onClick={handleResetToInputMode}
-            className="px-3.5 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-1.5 text-xs font-semibold text-[var(--color-text-muted)] bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-input)] transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <RotateCcw size={14} />
             Change ingredients
@@ -266,7 +266,7 @@ export function PantryRecalibrateCard() {
             })}
           </ul>
         ) : (
-          <div className="p-8 text-center text-xs text-slate-400 italic bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+          <div className="p-8 text-center text-xs text-[var(--color-text-dim)] italic bg-[var(--color-surface-subtle)] rounded-[var(--radius-card)] border border-dashed border-[var(--color-border)]">
             No meal options found from pantry ingredients. Please click &quot;Change
             ingredients&quot;.
           </div>
@@ -279,14 +279,14 @@ export function PantryRecalibrateCard() {
     <section className="content-section">
       <div className="content-section__header">
         <h2 className="flex items-center gap-2">
-          <Refrigerator size={18} className="text-emerald-600" /> Pantry &amp; Available Ingredients
+          <Refrigerator size={18} className="text-[var(--color-recovery)]" /> Pantry &amp; Available Ingredients
         </h2>
         <p>Enter food items in your fridge for AI to suggest optimal meals</p>
       </div>
 
       <div className="meal-choice space-y-4">
         <div>
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">
+          <span className="text-xs font-semibold text-[var(--color-text-dim)] uppercase tracking-wider block mb-2">
             Popular ingredient suggestions:
           </span>
           <div className="flex flex-wrap gap-1.5">
@@ -300,8 +300,8 @@ export function PantryRecalibrateCard() {
                   disabled={isAdded}
                   className={`text-xs px-2.5 py-1 rounded-full border transition-all flex items-center gap-1 ${
                     isAdded
-                      ? "bg-slate-100 text-slate-400 border-slate-200 cursor-default opacity-60"
-                      : "bg-white text-slate-700 border-slate-200 hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50/50"
+                      ? "bg-[var(--color-surface-subtle)] text-[var(--color-text-dim)] border-[var(--color-border)] cursor-default opacity-60"
+                      : "bg-[var(--color-surface)] text-[var(--color-text)] border-[var(--color-border)] hover:border-[var(--color-action)] hover:text-[var(--color-action)] hover:bg-[var(--color-action-soft)]"
                   }`}
                 >
                   {!isAdded && <Plus size={11} />}
@@ -325,29 +325,29 @@ export function PantryRecalibrateCard() {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="Enter ingredient name (e.g. Chicken breast, Eggs, Shrimp...)"
-              className="flex-1 px-3.5 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all placeholder:text-slate-400"
+              className="flex-1 px-3.5 py-2 text-sm bg-[var(--color-surface-subtle)] border border-[var(--color-border)] rounded-[var(--radius-input)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] focus:border-[var(--color-action)] transition-all placeholder:text-[var(--color-text-dim)] text-[var(--color-text)]"
             />
             <button
               type="submit"
               disabled={!inputVal.trim()}
-              className="px-4 py-2 text-sm font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+              className="px-4 py-2 text-sm font-semibold bg-[var(--color-action)] text-[var(--color-action-contrast)] rounded-[var(--radius-input)] hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Plus size={16} /> Add
             </button>
           </form>
 
           {ingredients.length > 0 ? (
-            <div className="flex flex-wrap gap-2 p-3 bg-slate-50/80 rounded-xl border border-slate-100 min-h-[44px] items-center">
+            <div className="flex flex-wrap gap-2 p-3 bg-[var(--color-surface-subtle)] rounded-[var(--radius-input)] border border-[var(--color-border)] min-h-[44px] items-center">
               {ingredients.map((ing, index) => (
                 <span
                   key={`${ing}-${index}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-emerald-200 text-emerald-800 text-xs font-medium rounded-lg shadow-2xs group hover:border-red-200 hover:bg-red-50 hover:text-red-700 transition-all"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] text-xs font-medium rounded-[var(--radius-input)] shadow-2xs group hover:border-[var(--color-effort)]/40 hover:bg-[var(--color-effort-soft)] transition-all"
                 >
                   <span>{ing}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveIngredient(index)}
-                    className="text-emerald-500 group-hover:text-red-500 hover:scale-110 transition-all p-0.5"
+                    className="text-[var(--color-text-muted)] group-hover:text-[var(--color-effort)] hover:scale-110 transition-all p-0.5 cursor-pointer"
                     title="Remove ingredient"
                   >
                     <X size={12} />
@@ -356,7 +356,7 @@ export function PantryRecalibrateCard() {
               ))}
             </div>
           ) : (
-            <div className="p-3 text-center text-xs text-slate-400 italic bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+            <div className="p-3 text-center text-xs text-[var(--color-text-dim)] italic bg-[var(--color-surface-subtle)] rounded-[var(--radius-input)] border border-dashed border-[var(--color-border)]">
               No ingredients added yet. Select from suggestions above or enter custom items.
             </div>
           )}
@@ -364,17 +364,17 @@ export function PantryRecalibrateCard() {
 
         {statusMsg ? (
           <div
-            className={`p-3 rounded-xl text-xs font-medium flex items-center justify-between ${
+            className={`p-3 rounded-[var(--radius-input)] text-xs font-medium flex items-center justify-between ${
               statusMsg.type === "success"
-                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                : "bg-rose-50 text-rose-800 border border-rose-200"
+                ? "bg-[var(--color-recovery-soft)] text-[var(--color-recovery)] border border-[var(--color-recovery)]/30"
+                : "bg-[var(--color-effort-soft)] text-[var(--color-effort)] border border-[var(--color-effort)]/30"
             }`}
           >
             <span>{statusMsg.text}</span>
             <button
               type="button"
               onClick={() => setStatusMsg(null)}
-              className="p-1 hover:opacity-75"
+              className="p-1 hover:opacity-75 cursor-pointer"
             >
               <X size={14} />
             </button>
@@ -385,7 +385,7 @@ export function PantryRecalibrateCard() {
           type="button"
           onClick={handleSubmitRecalibrate}
           disabled={isPending || ingredients.length === 0}
-          className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-sm rounded-xl shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2.5 px-4 bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] font-semibold text-sm rounded-[var(--radius-input)] shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isPending ? (
             <>
