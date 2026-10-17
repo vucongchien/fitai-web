@@ -32,7 +32,7 @@ export default function LoginPage() {
         </section>
 
         <section aria-labelledby="sign-in-title" className="login-form-panel">
-          <div>
+          <div className="login-form-header">
             <h2 id="sign-in-title">Start with your account</h2>
             <p>Your training details stay connected when you switch devices.</p>
           </div>

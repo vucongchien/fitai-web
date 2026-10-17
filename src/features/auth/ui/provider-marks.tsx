@@ -1,6 +1,6 @@
 export function GoogleMark() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
+    <svg aria-hidden="true" height="18" viewBox="0 0 24 24" width="18">
       <path
         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.31v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.09Z"
         fill="#4285F4"
@@ -23,7 +23,7 @@ export function GoogleMark() {
 
 export function FacebookMark() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
+    <svg aria-hidden="true" height="18" viewBox="0 0 24 24" width="18">
       <path
         d="M24 12a12 12 0 1 0-13.88 11.85v-8.47H7.08V12h3.04V9.43c0-3 1.79-4.66 4.53-4.66.9.01 1.8.09 2.69.24v2.95h-1.51c-1.49 0-1.95.92-1.95 1.87V12h3.32l-.53 3.38h-2.79v8.47A12 12 0 0 0 24 12Z"
         fill="#1877F2"

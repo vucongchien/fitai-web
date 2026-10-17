@@ -4,7 +4,6 @@ import { Eye, EyeOff } from "lucide-react";
 
 import { useLoginFlow } from "@/features/auth/model/use-login-flow";
 import { FacebookMark, GoogleMark } from "@/features/auth/ui/provider-marks";
-import { Button } from "@/shared/ui/button";
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -38,35 +37,31 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       ) : null}
 
       <div className="auth-social-stack">
-        <Button
-          className="login-provider auth-provider-btn"
+        <button
+          className="auth-provider-btn"
           disabled={isPending}
           id="login-google"
           onClick={handleGoogleLogin}
-          size="large"
           type="button"
-          variant="secondary"
         >
           <span aria-hidden="true" className="auth-provider-icon">
             <GoogleMark />
           </span>
           <span>Continue with Google</span>
-        </Button>
+        </button>
 
-        <Button
-          className="login-provider auth-provider-btn"
+        <button
+          className="auth-provider-btn"
           disabled={isPending}
           id="login-facebook"
           onClick={handleFacebookLogin}
-          size="large"
           type="button"
-          variant="secondary"
         >
           <span aria-hidden="true" className="auth-provider-icon">
             <FacebookMark />
           </span>
           <span>Continue with Facebook</span>
-        </Button>
+        </button>
       </div>
 
       <div className="auth-divider">
@@ -139,15 +134,13 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         </div>
 
         <div className="auth-submit-wrapper">
-          <Button
+          <button
             className="auth-submit-btn auth-submit-btn--dark"
             disabled={!identifier || !password || !isIdentifierValid || isPending}
-            loading={isPending}
-            size="large"
             type="submit"
           >
-            Log in
-          </Button>
+            {isPending ? "Logging in..." : "Log in"}
+          </button>
           <span className="auth-last-used-badge">Last used</span>
         </div>
 
