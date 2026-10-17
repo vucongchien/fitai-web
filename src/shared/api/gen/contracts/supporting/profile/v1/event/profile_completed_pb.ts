@@ -4,13 +4,15 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/profile/v1/event/profile_completed.proto.
  */
 export const file_contracts_supporting_profile_v1_event_profile_completed: GenFile = /*@__PURE__*/
-  fileDesc("Cj1jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L3Byb2ZpbGVfY29tcGxldGVkLnByb3RvEiVjb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLmV2ZW50IlYKEUJpb2xvZ2ljYWxNZXRyaWNzEhEKCXdlaWdodF9rZxgBIAEoAhIRCgloZWlnaHRfY20YAiABKAISCwoDYWdlGAMgASgFEg4KBmdlbmRlchgEIAEoCSLcAQoQUHJvZmlsZUNvbXBsZXRlZBIPCgd1c2VyX2lkGAEgASgJElQKEmJpb2xvZ2ljYWxfbWV0cmljcxgCIAEoCzI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuQmlvbG9naWNhbE1ldHJpY3MSDQoFZ29hbHMYAyADKAkSGwoTcmVnaXN0ZXJlZF9pbmp1cmllcxgEIAMoCRIfChdwcmVmZXJyZWRfd29ya291dF90aW1lcxgFIAMoCRIUCgxjb21wbGV0ZWRfYXQYBiABKAlCa1ppZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50O3Byb2ZpbGV2MWV2ZW50YgZwcm90bzM");
+  fileDesc("Cj1jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L3Byb2ZpbGVfY29tcGxldGVkLnByb3RvEiVjb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLmV2ZW50IlYKEUJpb2xvZ2ljYWxNZXRyaWNzEhEKCXdlaWdodF9rZxgBIAEoAhIRCgloZWlnaHRfY20YAiABKAISCwoDYWdlGAMgASgFEg4KBmdlbmRlchgEIAEoCSL4AQoQUHJvZmlsZUNvbXBsZXRlZBIPCgd1c2VyX2lkGAEgASgJElQKEmJpb2xvZ2ljYWxfbWV0cmljcxgCIAEoCzI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuQmlvbG9naWNhbE1ldHJpY3MSDQoFZ29hbHMYAyADKAkSGwoTcmVnaXN0ZXJlZF9pbmp1cmllcxgEIAMoCRIfChdwcmVmZXJyZWRfd29ya291dF90aW1lcxgFIAMoCRIwCgxjb21wbGV0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQmtaaWdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvcHJvZmlsZS92MS9ldmVudDtwcm9maWxldjFldmVudGIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message contracts.supporting.profile.v1.event.BiologicalMetrics
@@ -74,9 +76,9 @@ export type ProfileCompleted = Message<"contracts.supporting.profile.v1.event.Pr
   preferredWorkoutTimes: string[];
 
   /**
-   * @generated from field: string completed_at = 6;
+   * @generated from field: google.protobuf.Timestamp completed_at = 6;
    */
-  completedAt: string;
+  completedAt?: Timestamp | undefined;
 };
 
 /**

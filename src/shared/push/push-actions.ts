@@ -6,13 +6,6 @@ import { cookies } from "next/headers";
 import { NotificationService } from "@/shared/api/gen/contracts/generic/notification/v1/service/notification_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 
-/**
- * Hands an FCM registration token to the backend so the Go notification service
- * can push to this browser.
- *
- * Runs server-side because that is where the access token cookie is readable —
- * the same shape as workout-actions.ts.
- */
 export async function registerDeviceToken(deviceToken: string): Promise<boolean> {
   if (!deviceToken) {
     return false;
@@ -29,10 +22,6 @@ export async function registerDeviceToken(deviceToken: string): Promise<boolean>
     const response = await client.registerDeviceToken({
       deviceToken,
       deviceType: "WEB",
-      // TODO: the backend derives the user from the bearer token; this field is
-      // Required by the contract. Matches the `userId: "TODO"` seam already in
-      // Workout-actions.ts — resolve both together when a /me lookup exists.
-      userId: "",
     });
     return response.success;
   } catch {

@@ -4,13 +4,15 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/profile/v1/event/injury_recovered.proto.
  */
 export const file_contracts_supporting_profile_v1_event_injury_recovered: GenFile = /*@__PURE__*/
-  fileDesc("Cjxjb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L2luanVyeV9yZWNvdmVyZWQucHJvdG8SJWNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQiZQoTSW5qdXJ5UmVjb3ZlcmVkRGF0YRIPCgd1c2VyX2lkGAEgASgJEhEKCWluanVyeV9pZBgCIAEoCRIUCgxtdXNjbGVfZ3JvdXAYAyABKAkSFAoMcmVjb3ZlcmVkX2F0GAQgASgJQmtaaWdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvcHJvZmlsZS92MS9ldmVudDtwcm9maWxldjFldmVudGIGcHJvdG8z");
+  fileDesc("Cjxjb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L2luanVyeV9yZWNvdmVyZWQucHJvdG8SJWNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQigQEKE0luanVyeVJlY292ZXJlZERhdGESDwoHdXNlcl9pZBgBIAEoCRIRCglpbmp1cnlfaWQYAiABKAkSFAoMbXVzY2xlX2dyb3VwGAMgASgJEjAKDHJlY292ZXJlZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCa1ppZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50O3Byb2ZpbGV2MWV2ZW50YgZwcm90bzM", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message contracts.supporting.profile.v1.event.InjuryRecoveredData
@@ -32,9 +34,9 @@ export type InjuryRecoveredData = Message<"contracts.supporting.profile.v1.event
   muscleGroup: string;
 
   /**
-   * @generated from field: string recovered_at = 4;
+   * @generated from field: google.protobuf.Timestamp recovered_at = 4;
    */
-  recoveredAt: string;
+  recoveredAt?: Timestamp | undefined;
 };
 
 /**

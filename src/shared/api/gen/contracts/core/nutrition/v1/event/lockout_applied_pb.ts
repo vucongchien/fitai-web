@@ -4,13 +4,15 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/nutrition/v1/event/lockout_applied.proto.
  */
 export const file_contracts_core_nutrition_v1_event_lockout_applied: GenFile = /*@__PURE__*/
-  fileDesc("Cjdjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbG9ja291dF9hcHBsaWVkLnByb3RvEiFjb250cmFjdHMuY29yZS5udXRyaXRpb24udjEuZXZlbnQiXAoOTG9ja291dEFwcGxpZWQSDwoHdXNlcl9pZBgBIAEoCRIRCglpdGVtX3R5cGUYAiABKAkSEQoJaXRlbV9uYW1lGAMgASgJEhMKC3VubG9ja2VkX2F0GAQgASgJQmlaZ2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvbnV0cml0aW9uL3YxL2V2ZW50O251dHJpdGlvbnYxZXZlbnRiBnByb3RvMw");
+  fileDesc("Cjdjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbG9ja291dF9hcHBsaWVkLnByb3RvEiFjb250cmFjdHMuY29yZS5udXRyaXRpb24udjEuZXZlbnQieAoOTG9ja291dEFwcGxpZWQSDwoHdXNlcl9pZBgBIAEoCRIRCglpdGVtX3R5cGUYAiABKAkSEQoJaXRlbV9uYW1lGAMgASgJEi8KC3VubG9ja2VkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEJpWmdnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL251dHJpdGlvbi92MS9ldmVudDtudXRyaXRpb252MWV2ZW50YgZwcm90bzM", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message contracts.core.nutrition.v1.event.LockoutApplied
@@ -32,9 +34,9 @@ export type LockoutApplied = Message<"contracts.core.nutrition.v1.event.LockoutA
   itemName: string;
 
   /**
-   * @generated from field: string unlocked_at = 4;
+   * @generated from field: google.protobuf.Timestamp unlocked_at = 4;
    */
-  unlockedAt: string;
+  unlockedAt?: Timestamp | undefined;
 };
 
 /**

@@ -4,13 +4,15 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/core/nutrition/v1/event/nutrition_plan_generated.proto.
  */
 export const file_contracts_core_nutrition_v1_event_nutrition_plan_generated: GenFile = /*@__PURE__*/
-  fileDesc("CkBjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbnV0cml0aW9uX3BsYW5fZ2VuZXJhdGVkLnByb3RvEiFjb250cmFjdHMuY29yZS5udXRyaXRpb24udjEuZXZlbnQiYAoWTnV0cml0aW9uUGxhbkdlbmVyYXRlZBIPCgdwbGFuX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSEQoJcGxhbl9kYXRlGAMgASgJEhEKCXRpbWVzdGFtcBgEIAEoCUJpWmdnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9jb3JlL251dHJpdGlvbi92MS9ldmVudDtudXRyaXRpb252MWV2ZW50YgZwcm90bzM");
+  fileDesc("CkBjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQvbnV0cml0aW9uX3BsYW5fZ2VuZXJhdGVkLnByb3RvEiFjb250cmFjdHMuY29yZS5udXRyaXRpb24udjEuZXZlbnQifAoWTnV0cml0aW9uUGxhbkdlbmVyYXRlZBIPCgdwbGFuX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSEQoJcGxhbl9kYXRlGAMgASgJEi0KCXRpbWVzdGFtcBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCaVpnZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvZXZlbnQ7bnV0cml0aW9udjFldmVudGIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message contracts.core.nutrition.v1.event.NutritionPlanGenerated
@@ -32,9 +34,9 @@ export type NutritionPlanGenerated = Message<"contracts.core.nutrition.v1.event.
   planDate: string;
 
   /**
-   * @generated from field: string timestamp = 4;
+   * @generated from field: google.protobuf.Timestamp timestamp = 4;
    */
-  timestamp: string;
+  timestamp?: Timestamp | undefined;
 };
 
 /**

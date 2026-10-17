@@ -20,7 +20,7 @@ export const file_contracts_supporting_exercise_v1_service_exercise_service: Gen
  */
 export const ExerciseService: GenService<{
   /**
-   * Tìm kiếm bài tập trong thư viện (User & Coach)
+   * Tìm kiếm bài tập trong thư viện
    *
    * @generated from rpc contracts.supporting.exercise.v1.service.ExerciseService.SearchExercises
    */

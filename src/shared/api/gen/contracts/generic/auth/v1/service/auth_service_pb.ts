@@ -6,14 +6,14 @@ import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import { file_google_api_annotations } from "../../../../../google/api/annotations_pb";
 import { file_protoc_gen_openapiv2_options_annotations } from "../../../../../protoc-gen-openapiv2/options/annotations_pb";
-import type { GetJWKSRequestSchema, GetJWKSResponseSchema, GetOAuthLoginURLRequestSchema, GetOAuthLoginURLResponseSchema, LoginWithOAuthRequestSchema, LoginWithOAuthResponseSchema, LogoutRequestSchema, LogoutResponseSchema, RefreshTokenRequestSchema, RefreshTokenResponseSchema, RotateKeysRequestSchema, RotateKeysResponseSchema } from "../message/auth_messages_pb";
+import type { ApproveBrandRequestSchema, ApproveBrandResponseSchema, ChangePasswordRequestSchema, ChangePasswordResponseSchema, GetJWKSRequestSchema, GetJWKSResponseSchema, GetOAuthLoginURLRequestSchema, GetOAuthLoginURLResponseSchema, ListBrandRequestsRequestSchema, ListBrandRequestsResponseSchema, ListUsersRequestSchema, ListUsersResponseSchema, LockUserRequestSchema, LockUserResponseSchema, LoginRequestSchema, LoginResponseSchema, LoginWithOAuthRequestSchema, LoginWithOAuthResponseSchema, LogoutRequestSchema, LogoutResponseSchema, RefreshTokenRequestSchema, RefreshTokenResponseSchema, RegisterBrandRequestSchema, RegisterBrandResponseSchema, RegisterRequestSchema, RegisterResponseSchema, RejectBrandRequestSchema, RejectBrandResponseSchema, ResetPasswordRequestSchema, ResetPasswordResponseSchema, RotateKeysRequestSchema, RotateKeysResponseSchema, SendOTPRequestSchema, SendOTPResponseSchema, UnlockUserRequestSchema, UnlockUserResponseSchema, VerifyOTPRequestSchema, VerifyOTPResponseSchema } from "../message/auth_messages_pb";
 import { file_contracts_generic_auth_v1_message_auth_messages } from "../message/auth_messages_pb";
 
 /**
  * Describes the file contracts/generic/auth/v1/service/auth_service.proto.
  */
 export const file_contracts_generic_auth_v1_service_auth_service: GenFile = /*@__PURE__*/
-  fileDesc("CjRjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL3NlcnZpY2UvYXV0aF9zZXJ2aWNlLnByb3RvEiFjb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLnNlcnZpY2Uy8QgKC0F1dGhTZXJ2aWNlErwBCgxSZWZyZXNoVG9rZW4SNi5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuUmVmcmVzaFRva2VuUmVxdWVzdBo3LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5SZWZyZXNoVG9rZW5SZXNwb25zZSI7kkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCGToBKiIUL2FwaS92MS9hdXRoL3JlZnJlc2gSpwEKBkxvZ291dBIwLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dvdXRSZXF1ZXN0GjEuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ291dFJlc3BvbnNlIjiSQRcKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcoLT5JMCGDoBKiITL2FwaS92MS9hdXRoL2xvZ291dBLJAQoQR2V0T0F1dGhMb2dpblVSTBI6LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5HZXRPQXV0aExvZ2luVVJMUmVxdWVzdBo7LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5HZXRPQXV0aExvZ2luVVJMUmVzcG9uc2UiPJJBGQoVQXV0aGVudGljYXRpb24gLyBVc2VyYgCC0+STAhoSGC9hcGkvdjEvYXV0aC9vYXV0aC9sb2dpbhK5AQoKUm90YXRlS2V5cxI0LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Sb3RhdGVLZXlzUmVxdWVzdBo1LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Sb3RhdGVLZXlzUmVzcG9uc2UiPpJBGAoWQXV0aGVudGljYXRpb24gLyBBZG1pboLT5JMCHToBKiIYL2FwaS92MS9hdXRoL2tleXMvcm90YXRlEqcBCgdHZXRKV0tTEjEuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkdldEpXS1NSZXF1ZXN0GjIuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkdldEpXS1NSZXNwb25zZSI1kkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCExIRL2FwaS92MS9hdXRoL2p3a3MSxgEKDkxvZ2luV2l0aE9BdXRoEjguY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ2luV2l0aE9BdXRoUmVxdWVzdBo5LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dpbldpdGhPQXV0aFJlc3BvbnNlIj+SQRkKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcmIAgtPkkwIdOgEqIhgvYXBpL3YxL2F1dGgvbG9naW4vb2F1dGhCugJaZGdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2dlbmVyaWMvYXV0aC92MS9zZXJ2aWNlO2F1dGh2MXNlcnZpY2WSQdABEmkKHUlkZW50aXR5ICYgQXV0aGVudGljYXRpb24gQVBJEkNBUEkgeMOhYyB0aOG7sWMgbmfGsOG7nWkgZMO5bmcgYuG6sW5nIHTDoGkga2hv4bqjbiBHb29nbGUvRmFjZWJvb2suMgMxLjBaUQpPCgpCZWFyZXJBdXRoEkEIAhIsQmVhcmVyIGFjY2VzcyB0b2tlbiAoRm9ybWF0OiBCZWFyZXIgPHRva2VuPikaDUF1dGhvcml6YXRpb24gAmIQCg4KCkJlYXJlckF1dGgSAGIGcHJvdG8z", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_generic_auth_v1_message_auth_messages]);
+  fileDesc("CjRjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL3NlcnZpY2UvYXV0aF9zZXJ2aWNlLnByb3RvEiFjb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLnNlcnZpY2Uy7hwKC0F1dGhTZXJ2aWNlErwBCgxSZWZyZXNoVG9rZW4SNi5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuUmVmcmVzaFRva2VuUmVxdWVzdBo3LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5SZWZyZXNoVG9rZW5SZXNwb25zZSI7kkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCGToBKiIUL2FwaS92MS9hdXRoL3JlZnJlc2gSpwEKBkxvZ291dBIwLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dvdXRSZXF1ZXN0GjEuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ291dFJlc3BvbnNlIjiSQRcKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcoLT5JMCGDoBKiITL2FwaS92MS9hdXRoL2xvZ291dBLJAQoQR2V0T0F1dGhMb2dpblVSTBI6LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5HZXRPQXV0aExvZ2luVVJMUmVxdWVzdBo7LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5HZXRPQXV0aExvZ2luVVJMUmVzcG9uc2UiPJJBGQoVQXV0aGVudGljYXRpb24gLyBVc2VyYgCC0+STAhoSGC9hcGkvdjEvYXV0aC9vYXV0aC9sb2dpbhK5AQoKUm90YXRlS2V5cxI0LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Sb3RhdGVLZXlzUmVxdWVzdBo1LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Sb3RhdGVLZXlzUmVzcG9uc2UiPpJBGAoWQXV0aGVudGljYXRpb24gLyBBZG1pboLT5JMCHToBKiIYL2FwaS92MS9hdXRoL2tleXMvcm90YXRlEqcBCgdHZXRKV0tTEjEuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkdldEpXS1NSZXF1ZXN0GjIuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkdldEpXS1NSZXNwb25zZSI1kkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCExIRL2FwaS92MS9hdXRoL2p3a3MSxgEKDkxvZ2luV2l0aE9BdXRoEjguY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ2luV2l0aE9BdXRoUmVxdWVzdBo5LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dpbldpdGhPQXV0aFJlc3BvbnNlIj+SQRkKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcmIAgtPkkwIdOgEqIhgvYXBpL3YxL2F1dGgvbG9naW4vb2F1dGgSsQEKCFJlZ2lzdGVyEjIuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLlJlZ2lzdGVyUmVxdWVzdBozLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5SZWdpc3RlclJlc3BvbnNlIjySQRkKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcmIAgtPkkwIaOgEqIhUvYXBpL3YxL2F1dGgvcmVnaXN0ZXISpQEKBUxvZ2luEi8uY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxvZ2luUmVxdWVzdBowLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2dpblJlc3BvbnNlIjmSQRkKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcmIAgtPkkwIXOgEqIhIvYXBpL3YxL2F1dGgvbG9naW4SrgEKB1NlbmRPVFASMS5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuU2VuZE9UUFJlcXVlc3QaMi5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuU2VuZE9UUFJlc3BvbnNlIjySQRkKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcmIAgtPkkwIaOgEqIhUvYXBpL3YxL2F1dGgvb3RwL3NlbmQStgEKCVZlcmlmeU9UUBIzLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5WZXJpZnlPVFBSZXF1ZXN0GjQuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLlZlcmlmeU9UUFJlc3BvbnNlIj6SQRkKFUF1dGhlbnRpY2F0aW9uIC8gVXNlcmIAgtPkkwIcOgEqIhcvYXBpL3YxL2F1dGgvb3RwL3ZlcmlmeRLIAQoOQ2hhbmdlUGFzc3dvcmQSOC5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuQ2hhbmdlUGFzc3dvcmRSZXF1ZXN0GjkuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkNoYW5nZVBhc3N3b3JkUmVzcG9uc2UiQZJBFwoVQXV0aGVudGljYXRpb24gLyBVc2VygtPkkwIhOgEqIhwvYXBpL3YxL2F1dGgvcGFzc3dvcmQvY2hhbmdlEsYBCg1SZXNldFBhc3N3b3JkEjcuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLlJlc2V0UGFzc3dvcmRSZXF1ZXN0GjguY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLlJlc2V0UGFzc3dvcmRSZXNwb25zZSJCkkEZChVBdXRoZW50aWNhdGlvbiAvIFVzZXJiAILT5JMCIDoBKiIbL2FwaS92MS9hdXRoL3Bhc3N3b3JkL3Jlc2V0EsUBCg1SZWdpc3RlckJyYW5kEjcuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLlJlZ2lzdGVyQnJhbmRSZXF1ZXN0GjguY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLlJlZ2lzdGVyQnJhbmRSZXNwb25zZSJBkkEYChZBdXRoZW50aWNhdGlvbiAvIEJyYW5kgtPkkwIgOgEqIhsvYXBpL3YxL2F1dGgvYnJhbmQvcmVnaXN0ZXIS3QEKDEFwcHJvdmVCcmFuZBI2LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5BcHByb3ZlQnJhbmRSZXF1ZXN0GjcuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkFwcHJvdmVCcmFuZFJlc3BvbnNlIlySQRgKFkF1dGhlbnRpY2F0aW9uIC8gQWRtaW6C0+STAjs6ASoiNi9hcGkvdjEvYXV0aC9hZG1pbi9icmFuZC1yZXF1ZXN0cy97cmVxdWVzdF9pZH0vYXBwcm92ZRLZAQoLUmVqZWN0QnJhbmQSNS5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuUmVqZWN0QnJhbmRSZXF1ZXN0GjYuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLlJlamVjdEJyYW5kUmVzcG9uc2UiW5JBGAoWQXV0aGVudGljYXRpb24gLyBBZG1pboLT5JMCOjoBKiI1L2FwaS92MS9hdXRoL2FkbWluL2JyYW5kLXJlcXVlc3RzL3tyZXF1ZXN0X2lkfS9yZWplY3QS1AEKEUxpc3RCcmFuZFJlcXVlc3RzEjsuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxpc3RCcmFuZFJlcXVlc3RzUmVxdWVzdBo8LmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5MaXN0QnJhbmRSZXF1ZXN0c1Jlc3BvbnNlIkSSQRgKFkF1dGhlbnRpY2F0aW9uIC8gQWRtaW6C0+STAiMSIS9hcGkvdjEvYXV0aC9hZG1pbi9icmFuZC1yZXF1ZXN0cxKzAQoJTGlzdFVzZXJzEjMuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkxpc3RVc2Vyc1JlcXVlc3QaNC5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuTGlzdFVzZXJzUmVzcG9uc2UiO5JBGAoWQXV0aGVudGljYXRpb24gLyBBZG1pboLT5JMCGhIYL2FwaS92MS9hdXRoL2FkbWluL3VzZXJzEsIBCghMb2NrVXNlchIyLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5Mb2NrVXNlclJlcXVlc3QaMy5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuTG9ja1VzZXJSZXNwb25zZSJNkkEYChZBdXRoZW50aWNhdGlvbiAvIEFkbWlugtPkkwIsOgEqIicvYXBpL3YxL2F1dGgvYWRtaW4vdXNlcnMve3VzZXJfaWR9L2xvY2sSygEKClVubG9ja1VzZXISNC5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuVW5sb2NrVXNlclJlcXVlc3QaNS5jb250cmFjdHMuZ2VuZXJpYy5hdXRoLnYxLm1lc3NhZ2UuVW5sb2NrVXNlclJlc3BvbnNlIk+SQRgKFkF1dGhlbnRpY2F0aW9uIC8gQWRtaW6C0+STAi46ASoiKS9hcGkvdjEvYXV0aC9hZG1pbi91c2Vycy97dXNlcl9pZH0vdW5sb2NrQroCWmRnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL2F1dGgvdjEvc2VydmljZTthdXRodjFzZXJ2aWNlkkHQARJpCh1JZGVudGl0eSAmIEF1dGhlbnRpY2F0aW9uIEFQSRJDQVBJIHjDoWMgdGjhu7FjIG5nxrDhu51pIGTDuW5nIGLhurFuZyB0w6BpIGtob+G6o24gR29vZ2xlL0ZhY2Vib29rLjIDMS4wWlEKTwoKQmVhcmVyQXV0aBJBCAISLEJlYXJlciBhY2Nlc3MgdG9rZW4gKEZvcm1hdDogQmVhcmVyIDx0b2tlbj4pGg1BdXRob3JpemF0aW9uIAJiEAoOCgpCZWFyZXJBdXRoEgBiBnByb3RvMw", [file_google_api_annotations, file_protoc_gen_openapiv2_options_annotations, file_contracts_generic_auth_v1_message_auth_messages]);
 
 /**
  * @generated from service contracts.generic.auth.v1.service.AuthService
@@ -78,6 +78,136 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof LoginWithOAuthRequestSchema;
     output: typeof LoginWithOAuthResponseSchema;
+  },
+  /**
+   * Đăng ký tài khoản mới bằng Email hoặc Số điện thoại kèm Mật khẩu
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.Register
+   */
+  register: {
+    methodKind: "unary";
+    input: typeof RegisterRequestSchema;
+    output: typeof RegisterResponseSchema;
+  },
+  /**
+   * Đăng nhập bằng Email hoặc Số điện thoại kèm Mật khẩu
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.Login
+   */
+  login: {
+    methodKind: "unary";
+    input: typeof LoginRequestSchema;
+    output: typeof LoginResponseSchema;
+  },
+  /**
+   * Yêu cầu gửi mã OTP qua Email hoặc SMS
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.SendOTP
+   */
+  sendOTP: {
+    methodKind: "unary";
+    input: typeof SendOTPRequestSchema;
+    output: typeof SendOTPResponseSchema;
+  },
+  /**
+   * Xác thực mã OTP nhận được
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.VerifyOTP
+   */
+  verifyOTP: {
+    methodKind: "unary";
+    input: typeof VerifyOTPRequestSchema;
+    output: typeof VerifyOTPResponseSchema;
+  },
+  /**
+   * Đổi mật khẩu cho người dùng đã đăng nhập (yêu cầu Bearer Token)
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.ChangePassword
+   */
+  changePassword: {
+    methodKind: "unary";
+    input: typeof ChangePasswordRequestSchema;
+    output: typeof ChangePasswordResponseSchema;
+  },
+  /**
+   * Đổi lại mật khẩu mới sau khi đã xác thực mã OTP
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.ResetPassword
+   */
+  resetPassword: {
+    methodKind: "unary";
+    input: typeof ResetPasswordRequestSchema;
+    output: typeof ResetPasswordResponseSchema;
+  },
+  /**
+   * Đăng ký nâng cấp tài khoản người dùng thành Brand
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.RegisterBrand
+   */
+  registerBrand: {
+    methodKind: "unary";
+    input: typeof RegisterBrandRequestSchema;
+    output: typeof RegisterBrandResponseSchema;
+  },
+  /**
+   * Admin phê duyệt yêu cầu nâng cấp Brand
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.ApproveBrand
+   */
+  approveBrand: {
+    methodKind: "unary";
+    input: typeof ApproveBrandRequestSchema;
+    output: typeof ApproveBrandResponseSchema;
+  },
+  /**
+   * Admin từ chối yêu cầu nâng cấp Brand
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.RejectBrand
+   */
+  rejectBrand: {
+    methodKind: "unary";
+    input: typeof RejectBrandRequestSchema;
+    output: typeof RejectBrandResponseSchema;
+  },
+  /**
+   * Admin lấy danh sách các yêu cầu nâng cấp Brand
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.ListBrandRequests
+   */
+  listBrandRequests: {
+    methodKind: "unary";
+    input: typeof ListBrandRequestsRequestSchema;
+    output: typeof ListBrandRequestsResponseSchema;
+  },
+  /**
+   * Admin lấy danh sách người dùng có lọc theo vai trò, trạng thái, tìm kiếm và phân trang
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.ListUsers
+   */
+  listUsers: {
+    methodKind: "unary";
+    input: typeof ListUsersRequestSchema;
+    output: typeof ListUsersResponseSchema;
+  },
+  /**
+   * Admin khóa tài khoản người dùng
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.LockUser
+   */
+  lockUser: {
+    methodKind: "unary";
+    input: typeof LockUserRequestSchema;
+    output: typeof LockUserResponseSchema;
+  },
+  /**
+   * Admin mở khóa tài khoản người dùng
+   *
+   * @generated from rpc contracts.generic.auth.v1.service.AuthService.UnlockUser
+   */
+  unlockUser: {
+    methodKind: "unary";
+    input: typeof UnlockUserRequestSchema;
+    output: typeof UnlockUserResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_contracts_generic_auth_v1_service_auth_service, 0);

@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/generic/auth/v1/event/user_registered.proto.
  */
 export const file_contracts_generic_auth_v1_event_user_registered: GenFile = /*@__PURE__*/
-  fileDesc("CjVjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL2V2ZW50L3VzZXJfcmVnaXN0ZXJlZC5wcm90bxIfY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5ldmVudCKKAQoOVXNlclJlZ2lzdGVyZWQSDwoHdXNlcl9pZBgBIAEoCRINCgVlbWFpbBgCIAEoCRIRCglmdWxsX25hbWUYAyABKAkSMQoNcmVnaXN0ZXJlZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKYXZhdGFyX3VybBgFIAEoCUJiWmBnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL2F1dGgvdjEvZXZlbnQ7YXV0aHYxZXZlbnRiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("CjVjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL2V2ZW50L3VzZXJfcmVnaXN0ZXJlZC5wcm90bxIfY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5ldmVudCLbAQoOVXNlclJlZ2lzdGVyZWQSDwoHdXNlcl9pZBgBIAEoCRIVCg1pZGVudGl0eV90eXBlGAIgASgJEhIKCmlkZW50aWZpZXIYAyABKAkSEQoJZnVsbF9uYW1lGAQgASgJEjEKDXJlZ2lzdGVyZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhIKCmF2YXRhcl91cmwYBiABKAkSDgoGZ2VuZGVyGAcgASgJEhUKDWRhdGVfb2ZfYmlydGgYCCABKAkSDAoEcm9sZRgJIAEoCUJiWmBnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL2F1dGgvdjEvZXZlbnQ7YXV0aHYxZXZlbnRiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message contracts.generic.auth.v1.event.UserRegistered
@@ -24,24 +24,44 @@ export type UserRegistered = Message<"contracts.generic.auth.v1.event.UserRegist
   userId: string;
 
   /**
-   * @generated from field: string email = 2;
+   * @generated from field: string identity_type = 2;
    */
-  email: string;
+  identityType: string;
 
   /**
-   * @generated from field: string full_name = 3;
+   * @generated from field: string identifier = 3;
+   */
+  identifier: string;
+
+  /**
+   * @generated from field: string full_name = 4;
    */
   fullName: string;
 
   /**
-   * @generated from field: google.protobuf.Timestamp registered_at = 4;
+   * @generated from field: google.protobuf.Timestamp registered_at = 5;
    */
   registeredAt?: Timestamp | undefined;
 
   /**
-   * @generated from field: string avatar_url = 5;
+   * @generated from field: string avatar_url = 6;
    */
   avatarUrl: string;
+
+  /**
+   * @generated from field: string gender = 7;
+   */
+  gender: string;
+
+  /**
+   * @generated from field: string date_of_birth = 8;
+   */
+  dateOfBirth: string;
+
+  /**
+   * @generated from field: string role = 9;
+   */
+  role: string;
 };
 
 /**

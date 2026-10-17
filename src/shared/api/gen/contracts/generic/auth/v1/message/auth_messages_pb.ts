@@ -2,15 +2,15 @@
 // @generated from file contracts/generic/auth/v1/message/auth_messages.proto (package contracts.generic.auth.v1.message, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/generic/auth/v1/message/auth_messages.proto.
  */
 export const file_contracts_generic_auth_v1_message_auth_messages: GenFile = /*@__PURE__*/
-  fileDesc("CjVjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL21lc3NhZ2UvYXV0aF9tZXNzYWdlcy5wcm90bxIhY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlIk0KDUxvZ2luUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSDwoHdXNlcl9pZBgDIAEoCSIsChNSZWZyZXNoVG9rZW5SZXF1ZXN0EhUKDXJlZnJlc2hfdG9rZW4YASABKAkiQwoUUmVmcmVzaFRva2VuUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkiJgoNTG9nb3V0UmVxdWVzdBIVCg1yZWZyZXNoX3Rva2VuGAEgASgJIjIKDkxvZ291dFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSJBChdHZXRPQXV0aExvZ2luVVJMUmVxdWVzdBIQCghwcm92aWRlchgBIAEoCRIUCgxyZWRpcmVjdF91cmkYAiABKAkiLQoYR2V0T0F1dGhMb2dpblVSTFJlc3BvbnNlEhEKCWxvZ2luX3VybBgBIAEoCSITChFSb3RhdGVLZXlzUmVxdWVzdCIlChJSb3RhdGVLZXlzUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCSIQCg5HZXRKV0tTUmVxdWVzdCJSCgZKV0tLZXkSCwoDa3R5GAEgASgJEgsKA3VzZRgCIAEoCRILCgNhbGcYAyABKAkSCwoDa2lkGAQgASgJEgkKAW4YBSABKAkSCQoBZRgGIAEoCSJKCg9HZXRKV0tTUmVzcG9uc2USNwoEa2V5cxgBIAMoCzIpLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5KV0tLZXkiXAoVTG9naW5XaXRoT0F1dGhSZXF1ZXN0EhAKCHByb3ZpZGVyGAEgASgJEgwKBGNvZGUYAiABKAkSFAoMcmVkaXJlY3RfdXJpGAMgASgJEg0KBXN0YXRlGAQgASgJIlYKFkxvZ2luV2l0aE9BdXRoUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSDwoHdXNlcl9pZBgDIAEoCUJmWmRnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL2F1dGgvdjEvbWVzc2FnZTthdXRodjFtZXNzYWdlYgZwcm90bzM");
+  fileDesc("CjVjb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL21lc3NhZ2UvYXV0aF9tZXNzYWdlcy5wcm90bxIhY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlIk0KDUxvZ2luUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSDwoHdXNlcl9pZBgDIAEoCSIsChNSZWZyZXNoVG9rZW5SZXF1ZXN0EhUKDXJlZnJlc2hfdG9rZW4YASABKAkiQwoUUmVmcmVzaFRva2VuUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkiJgoNTG9nb3V0UmVxdWVzdBIVCg1yZWZyZXNoX3Rva2VuGAEgASgJIjIKDkxvZ291dFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSJBChdHZXRPQXV0aExvZ2luVVJMUmVxdWVzdBIQCghwcm92aWRlchgBIAEoCRIUCgxyZWRpcmVjdF91cmkYAiABKAkiLQoYR2V0T0F1dGhMb2dpblVSTFJlc3BvbnNlEhEKCWxvZ2luX3VybBgBIAEoCSITChFSb3RhdGVLZXlzUmVxdWVzdCIlChJSb3RhdGVLZXlzUmVzcG9uc2USDwoHbWVzc2FnZRgBIAEoCSIQCg5HZXRKV0tTUmVxdWVzdCJSCgZKV0tLZXkSCwoDa3R5GAEgASgJEgsKA3VzZRgCIAEoCRILCgNhbGcYAyABKAkSCwoDa2lkGAQgASgJEgkKAW4YBSABKAkSCQoBZRgGIAEoCSJKCg9HZXRKV0tTUmVzcG9uc2USNwoEa2V5cxgBIAMoCzIpLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5KV0tLZXkiXAoVTG9naW5XaXRoT0F1dGhSZXF1ZXN0EhAKCHByb3ZpZGVyGAEgASgJEgwKBGNvZGUYAiABKAkSFAoMcmVkaXJlY3RfdXJpGAMgASgJEg0KBXN0YXRlGAQgASgJIlYKFkxvZ2luV2l0aE9BdXRoUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEhUKDXJlZnJlc2hfdG9rZW4YAiABKAkSDwoHdXNlcl9pZBgDIAEoCSJxCg9SZWdpc3RlclJlcXVlc3QSEgoKaWRlbnRpZmllchgBIAEoCRIQCghwYXNzd29yZBgCIAEoCRIRCglmdWxsX25hbWUYAyABKAkSDgoGZ2VuZGVyGAQgASgJEhUKDWRhdGVfb2ZfYmlydGgYBSABKAkiIwoQUmVnaXN0ZXJSZXNwb25zZRIPCgdtZXNzYWdlGAEgASgJIjQKDExvZ2luUmVxdWVzdBISCgppZGVudGlmaWVyGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJIjUKDlNlbmRPVFBSZXF1ZXN0EhIKCmlkZW50aWZpZXIYASABKAkSDwoHcHVycG9zZRgCIAEoCSJiCg9TZW5kT1RQUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIPCgdtZXNzYWdlGAIgASgJEhoKEmV4cGlyZXNfaW5fc2Vjb25kcxgDIAEoAxIRCglvdHBfdG9rZW4YBCABKAkiMwoQVmVyaWZ5T1RQUmVxdWVzdBIRCglvdHBfdG9rZW4YASABKAkSDAoEY29kZRgCIAEoCSJIChFWZXJpZnlPVFBSZXNwb25zZRINCgV2YWxpZBgBIAEoCBITCgtyZXNldF90b2tlbhgCIAEoCRIPCgdtZXNzYWdlGAMgASgJIl0KFUNoYW5nZVBhc3N3b3JkUmVxdWVzdBIUCgxvbGRfcGFzc3dvcmQYASABKAkSFAoMbmV3X3Bhc3N3b3JkGAIgASgJEhgKEGNvbmZpcm1fcGFzc3dvcmQYAyABKAkiOgoWQ2hhbmdlUGFzc3dvcmRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAkiWwoUUmVzZXRQYXNzd29yZFJlcXVlc3QSEwoLcmVzZXRfdG9rZW4YASABKAkSFAoMbmV3X3Bhc3N3b3JkGAIgASgJEhgKEGNvbmZpcm1fcGFzc3dvcmQYAyABKAkiOQoVUmVzZXRQYXNzd29yZFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSKvAgoMQnJhbmRSZXF1ZXN0EgoKAmlkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSEgoKYnJhbmRfbmFtZRgDIAEoCRITCgtkZXNjcmlwdGlvbhgEIAEoCRIVCg1jb250YWN0X3Bob25lGAUgASgJEg8KB2FkZHJlc3MYBiABKAkSRQoGc3RhdHVzGAcgASgOMjUuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkJyYW5kUmVxdWVzdFN0YXR1cxIYChByZWplY3Rpb25fcmVhc29uGAggASgJEhMKC3Jldmlld2VkX2J5GAkgASgJEhIKCmNyZWF0ZWRfYXQYCiABKAkSEwoLcmV2aWV3ZWRfYXQYCyABKAkSEgoKdXBkYXRlZF9hdBgMIAEoCSJnChRSZWdpc3RlckJyYW5kUmVxdWVzdBISCgpicmFuZF9uYW1lGAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJEhUKDWNvbnRhY3RfcGhvbmUYAyABKAkSDwoHYWRkcmVzcxgEIAEoCSI5ChVSZWdpc3RlckJyYW5kUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIPCgdtZXNzYWdlGAIgASgJIikKE0FwcHJvdmVCcmFuZFJlcXVlc3QSEgoKcmVxdWVzdF9pZBgBIAEoCSI4ChRBcHByb3ZlQnJhbmRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAkiOAoSUmVqZWN0QnJhbmRSZXF1ZXN0EhIKCnJlcXVlc3RfaWQYASABKAkSDgoGcmVhc29uGAIgASgJIjcKE1JlamVjdEJyYW5kUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIPCgdtZXNzYWdlGAIgASgJIoIBChhMaXN0QnJhbmRSZXF1ZXN0c1JlcXVlc3QSRQoGc3RhdHVzGAEgASgOMjUuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLkJyYW5kUmVxdWVzdFN0YXR1cxIMCgRwYWdlGAIgASgFEhEKCXBhZ2Vfc2l6ZRgDIAEoBSKLAQoZTGlzdEJyYW5kUmVxdWVzdHNSZXNwb25zZRI+CgVpdGVtcxgBIAMoCzIvLmNvbnRyYWN0cy5nZW5lcmljLmF1dGgudjEubWVzc2FnZS5CcmFuZFJlcXVlc3QSDQoFdG90YWwYAiABKAUSDAoEcGFnZRgDIAEoBRIRCglwYWdlX3NpemUYBCABKAUimgEKCFVzZXJJbmZvEgoKAmlkGAEgASgJEhEKCWZ1bGxfbmFtZRgCIAEoCRIMCgRyb2xlGAMgASgJEg4KBnN0YXR1cxgEIAEoCRIVCg1pZGVudGl0eV90eXBlGAUgASgJEhIKCmlkZW50aWZpZXIYBiABKAkSEgoKY3JlYXRlZF9hdBgHIAEoCRISCgp1cGRhdGVkX2F0GAggASgJImEKEExpc3RVc2Vyc1JlcXVlc3QSDAoEcm9sZRgBIAEoCRIOCgZzdGF0dXMYAiABKAkSDgoGc2VhcmNoGAMgASgJEgwKBHBhZ2UYBCABKAUSEQoJcGFnZV9zaXplGAUgASgFIn8KEUxpc3RVc2Vyc1Jlc3BvbnNlEjoKBWl0ZW1zGAEgAygLMisuY29udHJhY3RzLmdlbmVyaWMuYXV0aC52MS5tZXNzYWdlLlVzZXJJbmZvEg0KBXRvdGFsGAIgASgFEgwKBHBhZ2UYAyABKAUSEQoJcGFnZV9zaXplGAQgASgFIjIKD0xvY2tVc2VyUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEg4KBnJlYXNvbhgCIAEoCSI0ChBMb2NrVXNlclJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSIkChFVbmxvY2tVc2VyUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIjYKElVubG9ja1VzZXJSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAkqogEKEkJyYW5kUmVxdWVzdFN0YXR1cxIkCiBCUkFORF9SRVFVRVNUX1NUQVRVU19VTlNQRUNJRklFRBAAEiAKHEJSQU5EX1JFUVVFU1RfU1RBVFVTX1BFTkRJTkcQARIhCh1CUkFORF9SRVFVRVNUX1NUQVRVU19BUFBST1ZFRBACEiEKHUJSQU5EX1JFUVVFU1RfU1RBVFVTX1JFSkVDVEVEEANCZlpkZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvZ2VuZXJpYy9hdXRoL3YxL21lc3NhZ2U7YXV0aHYxbWVzc2FnZWIGcHJvdG8z");
 
 /**
  * @generated from message contracts.generic.auth.v1.message.LoginResponse
@@ -334,4 +334,820 @@ export type LoginWithOAuthResponse = Message<"contracts.generic.auth.v1.message.
  */
 export const LoginWithOAuthResponseSchema: GenMessage<LoginWithOAuthResponse> = /*@__PURE__*/
   messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 13);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.RegisterRequest
+ */
+export type RegisterRequest = Message<"contracts.generic.auth.v1.message.RegisterRequest"> & {
+  /**
+   * Email address or Domestic/E.164 Phone
+   *
+   * @generated from field: string identifier = 1;
+   */
+  identifier: string;
+
+  /**
+   * @generated from field: string password = 2;
+   */
+  password: string;
+
+  /**
+   * @generated from field: string full_name = 3;
+   */
+  fullName: string;
+
+  /**
+   * "MALE", "FEMALE", "OTHER"
+   *
+   * @generated from field: string gender = 4;
+   */
+  gender: string;
+
+  /**
+   * Format: "YYYY-MM-DD"
+   *
+   * @generated from field: string date_of_birth = 5;
+   */
+  dateOfBirth: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.RegisterRequest.
+ * Use `create(RegisterRequestSchema)` to create a new message.
+ */
+export const RegisterRequestSchema: GenMessage<RegisterRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 14);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.RegisterResponse
+ */
+export type RegisterResponse = Message<"contracts.generic.auth.v1.message.RegisterResponse"> & {
+  /**
+   * @generated from field: string message = 1;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.RegisterResponse.
+ * Use `create(RegisterResponseSchema)` to create a new message.
+ */
+export const RegisterResponseSchema: GenMessage<RegisterResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 15);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.LoginRequest
+ */
+export type LoginRequest = Message<"contracts.generic.auth.v1.message.LoginRequest"> & {
+  /**
+   * Email address or Domestic/E.164 Phone
+   *
+   * @generated from field: string identifier = 1;
+   */
+  identifier: string;
+
+  /**
+   * @generated from field: string password = 2;
+   */
+  password: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.LoginRequest.
+ * Use `create(LoginRequestSchema)` to create a new message.
+ */
+export const LoginRequestSchema: GenMessage<LoginRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 16);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.SendOTPRequest
+ */
+export type SendOTPRequest = Message<"contracts.generic.auth.v1.message.SendOTPRequest"> & {
+  /**
+   * Email address or Phone (+84...)
+   *
+   * @generated from field: string identifier = 1;
+   */
+  identifier: string;
+
+  /**
+   * "register", "login", "reset_password", "verify_phone", "verify_email", "change_password"
+   *
+   * @generated from field: string purpose = 2;
+   */
+  purpose: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.SendOTPRequest.
+ * Use `create(SendOTPRequestSchema)` to create a new message.
+ */
+export const SendOTPRequestSchema: GenMessage<SendOTPRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 17);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.SendOTPResponse
+ */
+export type SendOTPResponse = Message<"contracts.generic.auth.v1.message.SendOTPResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+
+  /**
+   * @generated from field: int64 expires_in_seconds = 3;
+   */
+  expiresInSeconds: bigint;
+
+  /**
+   * Mã định danh phiên OTP (UI lưu và gửi ngầm khi verify)
+   *
+   * @generated from field: string otp_token = 4;
+   */
+  otpToken: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.SendOTPResponse.
+ * Use `create(SendOTPResponseSchema)` to create a new message.
+ */
+export const SendOTPResponseSchema: GenMessage<SendOTPResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 18);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.VerifyOTPRequest
+ */
+export type VerifyOTPRequest = Message<"contracts.generic.auth.v1.message.VerifyOTPRequest"> & {
+  /**
+   * Mã phiên OTP nhận từ SendOTPResponse
+   *
+   * @generated from field: string otp_token = 1;
+   */
+  otpToken: string;
+
+  /**
+   * Mã OTP 6 chữ số do người dùng nhập
+   *
+   * @generated from field: string code = 2;
+   */
+  code: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.VerifyOTPRequest.
+ * Use `create(VerifyOTPRequestSchema)` to create a new message.
+ */
+export const VerifyOTPRequestSchema: GenMessage<VerifyOTPRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 19);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.VerifyOTPResponse
+ */
+export type VerifyOTPResponse = Message<"contracts.generic.auth.v1.message.VerifyOTPResponse"> & {
+  /**
+   * @generated from field: bool valid = 1;
+   */
+  valid: boolean;
+
+  /**
+   * One-time token used for password reset if purpose is "reset_password"
+   *
+   * @generated from field: string reset_token = 2;
+   */
+  resetToken: string;
+
+  /**
+   * @generated from field: string message = 3;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.VerifyOTPResponse.
+ * Use `create(VerifyOTPResponseSchema)` to create a new message.
+ */
+export const VerifyOTPResponseSchema: GenMessage<VerifyOTPResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 20);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ChangePasswordRequest
+ */
+export type ChangePasswordRequest = Message<"contracts.generic.auth.v1.message.ChangePasswordRequest"> & {
+  /**
+   * @generated from field: string old_password = 1;
+   */
+  oldPassword: string;
+
+  /**
+   * @generated from field: string new_password = 2;
+   */
+  newPassword: string;
+
+  /**
+   * Mật khẩu mới nhập lại để đối chiếu
+   *
+   * @generated from field: string confirm_password = 3;
+   */
+  confirmPassword: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ChangePasswordRequest.
+ * Use `create(ChangePasswordRequestSchema)` to create a new message.
+ */
+export const ChangePasswordRequestSchema: GenMessage<ChangePasswordRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 21);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ChangePasswordResponse
+ */
+export type ChangePasswordResponse = Message<"contracts.generic.auth.v1.message.ChangePasswordResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ChangePasswordResponse.
+ * Use `create(ChangePasswordResponseSchema)` to create a new message.
+ */
+export const ChangePasswordResponseSchema: GenMessage<ChangePasswordResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 22);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ResetPasswordRequest
+ */
+export type ResetPasswordRequest = Message<"contracts.generic.auth.v1.message.ResetPasswordRequest"> & {
+  /**
+   * One-time reset token returned from VerifyOTP
+   *
+   * @generated from field: string reset_token = 1;
+   */
+  resetToken: string;
+
+  /**
+   * @generated from field: string new_password = 2;
+   */
+  newPassword: string;
+
+  /**
+   * Mật khẩu mới nhập lại để đối chiếu
+   *
+   * @generated from field: string confirm_password = 3;
+   */
+  confirmPassword: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ResetPasswordRequest.
+ * Use `create(ResetPasswordRequestSchema)` to create a new message.
+ */
+export const ResetPasswordRequestSchema: GenMessage<ResetPasswordRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 23);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ResetPasswordResponse
+ */
+export type ResetPasswordResponse = Message<"contracts.generic.auth.v1.message.ResetPasswordResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ResetPasswordResponse.
+ * Use `create(ResetPasswordResponseSchema)` to create a new message.
+ */
+export const ResetPasswordResponseSchema: GenMessage<ResetPasswordResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 24);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.BrandRequest
+ */
+export type BrandRequest = Message<"contracts.generic.auth.v1.message.BrandRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string user_id = 2;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: string brand_name = 3;
+   */
+  brandName: string;
+
+  /**
+   * @generated from field: string description = 4;
+   */
+  description: string;
+
+  /**
+   * @generated from field: string contact_phone = 5;
+   */
+  contactPhone: string;
+
+  /**
+   * @generated from field: string address = 6;
+   */
+  address: string;
+
+  /**
+   * @generated from field: contracts.generic.auth.v1.message.BrandRequestStatus status = 7;
+   */
+  status: BrandRequestStatus;
+
+  /**
+   * @generated from field: string rejection_reason = 8;
+   */
+  rejectionReason: string;
+
+  /**
+   * @generated from field: string reviewed_by = 9;
+   */
+  reviewedBy: string;
+
+  /**
+   * @generated from field: string created_at = 10;
+   */
+  createdAt: string;
+
+  /**
+   * @generated from field: string reviewed_at = 11;
+   */
+  reviewedAt: string;
+
+  /**
+   * @generated from field: string updated_at = 12;
+   */
+  updatedAt: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.BrandRequest.
+ * Use `create(BrandRequestSchema)` to create a new message.
+ */
+export const BrandRequestSchema: GenMessage<BrandRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 25);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.RegisterBrandRequest
+ */
+export type RegisterBrandRequest = Message<"contracts.generic.auth.v1.message.RegisterBrandRequest"> & {
+  /**
+   * @generated from field: string brand_name = 1;
+   */
+  brandName: string;
+
+  /**
+   * @generated from field: string description = 2;
+   */
+  description: string;
+
+  /**
+   * @generated from field: string contact_phone = 3;
+   */
+  contactPhone: string;
+
+  /**
+   * @generated from field: string address = 4;
+   */
+  address: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.RegisterBrandRequest.
+ * Use `create(RegisterBrandRequestSchema)` to create a new message.
+ */
+export const RegisterBrandRequestSchema: GenMessage<RegisterBrandRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 26);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.RegisterBrandResponse
+ */
+export type RegisterBrandResponse = Message<"contracts.generic.auth.v1.message.RegisterBrandResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.RegisterBrandResponse.
+ * Use `create(RegisterBrandResponseSchema)` to create a new message.
+ */
+export const RegisterBrandResponseSchema: GenMessage<RegisterBrandResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 27);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ApproveBrandRequest
+ */
+export type ApproveBrandRequest = Message<"contracts.generic.auth.v1.message.ApproveBrandRequest"> & {
+  /**
+   * @generated from field: string request_id = 1;
+   */
+  requestId: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ApproveBrandRequest.
+ * Use `create(ApproveBrandRequestSchema)` to create a new message.
+ */
+export const ApproveBrandRequestSchema: GenMessage<ApproveBrandRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 28);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ApproveBrandResponse
+ */
+export type ApproveBrandResponse = Message<"contracts.generic.auth.v1.message.ApproveBrandResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ApproveBrandResponse.
+ * Use `create(ApproveBrandResponseSchema)` to create a new message.
+ */
+export const ApproveBrandResponseSchema: GenMessage<ApproveBrandResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 29);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.RejectBrandRequest
+ */
+export type RejectBrandRequest = Message<"contracts.generic.auth.v1.message.RejectBrandRequest"> & {
+  /**
+   * @generated from field: string request_id = 1;
+   */
+  requestId: string;
+
+  /**
+   * @generated from field: string reason = 2;
+   */
+  reason: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.RejectBrandRequest.
+ * Use `create(RejectBrandRequestSchema)` to create a new message.
+ */
+export const RejectBrandRequestSchema: GenMessage<RejectBrandRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 30);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.RejectBrandResponse
+ */
+export type RejectBrandResponse = Message<"contracts.generic.auth.v1.message.RejectBrandResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.RejectBrandResponse.
+ * Use `create(RejectBrandResponseSchema)` to create a new message.
+ */
+export const RejectBrandResponseSchema: GenMessage<RejectBrandResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 31);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ListBrandRequestsRequest
+ */
+export type ListBrandRequestsRequest = Message<"contracts.generic.auth.v1.message.ListBrandRequestsRequest"> & {
+  /**
+   * @generated from field: contracts.generic.auth.v1.message.BrandRequestStatus status = 1;
+   */
+  status: BrandRequestStatus;
+
+  /**
+   * @generated from field: int32 page = 2;
+   */
+  page: number;
+
+  /**
+   * @generated from field: int32 page_size = 3;
+   */
+  pageSize: number;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ListBrandRequestsRequest.
+ * Use `create(ListBrandRequestsRequestSchema)` to create a new message.
+ */
+export const ListBrandRequestsRequestSchema: GenMessage<ListBrandRequestsRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 32);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ListBrandRequestsResponse
+ */
+export type ListBrandRequestsResponse = Message<"contracts.generic.auth.v1.message.ListBrandRequestsResponse"> & {
+  /**
+   * @generated from field: repeated contracts.generic.auth.v1.message.BrandRequest items = 1;
+   */
+  items: BrandRequest[];
+
+  /**
+   * @generated from field: int32 total = 2;
+   */
+  total: number;
+
+  /**
+   * @generated from field: int32 page = 3;
+   */
+  page: number;
+
+  /**
+   * @generated from field: int32 page_size = 4;
+   */
+  pageSize: number;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ListBrandRequestsResponse.
+ * Use `create(ListBrandRequestsResponseSchema)` to create a new message.
+ */
+export const ListBrandRequestsResponseSchema: GenMessage<ListBrandRequestsResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 33);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.UserInfo
+ */
+export type UserInfo = Message<"contracts.generic.auth.v1.message.UserInfo"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string full_name = 2;
+   */
+  fullName: string;
+
+  /**
+   * Vai trò người dùng trong hệ thống: "admin", "user", "brand"
+   *
+   * @generated from field: string role = 3;
+   */
+  role: string;
+
+  /**
+   * Trạng thái tài khoản: "active", "locked"
+   *
+   * @generated from field: string status = 4;
+   */
+  status: string;
+
+  /**
+   * @generated from field: string identity_type = 5;
+   */
+  identityType: string;
+
+  /**
+   * @generated from field: string identifier = 6;
+   */
+  identifier: string;
+
+  /**
+   * @generated from field: string created_at = 7;
+   */
+  createdAt: string;
+
+  /**
+   * @generated from field: string updated_at = 8;
+   */
+  updatedAt: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.UserInfo.
+ * Use `create(UserInfoSchema)` to create a new message.
+ */
+export const UserInfoSchema: GenMessage<UserInfo> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 34);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ListUsersRequest
+ */
+export type ListUsersRequest = Message<"contracts.generic.auth.v1.message.ListUsersRequest"> & {
+  /**
+   * Lọc theo vai trò: "admin", "user", "brand" (để trống nếu lấy tất cả)
+   *
+   * @generated from field: string role = 1;
+   */
+  role: string;
+
+  /**
+   * Lọc theo trạng thái: "active", "locked" (để trống nếu lấy tất cả)
+   *
+   * @generated from field: string status = 2;
+   */
+  status: string;
+
+  /**
+   * Tìm kiếm theo họ tên, email hoặc số điện thoại
+   *
+   * @generated from field: string search = 3;
+   */
+  search: string;
+
+  /**
+   * @generated from field: int32 page = 4;
+   */
+  page: number;
+
+  /**
+   * @generated from field: int32 page_size = 5;
+   */
+  pageSize: number;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ListUsersRequest.
+ * Use `create(ListUsersRequestSchema)` to create a new message.
+ */
+export const ListUsersRequestSchema: GenMessage<ListUsersRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 35);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.ListUsersResponse
+ */
+export type ListUsersResponse = Message<"contracts.generic.auth.v1.message.ListUsersResponse"> & {
+  /**
+   * @generated from field: repeated contracts.generic.auth.v1.message.UserInfo items = 1;
+   */
+  items: UserInfo[];
+
+  /**
+   * @generated from field: int32 total = 2;
+   */
+  total: number;
+
+  /**
+   * @generated from field: int32 page = 3;
+   */
+  page: number;
+
+  /**
+   * @generated from field: int32 page_size = 4;
+   */
+  pageSize: number;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.ListUsersResponse.
+ * Use `create(ListUsersResponseSchema)` to create a new message.
+ */
+export const ListUsersResponseSchema: GenMessage<ListUsersResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 36);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.LockUserRequest
+ */
+export type LockUserRequest = Message<"contracts.generic.auth.v1.message.LockUserRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: string reason = 2;
+   */
+  reason: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.LockUserRequest.
+ * Use `create(LockUserRequestSchema)` to create a new message.
+ */
+export const LockUserRequestSchema: GenMessage<LockUserRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 37);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.LockUserResponse
+ */
+export type LockUserResponse = Message<"contracts.generic.auth.v1.message.LockUserResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.LockUserResponse.
+ * Use `create(LockUserResponseSchema)` to create a new message.
+ */
+export const LockUserResponseSchema: GenMessage<LockUserResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 38);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.UnlockUserRequest
+ */
+export type UnlockUserRequest = Message<"contracts.generic.auth.v1.message.UnlockUserRequest"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.UnlockUserRequest.
+ * Use `create(UnlockUserRequestSchema)` to create a new message.
+ */
+export const UnlockUserRequestSchema: GenMessage<UnlockUserRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 39);
+
+/**
+ * @generated from message contracts.generic.auth.v1.message.UnlockUserResponse
+ */
+export type UnlockUserResponse = Message<"contracts.generic.auth.v1.message.UnlockUserResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+
+  /**
+   * @generated from field: string message = 2;
+   */
+  message: string;
+};
+
+/**
+ * Describes the message contracts.generic.auth.v1.message.UnlockUserResponse.
+ * Use `create(UnlockUserResponseSchema)` to create a new message.
+ */
+export const UnlockUserResponseSchema: GenMessage<UnlockUserResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_generic_auth_v1_message_auth_messages, 40);
+
+/**
+ * @generated from enum contracts.generic.auth.v1.message.BrandRequestStatus
+ */
+export enum BrandRequestStatus {
+  /**
+   * @generated from enum value: BRAND_REQUEST_STATUS_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: BRAND_REQUEST_STATUS_PENDING = 1;
+   */
+  PENDING = 1,
+
+  /**
+   * @generated from enum value: BRAND_REQUEST_STATUS_APPROVED = 2;
+   */
+  APPROVED = 2,
+
+  /**
+   * @generated from enum value: BRAND_REQUEST_STATUS_REJECTED = 3;
+   */
+  REJECTED = 3,
+}
+
+/**
+ * Describes the enum contracts.generic.auth.v1.message.BrandRequestStatus.
+ */
+export const BrandRequestStatusSchema: GenEnum<BrandRequestStatus> = /*@__PURE__*/
+  enumDesc(file_contracts_generic_auth_v1_message_auth_messages, 0);
 

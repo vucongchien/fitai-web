@@ -4,13 +4,15 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/generic/notification/v1/event/notification_sent.proto.
  */
 export const file_contracts_generic_notification_v1_event_notification_sent: GenFile = /*@__PURE__*/
-  fileDesc("Cj9jb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvZXZlbnQvbm90aWZpY2F0aW9uX3NlbnQucHJvdG8SJ2NvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5ldmVudCJ7ChBOb3RpZmljYXRpb25TZW50EhcKD25vdGlmaWNhdGlvbl9pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEg8KB2NoYW5uZWwYAyABKAkSDQoFdGl0bGUYBCABKAkSDAoEYm9keRgFIAEoCRIPCgdzZW50X2F0GAYgASgJQnJacGdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2dlbmVyaWMvbm90aWZpY2F0aW9uL3YxL2V2ZW50O25vdGlmaWNhdGlvbnYxZXZlbnRiBnByb3RvMw");
+  fileDesc("Cj9jb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvZXZlbnQvbm90aWZpY2F0aW9uX3NlbnQucHJvdG8SJ2NvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5ldmVudCKXAQoQTm90aWZpY2F0aW9uU2VudBIXCg9ub3RpZmljYXRpb25faWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRIPCgdjaGFubmVsGAMgASgJEg0KBXRpdGxlGAQgASgJEgwKBGJvZHkYBSABKAkSKwoHc2VudF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCclpwZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvZXZlbnQ7bm90aWZpY2F0aW9udjFldmVudGIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message contracts.generic.notification.v1.event.NotificationSent
@@ -44,9 +46,9 @@ export type NotificationSent = Message<"contracts.generic.notification.v1.event.
   body: string;
 
   /**
-   * @generated from field: string sent_at = 6;
+   * @generated from field: google.protobuf.Timestamp sent_at = 6;
    */
-  sentAt: string;
+  sentAt?: Timestamp | undefined;
 };
 
 /**
