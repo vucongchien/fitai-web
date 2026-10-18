@@ -30,7 +30,7 @@ export function useRegisterFlow() {
 
   const handleSendOtp = async (): Promise<boolean> => {
     if (!isIdentifierValid) {
-      setErrorMessage("Vui lòng nhập số điện thoại hoặc email hợp lệ để đăng ký.");
+      setErrorMessage("Please enter a valid email or phone number to register.");
       return false;
     }
     setErrorMessage(null);
@@ -76,11 +76,11 @@ export function useRegisterFlow() {
   ) => {
     e.preventDefault();
     if (!data.fullName.trim() || !data.password || !data.dateOfBirth) {
-      setErrorMessage("Vui lòng điền đầy đủ họ tên, mật khẩu và ngày sinh.");
+      setErrorMessage("Please fill in your full name, password, and date of birth.");
       return;
     }
     if (data.password.length < 8) {
-      setErrorMessage("Mật khẩu phải có tối thiểu 8 ký tự.");
+      setErrorMessage("Password must be at least 8 characters.");
       return;
     }
     setErrorMessage(null);

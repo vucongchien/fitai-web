@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
 import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
@@ -54,13 +55,6 @@ export function RegisterProfileSubform({
 
   return (
     <form className="auth-step-profile-details" onSubmit={handleSubmit}>
-      <div className="auth-profile-header">
-        <h3 className="auth-step-title">Set up your profile</h3>
-        <p className="auth-step-desc">
-          Create your profile and choose your unique avatar style.
-        </p>
-      </div>
-
       <AvatarCreator
         disabled={isPending}
         name={fullName}
@@ -84,29 +78,29 @@ export function RegisterProfileSubform({
       </div>
 
       <div className="auth-field">
-        <div className="auth-label-row">
-          <label className="auth-label" htmlFor="register-password">
-            Password
-          </label>
+        <label className="auth-label" htmlFor="register-password">
+          Password
+        </label>
+        <div className="auth-input-wrapper">
+          <input
+            id="register-password"
+            autoComplete="new-password"
+            className="auth-input"
+            disabled={isPending}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="At least 8 characters"
+            type={showPassword ? "text" : "password"}
+            value={password}
+          />
           <button
-            className="auth-toggle-pwd-btn"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="auth-input-adornment"
             onClick={() => setShowPassword(!showPassword)}
-            tabIndex={-1}
             type="button"
           >
-            {showPassword ? "Hide" : "Show"}
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
-        <input
-          id="register-password"
-          autoComplete="new-password"
-          className="auth-input"
-          disabled={isPending}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="At least 8 characters"
-          type={showPassword ? "text" : "password"}
-          value={password}
-        />
       </div>
 
       <div className="auth-form-row">

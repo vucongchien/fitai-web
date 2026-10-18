@@ -10,6 +10,7 @@ vi.mock("next/headers", () => ({
 
 const mockSendOTP = vi.fn();
 const mockVerifyOTP = vi.fn();
+const mockResetPassword = vi.fn();
 const mockLogin = vi.fn();
 const mockRegister = vi.fn();
 const mockGetProfile = vi.fn();
@@ -19,6 +20,7 @@ vi.mock("@connectrpc/connect", () => ({
   createClient: vi.fn(() => ({
     sendOTP: mockSendOTP,
     verifyOTP: mockVerifyOTP,
+    resetPassword: mockResetPassword,
     login: mockLogin,
     register: mockRegister,
     getProfile: mockGetProfile,
@@ -34,6 +36,7 @@ import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_
 import {
   loginWithPasswordAction,
   registerAction,
+  resetPasswordAction,
   sendOtpAction,
   verifyOtpAction,
 } from "@/features/auth/server/auth-actions";
@@ -48,7 +51,7 @@ describe("auth-actions", () => {
     it("returns error for empty or invalid identifier", async () => {
       const res = await sendOtpAction("", "login");
       expect(res.success).toBe(false);
-      expect(res.error).toContain("hợp lệ");
+      expect(res.error).toContain("valid");
     });
 
     it("normalizes phone and calls sendOTP RPC successfully", async () => {
@@ -68,13 +71,31 @@ describe("auth-actions", () => {
         purpose: "login",
       });
     });
+
+    it("sends OTP for reset_password purpose correctly", async () => {
+      mockSendOTP.mockResolvedValueOnce({
+        otpToken: "reset_otp_token",
+        expiresInSeconds: 120n,
+      });
+
+      const res = await sendOtpAction("user@example.com", "reset_password");
+      expect(res.success).toBe(true);
+      if (res.success) {
+        expect(res.data.otpToken).toBe("reset_otp_token");
+        expect(res.data.expiresInSeconds).toBe(120);
+      }
+      expect(mockSendOTP).toHaveBeenCalledWith({
+        identifier: "user@example.com",
+        purpose: "reset_password",
+      });
+    });
   });
 
   describe("verifyOtpAction", () => {
     it("rejects code not having 6 digits", async () => {
       const res = await verifyOtpAction("tok", "123");
       expect(res.success).toBe(false);
-      expect(res.error).toContain("6 chữ số");
+      expect(res.error).toContain("6 digits");
     });
 
     it("returns valid response when RPC returns valid true", async () => {
@@ -99,7 +120,7 @@ describe("auth-actions", () => {
 
       const res = await verifyOtpAction("tok_123", "000000");
       expect(res.success).toBe(false);
-      expect(res.error).toBe("Mã sai rồi");
+      expect(res.error).toBe("Invalid verification code. Please check and try again.");
     });
   });
 
@@ -153,6 +174,51 @@ describe("auth-actions", () => {
         gender: Gender.MALE,
         dateOfBirth: "1995-01-01",
       });
+    });
+  });
+
+  describe("resetPasswordAction", () => {
+    it("rejects when resetToken is empty", async () => {
+      const res = await resetPasswordAction("", "newpassword123", "newpassword123");
+      expect(res.success).toBe(false);
+      expect(res.error).toContain("invalid");
+    });
+
+    it("rejects when password is shorter than 8 characters", async () => {
+      const res = await resetPasswordAction("tok_123", "short", "short");
+      expect(res.success).toBe(false);
+      expect(res.error).toContain("8 characters");
+    });
+
+    it("rejects when newPassword and confirmPassword do not match", async () => {
+      const res = await resetPasswordAction("tok_123", "password123", "different123");
+      expect(res.success).toBe(false);
+      expect(res.error).toContain("do not match");
+    });
+
+    it("calls resetPassword RPC and succeeds", async () => {
+      mockResetPassword.mockResolvedValueOnce({
+        message: "Password has been reset successfully",
+      });
+
+      const res = await resetPasswordAction("tok_valid", "newpassword123", "newpassword123");
+      expect(res.success).toBe(true);
+      if (res.success) {
+        expect(res.data.message).toBe("Password has been reset successfully");
+      }
+      expect(mockResetPassword).toHaveBeenCalledWith({
+        resetToken: "tok_valid",
+        newPassword: "newpassword123",
+        confirmPassword: "newpassword123",
+      });
+    });
+
+    it("handles RPC failure gracefully", async () => {
+      mockResetPassword.mockRejectedValueOnce(new Error("Token has expired"));
+
+      const res = await resetPasswordAction("tok_expired", "newpassword123", "newpassword123");
+      expect(res.success).toBe(false);
+      expect(res.error).toBe("Token has expired");
     });
   });
 });

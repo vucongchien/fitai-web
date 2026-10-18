@@ -6,10 +6,16 @@ import { useLoginFlow } from "@/features/auth/model/use-login-flow";
 import { FacebookMark, GoogleMark } from "@/features/auth/ui/provider-marks";
 
 interface LoginFormProps {
+  defaultIdentifier?: string;
+  onForgotPassword?: () => void;
   onSwitchToRegister: () => void;
 }
 
-export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
+export function LoginForm({
+  defaultIdentifier = "",
+  onForgotPassword,
+  onSwitchToRegister,
+}: LoginFormProps) {
   const {
     identifier,
     setIdentifier,
@@ -23,7 +29,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     handlePasswordSubmit,
     handleGoogleLogin,
     handleFacebookLogin,
-  } = useLoginFlow();
+  } = useLoginFlow(defaultIdentifier);
 
   const isDev = process.env.NODE_ENV === "development";
 
@@ -101,7 +107,7 @@ export function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             </label>
             <button
               className="auth-forgot-link"
-              onClick={() => alert("Password reset link will be sent to your email or phone.")}
+              onClick={onForgotPassword}
               type="button"
             >
               Forgot password?

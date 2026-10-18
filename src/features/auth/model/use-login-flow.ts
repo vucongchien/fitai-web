@@ -7,9 +7,9 @@ import { detectIdentifierType } from "@/features/auth/model/auth-validation";
 import { loginWithPasswordAction } from "@/features/auth/server/auth-actions";
 import { openOAuthPopup } from "@/features/auth/ui/login-actions";
 
-export function useLoginFlow() {
+export function useLoginFlow(defaultIdentifier: string = "") {
   const router = useRouter();
-  const [identifier, setIdentifier] = useState("");
+  const [identifier, setIdentifier] = useState(defaultIdentifier);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

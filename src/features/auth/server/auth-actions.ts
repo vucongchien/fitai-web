@@ -9,6 +9,7 @@ import { createServerTransport } from "@/shared/api/server/transport";
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
 import { resolveEntryRoute } from "@/shared/auth/route-decision";
 import {
+  cleanAuthErrorMessage,
   detectIdentifierType,
   normalizePhoneNumber,
 } from "@/features/auth/model/auth-validation";
@@ -64,11 +65,11 @@ async function persistSessionCookies(accessToken: string, refreshToken: string, 
 
 export async function sendOtpAction(
   rawIdentifier: string,
-  purpose: "login" | "register",
+  purpose: "login" | "register" | "reset_password",
 ): Promise<AuthActionResult<{ otpToken: string; expiresInSeconds: number }>> {
   const identifier = formatIdentifier(rawIdentifier);
   if (!identifier) {
-    return { success: false, error: "Vui lòng nhập số điện thoại hoặc email hợp lệ." };
+    return { success: false, error: "Please enter a valid email or phone number." };
   }
 
   if (!process.env.FITAI_RPC_URL) {
@@ -92,8 +93,10 @@ export async function sendOtpAction(
       },
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Không thể gửi mã OTP. Vui lòng thử lại.";
-    return { success: false, error: message };
+    return {
+      success: false,
+      error: cleanAuthErrorMessage(error, "Failed to send verification code. Please try again."),
+    };
   }
 }
 
@@ -102,7 +105,7 @@ export async function verifyOtpAction(
   code: string,
 ): Promise<AuthActionResult<{ valid: boolean; resetToken?: string }>> {
   if (!otpToken || !code || code.length !== 6) {
-    return { success: false, error: "Mã OTP phải gồm 6 chữ số." };
+    return { success: false, error: "Verification code must be 6 digits." };
   }
 
   if (!process.env.FITAI_RPC_URL) {
@@ -113,7 +116,10 @@ export async function verifyOtpAction(
     const client = createClient(AuthService, createServerTransport());
     const response = await client.verifyOTP({ otpToken, code });
     if (!response.valid) {
-      return { success: false, error: response.message || "Mã xác thực không hợp lệ hoặc đã hết hạn." };
+      return {
+        success: false,
+        error: cleanAuthErrorMessage(response.message, "Invalid or expired verification code."),
+      };
     }
     return {
       success: true,
@@ -123,8 +129,10 @@ export async function verifyOtpAction(
       },
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Xác thực mã OTP thất bại.";
-    return { success: false, error: message };
+    return {
+      success: false,
+      error: cleanAuthErrorMessage(error, "Invalid or expired verification code."),
+    };
   }
 }
 
@@ -164,7 +172,7 @@ export async function registerAction(payload: {
 }): Promise<AuthActionResult<{ redirectUrl: string }>> {
   const identifier = formatIdentifier(payload.identifier);
   if (!identifier || !payload.password || !payload.fullName) {
-    return { success: false, error: "Vui lòng điền đầy đủ các thông tin bắt buộc." };
+    return { success: false, error: "Please fill in all required fields." };
   }
 
   if (!process.env.FITAI_RPC_URL) {
@@ -199,7 +207,40 @@ export async function registerAction(payload: {
 
     return { success: true, data: { redirectUrl: "/onboarding" } };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Đăng ký không thành công. Vui lòng thử lại.";
-    return { success: false, error: message };
+    return {
+      success: false,
+      error: cleanAuthErrorMessage(error, "Registration failed. Please try again."),
+    };
+  }
+}
+
+export async function resetPasswordAction(
+  resetToken: string,
+  newPassword: string,
+  confirmPassword: string,
+): Promise<AuthActionResult<{ message: string }>> {
+  if (!resetToken) {
+    return { success: false, error: "Reset session is invalid. Please start over." };
+  }
+  if (newPassword.length < 8) {
+    return { success: false, error: "Password must be at least 8 characters." };
+  }
+  if (newPassword !== confirmPassword) {
+    return { success: false, error: "Passwords do not match." };
+  }
+
+  if (!process.env.FITAI_RPC_URL) {
+    return { success: true, data: { message: "Password reset successful." } };
+  }
+
+  try {
+    const client = createClient(AuthService, createServerTransport());
+    const response = await client.resetPassword({ resetToken, newPassword, confirmPassword });
+    return { success: true, data: { message: response.message || "Password reset successful." } };
+  } catch (error) {
+    return {
+      success: false,
+      error: cleanAuthErrorMessage(error, "Failed to reset password. Please try again."),
+    };
   }
 }

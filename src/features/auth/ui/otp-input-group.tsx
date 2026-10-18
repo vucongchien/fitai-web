@@ -96,7 +96,7 @@ export function OtpInputGroup({
             ref={(el) => {
               inputsRef.current[index] = el;
             }}
-            aria-label={`Mã OTP số ${index + 1}`}
+            aria-label={`OTP digit ${index + 1}`}
             autoComplete="one-time-code"
             className={`otp-box ${errorMessage ? "otp-box--error" : ""}`}
             disabled={disabled}

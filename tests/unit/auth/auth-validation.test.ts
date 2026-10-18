@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  cleanAuthErrorMessage,
   detectIdentifierType,
   getEmailProviderUrl,
   isValidEmail,
@@ -188,6 +189,41 @@ describe("auth-validation edge cases & security tests", () => {
       expect(getEmailProviderUrl("user@yahoo.com")).toBeNull();
       expect(getEmailProviderUrl("")).toBeNull();
       expect(getEmailProviderUrl("invalid-email")).toBeNull();
+    });
+  });
+
+  describe("cleanAuthErrorMessage", () => {
+    it("handles maximum attempts exceeded error with gRPC code and Vietnamese text", () => {
+      const raw = "[invalid_argument] xác thực OTP thất bại: maximum otp verification attempts exceeded";
+      expect(cleanAuthErrorMessage(raw)).toBe(
+        "Maximum verification attempts exceeded. Please request a new code.",
+      );
+    });
+
+    it("strips gRPC status code prefix and maps invalid OTP to English", () => {
+      const raw = "[invalid_argument] xác thực OTP thất bại: mã OTP không chính xác";
+      expect(cleanAuthErrorMessage(raw)).toBe(
+        "Invalid verification code. Please check and try again.",
+      );
+    });
+
+    it("maps expired token message to English", () => {
+      const raw = "[deadline_exceeded] Mã OTP đã hết hạn";
+      expect(cleanAuthErrorMessage(raw)).toBe(
+        "Verification code has expired. Please request a new code.",
+      );
+    });
+
+    it("falls back to English default if backend message is unmapped Vietnamese", () => {
+      const raw = "[internal] lỗi hệ thống nội bộ không xác định";
+      expect(cleanAuthErrorMessage(raw, "Something went wrong. Please try again.")).toBe(
+        "Something went wrong. Please try again.",
+      );
+    });
+
+    it("preserves already clean English messages without gRPC prefix", () => {
+      const raw = "[permission_denied] Access denied for this resource";
+      expect(cleanAuthErrorMessage(raw)).toBe("Access denied for this resource");
     });
   });
 });

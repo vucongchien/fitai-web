@@ -5,7 +5,6 @@ import { Pencil } from "lucide-react";
 import { maskIdentifier } from "@/features/auth/model/auth-validation";
 import { useRegisterFlow } from "@/features/auth/model/use-register-flow";
 import { OtpInputGroup } from "@/features/auth/ui/otp-input-group";
-import { GmailMark } from "@/features/auth/ui/provider-marks";
 import { RegisterProfileSubform } from "@/features/auth/ui/register-profile-subform";
 import { Button } from "@/shared/ui/button";
 
@@ -23,11 +22,17 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     setErrorMessage,
     isPending,
     isIdentifierValid,
+    mailUrl,
     handleSendOtp,
     handleVerifyOtp,
     handleProfileSubmit,
     resetToIdentifier,
   } = useRegisterFlow();
+
+  const isEmail = identifier.includes("@");
+  const emailDomain = isEmail ? identifier.split("@")[1]?.trim() : "";
+  const mailTargetUrl =
+    mailUrl || (isEmail && emailDomain ? `https://${emailDomain}` : null);
 
   return (
     <div className="register-form-container">
@@ -41,15 +46,22 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               Enter the 6-digit code sent to
             </p>
             <div className="auth-recipient-center">
-              {identifier.toLowerCase().includes("@") && (
-                <div className="auth-provider-logo-top">
-                  <GmailMark size={28} />
-                </div>
-              )}
               <div className="auth-recipient-row">
-                <span className="auth-identifier-badge">
-                  <strong>{maskIdentifier(identifier)}</strong>
-                </span>
+                {mailTargetUrl ? (
+                  <a
+                    className="auth-identifier-badge auth-identifier-link"
+                    href={mailTargetUrl}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    title="Open inbox in new tab"
+                  >
+                    <span>{maskIdentifier(identifier)}</span>
+                  </a>
+                ) : (
+                  <span className="auth-identifier-badge">
+                    <span>{maskIdentifier(identifier)}</span>
+                  </span>
+                )}
                 <button
                   aria-label="Change phone or email"
                   className="auth-inline-change-btn"

@@ -16,6 +16,7 @@ vi.mock("@/features/auth/server/auth-actions", () => ({
   sendOtpAction: vi.fn(),
   verifyOtpAction: vi.fn(),
   registerAction: vi.fn(),
+  resetPasswordAction: vi.fn(),
 }));
 
 describe("AuthPanel component", () => {
@@ -96,8 +97,50 @@ describe("AuthPanel component", () => {
     const title = await screen.findByRole("heading", { level: 2, name: /Check your email/i });
     expect(title).toBeInTheDocument();
 
+    const emailLink = screen.getByRole("link", { name: /t•••@gmail.com/i });
+    expect(emailLink).toHaveAttribute("href", "https://mail.google.com");
+    expect(emailLink).toHaveAttribute("target", "_blank");
+    expect(emailLink).toHaveAttribute("rel", "noopener noreferrer");
+
     // Click Change to go back
     fireEvent.click(screen.getByRole("button", { name: /Change/i }));
     expect(await screen.findByRole("heading", { level: 2, name: /Create your account/i })).toBeInTheDocument();
+  });
+
+  it("switches to 'Reset password' when clicking 'Forgot password?'", () => {
+    render(<AuthPanel />);
+    const forgotLink = screen.getByRole("button", { name: /Forgot password\?/i });
+    fireEvent.click(forgotLink);
+
+    expect(screen.getByRole("heading", { level: 2, name: /Reset password/i })).toBeInTheDocument();
+  });
+
+  it("switches back to 'Log in' from forgot password when clicking 'Back to login'", () => {
+    render(<AuthPanel />);
+    fireEvent.click(screen.getByRole("button", { name: /Forgot password\?/i }));
+    expect(screen.getByRole("heading", { level: 2, name: /Reset password/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Back to login/i }));
+    expect(screen.getByRole("heading", { level: 2, name: /^Log in$/i })).toBeInTheDocument();
+  });
+
+  it("progresses to OTP step in forgot password flow when entering identifier", async () => {
+    const { sendOtpAction } = await import("@/features/auth/server/auth-actions");
+    (sendOtpAction as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      success: true,
+      data: { otpToken: "reset-dummy-token", expiresInSeconds: 60 },
+    });
+
+    render(<AuthPanel />);
+    fireEvent.click(screen.getByRole("button", { name: /Forgot password\?/i }));
+
+    const input = screen.getByLabelText(/Email or phone/i);
+    fireEvent.change(input, { target: { value: "reset@gmail.com" } });
+
+    const sendBtn = screen.getByRole("button", { name: /Send verification code/i });
+    fireEvent.click(sendBtn);
+
+    const title = await screen.findByRole("heading", { level: 2, name: /Check your email/i });
+    expect(title).toBeInTheDocument();
   });
 });
