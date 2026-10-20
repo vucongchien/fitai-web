@@ -70,7 +70,7 @@ function ProfileSkeletonFallback() {
 
       {/* 2. Tabs Row */}
       <div className="flex border-b border-neutral-200 bg-white">
-        {["Threads", "Replies", "Media", "Reposts"].map((t, idx) => (
+        {["Threads", "Replies", "Media"].map((t, idx) => (
           <div
             key={t}
             className={[

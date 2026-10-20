@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, MessageCircle, Repeat2, Send } from "lucide-react";
+import { Heart, MessageCircle, Send } from "lucide-react";
 
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
 import { reactTargetAction } from "../server/social-actions";
@@ -37,8 +37,6 @@ export function ReactionBar({
 }: Props) {
   const [current, setCurrent] = useState<ReactionType>(initialReaction);
   const [count, setCount] = useState(initialCount ?? 0);
-  const [repostCount, setRepostCount] = useState(0);
-  const [isReposted, setIsReposted] = useState(false);
   const [pending, setPending] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -81,13 +79,6 @@ export function ReactionBar({
     } finally {
       setPending(false);
     }
-  }
-
-  function handleToggleRepost() {
-    hapticFeedback.repSuccess();
-    const next = !isReposted;
-    setIsReposted(next);
-    setRepostCount((prev) => (next ? prev + 1 : Math.max(0, prev - 1)));
   }
 
   function handleShare() {
@@ -151,34 +142,7 @@ export function ReactionBar({
         )}
       </button>
 
-      {/* 3. Repost */}
-      <button
-        type="button"
-        aria-label="Repost"
-        onClick={handleToggleRepost}
-        className="group flex items-center gap-1.5 p-2 rounded-full hover:bg-neutral-50 active:scale-80 transition-all duration-150"
-      >
-        <Repeat2
-          size={19}
-          strokeWidth={1.9}
-          className={[
-            "transition-colors duration-150",
-            isReposted ? "text-emerald-500" : "text-neutral-900 group-hover:text-emerald-600",
-          ].join(" ")}
-        />
-        {repostCount > 0 && (
-          <span
-            className={[
-              "text-xs font-medium tracking-tight",
-              isReposted ? "text-emerald-500 font-semibold" : "text-neutral-600",
-            ].join(" ")}
-          >
-            {formatSocialCount(repostCount)}
-          </span>
-        )}
-      </button>
-
-      {/* 4. Share / Send */}
+      {/* 3. Share / Send */}
       <button
         type="button"
         aria-label="Share"

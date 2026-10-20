@@ -44,7 +44,7 @@ function InstagramIcon({ size = 20, className = "" }: { size?: number; className
   );
 }
 
-type TabKey = "threads" | "replies" | "media" | "reposts";
+type TabKey = "threads" | "replies" | "media";
 
 export function PublicProfileView({ profile, currentUserId }: Props) {
   const { summary } = profile;
@@ -170,14 +170,13 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
         </div>
       </div>
 
-      {/* 4. Tabs Bar (Threads, Replies, Media, Reposts) */}
+      {/* 4. Tabs Bar (Threads, Replies, Media) */}
       <div className="flex border-b border-neutral-200 bg-white">
         {(
           [
             { key: "threads", label: "Threads" },
             { key: "replies", label: "Replies" },
             { key: "media", label: "Media" },
-            { key: "reposts", label: "Reposts" },
           ] as const
         ).map((tab) => {
           const isActive = activeTab === tab.key;

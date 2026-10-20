@@ -118,7 +118,7 @@ export function FeedCard({ item, currentUserId }: Props) {
           </div>
         )}
 
-        {/* Reaction Bar (Heart, Message, Repost, Send) */}
+        {/* Reaction Bar (Heart, Message, Send) */}
         <ReactionBar
           feedItemId={item.id}
           initialReaction={userReaction}

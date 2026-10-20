@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MessageCircle, MoreHorizontal, Repeat2, Send, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Send, Trash2 } from "lucide-react";
 
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
 import type { CommentVM } from "../model/social.types";
@@ -138,7 +138,7 @@ export function ThreadCommentItem({
             {comment.content}
           </p>
 
-          {/* Action row (Heart, Reply, Repost, Share) */}
+          {/* Action row (Heart, Reply, Share) */}
           <div className="mt-2 -ml-2 flex items-center gap-4 text-neutral-800">
             <button
               type="button"
@@ -168,14 +168,6 @@ export function ThreadCommentItem({
               {comment.replies && comment.replies.length > 0 && (
                 <span className="text-xs text-neutral-500">{comment.replies.length}</span>
               )}
-            </button>
-
-            <button
-              type="button"
-              aria-label="Repost reply"
-              className="p-1.5 rounded-full hover:bg-neutral-50 active:scale-90 transition-all cursor-pointer text-neutral-700 hover:text-neutral-900"
-            >
-              <Repeat2 size={16} strokeWidth={1.8} />
             </button>
 
             <button
@@ -342,14 +334,6 @@ function ThreadReplyItem({
             className="flex items-center gap-1 p-1 rounded-full hover:bg-neutral-50 active:scale-90 transition-all cursor-pointer text-neutral-700 hover:text-neutral-900"
           >
             <MessageCircle size={15} strokeWidth={1.8} />
-          </button>
-
-          <button
-            type="button"
-            aria-label="Repost reply"
-            className="p-1 rounded-full hover:bg-neutral-50 active:scale-90 transition-all cursor-pointer text-neutral-700 hover:text-neutral-900"
-          >
-            <Repeat2 size={15} strokeWidth={1.8} />
           </button>
 
           <button
