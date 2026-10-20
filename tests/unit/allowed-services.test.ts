@@ -9,6 +9,12 @@ describe(isAllowedRpcPath, () => {
     ).toBe(true);
   });
 
+  it("allows social service methods", () => {
+    expect(
+      isAllowedRpcPath("contracts.supporting.social.v1.service.SocialService/GetActivityFeed"),
+    ).toBe(true);
+  });
+
   it("blocks admin services", () => {
     expect(
       isAllowedRpcPath(
