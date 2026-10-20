@@ -17,7 +17,7 @@
   --ref-danger-tint: #fff0f2;
   --ref-warning-text: #8a451d;
 
-  --color-canvas: var(--ref-soft-paper);
+  --color-canvas: var(--ref-clear-white);
   --color-surface: var(--ref-clear-white);
   --color-surface-subtle: var(--ref-mist);
   --color-text: var(--ref-true-ink);
