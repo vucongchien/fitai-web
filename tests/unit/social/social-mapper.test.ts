@@ -1,72 +1,87 @@
 import { describe, expect, it } from "vitest";
 
-import { mapComment, mapFeedItem, mapSocialSummary } from "@/features/social/model/social.mapper";
+import {
+  mapComment,
+  mapFeedItem,
+  mapSocialSummary,
+} from "@/features/social/model/social.mapper";
 
 describe("social mapper", () => {
   describe("mapFeedItem", () => {
     it("maps a basic POST item", () => {
       const protoItem: any = {
-        id: "feed-1",
+        id: "post-1",
         userId: "user-100",
-        authorName: "Alice Gym",
-        authorAvatarUrl: "https://example.com/avatar.jpg",
+        authorName: "Alice",
+        authorAvatarUrl: "https://example.com/alice.jpg",
         itemType: "FEED_ITEM_TYPE_POST",
-        caption: "Great leg day!",
+        caption: "Hello world!",
         reactionCount: 5,
         commentCount: 2,
         userReaction: "LIKE",
-        createdAt: { seconds: 1776500000n },
+        createdAt: { seconds: 1729000000n, nanos: 0 },
       };
 
       const result = mapFeedItem(protoItem);
 
       expect(result).toEqual({
-        id: "feed-1",
+        id: "post-1",
         userId: "user-100",
-        authorName: "Alice Gym",
-        authorAvatarUrl: "https://example.com/avatar.jpg",
+        authorName: "Alice",
+        authorAvatarUrl: "https://example.com/alice.jpg",
         itemType: "POST",
-        caption: "Great leg day!",
+        caption: "Hello world!",
         reactionCount: 5,
         commentCount: 2,
         userReaction: "LIKE",
-        createdAt: new Date(1776500000 * 1000).toISOString(),
+        createdAt: new Date(1729000000 * 1000).toISOString(),
         workoutData: undefined,
       });
     });
 
     it("maps a WORKOUT_ACTIVITY item with workout metrics summary", () => {
       const protoItem: any = {
-        id: "feed-2",
+        id: "activity-1",
         userId: "user-200",
-        authorName: "Bob Fit",
-        authorAvatarUrl: "",
+        authorName: "Bob",
+        authorAvatarUrl: "https://example.com/bob.jpg",
         itemType: "FEED_ITEM_TYPE_WORKOUT_ACTIVITY",
-        caption: "Finished full body workout",
+        caption: "Crushed Chest Day!",
         reactionCount: 12,
-        commentCount: 4,
+        commentCount: 3,
         userReaction: "FIRE",
-        createdAt: { seconds: 1776501000 },
+        createdAt: { seconds: 1729100000n, nanos: 0 },
         workoutData: {
           sessionId: "sess-99",
-          workoutTitle: "Chest & Triceps Hypertrophy",
-          durationSeconds: 2700,
-          totalVolumeKg: 3500.5,
+          workoutTitle: "Chest Hypertrophy",
+          durationSeconds: 3600,
+          totalVolumeKg: 4200,
           exerciseCount: 5,
-          totalSets: 16,
+          totalSets: 18,
         },
       };
 
       const result = mapFeedItem(protoItem);
 
-      expect(result.itemType).toBe("WORKOUT_ACTIVITY");
-      expect(result.workoutData).toEqual({
-        sessionId: "sess-99",
-        workoutTitle: "Chest & Triceps Hypertrophy",
-        durationSeconds: 2700,
-        totalVolumeKg: 3500.5,
-        exerciseCount: 5,
-        totalSets: 16,
+      expect(result).toEqual({
+        id: "activity-1",
+        userId: "user-200",
+        authorName: "Bob",
+        authorAvatarUrl: "https://example.com/bob.jpg",
+        itemType: "WORKOUT_ACTIVITY",
+        caption: "Crushed Chest Day!",
+        reactionCount: 12,
+        commentCount: 3,
+        userReaction: "FIRE",
+        createdAt: new Date(1729100000 * 1000).toISOString(),
+        workoutData: {
+          sessionId: "sess-99",
+          workoutTitle: "Chest Hypertrophy",
+          durationSeconds: 3600,
+          totalVolumeKg: 4200,
+          exerciseCount: 5,
+          totalSets: 18,
+        },
       });
     });
   });
@@ -128,11 +143,11 @@ describe("social mapper", () => {
         id: "cmt-1",
         userId: "user-300",
         authorName: "Charlie",
-        authorAvatarUrl: "https://example.com/c.jpg",
-        feedItemId: "feed-1",
-        parentId: "cmt-0",
-        content: "Awesome progress!",
-        createdAt: { seconds: 1776502000n },
+        authorAvatarUrl: "https://example.com/charlie.jpg",
+        feedItemId: "post-1",
+        parentId: "cmt-root",
+        content: "Great lift bro!",
+        createdAt: { seconds: 1729200000n, nanos: 0 },
       };
 
       const result = mapComment(protoComment);
@@ -141,11 +156,11 @@ describe("social mapper", () => {
         id: "cmt-1",
         userId: "user-300",
         authorName: "Charlie",
-        authorAvatarUrl: "https://example.com/c.jpg",
-        feedItemId: "feed-1",
-        parentId: "cmt-0",
-        content: "Awesome progress!",
-        createdAt: new Date(1776502000 * 1000).toISOString(),
+        authorAvatarUrl: "https://example.com/charlie.jpg",
+        feedItemId: "post-1",
+        parentId: "cmt-root",
+        content: "Great lift bro!",
+        createdAt: new Date(1729200000 * 1000).toISOString(),
       });
     });
   });

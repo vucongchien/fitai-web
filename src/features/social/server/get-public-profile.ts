@@ -6,7 +6,7 @@ import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
 
 import { mapFeedItem, mapSocialSummary } from "../model/social.mapper";
-import { PublicProfileVM } from "../model/social.types";
+import type { PublicProfileVM } from "../model/social.types";
 
 export async function getPublicProfile(userId: string): Promise<PublicProfileVM> {
   const accessToken = await getAccessToken();
@@ -38,15 +38,12 @@ export async function getPublicProfile(userId: string): Promise<PublicProfileVM>
   const authorName = summary.fullName || firstItem?.authorName || fallbackName;
   const authorAvatarUrl = summary.avatarUrl || firstItem?.authorAvatarUrl || "";
 
-  const profile = new PublicProfileVM({
+  return {
     userId,
     authorName,
     authorAvatarUrl,
     summary,
     feedItems,
     feedNextCursor,
-  });
-
-  // Next.js RSC boundary requires plain objects across Server/Client boundary
-  return JSON.parse(JSON.stringify(profile));
+  };
 }

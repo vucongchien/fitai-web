@@ -5,10 +5,10 @@ import type {
   WorkoutMetricsSummary,
 } from "@/shared/api/gen/contracts/supporting/social/v1/message/social_messages_pb";
 
-import {
+import type {
   CommentVM,
   FeedItemVM,
-  type ReactionType,
+  ReactionType,
   SocialSummaryVM,
   WorkoutMetricsVM,
 } from "./social.types";
@@ -19,14 +19,14 @@ function protoTimestampToISO(ts?: { seconds: bigint | number }): string {
 }
 
 function mapWorkoutMetrics(data: WorkoutMetricsSummary): WorkoutMetricsVM {
-  return new WorkoutMetricsVM({
+  return {
     sessionId: data.sessionId,
     workoutTitle: data.workoutTitle,
     durationSeconds: data.durationSeconds,
     totalVolumeKg: data.totalVolumeKg,
     exerciseCount: data.exerciseCount,
     totalSets: data.totalSets,
-  });
+  };
 }
 
 export function mapFeedItem(item: FeedItem): FeedItemVM {
@@ -35,7 +35,7 @@ export function mapFeedItem(item: FeedItem): FeedItemVM {
     ? "WORKOUT_ACTIVITY"
     : "POST";
 
-  return new FeedItemVM({
+  return {
     id: item.id,
     userId: item.userId,
     authorName: item.authorName,
@@ -47,11 +47,11 @@ export function mapFeedItem(item: FeedItem): FeedItemVM {
     userReaction: (item.userReaction ?? "") as ReactionType,
     createdAt: protoTimestampToISO(item.createdAt as any),
     workoutData: item.workoutData ? mapWorkoutMetrics(item.workoutData) : undefined,
-  });
+  };
 }
 
 export function mapSocialSummary(res: GetSocialSummaryResponse): SocialSummaryVM {
-  return new SocialSummaryVM({
+  return {
     userId: res.userId,
     followerCount: res.followerCount,
     followingCount: res.followingCount,
@@ -60,11 +60,11 @@ export function mapSocialSummary(res: GetSocialSummaryResponse): SocialSummaryVM
     fullName: res.fullName || "",
     avatarUrl: res.avatarUrl || "",
     role: res.role || "user",
-  });
+  };
 }
 
 export function mapComment(c: CommentItem): CommentVM {
-  return new CommentVM({
+  return {
     id: c.id,
     userId: c.userId,
     authorName: c.authorName,
@@ -73,5 +73,5 @@ export function mapComment(c: CommentItem): CommentVM {
     parentId: c.parentId ?? undefined,
     content: c.content,
     createdAt: protoTimestampToISO(c.createdAt as any),
-  });
+  };
 }
