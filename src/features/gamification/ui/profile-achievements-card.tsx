@@ -31,24 +31,24 @@ function renderBadgeVisual(badge: BadgeItemVM, index: number) {
 
   let bg = "bg-emerald-500";
   let icon = <Target className="h-7 w-7 text-white mt-0.5" />;
-  let level = "CẤP 1";
+  let level = "LEVEL 1";
 
   if (code.includes("STREAK") || cat.includes("STREAK") || index === 0) {
     bg = "bg-red-500";
     icon = <Flame className="h-7 w-7 text-amber-300 fill-amber-300 mt-0.5" />;
-    level = "CẤP 5";
+    level = "LEVEL 5";
   } else if (code.includes("XP") || code.includes("LEVEL") || cat.includes("LEVEL") || index === 1) {
     bg = "bg-emerald-500";
     icon = <Zap className="h-7 w-7 text-white mt-0.5 fill-white" />;
-    level = "CẤP 7";
+    level = "LEVEL 7";
   } else if (code.includes("LEAGUE") || code.includes("LEADERBOARD") || cat.includes("LEADERBOARD") || index === 2) {
     bg = "bg-purple-500";
     icon = <Shield className="h-7 w-7 text-amber-300 fill-amber-300 mt-0.5" />;
-    level = "CẤP 7";
+    level = "LEVEL 7";
   } else if (code.includes("WORKOUT") || cat.includes("WORKOUT")) {
     bg = "bg-emerald-500";
     icon = <Trophy className="h-7 w-7 text-amber-200 fill-amber-200 mt-0.5" />;
-    level = "CẤP 4";
+    level = "LEVEL 4";
   }
 
   return (
@@ -69,16 +69,16 @@ export function ProfileAchievementsCard({
   return (
     <div className="w-full">
       <h2 className="text-[20px] font-extrabold text-neutral-800 mb-3 px-1">
-        Thành tích
+        Achievements
       </h2>
 
       <div className="rounded-2xl border border-neutral-200/90 bg-white shadow-2xs divide-y divide-neutral-100 overflow-hidden">
         {badges.length === 0 ? (
           <div className="py-8 px-4 text-center">
             <Award className="mx-auto h-10 w-10 text-neutral-300 mb-2" />
-            <p className="text-[14px] font-semibold text-neutral-700">Chưa có thành tích nào</p>
+            <p className="text-[14px] font-semibold text-neutral-700">No achievements yet</p>
             <p className="text-[12px] text-neutral-400 mt-0.5">
-              Tập luyện và duy trì chuỗi streak để mở khóa các huy hiệu từ hệ thống.
+              Train consistently and keep your streak alive to unlock badges.
             </p>
           </div>
         ) : (
@@ -122,7 +122,7 @@ export function ProfileAchievementsCard({
           href="/profile/badges"
           className="flex items-center justify-between px-5 py-4 text-left font-bold text-neutral-800 hover:bg-neutral-50 transition-colors group cursor-pointer"
         >
-          <span className="text-[15px] group-hover:text-neutral-900">Xem tất cả</span>
+          <span className="text-[15px] group-hover:text-neutral-900">View all</span>
           <ChevronRight className="h-5 w-5 text-neutral-400 group-hover:text-neutral-600 stroke-[2.5]" />
         </Link>
       </div>

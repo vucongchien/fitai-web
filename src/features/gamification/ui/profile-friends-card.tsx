@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import { cn } from "@/shared/lib/cn";
+import { TabButton } from "@/shared/ui/tab-button";
 
 import type { UserFriendVM } from "../model/gamification.types";
 
@@ -32,49 +32,33 @@ export function ProfileFriendsCard({
     <div className="w-full">
       {/* Title outside the card */}
       <div className="flex items-center justify-between mb-3 px-1">
-        <h2 className="text-[20px] font-extrabold text-neutral-800">Bạn bè</h2>
+        <h2 className="text-[20px] font-extrabold text-neutral-800">Friends</h2>
         <Link
           href="/community"
           className="text-[13px] font-bold text-sky-500 hover:text-sky-600 uppercase tracking-wide cursor-pointer transition-colors"
         >
-          THÊM BẠN BÈ
+          ADD FRIENDS
         </Link>
       </div>
 
       {/* Card container */}
       <div className="rounded-2xl border border-neutral-200/90 bg-white shadow-2xs overflow-hidden">
         {/* Two flat tabs with blue indicator */}
-        <div className="flex border-b border-neutral-200">
-          <button
-            type="button"
+        <div className="flex border-b border-neutral-200" role="tablist">
+          <TabButton
+            active={activeSubTab === "following"}
             onClick={() => setActiveSubTab("following")}
-            className={cn(
-              "flex-1 py-3 text-center text-[13px] font-bold uppercase tracking-wider transition-colors cursor-pointer relative",
-              activeSubTab === "following"
-                ? "text-sky-500"
-                : "text-neutral-400 hover:text-neutral-600",
-            )}
+            uppercase
           >
-            ĐANG THEO DÕI
-            {activeSubTab === "following" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-sky-500" />
-            )}
-          </button>
-          <button
-            type="button"
+            FOLLOWING
+          </TabButton>
+          <TabButton
+            active={activeSubTab === "followers"}
             onClick={() => setActiveSubTab("followers")}
-            className={cn(
-              "flex-1 py-3 text-center text-[13px] font-bold uppercase tracking-wider transition-colors cursor-pointer relative",
-              activeSubTab === "followers"
-                ? "text-sky-500"
-                : "text-neutral-400 hover:text-neutral-600",
-            )}
+            uppercase
           >
-            NGƯỜI THEO DÕI
-            {activeSubTab === "followers" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-sky-500" />
-            )}
-          </button>
+            FOLLOWERS
+          </TabButton>
         </div>
 
         {/* Friend Items */}
@@ -82,10 +66,10 @@ export function ProfileFriendsCard({
           <div className="py-8 px-4 text-center">
             <Users className="mx-auto h-9 w-9 text-neutral-300 mb-2" />
             <p className="text-[14px] font-semibold text-neutral-600">
-              {activeSubTab === "following" ? "Chưa theo dõi ai" : "Chưa có người theo dõi"}
+              {activeSubTab === "following" ? "Not following anyone yet" : "No followers yet"}
             </p>
             <p className="text-[12px] text-neutral-400 mt-0.5">
-              Kết nối và chia sẻ tiến trình tập luyện cùng cộng đồng FITAI.
+              Connect and share your workout progress with the FITAI community.
             </p>
           </div>
         ) : (
@@ -117,7 +101,7 @@ export function ProfileFriendsCard({
                         {user.fullName}
                       </div>
                       <div className="text-[13px] font-medium text-neutral-400 mt-0.5">
-                        {user.xp ? `${user.xp.toLocaleString()} KN` : `Cấp độ ${user.level || 1}`}
+                        {user.xp ? `${user.xp.toLocaleString()} XP` : `Level ${user.level || 1}`}
                       </div>
                     </div>
                   </div>
@@ -135,7 +119,7 @@ export function ProfileFriendsCard({
             className="flex items-center justify-between px-5 py-4 text-left font-bold text-neutral-800 hover:bg-neutral-50 transition-colors group cursor-pointer border-t border-neutral-100"
           >
             <span className="text-[15px] group-hover:text-neutral-900">
-              Xem thêm {remainingCount} người khác
+              View {remainingCount} more
             </span>
             <ChevronRight className="h-5 w-5 text-neutral-400 group-hover:text-neutral-600 stroke-[2.5]" />
           </Link>

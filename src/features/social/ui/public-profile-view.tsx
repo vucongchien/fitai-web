@@ -9,6 +9,7 @@ import type { ProfileGamificationOverviewVM } from "@/features/gamification/mode
 import { ProfileAchievementsCard } from "@/features/gamification/ui/profile-achievements-card";
 import { ProfileFriendsCard } from "@/features/gamification/ui/profile-friends-card";
 import { ProfileStatsGrid } from "@/features/gamification/ui/profile-stats-grid";
+import { TabButton } from "@/shared/ui/tab-button";
 
 import type { PublicProfileVM } from "../model/social.types";
 import { FeedList } from "./feed-list";
@@ -95,14 +96,14 @@ export function PublicProfileView({
 
         <div className="mt-4 flex items-center justify-between text-neutral-500">
           <span className="text-[14px] text-neutral-400 font-normal">
-            {formatFollowers(followerCount)} {followerCount === 1 ? "người theo dõi" : "người theo dõi"}
+            {formatFollowers(followerCount)} {followerCount === 1 ? "follower" : "followers"}
           </span>
 
           <div className="flex items-center gap-3">
             {isOwnProfile ? (
               <Link
                 href="/profile/settings"
-                aria-label="Cài đặt tài khoản"
+                aria-label="Account Settings"
                 className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
               >
                 <Settings size={20} />
@@ -150,7 +151,7 @@ export function PublicProfileView({
                 type="button"
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"
               >
-                Nhắn tin
+                Message
               </button>
             </>
           ) : (
@@ -159,7 +160,7 @@ export function PublicProfileView({
                 href="/profile/settings"
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"
               >
-                Chỉnh sửa hồ sơ
+                Edit Profile
               </Link>
               <button
                 type="button"
@@ -173,7 +174,7 @@ export function PublicProfileView({
                 }}
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"
               >
-                Chia sẻ hồ sơ
+                Share Profile
               </button>
             </>
           )}
@@ -181,35 +182,23 @@ export function PublicProfileView({
       </div>
 
       {/* Profile Tab Navigation Bar */}
-      <div className="flex border-b border-neutral-200 bg-white">
+      <div className="flex border-b border-neutral-200 bg-white" role="tablist">
         {(
           [
-            { key: "overview", label: "Tổng quan" },
-            { key: "threads", label: "Bài viết" },
-            { key: "replies", label: "Phản hồi" },
+            { key: "overview", label: "Overview" },
+            { key: "threads", label: "Posts" },
+            { key: "replies", label: "Replies" },
             { key: "media", label: "Media" },
           ] as const
-        ).map((tab) => {
-          const isActive = activeTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveTab(tab.key)}
-              className={[
-                "flex-1 py-3 text-center text-[14.5px] font-bold transition-colors cursor-pointer relative",
-                isActive
-                  ? "text-sky-500"
-                  : "text-neutral-400 hover:text-neutral-600",
-              ].join(" ")}
-            >
-              {tab.label}
-              {isActive && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-sky-500" />
-              )}
-            </button>
-          );
-        })}
+        ).map((tab) => (
+          <TabButton
+            key={tab.key}
+            active={activeTab === tab.key}
+            onClick={() => setActiveTab(tab.key)}
+          >
+            {tab.label}
+          </TabButton>
+        ))}
       </div>
     </div>
   );

@@ -24,18 +24,18 @@ describe("Gamification Views", () => {
         />,
       );
 
-      expect(screen.getByText("Bạn bè")).toBeDefined();
-      expect(screen.getByText("THÊM BẠN BÈ")).toBeDefined();
-      expect(screen.getByText("ĐANG THEO DÕI")).toBeDefined();
-      expect(screen.getByText("NGƯỜI THEO DÕI")).toBeDefined();
-      // When empty, the "Xem thêm" link is cleanly hidden
-      expect(screen.queryByText("Xem tất cả")).toBeNull();
-      expect(screen.queryByText(/Xem thêm/)).toBeNull();
+      expect(screen.getByText("Friends")).toBeDefined();
+      expect(screen.getByText("ADD FRIENDS")).toBeDefined();
+      expect(screen.getByText("FOLLOWING")).toBeDefined();
+      expect(screen.getByText("FOLLOWERS")).toBeDefined();
+      // When empty, the "View more" link is cleanly hidden
+      expect(screen.queryByText("View all")).toBeNull();
+      expect(screen.queryByText(/View \d+ more/)).toBeNull();
     });
   });
 
   describe("ProfileBadgesView", () => {
-    it("renders page header and empty status when no badges exist", () => {
+    it("renders page header and empty status without unnecessary done button", () => {
       render(
         <ProfileBadgesView
           badges={[]}
@@ -44,14 +44,14 @@ describe("Gamification Views", () => {
         />,
       );
 
-      expect(screen.getByText("Tất cả thành tích")).toBeDefined();
-      expect(screen.getByText("HOÀN TẤT")).toBeDefined();
-      expect(screen.getByText("Chưa có thành tích nào")).toBeDefined();
+      expect(screen.getByText("All Achievements")).toBeDefined();
+      expect(screen.queryByText("DONE")).toBeNull();
+      expect(screen.getByText("No achievements yet")).toBeDefined();
     });
   });
 
   describe("ProfileFriendsView", () => {
-    it("renders friends search and clean tabs", () => {
+    it("renders friends search and clean tabs without unnecessary done button", () => {
       render(
         <ProfileFriendsView
           followers={[]}
@@ -61,11 +61,11 @@ describe("Gamification Views", () => {
         />,
       );
 
-      expect(screen.getByText("Bạn bè")).toBeDefined();
-      expect(screen.getByText("HOÀN TẤT")).toBeDefined();
-      expect(screen.getByText("ĐANG THEO DÕI")).toBeDefined();
-      expect(screen.getByText("NGƯỜI THEO DÕI")).toBeDefined();
-      expect(screen.getByPlaceholderText("Tìm kiếm bạn bè theo tên...")).toBeDefined();
+      expect(screen.getByText("Friends")).toBeDefined();
+      expect(screen.queryByText("DONE")).toBeNull();
+      expect(screen.getByText("FOLLOWING")).toBeDefined();
+      expect(screen.getByText("FOLLOWERS")).toBeDefined();
+      expect(screen.getByPlaceholderText("Search friends by name...")).toBeDefined();
     });
   });
 });

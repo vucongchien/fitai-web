@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowLeft, Award, Flame, Shield, Target, Trophy, Zap } from "lucide-react";
+import { Award, Flame, Shield, Target, Trophy, Zap } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+
+import { PageHeader } from "@/shared/ui/page-header";
 
 import type { BadgeItemVM } from "../model/gamification.types";
 
@@ -33,24 +34,24 @@ function renderBadgeVisual(badge: BadgeItemVM, index: number) {
 
   let bg = "bg-emerald-500";
   let icon = <Target className="h-7 w-7 text-white mt-0.5" />;
-  let level = "CẤP 1";
+  let level = "LEVEL 1";
 
   if (code.includes("STREAK") || cat.includes("STREAK") || index === 0) {
     bg = "bg-red-500";
     icon = <Flame className="h-7 w-7 text-amber-300 fill-amber-300 mt-0.5" />;
-    level = "CẤP 5";
+    level = "LEVEL 5";
   } else if (code.includes("XP") || code.includes("LEVEL") || cat.includes("LEVEL") || index === 1) {
     bg = "bg-emerald-500";
     icon = <Zap className="h-7 w-7 text-white mt-0.5 fill-white" />;
-    level = "CẤP 7";
+    level = "LEVEL 7";
   } else if (code.includes("LEAGUE") || code.includes("LEADERBOARD") || cat.includes("LEADERBOARD") || index === 2) {
     bg = "bg-purple-500";
     icon = <Shield className="h-7 w-7 text-amber-300 fill-amber-300 mt-0.5" />;
-    level = "CẤP 7";
+    level = "LEVEL 7";
   } else if (code.includes("WORKOUT") || cat.includes("WORKOUT")) {
     bg = "bg-emerald-500";
     icon = <Trophy className="h-7 w-7 text-amber-200 fill-amber-200 mt-0.5" />;
-    level = "CẤP 4";
+    level = "LEVEL 4";
   }
 
   return (
@@ -67,47 +68,42 @@ function renderBadgeVisual(badge: BadgeItemVM, index: number) {
 
 export function ProfileBadgesView({
   badges,
+  totalUnlocked,
+  totalAvailable,
 }: ProfileBadgesViewProps) {
-  const router = useRouter();
-
-  const handleDone = () => {
-    router.push("/profile");
-  };
-
   return (
-    <div className="min-h-screen bg-white pb-20 font-body">
-      {/* Top Header Bar - Synchronized with Friends and Settings */}
-      <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-neutral-200 bg-white px-4 sm:px-6">
-        <button
-          type="button"
-          onClick={handleDone}
-          aria-label="Quay lại hồ sơ"
-          className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors cursor-pointer"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className="text-[17px] font-bold text-neutral-800 tracking-tight text-center">
-          Tất cả thành tích
-        </h1>
-        <button
-          type="button"
-          onClick={handleDone}
-          className="text-right text-[15px] font-bold text-sky-500 hover:text-sky-600 transition-colors uppercase tracking-wide cursor-pointer"
-        >
-          HOÀN TẤT
-        </button>
-      </header>
+    <div className="min-h-screen bg-white pb-20">
+      <PageHeader
+        title="Achievements"
+        fallbackHref="/profile"
+        right={
+          totalUnlocked > 0 ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200/70">
+              <Trophy size={13} className="text-amber-500" />
+              <span>{totalUnlocked}</span>
+            </span>
+          ) : undefined
+        }
+      />
 
       {/* Main Container */}
-      <main className="max-w-[560px] mx-auto px-4 pt-5 space-y-4">
+      <main className="max-w-[560px] mx-auto px-4 pt-4 space-y-4">
+        <div className="flex items-center justify-between px-1">
+          <h2 className="text-[18px] font-extrabold text-neutral-900 tracking-tight">
+            All Achievements
+          </h2>
+          <span className="text-[13px] font-semibold text-neutral-400">
+            {totalUnlocked} of {totalAvailable} unlocked
+          </span>
+        </div>
         {badges.length === 0 ? (
           <div className="rounded-2xl border border-neutral-200/90 bg-white p-8 text-center shadow-2xs">
             <Award className="mx-auto h-12 w-12 text-neutral-300 mb-3" />
             <h3 className="text-[16px] font-bold text-neutral-800">
-              Chưa có thành tích nào
+              No achievements yet
             </h3>
             <p className="text-[13px] text-neutral-400 mt-1 max-w-[320px] mx-auto">
-              Các thành tích và huy hiệu sẽ tự động được ghi nhận khi bạn thực hiện các buổi tập và duy trì chuỗi kỷ luật.
+              Achievements and badges will be automatically recorded as you complete workouts and keep your streak alive.
             </p>
           </div>
         ) : (

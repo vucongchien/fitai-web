@@ -43,13 +43,14 @@ describe(BottomNavigation, () => {
     expect(profileLink).not.toHaveAttribute("aria-current");
   });
 
-  it("renders all 4 navigation destinations", () => {
+  it("renders all 5 navigation destinations", () => {
     vi.mocked(usePathname).mockReturnValue("/home");
     render(<BottomNavigation />);
 
     expect(screen.getByRole("link", { name: /today/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /nutrition/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /workout/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /community/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /profile/i })).toBeInTheDocument();
   });
 
@@ -66,7 +67,7 @@ describe(BottomNavigation, () => {
     const { container } = render(<BottomNavigation />);
 
     const hiddenSvgs = container.querySelectorAll("svg[aria-hidden='true']");
-    // 4 nav icons should all be aria-hidden
-    expect(hiddenSvgs.length).toBeGreaterThanOrEqual(4);
+    // 5 nav icons should all be aria-hidden
+    expect(hiddenSvgs.length).toBeGreaterThanOrEqual(5);
   });
 });

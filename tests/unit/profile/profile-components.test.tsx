@@ -21,55 +21,52 @@ describe("profile UI Components - ProfileSettingsView", () => {
   it("renders profile settings page with exact Duolingo layout sections", () => {
     render(<ProfileSettingsView profile={mockProfileData} />);
 
-    expect(screen.getByText("Cài đặt")).toBeInTheDocument();
-    expect(screen.getByText("HOÀN TẤT")).toBeInTheDocument();
+    expect(screen.getByText("Settings")).toBeInTheDocument();
 
-    // Group 1: Tài khoản
-    expect(screen.getByText("Tài khoản")).toBeInTheDocument();
-    expect(screen.getByText("Cài đặt riêng")).toBeInTheDocument();
-    expect(screen.getByText("Hồ sơ")).toBeInTheDocument();
-    expect(screen.getByText("Thông báo")).toBeInTheDocument();
-    expect(screen.getByText("Khoá học")).toBeInTheDocument();
-    expect(screen.getByText("Điểm trên LinkedIn")).toBeInTheDocument();
-    expect(screen.getByText("Duolingo for Schools")).toBeInTheDocument();
-    expect(screen.getByText("Tài khoản mạng xã hội")).toBeInTheDocument();
-    expect(screen.getByText("Cài đặt quyền riêng tư")).toBeInTheDocument();
+    // Group 1: Training & Health Profile
+    expect(screen.getByText("Training & Health Profile")).toBeInTheDocument();
+    expect(screen.getByText("Personal Info")).toBeInTheDocument();
+    expect(screen.getByText("Body Metrics")).toBeInTheDocument();
+    expect(screen.getByText("Training Goals")).toBeInTheDocument();
+    expect(screen.getByText("Available Equipment")).toBeInTheDocument();
+    expect(screen.getByText("Injury Management")).toBeInTheDocument();
 
-    // Group 2: Gói đăng ký
-    expect(screen.getByText("Gói đăng ký")).toBeInTheDocument();
-    expect(screen.getByText("Chọn gói đăng ký")).toBeInTheDocument();
+    // Group 2: Preferences & Membership
+    expect(screen.getByText("Preferences & Membership")).toBeInTheDocument();
+    expect(screen.getByText("Notifications")).toBeInTheDocument();
+    expect(screen.getByText("Membership Plan")).toBeInTheDocument();
 
-    // Group 3: Hỗ trợ
-    expect(screen.getByText("Hỗ trợ")).toBeInTheDocument();
-    expect(screen.getByText("Trung tâm trợ giúp")).toBeInTheDocument();
+    // Group 3: Support
+    expect(screen.getByText("Support")).toBeInTheDocument();
+    expect(screen.getByText("Send Feedback & Help")).toBeInTheDocument();
 
     // Bottom
-    expect(screen.getByText("ĐĂNG XUẤT")).toBeInTheDocument();
+    expect(screen.getByText("LOG OUT")).toBeInTheDocument();
   });
 
   it("opens modal when clicking a settings item", () => {
     render(<ProfileSettingsView profile={mockProfileData} />);
 
-    const item = screen.getByText("Cài đặt riêng");
+    const item = screen.getByText("Body Metrics");
     fireEvent.click(item);
 
     expect(screen.getByText("Current Weight (kg)")).toBeInTheDocument();
   });
 
-  it("opens Training Goals modal when clicking Duolingo for Schools item", () => {
+  it("opens Training Goals modal when clicking Training Goals item", () => {
     render(<ProfileSettingsView profile={mockProfileData} />);
 
-    const item = screen.getByText("Duolingo for Schools");
+    const item = screen.getByText("Training Goals");
     fireEvent.click(item);
 
     expect(screen.getByText("Experience Level")).toBeInTheDocument();
     expect(screen.getByText("Primary Goals (Select at least 1)")).toBeInTheDocument();
   });
 
-  it("opens Support Feedback modal when clicking Trung tâm trợ giúp", () => {
+  it("opens Support Feedback modal when clicking Send Feedback & Help", () => {
     render(<ProfileSettingsView profile={mockProfileData} />);
 
-    const item = screen.getByText("Trung tâm trợ giúp");
+    const item = screen.getByText("Send Feedback & Help");
     fireEvent.click(item);
 
     expect(screen.getByText("Send Feedback")).toBeInTheDocument();
@@ -82,7 +79,7 @@ describe("profile UI Components - ProfileSettingsView", () => {
 
     render(<ProfileSettingsView profile={mockProfileData} />);
 
-    const logoutBtn = screen.getByText("ĐĂNG XUẤT");
+    const logoutBtn = screen.getByText("LOG OUT");
     fireEvent.click(logoutBtn);
 
     expect(fetchMock).toHaveBeenCalledWith("/api/auth/logout", {

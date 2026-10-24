@@ -36,10 +36,7 @@ export function AppHeader() {
           <span>{backDestination.label}</span>
         </Link>
       ) : (
-        <>
-          <BrandMark />
-          <span className="app-header__phase">Week 2</span>
-        </>
+        <BrandMark />
       )}
       <span aria-hidden="true" className="app-header__spacer" />
       <div id="app-header-gamification" className="flex items-center gap-2 mr-2" />

@@ -1,12 +1,12 @@
 "use client";
 
-import { ArrowLeft, ChevronRight, Search, Users } from "lucide-react";
+import { ChevronRight, Search, UserPlus, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
-import { cn } from "@/shared/lib/cn";
+import { PageHeader } from "@/shared/ui/page-header";
+import { TabButton } from "@/shared/ui/tab-button";
 
 import type { UserFriendVM } from "../model/gamification.types";
 
@@ -21,7 +21,6 @@ export function ProfileFriendsView({
   followers,
   following,
 }: ProfileFriendsViewProps) {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"following" | "followers">("following");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -35,36 +34,25 @@ export function ProfileFriendsView({
     return currentList.filter((u) => u.fullName.toLowerCase().includes(q));
   }, [currentList, searchQuery]);
 
-  const handleDone = () => {
-    router.push("/profile");
-  };
-
   return (
-    <div className="min-h-screen bg-white pb-20 font-body">
-      {/* Top Header Bar - Synchronized with Badges and Settings */}
-      <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-neutral-200 bg-white px-4 sm:px-6">
-        <button
-          type="button"
-          onClick={handleDone}
-          aria-label="Quay lại hồ sơ"
-          className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 transition-colors cursor-pointer"
-        >
-          <ArrowLeft size={20} />
-        </button>
-        <h1 className="text-[17px] font-bold text-neutral-800 tracking-tight text-center">
-          Bạn bè
-        </h1>
-        <button
-          type="button"
-          onClick={handleDone}
-          className="text-right text-[15px] font-bold text-sky-500 hover:text-sky-600 transition-colors uppercase tracking-wide cursor-pointer"
-        >
-          HOÀN TẤT
-        </button>
-      </header>
+    <div className="min-h-screen bg-white pb-20">
+      <PageHeader
+        title="Friends"
+        fallbackHref="/profile"
+        right={
+          <Link
+            href="/community"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-700 hover:bg-neutral-100 active:scale-95 transition-all"
+            aria-label="Add Friends"
+            title="Add Friends"
+          >
+            <UserPlus size={19} />
+          </Link>
+        }
+      />
 
       {/* Main Container */}
-      <main className="max-w-[560px] mx-auto px-4 pt-5 space-y-4">
+      <main className="max-w-[560px] mx-auto px-4 pt-4 space-y-4">
         {/* Search Bar */}
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
@@ -72,7 +60,7 @@ export function ProfileFriendsView({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Tìm kiếm bạn bè theo tên..."
+            placeholder="Search friends by name..."
             className="w-full h-11 pl-10 pr-4 rounded-xl border border-neutral-200 bg-white text-[14px] text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
           />
         </div>
@@ -80,37 +68,21 @@ export function ProfileFriendsView({
         {/* Tab Switcher & Friends Card */}
         <div className="rounded-2xl border border-neutral-200/90 bg-white shadow-2xs overflow-hidden">
           {/* Tabs */}
-          <div className="flex border-b border-neutral-200">
-            <button
-              type="button"
+          <div className="flex border-b border-neutral-200" role="tablist">
+            <TabButton
+              active={activeTab === "following"}
               onClick={() => setActiveTab("following")}
-              className={cn(
-                "flex-1 py-3 text-center text-[13px] font-bold uppercase tracking-wider transition-colors cursor-pointer relative",
-                activeTab === "following"
-                  ? "text-sky-500"
-                  : "text-neutral-400 hover:text-neutral-600",
-              )}
+              uppercase
             >
-              ĐANG THEO DÕI
-              {activeTab === "following" && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-sky-500" />
-              )}
-            </button>
-            <button
-              type="button"
+              FOLLOWING
+            </TabButton>
+            <TabButton
+              active={activeTab === "followers"}
               onClick={() => setActiveTab("followers")}
-              className={cn(
-                "flex-1 py-3 text-center text-[13px] font-bold uppercase tracking-wider transition-colors cursor-pointer relative",
-                activeTab === "followers"
-                  ? "text-sky-500"
-                  : "text-neutral-400 hover:text-neutral-600",
-              )}
+              uppercase
             >
-              NGƯỜI THEO DÕI
-              {activeTab === "followers" && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-sky-500" />
-              )}
-            </button>
+              FOLLOWERS
+            </TabButton>
           </div>
 
           {/* List */}
@@ -120,16 +92,16 @@ export function ProfileFriendsView({
                 <Users className="h-6 w-6" />
               </div>
               <p className="text-[15px] font-bold text-neutral-700">
-                {searchQuery ? "Không tìm thấy bạn bè nào" : "Chưa có ai trong danh sách này"}
+                {searchQuery ? "No friends found" : "No one here yet"}
               </p>
               <p className="text-[13px] text-neutral-400 mt-1">
-                Khám phá cộng đồng FITAI để kết nối với những người tập luyện khác.
+                Explore the FITAI community to connect with other athletes.
               </p>
               <Link
                 href="/community"
                 className="inline-flex mt-4 h-9 px-4 items-center justify-center rounded-xl bg-sky-500 text-white text-xs font-bold hover:bg-sky-600 transition-colors shadow-xs"
               >
-                Khám phá cộng đồng
+                Explore Community
               </Link>
             </div>
           ) : (
@@ -163,7 +135,7 @@ export function ProfileFriendsView({
                           {user.fullName}
                         </div>
                         <div className="text-[13px] font-medium text-neutral-400 mt-0.5">
-                          {user.xp ? `${user.xp.toLocaleString()} KN` : `Cấp độ ${user.level || 1}`}
+                          {user.xp ? `${user.xp.toLocaleString()} XP` : `Level ${user.level || 1}`}
                         </div>
                       </div>
                     </Link>

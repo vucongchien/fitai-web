@@ -10,28 +10,28 @@ export function ProfileStatsGrid({ stats }: ProfileStatsGridProps) {
   const items = [
     {
       id: "streak",
-      label: "Ngày streak",
+      label: "Day streak",
       value: stats.streakDays.toString(),
       icon: <Flame className="h-5 w-5 text-amber-500 fill-amber-500" />,
       bg: "bg-amber-500/10",
     },
     {
       id: "xp",
-      label: "Tổng điểm KN (XP)",
+      label: "Total XP",
       value: stats.totalXp.toLocaleString(),
       icon: <Zap className="h-5 w-5 text-indigo-500 fill-indigo-500" />,
       bg: "bg-indigo-500/10",
     },
     {
       id: "workouts",
-      label: "Buổi tập hoàn thành",
+      label: "Workouts completed",
       value: stats.completedWorkouts.toString(),
       icon: <Dumbbell className="h-5 w-5 text-emerald-500" />,
       bg: "bg-emerald-500/10",
     },
     {
       id: "rank",
-      label: "Thứ hạng BXH",
+      label: "League rank",
       value: stats.leaderboardRank ? `#${stats.leaderboardRank}` : "--",
       icon: <Award className="h-5 w-5 text-amber-500" />,
       bg: "bg-amber-500/10",
@@ -41,7 +41,7 @@ export function ProfileStatsGrid({ stats }: ProfileStatsGridProps) {
   return (
     <div className="w-full">
       <div className="text-[13px] font-bold tracking-wider text-neutral-400 uppercase mb-3 px-1">
-        Thống kê
+        STATISTICS
       </div>
       <div className="grid grid-cols-2 gap-3">
         {items.map((item) => (

@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Clock, Info, Loader2, Plus, Sparkles, X, Zap } from "lucide-react";
+import { Check, Clock, Info, Loader2, Plus, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
@@ -13,30 +13,141 @@ interface AdhocAiGeneratorModalProps {
   currentExerciseCount: number;
 }
 
-const QUICK_PROMPTS = [
+interface WorkoutPreset {
+  id: string;
+  emoji: string;
+  title: string;
+  subtitle: string;
+  prompt: string;
+  defaultDuration: number;
+}
+
+const WORKOUT_PRESETS: WorkoutPreset[] = [
   {
-    label: "💪 Push Day",
-    text: "Chest, front delts, and triceps with dumbbells",
-    duration: 45,
+    id: "push",
+    emoji: "💪",
+    title: "Push Day",
+    subtitle: "Chest, front delts & triceps",
+    prompt: "Chest, front delts, and triceps with dumbbells",
+    defaultDuration: 45,
   },
   {
-    label: "⚡ Pull & Core",
-    text: "Back, biceps, and core in 45 minutes",
-    duration: 45,
+    id: "pull",
+    emoji: "⚡",
+    title: "Pull & Core",
+    subtitle: "Back, biceps & abs focus",
+    prompt: "Back, biceps, and core in 45 minutes",
+    defaultDuration: 45,
   },
   {
-    label: "🔥 Leg Hypertrophy",
-    text: "Quadriceps, hamstrings, and calves focus",
-    duration: 50,
+    id: "legs",
+    emoji: "🔥",
+    title: "Leg Hypertrophy",
+    subtitle: "Quads, hamstrings & calves",
+    prompt: "Quadriceps, hamstrings, and calves focus",
+    defaultDuration: 50,
   },
   {
-    label: "⏱️ 30-Min Full Body Express",
-    text: "High efficiency compound movements",
-    duration: 30,
+    id: "express",
+    emoji: "⏱️",
+    title: "30-Min Express",
+    subtitle: "Full body burner",
+    prompt: "High efficiency compound movements",
+    defaultDuration: 30,
   },
 ];
 
 const DURATION_OPTIONS = [15, 30, 45, 60, 90];
+
+function FitAiCoachMascot({
+  mood = "idle",
+  className = "",
+}: {
+  mood?: "idle" | "loading" | "celebrating";
+  className?: string;
+}) {
+  return (
+    <div className={`ai-mascot-avatar ${className}`} aria-hidden="true">
+      <svg
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full"
+      >
+        <ellipse cx="50" cy="92" rx="30" ry="5.5" fill="#101214" opacity="0.1" />
+
+        {/* Body - FITAI Relay Blue #4b57f2 */}
+        <rect x="22" y="24" width="56" height="64" rx="28" fill="#4b57f2" />
+        <path
+          d="M22 60 C22 75, 34 88, 50 88 C66 88, 78 75, 78 60 L78 68 C78 80, 66 88, 50 88 C34 88, 22 80, 22 68 Z"
+          fill="#3945dc"
+        />
+
+        {/* Headband - FITAI Sprint Coral #ff5a47 */}
+        <rect x="21" y="26" width="58" height="15" rx="5" fill="#ff5a47" />
+        <path d="M21 38 L79 38 L79 41 C79 43, 76 44, 74 44 L26 44 C24 44, 21 43, 21 41 Z" fill="#e04635" />
+        <path d="M51 29 L47 34 L50 34 L48 39 L54 33 L51 33 Z" fill="#ffffff" />
+
+        {/* Eyes */}
+        {mood === "celebrating" ? (
+          <>
+            <path d="M34 50 Q41 42 48 50" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+            <path d="M52 50 Q59 42 66 50" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+          </>
+        ) : mood === "loading" ? (
+          <>
+            <ellipse cx="40" cy="52" rx="7" ry="7" fill="#ffffff" />
+            <circle cx="42" cy="52" r="4" fill="#101214" />
+            <circle cx="43" cy="50" r="1.5" fill="#ffffff" />
+
+            <ellipse cx="60" cy="52" rx="7" ry="7" fill="#ffffff" />
+            <circle cx="62" cy="52" r="4" fill="#101214" />
+            <circle cx="63" cy="50" r="1.5" fill="#ffffff" />
+          </>
+        ) : (
+          <>
+            <ellipse cx="39" cy="52" rx="8" ry="9" fill="#ffffff" />
+            <ellipse cx="40" cy="52" rx="5" ry="6" fill="#101214" />
+            <circle cx="42" cy="49" r="2.2" fill="#ffffff" />
+            <circle cx="38" cy="54" r="1.1" fill="#ffffff" />
+
+            <ellipse cx="61" cy="52" rx="8" ry="9" fill="#ffffff" />
+            <ellipse cx="60" cy="52" rx="5" ry="6" fill="#101214" />
+            <circle cx="62" cy="49" r="2.2" fill="#ffffff" />
+            <circle cx="58" cy="54" r="1.1" fill="#ffffff" />
+          </>
+        )}
+
+        {/* Blush */}
+        <circle cx="28" cy="58" r="4" fill="#ff5a47" opacity="0.4" />
+        <circle cx="72" cy="58" r="4" fill="#ff5a47" opacity="0.4" />
+
+        {/* Smile */}
+        {mood === "celebrating" ? (
+          <g>
+            <path d="M42 63 C42 70, 58 70, 58 63 Z" fill="#ffffff" />
+            <path d="M45 66 C47 69, 53 69, 55 66 Z" fill="#ff5a47" />
+          </g>
+        ) : (
+          <path d="M44 64 Q50 70 56 64" stroke="#ffffff" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+        )}
+
+        {/* Arms */}
+        {mood === "celebrating" ? (
+          <>
+            <rect x="10" y="32" width="12" height="24" rx="6" fill="#4b57f2" transform="rotate(-30 10 32)" />
+            <rect x="78" y="24" width="12" height="24" rx="6" fill="#4b57f2" transform="rotate(30 78 24)" />
+          </>
+        ) : (
+          <>
+            <circle cx="18" cy="62" r="7" fill="#4b57f2" />
+            <circle cx="82" cy="62" r="7" fill="#4b57f2" />
+          </>
+        )}
+      </svg>
+    </div>
+  );
+}
 
 export function AdhocAiGeneratorModal({
   isOpen,
@@ -63,8 +174,9 @@ function AdhocAiGeneratorModalContent({
   onApplyExercises,
   currentExerciseCount,
 }: Omit<AdhocAiGeneratorModalProps, "isOpen">) {
-  const [promptText, setPromptText] = useState("");
-  const [durationMinutes, setDurationMinutes] = useState(45);
+  const [selectedPresetId, setSelectedPresetId] = useState<string | null>("push");
+  const [promptText, setPromptText] = useState(WORKOUT_PRESETS[0].prompt);
+  const [durationMinutes, setDurationMinutes] = useState(WORKOUT_PRESETS[0].defaultDuration);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [result, setResult] = useState<AdhocAiRecommendationOutput | null>(null);
@@ -80,6 +192,12 @@ function AdhocAiGeneratorModalContent({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
+  };
+
+  const handleSelectPreset = (preset: WorkoutPreset) => {
+    setSelectedPresetId(preset.id);
+    setPromptText(preset.prompt);
+    setDurationMinutes(preset.defaultDuration);
   };
 
   const handleGenerate = async (customPrompt?: string, customDuration?: number) => {
@@ -103,12 +221,6 @@ function AdhocAiGeneratorModalContent({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleQuickPromptClick = (text: string, duration: number) => {
-    setPromptText(text);
-    setDurationMinutes(duration);
-    handleGenerate(text, duration);
   };
 
   const handleApply = (mode: "replace" | "append") => {
@@ -135,8 +247,10 @@ function AdhocAiGeneratorModalContent({
     onClose();
   };
 
+  const mascotMood = isLoading ? "loading" : result ? "celebrating" : "idle";
+
   return (
-    <div ref={containerRef} className="exercise-edit-modal-backdrop ai-generator-modal-backdrop">
+    <div ref={containerRef} className="ai-generator-modal-backdrop">
       <button
         aria-label="Close AI Generator"
         className="exercise-edit-modal__scrim"
@@ -147,111 +261,44 @@ function AdhocAiGeneratorModalContent({
       <div
         aria-label="AI Coach Workout Generator"
         aria-modal="true"
-        className="exercise-edit-modal ai-generator-modal"
+        className="ai-generator-modal"
         role="dialog"
       >
-        {/* Header */}
-        <div className="exercise-edit-modal__header">
-          <div className="ai-modal-title">
-            <span className="ai-modal-badge">
-              <Sparkles size={16} />
-              AI Coach Copilot
-            </span>
-            <h2>Generate Adhoc Workout</h2>
+        {/* Compact Header */}
+        <div className="ai-modal-header">
+          <div className="ai-modal-header-left">
+            <FitAiCoachMascot
+              mood={mascotMood}
+              className="ai-mascot-avatar--compact"
+            />
+            <div className="ai-modal-title-group">
+              <span className="ai-modal-badge">
+                <Sparkles size={13} />
+                AI Coach Copilot
+              </span>
+              <h2 className="ai-modal-title">Generate Adhoc Workout</h2>
+            </div>
           </div>
           <button
             aria-label="Close modal"
-            className="exercise-edit-modal__close"
+            className="ai-modal-close-btn"
             onClick={onClose}
             type="button"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="exercise-edit-modal__body ai-generator-modal__body">
-          {/* Prompt Section */}
-          <div className="ai-generator-field">
-            <label htmlFor="ai-prompt-input">
-              <span>What do you want to train today? (Free text)</span>
-            </label>
-            <div className="ai-textarea-wrapper">
-              <textarea
-                id="ai-prompt-input"
-                className="ai-prompt-textarea"
-                placeholder="e.g. 45 min chest and triceps with dumbbells, shoulder is slightly tight so avoid heavy overhead presses..."
-                rows={3}
-                value={promptText}
-                onChange={(e) => setPromptText(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          {/* Duration Selector */}
-          <div className="ai-duration-section">
-            <div className="ai-duration-header">
-              <Clock size={15} />
-              <span>Workout Duration:</span>
-              <strong>{durationMinutes} min</strong>
-            </div>
-            <div className="ai-duration-pills">
-              {DURATION_OPTIONS.map((mins) => (
-                <button
-                  key={mins}
-                  type="button"
-                  className={`ai-duration-pill ${durationMinutes === mins ? "is-active" : ""}`}
-                  onClick={() => setDurationMinutes(mins)}
-                  disabled={isLoading}
-                >
-                  {mins}m
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Prompts Inspiration */}
-          <div className="ai-quick-prompts-section">
-            <span className="ai-section-label">
-              <Zap size={13} /> Quick 1-tap presets:
-            </span>
-            <div className="ai-quick-prompts-list">
-              {QUICK_PROMPTS.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  className="ai-quick-prompt-btn"
-                  onClick={() => handleQuickPromptClick(item.text, item.duration)}
-                  disabled={isLoading}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Trigger Generate Button */}
-          <div className="ai-generate-action-row">
-            <button
-              type="button"
-              className="ui-button ui-button--primary ui-button--large ai-submit-button"
-              onClick={() => handleGenerate()}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="animate-spin" size={18} />
-                  <span>AI Coach is analyzing & creating plan...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles size={18} />
-                  <span>{result ? "Regenerate Plan" : "Generate Smart Workout"}</span>
-                </>
-              )}
-            </button>
-          </div>
+        {/* Body Content */}
+        <div className="ai-modal-body">
+          {/* Subtle Coach Hint */}
+          <p className="ai-coach-hint">
+            {isLoading
+              ? "⚡ Analyzing sports biomechanics & building your plan..."
+              : result
+                ? "🎯 Plan tailored and ready! Review your movements below:"
+                : "Choose a target routine or describe custom movements below:"}
+          </p>
 
           {/* Error Message */}
           {errorMsg && (
@@ -261,14 +308,94 @@ function AdhocAiGeneratorModalContent({
             </div>
           )}
 
-          {/* Result Preview Box */}
-          {result && (
-            <div className="ai-result-preview-box">
-              {/* Reasoning Card */}
+          {!result ? (
+            <>
+              {/* Focus Cards */}
+              <div>
+                <div className="ai-section-label">
+                  <span>What’s the focus?</span>
+                </div>
+                <div className="ai-presets-grid">
+                  {WORKOUT_PRESETS.map((preset) => {
+                    const isSelected = selectedPresetId === preset.id;
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        className={`ai-focus-card ${isSelected ? "is-selected" : ""}`}
+                        onClick={() => handleSelectPreset(preset)}
+                        disabled={isLoading}
+                      >
+                        <div className="ai-focus-card__header">
+                          <span className="ai-focus-card__emoji">{preset.emoji}</span>
+                          {isSelected && (
+                            <span className="ai-focus-card__check">
+                              <Check size={11} strokeWidth={3} />
+                            </span>
+                          )}
+                        </div>
+                        <div className="ai-focus-card__body">
+                          <h4 className="ai-focus-card__title">{preset.title}</h4>
+                          <p className="ai-focus-card__desc">{preset.subtitle}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Duration Pills */}
+              <div>
+                <div className="ai-section-label">
+                  <span className="inline-flex items-center gap-1">
+                    <Clock size={12} /> Workout Duration
+                  </span>
+                  <span className="ai-section-highlight">{durationMinutes} min</span>
+                </div>
+                <div className="ai-duration-row">
+                  {DURATION_OPTIONS.map((mins) => (
+                    <button
+                      key={mins}
+                      type="button"
+                      className={`ai-duration-pill ${durationMinutes === mins ? "is-active" : ""}`}
+                      onClick={() => setDurationMinutes(mins)}
+                      disabled={isLoading}
+                    >
+                      {mins}m
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Text Input */}
+              <div className="ai-input-wrapper">
+                <div className="ai-section-label">
+                  <label htmlFor="ai-prompt-input">
+                    What do you want to train today? (Free text)
+                  </label>
+                </div>
+                <textarea
+                  id="ai-prompt-input"
+                  className="ai-custom-textarea"
+                  placeholder="e.g. 45 min chest and triceps with dumbbells, shoulder tight so avoid overhead..."
+                  rows={2}
+                  value={promptText}
+                  onChange={(e) => {
+                    setPromptText(e.target.value);
+                    const match = WORKOUT_PRESETS.find((p) => p.prompt === e.target.value);
+                    setSelectedPresetId(match ? match.id : null);
+                  }}
+                  disabled={isLoading}
+                />
+              </div>
+            </>
+          ) : (
+            /* Result Preview Screen */
+            <div className="ai-result-deck">
               <div className="ai-reasoning-card">
                 <div className="ai-reasoning-header">
-                  <span className="ai-coach-tag">
-                    <Sparkles size={14} /> AI Coach Reasoning
+                  <span className="inline-flex items-center gap-1 text-xs font-bold uppercase text-[var(--color-action)]">
+                    <Sparkles size={13} /> Coach Strategy
                   </span>
                   {result.estimatedRpe && (
                     <span className="ai-rpe-badge">RPE ~{result.estimatedRpe}</span>
@@ -277,37 +404,37 @@ function AdhocAiGeneratorModalContent({
                 <p className="ai-reasoning-text">{result.reasoning}</p>
 
                 {result.muscleGroups && result.muscleGroups.length > 0 && (
-                  <div className="ai-target-muscles">
-                    <span>Target Muscles:</span>
-                    <div className="ai-muscle-tags">
-                      {result.muscleGroups.map((m) => (
-                        <span key={m} className="ai-muscle-tag">
-                          {m}
-                        </span>
-                      ))}
-                    </div>
+                  <div className="ai-muscles-row">
+                    <span className="text-xs font-semibold text-[var(--color-text-muted)]">Target:</span>
+                    {result.muscleGroups.map((m) => (
+                      <span key={m} className="ai-muscle-chip">
+                        {m}
+                      </span>
+                    ))}
                   </div>
                 )}
               </div>
 
-              {/* Exercises Preview List */}
-              <div className="ai-preview-list-header">
-                <h3>Recommended Exercises ({result.exercises.length})</h3>
+              <div className="ai-exercises-header">
+                <h3>Recommended Routine ({result.exercises.length})</h3>
+                <span className="text-xs font-bold text-[var(--color-action)]">
+                  ~{durationMinutes} min
+                </span>
               </div>
 
-              <div className="ai-preview-exercise-list">
+              <div className="ai-exercise-list">
                 {result.exercises.map((ex, idx) => (
-                  <div key={ex.exerciseId + idx} className="ai-preview-item">
-                    <span className="ai-preview-item__index">
+                  <div key={ex.exerciseId + idx} className="ai-exercise-item">
+                    <span className="ai-exercise-index">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
-                    <div className="ai-preview-item__info">
-                      <strong>{ex.exerciseName}</strong>
-                      <span>
+                    <div className="ai-exercise-info">
+                      <strong className="ai-exercise-title">{ex.exerciseName}</strong>
+                      <span className="ai-exercise-meta">
                         {ex.targetSets} sets × {ex.targetReps} reps
                         {ex.targetWeight ? ` · ${ex.targetWeight} kg` : ""} · Rest {ex.restSetSec}s
                       </span>
-                      {ex.notes && <p className="ai-preview-item__note">{ex.notes}</p>}
+                      {ex.notes && <p className="ai-exercise-note">{ex.notes}</p>}
                     </div>
                   </div>
                 ))}
@@ -316,38 +443,57 @@ function AdhocAiGeneratorModalContent({
           )}
         </div>
 
-        {/* Footer Actions */}
-        <div className="exercise-edit-modal__footer ai-generator-modal__footer">
-          <button
-            className="ui-button ui-button--secondary ui-button--medium"
-            onClick={onClose}
-            type="button"
-          >
-            Close
-          </button>
+        {/* Footer */}
+        <div className="ai-modal-footer">
+          {!result ? (
+            <button
+              type="button"
+              className="ui-button ui-button--primary ui-button--large w-full"
+              onClick={() => handleGenerate()}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin" size={16} />
+                  <span>Creating plan...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles size={16} />
+                  <span>Generate Smart Workout</span>
+                </>
+              )}
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                className="ui-button ui-button--primary ui-button--large w-full"
+                onClick={() => handleApply("replace")}
+              >
+                <Check size={16} />
+                <span>Apply All ({result.exercises.length})</span>
+              </button>
 
-          {result && result.exercises.length > 0 && (
-            <div className="ai-apply-actions">
               {currentExerciseCount > 0 && (
                 <button
-                  className="ui-button ui-button--secondary ui-button--medium"
-                  onClick={() => handleApply("append")}
                   type="button"
+                  className="ui-button ui-button--secondary ui-button--medium w-full"
+                  onClick={() => handleApply("append")}
                 >
-                  <Plus size={16} />
-                  Add to Routine ({result.exercises.length})
+                  <Plus size={15} />
+                  <span>Add to Routine ({result.exercises.length})</span>
                 </button>
               )}
 
               <button
-                className="ui-button ui-button--primary ui-button--medium"
-                onClick={() => handleApply("replace")}
                 type="button"
+                className="ai-btn-ghost"
+                onClick={() => setResult(null)}
               >
-                <Check size={16} />
-                Apply All ({result.exercises.length})
+                ← Change focus or options
               </button>
-            </div>
+            </>
           )}
         </div>
       </div>

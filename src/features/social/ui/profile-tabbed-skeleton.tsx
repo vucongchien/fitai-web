@@ -2,7 +2,7 @@ import { SocialContainer } from "./social-container";
 
 export function ProfileTabbedSkeleton() {
   return (
-    <SocialContainer aria-busy="true" aria-label="Đang tải hồ sơ">
+    <SocialContainer aria-busy="true" aria-label="Loading profile">
       <div className="px-5 sm:px-6 pt-6 pb-4 bg-white">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 space-y-2">
@@ -28,7 +28,7 @@ export function ProfileTabbedSkeleton() {
       </div>
 
       <div className="flex border-b border-neutral-200 bg-white">
-        {["Tổng quan", "Bài viết", "Phản hồi", "Media"].map((t, idx) => (
+        {["Overview", "Posts", "Replies", "Media"].map((t, idx) => (
           <div
             key={t}
             className={[
