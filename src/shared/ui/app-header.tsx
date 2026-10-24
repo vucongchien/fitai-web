@@ -42,6 +42,7 @@ export function AppHeader() {
         </>
       )}
       <span aria-hidden="true" className="app-header__spacer" />
+      <div id="app-header-gamification" className="flex items-center gap-2 mr-2" />
       <HeaderActions />
     </header>
   );

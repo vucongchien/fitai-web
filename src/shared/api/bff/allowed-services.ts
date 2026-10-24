@@ -5,6 +5,7 @@ export const allowedRpcServices = new Set([
   "contracts.generic.audio.v1.service.AudioService",
   "contracts.generic.notification.v1.service.NotificationService",
   "contracts.supporting.exercise.v1.service.ExerciseService",
+  "contracts.supporting.gamification.v1.service.GamificationService",
   "contracts.supporting.profile.v1.service.ProfileService",
   "contracts.supporting.social.v1.service.SocialService",
 ]);

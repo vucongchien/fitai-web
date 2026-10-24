@@ -1,16 +1,24 @@
 "use client";
 
-import { Bell, MoreHorizontal } from "lucide-react";
+import { Bell, MoreHorizontal, Settings } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
+
+import type { ProfileGamificationOverviewVM } from "@/features/gamification/model/gamification.types";
+import { ProfileAchievementsCard } from "@/features/gamification/ui/profile-achievements-card";
+import { ProfileFriendsCard } from "@/features/gamification/ui/profile-friends-card";
+import { ProfileStatsGrid } from "@/features/gamification/ui/profile-stats-grid";
 
 import type { PublicProfileVM } from "../model/social.types";
 import { FeedList } from "./feed-list";
 import { FollowButton } from "./follow-button";
+import { SocialContainer } from "./social-container";
 
 type Props = {
   profile: PublicProfileVM;
   currentUserId?: string;
+  gamification?: ProfileGamificationOverviewVM;
 };
 
 function formatFollowers(count: number): string {
@@ -44,13 +52,17 @@ function InstagramIcon({ size = 20, className = "" }: { size?: number; className
   );
 }
 
-type TabKey = "threads" | "replies" | "media";
+type TabKey = "overview" | "threads" | "replies" | "media";
 
-export function PublicProfileView({ profile, currentUserId }: Props) {
+export function PublicProfileView({
+  profile,
+  currentUserId,
+  gamification,
+}: Props) {
   const { summary } = profile;
   const isOwnProfile = profile.userId === currentUserId;
   const [followerCount, setFollowerCount] = useState(summary.followerCount);
-  const [activeTab, setActiveTab] = useState<TabKey>("threads");
+  const [activeTab, setActiveTab] = useState<TabKey>("overview");
 
   const avatarSrc =
     profile.authorAvatarUrl ||
@@ -66,7 +78,7 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
             <h1 className="text-2xl sm:text-[28px] font-bold text-neutral-900 tracking-tight leading-tight">
               {profile.authorName}
             </h1>
-            <p className="text-[14px] text-neutral-500 font-normal mt-0.5">{handle}</p>
+            <p className="text-[14px] text-neutral-500 font-normal mt-0.5">@{handle}</p>
           </div>
 
           <div className="relative h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-neutral-200/90 bg-neutral-100">
@@ -83,31 +95,43 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
 
         <div className="mt-4 flex items-center justify-between text-neutral-500">
           <span className="text-[14px] text-neutral-400 font-normal">
-            {formatFollowers(followerCount)} {followerCount === 1 ? "follower" : "followers"}
+            {formatFollowers(followerCount)} {followerCount === 1 ? "người theo dõi" : "người theo dõi"}
           </span>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              aria-label="Instagram profile"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 hover:text-neutral-700 active:scale-90 transition-all cursor-pointer"
-            >
-              <InstagramIcon size={19} />
-            </button>
-            <button
-              type="button"
-              aria-label="Notifications"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 hover:text-neutral-700 active:scale-90 transition-all cursor-pointer"
-            >
-              <Bell size={19} />
-            </button>
-            <button
-              type="button"
-              aria-label="More options"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 hover:text-neutral-700 active:scale-90 transition-all cursor-pointer"
-            >
-              <MoreHorizontal size={19} />
-            </button>
+            {isOwnProfile ? (
+              <Link
+                href="/profile/settings"
+                aria-label="Cài đặt tài khoản"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
+              >
+                <Settings size={20} />
+              </Link>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  aria-label="Instagram profile"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 hover:text-neutral-700 active:scale-90 transition-all cursor-pointer"
+                >
+                  <InstagramIcon size={19} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Notifications"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 hover:text-neutral-700 active:scale-90 transition-all cursor-pointer"
+                >
+                  <Bell size={19} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="More options"
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 hover:text-neutral-700 active:scale-90 transition-all cursor-pointer"
+                >
+                  <MoreHorizontal size={19} />
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -126,33 +150,43 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
                 type="button"
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"
               >
-                Message
+                Nhắn tin
               </button>
             </>
           ) : (
             <>
-              <button
-                type="button"
+              <Link
+                href="/profile/settings"
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"
               >
-                Edit profile
-              </button>
+                Chỉnh sửa hồ sơ
+              </Link>
               <button
                 type="button"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && navigator.share) {
+                    navigator.share({
+                      title: profile.authorName,
+                      url: window.location.href,
+                    }).catch(() => {});
+                  }
+                }}
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"
               >
-                Share profile
+                Chia sẻ hồ sơ
               </button>
             </>
           )}
         </div>
       </div>
 
+      {/* Profile Tab Navigation Bar */}
       <div className="flex border-b border-neutral-200 bg-white">
         {(
           [
-            { key: "threads", label: "Threads" },
-            { key: "replies", label: "Replies" },
+            { key: "overview", label: "Tổng quan" },
+            { key: "threads", label: "Bài viết" },
+            { key: "replies", label: "Phản hồi" },
             { key: "media", label: "Media" },
           ] as const
         ).map((tab) => {
@@ -163,13 +197,16 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
               type="button"
               onClick={() => setActiveTab(tab.key)}
               className={[
-                "flex-1 py-3 text-center text-[14.5px] font-semibold transition-colors cursor-pointer border-b-2 -mb-[1px]",
+                "flex-1 py-3 text-center text-[14.5px] font-bold transition-colors cursor-pointer relative",
                 isActive
-                  ? "border-neutral-900 text-neutral-900"
-                  : "border-transparent text-neutral-400 hover:text-neutral-700",
+                  ? "text-sky-500"
+                  : "text-neutral-400 hover:text-neutral-600",
               ].join(" ")}
             >
               {tab.label}
+              {isActive && (
+                <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-sky-500" />
+              )}
             </button>
           );
         })}
@@ -178,12 +215,38 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
   );
 
   return (
-    <FeedList
-      initialItems={activeTab === "threads" ? profile.feedItems : []}
-      initialNextCursor={activeTab === "threads" ? profile.feedNextCursor : ""}
-      currentUserId={currentUserId}
-      profileUserId={profile.userId}
-      header={profileHeader}
-    />
+    <div className="w-full">
+      {activeTab === "overview" ? (
+        <SocialContainer hasDividers={false}>
+          {profileHeader}
+          <div className="space-y-5 pt-4 pb-6 px-5 sm:px-6 bg-white">
+            {gamification && <ProfileStatsGrid stats={gamification.stats} />}
+            {gamification && (
+              <ProfileFriendsCard
+                followers={gamification.followers}
+                following={gamification.following}
+                followerCount={gamification.followerCount}
+                followingCount={gamification.followingCount}
+              />
+            )}
+            {gamification && (
+              <ProfileAchievementsCard
+                badges={gamification.badges}
+                totalUnlocked={gamification.totalUnlockedBadges}
+                totalAvailable={gamification.totalAvailableBadges}
+              />
+            )}
+          </div>
+        </SocialContainer>
+      ) : (
+        <FeedList
+          initialItems={activeTab === "threads" ? profile.feedItems : []}
+          initialNextCursor={activeTab === "threads" ? profile.feedNextCursor : ""}
+          currentUserId={currentUserId}
+          profileUserId={profile.userId}
+          header={profileHeader}
+        />
+      )}
+    </div>
   );
 }

@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import type { FeedItemVM } from "../model/social.types";
 import { fetchMoreFeedAction, fetchMoreProfileFeedAction } from "../server/social-actions";
 import { FeedCard } from "./feed-card";
+import { SocialContainer } from "./social-container";
 
 interface Props {
   initialItems: FeedItemVM[];
@@ -58,11 +59,9 @@ export function FeedList({
   );
 
   return (
-    <div className="max-w-[640px] w-full mx-auto rounded-[24px] border border-neutral-300 bg-white overflow-hidden divide-y divide-neutral-100 shadow-none">
-      {/* Custom Header (e.g. Profile Header & Tabs) */}
+    <SocialContainer>
       {header}
 
-      {/* 1. Top Composer Row (What's new?) */}
       {!profileUserId && !header && (
         <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-white">
           <div className="flex items-center gap-3 min-w-0">
@@ -75,7 +74,9 @@ export function FeedList({
                 className="object-cover"
               />
             </div>
-            <span className="text-[14px] text-neutral-400 font-normal truncate">What's new?</span>
+            <span className="text-[14px] text-neutral-400 font-normal truncate">
+              What's new?
+            </span>
           </div>
           <button
             type="button"
@@ -86,7 +87,6 @@ export function FeedList({
         </div>
       )}
 
-      {/* 2. Empty State */}
       {items.length === 0 && !loading && (
         <div className="py-16 text-center px-4">
           <p className="text-sm font-medium text-neutral-600">No posts yet.</p>
@@ -96,24 +96,21 @@ export function FeedList({
         </div>
       )}
 
-      {/* 3. Feed Items (divided by thin line) */}
       {items.map((item) => (
         <FeedCard key={item.id} item={item} currentUserId={currentUserId} />
       ))}
 
-      {/* 4. Spinner in center during infinite load */}
       {cursor && (
         <div ref={sentinelRef} className="flex justify-center items-center py-6 bg-white">
           <Loader2 className="animate-spin text-neutral-400" size={22} />
         </div>
       )}
 
-      {/* 5. End of feed indicator */}
       {!cursor && items.length > 0 && (
         <div className="py-5 text-center text-xs text-neutral-400 bg-white">
           You're all caught up
         </div>
       )}
-    </div>
+    </SocialContainer>
   );
 }
