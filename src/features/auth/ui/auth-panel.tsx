@@ -3,8 +3,8 @@
 import { Suspense, useCallback, useState } from "react";
 
 import { ForgotPasswordForm } from "@/features/auth/ui/forgot-password-form";
-import { LoginForm } from "@/features/auth/ui/login-form";
 import { LoginErrorAlert } from "@/features/auth/ui/login-error-alert";
+import { LoginForm } from "@/features/auth/ui/login-form";
 import { RegisterForm } from "@/features/auth/ui/register-form";
 
 export type AuthMode = "login" | "register" | "forgot-password";
@@ -32,13 +32,8 @@ export function AuthPanel() {
           onSwitchToRegister={() => setMode("register")}
         />
       )}
-      {mode === "register" && (
-        <RegisterForm onSwitchToLogin={() => setMode("login")} />
-      )}
-      {mode === "forgot-password" && (
-        <ForgotPasswordForm onBackToLogin={handleResetSuccess} />
-      )}
+      {mode === "register" && <RegisterForm onSwitchToLogin={() => setMode("login")} />}
+      {mode === "forgot-password" && <ForgotPasswordForm onBackToLogin={handleResetSuccess} />}
     </div>
   );
 }
-

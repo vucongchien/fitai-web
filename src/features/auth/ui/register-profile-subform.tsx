@@ -1,7 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Eye, EyeOff } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
@@ -23,19 +23,19 @@ const AvatarCreator = dynamic(
 
 interface RegisterProfileSubformProps {
   isPending: boolean;
-  onSubmit: (e: React.FormEvent, data: {
-    fullName: string;
-    password: string;
-    gender: Gender;
-    dateOfBirth: string;
-    avatarUrl: string;
-  }) => void;
+  onSubmit: (
+    e: React.FormEvent,
+    data: {
+      fullName: string;
+      password: string;
+      gender: Gender;
+      dateOfBirth: string;
+      avatarUrl: string;
+    },
+  ) => void;
 }
 
-export function RegisterProfileSubform({
-  isPending,
-  onSubmit,
-}: RegisterProfileSubformProps) {
+export function RegisterProfileSubform({ isPending, onSubmit }: RegisterProfileSubformProps) {
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -55,11 +55,7 @@ export function RegisterProfileSubform({
 
   return (
     <form className="auth-step-profile-details" onSubmit={handleSubmit}>
-      <AvatarCreator
-        disabled={isPending}
-        name={fullName}
-        onAvatarChange={setAvatarUrl}
-      />
+      <AvatarCreator disabled={isPending} name={fullName} onAvatarChange={setAvatarUrl} />
 
       <div className="auth-field">
         <label className="auth-label" htmlFor="register-fullname">

@@ -9,10 +9,7 @@ import { PageTransition } from "@/shared/ui/page-transition";
 export const metadata = { title: "Community — FITAI" };
 
 async function CommunityContent() {
-  const [data, currentUserId] = await Promise.all([
-    getActivityFeed(),
-    getAuthenticatedUserId(),
-  ]);
+  const [data, currentUserId] = await Promise.all([getActivityFeed(), getAuthenticatedUserId()]);
   return <CommunityView data={data} currentUserId={currentUserId} />;
 }
 

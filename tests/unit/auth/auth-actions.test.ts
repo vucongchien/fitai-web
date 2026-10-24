@@ -32,7 +32,6 @@ vi.mock("@/shared/api/server/transport", () => ({
   createServerTransport: vi.fn(() => ({})),
 }));
 
-import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 import {
   loginWithPasswordAction,
   registerAction,
@@ -40,6 +39,7 @@ import {
   sendOtpAction,
   verifyOtpAction,
 } from "@/features/auth/server/auth-actions";
+import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 
 describe("auth-actions", () => {
   beforeEach(() => {

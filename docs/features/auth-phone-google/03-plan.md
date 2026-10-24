@@ -35,6 +35,7 @@ tests/unit/auth/
 ## 2. Technical Blueprint (Low-Level Details)
 
 ### 2.1 Pure Validation Functions (`src/features/auth/model/auth-validation.ts`)
+
 - `isValidVietnamesePhone(phone: string): boolean`: Chấp nhận `03`, `05`, `07`, `08`, `09` (10 số) hoặc `+84...`.
 - `normalizePhoneNumber(phone: string): string`: Chuyển đổi về chuẩn E.164 (`+84...`).
 - `isValidEmail(email: string): boolean`: Kiểm tra cú pháp RFC email hợp lệ.
@@ -50,16 +51,19 @@ tests/unit/auth/
   - `icloud.com` $\rightarrow$ `https://www.icloud.com/mail`
 
 ### 2.2 Avatar Creation Hook (`src/features/auth/model/use-multiavatar.ts`)
+
 - Dùng thư viện `@multiavatar/multiavatar`.
 - Hàm `generateMultiavatarSvg(seed: string): string`.
 - Trả về SVG string an toàn, có thể bọc trong data URL hoặc `dangerouslySetInnerHTML`.
 
 ### 2.3 Server Actions (`src/features/auth/server/auth-actions.ts`)
+
 - Chuẩn kết nối: `createClient(AuthService, createServerTransport())`.
 - Ghi cookie HTTP-only an toàn với `createAuthCookieOptions()`.
 - Xử lý lỗi ConnectRPC chuẩn mực: bắt `ConnectError`, ánh xạ mã lỗi thành tiếng Việt thân thiện (`UNAUTHENTICATED`, `NOT_FOUND`, `ALREADY_EXISTS`, `RESOURCE_EXHAUSTED`).
 
 ### 2.4 OTP Input Group (`src/features/auth/ui/otp-input-group.tsx`)
+
 - Không dùng icon!
 - 6 inputs, quản lý qua mảng `string[6]`.
 - Phím `Backspace`: nếu ô hiện tại rỗng, focus về ô trước đó.
@@ -67,6 +71,7 @@ tests/unit/auth/
 - `onPaste`: lấy 6 số từ clipboard, gán vào state và trigger `onComplete(code)`.
 
 ### 2.5 Form UI & Switcher (No Icons Policy)
+
 - Toàn bộ hành động đều hiển thị bằng chữ (Text Links / Buttons):
   - Tab switcher: `[ Đăng nhập ]` và `[ Đăng ký ]` dạng Pill.
   - Ẩn/Hiện mật khẩu: Nhãn văn bản `Hiện` / `Ẩn`.

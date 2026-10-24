@@ -2,10 +2,10 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { describe, expect, it, vi } from "vitest";
 
-import { FeedCard } from "@/features/social/ui/feed-card";
-import { ThreadView } from "@/features/social/ui/thread-view";
 import type { CommentVM, FeedItemVM } from "@/features/social/model/social.types";
 import * as socialActions from "@/features/social/server/social-actions";
+import { FeedCard } from "@/features/social/ui/feed-card";
+import { ThreadView } from "@/features/social/ui/thread-view";
 
 vi.mock<typeof import("next/navigation")>(import("next/navigation"), () => ({
   useRouter: vi.fn(),
@@ -84,9 +84,13 @@ describe("Thread Comments Flow (Threads-style)", () => {
       />,
     );
 
-    expect(screen.getByText("Spicing things up with multi-factor authentication.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Spicing things up with multi-factor authentication."),
+    ).toBeInTheDocument();
     expect(screen.getByText("arhitekta haosa")).toBeInTheDocument();
-    expect(screen.getByText("Me asking my partner if they locked the front door.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Me asking my partner if they locked the front door."),
+    ).toBeInTheDocument();
 
     // Check nested child reply
     expect(screen.getByText("Love is blind but security isn't")).toBeInTheDocument();
@@ -138,20 +142,18 @@ describe("Thread Comments Flow (Threads-style)", () => {
   });
 
   it("submits comment with parentId when replying", async () => {
-    const addCommentSpy = vi
-      .spyOn(socialActions, "addCommentAction")
-      .mockResolvedValueOnce({
-        comment: {
-          id: "comm-3",
-          userId: "user-viewer",
-          authorName: "Viewer",
-          authorAvatarUrl: "",
-          feedItemId: "post-101",
-          parentId: "comm-1",
-          content: "@arhitekta haosa Exactly my point!",
-          createdAt: new Date().toISOString(),
-        },
-      });
+    const addCommentSpy = vi.spyOn(socialActions, "addCommentAction").mockResolvedValueOnce({
+      comment: {
+        id: "comm-3",
+        userId: "user-viewer",
+        authorName: "Viewer",
+        authorAvatarUrl: "",
+        feedItemId: "post-101",
+        parentId: "comm-1",
+        content: "@arhitekta haosa Exactly my point!",
+        createdAt: new Date().toISOString(),
+      },
+    });
 
     render(
       <ThreadView

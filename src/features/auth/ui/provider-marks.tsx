@@ -35,4 +35,3 @@ export function FacebookMark() {
     </svg>
   );
 }
-

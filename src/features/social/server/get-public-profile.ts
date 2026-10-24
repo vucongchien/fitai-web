@@ -30,8 +30,7 @@ export async function getPublicProfile(userId: string): Promise<PublicProfileVM>
   const summary = mapSocialSummary(summaryResult.value);
   const feedItems =
     feedResult.status === "fulfilled" ? feedResult.value.items.map(mapFeedItem) : [];
-  const feedNextCursor =
-    feedResult.status === "fulfilled" ? feedResult.value.nextCursor : "";
+  const feedNextCursor = feedResult.status === "fulfilled" ? feedResult.value.nextCursor : "";
 
   const firstItem = feedItems[0];
   const fallbackName = userId ? `Athlete ${userId.slice(-4)}` : "Athlete";

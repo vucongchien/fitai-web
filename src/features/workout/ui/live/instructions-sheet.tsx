@@ -120,10 +120,7 @@ export function InstructionsSheet({
       role="dialog"
       onClick={handleClose}
     >
-      <div
-        className="live-sheet__panel cursor-default"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="live-sheet__panel cursor-default" onClick={(e) => e.stopPropagation()}>
         <header className="live-sheet__header">
           <div>
             <p className="utility-label">How to do it</p>

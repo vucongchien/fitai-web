@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
 import { Bell, MoreHorizontal } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
 
+import type { PublicProfileVM } from "../model/social.types";
 import { FeedList } from "./feed-list";
 import { FollowButton } from "./follow-button";
-import type { PublicProfileVM } from "../model/social.types";
 
 type Props = {
   profile: PublicProfileVM;
@@ -66,9 +66,7 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
             <h1 className="text-2xl sm:text-[28px] font-bold text-neutral-900 tracking-tight leading-tight">
               {profile.authorName}
             </h1>
-            <p className="text-[14px] text-neutral-500 font-normal mt-0.5">
-              {handle}
-            </p>
+            <p className="text-[14px] text-neutral-500 font-normal mt-0.5">{handle}</p>
           </div>
 
           <div className="relative h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-neutral-200/90 bg-neutral-100">

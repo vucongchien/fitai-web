@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MoreHorizontal } from "lucide-react";
+import { useState } from "react";
 
 import { cacheFeedItem } from "../lib/post-cache";
 import type { FeedItemVM, ReactionType } from "../model/social.types";

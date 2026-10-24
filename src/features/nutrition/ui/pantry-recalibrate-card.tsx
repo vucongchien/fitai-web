@@ -279,7 +279,8 @@ export function PantryRecalibrateCard() {
     <section className="content-section">
       <div className="content-section__header">
         <h2 className="flex items-center gap-2">
-          <Refrigerator size={18} className="text-[var(--color-recovery)]" /> Pantry &amp; Available Ingredients
+          <Refrigerator size={18} className="text-[var(--color-recovery)]" /> Pantry &amp; Available
+          Ingredients
         </h2>
         <p>Enter food items in your fridge for AI to suggest optimal meals</p>
       </div>

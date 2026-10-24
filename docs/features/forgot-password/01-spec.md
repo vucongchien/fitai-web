@@ -12,8 +12,8 @@ Cho phép người dùng đặt lại mật khẩu khi quên, thông qua luồng
 
 ## Actors & Entry Point
 
-| Actor | Trigger |
-|-------|---------|
+| Actor                     | Trigger                                   |
+| ------------------------- | ----------------------------------------- |
 | Người dùng chưa đăng nhập | Click "Forgot password?" trên `LoginForm` |
 
 ## Scope
@@ -35,12 +35,12 @@ Cho phép người dùng đặt lại mật khẩu khi quên, thông qua luồng
 
 ## Current vs Expected Behavior
 
-| Aspect | Current | Expected |
-|--------|---------|----------|
-| Nút "Forgot password?" | `alert("Password reset link...")` | Chuyển `AuthPanel` sang mode `"forgot-password"` |
-| Send OTP cho reset | `sendOtpAction` chỉ nhận `"login" \| "register"` | Thêm `"reset_password"` vào allowed purposes |
-| Reset password action | Không tồn tại | `resetPasswordAction(resetToken, newPassword, confirmPassword)` |
-| UI flow | Không có | 3-step form trong `AuthPanel` |
+| Aspect                 | Current                                          | Expected                                                        |
+| ---------------------- | ------------------------------------------------ | --------------------------------------------------------------- |
+| Nút "Forgot password?" | `alert("Password reset link...")`                | Chuyển `AuthPanel` sang mode `"forgot-password"`                |
+| Send OTP cho reset     | `sendOtpAction` chỉ nhận `"login" \| "register"` | Thêm `"reset_password"` vào allowed purposes                    |
+| Reset password action  | Không tồn tại                                    | `resetPasswordAction(resetToken, newPassword, confirmPassword)` |
+| UI flow                | Không có                                         | 3-step form trong `AuthPanel`                                   |
 
 ## User Scenario
 
@@ -110,18 +110,18 @@ Cho phép người dùng đặt lại mật khẩu khi quên, thông qua luồng
 
 ## Functional Requirements
 
-| ID | Requirement |
-|----|-------------|
-| FR-01 | `AuthPanel` hỗ trợ mode `"forgot-password"` ngoài `"login"` và `"register"` |
-| FR-02 | Step 1 validate identifier (email hoặc phone VN) bằng `detectIdentifierType()` trước khi gọi API |
-| FR-03 | `sendOtpAction` chấp nhận purpose `"reset_password"` |
-| FR-04 | Step 2 tái sử dụng `OtpInputGroup` với cùng UX pattern như RegisterForm |
-| FR-05 | `verifyOtpAction` trả về `resetToken` khi purpose là reset password |
-| FR-06 | Tạo `resetPasswordAction(resetToken, newPassword, confirmPassword)` gọi `AuthService.ResetPassword` |
-| FR-07 | Step 3 validate: newPassword ≥ 8 ký tự, newPassword === confirmPassword |
-| FR-08 | Sau reset thành công, hiển thị success rồi tự động chuyển về Login |
+| ID    | Requirement                                                                                           |
+| ----- | ----------------------------------------------------------------------------------------------------- |
+| FR-01 | `AuthPanel` hỗ trợ mode `"forgot-password"` ngoài `"login"` và `"register"`                           |
+| FR-02 | Step 1 validate identifier (email hoặc phone VN) bằng `detectIdentifierType()` trước khi gọi API      |
+| FR-03 | `sendOtpAction` chấp nhận purpose `"reset_password"`                                                  |
+| FR-04 | Step 2 tái sử dụng `OtpInputGroup` với cùng UX pattern như RegisterForm                               |
+| FR-05 | `verifyOtpAction` trả về `resetToken` khi purpose là reset password                                   |
+| FR-06 | Tạo `resetPasswordAction(resetToken, newPassword, confirmPassword)` gọi `AuthService.ResetPassword`   |
+| FR-07 | Step 3 validate: newPassword ≥ 8 ký tự, newPassword === confirmPassword                               |
+| FR-08 | Sau reset thành công, hiển thị success rồi tự động chuyển về Login                                    |
 | FR-09 | Mọi step xử lý đầy đủ Loading (button disabled + spinner), Error (inline message), và navigation back |
-| FR-10 | Nút "Back to login" hoặc "Start over" luôn available ở mọi step |
+| FR-10 | Nút "Back to login" hoặc "Start over" luôn available ở mọi step                                       |
 
 ## Business Rules & Invariants
 
@@ -133,22 +133,22 @@ Cho phép người dùng đặt lại mật khẩu khi quên, thông qua luồng
 
 ### Standardized Error Messages (Security-Conscious)
 
-| Context | Message | Rationale |
-|---------|---------|-----------|
+| Context                    | Message                                                                         | Rationale                                          |
+| -------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------- |
 | Forgot password — send OTP | "If an account exists with these details, you'll receive instructions shortly." | Anti-enumeration: không tiết lộ account có tồn tại |
-| Send OTP (generic) | "If an eligible account exists, a verification code will be sent." | Anti-enumeration |
-| OTP invalid/expired | "Invalid verification code" / "Verification code has expired" | Generic, không tiết lộ thêm info |
-| Reset token expired | "Reset session has expired. Please start over." | Generic |
-| Password validation | "Password must be at least 8 characters" / "Passwords do not match" | Client-side, ok to be specific |
+| Send OTP (generic)         | "If an eligible account exists, a verification code will be sent."              | Anti-enumeration                                   |
+| OTP invalid/expired        | "Invalid verification code" / "Verification code has expired"                   | Generic, không tiết lộ thêm info                   |
+| Reset token expired        | "Reset session has expired. Please start over."                                 | Generic                                            |
+| Password validation        | "Password must be at least 8 characters" / "Passwords do not match"             | Client-side, ok to be specific                     |
 
 ## Validation Rules
 
-| Field | Rule |
-|-------|------|
-| Identifier | Email valid hoặc phone VN (`0[35789]...` 10 số hoặc `+84[35789]...`) |
-| OTP | Exactly 6 digits |
-| New password | ≥ 8 ký tự |
-| Confirm password | Phải khớp new password |
+| Field            | Rule                                                                 |
+| ---------------- | -------------------------------------------------------------------- |
+| Identifier       | Email valid hoặc phone VN (`0[35789]...` 10 số hoặc `+84[35789]...`) |
+| OTP              | Exactly 6 digits                                                     |
+| New password     | ≥ 8 ký tự                                                            |
+| Confirm password | Phải khớp new password                                               |
 
 ## Acceptance Criteria
 
@@ -165,11 +165,11 @@ Cho phép người dùng đặt lại mật khẩu khi quên, thông qua luồng
 
 ## Open Questions & Decisions Needed
 
-| # | Question | Impact | Recommendation |
-|---|----------|--------|----------------|
+| #    | Question                                                                                                | Impact                         | Recommendation                                                                                                                        |
+| ---- | ------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
 | Q-01 | Giữ forgot-password trong `AuthPanel` state machine (thêm mode) hay tạo route `/forgot-password` riêng? | Routing, UX, code organization | **Recommend: thêm mode vào `AuthPanel`** — consistent với pattern login/register hiện tại, không cần thêm route, transition mượt hơn. |
-| Q-02 | Sau reset thành công, có nên pre-fill identifier vào ô login để user chỉ cần nhập password? | UX convenience | **Recommend: Có** — giảm friction, user không cần nhập lại email/phone. |
-| Q-03 | Heading/title cho mỗi step nên dùng tiếng Việt hay tiếng Anh? LoginForm hiện đang dùng English labels. | UI consistency | **Recommend: English** — match LoginForm/RegisterForm pattern hiện tại. |
+| Q-02 | Sau reset thành công, có nên pre-fill identifier vào ô login để user chỉ cần nhập password?             | UX convenience                 | **Recommend: Có** — giảm friction, user không cần nhập lại email/phone.                                                               |
+| Q-03 | Heading/title cho mỗi step nên dùng tiếng Việt hay tiếng Anh? LoginForm hiện đang dùng English labels.  | UI consistency                 | **Recommend: English** — match LoginForm/RegisterForm pattern hiện tại.                                                               |
 
 ## Assumptions
 

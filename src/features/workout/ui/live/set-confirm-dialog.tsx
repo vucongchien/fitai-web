@@ -98,9 +98,7 @@ function SetConfirmDialogContent({
             <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-action)]">
               Companion · Set {currentSet}/{totalSets}
             </span>
-            <h2 className="text-xl font-bold mt-1 text-[var(--color-text)]">
-              {exercise.name}
-            </h2>
+            <h2 className="text-xl font-bold mt-1 text-[var(--color-text)]">{exercise.name}</h2>
           </div>
           <button
             onClick={() => triggerClose()}
@@ -223,9 +221,7 @@ function SetConfirmDialogContent({
         {!timed && (
           <div className="bg-[var(--color-surface-subtle)] rounded-[var(--radius-card)] p-4 mb-4 border border-[var(--color-border)]">
             <div className="flex justify-between items-center">
-              <span className="font-semibold text-sm text-[var(--color-text)]">
-                Weight (kg)
-              </span>
+              <span className="font-semibold text-sm text-[var(--color-text)]">Weight (kg)</span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"

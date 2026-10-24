@@ -102,7 +102,10 @@ function MetadataDialogForm({
       {/* Body Form */}
       <form id="metadata-form" noValidate onSubmit={handleSubmit} className="p-6 space-y-4">
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-[var(--color-text)]" htmlFor={`${fieldIdBase}-1`}>
+          <label
+            className="text-xs font-bold text-[var(--color-text)]"
+            htmlFor={`${fieldIdBase}-1`}
+          >
             Name *
           </label>
           <input
@@ -116,7 +119,10 @@ function MetadataDialogForm({
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-bold text-[var(--color-text)]" htmlFor={`${fieldIdBase}-2`}>
+          <label
+            className="text-xs font-bold text-[var(--color-text)]"
+            htmlFor={`${fieldIdBase}-2`}
+          >
             Description (Optional)
           </label>
           <textarea

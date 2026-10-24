@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { Heart, MessageCircle, Send } from "lucide-react";
+import { useState } from "react";
 
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
-import { reactTargetAction } from "../server/social-actions";
+
 import type { ReactionType } from "../model/social.types";
+import { reactTargetAction } from "../server/social-actions";
 
 interface Props {
   feedItemId: string;
@@ -40,7 +41,8 @@ export function ReactionBar({
   const [pending, setPending] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const isLiked = current === "LIKE" || current === "FIRE" || current === "MUSCLE" || current === "CLAP";
+  const isLiked =
+    current === "LIKE" || current === "FIRE" || current === "MUSCLE" || current === "CLAP";
 
   async function handleToggleLike() {
     if (pending) return;
@@ -105,7 +107,9 @@ export function ReactionBar({
           strokeWidth={1.9}
           className={[
             "transition-colors duration-150",
-            isLiked ? "fill-red-500 text-red-500 scale-105" : "text-neutral-900 group-hover:text-red-500",
+            isLiked
+              ? "fill-red-500 text-red-500 scale-105"
+              : "text-neutral-900 group-hover:text-red-500",
           ].join(" ")}
         />
         {count > 0 && (

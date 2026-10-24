@@ -21,7 +21,9 @@ export function WorkoutSummaryCard({ data }: Props) {
         </span>
         <span className="text-xs font-medium text-neutral-400">{minutes}m session</span>
       </div>
-      <p className="mt-1.5 text-sm font-semibold text-neutral-900 leading-snug">{data.workoutTitle}</p>
+      <p className="mt-1.5 text-sm font-semibold text-neutral-900 leading-snug">
+        {data.workoutTitle}
+      </p>
       <div className="mt-2.5 flex items-center gap-4 text-xs text-neutral-600">
         <span className="inline-flex items-center gap-1 font-medium">
           <Timer size={13} className="text-neutral-400" />

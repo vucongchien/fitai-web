@@ -1,9 +1,10 @@
 "use client";
 
-import { use, useState } from "react";
 import { MoreHorizontal } from "lucide-react";
+import { use, useState } from "react";
 
 import { BackButton } from "@/shared/ui/back-button";
+
 import { getCachedFeedItem } from "../lib/post-cache";
 import type { CommentVM, FeedItemVM } from "../model/social.types";
 import { ThreadView } from "./thread-view";
@@ -35,7 +36,9 @@ export function ThreadDetailShell({
     return (
       <div className="max-w-[620px] w-full mx-auto p-8 text-center bg-white rounded-2xl border border-neutral-200">
         <p className="text-base font-semibold text-neutral-800">Thread not found</p>
-        <p className="text-sm text-neutral-400 mt-1">This post may have been deleted or is unavailable.</p>
+        <p className="text-sm text-neutral-400 mt-1">
+          This post may have been deleted or is unavailable.
+        </p>
         <BackButton
           fallbackHref="/community"
           className="mt-4 inline-block px-4 py-2 text-sm font-semibold text-white bg-neutral-900 rounded-full cursor-pointer hover:bg-neutral-800 transition-colors w-auto h-auto"
@@ -49,9 +52,7 @@ export function ThreadDetailShell({
   // Calculate approximate views for header subtext (Image 1: 2.7K views)
   const viewsCount = Math.max(post.reactionCount * 18 + 124, 270);
   const formattedViews =
-    viewsCount >= 1000
-      ? `${(viewsCount / 1000).toFixed(1)}K views`
-      : `${viewsCount} views`;
+    viewsCount >= 1000 ? `${(viewsCount / 1000).toFixed(1)}K views` : `${viewsCount} views`;
 
   return (
     <div className="max-w-[620px] w-full mx-auto">

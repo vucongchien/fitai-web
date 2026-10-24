@@ -14,11 +14,7 @@ interface PageProps {
   params: Promise<{ postId: string }>;
 }
 
-async function ThreadContent({
-  paramsPromise,
-}: {
-  paramsPromise: Promise<{ postId: string }>;
-}) {
+async function ThreadContent({ paramsPromise }: { paramsPromise: Promise<{ postId: string }> }) {
   const { postId } = await paramsPromise;
   const session = await getAuthenticatedSession();
 

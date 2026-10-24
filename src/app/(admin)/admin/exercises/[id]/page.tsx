@@ -288,7 +288,10 @@ function AdminExerciseForm({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-1`}>
+                <label
+                  className="text-xs font-bold text-[var(--color-text-muted)]"
+                  htmlFor={`${fieldIdBase}-1`}
+                >
                   Exercise Title *
                 </label>
                 <input
@@ -301,7 +304,10 @@ function AdminExerciseForm({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-2`}>
+                <label
+                  className="text-xs font-bold text-[var(--color-text-muted)]"
+                  htmlFor={`${fieldIdBase}-2`}
+                >
                   Status
                 </label>
                 <select
@@ -318,7 +324,10 @@ function AdminExerciseForm({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-3`}>
+                <label
+                  className="text-xs font-bold text-[var(--color-text-muted)]"
+                  htmlFor={`${fieldIdBase}-3`}
+                >
                   Difficulty Level
                 </label>
                 <select
@@ -336,7 +345,10 @@ function AdminExerciseForm({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-4`}>
+                <label
+                  className="text-xs font-bold text-[var(--color-text-muted)]"
+                  htmlFor={`${fieldIdBase}-4`}
+                >
                   Primary Body Part *
                 </label>
                 <select
@@ -354,7 +366,10 @@ function AdminExerciseForm({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-5`}>
+                <label
+                  className="text-xs font-bold text-[var(--color-text-muted)]"
+                  htmlFor={`${fieldIdBase}-5`}
+                >
                   Equipment *
                 </label>
                 <select
@@ -372,7 +387,10 @@ function AdminExerciseForm({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-6`}>
+                <label
+                  className="text-xs font-bold text-[var(--color-text-muted)]"
+                  htmlFor={`${fieldIdBase}-6`}
+                >
                   Target Muscle *
                 </label>
                 <select
@@ -391,7 +409,10 @@ function AdminExerciseForm({
             </div>
 
             <div className="space-y-1.5 pt-2">
-              <label className="text-xs font-bold text-[var(--color-text-muted)]" htmlFor={`${fieldIdBase}-7`}>
+              <label
+                className="text-xs font-bold text-[var(--color-text-muted)]"
+                htmlFor={`${fieldIdBase}-7`}
+              >
                 Default Rest Time (Seconds)
               </label>
               <input
@@ -406,7 +427,9 @@ function AdminExerciseForm({
 
           {/* Detailed Instructions Textarea */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-6 space-y-3 shadow-xs">
-            <h3 className="text-sm font-bold text-[var(--color-text)]">Step-by-Step Instructions</h3>
+            <h3 className="text-sm font-bold text-[var(--color-text)]">
+              Step-by-Step Instructions
+            </h3>
             <textarea
               rows={5}
               value={instructions}
@@ -423,7 +446,9 @@ function AdminExerciseForm({
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
             <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center justify-between">
               <span>Form Cues (Array)</span>
-              <span className="text-xs text-[var(--color-action)] font-mono">{formCues.length} Cues</span>
+              <span className="text-xs text-[var(--color-action)] font-mono">
+                {formCues.length} Cues
+              </span>
             </h3>
 
             <div className="space-y-2">
@@ -472,7 +497,9 @@ function AdminExerciseForm({
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
             <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center justify-between">
               <span>Common Mistakes (Array)</span>
-              <span className="text-xs text-[var(--color-danger)] font-mono">{commonMistakes.length} Items</span>
+              <span className="text-xs text-[var(--color-danger)] font-mono">
+                {commonMistakes.length} Items
+              </span>
             </h3>
 
             <div className="space-y-2">

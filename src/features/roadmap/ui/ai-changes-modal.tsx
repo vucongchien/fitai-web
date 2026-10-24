@@ -50,8 +50,12 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
             <Sparkles className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-[var(--color-text)] font-display">{getTitle()}</h3>
-            <p className="text-xs text-[var(--color-text-muted)]">Automated coaching adaptation details</p>
+            <h3 className="text-base font-bold text-[var(--color-text)] font-display">
+              {getTitle()}
+            </h3>
+            <p className="text-xs text-[var(--color-text-muted)]">
+              Automated coaching adaptation details
+            </p>
           </div>
         </div>
 
@@ -61,7 +65,9 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
               <ShieldAlert className="h-5 w-5 text-[var(--color-danger)] shrink-0" />
               <div className="text-xs">
                 <span className="font-bold text-[var(--color-text)]">Target Area: </span>
-                <span className="text-[var(--color-danger)] font-semibold">{context.muscleGroup}</span>
+                <span className="text-[var(--color-danger)] font-semibold">
+                  {context.muscleGroup}
+                </span>
                 <p className="text-[var(--color-text-muted)] mt-0.5">
                   Direct overload exercises targeting this muscle group are actively excluded or
                   protected.
@@ -74,7 +80,9 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
             <div className="p-3.5 flex items-start gap-2.5">
               <CheckCircle2 className="h-4 w-4 text-[var(--color-recovery-strong)] shrink-0 mt-0.5" />
               <div>
-                <strong className="text-[var(--color-text)]">Medical Safety Rule (BR-AC-09):</strong>
+                <strong className="text-[var(--color-text)]">
+                  Medical Safety Rule (BR-AC-09):
+                </strong>
                 <p className="text-[var(--color-text-muted)] mt-0.5">
                   Upcoming session plans have been revised to eliminate joint strain and prevent
                   aggravation.
@@ -85,7 +93,9 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
             <div className="p-3.5 flex items-start gap-2.5">
               <CheckCircle2 className="h-4 w-4 text-[var(--color-recovery-strong)] shrink-0 mt-0.5" />
               <div>
-                <strong className="text-[var(--color-text)]">History Preservation (Rule D3):</strong>
+                <strong className="text-[var(--color-text)]">
+                  History Preservation (Rule D3):
+                </strong>
                 <p className="text-[var(--color-text-muted)] mt-0.5">
                   100% of your completed workout sessions in the past remain untouched and
                   preserved.
@@ -96,7 +106,9 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
             <div className="p-3.5 flex items-start gap-2.5">
               <CheckCircle2 className="h-4 w-4 text-[var(--color-recovery-strong)] shrink-0 mt-0.5" />
               <div>
-                <strong className="text-[var(--color-text)]">Dynamic Volume & RPE Re-indexing:</strong>
+                <strong className="text-[var(--color-text)]">
+                  Dynamic Volume & RPE Re-indexing:
+                </strong>
                 <p className="text-[var(--color-text-muted)] mt-0.5">
                   Effort targets (RPE) across the remaining weeks have been recalculated for optimal
                   recovery.
@@ -107,12 +119,7 @@ export function AIChangesModal({ isOpen, onClose, context }: AIChangesModalProps
         </div>
 
         <div className="flex justify-end pt-2">
-          <Button
-            type="button"
-            onClick={onClose}
-            className="w-full sm:w-auto"
-            variant="primary"
-          >
+          <Button type="button" onClick={onClose} className="w-full sm:w-auto" variant="primary">
             Understood & Close
           </Button>
         </div>

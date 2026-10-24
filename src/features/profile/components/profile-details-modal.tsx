@@ -87,7 +87,6 @@ export function ProfileDetailsModal({
   );
 }
 
-
 function ConfirmDialog({
   title = "Confirm Changes",
   message,
@@ -125,7 +124,6 @@ function ConfirmDialog({
   );
 }
 
-
 function SelectableTile({
   label,
   description,
@@ -158,9 +156,7 @@ function SelectableTile({
           {label}
         </div>
         {description && (
-          <div className="text-xs mt-0.5 text-[var(--color-text-muted)]">
-            {description}
-          </div>
+          <div className="text-xs mt-0.5 text-[var(--color-text-muted)]">{description}</div>
         )}
       </div>
       <div
@@ -176,7 +172,6 @@ function SelectableTile({
     </button>
   );
 }
-
 
 function BodyMetricsForm({
   profile,
@@ -241,13 +236,17 @@ function BodyMetricsForm({
         </div>
         <div>
           <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Body Metrics</h2>
-          <p className="text-xs text-[var(--color-text-muted)]">Update your physical status and target goals</p>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            Update your physical status and target goals
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Current Weight (kg)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+            Current Weight (kg)
+          </label>
           <input
             type="number"
             step="0.1"
@@ -258,7 +257,9 @@ function BodyMetricsForm({
           />
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Target Weight (kg)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+            Target Weight (kg)
+          </label>
           <input
             type="number"
             step="0.1"
@@ -269,7 +270,9 @@ function BodyMetricsForm({
           />
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Height (cm)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+            Height (cm)
+          </label>
           <input
             type="number"
             value={data.heightCm}
@@ -279,7 +282,9 @@ function BodyMetricsForm({
           />
         </div>
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Body Fat (%)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+            Body Fat (%)
+          </label>
           <input
             type="number"
             step="0.1"
@@ -290,7 +295,9 @@ function BodyMetricsForm({
           />
         </div>
         <div className="space-y-1 sm:col-span-2">
-          <label className="text-xs font-semibold text-[var(--color-text-muted)]">Target Body Fat (%)</label>
+          <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+            Target Body Fat (%)
+          </label>
           <input
             type="number"
             step="0.1"
@@ -304,9 +311,14 @@ function BodyMetricsForm({
 
       {bmi && (
         <div className="p-3.5 rounded-[var(--radius-input)] mb-6 bg-[var(--color-action-soft)] border border-[color-mix(in_srgb,var(--color-action)_20%,transparent)] flex items-center justify-between">
-          <span className="text-xs text-[var(--color-text-muted)]">Calculated Body Mass Index (BMI)</span>
+          <span className="text-xs text-[var(--color-text-muted)]">
+            Calculated Body Mass Index (BMI)
+          </span>
           <span className="text-sm font-bold font-data text-[var(--color-action)]">
-            {bmi.bmi} <span className="text-xs font-normal text-[var(--color-text-muted)]">({bmi.category})</span>
+            {bmi.bmi}{" "}
+            <span className="text-xs font-normal text-[var(--color-text-muted)]">
+              ({bmi.category})
+            </span>
           </span>
         </div>
       )}
@@ -329,7 +341,6 @@ function BodyMetricsForm({
     </>
   );
 }
-
 
 function GoalsForm({
   profile,
@@ -398,7 +409,9 @@ function GoalsForm({
           <Target className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Training Goals</h2>
+          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">
+            Training Goals
+          </h2>
           <p className="text-xs text-[var(--color-text-muted)]">
             Customize your focus, target muscles & experience level
           </p>
@@ -476,9 +489,7 @@ function GoalsForm({
                         : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
                     )}
                   >
-                    <span className="text-xs font-semibold">
-                      {mg.name}
-                    </span>
+                    <span className="text-xs font-semibold">{mg.name}</span>
                   </button>
                 );
               })}
@@ -505,7 +516,6 @@ function GoalsForm({
     </>
   );
 }
-
 
 function EquipmentForm({
   profile,
@@ -558,8 +568,12 @@ function EquipmentForm({
           <Dumbbell className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Available Equipment</h2>
-          <p className="text-xs text-[var(--color-text-muted)]">Select what gear you have access to for workouts</p>
+          <h2 className="text-lg font-bold text-[var(--color-text)] font-display">
+            Available Equipment
+          </h2>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            Select what gear you have access to for workouts
+          </p>
         </div>
       </div>
 
@@ -598,7 +612,6 @@ function EquipmentForm({
     </>
   );
 }
-
 
 function PersonalInfoForm({
   profile,
@@ -641,14 +654,18 @@ function PersonalInfoForm({
         </div>
         <div>
           <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Personal Info</h2>
-          <p className="text-xs text-[var(--color-text-muted)]">Manage profile details & coach preferences</p>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            Manage profile details & coach preferences
+          </p>
         </div>
       </div>
 
       <div className="space-y-6 mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-[var(--color-text-muted)]">Date of Birth</label>
+            <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+              Date of Birth
+            </label>
             <input
               type="date"
               value={dob}
@@ -726,7 +743,6 @@ function PersonalInfoForm({
     </>
   );
 }
-
 
 function InjuryHistoryForm({
   profile,
@@ -868,8 +884,12 @@ function InjuryHistoryForm({
             <AlertCircle className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Injury Management</h2>
-            <p className="text-xs text-[var(--color-text-muted)]">Track pain areas so AI Coach protects you</p>
+            <h2 className="text-lg font-bold text-[var(--color-text)] font-display">
+              Injury Management
+            </h2>
+            <p className="text-xs text-[var(--color-text-muted)]">
+              Track pain areas so AI Coach protects you
+            </p>
           </div>
         </div>
         {!showReport && (
@@ -951,14 +971,18 @@ function InjuryHistoryForm({
                       >
                         {m.name}
                       </div>
-                      <div className="text-[10px] text-[var(--color-text-muted)] truncate">{m.hint}</div>
+                      <div className="text-[10px] text-[var(--color-text-muted)] truncate">
+                        {m.hint}
+                      </div>
                     </button>
                   );
                 })}
               </div>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[var(--color-text-muted)]">Severity & AI Protocol</label>
+              <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+                Severity & AI Protocol
+              </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {[
                   { id: "Mild", label: "Mild", desc: "Reduce load & sets by 30%" },
@@ -986,7 +1010,9 @@ function InjuryHistoryForm({
                       >
                         {s.label}
                       </div>
-                      <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5">{s.desc}</div>
+                      <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
+                        {s.desc}
+                      </div>
                     </button>
                   );
                 })}
@@ -1045,7 +1071,9 @@ function InjuryHistoryForm({
                   <span
                     className={cn(
                       "text-sm font-bold",
-                      injury.isRecovered ? "text-[var(--color-text-muted)] line-through" : "text-[var(--color-danger)]",
+                      injury.isRecovered
+                        ? "text-[var(--color-text-muted)] line-through"
+                        : "text-[var(--color-danger)]",
                     )}
                   >
                     {injury.muscleGroup}
@@ -1064,7 +1092,9 @@ function InjuryHistoryForm({
                 <p
                   className={cn(
                     "text-xs",
-                    injury.isRecovered ? "text-[var(--color-text-muted)] line-through" : "text-[var(--color-danger)]",
+                    injury.isRecovered
+                      ? "text-[var(--color-text-muted)] line-through"
+                      : "text-[var(--color-danger)]",
                   )}
                 >
                   {injury.notes}
@@ -1107,7 +1137,6 @@ function InjuryHistoryForm({
   );
 }
 
-
 function FeedbackForm({ onClose }: { onClose: () => void }) {
   const [feedback, setFeedback] = useState("");
   const [sent, setSent] = useState(false);
@@ -1130,7 +1159,9 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
         </div>
         <div>
           <h2 className="text-lg font-bold text-[var(--color-text)] font-display">Send Feedback</h2>
-          <p className="text-xs text-[var(--color-text-muted)]">Help the FITAI team improve your experience</p>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            Help the FITAI team improve your experience
+          </p>
         </div>
       </div>
 
@@ -1138,7 +1169,9 @@ function FeedbackForm({ onClose }: { onClose: () => void }) {
         <div className="p-8 text-center space-y-2">
           <CheckCircle2 className="h-10 w-10 text-[var(--color-recovery-strong)] mx-auto" />
           <h3 className="text-sm font-bold text-[var(--color-text)]">Thank You!</h3>
-          <p className="text-xs text-[var(--color-text-muted)]">Your feedback has been submitted to the team.</p>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            Your feedback has been submitted to the team.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">

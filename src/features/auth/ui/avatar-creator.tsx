@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { Camera } from "lucide-react";
+import Image from "next/image";
 import { useRef, useState } from "react";
 
 import { generateMultiavatarSvg } from "@/features/auth/model/use-multiavatar";

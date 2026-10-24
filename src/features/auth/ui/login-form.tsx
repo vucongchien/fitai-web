@@ -105,11 +105,7 @@ export function LoginForm({
             <label className="auth-label" htmlFor="login-password">
               Password
             </label>
-            <button
-              className="auth-forgot-link"
-              onClick={onForgotPassword}
-              type="button"
-            >
+            <button className="auth-forgot-link" onClick={onForgotPassword} type="button">
               Forgot password?
             </button>
           </div>
@@ -151,11 +147,7 @@ export function LoginForm({
 
         <div className="auth-switch-footer">
           <span>Don&apos;t have an account?</span>
-          <button
-            className="auth-switch-link"
-            onClick={onSwitchToRegister}
-            type="button"
-          >
+          <button className="auth-switch-link" onClick={onSwitchToRegister} type="button">
             Create your account
           </button>
         </div>

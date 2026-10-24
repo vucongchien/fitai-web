@@ -1,6 +1,10 @@
 export function ThreadCommentsSkeleton() {
   return (
-    <div className="space-y-4 px-4 sm:px-6 pt-3 pb-6" aria-busy="true" aria-label="Loading comments">
+    <div
+      className="space-y-4 px-4 sm:px-6 pt-3 pb-6"
+      aria-busy="true"
+      aria-label="Loading comments"
+    >
       {/* Skeleton reply capsule bar (Image 1) */}
       <div className="hidden sm:block h-11 w-full rounded-full bg-neutral-100 animate-pulse" />
 

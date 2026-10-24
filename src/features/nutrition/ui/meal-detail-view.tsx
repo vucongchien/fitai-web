@@ -61,10 +61,7 @@ function IngredientsList({ ingredients }: { ingredients: MealIngredient[] }) {
             }}
           >
             <span style={{ fontWeight: 500 }}>{ing.ingredientName}</span>
-            <span
-              className="data-value"
-              style={{ fontWeight: 700, color: "var(--color-effort)" }}
-            >
+            <span className="data-value" style={{ fontWeight: 700, color: "var(--color-effort)" }}>
               {ing.grams}g
             </span>
             {ing.isSupplementary ? (

@@ -2,9 +2,7 @@
 
 import { createClient } from "@connectrpc/connect";
 
-import {
-  ReactionType as ProtoReactionType,
-} from "@/shared/api/gen/contracts/supporting/social/v1/message/social_messages_pb";
+import { ReactionType as ProtoReactionType } from "@/shared/api/gen/contracts/supporting/social/v1/message/social_messages_pb";
 import { SocialService } from "@/shared/api/gen/contracts/supporting/social/v1/service/social_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
@@ -46,11 +44,16 @@ export async function unfollowUserAction(
 
 function toReactionEnum(type: string): ProtoReactionType {
   switch (type) {
-    case "LIKE":   return ProtoReactionType.LIKE;
-    case "FIRE":   return ProtoReactionType.FIRE;
-    case "MUSCLE": return ProtoReactionType.MUSCLE;
-    case "CLAP":   return ProtoReactionType.CLAP;
-    default:       return ProtoReactionType.UNSPECIFIED;
+    case "LIKE":
+      return ProtoReactionType.LIKE;
+    case "FIRE":
+      return ProtoReactionType.FIRE;
+    case "MUSCLE":
+      return ProtoReactionType.MUSCLE;
+    case "CLAP":
+      return ProtoReactionType.CLAP;
+    default:
+      return ProtoReactionType.UNSPECIFIED;
   }
 }
 
@@ -111,9 +114,7 @@ export async function addCommentAction(
   }
 }
 
-export async function deleteCommentAction(
-  commentId: string,
-): Promise<{ success: boolean }> {
+export async function deleteCommentAction(commentId: string): Promise<{ success: boolean }> {
   try {
     const client = await getSocialClient();
     const res = await client.deleteComment({ commentId });

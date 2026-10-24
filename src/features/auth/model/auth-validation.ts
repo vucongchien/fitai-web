@@ -173,9 +173,7 @@ export function cleanAuthErrorMessage(
 
   // If there are still Vietnamese diacritics in the message, fallback to English fallback
   const hasVietnamese =
-    /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(
-      raw,
-    );
+    /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(raw);
   if (hasVietnamese) {
     return fallback;
   }

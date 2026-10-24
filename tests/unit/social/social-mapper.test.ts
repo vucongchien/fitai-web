@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  mapComment,
-  mapFeedItem,
-  mapSocialSummary,
-} from "@/features/social/model/social.mapper";
+import { mapComment, mapFeedItem, mapSocialSummary } from "@/features/social/model/social.mapper";
 
 describe("social mapper", () => {
   describe("mapFeedItem", () => {

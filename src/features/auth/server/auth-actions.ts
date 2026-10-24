@@ -3,17 +3,17 @@
 import { createClient } from "@connectrpc/connect";
 import { cookies } from "next/headers";
 
-import { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
-import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
-import { createServerTransport } from "@/shared/api/server/transport";
-import { createAuthCookieOptions } from "@/shared/auth/cookies";
-import { resolveEntryRoute } from "@/shared/auth/route-decision";
 import {
   cleanAuthErrorMessage,
   detectIdentifierType,
   normalizePhoneNumber,
 } from "@/features/auth/model/auth-validation";
 import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
+import { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
+import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
+import { createServerTransport } from "@/shared/api/server/transport";
+import { createAuthCookieOptions } from "@/shared/auth/cookies";
+import { resolveEntryRoute } from "@/shared/auth/route-decision";
 
 export type AuthActionResult<T = void> =
   | { success: true; data: T }

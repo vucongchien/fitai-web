@@ -48,10 +48,7 @@ export function PainReportDialog({
       role="dialog"
       onClick={onDismiss}
     >
-      <div
-        className="pain-dialog cursor-default"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="pain-dialog cursor-default" onClick={(e) => e.stopPropagation()}>
         <div className="pain-dialog__mark" aria-hidden="true">
           <HeartPulse size={26} />
         </div>

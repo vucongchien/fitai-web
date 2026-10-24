@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Heart, MessageCircle, MoreHorizontal, Send, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MessageCircle, MoreHorizontal, Send, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
+
 import { CommentVM } from "../model/social.types";
 
 export interface ThreadCommentWithReplies extends CommentVM {
@@ -99,9 +100,7 @@ export function ThreadCommentItem({
               {isPostAuthor && (
                 <span className="text-[11px] font-medium text-neutral-400">· Author</span>
               )}
-              <span className="text-[11px] text-neutral-400">
-                {timeAgo(comment.createdAt)}
-              </span>
+              <span className="text-[11px] text-neutral-400">{timeAgo(comment.createdAt)}</span>
             </div>
 
             {/* Actions dropdown / Delete */}
@@ -152,7 +151,9 @@ export function ThreadCommentItem({
                 className={liked ? "fill-red-500 text-red-500" : "text-neutral-700"}
               />
               {likeCount > 0 && (
-                <span className={`text-xs ${liked ? "text-red-500 font-semibold" : "text-neutral-500"}`}>
+                <span
+                  className={`text-xs ${liked ? "text-red-500 font-semibold" : "text-neutral-500"}`}
+                >
                   {likeCount}
                 </span>
               )}
@@ -270,9 +271,7 @@ function ThreadReplyItem({
             {isPostAuthor && (
               <span className="text-[11px] font-medium text-neutral-400">· Author</span>
             )}
-            <span className="text-[11px] text-neutral-400">
-              {timeAgo(reply.createdAt)}
-            </span>
+            <span className="text-[11px] text-neutral-400">{timeAgo(reply.createdAt)}</span>
           </div>
 
           <div className="relative">
@@ -321,7 +320,9 @@ function ThreadReplyItem({
               className={liked ? "fill-red-500 text-red-500" : "text-neutral-700"}
             />
             {likeCount > 0 && (
-              <span className={`text-[11px] ${liked ? "text-red-500 font-semibold" : "text-neutral-500"}`}>
+              <span
+                className={`text-[11px] ${liked ? "text-red-500 font-semibold" : "text-neutral-500"}`}
+              >
                 {likeCount}
               </span>
             )}

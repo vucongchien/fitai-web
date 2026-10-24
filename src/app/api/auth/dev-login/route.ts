@@ -1,4 +1,5 @@
 import crypto from "crypto";
+
 import { NextResponse } from "next/server";
 
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
@@ -75,11 +76,7 @@ export async function GET(request: Request) {
   const response = NextResponse.redirect(new URL(dest, origin));
   const token = generateDevJWT(userId, "user");
 
-  response.cookies.set(
-    "fitai_access_token",
-    token,
-    createAuthCookieOptions({ maxAge: 60 * 60 }),
-  );
+  response.cookies.set("fitai_access_token", token, createAuthCookieOptions({ maxAge: 60 * 60 }));
   response.cookies.set(
     "fitai_refresh_token",
     `mock_dev_refresh_token_${userId}`,

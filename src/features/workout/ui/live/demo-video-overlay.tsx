@@ -44,10 +44,7 @@ export function DemoVideoOverlay({
       role="dialog"
       onClick={onClose}
     >
-      <div
-        className="demo-video__panel cursor-default"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="demo-video__panel cursor-default" onClick={(e) => e.stopPropagation()}>
         {parsed.type === "youtube" ? (
           <iframe
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

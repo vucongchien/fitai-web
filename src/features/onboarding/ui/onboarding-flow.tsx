@@ -16,8 +16,8 @@ import { calculateWeeklyScheduleStats } from "@/features/onboarding/domain/worko
 import { saveOnboardingProfileServerAction } from "@/features/onboarding/server/onboarding-actions";
 import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { calculateBMI } from "@/features/profile/model/profile.mapper";
-import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/cn";
+import { Button } from "@/shared/ui/button";
 
 const storageKey = "fitai-onboarding-draft-v2";
 
@@ -518,7 +518,10 @@ export function OnboardingFlow() {
                     ))}
                   </div>
                   {errors.equipment ? (
-                    <p className="mt-2 text-xs font-semibold text-[var(--color-danger)]" role="alert">
+                    <p
+                      className="mt-2 text-xs font-semibold text-[var(--color-danger)]"
+                      role="alert"
+                    >
                       {errors.equipment.message}
                     </p>
                   ) : null}

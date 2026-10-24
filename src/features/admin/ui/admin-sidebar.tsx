@@ -84,7 +84,9 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
                 <div className="flex items-center gap-3">
                   <Icon
                     className={`size-4.5 transition-colors ${
-                      isActive ? "text-[var(--color-action)]" : "text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]"
+                      isActive
+                        ? "text-[var(--color-action)]"
+                        : "text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]"
                     }`}
                   />
                   <span>{item.label}</span>
@@ -98,7 +100,9 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
                   )}
                   <ChevronRight
                     className={`size-3.5 opacity-0 group-hover:opacity-100 transition-opacity ${
-                      isActive ? "opacity-100 text-[var(--color-action)]" : "text-[var(--color-text-muted)]"
+                      isActive
+                        ? "opacity-100 text-[var(--color-action)]"
+                        : "text-[var(--color-text-muted)]"
                     }`}
                   />
                 </div>
@@ -115,7 +119,9 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
             AD
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-[var(--color-text)] truncate">System Administrator</p>
+            <p className="text-xs font-bold text-[var(--color-text)] truncate">
+              System Administrator
+            </p>
             <p className="text-[11px] text-[var(--color-text-muted)] truncate">admin@fitai.com</p>
           </div>
         </div>

@@ -104,7 +104,9 @@ describe("AuthPanel component", () => {
 
     // Click Change to go back
     fireEvent.click(screen.getByRole("button", { name: /Change/i }));
-    expect(await screen.findByRole("heading", { level: 2, name: /Create your account/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 2, name: /Create your account/i }),
+    ).toBeInTheDocument();
   });
 
   it("switches to 'Reset password' when clicking 'Forgot password?'", () => {

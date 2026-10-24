@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import { Image as ImageIcon, Send, X } from "lucide-react";
+import Image from "next/image";
+import { useMemo, useRef, useState } from "react";
 
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
+
 import type { CommentVM, FeedItemVM } from "../model/social.types";
 import { addCommentAction, deleteCommentAction } from "../server/social-actions";
 import { ThreadCommentItem, type ThreadCommentWithReplies } from "./thread-comment-item";
@@ -77,9 +78,7 @@ export function ThreadView({
     }
 
     // "top" sorting: prioritize items with more replies
-    return [...rootComments].sort(
-      (a, b) => (b.replies?.length ?? 0) - (a.replies?.length ?? 0),
-    );
+    return [...rootComments].sort((a, b) => (b.replies?.length ?? 0) - (a.replies?.length ?? 0));
   }, [comments, sortOrder]);
 
   // Reply trigger — FB style: prefill @Name and focus input
@@ -136,9 +135,7 @@ export function ThreadView({
   async function handleDeleteComment(commentId: string) {
     const res = await deleteCommentAction(commentId);
     if (res.success) {
-      setComments((prev) =>
-        prev.filter((c) => c.id !== commentId && c.parentId !== commentId),
-      );
+      setComments((prev) => prev.filter((c) => c.id !== commentId && c.parentId !== commentId));
     }
   }
 
@@ -164,7 +161,8 @@ export function ThreadView({
         {replyingTo && (
           <div className="mb-2 flex items-center justify-between text-xs text-neutral-500 bg-neutral-50 px-3 py-1.5 rounded-lg border border-neutral-200/60">
             <span>
-              Replying to <strong className="text-neutral-900 font-semibold">@{replyingTo.authorName}</strong>
+              Replying to{" "}
+              <strong className="text-neutral-900 font-semibold">@{replyingTo.authorName}</strong>
             </span>
             <button
               type="button"
@@ -196,7 +194,9 @@ export function ThreadView({
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={replyingTo ? `Reply to @${replyingTo.authorName}…` : `Reply to ${post.authorName}…`}
+              placeholder={
+                replyingTo ? `Reply to @${replyingTo.authorName}…` : `Reply to ${post.authorName}…`
+              }
               disabled={submitting}
               className="min-w-0 flex-1 bg-transparent text-sm text-neutral-900 outline-none border-none p-0 focus:outline-none focus:ring-0 placeholder:text-neutral-400"
             />
@@ -251,7 +251,8 @@ export function ThreadView({
         {replyingTo && (
           <div className="mb-1.5 flex items-center justify-between text-xs text-neutral-500 px-1">
             <span>
-              Đang trả lời <strong className="text-neutral-900 font-semibold">@{replyingTo.authorName}</strong>
+              Đang trả lời{" "}
+              <strong className="text-neutral-900 font-semibold">@{replyingTo.authorName}</strong>
             </span>
             <button
               type="button"
@@ -283,7 +284,9 @@ export function ThreadView({
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={replyingTo ? `Trả lời @${replyingTo.authorName}…` : `Trả lời ${post.authorName}…`}
+              placeholder={
+                replyingTo ? `Trả lời @${replyingTo.authorName}…` : `Trả lời ${post.authorName}…`
+              }
               disabled={submitting}
               className="min-w-0 flex-1 bg-transparent text-[14px] text-neutral-900 outline-none border-none p-0 focus:outline-none focus:ring-0 placeholder:text-neutral-400"
             />

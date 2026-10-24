@@ -56,7 +56,9 @@ function buildExerciseColumns({
             <h4 className="font-bold text-[var(--color-text)] text-sm truncate group-hover:text-[var(--color-action)] transition-colors">
               {ex.name}
             </h4>
-            <p className="text-xs text-[var(--color-text-muted)] truncate">Created by: {ex.createdBy}</p>
+            <p className="text-xs text-[var(--color-text-muted)] truncate">
+              Created by: {ex.createdBy}
+            </p>
           </div>
         </div>
       ),
@@ -86,7 +88,9 @@ function buildExerciseColumns({
     {
       header: "Rest Time",
       cell: (ex) => (
-        <span className="text-xs text-[var(--color-text-muted)] font-mono">{ex.defaultRestSeconds}s</span>
+        <span className="text-xs text-[var(--color-text-muted)] font-mono">
+          {ex.defaultRestSeconds}s
+        </span>
       ),
     },
     {

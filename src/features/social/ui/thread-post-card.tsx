@@ -1,11 +1,11 @@
 "use client";
 
+import { ArrowUpDown, ChevronRight, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpDown, ChevronRight, MoreHorizontal } from "lucide-react";
 
-import type { FeedItemVM } from "../model/social.types";
 import { cacheFeedItem } from "../lib/post-cache";
+import type { FeedItemVM } from "../model/social.types";
 import { ReactionBar } from "./reaction-bar";
 import { WorkoutSummaryCard } from "./workout-summary-card";
 

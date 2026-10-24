@@ -9,11 +9,14 @@
 ## 1. Executive Summary & Value
 
 ### 1.1 Problem Statement
+
 Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/src/app/%28public%29/login/page.tsx)) chỉ hỗ trợ 2 nút Social OAuth (Google, Facebook) thông qua popup, chưa hỗ trợ người dùng đăng nhập bằng **Số điện thoại** hoặc **Email/Gmail trực tiếp** (với OTP hoặc Mật khẩu). Trong khi đó, tại thị trường Việt Nam:
+
 1. Phần lớn người dùng phòng gym chuộng đăng nhập tức thì bằng **Số điện thoại** nhận mã OTP SMS qua điện thoại.
 2. Nhiều người dùng không muốn liên kết tài khoản mạng xã hội hoặc gặp lỗi khi trình duyệt mobile chặn popup OAuth.
 
 ### 1.2 Desired Outcome
+
 - Cho phép người dùng đăng nhập/đăng ký liền mạch trên cùng một giao diện `/login` bằng:
   1. **Google OAuth 1-Click** (Popup / Redirect fallback).
   2. **Số điện thoại Việt Nam (+84 / 0x...) hoặc Email** thông qua mã **OTP** (Passwordless Authentication).
@@ -36,6 +39,7 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
 ## 3. Scope & Non-Goals
 
 ### In-Scope (Phase 1)
+
 - **UI Form Đa phương thức (Unified Login Panel)**:
   - Nút Social Google nổi bật ở trên cùng.
   - Phân cách `"hoặc tiếp tục với"`.
@@ -52,6 +56,7 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
   - Snapshot test & review qua Google Stitch CLI (`stitch capture` -> `stitch review`).
 
 ### Out-of-Scope (Non-Goals)
+
 - Đăng nhập sinh trắc học WebAuthn/Passkeys (dành cho phase sau).
 - Tính năng đăng ký tổ chức Brand/Gym Partner (`RegisterBrand` thuộc về portal đối tác riêng).
 - Tự triển khai SMS Gateway tại Frontend (toàn bộ SMS/Email OTP do backend Go xử lý).
@@ -61,6 +66,7 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
 ## 4. User Scenarios & Workflows
 
 ### Scenario 1: Đăng nhập nhanh bằng Số điện thoại hoặc Email qua OTP (Chính)
+
 1. **Given**: Người dùng mở trang `/login`. Ô input tự động được focus sẵn (`autoFocus`).
 2. **When**: Người dùng nhập số điện thoại hoặc email.
    - **Pre-check (Kiểm tra trước)**: Hệ thống kiểm tra format tức thì khi gõ:
@@ -68,17 +74,17 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
      - Email: Cú pháp chuẩn `...@...`.
      - Nút "Tiếp tục" chỉ sáng màu Emerald khi dữ liệu hợp lệ. Nếu sai định dạng, hiển thị lỗi nhẹ ngay tại field, không gửi request thừa lên backend.
 3. **When**: Người dùng bấm **"Tiếp tục"** (hoặc nhấn phím `Enter`).
-4. **Then**: 
+4. **Then**:
    - Frontend chuẩn hóa format E.164 (`+84...`) nếu là SĐT.
    - Gọi Server Action `sendOtpAction({ identifier, purpose: "login" })`.
    - UI chuyển sang bước nhập OTP với trải nghiệm tối ưu:
      - **Auto-focus**: Con trỏ tự động nhảy vào ô OTP số 1.
      - **Hiển thị định danh che mờ**: "Mã 6 số đã gửi tới `+84 912 ••• 678`" kèm nút nhỏ **"Đổi số / Sửa"** nếu lỡ nhập sai.
      - **Tiện ích mở nhanh ứng dụng (Smart Shortcuts)**:
-       - *Nếu là Gmail (`@gmail.com`)*: Hiển thị nút **"Mở Gmail"** (mở `https://mail.google.com` trong tab mới).
-       - *Nếu là Outlook (`@outlook.com`, `@hotmail.com`)*: Hiển thị nút **"Mở Outlook"**.
-       - *Dòng ghi chú nhỏ*: "Kiểm tra cả hòm thư Spam nếu chưa thấy mã".
-       - *Nếu là SĐT trên di động (Android Chrome / iOS Safari)*: Kích hoạt **WebOTP API** (`navigator.credentials.get`) để nhận diện SMS 1-chạm tự động điền mã không cần mở app Tin nhắn.
+       - _Nếu là Gmail (`@gmail.com`)_: Hiển thị nút **"Mở Gmail"** (mở `https://mail.google.com` trong tab mới).
+       - _Nếu là Outlook (`@outlook.com`, `@hotmail.com`)_: Hiển thị nút **"Mở Outlook"**.
+       - _Dòng ghi chú nhỏ_: "Kiểm tra cả hòm thư Spam nếu chưa thấy mã".
+       - _Nếu là SĐT trên di động (Android Chrome / iOS Safari)_: Kích hoạt **WebOTP API** (`navigator.credentials.get`) để nhận diện SMS 1-chạm tự động điền mã không cần mở app Tin nhắn.
      - **Trải nghiệm gõ phím OTP (6 Pin Inputs)**:
        - Tự động nhảy ô tiếp theo khi gõ 1 số.
        - Tự động lùi về ô trước khi bấm Backspace.
@@ -93,6 +99,7 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
    - Nếu sai 3 lần liên tiếp: Khoá nhập trong 15 phút, hiển thị đồng hồ đếm ngược (theo [ux-flow-spec.md](file:///e:/LEARN/a/fitai-web/docs/ux-flow-spec.md#L30)).
 
 ### Scenario 2: Đăng ký tài khoản mới kèm Cá nhân hóa Avatar (Registration Flow)
+
 1. **Given**: Người dùng chọn tab/nút **"Đăng ký tài khoản"**.
 2. **When**: Người dùng nhập Số điện thoại hoặc Email $\rightarrow$ Nhận và nhập mã OTP 6 số để xác thực danh tính (`purpose: "register"`).
 3. **Then**: Form mở sang màn hình **"Thiết lập hồ sơ cá nhân"**:
@@ -113,6 +120,7 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
    - Tự động điều hướng người dùng sang `/onboarding` để hoàn thiện khảo sát thể trạng & mục tiêu tập luyện.
 
 ### Scenario 3: Đăng nhập bằng Gmail (Google OAuth 1-Click)
+
 1. **Given**: Người dùng bấm nút **"Tiếp tục với Google"**.
 2. **When**: Cửa sổ Popup Google OAuth mở ra $\rightarrow$ người dùng chọn tài khoản Google.
 3. **Then**:
@@ -121,6 +129,7 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
    - Trang chính tự động đóng popup và điều hướng người dùng mà không cần reload toàn trang.
 
 ### Scenario 4: Đăng nhập bằng Mật khẩu (Password Fallback)
+
 1. **Given**: Người dùng đã có tài khoản và mật khẩu trước đó.
 2. **When**: Trên màn hình nhập `identifier`, người dùng bấm nút **"Đăng nhập với mật khẩu"**.
 3. **Then**:
@@ -132,22 +141,22 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
 
 ## 5. Functional Requirements (FR)
 
-| ID | Yêu cầu nghiệp vụ & Giao diện | Backend RPC Seam |
-| :--- | :--- | :--- |
-| **FR-01** | Input thông minh tự động nhận diện Email (chứa `@`) hoặc Số điện thoại. Pre-validation inline tại client. | Client-side validation |
-| **FR-02** | Tab Switcher mượt mà giữa **Đăng nhập** và **Đăng ký**. | Client Component State |
-| **FR-03** | Gửi yêu cầu mã OTP SMS/Email kèm `purpose: "login"` hoặc `"register"`. Nhận về `otp_token` và `expires_in_seconds`. | `AuthService.SendOTP` |
-| **FR-04** | Bộ nhập OTP 6 chữ số chuyên dụng: auto-focus, auto-advance, backspace navigation, paste clipboard, auto-submit khi đủ 6 ký tự. | Client Component |
-| **FR-05** | Tiện ích thông minh theo định danh: Nút "Mở Gmail / Outlook" cho Email, nút "Sửa số" và WebOTP API cho Số điện thoại. | Client Utility |
-| **FR-06** | **Tích hợp `@multiavatar/multiavatar`**: Tự động sinh avatar vector SVG real-time khi gõ tên, nút xúc xắc Randomize kiểu dáng, thanh 4 avatar preset. | `@multiavatar/multiavatar` |
-| **FR-07** | **Tải ảnh Avatar cá nhân**: Cho phép chọn file ảnh từ máy (preview ngay lập tức, kiểm tra dung lượng $\le 5\text{MB}$). | Client File Input |
-| **FR-08** | Form Đăng ký tài khoản đầy đủ: Họ tên, Mật khẩu, Giới tính, Ngày sinh, Avatar. | `AuthService.Register` |
-| **FR-09** | Bộ đếm ngược Resend OTP (mặc định 60 giây). Vô hiệu hóa nút gửi lại cho tới khi hết giờ. | Client State / Hook |
-| **FR-10** | Xác thực OTP với `otp_token` đã lưu in-memory. Nhận session token và set HTTP-only cookie. | `AuthService.VerifyOTP` |
-| **FR-11** | Cơ chế chống brute-force OTP: Quá 3 lần sai $\rightarrow$ khoá 15 phút kèm countdown đếm ngược. | Client Lockout state + Backend error code |
-| **FR-12** | Đăng nhập trực tiếp bằng Identifier + Password. | `AuthService.Login` |
-| **FR-13** | Tiếp tục duy trì và tối ưu nút đăng nhập Google OAuth 1-Click hiện có. | `AuthService.GetOAuthLoginURL` & `LoginWithOAuth` |
-| **FR-14** | Xử lý điều hướng thông minh sau đăng nhập: Kiểm tra `completionRate` của profile để đưa vào `/home` hay `/onboarding`. | `ProfileService.GetProfile` |
+| ID        | Yêu cầu nghiệp vụ & Giao diện                                                                                                                         | Backend RPC Seam                                  |
+| :-------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------ |
+| **FR-01** | Input thông minh tự động nhận diện Email (chứa `@`) hoặc Số điện thoại. Pre-validation inline tại client.                                             | Client-side validation                            |
+| **FR-02** | Tab Switcher mượt mà giữa **Đăng nhập** và **Đăng ký**.                                                                                               | Client Component State                            |
+| **FR-03** | Gửi yêu cầu mã OTP SMS/Email kèm `purpose: "login"` hoặc `"register"`. Nhận về `otp_token` và `expires_in_seconds`.                                   | `AuthService.SendOTP`                             |
+| **FR-04** | Bộ nhập OTP 6 chữ số chuyên dụng: auto-focus, auto-advance, backspace navigation, paste clipboard, auto-submit khi đủ 6 ký tự.                        | Client Component                                  |
+| **FR-05** | Tiện ích thông minh theo định danh: Nút "Mở Gmail / Outlook" cho Email, nút "Sửa số" và WebOTP API cho Số điện thoại.                                 | Client Utility                                    |
+| **FR-06** | **Tích hợp `@multiavatar/multiavatar`**: Tự động sinh avatar vector SVG real-time khi gõ tên, nút xúc xắc Randomize kiểu dáng, thanh 4 avatar preset. | `@multiavatar/multiavatar`                        |
+| **FR-07** | **Tải ảnh Avatar cá nhân**: Cho phép chọn file ảnh từ máy (preview ngay lập tức, kiểm tra dung lượng $\le 5\text{MB}$).                               | Client File Input                                 |
+| **FR-08** | Form Đăng ký tài khoản đầy đủ: Họ tên, Mật khẩu, Giới tính, Ngày sinh, Avatar.                                                                        | `AuthService.Register`                            |
+| **FR-09** | Bộ đếm ngược Resend OTP (mặc định 60 giây). Vô hiệu hóa nút gửi lại cho tới khi hết giờ.                                                              | Client State / Hook                               |
+| **FR-10** | Xác thực OTP với `otp_token` đã lưu in-memory. Nhận session token và set HTTP-only cookie.                                                            | `AuthService.VerifyOTP`                           |
+| **FR-11** | Cơ chế chống brute-force OTP: Quá 3 lần sai $\rightarrow$ khoá 15 phút kèm countdown đếm ngược.                                                       | Client Lockout state + Backend error code         |
+| **FR-12** | Đăng nhập trực tiếp bằng Identifier + Password.                                                                                                       | `AuthService.Login`                               |
+| **FR-13** | Tiếp tục duy trì và tối ưu nút đăng nhập Google OAuth 1-Click hiện có.                                                                                | `AuthService.GetOAuthLoginURL` & `LoginWithOAuth` |
+| **FR-14** | Xử lý điều hướng thông minh sau đăng nhập: Kiểm tra `completionRate` của profile để đưa vào `/home` hay `/onboarding`.                                | `ProfileService.GetProfile`                       |
 
 ---
 
@@ -176,14 +185,16 @@ Giao diện đăng nhập hiện tại ([/login](file:///e:/LEARN/a/fitai-web/sr
 ## 7. Open Questions & Technical Deliberations (Rule 14)
 
 ### Câu hỏi 1: Luồng người dùng mới (New User) với Số điện thoại
-* **Lựa chọn A (Khuyến nghị)**: Đăng nhập và Đăng ký gộp làm một (Unified Auth). Người dùng nhập SĐT $\rightarrow$ nếu chưa có tài khoản, backend tự tạo tài khoản mới với trạng thái `INCOMPLETE` và gửi OTP. Sau khi verify, chuyển thẳng sang `/onboarding`.
-* **Lựa chọn B**: Tách rời 2 tab "Đăng nhập" và "Đăng ký". Bắt người dùng mới phải chủ động chọn tab "Đăng ký".
-* **Đánh giá**: Lựa chọn A mang lại trải nghiệm mượt mà hơn nhiều cho ứng dụng thể hình di động.
+
+- **Lựa chọn A (Khuyến nghị)**: Đăng nhập và Đăng ký gộp làm một (Unified Auth). Người dùng nhập SĐT $\rightarrow$ nếu chưa có tài khoản, backend tự tạo tài khoản mới với trạng thái `INCOMPLETE` và gửi OTP. Sau khi verify, chuyển thẳng sang `/onboarding`.
+- **Lựa chọn B**: Tách rời 2 tab "Đăng nhập" và "Đăng ký". Bắt người dùng mới phải chủ động chọn tab "Đăng ký".
+- **Đánh giá**: Lựa chọn A mang lại trải nghiệm mượt mà hơn nhiều cho ứng dụng thể hình di động.
 
 ### Câu hỏi 2: Quản lý phiên OTP (`otpToken`)
-* **Lựa chọn A (Khuyến nghị)**: Lưu `otpToken` trong Client State (React state trong component form OTP). Không lưu vào localStorage để tránh rò rỉ token.
-* **Lựa chọn B**: Lưu `otpToken` vào một HTTP-only cookie tạm thời (`fitai_otp_session`) có TTL 5 phút.
-* **Đánh giá**: Lựa chọn A đơn giản, an toàn và tự hủy khi người dùng tắt hoặc refresh trình duyệt.
+
+- **Lựa chọn A (Khuyến nghị)**: Lưu `otpToken` trong Client State (React state trong component form OTP). Không lưu vào localStorage để tránh rò rỉ token.
+- **Lựa chọn B**: Lưu `otpToken` vào một HTTP-only cookie tạm thời (`fitai_otp_session`) có TTL 5 phút.
+- **Đánh giá**: Lựa chọn A đơn giản, an toàn và tự hủy khi người dùng tắt hoặc refresh trình duyệt.
 
 ---
 

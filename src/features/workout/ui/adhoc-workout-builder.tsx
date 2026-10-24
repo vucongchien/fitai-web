@@ -15,6 +15,7 @@ import {
 import { useMemo } from "react";
 
 import { useAdhocWorkout } from "@/features/workout/model/use-adhoc-workout";
+import type { AdhocConfig } from "@/features/workout/model/workout.types";
 import { AdhocAiGeneratorModal } from "@/features/workout/ui/adhoc-ai-generator-modal";
 import { AdhocEstimates } from "@/features/workout/ui/adhoc-estimates";
 import { AdhocHero } from "@/features/workout/ui/adhoc-hero";
@@ -23,7 +24,6 @@ import { ExerciseEditModal } from "@/features/workout/ui/exercise-edit-modal";
 import { ExerciseSearchSheet } from "@/features/workout/ui/exercise-search-sheet";
 import { SortableAdhocItem } from "@/features/workout/ui/sortable-adhoc-item";
 import { buttonVariants } from "@/shared/ui/button";
-import type { AdhocConfig } from "@/features/workout/model/workout.types";
 
 interface AdhocWorkoutBuilderProps {
   initialConfig?: AdhocConfig;

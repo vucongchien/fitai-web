@@ -50,7 +50,9 @@ async function AdminGate({ children }: { children: React.ReactNode }) {
           <header className="h-16 border-b border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
             <div className="flex items-center gap-2">
               <span className="size-2.5 rounded-full bg-[var(--color-recovery)] animate-pulse" />
-              <span className="text-xs font-semibold text-[var(--color-text-muted)]">System Operational</span>
+              <span className="text-xs font-semibold text-[var(--color-text-muted)]">
+                System Operational
+              </span>
             </div>
 
             <div className="flex items-center gap-3">

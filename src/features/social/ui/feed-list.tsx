@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import Image from "next/image";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useState } from "react";
 
-import { fetchMoreFeedAction, fetchMoreProfileFeedAction } from "../server/social-actions";
 import type { FeedItemVM } from "../model/social.types";
+import { fetchMoreFeedAction, fetchMoreProfileFeedAction } from "../server/social-actions";
 import { FeedCard } from "./feed-card";
 
 interface Props {
@@ -75,9 +75,7 @@ export function FeedList({
                 className="object-cover"
               />
             </div>
-            <span className="text-[14px] text-neutral-400 font-normal truncate">
-              What's new?
-            </span>
+            <span className="text-[14px] text-neutral-400 font-normal truncate">What's new?</span>
           </div>
           <button
             type="button"

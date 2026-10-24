@@ -11,11 +11,7 @@ import { PageTransition } from "@/shared/ui/page-transition";
 
 export const metadata = { title: "Profile — FITAI" };
 
-async function ProfileContent({
-  paramsPromise,
-}: {
-  paramsPromise: Promise<{ userId: string }>;
-}) {
+async function ProfileContent({ paramsPromise }: { paramsPromise: Promise<{ userId: string }> }) {
   const { userId } = await paramsPromise;
 
   const [profile, currentUserId] = await Promise.all([
@@ -72,7 +68,9 @@ function ProfileSkeletonFallback() {
             key={t}
             className={[
               "flex-1 py-3 text-center text-sm font-semibold",
-              idx === 0 ? "text-neutral-900 border-b-2 border-neutral-900 -mb-[1px]" : "text-neutral-400",
+              idx === 0
+                ? "text-neutral-900 border-b-2 border-neutral-900 -mb-[1px]"
+                : "text-neutral-400",
             ].join(" ")}
           >
             {t}
@@ -101,11 +99,7 @@ function ProfileSkeletonFallback() {
 
 const PROFILE_FALLBACK = <ProfileSkeletonFallback />;
 
-export default function PublicProfilePage({
-  params,
-}: {
-  params: Promise<{ userId: string }>;
-}) {
+export default function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   return (
     <PageTransition className="min-h-screen bg-canvas">
       {/* Top Focused App Header */}
