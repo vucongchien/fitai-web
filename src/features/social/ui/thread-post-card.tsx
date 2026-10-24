@@ -48,7 +48,7 @@ export function ThreadPostCard({
           {/* Avatar with Threads '+' badge */}
           <div className="relative flex-shrink-0">
             <Link
-              href={`/social/users/${post.userId}`}
+              href={`/community/users/${post.userId}`}
               aria-label={`${post.authorName}'s profile`}
               className="block active:scale-95 transition-transform"
             >
@@ -76,7 +76,7 @@ export function ThreadPostCard({
           {/* Name & time */}
           <div className="flex items-center gap-1.5">
             <Link
-              href={`/social/users/${post.userId}`}
+              href={`/community/users/${post.userId}`}
               className="truncate text-[15px] font-semibold text-neutral-900 hover:underline block leading-tight"
             >
               {post.authorName}

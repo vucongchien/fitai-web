@@ -84,7 +84,7 @@ export function ReactionBar({
   function handleShare() {
     hapticFeedback.repSuccess();
     if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(window.location.origin + `/social/posts/${feedItemId}`);
+      navigator.clipboard.writeText(window.location.origin + `/community/posts/${feedItemId}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }

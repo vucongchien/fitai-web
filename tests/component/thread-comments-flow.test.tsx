@@ -62,7 +62,7 @@ const mockComments: CommentVM[] = [
 ];
 
 describe("Thread Comments Flow (Threads-style)", () => {
-  it("FeedCard comment button navigates to /social/posts/[postId]", () => {
+  it("FeedCard comment button navigates to /community/posts/[postId]", () => {
     const pushMock = vi.fn();
     vi.mocked(useRouter).mockReturnValue({ push: pushMock } as any);
 
@@ -71,7 +71,7 @@ describe("Thread Comments Flow (Threads-style)", () => {
     const commentButton = screen.getByRole("button", { name: /comments/i });
     fireEvent.click(commentButton);
 
-    expect(pushMock).toHaveBeenCalledWith("/social/posts/post-101");
+    expect(pushMock).toHaveBeenCalledWith("/community/posts/post-101");
   });
 
   it("renders post card and nested threaded replies with Author badge", () => {

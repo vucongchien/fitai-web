@@ -1,18 +1,15 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { getPublicProfile } from "@/features/social/server/get-public-profile";
 import { PublicProfileView } from "@/features/social/ui/public-profile-view";
 import { getAuthenticatedUserId } from "@/shared/auth/session";
+import { BackButton } from "@/shared/ui/back-button";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
 import { PageTransition } from "@/shared/ui/page-transition";
 
 export const metadata = { title: "Profile — FITAI" };
-
-const NAV_BACK = ["nav-back"];
 
 async function ProfileContent({
   paramsPromise,
@@ -113,14 +110,11 @@ export default function PublicProfilePage({
     <PageTransition className="min-h-screen bg-canvas">
       {/* Top Focused App Header */}
       <header className="focused-header">
-        <Link
-          aria-label="Back to community"
+        <BackButton
+          ariaLabel="Back to community"
           className="focused-header__back"
-          href="/community"
-          transitionTypes={NAV_BACK}
-        >
-          <ArrowLeft aria-hidden="true" size={20} />
-        </Link>
+          fallbackHref="/community"
+        />
         <BrandMark />
         <HeaderActions />
       </header>

@@ -13,7 +13,7 @@
 
 ## 1. Tổng quan
 Kiểm chứng luồng bình luận mới theo chuẩn Threads:
-- Thay thế modal bottom-sheet cũ (`CommentSheet`) bằng trang chi tiết bài viết `/social/posts/[postId]`.
+- Thay thế modal bottom-sheet cũ (`CommentSheet`) bằng trang chi tiết bài viết `/community/posts/[postId]`.
 - Hiển thị bài viết gốc, các bình luận cấp 1 và bình luận lồng cấp 2 kết nối bằng đường line dọc (connector line) Threads.
 - Hỗ trợ điền sẵn tên `@Tên` khi nhấn vào nút trả lời của một bình luận (tương tự Facebook).
 - Hỗ trợ giao diện kép: Inline trên desktop và Sticky Bottom cố định dưới đáy màn hình trên mobile.
@@ -23,9 +23,9 @@ Kiểm chứng luồng bình luận mới theo chuẩn Threads:
 ## 2. Chi tiết kịch bản kiểm thử
 
 ### Kịch bản 1: Điều hướng từ FeedCard sang Post Detail
-- **Mục tiêu**: Đảm bảo khi nhấn vào nút comment trên bài viết ngoài bảng tin, ứng dụng lưu tạm bài viết vào client cache và điều hướng tới route `/social/posts/[postId]`.
+- **Mục tiêu**: Đảm bảo khi nhấn vào nút comment trên bài viết ngoài bảng tin, ứng dụng lưu tạm bài viết vào client cache và điều hướng tới route `/community/posts/[postId]`.
 - **Hành vi kiểm chứng**:
-  - `onCommentClick` gọi `router.push('/social/posts/' + item.id)`.
+  - `onCommentClick` gọi `router.push('/community/posts/' + item.id)`.
   - Cache bài viết để trang chi tiết hiển thị tức thì không bị giật lag.
 
 ### Kịch bản 2: Hiển thị giao diện Thread và phân cấp bình luận

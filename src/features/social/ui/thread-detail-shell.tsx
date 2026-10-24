@@ -1,9 +1,9 @@
 "use client";
 
 import { use, useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
+import { BackButton } from "@/shared/ui/back-button";
 import { getCachedFeedItem } from "../lib/post-cache";
 import type { CommentVM, FeedItemVM } from "../model/social.types";
 import { ThreadView } from "./thread-view";
@@ -36,12 +36,12 @@ export function ThreadDetailShell({
       <div className="max-w-[620px] w-full mx-auto p-8 text-center bg-white rounded-2xl border border-neutral-200">
         <p className="text-base font-semibold text-neutral-800">Thread not found</p>
         <p className="text-sm text-neutral-400 mt-1">This post may have been deleted or is unavailable.</p>
-        <Link
-          href="/community"
-          className="mt-4 inline-block px-4 py-2 text-sm font-semibold text-white bg-neutral-900 rounded-full"
+        <BackButton
+          fallbackHref="/community"
+          className="mt-4 inline-block px-4 py-2 text-sm font-semibold text-white bg-neutral-900 rounded-full cursor-pointer hover:bg-neutral-800 transition-colors w-auto h-auto"
         >
           Back to Community
-        </Link>
+        </BackButton>
       </div>
     );
   }
@@ -58,13 +58,7 @@ export function ThreadDetailShell({
       {/* 1. Header (Image 1 & 2: ← Thread, views, (···)) */}
       <div className="flex items-center justify-between px-2 sm:px-0 mb-3">
         <div className="flex items-center gap-4">
-          <Link
-            href="/community"
-            aria-label="Back to community"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-800 hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
-          >
-            <ArrowLeft size={20} />
-          </Link>
+          <BackButton fallbackHref="/community" ariaLabel="Back" />
           <div>
             <h1 className="text-[17px] font-bold text-neutral-900 leading-tight">Thread</h1>
             <span className="text-[11px] text-neutral-400 font-normal select-none">

@@ -43,7 +43,7 @@ export function FeedCard({ item, currentUserId }: Props) {
       userReaction,
       reactionCount,
     });
-    router.push(`/social/posts/${item.id}`);
+    router.push(`/community/posts/${item.id}`);
   }
 
   return (
@@ -51,7 +51,7 @@ export function FeedCard({ item, currentUserId }: Props) {
       {/* 1. Avatar column (Exact 40x40 with Threads '+' badge) */}
       <div className="relative flex-shrink-0 self-start">
         <Link
-          href={`/social/users/${item.userId}`}
+          href={`/community/users/${item.userId}`}
           aria-label={`${item.authorName}'s profile`}
           className="block active:scale-95 transition-transform"
         >
@@ -82,7 +82,7 @@ export function FeedCard({ item, currentUserId }: Props) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 min-w-0">
             <Link
-              href={`/social/users/${item.userId}`}
+              href={`/community/users/${item.userId}`}
               className="truncate text-[14.5px] font-semibold text-neutral-900 hover:underline block leading-tight"
             >
               {item.authorName}

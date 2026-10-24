@@ -70,7 +70,7 @@ export function ThreadCommentItem({
       <div className="flex gap-3 relative z-10">
         {/* Avatar */}
         <Link
-          href={`/social/users/${comment.userId}`}
+          href={`/community/users/${comment.userId}`}
           aria-label={`${comment.authorName}'s profile`}
           className="flex-shrink-0 self-start active:scale-95 transition-transform"
         >
@@ -91,7 +91,7 @@ export function ThreadCommentItem({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 flex-wrap">
               <Link
-                href={`/social/users/${comment.userId}`}
+                href={`/community/users/${comment.userId}`}
                 className="text-[13.5px] font-semibold text-neutral-900 hover:underline leading-tight"
               >
                 {comment.authorName}
@@ -241,7 +241,7 @@ function ThreadReplyItem({
 
       {/* Child Avatar */}
       <Link
-        href={`/social/users/${reply.userId}`}
+        href={`/community/users/${reply.userId}`}
         aria-label={`${reply.authorName}'s profile`}
         className="flex-shrink-0 self-start active:scale-95 transition-transform"
       >
@@ -262,7 +262,7 @@ function ThreadReplyItem({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 flex-wrap">
             <Link
-              href={`/social/users/${reply.userId}`}
+              href={`/community/users/${reply.userId}`}
               className="text-[13px] font-semibold text-neutral-900 hover:underline leading-tight"
             >
               {reply.authorName}
