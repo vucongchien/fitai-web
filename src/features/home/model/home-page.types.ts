@@ -61,6 +61,11 @@ export interface FeaturedExerciseItem {
 export interface HomePageData {
   hasActiveRoadmap?: boolean;
   streak: StreakInfo;
+  gamification?: {
+    streakDays: number;
+    isActiveToday: boolean;
+    coins: number;
+  };
   coachNote: string | null;
   userName?: string;
   profileCompletionRate: number;

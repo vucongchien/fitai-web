@@ -39,7 +39,7 @@ async function ThreadContent({ paramsPromise }: { paramsPromise: Promise<{ postI
 
 export default function ThreadPage({ params }: PageProps) {
   return (
-    <PageTransition className="min-h-screen bg-white sm:bg-neutral-50/50 px-0 sm:px-4 pt-3 pb-24">
+    <PageTransition className="min-h-screen bg-white sm:bg-neutral-50/50 px-0 sm:px-4 pt-3 pb-6">
       <Suspense fallback={<ThreadPageSkeleton />}>
         <ThreadContent paramsPromise={params} />
       </Suspense>

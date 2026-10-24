@@ -63,6 +63,28 @@ describe("availabilityScheduler Component", () => {
     );
   });
 
+  it("adds a new time slot row underneath when '+' button is clicked", () => {
+    const handleChange = vi.fn();
+    render(<AvailabilityScheduler defaultValue={defaultWeek()} onChange={handleChange} />);
+
+    const addButtons = screen.getAllByRole("button", { name: "Add another time window" });
+    expect(addButtons.length).toBeGreaterThan(0);
+
+    // Click '+' on Monday
+    fireEvent.click(addButtons[0]);
+
+    expect(handleChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mon: expect.objectContaining({
+          ranges: expect.arrayContaining([
+            expect.objectContaining({ start: expect.any(String), end: expect.any(String) }),
+            expect.objectContaining({ start: expect.any(String), end: expect.any(String) }),
+          ]),
+        }),
+      }),
+    );
+  });
+
   it("shows rest day label when day is disabled", () => {
     render(<AvailabilityScheduler defaultValue={defaultWeek()} />);
     const restDayLabels = screen.getAllByText("Rest");

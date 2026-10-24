@@ -28,14 +28,16 @@ export function BottomNavigation() {
         return (
           <Link
             aria-current={active ? "page" : undefined}
+            aria-label={label}
             className="bottom-navigation__link"
             data-active={active || undefined}
             href={href}
             key={href}
+            title={label}
             transitionTypes={NAV_LATERAL}
           >
             <Icon aria-hidden="true" size={20} strokeWidth={active ? 2.3 : 1.8} />
-            <span>{label}</span>
+            <span className="bottom-navigation__label">{label}</span>
           </Link>
         );
       })}

@@ -21,7 +21,7 @@
     "audit:skills": "node scripts/audit-skills.mjs",
     "audit:comments": "node scripts/audit-comments.mjs",
     "precommit": "node scripts/pre-commit.mjs",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "node -e \"if (require('fs').existsSync('.git')) { try { require('child_process').execSync('git config core.hooksPath .githooks'); } catch {} }\""
   },
   "dependencies": {
     "@bufbuild/protobuf": "2.13.0",

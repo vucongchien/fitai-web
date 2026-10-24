@@ -426,13 +426,5 @@ export async function getPresignedUploadUrl(
     }
   }
 
-  const sanitized = fileName.replace(/[^a-zA-Z0-9_.-]/g, "_");
-  const isAudio = contentType.startsWith("audio/");
-  const folder = isAudio ? "audio" : "rules";
-
-  return {
-    uploadUrl: `https://storage.fitai.com/upload-mock/${folder}/${Date.now()}_${sanitized}`,
-    fileUrl: `https://storage.fitai.com/${folder}/${Date.now()}_${sanitized}`,
-    fileName: sanitized,
-  };
+  throw new Error("[getPresignedUploadUrl] FITAI_RPC_URL not configured or RPC failed.");
 }
