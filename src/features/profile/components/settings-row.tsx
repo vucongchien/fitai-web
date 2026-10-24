@@ -13,14 +13,7 @@ export interface SettingsRowProps {
   className?: string;
 }
 
-export function SettingsRow({
-  label,
-  value,
-  icon,
-  onClick,
-  href,
-  className,
-}: SettingsRowProps) {
+export function SettingsRow({ label, value, icon, onClick, href, className }: SettingsRowProps) {
   const commonClasses = cn(
     "flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-neutral-50 active:bg-neutral-100 cursor-pointer group",
     className,
@@ -39,9 +32,7 @@ export function SettingsRow({
             {label}
           </div>
           {value && (
-            <div className="text-[13px] font-medium text-neutral-400 mt-0.5 truncate">
-              {value}
-            </div>
+            <div className="text-[13px] font-medium text-neutral-400 mt-0.5 truncate">{value}</div>
           )}
         </div>
       </div>

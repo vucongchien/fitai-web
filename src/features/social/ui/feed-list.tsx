@@ -74,9 +74,7 @@ export function FeedList({
                 className="object-cover"
               />
             </div>
-            <span className="text-[14px] text-neutral-400 font-normal truncate">
-              What's new?
-            </span>
+            <span className="text-[14px] text-neutral-400 font-normal truncate">What's new?</span>
           </div>
           <button
             type="button"

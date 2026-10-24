@@ -56,7 +56,9 @@ export function HeaderGamificationChips({
         title={`${coins.toLocaleString()} FitCoins`}
         aria-label={`${coins.toLocaleString()} FitCoins`}
       >
-        <span aria-hidden="true" className="text-xs leading-none">🪙</span>
+        <span aria-hidden="true" className="text-xs leading-none">
+          🪙
+        </span>
         <span>{coins.toLocaleString()}</span>
       </div>
     </div>

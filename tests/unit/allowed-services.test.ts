@@ -17,7 +17,9 @@ describe(isAllowedRpcPath, () => {
 
   it("allows gamification service methods", () => {
     expect(
-      isAllowedRpcPath("contracts.supporting.gamification.v1.service.GamificationService/GetStreak"),
+      isAllowedRpcPath(
+        "contracts.supporting.gamification.v1.service.GamificationService/GetStreak",
+      ),
     ).toBe(true);
   });
 

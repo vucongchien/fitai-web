@@ -40,11 +40,21 @@ function renderBadgeVisual(badge: BadgeItemVM, index: number) {
     bg = "bg-red-500";
     icon = <Flame className="h-7 w-7 text-amber-300 fill-amber-300 mt-0.5" />;
     level = "LEVEL 5";
-  } else if (code.includes("XP") || code.includes("LEVEL") || cat.includes("LEVEL") || index === 1) {
+  } else if (
+    code.includes("XP") ||
+    code.includes("LEVEL") ||
+    cat.includes("LEVEL") ||
+    index === 1
+  ) {
     bg = "bg-emerald-500";
     icon = <Zap className="h-7 w-7 text-white mt-0.5 fill-white" />;
     level = "LEVEL 7";
-  } else if (code.includes("LEAGUE") || code.includes("LEADERBOARD") || cat.includes("LEADERBOARD") || index === 2) {
+  } else if (
+    code.includes("LEAGUE") ||
+    code.includes("LEADERBOARD") ||
+    cat.includes("LEADERBOARD") ||
+    index === 2
+  ) {
     bg = "bg-purple-500";
     icon = <Shield className="h-7 w-7 text-amber-300 fill-amber-300 mt-0.5" />;
     level = "LEVEL 7";
@@ -59,9 +69,7 @@ function renderBadgeVisual(badge: BadgeItemVM, index: number) {
       className={`relative h-16 w-16 min-w-16 shrink-0 rounded-2xl ${bg} flex flex-col items-center justify-between p-2 shadow-xs`}
     >
       {icon}
-      <span className="text-[10px] font-black text-white uppercase tracking-wider">
-        {level}
-      </span>
+      <span className="text-[10px] font-black text-white uppercase tracking-wider">{level}</span>
     </div>
   );
 }
@@ -99,11 +107,10 @@ export function ProfileBadgesView({
         {badges.length === 0 ? (
           <div className="rounded-2xl border border-neutral-200/90 bg-white p-8 text-center shadow-2xs">
             <Award className="mx-auto h-12 w-12 text-neutral-300 mb-3" />
-            <h3 className="text-[16px] font-bold text-neutral-800">
-              No achievements yet
-            </h3>
+            <h3 className="text-[16px] font-bold text-neutral-800">No achievements yet</h3>
             <p className="text-[13px] text-neutral-400 mt-1 max-w-[320px] mx-auto">
-              Achievements and badges will be automatically recorded as you complete workouts and keep your streak alive.
+              Achievements and badges will be automatically recorded as you complete workouts and
+              keep your streak alive.
             </p>
           </div>
         ) : (

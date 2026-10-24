@@ -17,10 +17,7 @@ interface ProfileFriendsViewProps {
   followingCount: number;
 }
 
-export function ProfileFriendsView({
-  followers,
-  following,
-}: ProfileFriendsViewProps) {
+export function ProfileFriendsView({ followers, following }: ProfileFriendsViewProps) {
   const [activeTab, setActiveTab] = useState<"following" | "followers">("following");
   const [searchQuery, setSearchQuery] = useState("");
 

@@ -85,14 +85,29 @@ function FitAiCoachMascot({
 
         {/* Headband - FITAI Sprint Coral #ff5a47 */}
         <rect x="21" y="26" width="58" height="15" rx="5" fill="#ff5a47" />
-        <path d="M21 38 L79 38 L79 41 C79 43, 76 44, 74 44 L26 44 C24 44, 21 43, 21 41 Z" fill="#e04635" />
+        <path
+          d="M21 38 L79 38 L79 41 C79 43, 76 44, 74 44 L26 44 C24 44, 21 43, 21 41 Z"
+          fill="#e04635"
+        />
         <path d="M51 29 L47 34 L50 34 L48 39 L54 33 L51 33 Z" fill="#ffffff" />
 
         {/* Eyes */}
         {mood === "celebrating" ? (
           <>
-            <path d="M34 50 Q41 42 48 50" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-            <path d="M52 50 Q59 42 66 50" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+            <path
+              d="M34 50 Q41 42 48 50"
+              stroke="#ffffff"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <path
+              d="M52 50 Q59 42 66 50"
+              stroke="#ffffff"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              fill="none"
+            />
           </>
         ) : mood === "loading" ? (
           <>
@@ -129,14 +144,36 @@ function FitAiCoachMascot({
             <path d="M45 66 C47 69, 53 69, 55 66 Z" fill="#ff5a47" />
           </g>
         ) : (
-          <path d="M44 64 Q50 70 56 64" stroke="#ffffff" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+          <path
+            d="M44 64 Q50 70 56 64"
+            stroke="#ffffff"
+            strokeWidth="2.8"
+            strokeLinecap="round"
+            fill="none"
+          />
         )}
 
         {/* Arms */}
         {mood === "celebrating" ? (
           <>
-            <rect x="10" y="32" width="12" height="24" rx="6" fill="#4b57f2" transform="rotate(-30 10 32)" />
-            <rect x="78" y="24" width="12" height="24" rx="6" fill="#4b57f2" transform="rotate(30 78 24)" />
+            <rect
+              x="10"
+              y="32"
+              width="12"
+              height="24"
+              rx="6"
+              fill="#4b57f2"
+              transform="rotate(-30 10 32)"
+            />
+            <rect
+              x="78"
+              y="24"
+              width="12"
+              height="24"
+              rx="6"
+              fill="#4b57f2"
+              transform="rotate(30 78 24)"
+            />
           </>
         ) : (
           <>
@@ -267,10 +304,7 @@ function AdhocAiGeneratorModalContent({
         {/* Compact Header */}
         <div className="ai-modal-header">
           <div className="ai-modal-header-left">
-            <FitAiCoachMascot
-              mood={mascotMood}
-              className="ai-mascot-avatar--compact"
-            />
+            <FitAiCoachMascot mood={mascotMood} className="ai-mascot-avatar--compact" />
             <div className="ai-modal-title-group">
               <span className="ai-modal-badge">
                 <Sparkles size={13} />
@@ -405,7 +439,9 @@ function AdhocAiGeneratorModalContent({
 
                 {result.muscleGroups && result.muscleGroups.length > 0 && (
                   <div className="ai-muscles-row">
-                    <span className="text-xs font-semibold text-[var(--color-text-muted)]">Target:</span>
+                    <span className="text-xs font-semibold text-[var(--color-text-muted)]">
+                      Target:
+                    </span>
                     {result.muscleGroups.map((m) => (
                       <span key={m} className="ai-muscle-chip">
                         {m}
@@ -425,9 +461,7 @@ function AdhocAiGeneratorModalContent({
               <div className="ai-exercise-list">
                 {result.exercises.map((ex, idx) => (
                   <div key={ex.exerciseId + idx} className="ai-exercise-item">
-                    <span className="ai-exercise-index">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
+                    <span className="ai-exercise-index">{String(idx + 1).padStart(2, "0")}</span>
                     <div className="ai-exercise-info">
                       <strong className="ai-exercise-title">{ex.exerciseName}</strong>
                       <span className="ai-exercise-meta">
@@ -486,11 +520,7 @@ function AdhocAiGeneratorModalContent({
                 </button>
               )}
 
-              <button
-                type="button"
-                className="ai-btn-ghost"
-                onClick={() => setResult(null)}
-              >
+              <button type="button" className="ai-btn-ghost" onClick={() => setResult(null)}>
                 ← Change focus or options
               </button>
             </>

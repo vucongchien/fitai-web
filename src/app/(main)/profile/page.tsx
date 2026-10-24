@@ -42,13 +42,7 @@ async function ProfileSection() {
     feedNextCursor: "",
   };
 
-  return (
-    <PublicProfileView
-      profile={profile}
-      currentUserId={userId}
-      gamification={gamification}
-    />
-  );
+  return <PublicProfileView profile={profile} currentUserId={userId} gamification={gamification} />;
 }
 
 export default function ProfilePage() {

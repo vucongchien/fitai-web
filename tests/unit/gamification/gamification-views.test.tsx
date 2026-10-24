@@ -16,12 +16,7 @@ describe("Gamification Views", () => {
   describe("ProfileFriendsCard", () => {
     it("renders friends title, add button, and tabs without count in title", () => {
       render(
-        <ProfileFriendsCard
-          followers={[]}
-          following={[]}
-          followerCount={0}
-          followingCount={0}
-        />,
+        <ProfileFriendsCard followers={[]} following={[]} followerCount={0} followingCount={0} />,
       );
 
       expect(screen.getByText("Friends")).toBeDefined();
@@ -36,13 +31,7 @@ describe("Gamification Views", () => {
 
   describe("ProfileBadgesView", () => {
     it("renders page header and empty status without unnecessary done button", () => {
-      render(
-        <ProfileBadgesView
-          badges={[]}
-          totalUnlocked={0}
-          totalAvailable={0}
-        />,
-      );
+      render(<ProfileBadgesView badges={[]} totalUnlocked={0} totalAvailable={0} />);
 
       expect(screen.getByText("All Achievements")).toBeDefined();
       expect(screen.queryByText("DONE")).toBeNull();
@@ -53,12 +42,7 @@ describe("Gamification Views", () => {
   describe("ProfileFriendsView", () => {
     it("renders friends search and clean tabs without unnecessary done button", () => {
       render(
-        <ProfileFriendsView
-          followers={[]}
-          following={[]}
-          followerCount={0}
-          followingCount={0}
-        />,
+        <ProfileFriendsView followers={[]} following={[]} followerCount={0} followingCount={0} />,
       );
 
       expect(screen.getByText("Friends")).toBeDefined();

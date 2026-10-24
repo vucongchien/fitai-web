@@ -55,11 +55,7 @@ function InstagramIcon({ size = 20, className = "" }: { size?: number; className
 
 type TabKey = "overview" | "threads" | "replies" | "media";
 
-export function PublicProfileView({
-  profile,
-  currentUserId,
-  gamification,
-}: Props) {
+export function PublicProfileView({ profile, currentUserId, gamification }: Props) {
   const { summary } = profile;
   const isOwnProfile = profile.userId === currentUserId;
   const [followerCount, setFollowerCount] = useState(summary.followerCount);
@@ -166,10 +162,12 @@ export function PublicProfileView({
                 type="button"
                 onClick={() => {
                   if (typeof navigator !== "undefined" && navigator.share) {
-                    navigator.share({
-                      title: profile.authorName,
-                      url: window.location.href,
-                    }).catch(() => {});
+                    navigator
+                      .share({
+                        title: profile.authorName,
+                        url: window.location.href,
+                      })
+                      .catch(() => {});
                   }
                 }}
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"

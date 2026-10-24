@@ -37,11 +37,21 @@ function renderBadgeVisual(badge: BadgeItemVM, index: number) {
     bg = "bg-red-500";
     icon = <Flame className="h-7 w-7 text-amber-300 fill-amber-300 mt-0.5" />;
     level = "LEVEL 5";
-  } else if (code.includes("XP") || code.includes("LEVEL") || cat.includes("LEVEL") || index === 1) {
+  } else if (
+    code.includes("XP") ||
+    code.includes("LEVEL") ||
+    cat.includes("LEVEL") ||
+    index === 1
+  ) {
     bg = "bg-emerald-500";
     icon = <Zap className="h-7 w-7 text-white mt-0.5 fill-white" />;
     level = "LEVEL 7";
-  } else if (code.includes("LEAGUE") || code.includes("LEADERBOARD") || cat.includes("LEADERBOARD") || index === 2) {
+  } else if (
+    code.includes("LEAGUE") ||
+    code.includes("LEADERBOARD") ||
+    cat.includes("LEADERBOARD") ||
+    index === 2
+  ) {
     bg = "bg-purple-500";
     icon = <Shield className="h-7 w-7 text-amber-300 fill-amber-300 mt-0.5" />;
     level = "LEVEL 7";
@@ -56,21 +66,15 @@ function renderBadgeVisual(badge: BadgeItemVM, index: number) {
       className={`relative h-16 w-16 min-w-16 shrink-0 rounded-2xl ${bg} flex flex-col items-center justify-between p-2 shadow-xs`}
     >
       {icon}
-      <span className="text-[10px] font-black text-white uppercase tracking-wider">
-        {level}
-      </span>
+      <span className="text-[10px] font-black text-white uppercase tracking-wider">{level}</span>
     </div>
   );
 }
 
-export function ProfileAchievementsCard({
-  badges,
-}: ProfileAchievementsCardProps) {
+export function ProfileAchievementsCard({ badges }: ProfileAchievementsCardProps) {
   return (
     <div className="w-full">
-      <h2 className="text-[20px] font-extrabold text-neutral-800 mb-3 px-1">
-        Achievements
-      </h2>
+      <h2 className="text-[20px] font-extrabold text-neutral-800 mb-3 px-1">Achievements</h2>
 
       <div className="rounded-2xl border border-neutral-200/90 bg-white shadow-2xs divide-y divide-neutral-100 overflow-hidden">
         {badges.length === 0 ? (

@@ -45,13 +45,7 @@ describe("Shared UI - TabButton", () => {
 describe("Profile UI - SettingsRow", () => {
   it("renders button row with label, value, and triggers onClick", () => {
     const handleClick = vi.fn();
-    render(
-      <SettingsRow
-        label="Body Metrics"
-        value="68.5 kg • 175 cm"
-        onClick={handleClick}
-      />,
-    );
+    render(<SettingsRow label="Body Metrics" value="68.5 kg • 175 cm" onClick={handleClick} />);
 
     expect(screen.getByText("Body Metrics")).toBeInTheDocument();
     expect(screen.getByText("68.5 kg • 175 cm")).toBeInTheDocument();
@@ -62,13 +56,7 @@ describe("Profile UI - SettingsRow", () => {
   });
 
   it("renders link row when href is provided", () => {
-    render(
-      <SettingsRow
-        label="Notifications"
-        value="System alerts"
-        href="/notifications"
-      />,
-    );
+    render(<SettingsRow label="Notifications" value="System alerts" href="/notifications" />);
 
     const link = screen.getByRole("link", { name: /Notifications/ });
     expect(link).toHaveAttribute("href", "/notifications");

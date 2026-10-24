@@ -91,34 +91,25 @@ export async function getUserGamificationOverview(
     const workoutClient = createClient(WorkoutExecutionService, transport);
 
     if (isOwner) {
-      const [
-        streakRes,
-        xpRes,
-        badgesRes,
-        leaderboardRes,
-        historyRes,
-        followersRes,
-        followingRes,
-      ] = await Promise.allSettled([
-        gamificationClient.getStreak({}),
-        gamificationClient.getMyXp({}),
-        gamificationClient.getMyBadges({}),
-        gamificationClient.getGlobalLeaderboard({ limit: 50 }),
-        workoutClient.getWorkoutHistory({ limit: 100, offset: 0 }),
-        socialClient.getFollowers({ userId }),
-        socialClient.getFollowing({ userId }),
-      ]);
+      const [streakRes, xpRes, badgesRes, leaderboardRes, historyRes, followersRes, followingRes] =
+        await Promise.allSettled([
+          gamificationClient.getStreak({}),
+          gamificationClient.getMyXp({}),
+          gamificationClient.getMyBadges({}),
+          gamificationClient.getGlobalLeaderboard({ limit: 50 }),
+          workoutClient.getWorkoutHistory({ limit: 100, offset: 0 }),
+          socialClient.getFollowers({ userId }),
+          socialClient.getFollowing({ userId }),
+        ]);
 
-      const streakSummary =
-        streakRes.status === "fulfilled" ? streakRes.value.streakSummary : null;
+      const streakSummary = streakRes.status === "fulfilled" ? streakRes.value.streakSummary : null;
       const xpSummary = xpRes.status === "fulfilled" ? xpRes.value.xpSummary : null;
       const myStanding =
         leaderboardRes.status === "fulfilled" ? leaderboardRes.value.myStanding : null;
       const totalWorkouts =
         historyRes.status === "fulfilled" ? historyRes.value.sessions.length : 0;
 
-      const rawBadges =
-        badgesRes.status === "fulfilled" ? badgesRes.value.badges || [] : [];
+      const rawBadges = badgesRes.status === "fulfilled" ? badgesRes.value.badges || [] : [];
       const badges = rawBadges.map((b) =>
         mapBadgeItem(b, {
           streakDays: streakSummary?.currentStreak,

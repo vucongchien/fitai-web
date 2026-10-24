@@ -28,7 +28,10 @@ vi.mock("@/shared/api/server/transport", () => ({
 }));
 
 vi.mock("@/shared/auth/session", () => ({
-  getAuthenticatedSession: vi.fn(async () => ({ accessToken: "test-admin-token", userId: "usr-admin" })),
+  getAuthenticatedSession: vi.fn(async () => ({
+    accessToken: "test-admin-token",
+    userId: "usr-admin",
+  })),
 }));
 
 describe("admin User Service (ConnectRPC Aligned)", () => {

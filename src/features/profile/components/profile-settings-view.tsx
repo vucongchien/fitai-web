@@ -64,10 +64,7 @@ export function ProfileSettingsView({
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      <PageHeader
-        title="Settings"
-        fallbackHref="/profile"
-      />
+      <PageHeader title="Settings" fallbackHref="/profile" />
 
       {/* Main Settings Container */}
       <main className="max-w-[560px] mx-auto px-4 pt-4 space-y-6">
@@ -130,9 +127,7 @@ export function ProfileSettingsView({
 
         {/* Group 3: Support & Feedback */}
         <section className="space-y-2">
-          <h2 className="text-[15px] font-bold text-neutral-500 px-1 tracking-tight">
-            Support
-          </h2>
+          <h2 className="text-[15px] font-bold text-neutral-500 px-1 tracking-tight">Support</h2>
           <div className="rounded-2xl border border-neutral-200/90 bg-white shadow-2xs divide-y divide-neutral-200/80 overflow-hidden">
             <SettingsRow
               label="Send Feedback & Help"

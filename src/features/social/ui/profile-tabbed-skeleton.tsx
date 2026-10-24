@@ -33,9 +33,7 @@ export function ProfileTabbedSkeleton() {
             key={t}
             className={[
               "flex-1 py-3 text-center text-[14.5px] font-bold relative",
-              idx === 0
-                ? "text-sky-500"
-                : "text-neutral-400",
+              idx === 0 ? "text-sky-500" : "text-neutral-400",
             ].join(" ")}
           >
             {t}

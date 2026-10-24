@@ -24,9 +24,7 @@ export function TabButton({
       className={cn(
         "flex-1 py-3 text-center text-[13.5px] font-bold transition-colors cursor-pointer relative",
         uppercase && "uppercase tracking-wider text-[13px]",
-        active
-          ? "text-sky-500"
-          : "text-neutral-400 hover:text-neutral-600",
+        active ? "text-sky-500" : "text-neutral-400 hover:text-neutral-600",
         className,
       )}
       {...props}
