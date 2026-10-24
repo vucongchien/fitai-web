@@ -302,7 +302,9 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
             </h3>
             <p className="text-xs text-[var(--color-text-muted)]">
               Exercise ID:{" "}
-              <code className="text-[var(--color-action)] font-mono font-bold">{spec.exerciseId}</code>
+              <code className="text-[var(--color-action)] font-mono font-bold">
+                {spec.exerciseId}
+              </code>
             </p>
           </div>
         </div>
@@ -465,7 +467,9 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               <div className="flex items-center gap-3">
                 <FileJson className="size-6 text-[var(--color-effort)]" />
                 <div>
-                  <h4 className="text-xs font-bold text-[var(--color-text)]">Local Pose Rules (JSON)</h4>
+                  <h4 className="text-xs font-bold text-[var(--color-text)]">
+                    Local Pose Rules (JSON)
+                  </h4>
                   <p className="text-[11px] text-[var(--color-text-muted)]">
                     Defines rep counting thresholds, form penalty scores, joint angle limits, and
                     camera distances.
@@ -694,8 +698,12 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                       <tbody className="divide-y divide-[var(--color-border)]">
                         {Object.entries(poseRules.errorRules || {}).map(([code, item]) => (
                           <tr key={code} className="hover:bg-[var(--color-surface-subtle)]/60">
-                            <td className="p-3 font-mono font-bold text-[var(--color-action)]">{code}</td>
-                            <td className="p-3 font-medium text-[var(--color-text)]">{item.description}</td>
+                            <td className="p-3 font-mono font-bold text-[var(--color-action)]">
+                              {code}
+                            </td>
+                            <td className="p-3 font-medium text-[var(--color-text)]">
+                              {item.description}
+                            </td>
                             <td className="p-3">
                               <span className="px-2 py-0.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] text-[var(--color-text)] border border-[var(--color-border)] font-mono text-[11px]">
                                 {item.joint}
@@ -798,9 +806,10 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
               </div>
 
               <div className="text-xs text-[var(--color-text-muted)]">
-                Each Coach (e.g., <code className="font-bold text-[var(--color-text)]">coach_alex</code>,{" "}
-                <code className="font-bold text-[var(--color-text)]">coach_sarah</code>) uses a dedicated
-                voice set.
+                Each Coach (e.g.,{" "}
+                <code className="font-bold text-[var(--color-text)]">coach_alex</code>,{" "}
+                <code className="font-bold text-[var(--color-text)]">coach_sarah</code>) uses a
+                dedicated voice set.
               </div>
             </div>
 
@@ -853,7 +862,9 @@ export function MotionSpecEditor({ spec, onSaveSuccess }: MotionSpecEditorProps)
                         {code}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-[var(--color-text-muted)] font-medium">Cooldown (s):</span>
+                        <span className="text-xs text-[var(--color-text-muted)] font-medium">
+                          Cooldown (s):
+                        </span>
                         <input
                           type="number"
                           step="0.5"

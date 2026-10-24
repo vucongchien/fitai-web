@@ -1,4 +1,5 @@
 import { ArrowDown } from "lucide-react";
+
 import { AuthPanel } from "@/features/auth/ui/auth-panel";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { PageTransition } from "@/shared/ui/page-transition";

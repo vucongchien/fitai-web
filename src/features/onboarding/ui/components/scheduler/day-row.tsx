@@ -172,7 +172,9 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
             ))}
           </div>
         ) : (
-          <span className="text-xs text-[var(--color-text-muted)] font-medium py-1.5 select-none">Rest</span>
+          <span className="text-xs text-[var(--color-text-muted)] font-medium py-1.5 select-none">
+            Rest
+          </span>
         )}
       </div>
     </div>

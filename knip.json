@@ -2,14 +2,6 @@
   "$schema": "https://unpkg.com/knip@5/overview/configuration-schema.json",
   "entry": ["src/app/**/*.{ts,tsx}"],
   "project": ["src/**/*.{ts,tsx}!"],
-  "ignore": [
-    "src/shared/api/gen/**",
-    "src/shared/push/**",
-    "src/shared/ui/metric-trace.tsx"
-  ],
-  "ignoreDependencies": [
-    "firebase",
-    "@bufbuild/protoc-gen-es",
-    "tailwindcss"
-  ]
+  "ignore": ["src/shared/api/gen/**", "src/shared/push/**", "src/shared/ui/metric-trace.tsx"],
+  "ignoreDependencies": ["firebase", "@bufbuild/protoc-gen-es", "tailwindcss"]
 }

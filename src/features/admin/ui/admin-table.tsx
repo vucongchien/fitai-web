@@ -114,7 +114,9 @@ export function AdminTable<T>({
                   key={keyExtractor(item)}
                   onClick={() => onRowClick && onRowClick(item)}
                   className={`transition-colors duration-150 group ${
-                    onRowClick ? "cursor-pointer hover:bg-[var(--color-action-soft)]/50" : "hover:bg-[var(--color-surface-subtle)]"
+                    onRowClick
+                      ? "cursor-pointer hover:bg-[var(--color-action-soft)]/50"
+                      : "hover:bg-[var(--color-surface-subtle)]"
                   }`}
                 >
                   {columns.map((col) => (

@@ -6,6 +6,7 @@ export const allowedRpcServices = new Set([
   "contracts.generic.notification.v1.service.NotificationService",
   "contracts.supporting.exercise.v1.service.ExerciseService",
   "contracts.supporting.profile.v1.service.ProfileService",
+  "contracts.supporting.social.v1.service.SocialService",
 ]);
 
 export function isAllowedRpcPath(path: string) {

@@ -45,9 +45,7 @@ export function MealTimeline({ slots }: MealTimelineProps) {
 
               <div className="flex items-center gap-2">
                 {logged ? (
-                  <span className="data-value font-bold">
-                    {slot.calories} kcal
-                  </span>
+                  <span className="data-value font-bold">{slot.calories} kcal</span>
                 ) : slot.plannedMeal ? (
                   <span className="data-value opacity-85 font-semibold">
                     {slot.plannedMeal.calories} kcal
@@ -55,10 +53,7 @@ export function MealTimeline({ slots }: MealTimelineProps) {
                 ) : (
                   <span className="meal-timeline__pending">Not logged</span>
                 )}
-                <Link
-                  className="meal-timeline__action"
-                  href={`/nutrition/${slot.slot}`}
-                >
+                <Link className="meal-timeline__action" href={`/nutrition/${slot.slot}`}>
                   {logged ? "View details" : "Log meal"} <ChevronRight size={14} />
                 </Link>
               </div>
@@ -69,18 +64,10 @@ export function MealTimeline({ slots }: MealTimelineProps) {
                 {slot.meals.map((meal) => (
                   <li key={meal.id}>
                     <span>
-                      {meal.time ? (
-                        <span className="data-value mr-2">
-                          {meal.time}
-                        </span>
-                      ) : null}
-                      <span className="meal-timeline__name font-semibold">
-                        {meal.name}
-                      </span>
+                      {meal.time ? <span className="data-value mr-2">{meal.time}</span> : null}
+                      <span className="meal-timeline__name font-semibold">{meal.name}</span>
                     </span>
-                    <span className="data-value font-semibold">
-                      {meal.calories} kcal
-                    </span>
+                    <span className="data-value font-semibold">{meal.calories} kcal</span>
                   </li>
                 ))}
               </ul>

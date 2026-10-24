@@ -176,10 +176,7 @@ export function RuleVoiceModal({
               onClick={handleTestTts}
               type="button"
             >
-              <Play
-                size={14}
-                className="text-[var(--color-action)] fill-[var(--color-action)]"
-              />
+              <Play size={14} className="text-[var(--color-action)] fill-[var(--color-action)]" />
               <span>Test TTS Voice</span>
             </button>
           </div>

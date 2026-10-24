@@ -200,7 +200,9 @@ describe("useForgotPasswordFlow hook", () => {
       });
 
       expect(result.current.step).toBe("IDENTIFIER"); // remains on step
-      expect(result.current.errorMessage).toContain("Reset session has expired. Please start over.");
+      expect(result.current.errorMessage).toContain(
+        "Reset session has expired. Please start over.",
+      );
     });
   });
 

@@ -77,7 +77,9 @@ export default function AdminMetadataPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-[var(--color-text)] font-display">Catalog Metadata</h1>
+          <h1 className="text-xl font-bold text-[var(--color-text)] font-display">
+            Catalog Metadata
+          </h1>
           <p className="text-xs text-[var(--color-text-muted)] mt-1">
             Manage exercise classifications, equipment types, muscle groups, and tags.
           </p>
@@ -134,7 +136,9 @@ export default function AdminMetadataPage() {
             >
               <div className="min-w-0 pr-2">
                 <h4 className="font-bold text-[var(--color-text)] text-sm truncate">{item.name}</h4>
-                <p className="text-[11px] text-[var(--color-text-dim)] font-mono truncate">ID: {item.id}</p>
+                <p className="text-[11px] text-[var(--color-text-dim)] font-mono truncate">
+                  ID: {item.id}
+                </p>
               </div>
 
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

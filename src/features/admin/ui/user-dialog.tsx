@@ -37,8 +37,12 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
               <User className="size-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[var(--color-text)]">User Profile (Proto Schema)</h2>
-              <p className="text-xs text-[var(--color-text-muted)] font-mono">User ID: {user.userId}</p>
+              <h2 className="text-base font-bold text-[var(--color-text)]">
+                User Profile (Proto Schema)
+              </h2>
+              <p className="text-xs text-[var(--color-text-muted)] font-mono">
+                User ID: {user.userId}
+              </p>
             </div>
           </div>
           <button
@@ -58,7 +62,9 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
               <UserAvatar alt={user.displayName} size={64} src={user.avatarUrl} />
             </div>
             <div className="flex-1 min-w-0 space-y-1">
-              <h3 className="text-base font-bold text-[var(--color-text)] truncate">{user.displayName}</h3>
+              <h3 className="text-base font-bold text-[var(--color-text)] truncate">
+                {user.displayName}
+              </h3>
               <p className="text-xs text-[var(--color-text-muted)] truncate">{user.email}</p>
               <div className="flex items-center gap-2 pt-1">
                 <span className="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)] border border-[var(--color-action)]/20">
@@ -105,7 +111,9 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
                 </span>
               </div>
               <div className="p-3 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)]">
-                <span className="text-[var(--color-text-muted)] text-[11px] block">Completion Rate</span>
+                <span className="text-[var(--color-text-muted)] text-[11px] block">
+                  Completion Rate
+                </span>
                 <span className="font-bold text-[var(--color-action)]">
                   {Math.round(user.completionRate * 100)}%
                 </span>
@@ -117,11 +125,14 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div className="p-3.5 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-1.5">
               <span className="text-[var(--color-text-muted)] font-medium flex items-center gap-1.5">
-                <Dumbbell className="size-3.5 text-[var(--color-action)]" /> Experience Level & Coach Style
+                <Dumbbell className="size-3.5 text-[var(--color-action)]" /> Experience Level &
+                Coach Style
               </span>
               <p className="font-bold text-[var(--color-text)]">{user.experienceLevel}</p>
               {user.coachStyle && (
-                <p className="text-[11px] text-[var(--color-text-muted)] italic">Style: {user.coachStyle}</p>
+                <p className="text-[11px] text-[var(--color-text-muted)] italic">
+                  Style: {user.coachStyle}
+                </p>
               )}
             </div>
 
@@ -158,8 +169,8 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
                     className="p-2.5 rounded-[var(--radius-input)] bg-[var(--color-effort-soft)]/40 border border-[var(--color-effort)]/20 text-xs flex items-center justify-between"
                   >
                     <div>
-                      <span className="font-bold text-[var(--color-text)]">{inj.affectedArea}</span> —{" "}
-                      <span className="text-[var(--color-text-muted)]">{inj.type}</span>
+                      <span className="font-bold text-[var(--color-text)]">{inj.affectedArea}</span>{" "}
+                      — <span className="text-[var(--color-text-muted)]">{inj.type}</span>
                     </div>
                     <span
                       className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${

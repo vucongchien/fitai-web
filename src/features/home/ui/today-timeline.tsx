@@ -50,7 +50,8 @@ export function TodayTimeline({
           <div>
             <h3>No active training plan yet</h3>
             <p>
-              Build your personalized 4-week roadmap to schedule daily workouts and meals tailored to your body.
+              Build your personalized 4-week roadmap to schedule daily workouts and meals tailored
+              to your body.
             </p>
           </div>
           <div className="timeline-empty-card__actions">
@@ -99,7 +100,8 @@ export function TodayTimeline({
         <div>
           <h3>Rest Day &amp; Active Recovery</h3>
           <p>
-            No workouts or meals scheduled for today. Enjoy active recovery, or review your schedule in Roadmap.
+            No workouts or meals scheduled for today. Enjoy active recovery, or review your schedule
+            in Roadmap.
           </p>
         </div>
         <div className="timeline-empty-card__actions">
@@ -177,9 +179,7 @@ export function TodayTimeline({
               <div className="flex flex-wrap items-center gap-2">
                 <h3>{item.title}</h3>
                 {item.status === "next" ? (
-                  <span className="timeline-next-badge">
-                    Next up
-                  </span>
+                  <span className="timeline-next-badge">Next up</span>
                 ) : null}
               </div>
               <span>{item.subtitle}</span>

@@ -13,11 +13,7 @@ import {
   verifyOtpAction,
 } from "@/features/auth/server/auth-actions";
 
-export type ForgotPasswordStep =
-  | "IDENTIFIER"
-  | "VERIFY_OTP"
-  | "NEW_PASSWORD"
-  | "SUCCESS";
+export type ForgotPasswordStep = "IDENTIFIER" | "VERIFY_OTP" | "NEW_PASSWORD" | "SUCCESS";
 
 export function useForgotPasswordFlow() {
   const [step, setStep] = useState<ForgotPasswordStep>("IDENTIFIER");
@@ -30,8 +26,7 @@ export function useForgotPasswordFlow() {
   const identifierType = detectIdentifierType(identifier);
   const isIdentifierValid = identifierType !== "invalid";
   const maskedIdentifier = isIdentifierValid ? maskIdentifier(identifier) : "";
-  const emailProviderUrl =
-    identifierType === "email" ? getEmailProviderUrl(identifier) : null;
+  const emailProviderUrl = identifierType === "email" ? getEmailProviderUrl(identifier) : null;
 
   const handleSendOtp = useCallback(async () => {
     if (!isIdentifierValid) {
@@ -66,11 +61,7 @@ export function useForgotPasswordFlow() {
           setStep("NEW_PASSWORD");
           return;
         }
-        setErrorMessage(
-          result.success
-            ? "Verification failed. Please try again."
-            : result.error,
-        );
+        setErrorMessage(result.success ? "Verification failed. Please try again." : result.error);
       } finally {
         setIsPending(false);
       }
@@ -91,11 +82,7 @@ export function useForgotPasswordFlow() {
       setErrorMessage(null);
       setIsPending(true);
       try {
-        const result = await resetPasswordAction(
-          resetToken,
-          newPassword,
-          confirmPassword,
-        );
+        const result = await resetPasswordAction(resetToken, newPassword, confirmPassword);
         if (result.success) {
           setStep("SUCCESS");
           return;
@@ -105,9 +92,7 @@ export function useForgotPasswordFlow() {
           result.error.toLowerCase().includes("expired") ||
           result.error.toLowerCase().includes("invalid")
         ) {
-          setErrorMessage(
-            "Reset session has expired. Please start over.",
-          );
+          setErrorMessage("Reset session has expired. Please start over.");
           return;
         }
         setErrorMessage(result.error);

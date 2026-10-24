@@ -135,8 +135,12 @@ export default function AdminMotionSpecsPage() {
             <span className="text-xs font-semibold">Total DB Exercises</span>
             <FileCode className="size-4 text-[var(--color-action)]" />
           </div>
-          <p className="text-2xl font-bold text-[var(--color-text)] font-display">{stats.totalExercises}</p>
-          <p className="text-[11px] text-[var(--color-text-muted)]">Exercises from Workout Module DB</p>
+          <p className="text-2xl font-bold text-[var(--color-text)] font-display">
+            {stats.totalExercises}
+          </p>
+          <p className="text-[11px] text-[var(--color-text-muted)]">
+            Exercises from Workout Module DB
+          </p>
         </div>
 
         <div className="p-4 rounded-[var(--radius-card)] bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xs space-y-1">
@@ -144,7 +148,9 @@ export default function AdminMotionSpecsPage() {
             <span className="text-xs font-semibold">Pose Rules File (.json)</span>
             <FileJson className="size-4 text-[var(--color-effort)]" />
           </div>
-          <p className="text-2xl font-bold text-[var(--color-effort)] font-display">{stats.activePoseRules}</p>
+          <p className="text-2xl font-bold text-[var(--color-effort)] font-display">
+            {stats.activePoseRules}
+          </p>
           <p className="text-[11px] text-[var(--color-text-muted)]">Loaded `local_rules_url`</p>
         </div>
 
@@ -164,7 +170,9 @@ export default function AdminMotionSpecsPage() {
             <span className="text-xs font-semibold">Ready for AI Workout</span>
             <CheckCircle2 className="size-4 text-[var(--color-recovery)]" />
           </div>
-          <p className="text-2xl font-bold text-[var(--color-recovery)] font-display">{stats.readyAiSpecs}</p>
+          <p className="text-2xl font-bold text-[var(--color-recovery)] font-display">
+            {stats.readyAiSpecs}
+          </p>
           <p className="text-[11px] text-[var(--color-text-muted)]">Both Rule & Voice ready</p>
         </div>
       </div>
@@ -263,7 +271,9 @@ export default function AdminMotionSpecsPage() {
           </div>
         ) : specs.length === 0 ? (
           <div className="py-16 text-center text-xs text-[var(--color-text-dim)] space-y-2">
-            <p className="font-bold text-[var(--color-text)]">No exercises found matching "{searchQuery}"</p>
+            <p className="font-bold text-[var(--color-text)]">
+              No exercises found matching "{searchQuery}"
+            </p>
             <p>Try searching with a different keyword or clear filters.</p>
           </div>
         ) : (
@@ -290,7 +300,10 @@ export default function AdminMotionSpecsPage() {
                     );
 
                     return (
-                      <tr key={item.exerciseId} className="hover:bg-[var(--color-surface-subtle)]/80 transition-colors">
+                      <tr
+                        key={item.exerciseId}
+                        className="hover:bg-[var(--color-surface-subtle)]/80 transition-colors"
+                      >
                         <td className="p-4">
                           <div className="font-bold text-[var(--color-text)] text-sm font-display">
                             {item.exerciseName && item.exerciseName !== item.exerciseId
@@ -338,7 +351,9 @@ export default function AdminMotionSpecsPage() {
                               {item.recommendedCameraAngle}
                             </span>
                           ) : (
-                            <span className="text-[11px] text-[var(--color-text-dim)] font-medium">No data</span>
+                            <span className="text-[11px] text-[var(--color-text-dim)] font-medium">
+                              No data
+                            </span>
                           )}
                         </td>
 
@@ -361,8 +376,8 @@ export default function AdminMotionSpecsPage() {
                               handleOpenEdit(
                                 item.exerciseId,
                                 item.exerciseName && item.exerciseName !== item.exerciseId
-                                    ? item.exerciseName
-                                    : "",
+                                  ? item.exerciseName
+                                  : "",
                               )
                             }
                             className="px-3.5 py-2 rounded-[var(--radius-input)] bg-[var(--color-action)] hover:opacity-90 text-[var(--color-action-contrast)] font-bold text-xs transition-colors shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
@@ -386,8 +401,8 @@ export default function AdminMotionSpecsPage() {
                   {totalCount > 0 ? startIndex + 1 : 0}
                 </span>{" "}
                 to <span className="font-bold text-[var(--color-text)]">{endIndex}</span> of{" "}
-                <span className="font-bold text-[var(--color-action)]">{totalCount}</span> exercises (Workout
-                Module)
+                <span className="font-bold text-[var(--color-action)]">{totalCount}</span> exercises
+                (Workout Module)
               </div>
 
               <div className="flex items-center gap-1">

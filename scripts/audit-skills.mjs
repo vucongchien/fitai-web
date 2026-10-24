@@ -262,9 +262,7 @@ function auditComponentSize() {
         `\n👉 Tech Lead Recommendation: Decompose oversized files into smaller sub-components or custom hooks.\n`,
     );
   } else {
-    process.stdout.write(
-      `✅ [PASS] All UI components are under 400 lines (clean modularity).\n`,
-    );
+    process.stdout.write(`✅ [PASS] All UI components are under 400 lines (clean modularity).\n`);
   }
 }
 
@@ -291,7 +289,10 @@ function auditDesignTokens() {
     process.stdout.write(
       `⚠️  [WARN] Found ${hexViolations.length} instance(s) of arbitrary hex colors in JSX className.\n` +
         `  Samples:\n` +
-        hexViolations.slice(0, 5).map((v) => `    - ${v}`).join("\n") +
+        hexViolations
+          .slice(0, 5)
+          .map((v) => `    - ${v}`)
+          .join("\n") +
         (hexViolations.length > 5 ? `\n    ... and ${hexViolations.length - 5} more.` : "") +
         `\n👉 Recommendation: Use CSS custom properties from tokens.css (e.g. var(--color-action), var(--color-text)).\n`,
     );

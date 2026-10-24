@@ -6,9 +6,6 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
 
   images: {
-    /**
-     * Allowlist for `next/image` remote sources — user avatars, workout thumbnails, meal progress photos.
-     */
     remotePatterns: [
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "platform-lookaside.fbsbx.com" },
@@ -17,6 +14,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.s3.amazonaws.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "gym-companion-production.up.railway.app" },
+      { protocol: "https", hostname: "static.exercisedb.dev" },
+      { protocol: "https", hostname: "**.supabase.co" },
       { protocol: "http", hostname: "localhost" },
       { protocol: "http", hostname: "127.0.0.1" },
     ],

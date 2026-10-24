@@ -38,9 +38,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
       : null);
 
   if (step === "SUCCESS") {
-    return (
-      <SuccessScreen onBackToLogin={() => onBackToLogin(identifier)} />
-    );
+    return <SuccessScreen onBackToLogin={() => onBackToLogin(identifier)} />;
   }
 
   if (step === "VERIFY_OTP") {
@@ -50,9 +48,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
           <h2 id="sign-in-title">
             {identifierType === "email" ? "Check your email" : "Check your phone"}
           </h2>
-          <p className="auth-step-instruction">
-            Enter the 6-digit code sent to
-          </p>
+          <p className="auth-step-instruction">Enter the 6-digit code sent to</p>
           <div className="auth-recipient-center">
             <div className="auth-recipient-row">
               {mailTargetUrl ? (
@@ -93,11 +89,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
         />
 
         <div className="auth-otp-footer">
-          <button
-            className="auth-switch-link"
-            onClick={() => onBackToLogin()}
-            type="button"
-          >
+          <button className="auth-switch-link" onClick={() => onBackToLogin()} type="button">
             ← Back to login
           </button>
         </div>
@@ -171,11 +163,7 @@ export function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
         </Button>
 
         <div className="auth-switch-footer">
-          <button
-            className="auth-switch-link"
-            onClick={() => onBackToLogin()}
-            type="button"
-          >
+          <button className="auth-switch-link" onClick={() => onBackToLogin()} type="button">
             ← Back to login
           </button>
         </div>
@@ -310,9 +298,7 @@ function NewPasswordStep({
             </button>
           </div>
           {confirmPassword && newPassword !== confirmPassword && (
-            <p className="auth-field-hint auth-field-hint--error">
-              Passwords do not match.
-            </p>
+            <p className="auth-field-hint auth-field-hint--error">Passwords do not match.</p>
           )}
         </div>
 
@@ -329,11 +315,7 @@ function NewPasswordStep({
         </div>
 
         <div className="auth-switch-footer">
-          <button
-            className="auth-switch-link"
-            onClick={onBackToLogin}
-            type="button"
-          >
+          <button className="auth-switch-link" onClick={onBackToLogin} type="button">
             ← Back to login
           </button>
         </div>
@@ -342,11 +324,7 @@ function NewPasswordStep({
   );
 }
 
-function SuccessScreen({
-  onBackToLogin,
-}: {
-  onBackToLogin: () => void;
-}) {
+function SuccessScreen({ onBackToLogin }: { onBackToLogin: () => void }) {
   const { remainingSeconds } = useOtpCountdown(3);
   const redirectTriggeredRef = useRef(false);
 
@@ -363,17 +341,11 @@ function SuccessScreen({
         <CheckCircle size={48} strokeWidth={1.5} />
       </div>
       <h2 id="sign-in-title">Password reset successful</h2>
-      <p className="auth-step-instruction">
-        You can now sign in with your new password.
-      </p>
+      <p className="auth-step-instruction">You can now sign in with your new password.</p>
       <p className="auth-success-countdown">
         Redirecting to login in <strong>{remainingSeconds}s</strong>...
       </p>
-      <button
-        className="auth-switch-link"
-        onClick={onBackToLogin}
-        type="button"
-      >
+      <button className="auth-switch-link" onClick={onBackToLogin} type="button">
         Back to login now
       </button>
     </div>

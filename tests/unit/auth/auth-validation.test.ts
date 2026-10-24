@@ -194,7 +194,8 @@ describe("auth-validation edge cases & security tests", () => {
 
   describe("cleanAuthErrorMessage", () => {
     it("handles maximum attempts exceeded error with gRPC code and Vietnamese text", () => {
-      const raw = "[invalid_argument] xác thực OTP thất bại: maximum otp verification attempts exceeded";
+      const raw =
+        "[invalid_argument] xác thực OTP thất bại: maximum otp verification attempts exceeded";
       expect(cleanAuthErrorMessage(raw)).toBe(
         "Maximum verification attempts exceeded. Please request a new code.",
       );

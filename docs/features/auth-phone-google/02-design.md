@@ -12,22 +12,22 @@
 ```mermaid
 graph TD
     A["src/app/(public)/login/page.tsx (Server Component)"] --> B["src/features/auth/ui/auth-panel.tsx (Client Component)"]
-    
+
     B --> C["Tab Header: 'Đăng nhập' | 'Đăng ký' (Pill Switcher)"]
-    
+
     B --> D["LoginForm (src/features/auth/ui/login-form.tsx)"]
     B --> E["RegisterForm (src/features/auth/ui/register-form.tsx)"]
-    
+
     D --> F["Google OAuth Button (provider-marks.tsx)"]
     D --> G["Identifier Input (Phone / Email pre-validation)"]
     D --> H["OtpInputGroup (src/features/auth/ui/otp-input-group.tsx)"]
     D --> I["Password Fallback Fields"]
-    
+
     E --> J["Register Step 1: Identifier + OTP Verify"]
     E --> K["Register Step 2: Account & Avatar Setup"]
     K --> L["AvatarCreator (src/features/auth/ui/avatar-creator.tsx)"]
     K --> M["Form Fields: Họ tên, Mật khẩu, Giới tính, Ngày sinh"]
-    
+
     D & E --> N["Server Actions (src/features/auth/server/auth-actions.ts)"]
     N --> O["ConnectRPC Client (AuthService & ProfileService)"]
     N --> P["Next.js cookies() Store (fitai_access_token)"]
@@ -39,7 +39,7 @@ graph TD
 
 Theo yêu cầu thiết kế không dùng icon biểu tượng, giao diện định hình phong cách **Typography-Driven & Material Surface** (sử dụng chữ, tỉ lệ không gian, viền kính và viền màu năng động của `DESIGN.md`):
 
-1. **Pill Tab Switcher**: 
+1. **Pill Tab Switcher**:
    - 2 nút bấm dạng viên thuốc mềm mại: `Đăng nhập` và `Đăng ký`.
    - Active state: background `var(--color-primary)` (Emerald `#10b981`), chữ đậm trắng, bóng đổ nhẹ.
    - Inactive state: chữ `var(--color-text-muted)`, hover làm sáng nhẹ viền.
@@ -56,23 +56,27 @@ Theo yêu cầu thiết kế không dùng icon biểu tượng, giao diện đ�
 ## 3. Component Specifications
 
 ### 3.1 `AuthPanel` (`src/features/auth/ui/auth-panel.tsx`)
+
 - Quản lý trạng thái tab hiện tại: `"login"` hoặc `"register"`.
 - Bọc toàn bộ trong glassmorphism surface theo `DESIGN.md` (`login-form-panel`).
 - Xử lý chuyển cảnh mượt mà giữa các bước.
 
 ### 3.2 `LoginForm` (`src/features/auth/ui/login-form.tsx`)
+
 - Quản lý 3 trạng thái con (sub-states):
   - `IDENTIFIER_INPUT`: Ô nhập SĐT/Email + nút Google + nút chuyển sang Mật khẩu.
   - `OTP_VERIFY`: 6 ô pin OTP + bộ đếm ngược 60s + nút gửi lại + nút shortcut mở Gmail/Outlook.
   - `PASSWORD_LOGIN`: Ô nhập SĐT/Email + Mật khẩu + link Quên mật khẩu.
 
 ### 3.3 `RegisterForm` (`src/features/auth/ui/register-form.tsx`)
+
 - Quản lý 2 bước đăng ký:
   - `STEP_VERIFY`: Nhập SĐT/Email $\rightarrow$ Gửi & Xác thực OTP `purpose: "register"`.
   - `STEP_PROFILE`: Điền thông tin cá nhân kèm chọn/sinh Avatar.
 - Gọi Server Action `registerAction` $\rightarrow$ Tự động lưu cookie $\rightarrow$ chuyển hướng sang `/onboarding`.
 
 ### 3.4 `AvatarCreator` (`src/features/auth/ui/avatar-creator.tsx`)
+
 - **Tích hợp `@multiavatar/multiavatar`**:
   - Khi user gõ `fullName`, hook `useMultiavatar(fullName)` tính toán chuỗi SVG tức thì.
   - Khung tròn `96x96px`, viền `2px solid var(--color-primary)`, bo tròn `9999px`.
@@ -85,6 +89,7 @@ Theo yêu cầu thiết kế không dùng icon biểu tượng, giao diện đ�
   - Hàng 4 avatar mẫu nhỏ (`36x36px`) để click chọn nhanh kiểu dáng.
 
 ### 3.5 `OtpInputGroup` (`src/features/auth/ui/otp-input-group.tsx`)
+
 - 6 ô `input` riêng biệt:
   - Kích thước `48x56px`, bo góc `var(--radius-md)`.
   - Chữ số hiển thị to, đậm (`font-size: 1.5rem`), căn giữa.
@@ -100,17 +105,25 @@ Toàn bộ kết nối backend tuân thủ nguyên tắc **ConnectRPC First** v�
 
 ```typescript
 export type AuthActionResult<T = void> =
-  | { success: true; data: T }
-  | { success: false; error: string; code?: string };
+  { success: true; data: T } | { success: false; error: string; code?: string };
 
 // 1. Gửi OTP
-export async function sendOtpAction(identifier: string, purpose: "login" | "register"): Promise<AuthActionResult<{ otpToken: string; expiresInSeconds: number }>>;
+export async function sendOtpAction(
+  identifier: string,
+  purpose: "login" | "register",
+): Promise<AuthActionResult<{ otpToken: string; expiresInSeconds: number }>>;
 
 // 2. Xác thực OTP
-export async function verifyOtpAction(otpToken: string, code: string): Promise<AuthActionResult<{ valid: boolean; resetToken?: string }>>;
+export async function verifyOtpAction(
+  otpToken: string,
+  code: string,
+): Promise<AuthActionResult<{ valid: boolean; resetToken?: string }>>;
 
 // 3. Đăng nhập bằng Mật khẩu
-export async function loginWithPasswordAction(identifier: string, password: string): Promise<AuthActionResult<{ redirectUrl: string }>>;
+export async function loginWithPasswordAction(
+  identifier: string,
+  password: string,
+): Promise<AuthActionResult<{ redirectUrl: string }>>;
 
 // 4. Đăng ký tài khoản
 export async function registerAction(payload: {

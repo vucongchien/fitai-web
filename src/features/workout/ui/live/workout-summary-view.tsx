@@ -162,9 +162,7 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
                     marginBottom: "8px",
                   }}
                 >
-                  <span style={{ color: "var(--color-text)" }}>
-                    Physical Exertion Index
-                  </span>
+                  <span style={{ color: "var(--color-text)" }}>Physical Exertion Index</span>
                   <span style={{ color, fontWeight: 700 }}>{label}</span>
                 </div>
                 <div

@@ -32,12 +32,7 @@ export function FeedbackState({
         <p>{description}</p>
       </div>
       {onActionClick && actionLabel ? (
-        <Button
-          className="text-action"
-          onClick={onActionClick}
-          type="button"
-          variant="secondary"
-        >
+        <Button className="text-action" onClick={onActionClick} type="button" variant="secondary">
           {actionLabel}
           <ArrowRight aria-hidden="true" size={17} />
         </Button>

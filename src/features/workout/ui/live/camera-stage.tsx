@@ -196,11 +196,7 @@ export function CameraStage({
 
       {state === "ready" || isCustomVideo ? null : (
         <div className="camera-stage__placeholder relative z-10 flex flex-col items-center justify-center p-4 text-center">
-          <CameraOff
-            aria-hidden="true"
-            className="text-[var(--color-text-muted)] mb-2"
-            size={26}
-          />
+          <CameraOff aria-hidden="true" className="text-[var(--color-text-muted)] mb-2" size={26} />
           <p className="text-xs font-medium text-[var(--color-text-muted)]">
             {state === "requesting"
               ? "Waiting for camera…"

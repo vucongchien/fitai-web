@@ -31,8 +31,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
   const isEmail = identifier.includes("@");
   const emailDomain = isEmail ? identifier.split("@")[1]?.trim() : "";
-  const mailTargetUrl =
-    mailUrl || (isEmail && emailDomain ? `https://${emailDomain}` : null);
+  const mailTargetUrl = mailUrl || (isEmail && emailDomain ? `https://${emailDomain}` : null);
 
   return (
     <div className="register-form-container">
@@ -42,9 +41,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             <h2 id="sign-in-title">
               {identifier.includes("@") ? "Check your email" : "Check your phone"}
             </h2>
-            <p className="auth-step-instruction">
-              Enter the 6-digit code sent to
-            </p>
+            <p className="auth-step-instruction">Enter the 6-digit code sent to</p>
             <div className="auth-recipient-center">
               <div className="auth-recipient-row">
                 {mailTargetUrl ? (
@@ -85,11 +82,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           />
 
           <div className="auth-otp-footer">
-            <button
-              className="auth-switch-link"
-              onClick={resetToIdentifier}
-              type="button"
-            >
+            <button className="auth-switch-link" onClick={resetToIdentifier} type="button">
               ← Back to phone / email
             </button>
           </div>
@@ -149,11 +142,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
                 <div className="auth-switch-footer">
                   <span>Already have an account?</span>
-                  <button
-                    className="auth-switch-link"
-                    onClick={onSwitchToLogin}
-                    type="button"
-                  >
+                  <button className="auth-switch-link" onClick={onSwitchToLogin} type="button">
                     Log in
                   </button>
                 </div>
@@ -166,10 +155,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               <div className="login-form-header">
                 <h2 id="sign-in-title">Complete your profile</h2>
               </div>
-              <RegisterProfileSubform
-                isPending={isPending}
-                onSubmit={handleProfileSubmit}
-              />
+              <RegisterProfileSubform isPending={isPending} onSubmit={handleProfileSubmit} />
             </>
           )}
         </>

@@ -5,6 +5,7 @@
 ## Context
 
 Feature forgot password cần một UI flow 3 bước. Có 2 lựa chọn:
+
 1. Tạo route `/forgot-password` riêng
 2. Thêm mode `"forgot-password"` vào `AuthPanel` state machine hiện tại
 

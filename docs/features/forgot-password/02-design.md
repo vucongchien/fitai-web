@@ -38,24 +38,24 @@ flowchart TD
 
 ### Affected Modules
 
-| Module | Change |
-|--------|--------|
-| `src/features/auth/ui/auth-panel.tsx` | Add `"forgot-password"` to `AuthMode`, render `ForgotPasswordForm` |
-| `src/features/auth/ui/login-form.tsx` | Replace `alert()` with `onForgotPassword` callback |
-| `src/features/auth/ui/forgot-password-form.tsx` | **NEW** — 3-step form component |
-| `src/features/auth/model/use-forgot-password-flow.ts` | **NEW** — step state machine hook |
-| `src/features/auth/server/auth-actions.ts` | Extend `sendOtpAction` purpose + add `resetPasswordAction` |
-| `src/app/globals.css` | Minor additions for success state styling |
+| Module                                                | Change                                                             |
+| ----------------------------------------------------- | ------------------------------------------------------------------ |
+| `src/features/auth/ui/auth-panel.tsx`                 | Add `"forgot-password"` to `AuthMode`, render `ForgotPasswordForm` |
+| `src/features/auth/ui/login-form.tsx`                 | Replace `alert()` with `onForgotPassword` callback                 |
+| `src/features/auth/ui/forgot-password-form.tsx`       | **NEW** — 3-step form component                                    |
+| `src/features/auth/model/use-forgot-password-flow.ts` | **NEW** — step state machine hook                                  |
+| `src/features/auth/server/auth-actions.ts`            | Extend `sendOtpAction` purpose + add `resetPasswordAction`         |
+| `src/app/globals.css`                                 | Minor additions for success state styling                          |
 
 ### Reused Components (zero changes needed)
 
-| Component/Utility | From |
-|-------------------|------|
-| `OtpInputGroup` | `src/features/auth/ui/otp-input-group.tsx` |
-| `useOtpCountdown` | `src/features/auth/model/use-otp-countdown.ts` |
-| `detectIdentifierType`, `maskIdentifier`, `normalizePhoneNumber`, `getEmailProviderUrl` | `src/features/auth/model/auth-validation.ts` |
-| `Button` (with `loading` prop) | `src/shared/ui/button.tsx` |
-| Auth CSS classes (`.auth-field`, `.auth-input`, `.auth-submit-btn`, etc.) | `src/app/globals.css` |
+| Component/Utility                                                                       | From                                           |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `OtpInputGroup`                                                                         | `src/features/auth/ui/otp-input-group.tsx`     |
+| `useOtpCountdown`                                                                       | `src/features/auth/model/use-otp-countdown.ts` |
+| `detectIdentifierType`, `maskIdentifier`, `normalizePhoneNumber`, `getEmailProviderUrl` | `src/features/auth/model/auth-validation.ts`   |
+| `Button` (with `loading` prop)                                                          | `src/shared/ui/button.tsx`                     |
+| Auth CSS classes (`.auth-field`, `.auth-input`, `.auth-submit-btn`, etc.)               | `src/app/globals.css`                          |
 
 ## 2. Execution Flow & Contracts
 
@@ -109,8 +109,8 @@ sequenceDiagram
 // New:     purpose: "login" | "register" | "reset_password"
 export async function sendOtpAction(
   identifier: string,
-  purpose: "login" | "register" | "reset_password"
-): Promise<ActionResult<{ otpToken: string; expiresInSeconds: number }>>
+  purpose: "login" | "register" | "reset_password",
+): Promise<ActionResult<{ otpToken: string; expiresInSeconds: number }>>;
 ```
 
 #### `resetPasswordAction` (NEW)
@@ -119,8 +119,8 @@ export async function sendOtpAction(
 export async function resetPasswordAction(
   resetToken: string,
   newPassword: string,
-  confirmPassword: string
-): Promise<ActionResult<{ success: boolean; message: string }>>
+  confirmPassword: string,
+): Promise<ActionResult<{ success: boolean; message: string }>>;
 ```
 
 - No auth token required (user is not logged in).
@@ -170,6 +170,7 @@ interface UseForgotPasswordFlow {
 ```
 
 Key design decisions:
+
 - **No `useEffect`** — all state transitions happen in event handlers.
 - **`identifier` stays in hook state** — passed back to `AuthPanel` on success for pre-fill.
 - **Error state is per-action** — cleared on next action attempt.
@@ -177,22 +178,23 @@ Key design decisions:
 
 ## 4. Error Handling
 
-| Error Source | Handling |
-|--------------|----------|
-| Network failure / 500 on sendOtp | Show generic "Something went wrong. Please try again." Stay on current step. |
-| Backend says identifier not found (sendOtp) | **Swallow** — show success message anyway, transition to OTP step (anti-enumeration). |
-| Invalid OTP code | Show "Invalid verification code" inline. Stay on OTP step. |
-| OTP expired | Show "Verification code has expired". Allow resend. |
-| Reset token expired | Show "Reset session has expired. Please start over." + "Start over" button → IDENTIFIER step. |
-| Password too short | Client-side validation before API call. |
-| Password mismatch | Client-side validation before API call. |
-| Generic backend error on resetPassword | Show `response.message` or fallback generic message. |
+| Error Source                                | Handling                                                                                      |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Network failure / 500 on sendOtp            | Show generic "Something went wrong. Please try again." Stay on current step.                  |
+| Backend says identifier not found (sendOtp) | **Swallow** — show success message anyway, transition to OTP step (anti-enumeration).         |
+| Invalid OTP code                            | Show "Invalid verification code" inline. Stay on OTP step.                                    |
+| OTP expired                                 | Show "Verification code has expired". Allow resend.                                           |
+| Reset token expired                         | Show "Reset session has expired. Please start over." + "Start over" button → IDENTIFIER step. |
+| Password too short                          | Client-side validation before API call.                                                       |
+| Password mismatch                           | Client-side validation before API call.                                                       |
+| Generic backend error on resetPassword      | Show `response.message` or fallback generic message.                                          |
 
 ## 5. UI Layout
 
 Each step reuses existing `.auth-*` CSS classes. No new design tokens needed.
 
 ### Step 1: IDENTIFIER
+
 - Heading: "Reset password"
 - Subheading: None (clean, no redundant instruction)
 - Input: `.auth-input` with identifier validation
@@ -200,6 +202,7 @@ Each step reuses existing `.auth-*` CSS classes. No new design tokens needed.
 - Footer link: "Back to login" (`.auth-switch-link`)
 
 ### Step 2: VERIFY_OTP
+
 - Heading: "Enter verification code"
 - Masked identifier badge (reuse RegisterForm pattern)
 - `OtpInputGroup` component (reused as-is)
@@ -207,6 +210,7 @@ Each step reuses existing `.auth-*` CSS classes. No new design tokens needed.
 - Footer: "Change email/phone" + "Back to login"
 
 ### Step 3: NEW_PASSWORD
+
 - Heading: "Set new password"
 - Two password fields with show/hide toggles (Eye/EyeOff pattern from LoginForm)
 - Validation hints below each field
@@ -214,6 +218,7 @@ Each step reuses existing `.auth-*` CSS classes. No new design tokens needed.
 - Footer link: "Back to login"
 
 ### Step 4: SUCCESS
+
 - Checkmark icon
 - Heading: "Password reset successful"
 - Subheading: "You can now sign in with your new password."

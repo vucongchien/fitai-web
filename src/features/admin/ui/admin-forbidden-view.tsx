@@ -33,7 +33,9 @@ export function AdminForbiddenView({ userName, role }: AdminForbiddenViewProps) 
 
         {/* Current Identity Banner */}
         <div className="rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] p-4 text-left space-y-1.5">
-          <div className="text-[11px] font-medium text-[var(--color-text-muted)]">Current Session:</div>
+          <div className="text-[11px] font-medium text-[var(--color-text-muted)]">
+            Current Session:
+          </div>
           <div className="flex items-center justify-between text-xs font-bold">
             <span className="text-[var(--color-text)] truncate">{userName || "Athlete User"}</span>
             <span className="px-2 py-0.5 rounded-md bg-[var(--color-surface)] text-[var(--color-text-muted)] border border-[var(--color-border)] font-mono text-[10px]">
