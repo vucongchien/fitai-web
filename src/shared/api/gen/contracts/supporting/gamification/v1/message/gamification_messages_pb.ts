@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/supporting/gamification/v1/message/gamification_messages.proto.
  */
 export const file_contracts_supporting_gamification_v1_message_gamification_messages: GenFile = /*@__PURE__*/
-  fileDesc("Ckhjb250cmFjdHMvc3VwcG9ydGluZy9nYW1pZmljYXRpb24vdjEvbWVzc2FnZS9nYW1pZmljYXRpb25fbWVzc2FnZXMucHJvdG8SLGNvbnRyYWN0cy5zdXBwb3J0aW5nLmdhbWlmaWNhdGlvbi52MS5tZXNzYWdlIqgBCg1Vc2VyWHBTdW1tYXJ5Eg8KB3VzZXJfaWQYASABKAkSCgoCeHAYAiABKAMSDQoFbGV2ZWwYAyABKAUSGAoQeHBfdG9fbmV4dF9sZXZlbBgEIAEoAxIhChlsZXZlbF9wcm9ncmVzc19wZXJjZW50YWdlGAUgASgCEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIrwBCg5YcEhpc3RvcnlFbnRyeRIKCgJpZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEg4KBmFtb3VudBgDIAEoBRIOCgZzb3VyY2UYBCABKAkSFwoKc2Vzc2lvbl9pZBgFIAEoCUgAiAEBEhUKDWFjdGl2aXR5X2RhdGUYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCDQoLX3Nlc3Npb25faWQiswEKDVN0cmVha1N1bW1hcnkSDwoHdXNlcl9pZBgBIAEoCRIWCg5jdXJyZW50X3N0cmVhaxgCIAEoBRIWCg5sb25nZXN0X3N0cmVhaxgDIAEoBRIYChBsYXN0X2FjdGl2ZV9kYXRlGAQgASgJEhcKD2lzX2FjdGl2ZV90b2RheRgFIAEoCBIuCgp1cGRhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCKPAQoSU3RyZWFrSGlzdG9yeUVudHJ5EgoKAmlkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSFQoNYWN0aXZpdHlfZGF0ZRgDIAEoCRIVCg1hY3Rpdml0eV90eXBlGAQgASgJEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIqYBChBMZWFkZXJib2FyZEVudHJ5EgwKBHJhbmsYASABKAUSDwoHdXNlcl9pZBgCIAEoCRIUCgxkaXNwbGF5X25hbWUYAyABKAkSEgoKYXZhdGFyX3VybBgEIAEoCRIKCgJ4cBgFIAEoAxINCgVsZXZlbBgGIAEoBRIuCgp1cGRhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCIQCg5HZXRNeVhwUmVxdWVzdCJiCg9HZXRNeVhwUmVzcG9uc2USTwoKeHBfc3VtbWFyeRgBIAEoCzI7LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmdhbWlmaWNhdGlvbi52MS5tZXNzYWdlLlVzZXJYcFN1bW1hcnkiNgoTR2V0WHBIaXN0b3J5UmVxdWVzdBIMCgRwYWdlGAEgASgFEhEKCXBhZ2Vfc2l6ZRgCIAEoBSKbAQoUR2V0WHBIaXN0b3J5UmVzcG9uc2USTQoHZW50cmllcxgBIAMoCzI8LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmdhbWlmaWNhdGlvbi52MS5tZXNzYWdlLlhwSGlzdG9yeUVudHJ5EhMKC3RvdGFsX2NvdW50GAIgASgFEgwKBHBhZ2UYAyABKAUSEQoJcGFnZV9zaXplGAQgASgFIhIKEEdldFN0cmVha1JlcXVlc3QiaAoRR2V0U3RyZWFrUmVzcG9uc2USUwoOc3RyZWFrX3N1bW1hcnkYASABKAsyOy5jb250cmFjdHMuc3VwcG9ydGluZy5nYW1pZmljYXRpb24udjEubWVzc2FnZS5TdHJlYWtTdW1tYXJ5Ii0KF0dldFN0cmVha0hpc3RvcnlSZXF1ZXN0EhIKCmxpbWl0X2RheXMYASABKAUibQoYR2V0U3RyZWFrSGlzdG9yeVJlc3BvbnNlElEKB2VudHJpZXMYASADKAsyQC5jb250cmFjdHMuc3VwcG9ydGluZy5nYW1pZmljYXRpb24udjEubWVzc2FnZS5TdHJlYWtIaXN0b3J5RW50cnkiLAobR2V0R2xvYmFsTGVhZGVyYm9hcmRSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFIsgBChxHZXRHbG9iYWxMZWFkZXJib2FyZFJlc3BvbnNlElMKC3RvcF9lbnRyaWVzGAEgAygLMj4uY29udHJhY3RzLnN1cHBvcnRpbmcuZ2FtaWZpY2F0aW9uLnYxLm1lc3NhZ2UuTGVhZGVyYm9hcmRFbnRyeRJTCgtteV9zdGFuZGluZxgCIAEoCzI+LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmdhbWlmaWNhdGlvbi52MS5tZXNzYWdlLkxlYWRlcmJvYXJkRW50cnkiwQEKCUJhZGdlSXRlbRISCgpiYWRnZV9jb2RlGAEgASgJEgwKBG5hbWUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSEAoIY2F0ZWdvcnkYBCABKAkSEAoIaWNvbl91cmwYBSABKAkSEwoLaXNfdW5sb2NrZWQYBiABKAgSNAoLdW5sb2NrZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSACIAQFCDgoMX3VubG9ja2VkX2F0IhQKEkdldE15QmFkZ2VzUmVxdWVzdCKPAQoTR2V0TXlCYWRnZXNSZXNwb25zZRJHCgZiYWRnZXMYASADKAsyNy5jb250cmFjdHMuc3VwcG9ydGluZy5nYW1pZmljYXRpb24udjEubWVzc2FnZS5CYWRnZUl0ZW0SFgoOdG90YWxfdW5sb2NrZWQYAiABKAUSFwoPdG90YWxfYXZhaWxhYmxlGAMgASgFQnlad2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvZ2FtaWZpY2F0aW9uL3YxL21lc3NhZ2U7Z2FtaWZpY2F0aW9udjFtZXNzYWdlYgZwcm90bzM", [file_google_protobuf_timestamp]);
+  fileDesc("Ckhjb250cmFjdHMvc3VwcG9ydGluZy9nYW1pZmljYXRpb24vdjEvbWVzc2FnZS9nYW1pZmljYXRpb25fbWVzc2FnZXMucHJvdG8SLGNvbnRyYWN0cy5zdXBwb3J0aW5nLmdhbWlmaWNhdGlvbi52MS5tZXNzYWdlIqgBCg1Vc2VyWHBTdW1tYXJ5Eg8KB3VzZXJfaWQYASABKAkSCgoCeHAYAiABKAMSDQoFbGV2ZWwYAyABKAUSGAoQeHBfdG9fbmV4dF9sZXZlbBgEIAEoAxIhChlsZXZlbF9wcm9ncmVzc19wZXJjZW50YWdlGAUgASgCEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIrwBCg5YcEhpc3RvcnlFbnRyeRIKCgJpZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEg4KBmFtb3VudBgDIAEoBRIOCgZzb3VyY2UYBCABKAkSFwoKc2Vzc2lvbl9pZBgFIAEoCUgAiAEBEhUKDWFjdGl2aXR5X2RhdGUYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCDQoLX3Nlc3Npb25faWQiswEKDVN0cmVha1N1bW1hcnkSDwoHdXNlcl9pZBgBIAEoCRIWCg5jdXJyZW50X3N0cmVhaxgCIAEoBRIWCg5sb25nZXN0X3N0cmVhaxgDIAEoBRIYChBsYXN0X2FjdGl2ZV9kYXRlGAQgASgJEhcKD2lzX2FjdGl2ZV90b2RheRgFIAEoCBIuCgp1cGRhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCKPAQoSU3RyZWFrSGlzdG9yeUVudHJ5EgoKAmlkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkSFQoNYWN0aXZpdHlfZGF0ZRgDIAEoCRIVCg1hY3Rpdml0eV90eXBlGAQgASgJEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIqYBChBMZWFkZXJib2FyZEVudHJ5EgwKBHJhbmsYASABKAUSDwoHdXNlcl9pZBgCIAEoCRIUCgxkaXNwbGF5X25hbWUYAyABKAkSEgoKYXZhdGFyX3VybBgEIAEoCRIKCgJ4cBgFIAEoAxINCgVsZXZlbBgGIAEoBRIuCgp1cGRhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCIQCg5HZXRNeVhwUmVxdWVzdCJiCg9HZXRNeVhwUmVzcG9uc2USTwoKeHBfc3VtbWFyeRgBIAEoCzI7LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmdhbWlmaWNhdGlvbi52MS5tZXNzYWdlLlVzZXJYcFN1bW1hcnkiNgoTR2V0WHBIaXN0b3J5UmVxdWVzdBIMCgRwYWdlGAEgASgFEhEKCXBhZ2Vfc2l6ZRgCIAEoBSKbAQoUR2V0WHBIaXN0b3J5UmVzcG9uc2USTQoHZW50cmllcxgBIAMoCzI8LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmdhbWlmaWNhdGlvbi52MS5tZXNzYWdlLlhwSGlzdG9yeUVudHJ5EhMKC3RvdGFsX2NvdW50GAIgASgFEgwKBHBhZ2UYAyABKAUSEQoJcGFnZV9zaXplGAQgASgFIhIKEEdldFN0cmVha1JlcXVlc3QiaAoRR2V0U3RyZWFrUmVzcG9uc2USUwoOc3RyZWFrX3N1bW1hcnkYASABKAsyOy5jb250cmFjdHMuc3VwcG9ydGluZy5nYW1pZmljYXRpb24udjEubWVzc2FnZS5TdHJlYWtTdW1tYXJ5Ii0KF0dldFN0cmVha0hpc3RvcnlSZXF1ZXN0EhIKCmxpbWl0X2RheXMYASABKAUibQoYR2V0U3RyZWFrSGlzdG9yeVJlc3BvbnNlElEKB2VudHJpZXMYASADKAsyQC5jb250cmFjdHMuc3VwcG9ydGluZy5nYW1pZmljYXRpb24udjEubWVzc2FnZS5TdHJlYWtIaXN0b3J5RW50cnkiLAobR2V0R2xvYmFsTGVhZGVyYm9hcmRSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFIsgBChxHZXRHbG9iYWxMZWFkZXJib2FyZFJlc3BvbnNlElMKC3RvcF9lbnRyaWVzGAEgAygLMj4uY29udHJhY3RzLnN1cHBvcnRpbmcuZ2FtaWZpY2F0aW9uLnYxLm1lc3NhZ2UuTGVhZGVyYm9hcmRFbnRyeRJTCgtteV9zdGFuZGluZxgCIAEoCzI+LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmdhbWlmaWNhdGlvbi52MS5tZXNzYWdlLkxlYWRlcmJvYXJkRW50cnkiwQEKCUJhZGdlSXRlbRISCgpiYWRnZV9jb2RlGAEgASgJEgwKBG5hbWUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSEAoIY2F0ZWdvcnkYBCABKAkSEAoIaWNvbl91cmwYBSABKAkSEwoLaXNfdW5sb2NrZWQYBiABKAgSNAoLdW5sb2NrZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSACIAQFCDgoMX3VubG9ja2VkX2F0IhQKEkdldE15QmFkZ2VzUmVxdWVzdCKPAQoTR2V0TXlCYWRnZXNSZXNwb25zZRJHCgZiYWRnZXMYASADKAsyNy5jb250cmFjdHMuc3VwcG9ydGluZy5nYW1pZmljYXRpb24udjEubWVzc2FnZS5CYWRnZUl0ZW0SFgoOdG90YWxfdW5sb2NrZWQYAiABKAUSFwoPdG90YWxfYXZhaWxhYmxlGAMgASgFIq0CCgtMZWRnZXJFbnRyeRIKCgJpZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEg4KBmFtb3VudBgDIAEoAxIVCg1iYWxhbmNlX2FmdGVyGAQgASgDEg4KBnJlYXNvbhgFIAEoCRIZCgxyZWZlcmVuY2VfaWQYBiABKAlIAIgBARIXCg9pZGVtcG90ZW5jeV9rZXkYByABKAkSFQoNYWN0aXZpdHlfZGF0ZRgIIAEoCRIVCghhZG1pbl9pZBgJIAEoCUgBiAEBEhEKBG5vdGUYCiABKAlIAogBARIuCgpjcmVhdGVkX2F0GAsgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIPCg1fcmVmZXJlbmNlX2lkQgsKCV9hZG1pbl9pZEIHCgVfbm90ZSISChBHZXRXYWxsZXRSZXF1ZXN0ImUKEUdldFdhbGxldFJlc3BvbnNlEg8KB3VzZXJfaWQYASABKAkSDwoHYmFsYW5jZRgCIAEoAxIuCgp1cGRhdGVkX2F0GAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCI4ChdMaXN0VHJhbnNhY3Rpb25zUmVxdWVzdBINCgVsaW1pdBgBIAEoBRIOCgZjdXJzb3IYAiABKAkiewoYTGlzdFRyYW5zYWN0aW9uc1Jlc3BvbnNlEkoKB2VudHJpZXMYASADKAsyOS5jb250cmFjdHMuc3VwcG9ydGluZy5nYW1pZmljYXRpb24udjEubWVzc2FnZS5MZWRnZXJFbnRyeRITCgtuZXh0X2N1cnNvchgCIAEoCSJwChFTcGVuZENvaW5zUmVxdWVzdBIOCgZhbW91bnQYASABKAMSDgoGcmVhc29uGAIgASgJEhQKDHJlZmVyZW5jZV9pZBgDIAEoCRIXCg9pZGVtcG90ZW5jeV9rZXkYBCABKAkSDAoEbm90ZRgFIAEoCSJDChJTcGVuZENvaW5zUmVzcG9uc2USFQoNYmFsYW5jZV9hZnRlchgBIAEoAxIWCg50cmFuc2FjdGlvbl9pZBgCIAEoCSJ4ChdBZG1pbkFkanVzdENvaW5zUmVxdWVzdBIWCg50YXJnZXRfdXNlcl9pZBgBIAEoCRIOCgZhbW91bnQYAiABKAMSDgoGcmVhc29uGAMgASgJEhcKD2lkZW1wb3RlbmN5X2tleRgEIAEoCRIMCgRub3RlGAUgASgJIkkKGEFkbWluQWRqdXN0Q29pbnNSZXNwb25zZRIVCg1iYWxhbmNlX2FmdGVyGAEgASgDEhYKDnRyYW5zYWN0aW9uX2lkGAIgASgJQnlad2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvZ2FtaWZpY2F0aW9uL3YxL21lc3NhZ2U7Z2FtaWZpY2F0aW9udjFtZXNzYWdlYgZwcm90bzM", [file_google_protobuf_timestamp]);
 
 /**
  * UserXpSummary chứa thông tin tổng hợp về điểm kinh nghiệm và cấp độ của người dùng.
@@ -554,4 +554,285 @@ export type GetMyBadgesResponse = Message<"contracts.supporting.gamification.v1.
  */
 export const GetMyBadgesResponseSchema: GenMessage<GetMyBadgesResponse> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 17);
+
+/**
+ * LedgerEntry biểu diễn một bút toán bất biến trong sổ cái FitCoins.
+ *
+ * @generated from message contracts.supporting.gamification.v1.message.LedgerEntry
+ */
+export type LedgerEntry = Message<"contracts.supporting.gamification.v1.message.LedgerEntry"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string user_id = 2;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: int64 amount = 3;
+   */
+  amount: bigint;
+
+  /**
+   * @generated from field: int64 balance_after = 4;
+   */
+  balanceAfter: bigint;
+
+  /**
+   * @generated from field: string reason = 5;
+   */
+  reason: string;
+
+  /**
+   * @generated from field: optional string reference_id = 6;
+   */
+  referenceId?: string | undefined;
+
+  /**
+   * @generated from field: string idempotency_key = 7;
+   */
+  idempotencyKey: string;
+
+  /**
+   * YYYY-MM-DD
+   *
+   * @generated from field: string activity_date = 8;
+   */
+  activityDate: string;
+
+  /**
+   * @generated from field: optional string admin_id = 9;
+   */
+  adminId?: string | undefined;
+
+  /**
+   * @generated from field: optional string note = 10;
+   */
+  note?: string | undefined;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 11;
+   */
+  createdAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.LedgerEntry.
+ * Use `create(LedgerEntrySchema)` to create a new message.
+ */
+export const LedgerEntrySchema: GenMessage<LedgerEntry> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 18);
+
+/**
+ * Request / Response cho API GetWallet
+ *
+ * @generated from message contracts.supporting.gamification.v1.message.GetWalletRequest
+ */
+export type GetWalletRequest = Message<"contracts.supporting.gamification.v1.message.GetWalletRequest"> & {
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.GetWalletRequest.
+ * Use `create(GetWalletRequestSchema)` to create a new message.
+ */
+export const GetWalletRequestSchema: GenMessage<GetWalletRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 19);
+
+/**
+ * @generated from message contracts.supporting.gamification.v1.message.GetWalletResponse
+ */
+export type GetWalletResponse = Message<"contracts.supporting.gamification.v1.message.GetWalletResponse"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: int64 balance = 2;
+   */
+  balance: bigint;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp updated_at = 3;
+   */
+  updatedAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.GetWalletResponse.
+ * Use `create(GetWalletResponseSchema)` to create a new message.
+ */
+export const GetWalletResponseSchema: GenMessage<GetWalletResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 20);
+
+/**
+ * Request / Response cho API ListTransactions (Cursor Pagination)
+ *
+ * @generated from message contracts.supporting.gamification.v1.message.ListTransactionsRequest
+ */
+export type ListTransactionsRequest = Message<"contracts.supporting.gamification.v1.message.ListTransactionsRequest"> & {
+  /**
+   * @generated from field: int32 limit = 1;
+   */
+  limit: number;
+
+  /**
+   * @generated from field: string cursor = 2;
+   */
+  cursor: string;
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.ListTransactionsRequest.
+ * Use `create(ListTransactionsRequestSchema)` to create a new message.
+ */
+export const ListTransactionsRequestSchema: GenMessage<ListTransactionsRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 21);
+
+/**
+ * @generated from message contracts.supporting.gamification.v1.message.ListTransactionsResponse
+ */
+export type ListTransactionsResponse = Message<"contracts.supporting.gamification.v1.message.ListTransactionsResponse"> & {
+  /**
+   * @generated from field: repeated contracts.supporting.gamification.v1.message.LedgerEntry entries = 1;
+   */
+  entries: LedgerEntry[];
+
+  /**
+   * @generated from field: string next_cursor = 2;
+   */
+  nextCursor: string;
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.ListTransactionsResponse.
+ * Use `create(ListTransactionsResponseSchema)` to create a new message.
+ */
+export const ListTransactionsResponseSchema: GenMessage<ListTransactionsResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 22);
+
+/**
+ * Request / Response cho API SpendCoins
+ *
+ * @generated from message contracts.supporting.gamification.v1.message.SpendCoinsRequest
+ */
+export type SpendCoinsRequest = Message<"contracts.supporting.gamification.v1.message.SpendCoinsRequest"> & {
+  /**
+   * @generated from field: int64 amount = 1;
+   */
+  amount: bigint;
+
+  /**
+   * @generated from field: string reason = 2;
+   */
+  reason: string;
+
+  /**
+   * @generated from field: string reference_id = 3;
+   */
+  referenceId: string;
+
+  /**
+   * @generated from field: string idempotency_key = 4;
+   */
+  idempotencyKey: string;
+
+  /**
+   * @generated from field: string note = 5;
+   */
+  note: string;
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.SpendCoinsRequest.
+ * Use `create(SpendCoinsRequestSchema)` to create a new message.
+ */
+export const SpendCoinsRequestSchema: GenMessage<SpendCoinsRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 23);
+
+/**
+ * @generated from message contracts.supporting.gamification.v1.message.SpendCoinsResponse
+ */
+export type SpendCoinsResponse = Message<"contracts.supporting.gamification.v1.message.SpendCoinsResponse"> & {
+  /**
+   * @generated from field: int64 balance_after = 1;
+   */
+  balanceAfter: bigint;
+
+  /**
+   * @generated from field: string transaction_id = 2;
+   */
+  transactionId: string;
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.SpendCoinsResponse.
+ * Use `create(SpendCoinsResponseSchema)` to create a new message.
+ */
+export const SpendCoinsResponseSchema: GenMessage<SpendCoinsResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 24);
+
+/**
+ * Request / Response cho API AdminAdjustCoins
+ *
+ * @generated from message contracts.supporting.gamification.v1.message.AdminAdjustCoinsRequest
+ */
+export type AdminAdjustCoinsRequest = Message<"contracts.supporting.gamification.v1.message.AdminAdjustCoinsRequest"> & {
+  /**
+   * @generated from field: string target_user_id = 1;
+   */
+  targetUserId: string;
+
+  /**
+   * @generated from field: int64 amount = 2;
+   */
+  amount: bigint;
+
+  /**
+   * @generated from field: string reason = 3;
+   */
+  reason: string;
+
+  /**
+   * @generated from field: string idempotency_key = 4;
+   */
+  idempotencyKey: string;
+
+  /**
+   * @generated from field: string note = 5;
+   */
+  note: string;
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.AdminAdjustCoinsRequest.
+ * Use `create(AdminAdjustCoinsRequestSchema)` to create a new message.
+ */
+export const AdminAdjustCoinsRequestSchema: GenMessage<AdminAdjustCoinsRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 25);
+
+/**
+ * @generated from message contracts.supporting.gamification.v1.message.AdminAdjustCoinsResponse
+ */
+export type AdminAdjustCoinsResponse = Message<"contracts.supporting.gamification.v1.message.AdminAdjustCoinsResponse"> & {
+  /**
+   * @generated from field: int64 balance_after = 1;
+   */
+  balanceAfter: bigint;
+
+  /**
+   * @generated from field: string transaction_id = 2;
+   */
+  transactionId: string;
+};
+
+/**
+ * Describes the message contracts.supporting.gamification.v1.message.AdminAdjustCoinsResponse.
+ * Use `create(AdminAdjustCoinsResponseSchema)` to create a new message.
+ */
+export const AdminAdjustCoinsResponseSchema: GenMessage<AdminAdjustCoinsResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_gamification_v1_message_gamification_messages, 26);
 

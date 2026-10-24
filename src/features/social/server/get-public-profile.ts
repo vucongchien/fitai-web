@@ -6,7 +6,7 @@ import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
 
 import { mapFeedItem, mapSocialSummary } from "../model/social.mapper";
-import type { PublicProfileVM } from "../model/social.types";
+import { PublicProfileVM } from "../model/social.types";
 
 export async function getPublicProfile(userId: string): Promise<PublicProfileVM> {
   const accessToken = await getAccessToken();
@@ -33,15 +33,20 @@ export async function getPublicProfile(userId: string): Promise<PublicProfileVM>
   const feedNextCursor =
     feedResult.status === "fulfilled" ? feedResult.value.nextCursor : "";
 
-  // authorName và avatar lấy từ bài đầu tiên nếu có, fallback về userId
   const firstItem = feedItems[0];
+  const fallbackName = userId ? `Athlete ${userId.slice(-4)}` : "Athlete";
+  const authorName = summary.fullName || firstItem?.authorName || fallbackName;
+  const authorAvatarUrl = summary.avatarUrl || firstItem?.authorAvatarUrl || "";
 
-  return {
+  const profile = new PublicProfileVM({
     userId,
-    authorName: firstItem?.authorName ?? userId,
-    authorAvatarUrl: firstItem?.authorAvatarUrl ?? "",
+    authorName,
+    authorAvatarUrl,
     summary,
     feedItems,
     feedNextCursor,
-  };
+  });
+
+  // Next.js RSC boundary requires plain objects across Server/Client boundary
+  return JSON.parse(JSON.stringify(profile));
 }

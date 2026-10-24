@@ -72,13 +72,16 @@ describe("social mapper", () => {
   });
 
   describe("mapSocialSummary", () => {
-    it("converts social summary proto response into ViewModel", () => {
+    it("converts social summary proto response into ViewModel with identity fields", () => {
       const protoRes: any = {
         userId: "user-xyz",
         followerCount: 42,
         followingCount: 15,
         postCount: 8,
         isFollowing: true,
+        fullName: "Hoàng Nam",
+        avatarUrl: "https://example.com/nam.jpg",
+        role: "coach",
       };
 
       const result = mapSocialSummary(protoRes);
@@ -89,6 +92,32 @@ describe("social mapper", () => {
         followingCount: 15,
         postCount: 8,
         isFollowing: true,
+        fullName: "Hoàng Nam",
+        avatarUrl: "https://example.com/nam.jpg",
+        role: "coach",
+      });
+    });
+
+    it("falls back gracefully when optional identity fields are missing", () => {
+      const protoRes: any = {
+        userId: "user-empty",
+        followerCount: 0,
+        followingCount: 0,
+        postCount: 0,
+        isFollowing: false,
+      };
+
+      const result = mapSocialSummary(protoRes);
+
+      expect(result).toEqual({
+        userId: "user-empty",
+        followerCount: 0,
+        followingCount: 0,
+        postCount: 0,
+        isFollowing: false,
+        fullName: "",
+        avatarUrl: "",
+        role: "user",
       });
     });
   });

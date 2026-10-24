@@ -6,19 +6,19 @@ import Link from "next/link";
 import { Heart, MessageCircle, MoreHorizontal, Send, Trash2 } from "lucide-react";
 
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
-import type { CommentVM } from "../model/social.types";
+import { CommentVM } from "../model/social.types";
 
 export interface ThreadCommentWithReplies extends CommentVM {
   replies?: CommentVM[];
 }
 
-interface Props {
+type Props = {
   comment: ThreadCommentWithReplies;
   postAuthorId: string;
   currentUserId?: string;
   onReply: (targetComment: CommentVM) => void;
   onDelete?: (commentId: string) => void;
-}
+};
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();

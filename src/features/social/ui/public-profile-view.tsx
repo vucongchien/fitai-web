@@ -8,10 +8,10 @@ import { FeedList } from "./feed-list";
 import { FollowButton } from "./follow-button";
 import type { PublicProfileVM } from "../model/social.types";
 
-interface Props {
+type Props = {
   profile: PublicProfileVM;
   currentUserId?: string;
-}
+};
 
 function formatFollowers(count: number): string {
   if (count >= 1_000_000) {
@@ -60,7 +60,6 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
 
   const profileHeader = (
     <div className="bg-white">
-      {/* 1. Header Info Row (Name, bio on left; Large avatar on right) */}
       <div className="px-5 sm:px-6 pt-6 pb-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
@@ -70,25 +69,8 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
             <p className="text-[14px] text-neutral-500 font-normal mt-0.5">
               {handle}
             </p>
-
-            {/* Bio */}
-            <p className="mt-3 text-[14.5px] text-neutral-900 leading-relaxed whitespace-pre-line">
-              Dedicated to strength, form, and consistency.{"\n"}
-              Pushing limits every session.
-            </p>
-
-            {/* Custom Link */}
-            <a
-              href={`https://fitai.app/${handle}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 text-sm font-semibold text-neutral-900 block hover:underline"
-            >
-              fitai.app/{handle}
-            </a>
           </div>
 
-          {/* Large circular avatar — NO blue badge, NO checkmark */}
           <div className="relative h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-neutral-200/90 bg-neutral-100">
             <Image
               src={avatarSrc}
@@ -101,7 +83,6 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
           </div>
         </div>
 
-        {/* 2. Stats & Utility icons row — NO recent views */}
         <div className="mt-4 flex items-center justify-between text-neutral-500">
           <span className="text-[14px] text-neutral-400 font-normal">
             {formatFollowers(followerCount)} {followerCount === 1 ? "follower" : "followers"}
@@ -132,7 +113,6 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
           </div>
         </div>
 
-        {/* 3. Action Buttons Row (Follow & Message, or Edit & Share) */}
         <div className="mt-4 flex items-center gap-3">
           {!isOwnProfile ? (
             <>
@@ -170,7 +150,6 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
         </div>
       </div>
 
-      {/* 4. Tabs Bar (Threads, Replies, Media) */}
       <div className="flex border-b border-neutral-200 bg-white">
         {(
           [
@@ -201,14 +180,12 @@ export function PublicProfileView({ profile, currentUserId }: Props) {
   );
 
   return (
-    <div className="min-h-screen bg-canvas">
-      <FeedList
-        initialItems={activeTab === "threads" ? profile.feedItems : []}
-        initialNextCursor={activeTab === "threads" ? profile.feedNextCursor : ""}
-        currentUserId={currentUserId}
-        profileUserId={profile.userId}
-        header={profileHeader}
-      />
-    </div>
+    <FeedList
+      initialItems={activeTab === "threads" ? profile.feedItems : []}
+      initialNextCursor={activeTab === "threads" ? profile.feedNextCursor : ""}
+      currentUserId={currentUserId}
+      profileUserId={profile.userId}
+      header={profileHeader}
+    />
   );
 }
