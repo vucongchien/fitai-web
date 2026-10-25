@@ -57,10 +57,18 @@ async function runE2E() {
 
   // 1. AUTH: Login as Admin
   await recordCheck("Auth", "Admin Login via ConnectRPC", async () => {
-    const res = await publicAuthClient.login({
-      identifier: "bot.hung@fitai.bot",
-      password: "FitAIBot@2026!",
-    });
+    let res;
+    try {
+      res = await publicAuthClient.login({
+        identifier: "admin@fitai.vn",
+        password: "FitAIBot@2026!",
+      });
+    } catch {
+      res = await publicAuthClient.login({
+        identifier: "bot.hung@fitai.bot",
+        password: "FitAIBot@2026!",
+      });
+    }
     accessToken = res.accessToken;
     adminUserId = res.userId;
     if (!accessToken) throw new Error("No access token returned");
