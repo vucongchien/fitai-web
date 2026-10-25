@@ -110,7 +110,10 @@ function runLint(changedFiles) {
   let targetArgs = ["."];
   if (!isAll) {
     const lintFiles = changedFiles.filter(
-      (f) => /\.(jsx?|tsx?|mjs|cjs)$/.test(f) && fs.existsSync(path.join(CWD, f)),
+      (f) =>
+        /\.(jsx?|tsx?|mjs|cjs)$/.test(f) &&
+        fs.existsSync(path.join(CWD, f)) &&
+        !f.startsWith("src/shared/api/gen/"),
     );
     if (lintFiles.length === 0) {
       printSkip("lint", "no staged JS/TS files");
