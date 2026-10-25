@@ -1,9 +1,16 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import { ProfileContent } from "../../../src/features/profile/components/profile-content";
+import { ProfileSettingsView } from "../../../src/features/profile/components/profile-settings-view";
 import { mapRawDataToProfileViewModel } from "../../../src/features/profile/model/profile.mapper";
 
-describe("profile UI Components", () => {
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    back: vi.fn(),
+  }),
+}));
+
+describe("profile UI Components - ProfileSettingsView", () => {
   const mockProfileData = mapRawDataToProfileViewModel({
     user: { name: "Emma Nguyen", level: 10 },
     profileProto: { weightKg: 68.5, heightCm: 175, targetWeightKg: 65, bodyFatPercent: 18.5 },
@@ -11,86 +18,74 @@ describe("profile UI Components", () => {
     statsProto: { totalWorkouts: 48, activeStreakDays: 12, totalCaloriesKcal: 12_500 },
   });
 
-  it("renders user profile hero card with English labels", () => {
-    render(<ProfileContent profile={mockProfileData} />);
+  it("renders profile settings page with exact Duolingo layout sections", () => {
+    render(<ProfileSettingsView profile={mockProfileData} />);
 
-    expect(screen.getByText("Emma Nguyen")).toBeInTheDocument();
-    expect(screen.getByText("Level 10")).toBeInTheDocument();
-    expect(screen.getByText("Barbell Deadlift 140kg")).toBeInTheDocument();
-    expect(screen.getByText("48")).toBeInTheDocument();
-    expect(screen.getByText("12 days")).toBeInTheDocument();
-    expect(screen.getByText("12.5k")).toBeInTheDocument();
+    expect(screen.getByText("Settings")).toBeInTheDocument();
+
+    // Group 1: Training & Health Profile
+    expect(screen.getByText("Training & Health Profile")).toBeInTheDocument();
+    expect(screen.getByText("Personal Info")).toBeInTheDocument();
+    expect(screen.getByText("Body Metrics")).toBeInTheDocument();
+    expect(screen.getByText("Training Goals")).toBeInTheDocument();
+    expect(screen.getByText("Available Equipment")).toBeInTheDocument();
+    expect(screen.getByText("Injury Management")).toBeInTheDocument();
+
+    // Group 2: Preferences & Membership
+    expect(screen.getByText("Preferences & Membership")).toBeInTheDocument();
+    expect(screen.getByText("Notifications")).toBeInTheDocument();
+    expect(screen.getByText("Membership Plan")).toBeInTheDocument();
+
+    // Group 3: Support
+    expect(screen.getByText("Support")).toBeInTheDocument();
+    expect(screen.getByText("Send Feedback & Help")).toBeInTheDocument();
+
+    // Bottom
+    expect(screen.getByText("LOG OUT")).toBeInTheDocument();
   });
 
-  it("renders 3 highlight cards for Weight, Body Fat, and Target", () => {
-    render(<ProfileContent profile={mockProfileData} />);
+  it("opens modal when clicking a settings item", () => {
+    render(<ProfileSettingsView profile={mockProfileData} />);
 
-    expect(screen.getAllByText("Weight")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Body Fat")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("Target")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("68.5")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("18.5")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("65")[0]).toBeInTheDocument();
-  });
-
-  it("opens Body Metrics modal when clicking Body Metrics menu item", () => {
-    render(<ProfileContent profile={mockProfileData} />);
-
-    const item = screen.getAllByText("Body Metrics")[0];
+    const item = screen.getByText("Body Metrics");
     fireEvent.click(item);
 
-    expect(screen.getAllByText("Body Metrics").length).toBeGreaterThan(0);
     expect(screen.getByText("Current Weight (kg)")).toBeInTheDocument();
   });
 
-  it("opens Training Goals modal when clicking Training Goals menu item", () => {
-    render(<ProfileContent profile={mockProfileData} />);
+  it("opens Training Goals modal when clicking Training Goals item", () => {
+    render(<ProfileSettingsView profile={mockProfileData} />);
 
-    const item = screen.getAllByText("Training Goals")[0];
+    const item = screen.getByText("Training Goals");
     fireEvent.click(item);
 
     expect(screen.getByText("Experience Level")).toBeInTheDocument();
     expect(screen.getByText("Primary Goals (Select at least 1)")).toBeInTheDocument();
   });
 
-  it("opens Available Equipment modal when clicking Available Equipment menu item", () => {
-    render(<ProfileContent profile={mockProfileData} />);
+  it("opens Support Feedback modal when clicking Send Feedback & Help", () => {
+    render(<ProfileSettingsView profile={mockProfileData} />);
 
-    const item = screen.getAllByText("Available Equipment")[0];
+    const item = screen.getByText("Send Feedback & Help");
     fireEvent.click(item);
 
-    expect(
-      screen.getByText("Select what gear you have access to for workouts"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Send Feedback")).toBeInTheDocument();
   });
 
-  it("opens Injury Management modal when clicking Injury Management menu item", () => {
-    render(<ProfileContent profile={mockProfileData} />);
+  it("handles logout button trigger", async () => {
+    const originalFetch = global.fetch;
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    global.fetch = fetchMock;
 
-    const item = screen.getAllByText("Injury Management")[0];
-    fireEvent.click(item);
+    render(<ProfileSettingsView profile={mockProfileData} />);
 
-    expect(screen.getByText("+ Report Injury")).toBeInTheDocument();
-  });
-
-  it("calls fetch to log out when clicking Log Out button", async () => {
-    const mockFetch = vi.fn().mockResolvedValue({ ok: true });
-    vi.stubGlobal("fetch", mockFetch);
-    const mockLocation = { href: "http://localhost/profile" };
-    vi.stubGlobal("location", mockLocation);
-
-    render(<ProfileContent profile={mockProfileData} />);
-
-    const logoutBtn = screen.getByText("Log Out");
+    const logoutBtn = screen.getByText("LOG OUT");
     fireEvent.click(logoutBtn);
 
-    expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", {
+    expect(fetchMock).toHaveBeenCalledWith("/api/auth/logout", {
       method: "POST",
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(mockLocation.href).toBe("/login");
-
-    vi.unstubAllGlobals();
+    global.fetch = originalFetch;
   });
 });

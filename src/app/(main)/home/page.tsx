@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 
+import { HeaderGamificationChips } from "@/features/gamification/ui/header-gamification-chips";
 import { getHomePageData } from "@/features/home/server/get-home-page-data";
 import { HomeView } from "@/features/home/ui/home-view";
-import { TodayHeader, TodayStreakBadge } from "@/features/home/ui/today-header";
+import { TodayHeader } from "@/features/home/ui/today-header";
 import { PageTransition } from "@/shared/ui/page-transition";
 
 export const metadata = { title: "Home — Today" };
@@ -11,7 +12,11 @@ async function HomeContent() {
   const data = await getHomePageData();
   return (
     <>
-      <TodayStreakBadge streakDays={data.streak.days} />
+      <HeaderGamificationChips
+        streakDays={data.gamification?.streakDays ?? data.streak.days}
+        isActiveToday={data.gamification?.isActiveToday ?? false}
+        coins={data.gamification?.coins ?? 0}
+      />
       <HomeView data={data} />
     </>
   );

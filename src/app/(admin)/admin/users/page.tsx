@@ -22,7 +22,7 @@ const userKey = (user: AdminUser) => user.userId;
 
 interface UserColumnHandlers {
   onView: (user: AdminUser) => void;
-  onToggleStatus: (userId: string) => void;
+  onToggleStatus: (userId: string, currentStatus?: AdminUser["status"]) => void;
   isToggling: boolean;
 }
 
@@ -112,7 +112,7 @@ function buildUserColumns({
             disabled={isToggling}
             onClick={(e) => {
               e.stopPropagation();
-              onToggleStatus(u.userId);
+              onToggleStatus(u.userId, u.status);
             }}
             className={`px-2.5 py-1.5 rounded-[var(--radius-input)] text-xs font-bold inline-flex items-center gap-1 border transition-colors cursor-pointer ${
               u.status === "active"
@@ -174,7 +174,13 @@ export default function AdminUsersPage() {
 
   // Toggle Ban / Unban Mutation
   const toggleMutation = useMutation({
-    mutationFn: (id: string) => toggleUserStatus(id),
+    mutationFn: ({
+      userId,
+      currentStatus,
+    }: {
+      userId: string;
+      currentStatus?: AdminUser["status"];
+    }) => toggleUserStatus(userId, currentStatus),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
@@ -194,8 +200,8 @@ export default function AdminUsersPage() {
   }, [refetch]);
 
   const handleToggleStatus = useCallback(
-    async (userId: string) => {
-      await toggleMutation.mutateAsync(userId);
+    async (userId: string, currentStatus?: AdminUser["status"]) => {
+      await toggleMutation.mutateAsync({ userId, currentStatus });
     },
     [toggleMutation],
   );

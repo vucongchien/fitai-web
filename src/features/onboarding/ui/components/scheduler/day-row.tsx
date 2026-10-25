@@ -77,9 +77,9 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
   };
 
   return (
-    <div className="py-2.5 px-3 sm:px-4 flex items-center justify-between gap-3 text-xs transition-colors hover:bg-[var(--color-surface-subtle)]">
+    <div className="py-2.5 px-3 sm:px-4 flex items-start justify-between gap-3 text-xs transition-colors hover:bg-[var(--color-surface-subtle)]">
       {/* Day Label (3 letters) & iOS Toggle Switch */}
-      <div className="flex items-center gap-2.5 w-20 sm:w-24 shrink-0">
+      <div className="flex items-center gap-2.5 w-20 sm:w-24 shrink-0 h-8.5">
         <button
           type="button"
           onClick={handleToggle}
@@ -109,12 +109,12 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
         </span>
       </div>
 
-      {/* Time Ranges (Inline row) or Rest Day */}
-      <div className="flex-1 flex items-center justify-end sm:justify-start gap-2 overflow-x-auto no-scrollbar">
+      {/* Time Ranges (Stacked rows) or Rest Day */}
+      <div className="flex-1 flex justify-end sm:justify-start">
         {state.enabled && state.ranges.length > 0 ? (
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <div className="flex flex-col gap-2 w-full sm:w-auto items-end sm:items-start">
             {state.ranges.map((range, index) => (
-              <div key={range.id} className="flex items-center gap-1.5 shrink-0">
+              <div key={range.id} className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap">
                 {/* Start Time Select */}
                 <select
                   value={range.start}
@@ -157,7 +157,7 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
                 </button>
 
                 {/* Add Next Slot Button */}
-                {index === state.ranges.length - 1 && (
+                {index === state.ranges.length - 1 ? (
                   <button
                     type="button"
                     onClick={handleAddRange}
@@ -167,14 +167,18 @@ export function DayRow({ day, label, state, options, onChange }: DayRowProps) {
                   >
                     <Plus className="w-4.5 h-4.5" />
                   </button>
+                ) : (
+                  <div className="w-8.5 h-8.5 hidden sm:block" />
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <span className="text-xs text-[var(--color-text-muted)] font-medium py-1.5 select-none">
-            Rest
-          </span>
+          <div className="h-8.5 flex items-center">
+            <span className="text-xs text-[var(--color-text-muted)] font-medium select-none">
+              Rest
+            </span>
+          </div>
         )}
       </div>
     </div>

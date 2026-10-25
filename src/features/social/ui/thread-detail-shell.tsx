@@ -7,6 +7,7 @@ import { BackButton } from "@/shared/ui/back-button";
 
 import { getCachedFeedItem } from "../lib/post-cache";
 import type { CommentVM, FeedItemVM } from "../model/social.types";
+import { SocialContainer } from "./social-container";
 import { ThreadView } from "./thread-view";
 
 interface Props {
@@ -26,10 +27,7 @@ export function ThreadDetailShell({
   currentUserAvatar,
   currentUserName,
 }: Props) {
-  // Use server post, or fallback to client cached post
   const [post] = useState<FeedItemVM | null>(() => serverPost ?? getCachedFeedItem(postId));
-
-  // React 19 `use()` unwraps the comments promise seamlessly
   const { comments } = use(commentsPromise);
 
   if (!post) {
@@ -49,15 +47,13 @@ export function ThreadDetailShell({
     );
   }
 
-  // Calculate approximate views for header subtext (Image 1: 2.7K views)
   const viewsCount = Math.max(post.reactionCount * 18 + 124, 270);
   const formattedViews =
     viewsCount >= 1000 ? `${(viewsCount / 1000).toFixed(1)}K views` : `${viewsCount} views`;
 
   return (
-    <div className="max-w-[620px] w-full mx-auto">
-      {/* 1. Header (Image 1 & 2: ← Thread, views, (···)) */}
-      <div className="flex items-center justify-between px-2 sm:px-0 mb-3">
+    <div className="max-w-[640px] w-full mx-auto">
+      <div className="flex items-center justify-between px-4 sm:px-0 mb-3">
         <div className="flex items-center gap-4">
           <BackButton fallbackHref="/community" ariaLabel="Back" />
           <div>
@@ -77,8 +73,7 @@ export function ThreadDetailShell({
         </button>
       </div>
 
-      {/* 2. Main Thread Card (Desktop bordered, Mobile clean) */}
-      <div className="bg-white sm:rounded-[24px] sm:border sm:border-neutral-200/90 overflow-hidden sm:shadow-xs">
+      <SocialContainer hasDividers={false}>
         <ThreadView
           post={post}
           initialComments={comments}
@@ -86,7 +81,7 @@ export function ThreadDetailShell({
           currentUserAvatar={currentUserAvatar}
           currentUserName={currentUserName}
         />
-      </div>
+      </SocialContainer>
     </div>
   );
 }

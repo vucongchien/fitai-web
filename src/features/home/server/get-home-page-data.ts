@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
 import type { ExerciseSummary } from "@/features/exercise/domain/exercise";
+import { getHomeGamificationData } from "@/features/gamification/server/get-gamification";
 import type {
   EvidenceItem,
   FeaturedExerciseItem,
@@ -218,6 +219,7 @@ export async function getHomePageData(): Promise<HomePageData> {
         catalog,
         nutHistoryRes,
         localMealsRes,
+        gamificationRes,
       ] = await Promise.allSettled([
         coachingClient.getActiveRoadmap({ userId: userId || "" }),
         nutritionClient.getNutritionSummary({ userId: userId || "" }),
@@ -234,6 +236,7 @@ export async function getHomePageData(): Promise<HomePageData> {
             })
           : Promise.resolve({ meals: [] }),
         readLocalMeals(),
+        getHomeGamificationData(),
       ]);
 
       const roadmap = roadmapRes.status === "fulfilled" ? roadmapRes.value.roadmap : undefined;
@@ -510,10 +513,15 @@ export async function getHomePageData(): Promise<HomePageData> {
       const coachNote = activeSession?.reasoning || null;
 
       const streakDays = calculateConsecutiveStreakDays(history);
+      const gamification =
+        gamificationRes.status === "fulfilled"
+          ? gamificationRes.value
+          : { streakDays, isActiveToday: false, coins: 0 };
 
       return {
         hasActiveRoadmap: Boolean(roadmap?.weekPlans?.length),
-        streak: { days: streakDays },
+        streak: { days: gamification.streakDays || streakDays },
+        gamification,
         coachNote,
         userName,
         profileCompletionRate: completionRate,
@@ -620,6 +628,7 @@ export async function getHomePageData(): Promise<HomePageData> {
   return {
     hasActiveRoadmap: false,
     streak: { days: 0 },
+    gamification: { streakDays: 0, isActiveToday: false, coins: 0 },
     coachNote: null,
     userName,
     profileCompletionRate: computedRate,
