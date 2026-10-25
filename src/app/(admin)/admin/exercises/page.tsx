@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Archive, CheckCircle2, Dumbbell, Pencil, Plus, Trash2 } from "lucide-react";
+import { Archive, CheckCircle2, Dumbbell, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
@@ -11,6 +11,7 @@ import {
   createExercise,
   deleteExercise,
   fetchAdminExercises,
+  restoreExercise,
 } from "@/features/admin/api/admin-exercise-service";
 import type { AdminExercise, ExerciseAdminFilters } from "@/features/admin/domain/admin-types";
 import {
@@ -29,18 +30,22 @@ const exerciseKey = (exercise: AdminExercise) => exercise.id;
 interface ExerciseColumnHandlers {
   onApprove: (id: string) => void;
   onArchive: (id: string) => void;
+  onRestore: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (event: React.MouseEvent, exercise: AdminExercise) => void;
   isApproving: boolean;
   isArchiving: boolean;
+  isRestoring: boolean;
 }
 
 // Column definitions kept at module scope to avoid re-creation on render.
 function buildExerciseColumns({
   isApproving,
   isArchiving,
+  isRestoring,
   onApprove,
   onArchive,
+  onRestore,
   onDelete,
   onEdit,
 }: ExerciseColumnHandlers): Column<AdminExercise>[] {
@@ -131,6 +136,23 @@ function buildExerciseColumns({
             </button>
           )}
 
+          {/* Restore Action */}
+          {ex.status === "archived" && (
+            <button
+              type="button"
+              title="Restore Exercise"
+              disabled={isRestoring}
+              onClick={(e) => {
+                e.stopPropagation();
+                onRestore(ex.id);
+              }}
+              className="px-2.5 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] hover:opacity-90 text-[var(--color-action)] border border-[color-mix(in_srgb,var(--color-action)_25%,transparent)] text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <RotateCcw className="size-3.5" />
+              <span>Restore</span>
+            </button>
+          )}
+
           {/* Edit / View Route Navigation */}
           <button
             type="button"
@@ -205,6 +227,13 @@ export default function AdminExercisesPage() {
     },
   });
 
+  const restoreMutation = useMutation({
+    mutationFn: (id: string) => restoreExercise(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-exercises"] });
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteExercise(id),
     onSuccess: () => {
@@ -247,6 +276,8 @@ export default function AdminExercisesPage() {
 
   const handleArchive = useCallback((id: string) => archiveMutation.mutate(id), [archiveMutation]);
 
+  const handleRestore = useCallback((id: string) => restoreMutation.mutate(id), [restoreMutation]);
+
   const handleEdit = useCallback((id: string) => router.push(`/admin/exercises/${id}`), [router]);
 
   const handleResetFilters = useCallback(() => setFilters(DEFAULT_EXERCISE_ADMIN_FILTERS), []);
@@ -266,16 +297,20 @@ export default function AdminExercisesPage() {
       buildExerciseColumns({
         isApproving: approveMutation.isPending,
         isArchiving: archiveMutation.isPending,
+        isRestoring: restoreMutation.isPending,
         onApprove: handleApprove,
         onArchive: handleArchive,
+        onRestore: handleRestore,
         onDelete: handleDelete,
         onEdit: handleEdit,
       }),
     [
       approveMutation.isPending,
       archiveMutation.isPending,
+      restoreMutation.isPending,
       handleApprove,
       handleArchive,
+      handleRestore,
       handleDelete,
       handleEdit,
     ],
