@@ -90,25 +90,25 @@ export function UserWalletPanel({ userId }: UserWalletPanelProps) {
     switch (reason) {
       case "COMPENSATION":
         return (
-          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-violet-50 text-violet-700 border border-violet-200">
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-violet-50 text-violet-700">
             COMPENSATION
           </span>
         );
       case "EVENT_REWARD":
         return (
-          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700">
             EVENT_REWARD
           </span>
         );
       case "FRAUD_REVOCATION":
         return (
-          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-700">
             FRAUD_REVOCATION
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-700">
             {reason || "ADMIN_ADJUST"}
           </span>
         );
@@ -116,70 +116,70 @@ export function UserWalletPanel({ userId }: UserWalletPanelProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       {/* FitCoins Hero Stat Card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-50 via-amber-50/40 to-orange-50/60 border border-amber-200/90 p-5 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-          <div className="flex items-center gap-3.5">
-            <div className="size-13 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white flex items-center justify-center shadow-lg shadow-amber-500/25 shrink-0 ring-4 ring-amber-100">
-              <Coins className="size-7" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-amber-500 to-orange-500 p-4 text-white shadow-md shadow-amber-500/15">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="size-8 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center">
+              <Coins className="size-4.5 text-white" />
             </div>
-            <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-800/80">
-                Số Dư Khả Dụng
-              </span>
-              <div className="flex items-baseline gap-2 pt-0.5">
-                <h3 className="text-3xl font-black text-slate-900 tracking-tight font-sans">
-                  {isWalletLoading ? (
-                    <Loader2 className="size-6 animate-spin text-amber-500 inline-block" />
-                  ) : (
-                    (wallet?.balance || 0).toLocaleString()
-                  )}
-                </h3>
-                <span className="text-xs font-bold text-amber-800 bg-amber-100/90 border border-amber-300/60 px-2.5 py-0.5 rounded-full">
-                  FitCoins
-                </span>
-              </div>
-              {wallet?.updatedAt && (
-                <p className="text-[11px] text-amber-900/60 pt-0.5">
-                  Cập nhật: {new Date(wallet.updatedAt).toLocaleTimeString("vi-VN")}{" "}
-                  {new Date(wallet.updatedAt).toLocaleDateString("vi-VN")}
-                </p>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-100">
+              Số Dư FitCoins
+            </span>
+          </div>
+          <button
+            type="button"
+            title="Làm mới sổ cái"
+            onClick={handleRefreshAll}
+            className="size-7 rounded-lg bg-white/15 hover:bg-white/25 flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <RefreshCw className="size-3.5 text-white" />
+          </button>
+        </div>
+
+        <div className="flex items-baseline justify-between">
+          <div>
+            <div className="text-3xl font-black tracking-tight font-sans">
+              {isWalletLoading ? (
+                <Loader2 className="size-6 animate-spin text-white inline-block" />
+              ) : (
+                (wallet?.balance || 0).toLocaleString()
               )}
             </div>
+            {wallet?.updatedAt && (
+              <p className="text-[10px] text-amber-100/80 pt-0.5">
+                Cập nhật:{" "}
+                {new Date(wallet.updatedAt).toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}{" "}
+                · {new Date(wallet.updatedAt).toLocaleDateString("vi-VN")}
+              </p>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              title="Làm mới sổ cái"
-              onClick={handleRefreshAll}
-              className="p-2.5 rounded-xl border border-amber-200 bg-white/90 hover:bg-white text-slate-600 hover:text-slate-900 shadow-2xs transition-all cursor-pointer"
-            >
-              <RefreshCw className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setFeedbackMsg(null);
-                setIsAdjustOpen((prev) => !prev);
-              }}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-md shadow-amber-500/25 transition-all cursor-pointer active:scale-[0.98]"
-            >
-              <Sliders className="size-3.5" />
-              <span>{isAdjustOpen ? "Đóng form điều chỉnh" : "Điều chỉnh số dư"}</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setFeedbackMsg(null);
+              setIsAdjustOpen((prev) => !prev);
+            }}
+            className="px-3 py-1.5 rounded-xl bg-white text-amber-900 font-bold text-xs shadow-xs hover:bg-amber-50 inline-flex items-center gap-1.5 transition-all cursor-pointer"
+          >
+            <Sliders className="size-3 text-amber-700" />
+            <span>{isAdjustOpen ? "Đóng form" : "Điều chỉnh"}</span>
+          </button>
         </div>
       </div>
 
       {/* Feedback Toast Alert */}
       {feedbackMsg && (
         <div
-          className={`p-3.5 rounded-xl text-xs font-semibold border flex items-center justify-between shadow-xs animate-in fade-in duration-150 ${
+          className={`p-3 rounded-xl text-xs font-semibold flex items-center justify-between shadow-xs animate-in fade-in duration-150 ${
             feedbackMsg.type === "success"
-              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-              : "bg-rose-50 text-rose-800 border-rose-200"
+              ? "bg-emerald-50 text-emerald-800"
+              : "bg-rose-50 text-rose-800"
           }`}
         >
           <span>{feedbackMsg.text}</span>
@@ -201,105 +201,94 @@ export function UserWalletPanel({ userId }: UserWalletPanelProps) {
         isPending={adjustMutation.isPending}
       />
 
-      {/* Ledger Table Section */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden flex flex-col">
-        <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between bg-white">
-          <div className="flex items-center gap-2">
-            <History className="size-4 text-indigo-600" />
+      {/* Activity Feed Section */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-1.5">
+            <History className="size-3.5 text-slate-500" />
             <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               Sổ cái giao dịch
             </h4>
-            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">
-              {txResponse?.entries?.length || 0} bản ghi
-            </span>
           </div>
-
-          <div className="text-[11px] text-slate-400 flex items-center gap-1">
-            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Đồng bộ PostgreSQL</span>
-          </div>
+          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+            {txResponse?.entries?.length || 0} bản ghi
+          </span>
         </div>
 
         {isTxLoading ? (
-          <div className="p-10 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
+          <div className="p-8 text-center text-xs text-slate-500 flex items-center justify-center gap-2 bg-slate-50/60 rounded-2xl">
             <Loader2 className="size-4 animate-spin text-amber-500" />
-            <span>Đang tải dữ liệu sổ cái...</span>
+            <span>Đang tải sổ cái...</span>
           </div>
         ) : !txResponse?.entries || txResponse.entries.length === 0 ? (
-          <div className="p-8 text-center space-y-2">
-            <div className="size-10 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center mx-auto border border-amber-200">
-              <Coins className="size-5" />
-            </div>
-            <p className="text-xs font-bold text-slate-700">Chưa có biến động FitCoins nào</p>
-            <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
-              Mọi giao dịch thưởng luyện tập, đạt PR, điểm danh hay điều chỉnh của Admin sẽ được lưu
-              vết tại đây.
+          <div className="p-6 text-center space-y-1.5 bg-slate-50/60 rounded-2xl">
+            <Coins className="size-6 text-amber-400 mx-auto" />
+            <p className="text-xs font-bold text-slate-700">Chưa có giao dịch</p>
+            <p className="text-[11px] text-slate-400">
+              Các biến động FitCoins của thành viên sẽ hiển thị tại đây.
             </p>
           </div>
         ) : (
-          <div className="max-h-72 overflow-y-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-50/90 border-b border-slate-100 sticky top-0 z-10 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
-                <tr>
-                  <th className="py-2.5 px-3.5">Thời gian</th>
-                  <th className="py-2.5 px-3.5 text-right">Biến động</th>
-                  <th className="py-2.5 px-3.5 text-right">Số dư sau</th>
-                  <th className="py-2.5 px-3.5">Lý do</th>
-                  <th className="py-2.5 px-3.5">Ghi chú kiểm toán</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-sans text-xs">
-                {txResponse.entries.map((tx) => {
-                  const isPositive = tx.amount > 0;
-                  return (
-                    <tr key={tx.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-2.5 px-3.5 text-slate-600 whitespace-nowrap">
-                        <div className="font-semibold text-slate-800 text-[11px]">
-                          {new Date(tx.createdAt).toLocaleDateString("vi-VN", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                          })}
-                        </div>
-                        <div className="text-[10px] text-slate-400">
-                          {new Date(tx.createdAt).toLocaleTimeString("vi-VN", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
-                        <span
-                          className={`inline-flex items-center gap-1 font-bold text-xs px-2 py-0.5 rounded-lg border ${
-                            isPositive
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              : "bg-rose-50 text-rose-700 border-rose-200"
-                          }`}
-                        >
-                          {isPositive ? (
-                            <ArrowUpRight className="size-3 text-emerald-600" />
-                          ) : (
-                            <ArrowDownRight className="size-3 text-rose-600" />
-                          )}
-                          {isPositive
-                            ? `+${tx.amount.toLocaleString()}`
-                            : tx.amount.toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-3.5 text-right font-mono font-bold text-slate-800">
-                        {tx.balanceAfter.toLocaleString()}
-                      </td>
-                      <td className="py-2.5 px-3.5 whitespace-nowrap">
+          <div className="max-h-[290px] overflow-y-auto space-y-1.5 pr-0.5">
+            {txResponse.entries.map((tx) => {
+              const isPositive = tx.amount > 0;
+              return (
+                <div
+                  key={tx.id}
+                  className="p-3 rounded-2xl bg-slate-50/80 hover:bg-slate-100/80 transition-colors flex items-center justify-between gap-3 text-xs"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div
+                      className={`size-8 rounded-xl flex items-center justify-center shrink-0 ${
+                        isPositive
+                          ? "bg-emerald-100/80 text-emerald-700"
+                          : "bg-rose-100/80 text-rose-700"
+                      }`}
+                    >
+                      {isPositive ? (
+                        <ArrowUpRight className="size-4 text-emerald-600" />
+                      ) : (
+                        <ArrowDownRight className="size-4 text-rose-600" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         {renderReasonBadge(tx.reason)}
-                      </td>
-                      <td className="py-2.5 px-3.5 text-slate-600 max-w-xs" title={tx.note || ""}>
-                        <span className="truncate block text-[11px]">{tx.note || "—"}</span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        {tx.note && (
+                          <span
+                            className="text-[11px] text-slate-500 truncate max-w-[140px]"
+                            title={tx.note}
+                          >
+                            {tx.note}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-slate-400 pt-0.5 font-mono">
+                        {new Date(tx.createdAt).toLocaleTimeString("vi-VN", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        · {new Date(tx.createdAt).toLocaleDateString("vi-VN")}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="text-right shrink-0">
+                    <div
+                      className={`font-bold font-mono text-xs ${
+                        isPositive ? "text-emerald-600" : "text-rose-600"
+                      }`}
+                    >
+                      {isPositive ? `+${tx.amount.toLocaleString()}` : tx.amount.toLocaleString()}{" "}
+                      xu
+                    </div>
+                    <div className="text-[10px] text-slate-400 font-mono">
+                      Sau: {tx.balanceAfter.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

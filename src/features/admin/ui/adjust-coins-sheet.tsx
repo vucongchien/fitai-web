@@ -40,44 +40,44 @@ export function AdjustCoinsSheet({ isOpen, onClose, onSubmit, isPending }: Adjus
   };
 
   return (
-    <div className="p-5 rounded-2xl bg-white border-2 border-amber-300 shadow-lg space-y-4 animate-in fade-in slide-in-from-top-2 duration-150">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div className="p-4 rounded-2xl bg-slate-50/90 shadow-xs space-y-3.5 animate-in fade-in duration-150">
+      <div className="flex items-center justify-between pb-2 border-b border-slate-200/50">
         <div>
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-1.5">
             <Sparkles className="size-3.5 text-amber-500" />
             <span>Điều chỉnh FitCoins cấp Admin</span>
           </h4>
           <p className="text-[11px] text-slate-500 pt-0.5">
-            Mọi thay đổi đều được mã hóa vào sổ cái PostgreSQL với chữ ký kiểm toán.
+            Lưu vết tự động vào sổ cái PostgreSQL với chữ ký kiểm toán.
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-600 cursor-pointer"
+          className="size-7 rounded-full bg-white hover:bg-slate-200/80 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
         >
-          <X className="size-4" />
+          <X className="size-3.5" />
         </button>
       </div>
 
       {validationError && (
-        <div className="p-2.5 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+        <div className="p-2.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700">
           {validationError}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
+      <form onSubmit={handleSubmit} className="space-y-3 text-xs">
         <div>
           <span className="block text-[11px] font-bold text-slate-600 mb-1.5">
-            Chọn nhanh hạn mức xu:
+            Hạn mức chọn nhanh:
           </span>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {PRESET_AMOUNTS.map((val) => (
               <button
                 key={`plus-${val}`}
                 type="button"
                 onClick={() => applyPreset(val, "+")}
-                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors cursor-pointer"
+                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-emerald-50 text-emerald-700 shadow-2xs transition-colors cursor-pointer"
               >
                 +{val} xu
               </button>
@@ -87,7 +87,7 @@ export function AdjustCoinsSheet({ isOpen, onClose, onSubmit, isPending }: Adjus
                 key={`minus-${val}`}
                 type="button"
                 onClick={() => applyPreset(val, "-")}
-                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors cursor-pointer"
+                className="px-2.5 py-1 rounded-lg text-xs font-bold bg-white hover:bg-rose-50 text-rose-700 shadow-2xs transition-colors cursor-pointer"
               >
                 -{val} xu
               </button>
@@ -95,13 +95,13 @@ export function AdjustCoinsSheet({ isOpen, onClose, onSubmit, isPending }: Adjus
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div className="space-y-2.5">
           <div>
             <label className="block text-[11px] font-bold text-slate-600 mb-1">
               Số lượng xu & Chiều biến động
             </label>
             <div className="flex items-center gap-1.5">
-              <div className="inline-flex rounded-xl p-0.5 bg-slate-100 border border-slate-200 shrink-0">
+              <div className="inline-flex rounded-xl p-0.5 bg-white shadow-2xs shrink-0">
                 <button
                   type="button"
                   onClick={() => setAmountSign("+")}
@@ -133,7 +133,7 @@ export function AdjustCoinsSheet({ isOpen, onClose, onSubmit, isPending }: Adjus
                 value={amountMagnitude}
                 onChange={(e) => setAmountMagnitude(e.target.value)}
                 placeholder="VD: 50"
-                className="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono text-xs focus:outline-none focus:border-amber-500 focus:bg-white"
+                className="flex-1 px-3 py-2 rounded-xl bg-white shadow-2xs text-slate-900 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/30"
                 required
               />
             </div>
@@ -146,7 +146,7 @@ export function AdjustCoinsSheet({ isOpen, onClose, onSubmit, isPending }: Adjus
             <select
               value={reasonInput}
               onChange={(e) => setReasonInput(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-amber-500 focus:bg-white cursor-pointer"
+              className="w-full px-3 py-2 rounded-xl bg-white shadow-2xs text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/30 cursor-pointer"
             >
               <option value="COMPENSATION">COMPENSATION (Bồi hoàn sự cố ứng dụng)</option>
               <option value="ADMIN_ADJUST">ADMIN_ADJUST (Điều chỉnh nghiệp vụ quản trị)</option>
@@ -154,33 +154,33 @@ export function AdjustCoinsSheet({ isOpen, onClose, onSubmit, isPending }: Adjus
               <option value="FRAUD_REVOCATION">FRAUD_REVOCATION (Thu hồi do gian lận)</option>
             </select>
           </div>
+
+          <div>
+            <label className="block text-[11px] font-bold text-slate-600 mb-1">
+              Ghi chú kiểm toán (Audit Note)
+            </label>
+            <input
+              type="text"
+              value={noteInput}
+              onChange={(e) => setNoteInput(e.target.value)}
+              placeholder="VD: Bồi hoàn sự cố ngày 25/10"
+              className="w-full px-3 py-2 rounded-xl bg-white shadow-2xs text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="block text-[11px] font-bold text-slate-600 mb-1">
-            Ghi chú kiểm toán bắt buộc (Audit Note)
-          </label>
-          <input
-            type="text"
-            value={noteInput}
-            onChange={(e) => setNoteInput(e.target.value)}
-            placeholder="VD: Đền bù người dùng gặp lỗi gián đoạn bài tập sáng 25/10"
-            className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-amber-500 focus:bg-white"
-          />
-        </div>
-
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200/50">
           <button
             type="button"
             onClick={onClose}
-            className="px-3.5 py-2 rounded-xl text-xs text-slate-600 hover:text-slate-900 border border-slate-200 hover:bg-slate-50 cursor-pointer font-semibold"
+            className="px-3.5 py-1.5 rounded-xl text-xs text-slate-600 hover:text-slate-900 hover:bg-white cursor-pointer font-semibold transition-colors"
           >
-            Hủy bỏ
+            Hủy
           </button>
           <button
             type="submit"
             disabled={isPending}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
           >
             {isPending && <Loader2 className="size-3 animate-spin" />}
             <span>
