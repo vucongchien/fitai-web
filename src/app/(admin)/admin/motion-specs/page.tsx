@@ -34,6 +34,7 @@ export default function AdminMotionSpecsPage() {
   // Pagination state (default 10 items per page for clear pagination)
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [filterConfiguredOnly, setFilterConfiguredOnly] = useState(true);
 
   const [selectedExerciseId, setSelectedExerciseId] = useState<string | null>(null);
   const [selectedExerciseName, setSelectedExerciseName] = useState<string>("");
@@ -83,7 +84,14 @@ export default function AdminMotionSpecsPage() {
   });
 
   const specs = listRes?.items || [];
-  const totalCount = listRes?.totalCount || 0;
+  const configuredSpecs = specs.filter((item) =>
+    Boolean(
+      (item.localRulesUrl && item.localRulesUrl.trim().length > 0) ||
+      (item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0),
+    ),
+  );
+  const displayedSpecs = filterConfiguredOnly ? configuredSpecs : specs;
+  const totalCount = filterConfiguredOnly ? configuredSpecs.length : listRes?.totalCount || 0;
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const validCurrentPage = Math.min(currentPage, totalPages);
@@ -179,7 +187,53 @@ export default function AdminMotionSpecsPage() {
 
       {/* Search & Header Pagination Toolbar */}
       <div className="p-4 rounded-[var(--radius-card)] bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xs flex items-center justify-between gap-4 flex-wrap">
-        <div className="relative flex-1 min-w-[280px]">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="inline-flex p-1 bg-[var(--color-surface-subtle)] rounded-[var(--radius-input)] border border-[var(--color-border)] text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => {
+                setFilterConfiguredOnly(true);
+                setCurrentPage(1);
+              }}
+              className={`px-3 py-1.5 rounded-[var(--radius-input)] transition-all cursor-pointer ${
+                filterConfiguredOnly
+                  ? "bg-[var(--color-surface)] text-[var(--color-text)] font-bold shadow-2xs"
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              }`}
+            >
+              Đang có AI Rules / Voice ({stats.activePoseRules || configuredSpecs.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setFilterConfiguredOnly(false);
+                setCurrentPage(1);
+              }}
+              className={`px-3 py-1.5 rounded-[var(--radius-input)] transition-all cursor-pointer ${
+                !filterConfiguredOnly
+                  ? "bg-[var(--color-surface)] text-[var(--color-text)] font-bold shadow-2xs"
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              }`}
+            >
+              Tất cả bài tập ({listRes?.totalCount || specs.length})
+            </button>
+          </div>
+
+          {filterConfiguredOnly && (
+            <button
+              type="button"
+              onClick={() => {
+                setFilterConfiguredOnly(false);
+                setCurrentPage(1);
+              }}
+              className="px-3 py-1.5 rounded-[var(--radius-input)] bg-[var(--color-action)] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs hover:bg-[var(--color-action-hover)] transition-colors"
+            >
+              <span>+ Thêm cấu hình bài tập</span>
+            </button>
+          )}
+        </div>
+
+        <div className="relative flex-1 min-w-[240px]">
           <Search className="size-4 text-[var(--color-text-dim)] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             id={`${fieldIdBase}-searchQuery`}
@@ -269,12 +323,18 @@ export default function AdminMotionSpecsPage() {
             <Sparkles className="size-8 animate-bounce text-[var(--color-action)] mx-auto" />
             <p>Loading Motion Specs list from Workout Service...</p>
           </div>
-        ) : specs.length === 0 ? (
+        ) : displayedSpecs.length === 0 ? (
           <div className="py-16 text-center text-xs text-[var(--color-text-dim)] space-y-2">
             <p className="font-bold text-[var(--color-text)]">
-              No exercises found matching "{searchQuery}"
+              {filterConfiguredOnly
+                ? "Chưa có bài tập nào được cấu hình AI Motion Rules / Voice."
+                : `Không tìm thấy bài tập nào khớp với "${searchQuery}"`}
             </p>
-            <p>Try searching with a different keyword or clear filters.</p>
+            <p>
+              {filterConfiguredOnly
+                ? "Bấm '+ Thêm cấu hình bài tập' để xem toàn bộ danh mục bài tập và thiết lập cấu hình mới."
+                : "Thử tìm kiếm với từ khóa khác hoặc xóa bộ lọc."}
+            </p>
           </div>
         ) : (
           <div>
@@ -291,7 +351,7 @@ export default function AdminMotionSpecsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--color-border)]">
-                  {specs.map((item) => {
+                  {displayedSpecs.map((item) => {
                     const hasRule = Boolean(
                       item.localRulesUrl && item.localRulesUrl.trim().length > 0,
                     );

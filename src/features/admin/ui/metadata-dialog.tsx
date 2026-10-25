@@ -4,6 +4,7 @@ import { Check, FolderTree, X } from "lucide-react";
 import { useId, useState } from "react";
 
 import type { MetadataItem } from "@/features/admin/domain/admin-types";
+import { useScrollLock } from "@/shared/lib/use-scroll-lock";
 import { toast } from "@/shared/ui/toast";
 
 export interface MetadataDialogProps {
@@ -15,6 +16,8 @@ export interface MetadataDialogProps {
 }
 
 export function MetadataDialog({ isOpen, category, item, onClose, onSave }: MetadataDialogProps) {
+  useScrollLock(isOpen);
+
   if (!isOpen) {
     return null;
   }

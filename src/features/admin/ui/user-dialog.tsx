@@ -20,6 +20,8 @@ import type { AdminUser } from "@/features/admin/domain/admin-types";
 import { USER_ROLE_LABEL, USER_STATUS_LABEL } from "@/features/admin/domain/admin-types";
 import { UserAvatar } from "@/features/admin/ui/user-avatar";
 import { UserWalletPanel } from "@/features/admin/ui/user-wallet-panel";
+import { useScrollLock } from "@/shared/lib/use-scroll-lock";
+import { Button } from "@/shared/ui/button";
 
 export interface UserDialogProps {
   isOpen: boolean;
@@ -29,6 +31,7 @@ export interface UserDialogProps {
 }
 
 export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialogProps) {
+  useScrollLock(isOpen && Boolean(user));
   const [activeTab, setActiveTab] = useState<"account" | "wallet">("account");
   const [isToggling, setIsToggling] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
@@ -57,91 +60,105 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
   const isAdmin = user.role === "admin";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/45 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-[460px] bg-white rounded-[32px] shadow-[0_24px_70px_-12px_rgba(0,0,0,0.18)] overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Hero Profile Header */}
-        <div className="relative px-6 pt-6 pb-4 bg-white text-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-neutral-200/80 overflow-hidden flex flex-col max-h-[85vh]">
+        {/* Top Control Bar */}
+        <div className="px-5 pt-4 pb-1 flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+            Quản trị thành viên
+          </span>
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-5 right-5 size-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer z-10"
+            aria-label="Đóng modal"
+            className="size-7 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-neutral-700 flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="size-4" />
           </button>
+        </div>
 
-          <div className="flex flex-col items-center">
-            <div className="size-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-indigo-600 text-white font-bold text-xl flex items-center justify-center shadow-md overflow-hidden shrink-0 ring-4 ring-indigo-50/80">
-              <UserAvatar alt={user.displayName} size={64} src={user.avatarUrl} />
-            </div>
+        {/* Community Profile Style Header */}
+        <div className="px-5 py-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl font-bold text-neutral-900 tracking-tight leading-tight truncate">
+                {user.displayName || "Thành viên FITAI"}
+              </h2>
 
-            <h2 className="text-base font-bold text-slate-900 mt-2.5 truncate max-w-[340px]">
-              {user.displayName || "Thành viên FITAI"}
-            </h2>
+              <p className="text-[13px] text-neutral-500 font-normal mt-0.5 truncate flex items-center gap-1">
+                <Mail className="size-3 text-neutral-400 shrink-0" />
+                <span className="truncate">{user.email || "Chưa thiết lập email"}</span>
+              </p>
 
-            <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
-              <Mail className="size-3 text-slate-400 shrink-0" />
-              <span className="truncate max-w-[280px]">{user.email || "Chưa có email"}</span>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 mt-2.5 flex-wrap">
-              <span
-                className={`px-2.5 py-0.5 text-[10px] font-extrabold rounded-full uppercase tracking-wider ${
-                  isAdmin ? "bg-indigo-50 text-indigo-700" : "bg-slate-100 text-slate-600"
-                }`}
-              >
-                {USER_ROLE_LABEL[user.role]}
-              </span>
-
-              <span
-                className={`px-2.5 py-0.5 text-[10px] font-extrabold rounded-full flex items-center gap-1.5 uppercase tracking-wider ${
-                  isBanned ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-700"
-                }`}
-              >
+              <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
                 <span
-                  className={`size-1.5 rounded-full ${isBanned ? "bg-rose-500" : "bg-emerald-500"}`}
-                />
-                {USER_STATUS_LABEL[user.status]}
-              </span>
+                  className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border ${
+                    isAdmin
+                      ? "bg-indigo-50 text-indigo-700 border-indigo-200/70"
+                      : "bg-neutral-100 text-neutral-700 border-neutral-200/80"
+                  }`}
+                >
+                  {USER_ROLE_LABEL[user.role]}
+                </span>
 
-              <button
-                type="button"
-                onClick={handleCopyId}
-                title="Sao chép User ID"
-                className="px-2 py-0.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 text-[10px] font-mono flex items-center gap-1 cursor-pointer transition-colors"
-              >
-                <span>{user.userId.slice(0, 8)}...</span>
-                {copiedId ? (
-                  <Check className="size-2.5 text-emerald-600" />
-                ) : (
-                  <Copy className="size-2.5 text-slate-400" />
-                )}
-              </button>
+                <span
+                  className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border flex items-center gap-1 ${
+                    isBanned
+                      ? "bg-rose-50 text-rose-700 border-rose-200/70"
+                      : "bg-emerald-50 text-emerald-700 border-emerald-200/70"
+                  }`}
+                >
+                  <span
+                    className={`size-1.5 rounded-full ${isBanned ? "bg-rose-500" : "bg-emerald-500"}`}
+                  />
+                  {USER_STATUS_LABEL[user.status]}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleCopyId}
+                  title="Sao chép User ID"
+                  className="px-1.5 py-0.5 rounded-md bg-neutral-100 hover:bg-neutral-200/70 text-neutral-500 hover:text-neutral-800 text-[10px] font-mono flex items-center gap-1 cursor-pointer transition-colors border border-neutral-200/60"
+                >
+                  <span>{user.userId.slice(0, 8)}...</span>
+                  {copiedId ? (
+                    <Check className="size-2.5 text-emerald-600" />
+                  ) : (
+                    <Copy className="size-2.5 text-neutral-400" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Avatar Circle on the Right (Community Profile Style) */}
+            <div className="relative h-15 w-15 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-neutral-200/90 bg-neutral-100 flex items-center justify-center font-bold text-lg text-neutral-700">
+              <UserAvatar alt={user.displayName} size={60} src={user.avatarUrl} />
             </div>
           </div>
         </div>
 
-        {/* Segmented Tab Bar */}
-        <div className="px-6 py-1 bg-white">
-          <div className="p-1 bg-slate-100 rounded-2xl flex gap-1">
+        {/* Tab Switcher */}
+        <div className="px-5 pt-2 pb-1 bg-white border-b border-neutral-100">
+          <div className="p-1 bg-neutral-100 rounded-xl flex gap-1 text-xs font-semibold">
             <button
               type="button"
               onClick={() => setActiveTab("account")}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === "account"
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-white text-neutral-900 shadow-xs font-bold"
+                  : "text-neutral-500 hover:text-neutral-800"
               }`}
             >
               <Shield className="size-3.5 text-indigo-600" />
-              <span>Tài khoản & Bảo mật</span>
+              <span>Tài khoản & Phân quyền</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("wallet")}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+              className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                 activeTab === "wallet"
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "bg-white text-neutral-900 shadow-xs font-bold"
+                  : "text-neutral-500 hover:text-neutral-800"
               }`}
             >
               <Coins className="size-3.5 text-amber-500" />
@@ -150,31 +167,33 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
           </div>
         </div>
 
-        {/* Scrollable Main Content */}
-        <div className="p-6 overflow-y-auto flex-1 bg-white">
+        {/* Scrollable Content Body */}
+        <div className="p-5 overflow-y-auto overscroll-contain flex-1 bg-white">
           {activeTab === "account" ? (
-            <div className="space-y-3.5">
+            <div className="space-y-3">
               {/* Account Quick Metrics Card */}
-              <div className="p-4 rounded-2xl bg-slate-50/80 space-y-3">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">
+              <div className="p-3.5 rounded-xl border border-neutral-200/60 bg-neutral-50/50 space-y-2.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 block">
                   Thông tin hệ thống
                 </span>
 
-                <div className="space-y-2.5 text-xs">
+                <div className="space-y-2 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-500 flex items-center gap-1.5">
+                    <span className="text-neutral-500 flex items-center gap-1.5">
                       <ShieldCheck className="size-3.5 text-indigo-600" />
                       Cổng xác thực
                     </span>
-                    <span className="font-bold text-slate-800 capitalize">{user.provider}</span>
+                    <span className="font-semibold text-neutral-800 capitalize">
+                      {user.provider}
+                    </span>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-500 flex items-center gap-1.5">
+                    <span className="text-neutral-500 flex items-center gap-1.5">
                       <Calendar className="size-3.5 text-indigo-600" />
                       Ngày khởi tạo
                     </span>
-                    <span className="font-bold text-slate-800 font-mono">
+                    <span className="font-semibold text-neutral-800 font-mono">
                       {new Date(user.createdAt).toLocaleDateString("vi-VN", {
                         year: "numeric",
                         month: "2-digit",
@@ -184,70 +203,64 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-500 flex items-center gap-1.5">
+                    <span className="text-neutral-500 flex items-center gap-1.5">
                       <UserCheck className="size-3.5 text-indigo-600" />
                       Phân quyền vai trò
                     </span>
-                    <span className="font-bold text-slate-800">{USER_ROLE_LABEL[user.role]}</span>
+                    <span className="font-semibold text-neutral-800">
+                      {USER_ROLE_LABEL[user.role]}
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Security & Access Management Card */}
-              <div className="p-4 rounded-2xl bg-slate-50/80 space-y-3">
+              <div className="p-3.5 rounded-xl border border-neutral-200/60 bg-neutral-50/50 space-y-2.5">
                 <div className="flex items-center gap-1.5">
-                  <ShieldAlert className="size-3.5 text-slate-600" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    Trạng thái & Quản trị bảo mật
+                  <ShieldAlert className="size-3.5 text-neutral-500" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                    Bảo mật & Trạng thái
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600">
+                <p className="text-xs text-neutral-600 leading-relaxed">
                   {isBanned
-                    ? "Tài khoản hiện đang bị khóa. Người dùng bị vô hiệu hóa quyền truy cập hệ thống và thực hiện giao dịch."
+                    ? "Tài khoản hiện đang bị khóa. Người dùng bị vô hiệu hóa quyền truy cập hệ thống."
                     : "Tài khoản đang hoạt động bình thường, có thể đăng nhập và ghi nhận buổi tập."}
                 </p>
 
                 {onToggleStatus && (
-                  <button
-                    type="button"
-                    disabled={isToggling}
-                    onClick={handleToggle}
-                    className={`w-full py-2.5 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs disabled:opacity-50 ${
-                      isBanned
-                        ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                        : "bg-rose-50 hover:bg-rose-100 text-rose-700"
-                    }`}
-                  >
+                  <div className="pt-1">
                     {isBanned ? (
-                      <>
+                      <Button
+                        type="button"
+                        variant="primary"
+                        loading={isToggling}
+                        onClick={handleToggle}
+                        className="w-full text-xs"
+                      >
                         <Unlock className="size-3.5" />
                         <span>Mở khóa tài khoản người dùng</span>
-                      </>
+                      </Button>
                     ) : (
-                      <>
+                      <Button
+                        type="button"
+                        variant="danger"
+                        loading={isToggling}
+                        onClick={handleToggle}
+                        className="w-full text-xs"
+                      >
                         <Lock className="size-3.5" />
                         <span>Khóa tài khoản người dùng</span>
-                      </>
+                      </Button>
                     )}
-                  </button>
+                  </div>
                 )}
               </div>
             </div>
           ) : (
             <UserWalletPanel userId={user.userId} />
           )}
-        </div>
-
-        {/* Modal Footer */}
-        <div className="px-6 py-3.5 bg-white border-t border-slate-50 flex items-center">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200/90 text-slate-700 text-xs font-bold transition-colors cursor-pointer text-center"
-          >
-            Đóng cửa sổ
-          </button>
         </div>
       </div>
     </div>

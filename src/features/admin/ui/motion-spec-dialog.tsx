@@ -5,6 +5,7 @@ import { Sparkles, X } from "lucide-react";
 
 import { fetchMotionSpecificationByExerciseId } from "@/features/admin/api/admin-motion-spec-service";
 import { MotionSpecEditor } from "@/features/admin/ui/motion-spec-editor";
+import { useScrollLock } from "@/shared/lib/use-scroll-lock";
 
 export interface MotionSpecDialogProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export function MotionSpecDialog({
   exerciseName,
   onClose,
 }: MotionSpecDialogProps) {
+  useScrollLock(isOpen && Boolean(exerciseId));
   const queryClient = useQueryClient();
 
   const { data: spec, isLoading } = useQuery({
@@ -37,7 +39,7 @@ export function MotionSpecDialog({
   if (!isOpen || !exerciseId) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[var(--color-scrim)] backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-[var(--color-scrim)] backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto overscroll-contain">
       <div className="bg-[var(--color-surface)] rounded-[var(--radius-card)] border border-[var(--color-border)] shadow-2xl w-full max-w-5xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-[var(--color-border)] bg-[var(--color-surface-subtle)] flex items-center justify-between">
