@@ -43,122 +43,92 @@ export interface PaginatedMotionSpecsResponse {
 }
 
 export async function fetchMotionSpecificationStats(): Promise<MotionSpecStats> {
-  if (process.env.FITAI_RPC_URL) {
-    try {
-      const { accessToken } = await getAuthenticatedSession();
-      const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
-
-      if ("getMotionSpecificationStats" in client) {
-        const res = await (client as any).getMotionSpecificationStats({});
-        return {
-          totalExercises: res.totalExercises || 0,
-          activePoseRules: res.activePoseRules || 0,
-          activeVoiceFiles: res.activeVoiceFiles || 0,
-          readyAiSpecs: res.readyAiSpecs || 0,
-        };
-      }
-
-      const res: any = await (client as any).listMotionSpecifications({
-        pageSize: 500,
-        pageToken: "",
-      });
-      const items = res?.motionSpecifications || [];
-
-      const activeRules = items.filter((s: any) =>
-        Boolean(s.localRulesUrl && s.localRulesUrl.trim().length > 0),
-      ).length;
-      const activeVoice = items.filter((s: any) =>
-        Boolean(s.dialogueEngineUrl && s.dialogueEngineUrl.trim().length > 0),
-      ).length;
-      const readySpecs = items.filter(
-        (s: any) =>
-          Boolean(s.localRulesUrl && s.localRulesUrl.trim().length > 0) &&
-          Boolean(s.dialogueEngineUrl && s.dialogueEngineUrl.trim().length > 0),
-      ).length;
-
-      return {
-        totalExercises: res?.totalCount || items.length,
-        activePoseRules: activeRules,
-        activeVoiceFiles: activeVoice,
-        readyAiSpecs: readySpecs,
-      };
-    } catch (err) {
-      console.warn("[fetchMotionSpecificationStats] RPC failed:", err);
-    }
+  if (!process.env.FITAI_RPC_URL) {
+    return {
+      totalExercises: 0,
+      activePoseRules: 0,
+      activeVoiceFiles: 0,
+      readyAiSpecs: 0,
+    };
   }
 
-  return {
-    totalExercises: 0,
-    activePoseRules: 0,
-    activeVoiceFiles: 0,
-    readyAiSpecs: 0,
-  };
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
+
+    const res = await client.getMotionSpecificationStats({});
+    return {
+      totalExercises: res.totalExercises || 0,
+      activePoseRules: res.activePoseRules || 0,
+      activeVoiceFiles: res.activeVoiceFiles || 0,
+      readyAiSpecs: res.readyAiSpecs || 0,
+    };
+  } catch (err) {
+    console.warn("[fetchMotionSpecificationStats] RPC failed:", err);
+    return {
+      totalExercises: 0,
+      activePoseRules: 0,
+      activeVoiceFiles: 0,
+      readyAiSpecs: 0,
+    };
+  }
 }
 
 export async function fetchMotionSpecifications({
   page = 1,
   pageSize = 20,
 }: FetchPaginatedMotionSpecsParams = {}): Promise<PaginatedMotionSpecsResponse> {
-  if (process.env.FITAI_RPC_URL) {
-    try {
-      const { accessToken } = await getAuthenticatedSession();
-      const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
-
-      const res = await client.listMotionSpecifications({
-        pageSize,
-        pageToken: String(page),
-      });
-
-      if (res.motionSpecifications) {
-        const items: AdminMotionSpecification[] = res.motionSpecifications.map((item: any) => {
-          const hasRules = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
-          const hasVoice = Boolean(
-            item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0,
-          );
-          const hasOnnx = Boolean(item.onnxDetectorUrl && item.onnxDetectorUrl.trim().length > 0);
-
-          const rawName = item.exerciseName || item.exercise_name || item.name || "";
-          const isUuid = (str?: string) =>
-            Boolean(
-              str &&
-              /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
-                str,
-              ),
-            );
-          const cleanName = rawName && !isUuid(rawName) ? rawName : rawName;
-
-          return {
-            exerciseId: item.exerciseId || item.exercise_id || "",
-            exerciseName: cleanName,
-            onnxDetectorUrl: item.onnxDetectorUrl || item.onnx_detector_url || "",
-            onnxSkeletonUrl: item.onnxSkeletonUrl || item.onnx_skeleton_url || "",
-            localRulesUrl: item.localRulesUrl || item.local_rules_url || "",
-            dialogueEngineUrl: item.dialogueEngineUrl || item.dialogue_engine_url || "",
-            recommendedCameraAngle:
-              item.recommendedCameraAngle || item.recommended_camera_angle || "",
-            isReady: hasRules && hasVoice && hasOnnx,
-            updatedAt: new Date().toISOString(),
-          };
-        });
-
-        return {
-          items,
-          totalCount: res.totalCount || items.length,
-          page,
-          pageSize,
-        };
-      }
-    } catch (err) {
-      console.warn("[fetchMotionSpecifications] RPC failed:", err);
-    }
+  if (!process.env.FITAI_RPC_URL) {
+    return {
+      items: [],
+      totalCount: 0,
+      page,
+      pageSize,
+    };
   }
 
-  return {
-    items: [],
-    totalCount: 0,
-    page,
-    pageSize,
-  };
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
+
+    const res = await client.listMotionSpecifications({
+      pageSize,
+      pageToken: String(page),
+    });
+
+    const items: AdminMotionSpecification[] = (res.motionSpecifications || []).map((item) => {
+      const hasRules = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
+      const hasVoice = Boolean(item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0);
+      const hasOnnx = Boolean(item.onnxDetectorUrl && item.onnxDetectorUrl.trim().length > 0);
+
+      return {
+        exerciseId: item.exerciseId || "",
+        exerciseName: item.exerciseName || "",
+        onnxDetectorUrl: item.onnxDetectorUrl || "",
+        onnxSkeletonUrl: item.onnxSkeletonUrl || "",
+        localRulesUrl: item.localRulesUrl || "",
+        dialogueEngineUrl: item.dialogueEngineUrl || "",
+        recommendedCameraAngle: item.recommendedCameraAngle || "",
+        isReady: hasRules && hasVoice && hasOnnx,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+
+    return {
+      items,
+      totalCount: res.totalCount || items.length,
+      page,
+      pageSize,
+    };
+  } catch (err) {
+    console.warn("[fetchMotionSpecifications] RPC failed:", err);
+    return {
+      items: [],
+      totalCount: 0,
+      page,
+      pageSize,
+    };
+  }
 }
 
 export async function searchMotionSpecifications({
@@ -166,88 +136,58 @@ export async function searchMotionSpecifications({
   page = 1,
   pageSize = 20,
 }: SearchMotionSpecsParams): Promise<PaginatedMotionSpecsResponse> {
-  if (process.env.FITAI_RPC_URL) {
-    try {
-      const { accessToken } = await getAuthenticatedSession();
-      const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
-
-      let res: any;
-      if ("searchMotionSpecifications" in client) {
-        res = await (client as any).searchMotionSpecifications({
-          keyword,
-          pageSize,
-          pageToken: String(page),
-        });
-      } else {
-        res = await (client as any).listMotionSpecifications({
-          pageSize: 500,
-          pageToken: "1",
-        });
-      }
-
-      if (res.motionSpecifications) {
-        let items: AdminMotionSpecification[] = res.motionSpecifications.map((item: any) => {
-          const hasRules = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
-          const hasVoice = Boolean(
-            item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0,
-          );
-          const hasOnnx = Boolean(item.onnxDetectorUrl && item.onnxDetectorUrl.trim().length > 0);
-          const rawName = item.exerciseName || item.exercise_name || item.name || "";
-          const isUuid = (str?: string) =>
-            Boolean(
-              str &&
-              /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(
-                str,
-              ),
-            );
-          const cleanName = rawName && !isUuid(rawName) ? rawName : rawName;
-
-          return {
-            exerciseId: item.exerciseId || item.exercise_id || "",
-            exerciseName: cleanName,
-            onnxDetectorUrl: item.onnxDetectorUrl || "",
-            onnxSkeletonUrl: item.onnxSkeletonUrl || "",
-            localRulesUrl: item.localRulesUrl || "",
-            dialogueEngineUrl: item.dialogueEngineUrl || "",
-            recommendedCameraAngle: item.recommendedCameraAngle || "",
-            isReady: hasRules && hasVoice && hasOnnx,
-            updatedAt: new Date().toISOString(),
-          };
-        });
-
-        const q = keyword.trim().toLowerCase();
-        if (q) {
-          items = items.filter(
-            (i) =>
-              i.exerciseId.toLowerCase().includes(q) ||
-              (i.exerciseName && i.exerciseName.toLowerCase().includes(q)) ||
-              i.localRulesUrl.toLowerCase().includes(q) ||
-              i.dialogueEngineUrl.toLowerCase().includes(q),
-          );
-        }
-
-        const totalCount = res.totalCount || items.length;
-        const startIndex = (page - 1) * pageSize;
-        const pageItems = items.slice(startIndex, startIndex + pageSize);
-
-        return {
-          items: pageItems,
-          totalCount,
-          page,
-          pageSize,
-        };
-      }
-    } catch (err) {
-      console.warn("[searchMotionSpecifications] RPC failed:", err);
-    }
+  if (!process.env.FITAI_RPC_URL) {
+    return {
+      items: [],
+      totalCount: 0,
+      page,
+      pageSize,
+    };
   }
 
-  return {
-    items: [],
-    totalCount: 0,
-    page,
-    pageSize,
-  };
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
+
+    const res = await client.searchMotionSpecifications({
+      keyword,
+      pageSize,
+      pageToken: String(page),
+    });
+
+    const items: AdminMotionSpecification[] = (res.motionSpecifications || []).map((item) => {
+      const hasRules = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
+      const hasVoice = Boolean(item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0);
+      const hasOnnx = Boolean(item.onnxDetectorUrl && item.onnxDetectorUrl.trim().length > 0);
+
+      return {
+        exerciseId: item.exerciseId || "",
+        exerciseName: item.exerciseName || "",
+        onnxDetectorUrl: item.onnxDetectorUrl || "",
+        onnxSkeletonUrl: item.onnxSkeletonUrl || "",
+        localRulesUrl: item.localRulesUrl || "",
+        dialogueEngineUrl: item.dialogueEngineUrl || "",
+        recommendedCameraAngle: item.recommendedCameraAngle || "",
+        isReady: hasRules && hasVoice && hasOnnx,
+        updatedAt: new Date().toISOString(),
+      };
+    });
+
+    return {
+      items,
+      totalCount: res.totalCount || items.length,
+      page,
+      pageSize,
+    };
+  } catch (err) {
+    console.warn("[searchMotionSpecifications] RPC failed:", err);
+    return {
+      items: [],
+      totalCount: 0,
+      page,
+      pageSize,
+    };
+  }
 }
 
 export async function fetchMotionSpecificationByExerciseId(
@@ -327,25 +267,27 @@ export async function fetchMotionSpecificationByExerciseId(
 export async function updateMotionSpecification(
   data: Partial<AdminMotionSpecification> & { exerciseId: string },
 ): Promise<AdminMotionSpecification> {
-  if (process.env.FITAI_RPC_URL) {
-    try {
-      const { accessToken } = await getAuthenticatedSession();
-      const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[updateMotionSpecification] FITAI_RPC_URL not configured or RPC failed.");
+  }
 
-      await client.updateMotionSpecification({
-        exerciseId: data.exerciseId,
-        onnxDetectorUrl: data.onnxDetectorUrl || "",
-        onnxSkeletonUrl: data.onnxSkeletonUrl || "",
-        localRulesUrl: data.localRulesUrl || "",
-        dialogueEngineUrl: data.dialogueEngineUrl || "",
-        recommendedCameraAngle: data.recommendedCameraAngle || "",
-      });
-    } catch (err) {
-      console.error("[updateMotionSpecification] RPC failed:", err);
-      throw new Error(
-        `Cập nhật trên gRPC Server thất bại: ${err instanceof Error ? err.message : String(err)}`,
-      );
-    }
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
+
+    await client.updateMotionSpecification({
+      exerciseId: data.exerciseId,
+      onnxDetectorUrl: data.onnxDetectorUrl || "",
+      onnxSkeletonUrl: data.onnxSkeletonUrl || "",
+      localRulesUrl: data.localRulesUrl || "",
+      dialogueEngineUrl: data.dialogueEngineUrl || "",
+      recommendedCameraAngle: data.recommendedCameraAngle || "",
+    });
+  } catch (err) {
+    console.error("[updateMotionSpecification] RPC failed:", err);
+    throw new Error(
+      `Cập nhật trên gRPC Server thất bại: ${err instanceof Error ? err.message : String(err)}`,
+    );
   }
 
   const hasRules = Boolean(data.localRulesUrl && data.localRulesUrl.trim().length > 0);
@@ -400,10 +342,7 @@ export async function patchMotionSpecificationAsset(
     }
   }
 
-  return {
-    fileUrl: "",
-    updatedAt: new Date().toISOString(),
-  };
+  throw new Error("[patchMotionSpecificationAsset] FITAI_RPC_URL not configured or RPC failed.");
 }
 
 export async function getPresignedUploadUrl(
@@ -427,4 +366,20 @@ export async function getPresignedUploadUrl(
   }
 
   throw new Error("[getPresignedUploadUrl] FITAI_RPC_URL not configured or RPC failed.");
+}
+
+export async function deleteMotionSpecification(exerciseId: string): Promise<boolean> {
+  if (!process.env.FITAI_RPC_URL) {
+    return false;
+  }
+
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
+    await client.deleteMotionSpecification({ exerciseId });
+    return true;
+  } catch (err) {
+    console.warn(`[deleteMotionSpecification] RPC failed for ${exerciseId}:`, err);
+    return false;
+  }
 }

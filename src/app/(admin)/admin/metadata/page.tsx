@@ -55,7 +55,7 @@ export default function AdminMetadataPage() {
 
   const handleDelete = async (item: MetadataItem) => {
     if (confirm(`Delete metadata item "${item.name}"?`)) {
-      await deleteMetadataItem(item.id);
+      await deleteMetadataItem(item.id, item.category);
       await queryClient.invalidateQueries({ queryKey: ["admin-metadata"] });
     }
   };

@@ -60,7 +60,7 @@ export const SocialService: GenService<{
     output: typeof GetFollowingResponseSchema;
   },
   /**
-   * Lấy thống kê mạng xã hội của một user (Followers, Following, Posts, is_following)
+   * Lấy trang thông tin cá nhân của user
    *
    * @generated from rpc contracts.supporting.social.v1.service.SocialService.GetSocialSummary
    */

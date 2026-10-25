@@ -80,18 +80,6 @@ export interface AdminUser {
   role: AdminUserRole;
   status: AdminUserStatus;
   provider: "google" | "facebook" | "email";
-  biologicalMetrics: BiologicalMetrics;
-  experienceLevel: string;
-  goals: string[];
-  preferredWorkoutTimes: string[];
-  availableEquipment: string[];
-  preferredMuscleGroups: string[];
-  coachStyle?: string;
-  targetWeightKg?: number;
-  targetBodyFatPercent?: number;
-  injuries: InjuryRecord[];
-  completionRate: number;
-  aiCoachActivated: boolean;
   createdAt: string;
   updatedAt: string;
   lastActiveAt: string;

@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/core/workout_execution/v1/message/workout_execution_messages.proto.
  */
 export const file_contracts_core_workout_execution_v1_message_workout_execution_messages: GenFile = /*@__PURE__*/
-  fileDesc("Ckxjb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9tZXNzYWdlL3dvcmtvdXRfZXhlY3V0aW9uX21lc3NhZ2VzLnByb3RvEitjb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlIi0KGlN0YXJ0V29ya291dFNlc3Npb25SZXF1ZXN0Eg8KB3BsYW5faWQYASABKAkiYQobU3RhcnRXb3Jrb3V0U2Vzc2lvblJlc3BvbnNlEhIKCnNlc3Npb25faWQYASABKAkSLgoKc3RhcnRlZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiOQojU3RhcnRTY2hlZHVsZWRXb3Jrb3V0U2Vzc2lvblJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCSJqCiRTdGFydFNjaGVkdWxlZFdvcmtvdXRTZXNzaW9uUmVzcG9uc2USEgoKc2Vzc2lvbl9pZBgBIAEoCRIuCgpzdGFydGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCLZAQoGUmVwTG9nEhIKCnJlcF9udW1iZXIYASABKAUSFgoOcm9tX3BlcmNlbnRhZ2UYAiABKAISEwoLZXJyb3JfY29kZXMYAyADKAkSWgoMam9pbnRfYW5nbGVzGAQgAygLMkQuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5SZXBMb2cuSm9pbnRBbmdsZXNFbnRyeRoyChBKb2ludEFuZ2xlc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoAjoCOAEimwIKFExvZ1dvcmtvdXRTZXRSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSEgoKc2V0X251bWJlchgCIAEoBRITCgtleGVyY2lzZV9pZBgDIAEoCRITCgt0YXJnZXRfcmVwcxgEIAEoBRITCgthY3R1YWxfcmVwcxgFIAEoBRIOCgZ3ZWlnaHQYBiABKAISFwoKZm9ybV9zY29yZRgHIAEoAkgAiAEBEgsKA3JwZRgIIAEoAhJBCgRyZXBzGAkgAygLMjMuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5SZXBMb2cSFAoMY2FtZXJhX2FuZ2xlGAogASgJQg0KC19mb3JtX3Njb3JlIisKFUxvZ1dvcmtvdXRTZXRSZXNwb25zZRISCgpzZXRfbG9nX2lkGAEgASgJIkAKGkFib3J0V29ya291dFNlc3Npb25SZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSDgoGcmVhc29uGAIgASgJImEKG0Fib3J0V29ya291dFNlc3Npb25SZXNwb25zZRISCgpzZXNzaW9uX2lkGAEgASgJEi4KCmFib3J0ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIpsBCh1Db21wbGV0ZVdvcmtvdXRTZXNzaW9uUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEh0KEGNvbmZpcm1fb3ZlcmxvYWQYAiABKAhIAIgBARIdChB3ZWlnaHRfdXBkYXRlX2tnGAMgASgCSAGIAQFCEwoRX2NvbmZpcm1fb3ZlcmxvYWRCEwoRX3dlaWdodF91cGRhdGVfa2ci3QEKHkNvbXBsZXRlV29ya291dFNlc3Npb25SZXNwb25zZRISCgpzZXNzaW9uX2lkGAEgASgJEjAKDGNvbXBsZXRlZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKdG90YWxfc2V0cxgDIAEoBRIUCgx0b3RhbF92b2x1bWUYBCABKAISHwoSYXZlcmFnZV9mb3JtX3Njb3JlGAUgASgCSACIAQESEwoLYXZlcmFnZV9ycGUYBiABKAJCFQoTX2F2ZXJhZ2VfZm9ybV9zY29yZSJpChpTaGFyZVdvcmtvdXRTZXNzaW9uUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEg8KB2NhcHRpb24YAiABKAkSEgoKbWVkaWFfdXJscxgDIAMoCRISCgp2aXNpYmlsaXR5GAQgASgJInMKG1NoYXJlV29ya291dFNlc3Npb25SZXNwb25zZRISCgpzZXNzaW9uX2lkGAEgASgJEhEKCWlzX3NoYXJlZBgCIAEoCBItCglzaGFyZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIpwBCghFcnJvckxvZxISCgplcnJvcl9jb2RlGAEgASgJEhAKCHNldmVyaXR5GAIgASgJEi0KCXRpbWVzdGFtcBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKc2V0X251bWJlchgEIAEoBRISCgpyZXBfbnVtYmVyGAUgASgFEhMKC2V4ZXJjaXNlX2lkGAYgASgJInMKFlN5bmNXb3Jrb3V0TG9nc1JlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRJFCgZlcnJvcnMYAiADKAsyNS5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkVycm9yTG9nIhkKF1N5bmNXb3Jrb3V0TG9nc1Jlc3BvbnNlIjEKDkRpYWxvZ3VlT3B0aW9uEgwKBHRleHQYASABKAkSEQoJYXVkaW9fdXJsGAIgASgJIrYBChJEaWFsb2d1ZVNldmVyaXRpZXMSTwoKc2V2ZXJpdHlfMRgBIAMoCzI7LmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuRGlhbG9ndWVPcHRpb24STwoKc2V2ZXJpdHlfMhgCIAMoCzI7LmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuRGlhbG9ndWVPcHRpb24ipAMKFERpYWxvZ3VlRW5naW5lQ29uZmlnEhYKDnBlcnNvbmFsaXR5X2lkGAEgASgJEmMKCWNvb2xkb3ducxgCIAMoCzJQLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuRGlhbG9ndWVFbmdpbmVDb25maWcuQ29vbGRvd25zRW50cnkSaAoMZGlhbG9ndWVfbWFwGAMgAygLMlIuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5EaWFsb2d1ZUVuZ2luZUNvbmZpZy5EaWFsb2d1ZU1hcEVudHJ5GjAKDkNvb2xkb3duc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoAjoCOAEacwoQRGlhbG9ndWVNYXBFbnRyeRILCgNrZXkYASABKAkSTgoFdmFsdWUYAiABKAsyPy5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkRpYWxvZ3VlU2V2ZXJpdGllczoCOAEiTwodR2V0TW90aW9uU3BlY2lmaWNhdGlvblJlcXVlc3QSEwoLZXhlcmNpc2VfaWQYASABKAkSGQoRY29hY2hfcGVyc29uYWxpdHkYAiABKAki2gEKHkdldE1vdGlvblNwZWNpZmljYXRpb25SZXNwb25zZRITCgtleGVyY2lzZV9pZBgBIAEoCRIZChFvbm54X2RldGVjdG9yX3VybBgCIAEoCRIZChFvbm54X3NrZWxldG9uX3VybBgDIAEoCRIXCg9sb2NhbF9ydWxlc191cmwYBCABKAkSGwoTZGlhbG9ndWVfZW5naW5lX3VybBgFIAEoCRIgChhyZWNvbW1lbmRlZF9jYW1lcmFfYW5nbGUYBiABKAkSFQoNZXhlcmNpc2VfbmFtZRgHIAEoCSKJAQoOUGVyc29uYWxSZWNvcmQSEwoLZXhlcmNpc2VfaWQYASABKAkSEwoLb25lX3JlcF9tYXgYAiABKAISDgoGd2VpZ2h0GAMgASgCEgwKBHJlcHMYBCABKAUSLwoLYWNoaWV2ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIjEKGUdldFBlcnNvbmFsUmVjb3Jkc1JlcXVlc3QSFAoMZXhlcmNpc2VfaWRzGAEgAygJIkcKHkFkbWluR2V0UGVyc29uYWxSZWNvcmRzUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhQKDGV4ZXJjaXNlX2lkcxgCIAMoCSJqChpHZXRQZXJzb25hbFJlY29yZHNSZXNwb25zZRJMCgdyZWNvcmRzGAEgAygLMjsuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5QZXJzb25hbFJlY29yZCJvCh9BZG1pbkdldFBlcnNvbmFsUmVjb3Jkc1Jlc3BvbnNlEkwKB3JlY29yZHMYASADKAsyOy5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlBlcnNvbmFsUmVjb3JkIjQKHkdldFdvcmtvdXRTZXNzaW9uRXJyb3JzUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJInwKH0dldFdvcmtvdXRTZXNzaW9uRXJyb3JzUmVzcG9uc2USEgoKc2Vzc2lvbl9pZBgBIAEoCRJFCgZlcnJvcnMYAiADKAsyNS5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkVycm9yTG9nIjkKGEdldFdvcmtvdXRIaXN0b3J5UmVxdWVzdBINCgVsaW1pdBgBIAEoBRIOCgZvZmZzZXQYAiABKAUiTwodQWRtaW5HZXRXb3Jrb3V0SGlzdG9yeVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRINCgVsaW1pdBgCIAEoBRIOCgZvZmZzZXQYAyABKAUitwEKFVdvcmtvdXRTZXNzaW9uU3VtbWFyeRISCgpzZXNzaW9uX2lkGAEgASgJEigKBGRhdGUYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhIKCnRvdGFsX3NldHMYAyABKAUSFAoMdG90YWxfdm9sdW1lGAQgASgCEh8KEmF2ZXJhZ2VfZm9ybV9zY29yZRgFIAEoAkgAiAEBQhUKE19hdmVyYWdlX2Zvcm1fc2NvcmUicQoZR2V0V29ya291dEhpc3RvcnlSZXNwb25zZRJUCghzZXNzaW9ucxgBIAMoCzJCLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuV29ya291dFNlc3Npb25TdW1tYXJ5InYKHkFkbWluR2V0V29ya291dEhpc3RvcnlSZXNwb25zZRJUCghzZXNzaW9ucxgBIAMoCzJCLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuV29ya291dFNlc3Npb25TdW1tYXJ5IsUBCiBVcGRhdGVNb3Rpb25TcGVjaWZpY2F0aW9uUmVxdWVzdBITCgtleGVyY2lzZV9pZBgBIAEoCRIZChFvbm54X2RldGVjdG9yX3VybBgCIAEoCRIZChFvbm54X3NrZWxldG9uX3VybBgDIAEoCRIXCg9sb2NhbF9ydWxlc191cmwYBCABKAkSGwoTZGlhbG9ndWVfZW5naW5lX3VybBgFIAEoCRIgChhyZWNvbW1lbmRlZF9jYW1lcmFfYW5nbGUYBiABKAkiegohVXBkYXRlTW90aW9uU3BlY2lmaWNhdGlvblJlc3BvbnNlEhMKC2V4ZXJjaXNlX2lkGAEgASgJEi4KCnVwZGF0ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhAKCGlzX3JlYWR5GAMgASgIIjcKIERlbGV0ZU1vdGlvblNwZWNpZmljYXRpb25SZXF1ZXN0EhMKC2V4ZXJjaXNlX2lkGAEgASgJIkkKIURlbGV0ZU1vdGlvblNwZWNpZmljYXRpb25SZXNwb25zZRITCgtleGVyY2lzZV9pZBgBIAEoCRIPCgdzdWNjZXNzGAIgASgIIlkKH0xpc3RNb3Rpb25TcGVjaWZpY2F0aW9uc1JlcXVlc3QSEQoJcGFnZV9zaXplGAEgASgFEhIKCnBhZ2VfdG9rZW4YAiABKAkSDwoHa2V5d29yZBgDIAEoCSK8AQogTGlzdE1vdGlvblNwZWNpZmljYXRpb25zUmVzcG9uc2USagoVbW90aW9uX3NwZWNpZmljYXRpb25zGAEgAygLMksuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRNb3Rpb25TcGVjaWZpY2F0aW9uUmVzcG9uc2USFwoPbmV4dF9wYWdlX3Rva2VuGAIgASgJEhMKC3RvdGFsX2NvdW50GAMgASgFIiQKIkdldE1vdGlvblNwZWNpZmljYXRpb25TdGF0c1JlcXVlc3QijQEKI0dldE1vdGlvblNwZWNpZmljYXRpb25TdGF0c1Jlc3BvbnNlEhcKD3RvdGFsX2V4ZXJjaXNlcxgBIAEoBRIZChFhY3RpdmVfcG9zZV9ydWxlcxgCIAEoBRIaChJhY3RpdmVfdm9pY2VfZmlsZXMYAyABKAUSFgoOcmVhZHlfYWlfc3BlY3MYBCABKAUiWwohU2VhcmNoTW90aW9uU3BlY2lmaWNhdGlvbnNSZXF1ZXN0Eg8KB2tleXdvcmQYASABKAkSEQoJcGFnZV9zaXplGAIgASgFEhIKCnBhZ2VfdG9rZW4YAyABKAkivgEKIlNlYXJjaE1vdGlvblNwZWNpZmljYXRpb25zUmVzcG9uc2USagoVbW90aW9uX3NwZWNpZmljYXRpb25zGAEgAygLMksuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5HZXRNb3Rpb25TcGVjaWZpY2F0aW9uUmVzcG9uc2USFwoPbmV4dF9wYWdlX3Rva2VuGAIgASgJEhMKC3RvdGFsX2NvdW50GAMgASgFIkcKHEdldFByZXNpZ25lZFVwbG9hZFVSTFJlcXVlc3QSEQoJZmlsZV9uYW1lGAEgASgJEhQKDGNvbnRlbnRfdHlwZRgCIAEoCSJYCh1HZXRQcmVzaWduZWRVcGxvYWRVUkxSZXNwb25zZRISCgp1cGxvYWRfdXJsGAEgASgJEhAKCGZpbGVfdXJsGAIgASgJEhEKCWZpbGVfbmFtZRgDIAEoCSK2AQokUGF0Y2hNb3Rpb25TcGVjaWZpY2F0aW9uQXNzZXRSZXF1ZXN0EhMKC2V4ZXJjaXNlX2lkGAEgASgJElAKCmFzc2V0X3R5cGUYAiABKA4yPC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLk1vdGlvbkFzc2V0VHlwZRISCgpwYXRjaF9qc29uGAMgASgJEhMKC2RlbGV0ZV9rZXlzGAQgAygJItABCiVQYXRjaE1vdGlvblNwZWNpZmljYXRpb25Bc3NldFJlc3BvbnNlEhMKC2V4ZXJjaXNlX2lkGAEgASgJElAKCmFzc2V0X3R5cGUYAiABKA4yPC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLk1vdGlvbkFzc2V0VHlwZRIQCghmaWxlX3VybBgDIAEoCRIuCgp1cGRhdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCp9Cg9Nb3Rpb25Bc3NldFR5cGUSIQodTU9USU9OX0FTU0VUX1RZUEVfVU5TUEVDSUZJRUQQABIgChxNT1RJT05fQVNTRVRfVFlQRV9QT1NFX1JVTEVTEAESJQohTU9USU9OX0FTU0VUX1RZUEVfRElBTE9HVUVfQ09ORklHEAJCfFp6Z2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9tZXNzYWdlO3dvcmtvdXRleGVjdXRpb252MW1lc3NhZ2ViBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("Ckxjb250cmFjdHMvY29yZS93b3Jrb3V0X2V4ZWN1dGlvbi92MS9tZXNzYWdlL3dvcmtvdXRfZXhlY3V0aW9uX21lc3NhZ2VzLnByb3RvEitjb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlIi0KGlN0YXJ0V29ya291dFNlc3Npb25SZXF1ZXN0Eg8KB3BsYW5faWQYASABKAkiYQobU3RhcnRXb3Jrb3V0U2Vzc2lvblJlc3BvbnNlEhIKCnNlc3Npb25faWQYASABKAkSLgoKc3RhcnRlZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiOQojU3RhcnRTY2hlZHVsZWRXb3Jrb3V0U2Vzc2lvblJlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCSJqCiRTdGFydFNjaGVkdWxlZFdvcmtvdXRTZXNzaW9uUmVzcG9uc2USEgoKc2Vzc2lvbl9pZBgBIAEoCRIuCgpzdGFydGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCLZAQoGUmVwTG9nEhIKCnJlcF9udW1iZXIYASABKAUSFgoOcm9tX3BlcmNlbnRhZ2UYAiABKAISEwoLZXJyb3JfY29kZXMYAyADKAkSWgoMam9pbnRfYW5nbGVzGAQgAygLMkQuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5SZXBMb2cuSm9pbnRBbmdsZXNFbnRyeRoyChBKb2ludEFuZ2xlc0VudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoAjoCOAEimwIKFExvZ1dvcmtvdXRTZXRSZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSEgoKc2V0X251bWJlchgCIAEoBRITCgtleGVyY2lzZV9pZBgDIAEoCRITCgt0YXJnZXRfcmVwcxgEIAEoBRITCgthY3R1YWxfcmVwcxgFIAEoBRIOCgZ3ZWlnaHQYBiABKAISFwoKZm9ybV9zY29yZRgHIAEoAkgAiAEBEgsKA3JwZRgIIAEoAhJBCgRyZXBzGAkgAygLMjMuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5SZXBMb2cSFAoMY2FtZXJhX2FuZ2xlGAogASgJQg0KC19mb3JtX3Njb3JlIisKFUxvZ1dvcmtvdXRTZXRSZXNwb25zZRISCgpzZXRfbG9nX2lkGAEgASgJIkAKGkFib3J0V29ya291dFNlc3Npb25SZXF1ZXN0EhIKCnNlc3Npb25faWQYASABKAkSDgoGcmVhc29uGAIgASgJImEKG0Fib3J0V29ya291dFNlc3Npb25SZXNwb25zZRISCgpzZXNzaW9uX2lkGAEgASgJEi4KCmFib3J0ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIpsBCh1Db21wbGV0ZVdvcmtvdXRTZXNzaW9uUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEh0KEGNvbmZpcm1fb3ZlcmxvYWQYAiABKAhIAIgBARIdChB3ZWlnaHRfdXBkYXRlX2tnGAMgASgCSAGIAQFCEwoRX2NvbmZpcm1fb3ZlcmxvYWRCEwoRX3dlaWdodF91cGRhdGVfa2ci3QEKHkNvbXBsZXRlV29ya291dFNlc3Npb25SZXNwb25zZRISCgpzZXNzaW9uX2lkGAEgASgJEjAKDGNvbXBsZXRlZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKdG90YWxfc2V0cxgDIAEoBRIUCgx0b3RhbF92b2x1bWUYBCABKAISHwoSYXZlcmFnZV9mb3JtX3Njb3JlGAUgASgCSACIAQESEwoLYXZlcmFnZV9ycGUYBiABKAJCFQoTX2F2ZXJhZ2VfZm9ybV9zY29yZSJpChpTaGFyZVdvcmtvdXRTZXNzaW9uUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEg8KB2NhcHRpb24YAiABKAkSEgoKbWVkaWFfdXJscxgDIAMoCRISCgp2aXNpYmlsaXR5GAQgASgJInMKG1NoYXJlV29ya291dFNlc3Npb25SZXNwb25zZRISCgpzZXNzaW9uX2lkGAEgASgJEhEKCWlzX3NoYXJlZBgCIAEoCBItCglzaGFyZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIpwBCghFcnJvckxvZxISCgplcnJvcl9jb2RlGAEgASgJEhAKCHNldmVyaXR5GAIgASgJEi0KCXRpbWVzdGFtcBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKc2V0X251bWJlchgEIAEoBRISCgpyZXBfbnVtYmVyGAUgASgFEhMKC2V4ZXJjaXNlX2lkGAYgASgJInMKFlN5bmNXb3Jrb3V0TG9nc1JlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCRJFCgZlcnJvcnMYAiADKAsyNS5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLkVycm9yTG9nIhkKF1N5bmNXb3Jrb3V0TG9nc1Jlc3BvbnNlIk8KHUdldE1vdGlvblNwZWNpZmljYXRpb25SZXF1ZXN0EhMKC2V4ZXJjaXNlX2lkGAEgASgJEhkKEWNvYWNoX3BlcnNvbmFsaXR5GAIgASgJItoBCh5HZXRNb3Rpb25TcGVjaWZpY2F0aW9uUmVzcG9uc2USEwoLZXhlcmNpc2VfaWQYASABKAkSGQoRb25ueF9kZXRlY3Rvcl91cmwYAiABKAkSGQoRb25ueF9za2VsZXRvbl91cmwYAyABKAkSFwoPbG9jYWxfcnVsZXNfdXJsGAQgASgJEhsKE2RpYWxvZ3VlX2VuZ2luZV91cmwYBSABKAkSIAoYcmVjb21tZW5kZWRfY2FtZXJhX2FuZ2xlGAYgASgJEhUKDWV4ZXJjaXNlX25hbWUYByABKAkiiQEKDlBlcnNvbmFsUmVjb3JkEhMKC2V4ZXJjaXNlX2lkGAEgASgJEhMKC29uZV9yZXBfbWF4GAIgASgCEg4KBndlaWdodBgDIAEoAhIMCgRyZXBzGAQgASgFEi8KC2FjaGlldmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCIxChlHZXRQZXJzb25hbFJlY29yZHNSZXF1ZXN0EhQKDGV4ZXJjaXNlX2lkcxgBIAMoCSJHCh5BZG1pbkdldFBlcnNvbmFsUmVjb3Jkc1JlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIUCgxleGVyY2lzZV9pZHMYAiADKAkiagoaR2V0UGVyc29uYWxSZWNvcmRzUmVzcG9uc2USTAoHcmVjb3JkcxgBIAMoCzI7LmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuUGVyc29uYWxSZWNvcmQibwofQWRtaW5HZXRQZXJzb25hbFJlY29yZHNSZXNwb25zZRJMCgdyZWNvcmRzGAEgAygLMjsuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5QZXJzb25hbFJlY29yZCI0Ch5HZXRXb3Jrb3V0U2Vzc2lvbkVycm9yc1JlcXVlc3QSEgoKc2Vzc2lvbl9pZBgBIAEoCSJ8Ch9HZXRXb3Jrb3V0U2Vzc2lvbkVycm9yc1Jlc3BvbnNlEhIKCnNlc3Npb25faWQYASABKAkSRQoGZXJyb3JzGAIgAygLMjUuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5FcnJvckxvZyI5ChhHZXRXb3Jrb3V0SGlzdG9yeVJlcXVlc3QSDQoFbGltaXQYASABKAUSDgoGb2Zmc2V0GAIgASgFIk8KHUFkbWluR2V0V29ya291dEhpc3RvcnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSDQoFbGltaXQYAiABKAUSDgoGb2Zmc2V0GAMgASgFIrcBChVXb3Jrb3V0U2Vzc2lvblN1bW1hcnkSEgoKc2Vzc2lvbl9pZBgBIAEoCRIoCgRkYXRlGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBISCgp0b3RhbF9zZXRzGAMgASgFEhQKDHRvdGFsX3ZvbHVtZRgEIAEoAhIfChJhdmVyYWdlX2Zvcm1fc2NvcmUYBSABKAJIAIgBAUIVChNfYXZlcmFnZV9mb3JtX3Njb3JlInEKGUdldFdvcmtvdXRIaXN0b3J5UmVzcG9uc2USVAoIc2Vzc2lvbnMYASADKAsyQi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLldvcmtvdXRTZXNzaW9uU3VtbWFyeSJ2Ch5BZG1pbkdldFdvcmtvdXRIaXN0b3J5UmVzcG9uc2USVAoIc2Vzc2lvbnMYASADKAsyQi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLldvcmtvdXRTZXNzaW9uU3VtbWFyeSLFAQogVXBkYXRlTW90aW9uU3BlY2lmaWNhdGlvblJlcXVlc3QSEwoLZXhlcmNpc2VfaWQYASABKAkSGQoRb25ueF9kZXRlY3Rvcl91cmwYAiABKAkSGQoRb25ueF9za2VsZXRvbl91cmwYAyABKAkSFwoPbG9jYWxfcnVsZXNfdXJsGAQgASgJEhsKE2RpYWxvZ3VlX2VuZ2luZV91cmwYBSABKAkSIAoYcmVjb21tZW5kZWRfY2FtZXJhX2FuZ2xlGAYgASgJInoKIVVwZGF0ZU1vdGlvblNwZWNpZmljYXRpb25SZXNwb25zZRITCgtleGVyY2lzZV9pZBgBIAEoCRIuCgp1cGRhdGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIQCghpc19yZWFkeRgDIAEoCCI3CiBEZWxldGVNb3Rpb25TcGVjaWZpY2F0aW9uUmVxdWVzdBITCgtleGVyY2lzZV9pZBgBIAEoCSJJCiFEZWxldGVNb3Rpb25TcGVjaWZpY2F0aW9uUmVzcG9uc2USEwoLZXhlcmNpc2VfaWQYASABKAkSDwoHc3VjY2VzcxgCIAEoCCJZCh9MaXN0TW90aW9uU3BlY2lmaWNhdGlvbnNSZXF1ZXN0EhEKCXBhZ2Vfc2l6ZRgBIAEoBRISCgpwYWdlX3Rva2VuGAIgASgJEg8KB2tleXdvcmQYAyABKAkivAEKIExpc3RNb3Rpb25TcGVjaWZpY2F0aW9uc1Jlc3BvbnNlEmoKFW1vdGlvbl9zcGVjaWZpY2F0aW9ucxgBIAMoCzJLLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0TW90aW9uU3BlY2lmaWNhdGlvblJlc3BvbnNlEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCRITCgt0b3RhbF9jb3VudBgDIAEoBSIkCiJHZXRNb3Rpb25TcGVjaWZpY2F0aW9uU3RhdHNSZXF1ZXN0Io0BCiNHZXRNb3Rpb25TcGVjaWZpY2F0aW9uU3RhdHNSZXNwb25zZRIXCg90b3RhbF9leGVyY2lzZXMYASABKAUSGQoRYWN0aXZlX3Bvc2VfcnVsZXMYAiABKAUSGgoSYWN0aXZlX3ZvaWNlX2ZpbGVzGAMgASgFEhYKDnJlYWR5X2FpX3NwZWNzGAQgASgFIlsKIVNlYXJjaE1vdGlvblNwZWNpZmljYXRpb25zUmVxdWVzdBIPCgdrZXl3b3JkGAEgASgJEhEKCXBhZ2Vfc2l6ZRgCIAEoBRISCgpwYWdlX3Rva2VuGAMgASgJIr4BCiJTZWFyY2hNb3Rpb25TcGVjaWZpY2F0aW9uc1Jlc3BvbnNlEmoKFW1vdGlvbl9zcGVjaWZpY2F0aW9ucxgBIAMoCzJLLmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuR2V0TW90aW9uU3BlY2lmaWNhdGlvblJlc3BvbnNlEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCRITCgt0b3RhbF9jb3VudBgDIAEoBSJHChxHZXRQcmVzaWduZWRVcGxvYWRVUkxSZXF1ZXN0EhEKCWZpbGVfbmFtZRgBIAEoCRIUCgxjb250ZW50X3R5cGUYAiABKAkiWAodR2V0UHJlc2lnbmVkVXBsb2FkVVJMUmVzcG9uc2USEgoKdXBsb2FkX3VybBgBIAEoCRIQCghmaWxlX3VybBgCIAEoCRIRCglmaWxlX25hbWUYAyABKAkitgEKJFBhdGNoTW90aW9uU3BlY2lmaWNhdGlvbkFzc2V0UmVxdWVzdBITCgtleGVyY2lzZV9pZBgBIAEoCRJQCgphc3NldF90eXBlGAIgASgOMjwuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5Nb3Rpb25Bc3NldFR5cGUSEgoKcGF0Y2hfanNvbhgDIAEoCRITCgtkZWxldGVfa2V5cxgEIAMoCSLQAQolUGF0Y2hNb3Rpb25TcGVjaWZpY2F0aW9uQXNzZXRSZXNwb25zZRITCgtleGVyY2lzZV9pZBgBIAEoCRJQCgphc3NldF90eXBlGAIgASgOMjwuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5Nb3Rpb25Bc3NldFR5cGUSEAoIZmlsZV91cmwYAyABKAkSLgoKdXBkYXRlZF9hdBgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAicQoQU2tlbGV0b25MYW5kbWFyaxIWCg5sYW5kbWFya19pbmRleBgBIAEoBRIJCgF4GAIgASgCEgkKAXkYAyABKAISCQoBehgEIAEoAhISCgp2aXNpYmlsaXR5GAUgASgCEhAKCHByZXNlbmNlGAYgASgCItgBChJTb2xvVHJhY2tpbmdDb25maWcSEAoIbWF0Y2hfaWQYASABKAkSDwoHcGxhbl9pZBgCIAEoCRITCgtleGVyY2lzZV9pZBgDIAEoCRJWCg5jaGFsbGVuZ2VfdHlwZRgEIAEoDjI+LmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuU29sb0NoYWxsZW5nZVR5cGUSFAoMY2FtZXJhX2FuZ2xlGAUgASgJEhwKFHRpbWVfY2VpbGluZ19zZWNvbmRzGAYgASgFIqoBChFTb2xvVHJhY2tpbmdGcmFtZRItCgl0aW1lc3RhbXAYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wElAKCWxhbmRtYXJrcxgCIAMoCzI9LmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuU2tlbGV0b25MYW5kbWFyaxIUCgxjYW1lcmFfYW5nbGUYAyABKAkiIwoRU29sb1RyYWNraW5nQWJvcnQSDgoGcmVhc29uGAEgASgJIhQKElNvbG9UcmFja2luZ1N1Ym1pdCLzAgoeU3RyZWFtU29sb01hdGNoVHJhY2tpbmdSZXF1ZXN0ElEKBmNvbmZpZxgBIAEoCzI/LmNvbnRyYWN0cy5jb3JlLndvcmtvdXRfZXhlY3V0aW9uLnYxLm1lc3NhZ2UuU29sb1RyYWNraW5nQ29uZmlnSAASTwoFZnJhbWUYAiABKAsyPi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlNvbG9UcmFja2luZ0ZyYW1lSAASTwoFYWJvcnQYAyABKAsyPi5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlNvbG9UcmFja2luZ0Fib3J0SAASUQoGc3VibWl0GAQgASgLMj8uY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5Tb2xvVHJhY2tpbmdTdWJtaXRIAEIJCgdwYXlsb2FkIoEECh9TdHJlYW1Tb2xvTWF0Y2hUcmFja2luZ1Jlc3BvbnNlEhoKEm15X2NvbmZpcm1lZF92YWx1ZRgBIAEoBRIVCg1teV9mb3JtX3Njb3JlGAIgASgCEhUKDWlzX3ZhbGlkX2Zvcm0YAyABKAgSVwoJbXlfc3RhdHVzGAQgASgOMkQuY29udHJhY3RzLmNvcmUud29ya291dF9leGVjdXRpb24udjEubWVzc2FnZS5QYXJ0aWNpcGFudFN0cmVhbVN0YXR1cxIUCgxpc19jb21wbGV0ZWQYBSABKAgSFgoOb3Bwb25lbnRfdmFsdWUYBiABKAUSGwoTb3Bwb25lbnRfZm9ybV9zY29yZRgHIAEoAhJdCg9vcHBvbmVudF9zdGF0dXMYCCABKA4yRC5jb250cmFjdHMuY29yZS53b3Jrb3V0X2V4ZWN1dGlvbi52MS5tZXNzYWdlLlBhcnRpY2lwYW50U3RyZWFtU3RhdHVzEhcKD2RldGVjdGVkX2Vycm9ycxgJIAMoCRIRCglhdWRpb19jdWUYCiABKAkSIQoZcmVtYWluaW5nX2NlaWxpbmdfc2Vjb25kcxgLIAEoBRITCgttYXRjaF9lbmRlZBgMIAEoCBItCgl0aW1lc3RhbXAYDSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wKn0KD01vdGlvbkFzc2V0VHlwZRIhCh1NT1RJT05fQVNTRVRfVFlQRV9VTlNQRUNJRklFRBAAEiAKHE1PVElPTl9BU1NFVF9UWVBFX1BPU0VfUlVMRVMQARIlCiFNT1RJT05fQVNTRVRfVFlQRV9ESUFMT0dVRV9DT05GSUcQAip4ChFTb2xvQ2hhbGxlbmdlVHlwZRIjCh9TT0xPX0NIQUxMRU5HRV9UWVBFX1VOU1BFQ0lGSUVEEAASHAoYU09MT19DSEFMTEVOR0VfVFlQRV9SRVBTEAESIAocU09MT19DSEFMTEVOR0VfVFlQRV9EVVJBVElPThACKuQBChdQYXJ0aWNpcGFudFN0cmVhbVN0YXR1cxIpCiVQQVJUSUNJUEFOVF9TVFJFQU1fU1RBVFVTX1VOU1BFQ0lGSUVEEAASJAogUEFSVElDSVBBTlRfU1RSRUFNX1NUQVRVU19BQ1RJVkUQARIoCiRQQVJUSUNJUEFOVF9TVFJFQU1fU1RBVFVTX1NQRUNUQVRJTkcQAhInCiNQQVJUSUNJUEFOVF9TVFJFQU1fU1RBVFVTX0NPTVBMRVRFRBADEiUKIVBBUlRJQ0lQQU5UX1NUUkVBTV9TVEFUVVNfV0FJVElORxAEQnxaemdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvd29ya291dF9leGVjdXRpb24vdjEvbWVzc2FnZTt3b3Jrb3V0ZXhlY3V0aW9udjFtZXNzYWdlYgZwcm90bzM", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.StartWorkoutSessionRequest
@@ -477,77 +477,6 @@ export const SyncWorkoutLogsResponseSchema: GenMessage<SyncWorkoutLogsResponse> 
   messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 15);
 
 /**
- * @generated from message contracts.core.workout_execution.v1.message.DialogueOption
- */
-export type DialogueOption = Message<"contracts.core.workout_execution.v1.message.DialogueOption"> & {
-  /**
-   * @generated from field: string text = 1;
-   */
-  text: string;
-
-  /**
-   * @generated from field: string audio_url = 2;
-   */
-  audioUrl: string;
-};
-
-/**
- * Describes the message contracts.core.workout_execution.v1.message.DialogueOption.
- * Use `create(DialogueOptionSchema)` to create a new message.
- */
-export const DialogueOptionSchema: GenMessage<DialogueOption> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 16);
-
-/**
- * @generated from message contracts.core.workout_execution.v1.message.DialogueSeverities
- */
-export type DialogueSeverities = Message<"contracts.core.workout_execution.v1.message.DialogueSeverities"> & {
-  /**
-   * @generated from field: repeated contracts.core.workout_execution.v1.message.DialogueOption severity_1 = 1;
-   */
-  severity1: DialogueOption[];
-
-  /**
-   * @generated from field: repeated contracts.core.workout_execution.v1.message.DialogueOption severity_2 = 2;
-   */
-  severity2: DialogueOption[];
-};
-
-/**
- * Describes the message contracts.core.workout_execution.v1.message.DialogueSeverities.
- * Use `create(DialogueSeveritiesSchema)` to create a new message.
- */
-export const DialogueSeveritiesSchema: GenMessage<DialogueSeverities> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 17);
-
-/**
- * @generated from message contracts.core.workout_execution.v1.message.DialogueEngineConfig
- */
-export type DialogueEngineConfig = Message<"contracts.core.workout_execution.v1.message.DialogueEngineConfig"> & {
-  /**
-   * @generated from field: string personality_id = 1;
-   */
-  personalityId: string;
-
-  /**
-   * @generated from field: map<string, float> cooldowns = 2;
-   */
-  cooldowns: { [key: string]: number };
-
-  /**
-   * @generated from field: map<string, contracts.core.workout_execution.v1.message.DialogueSeverities> dialogue_map = 3;
-   */
-  dialogueMap: { [key: string]: DialogueSeverities };
-};
-
-/**
- * Describes the message contracts.core.workout_execution.v1.message.DialogueEngineConfig.
- * Use `create(DialogueEngineConfigSchema)` to create a new message.
- */
-export const DialogueEngineConfigSchema: GenMessage<DialogueEngineConfig> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 18);
-
-/**
  * @generated from message contracts.core.workout_execution.v1.message.GetMotionSpecificationRequest
  */
 export type GetMotionSpecificationRequest = Message<"contracts.core.workout_execution.v1.message.GetMotionSpecificationRequest"> & {
@@ -567,7 +496,7 @@ export type GetMotionSpecificationRequest = Message<"contracts.core.workout_exec
  * Use `create(GetMotionSpecificationRequestSchema)` to create a new message.
  */
 export const GetMotionSpecificationRequestSchema: GenMessage<GetMotionSpecificationRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 19);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 16);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetMotionSpecificationResponse
@@ -614,7 +543,7 @@ export type GetMotionSpecificationResponse = Message<"contracts.core.workout_exe
  * Use `create(GetMotionSpecificationResponseSchema)` to create a new message.
  */
 export const GetMotionSpecificationResponseSchema: GenMessage<GetMotionSpecificationResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 20);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 17);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.PersonalRecord
@@ -651,7 +580,7 @@ export type PersonalRecord = Message<"contracts.core.workout_execution.v1.messag
  * Use `create(PersonalRecordSchema)` to create a new message.
  */
 export const PersonalRecordSchema: GenMessage<PersonalRecord> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 21);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 18);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetPersonalRecordsRequest
@@ -668,7 +597,7 @@ export type GetPersonalRecordsRequest = Message<"contracts.core.workout_executio
  * Use `create(GetPersonalRecordsRequestSchema)` to create a new message.
  */
 export const GetPersonalRecordsRequestSchema: GenMessage<GetPersonalRecordsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 22);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 19);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.AdminGetPersonalRecordsRequest
@@ -690,7 +619,7 @@ export type AdminGetPersonalRecordsRequest = Message<"contracts.core.workout_exe
  * Use `create(AdminGetPersonalRecordsRequestSchema)` to create a new message.
  */
 export const AdminGetPersonalRecordsRequestSchema: GenMessage<AdminGetPersonalRecordsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 23);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 20);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetPersonalRecordsResponse
@@ -707,7 +636,7 @@ export type GetPersonalRecordsResponse = Message<"contracts.core.workout_executi
  * Use `create(GetPersonalRecordsResponseSchema)` to create a new message.
  */
 export const GetPersonalRecordsResponseSchema: GenMessage<GetPersonalRecordsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 24);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 21);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.AdminGetPersonalRecordsResponse
@@ -724,7 +653,7 @@ export type AdminGetPersonalRecordsResponse = Message<"contracts.core.workout_ex
  * Use `create(AdminGetPersonalRecordsResponseSchema)` to create a new message.
  */
 export const AdminGetPersonalRecordsResponseSchema: GenMessage<AdminGetPersonalRecordsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 25);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 22);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetWorkoutSessionErrorsRequest
@@ -741,7 +670,7 @@ export type GetWorkoutSessionErrorsRequest = Message<"contracts.core.workout_exe
  * Use `create(GetWorkoutSessionErrorsRequestSchema)` to create a new message.
  */
 export const GetWorkoutSessionErrorsRequestSchema: GenMessage<GetWorkoutSessionErrorsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 26);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 23);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetWorkoutSessionErrorsResponse
@@ -763,7 +692,7 @@ export type GetWorkoutSessionErrorsResponse = Message<"contracts.core.workout_ex
  * Use `create(GetWorkoutSessionErrorsResponseSchema)` to create a new message.
  */
 export const GetWorkoutSessionErrorsResponseSchema: GenMessage<GetWorkoutSessionErrorsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 27);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 24);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetWorkoutHistoryRequest
@@ -785,7 +714,7 @@ export type GetWorkoutHistoryRequest = Message<"contracts.core.workout_execution
  * Use `create(GetWorkoutHistoryRequestSchema)` to create a new message.
  */
 export const GetWorkoutHistoryRequestSchema: GenMessage<GetWorkoutHistoryRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 28);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 25);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.AdminGetWorkoutHistoryRequest
@@ -812,7 +741,7 @@ export type AdminGetWorkoutHistoryRequest = Message<"contracts.core.workout_exec
  * Use `create(AdminGetWorkoutHistoryRequestSchema)` to create a new message.
  */
 export const AdminGetWorkoutHistoryRequestSchema: GenMessage<AdminGetWorkoutHistoryRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 29);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 26);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.WorkoutSessionSummary
@@ -851,7 +780,7 @@ export type WorkoutSessionSummary = Message<"contracts.core.workout_execution.v1
  * Use `create(WorkoutSessionSummarySchema)` to create a new message.
  */
 export const WorkoutSessionSummarySchema: GenMessage<WorkoutSessionSummary> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 30);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 27);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetWorkoutHistoryResponse
@@ -868,7 +797,7 @@ export type GetWorkoutHistoryResponse = Message<"contracts.core.workout_executio
  * Use `create(GetWorkoutHistoryResponseSchema)` to create a new message.
  */
 export const GetWorkoutHistoryResponseSchema: GenMessage<GetWorkoutHistoryResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 31);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 28);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.AdminGetWorkoutHistoryResponse
@@ -885,7 +814,7 @@ export type AdminGetWorkoutHistoryResponse = Message<"contracts.core.workout_exe
  * Use `create(AdminGetWorkoutHistoryResponseSchema)` to create a new message.
  */
 export const AdminGetWorkoutHistoryResponseSchema: GenMessage<AdminGetWorkoutHistoryResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 32);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 29);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.UpdateMotionSpecificationRequest
@@ -927,7 +856,7 @@ export type UpdateMotionSpecificationRequest = Message<"contracts.core.workout_e
  * Use `create(UpdateMotionSpecificationRequestSchema)` to create a new message.
  */
 export const UpdateMotionSpecificationRequestSchema: GenMessage<UpdateMotionSpecificationRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 33);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 30);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.UpdateMotionSpecificationResponse
@@ -954,7 +883,7 @@ export type UpdateMotionSpecificationResponse = Message<"contracts.core.workout_
  * Use `create(UpdateMotionSpecificationResponseSchema)` to create a new message.
  */
 export const UpdateMotionSpecificationResponseSchema: GenMessage<UpdateMotionSpecificationResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 34);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 31);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.DeleteMotionSpecificationRequest
@@ -971,7 +900,7 @@ export type DeleteMotionSpecificationRequest = Message<"contracts.core.workout_e
  * Use `create(DeleteMotionSpecificationRequestSchema)` to create a new message.
  */
 export const DeleteMotionSpecificationRequestSchema: GenMessage<DeleteMotionSpecificationRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 35);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 32);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.DeleteMotionSpecificationResponse
@@ -993,7 +922,7 @@ export type DeleteMotionSpecificationResponse = Message<"contracts.core.workout_
  * Use `create(DeleteMotionSpecificationResponseSchema)` to create a new message.
  */
 export const DeleteMotionSpecificationResponseSchema: GenMessage<DeleteMotionSpecificationResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 36);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 33);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.ListMotionSpecificationsRequest
@@ -1020,7 +949,7 @@ export type ListMotionSpecificationsRequest = Message<"contracts.core.workout_ex
  * Use `create(ListMotionSpecificationsRequestSchema)` to create a new message.
  */
 export const ListMotionSpecificationsRequestSchema: GenMessage<ListMotionSpecificationsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 37);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 34);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.ListMotionSpecificationsResponse
@@ -1047,7 +976,7 @@ export type ListMotionSpecificationsResponse = Message<"contracts.core.workout_e
  * Use `create(ListMotionSpecificationsResponseSchema)` to create a new message.
  */
 export const ListMotionSpecificationsResponseSchema: GenMessage<ListMotionSpecificationsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 38);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 35);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetMotionSpecificationStatsRequest
@@ -1060,7 +989,7 @@ export type GetMotionSpecificationStatsRequest = Message<"contracts.core.workout
  * Use `create(GetMotionSpecificationStatsRequestSchema)` to create a new message.
  */
 export const GetMotionSpecificationStatsRequestSchema: GenMessage<GetMotionSpecificationStatsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 39);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 36);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetMotionSpecificationStatsResponse
@@ -1092,7 +1021,7 @@ export type GetMotionSpecificationStatsResponse = Message<"contracts.core.workou
  * Use `create(GetMotionSpecificationStatsResponseSchema)` to create a new message.
  */
 export const GetMotionSpecificationStatsResponseSchema: GenMessage<GetMotionSpecificationStatsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 40);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 37);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.SearchMotionSpecificationsRequest
@@ -1119,7 +1048,7 @@ export type SearchMotionSpecificationsRequest = Message<"contracts.core.workout_
  * Use `create(SearchMotionSpecificationsRequestSchema)` to create a new message.
  */
 export const SearchMotionSpecificationsRequestSchema: GenMessage<SearchMotionSpecificationsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 41);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 38);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.SearchMotionSpecificationsResponse
@@ -1146,7 +1075,7 @@ export type SearchMotionSpecificationsResponse = Message<"contracts.core.workout
  * Use `create(SearchMotionSpecificationsResponseSchema)` to create a new message.
  */
 export const SearchMotionSpecificationsResponseSchema: GenMessage<SearchMotionSpecificationsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 42);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 39);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetPresignedUploadURLRequest
@@ -1168,7 +1097,7 @@ export type GetPresignedUploadURLRequest = Message<"contracts.core.workout_execu
  * Use `create(GetPresignedUploadURLRequestSchema)` to create a new message.
  */
 export const GetPresignedUploadURLRequestSchema: GenMessage<GetPresignedUploadURLRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 43);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 40);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.GetPresignedUploadURLResponse
@@ -1195,7 +1124,7 @@ export type GetPresignedUploadURLResponse = Message<"contracts.core.workout_exec
  * Use `create(GetPresignedUploadURLResponseSchema)` to create a new message.
  */
 export const GetPresignedUploadURLResponseSchema: GenMessage<GetPresignedUploadURLResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 44);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 41);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.PatchMotionSpecificationAssetRequest
@@ -1227,7 +1156,7 @@ export type PatchMotionSpecificationAssetRequest = Message<"contracts.core.worko
  * Use `create(PatchMotionSpecificationAssetRequestSchema)` to create a new message.
  */
 export const PatchMotionSpecificationAssetRequestSchema: GenMessage<PatchMotionSpecificationAssetRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 45);
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 42);
 
 /**
  * @generated from message contracts.core.workout_execution.v1.message.PatchMotionSpecificationAssetResponse
@@ -1259,7 +1188,278 @@ export type PatchMotionSpecificationAssetResponse = Message<"contracts.core.work
  * Use `create(PatchMotionSpecificationAssetResponseSchema)` to create a new message.
  */
 export const PatchMotionSpecificationAssetResponseSchema: GenMessage<PatchMotionSpecificationAssetResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 43);
+
+/**
+ * @generated from message contracts.core.workout_execution.v1.message.SkeletonLandmark
+ */
+export type SkeletonLandmark = Message<"contracts.core.workout_execution.v1.message.SkeletonLandmark"> & {
+  /**
+   * @generated from field: int32 landmark_index = 1;
+   */
+  landmarkIndex: number;
+
+  /**
+   * @generated from field: float x = 2;
+   */
+  x: number;
+
+  /**
+   * @generated from field: float y = 3;
+   */
+  y: number;
+
+  /**
+   * @generated from field: float z = 4;
+   */
+  z: number;
+
+  /**
+   * @generated from field: float visibility = 5;
+   */
+  visibility: number;
+
+  /**
+   * @generated from field: float presence = 6;
+   */
+  presence: number;
+};
+
+/**
+ * Describes the message contracts.core.workout_execution.v1.message.SkeletonLandmark.
+ * Use `create(SkeletonLandmarkSchema)` to create a new message.
+ */
+export const SkeletonLandmarkSchema: GenMessage<SkeletonLandmark> = /*@__PURE__*/
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 44);
+
+/**
+ * @generated from message contracts.core.workout_execution.v1.message.SoloTrackingConfig
+ */
+export type SoloTrackingConfig = Message<"contracts.core.workout_execution.v1.message.SoloTrackingConfig"> & {
+  /**
+   * @generated from field: string match_id = 1;
+   */
+  matchId: string;
+
+  /**
+   * @generated from field: string plan_id = 2;
+   */
+  planId: string;
+
+  /**
+   * @generated from field: string exercise_id = 3;
+   */
+  exerciseId: string;
+
+  /**
+   * @generated from field: contracts.core.workout_execution.v1.message.SoloChallengeType challenge_type = 4;
+   */
+  challengeType: SoloChallengeType;
+
+  /**
+   * @generated from field: string camera_angle = 5;
+   */
+  cameraAngle: string;
+
+  /**
+   * @generated from field: int32 time_ceiling_seconds = 6;
+   */
+  timeCeilingSeconds: number;
+};
+
+/**
+ * Describes the message contracts.core.workout_execution.v1.message.SoloTrackingConfig.
+ * Use `create(SoloTrackingConfigSchema)` to create a new message.
+ */
+export const SoloTrackingConfigSchema: GenMessage<SoloTrackingConfig> = /*@__PURE__*/
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 45);
+
+/**
+ * @generated from message contracts.core.workout_execution.v1.message.SoloTrackingFrame
+ */
+export type SoloTrackingFrame = Message<"contracts.core.workout_execution.v1.message.SoloTrackingFrame"> & {
+  /**
+   * @generated from field: google.protobuf.Timestamp timestamp = 1;
+   */
+  timestamp?: Timestamp | undefined;
+
+  /**
+   * @generated from field: repeated contracts.core.workout_execution.v1.message.SkeletonLandmark landmarks = 2;
+   */
+  landmarks: SkeletonLandmark[];
+
+  /**
+   * @generated from field: string camera_angle = 3;
+   */
+  cameraAngle: string;
+};
+
+/**
+ * Describes the message contracts.core.workout_execution.v1.message.SoloTrackingFrame.
+ * Use `create(SoloTrackingFrameSchema)` to create a new message.
+ */
+export const SoloTrackingFrameSchema: GenMessage<SoloTrackingFrame> = /*@__PURE__*/
   messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 46);
+
+/**
+ * @generated from message contracts.core.workout_execution.v1.message.SoloTrackingAbort
+ */
+export type SoloTrackingAbort = Message<"contracts.core.workout_execution.v1.message.SoloTrackingAbort"> & {
+  /**
+   * e.g. "USER_FORFEITED"
+   *
+   * @generated from field: string reason = 1;
+   */
+  reason: string;
+};
+
+/**
+ * Describes the message contracts.core.workout_execution.v1.message.SoloTrackingAbort.
+ * Use `create(SoloTrackingAbortSchema)` to create a new message.
+ */
+export const SoloTrackingAbortSchema: GenMessage<SoloTrackingAbort> = /*@__PURE__*/
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 47);
+
+/**
+ * Gửi khi người dùng bấm hoàn thành / nộp bài chủ động
+ *
+ * @generated from message contracts.core.workout_execution.v1.message.SoloTrackingSubmit
+ */
+export type SoloTrackingSubmit = Message<"contracts.core.workout_execution.v1.message.SoloTrackingSubmit"> & {
+};
+
+/**
+ * Describes the message contracts.core.workout_execution.v1.message.SoloTrackingSubmit.
+ * Use `create(SoloTrackingSubmitSchema)` to create a new message.
+ */
+export const SoloTrackingSubmitSchema: GenMessage<SoloTrackingSubmit> = /*@__PURE__*/
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 48);
+
+/**
+ * @generated from message contracts.core.workout_execution.v1.message.StreamSoloMatchTrackingRequest
+ */
+export type StreamSoloMatchTrackingRequest = Message<"contracts.core.workout_execution.v1.message.StreamSoloMatchTrackingRequest"> & {
+  /**
+   * @generated from oneof contracts.core.workout_execution.v1.message.StreamSoloMatchTrackingRequest.payload
+   */
+  payload: {
+    /**
+     * Gửi 1 lần duy nhất khi mở kết nối stream
+     *
+     * @generated from field: contracts.core.workout_execution.v1.message.SoloTrackingConfig config = 1;
+     */
+    value: SoloTrackingConfig;
+    case: "config";
+  } | {
+    /**
+     * Gửi liên tục 15 - 20 FPS
+     *
+     * @generated from field: contracts.core.workout_execution.v1.message.SoloTrackingFrame frame = 2;
+     */
+    value: SoloTrackingFrame;
+    case: "frame";
+  } | {
+    /**
+     * Gửi khi người dùng bấm bỏ cuộc / đầu hàng
+     *
+     * @generated from field: contracts.core.workout_execution.v1.message.SoloTrackingAbort abort = 3;
+     */
+    value: SoloTrackingAbort;
+    case: "abort";
+  } | {
+    /**
+     * Gửi khi người dùng bấm hoàn thành / nộp bài
+     *
+     * @generated from field: contracts.core.workout_execution.v1.message.SoloTrackingSubmit submit = 4;
+     */
+    value: SoloTrackingSubmit;
+    case: "submit";
+  } | { case: undefined; value?: undefined };
+};
+
+/**
+ * Describes the message contracts.core.workout_execution.v1.message.StreamSoloMatchTrackingRequest.
+ * Use `create(StreamSoloMatchTrackingRequestSchema)` to create a new message.
+ */
+export const StreamSoloMatchTrackingRequestSchema: GenMessage<StreamSoloMatchTrackingRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 49);
+
+/**
+ * @generated from message contracts.core.workout_execution.v1.message.StreamSoloMatchTrackingResponse
+ */
+export type StreamSoloMatchTrackingResponse = Message<"contracts.core.workout_execution.v1.message.StreamSoloMatchTrackingResponse"> & {
+  /**
+   * @generated from field: int32 my_confirmed_value = 1;
+   */
+  myConfirmedValue: number;
+
+  /**
+   * @generated from field: float my_form_score = 2;
+   */
+  myFormScore: number;
+
+  /**
+   * @generated from field: bool is_valid_form = 3;
+   */
+  isValidForm: boolean;
+
+  /**
+   * @generated from field: contracts.core.workout_execution.v1.message.ParticipantStreamStatus my_status = 4;
+   */
+  myStatus: ParticipantStreamStatus;
+
+  /**
+   * @generated from field: bool is_completed = 5;
+   */
+  isCompleted: boolean;
+
+  /**
+   * @generated from field: int32 opponent_value = 6;
+   */
+  opponentValue: number;
+
+  /**
+   * @generated from field: float opponent_form_score = 7;
+   */
+  opponentFormScore: number;
+
+  /**
+   * @generated from field: contracts.core.workout_execution.v1.message.ParticipantStreamStatus opponent_status = 8;
+   */
+  opponentStatus: ParticipantStreamStatus;
+
+  /**
+   * @generated from field: repeated string detected_errors = 9;
+   */
+  detectedErrors: string[];
+
+  /**
+   * @generated from field: string audio_cue = 10;
+   */
+  audioCue: string;
+
+  /**
+   * @generated from field: int32 remaining_ceiling_seconds = 11;
+   */
+  remainingCeilingSeconds: number;
+
+  /**
+   * @generated from field: bool match_ended = 12;
+   */
+  matchEnded: boolean;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp timestamp = 13;
+   */
+  timestamp?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message contracts.core.workout_execution.v1.message.StreamSoloMatchTrackingResponse.
+ * Use `create(StreamSoloMatchTrackingResponseSchema)` to create a new message.
+ */
+export const StreamSoloMatchTrackingResponseSchema: GenMessage<StreamSoloMatchTrackingResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 50);
 
 /**
  * @generated from enum contracts.core.workout_execution.v1.message.MotionAssetType
@@ -1286,4 +1486,66 @@ export enum MotionAssetType {
  */
 export const MotionAssetTypeSchema: GenEnum<MotionAssetType> = /*@__PURE__*/
   enumDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 0);
+
+/**
+ * @generated from enum contracts.core.workout_execution.v1.message.SoloChallengeType
+ */
+export enum SoloChallengeType {
+  /**
+   * @generated from enum value: SOLO_CHALLENGE_TYPE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: SOLO_CHALLENGE_TYPE_REPS = 1;
+   */
+  REPS = 1,
+
+  /**
+   * @generated from enum value: SOLO_CHALLENGE_TYPE_DURATION = 2;
+   */
+  DURATION = 2,
+}
+
+/**
+ * Describes the enum contracts.core.workout_execution.v1.message.SoloChallengeType.
+ */
+export const SoloChallengeTypeSchema: GenEnum<SoloChallengeType> = /*@__PURE__*/
+  enumDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 1);
+
+/**
+ * @generated from enum contracts.core.workout_execution.v1.message.ParticipantStreamStatus
+ */
+export enum ParticipantStreamStatus {
+  /**
+   * @generated from enum value: PARTICIPANT_STREAM_STATUS_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: PARTICIPANT_STREAM_STATUS_ACTIVE = 1;
+   */
+  ACTIVE = 1,
+
+  /**
+   * @generated from enum value: PARTICIPANT_STREAM_STATUS_SPECTATING = 2;
+   */
+  SPECTATING = 2,
+
+  /**
+   * @generated from enum value: PARTICIPANT_STREAM_STATUS_COMPLETED = 3;
+   */
+  COMPLETED = 3,
+
+  /**
+   * @generated from enum value: PARTICIPANT_STREAM_STATUS_WAITING = 4;
+   */
+  WAITING = 4,
+}
+
+/**
+ * Describes the enum contracts.core.workout_execution.v1.message.ParticipantStreamStatus.
+ */
+export const ParticipantStreamStatusSchema: GenEnum<ParticipantStreamStatus> = /*@__PURE__*/
+  enumDesc(file_contracts_core_workout_execution_v1_message_workout_execution_messages, 2);
 

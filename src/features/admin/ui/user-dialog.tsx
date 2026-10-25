@@ -1,237 +1,266 @@
 "use client";
 
 import {
-  Activity,
-  AlertCircle,
   Calendar,
-  Dumbbell,
-  HeartPulse,
+  Check,
+  Coins,
+  Copy,
+  Lock,
+  Mail,
   Shield,
-  User,
+  ShieldAlert,
+  ShieldCheck,
+  Unlock,
+  UserCheck,
   X,
 } from "lucide-react";
+import { useState } from "react";
 
 import type { AdminUser } from "@/features/admin/domain/admin-types";
 import { USER_ROLE_LABEL, USER_STATUS_LABEL } from "@/features/admin/domain/admin-types";
 import { UserAvatar } from "@/features/admin/ui/user-avatar";
+import { UserWalletPanel } from "@/features/admin/ui/user-wallet-panel";
+import { useScrollLock } from "@/shared/lib/use-scroll-lock";
+import { Button } from "@/shared/ui/button";
 
 export interface UserDialogProps {
   isOpen: boolean;
   user?: AdminUser | null;
   onClose: () => void;
-  onToggleStatus?: (userId: string) => Promise<void>;
+  onToggleStatus?: (userId: string, currentStatus?: AdminUser["status"]) => Promise<void>;
 }
 
 export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialogProps) {
+  useScrollLock(isOpen && Boolean(user));
+  const [activeTab, setActiveTab] = useState<"account" | "wallet">("account");
+  const [isToggling, setIsToggling] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
+
   if (!isOpen || !user) {
     return null;
   }
 
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(user.userId);
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
+  };
+
+  const handleToggle = async () => {
+    if (!onToggleStatus || isToggling) return;
+    try {
+      setIsToggling(true);
+      await onToggleStatus(user.userId, user.status);
+    } finally {
+      setIsToggling(false);
+    }
+  };
+
+  const isBanned = user.status === "banned";
+  const isAdmin = user.role === "admin";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--color-scrim)] backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="w-full max-w-xl bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-card)] shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)] bg-[var(--color-surface-subtle)]">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] border border-[var(--color-action)]/20 text-[var(--color-action)] flex items-center justify-center">
-              <User className="size-5" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-[var(--color-text)]">
-                User Profile (Proto Schema)
-              </h2>
-              <p className="text-xs text-[var(--color-text-muted)] font-mono">
-                User ID: {user.userId}
-              </p>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-neutral-200/80 overflow-hidden flex flex-col max-h-[85vh]">
+        {/* Top Control Bar */}
+        <div className="px-5 pt-4 pb-1 flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+            Quản trị thành viên
+          </span>
           <button
             type="button"
             onClick={onClose}
-            className="size-8 rounded-full hover:bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] flex items-center justify-center transition-colors cursor-pointer"
+            aria-label="Đóng modal"
+            className="size-7 rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-neutral-700 flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="size-4" />
           </button>
         </div>
 
-        {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-6">
-          {/* User Hero Summary */}
-          <div className="flex items-center gap-4 p-4 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)]">
-            <div className="size-16 rounded-[var(--radius-input)] bg-[var(--color-action)] text-[var(--color-action-contrast)] font-bold text-2xl flex items-center justify-center shadow-md overflow-hidden shrink-0">
-              <UserAvatar alt={user.displayName} size={64} src={user.avatarUrl} />
-            </div>
-            <div className="flex-1 min-w-0 space-y-1">
-              <h3 className="text-base font-bold text-[var(--color-text)] truncate">
-                {user.displayName}
-              </h3>
-              <p className="text-xs text-[var(--color-text-muted)] truncate">{user.email}</p>
-              <div className="flex items-center gap-2 pt-1">
-                <span className="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)] border border-[var(--color-action)]/20">
-                  {USER_ROLE_LABEL[user.role]}
-                </span>
+        {/* Community Profile Style Header */}
+        <div className="px-5 py-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl font-bold text-neutral-900 tracking-tight leading-tight truncate">
+                {user.displayName || "Thành viên FITAI"}
+              </h2>
+
+              <p className="text-[13px] text-neutral-500 font-normal mt-0.5 truncate flex items-center gap-1">
+                <Mail className="size-3 text-neutral-400 shrink-0" />
+                <span className="truncate">{user.email || "Chưa thiết lập email"}</span>
+              </p>
+
+              <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
                 <span
-                  className={`px-2.5 py-0.5 text-[11px] font-bold rounded-full border ${
-                    user.status === "active"
-                      ? "bg-[var(--color-recovery-soft)] text-[var(--color-recovery)] border-[var(--color-recovery)]/30"
-                      : "bg-[var(--color-effort-soft)] text-[var(--color-effort)] border-[var(--color-effort)]/30"
+                  className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border ${
+                    isAdmin
+                      ? "bg-indigo-50 text-indigo-700 border-indigo-200/70"
+                      : "bg-neutral-100 text-neutral-700 border-neutral-200/80"
                   }`}
                 >
+                  {USER_ROLE_LABEL[user.role]}
+                </span>
+
+                <span
+                  className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border flex items-center gap-1 ${
+                    isBanned
+                      ? "bg-rose-50 text-rose-700 border-rose-200/70"
+                      : "bg-emerald-50 text-emerald-700 border-emerald-200/70"
+                  }`}
+                >
+                  <span
+                    className={`size-1.5 rounded-full ${isBanned ? "bg-rose-500" : "bg-emerald-500"}`}
+                  />
                   {USER_STATUS_LABEL[user.status]}
                 </span>
+
+                <button
+                  type="button"
+                  onClick={handleCopyId}
+                  title="Sao chép User ID"
+                  className="px-1.5 py-0.5 rounded-md bg-neutral-100 hover:bg-neutral-200/70 text-neutral-500 hover:text-neutral-800 text-[10px] font-mono flex items-center gap-1 cursor-pointer transition-colors border border-neutral-200/60"
+                >
+                  <span>{user.userId.slice(0, 8)}...</span>
+                  {copiedId ? (
+                    <Check className="size-2.5 text-emerald-600" />
+                  ) : (
+                    <Copy className="size-2.5 text-neutral-400" />
+                  )}
+                </button>
               </div>
             </div>
-          </div>
 
-          {/* Biological Metrics */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-dim)] flex items-center gap-1.5">
-              <HeartPulse className="size-3.5 text-[var(--color-action)]" />
-              <span>Biological Metrics</span>
-            </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-              <div className="p-3 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)]">
-                <span className="text-[var(--color-text-muted)] text-[11px] block">Height</span>
-                <span className="font-bold text-[var(--color-text)]">
-                  {user.biologicalMetrics.heightCm} cm
-                </span>
-              </div>
-              <div className="p-3 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)]">
-                <span className="text-[var(--color-text-muted)] text-[11px] block">Weight</span>
-                <span className="font-bold text-[var(--color-text)]">
-                  {user.biologicalMetrics.weightKg} kg
-                </span>
-              </div>
-              <div className="p-3 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)]">
-                <span className="text-[var(--color-text-muted)] text-[11px] block">Body Fat %</span>
-                <span className="font-bold text-[var(--color-text)]">
-                  {user.biologicalMetrics.bodyFatPercent
-                    ? `${user.biologicalMetrics.bodyFatPercent}%`
-                    : "—"}
-                </span>
-              </div>
-              <div className="p-3 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)]">
-                <span className="text-[var(--color-text-muted)] text-[11px] block">
-                  Completion Rate
-                </span>
-                <span className="font-bold text-[var(--color-action)]">
-                  {Math.round(user.completionRate * 100)}%
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Fitness Preferences & Goals */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div className="p-3.5 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-1.5">
-              <span className="text-[var(--color-text-muted)] font-medium flex items-center gap-1.5">
-                <Dumbbell className="size-3.5 text-[var(--color-action)]" /> Experience Level &
-                Coach Style
-              </span>
-              <p className="font-bold text-[var(--color-text)]">{user.experienceLevel}</p>
-              {user.coachStyle && (
-                <p className="text-[11px] text-[var(--color-text-muted)] italic">
-                  Style: {user.coachStyle}
-                </p>
-              )}
-            </div>
-
-            <div className="p-3.5 rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] space-y-1.5">
-              <span className="text-[var(--color-text-muted)] font-medium flex items-center gap-1.5">
-                <Activity className="size-3.5 text-[var(--color-action)]" /> Training Goals
-              </span>
-              <div className="flex flex-wrap gap-1">
-                {user.goals.map((g, i) => (
-                  <span
-                    key={i}
-                    className="px-2 py-0.5 rounded-[var(--radius-input)] bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] text-[11px] font-semibold"
-                  >
-                    {g}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Injuries Record */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-dim)] flex items-center gap-1.5">
-              <AlertCircle className="size-3.5 text-[var(--color-effort)]" />
-              <span>Injury History</span>
-            </h4>
-            {user.injuries.length === 0 ? (
-              <p className="text-xs text-[var(--color-text-muted)] italic">No reported injuries.</p>
-            ) : (
-              <div className="space-y-1.5">
-                {user.injuries.map((inj) => (
-                  <div
-                    key={inj.id}
-                    className="p-2.5 rounded-[var(--radius-input)] bg-[var(--color-effort-soft)]/40 border border-[var(--color-effort)]/20 text-xs flex items-center justify-between"
-                  >
-                    <div>
-                      <span className="font-bold text-[var(--color-text)]">{inj.affectedArea}</span>{" "}
-                      — <span className="text-[var(--color-text-muted)]">{inj.type}</span>
-                    </div>
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                        inj.isRecovered
-                          ? "bg-[var(--color-recovery-soft)] text-[var(--color-recovery)] border-[var(--color-recovery)]/30"
-                          : "bg-[var(--color-effort-soft)] text-[var(--color-effort)] border-[var(--color-effort)]/30"
-                      }`}
-                    >
-                      {inj.isRecovered ? "Recovered" : "Active Injury"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Meta System Timeline */}
-          <div className="grid grid-cols-2 gap-3 text-xs pt-2 border-t border-[var(--color-border)]">
-            <div className="space-y-0.5">
-              <span className="text-[var(--color-text-dim)] text-[11px] flex items-center gap-1">
-                <Calendar className="size-3" /> Registration Date
-              </span>
-              <p className="font-semibold text-[var(--color-text)]">
-                {new Date(user.createdAt).toLocaleDateString("en-US")}
-              </p>
-            </div>
-            <div className="space-y-0.5">
-              <span className="text-[var(--color-text-dim)] text-[11px] flex items-center gap-1">
-                <Shield className="size-3" /> OAuth Provider
-              </span>
-              <p className="font-semibold text-[var(--color-text)] capitalize">{user.provider}</p>
+            {/* Avatar Circle on the Right (Community Profile Style) */}
+            <div className="relative h-15 w-15 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-neutral-200/90 bg-neutral-100 flex items-center justify-center font-bold text-lg text-neutral-700">
+              <UserAvatar alt={user.displayName} size={60} src={user.avatarUrl} />
             </div>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[var(--color-border)] bg-[var(--color-surface-subtle)]">
-          {onToggleStatus && (
+        {/* Tab Switcher */}
+        <div className="px-5 pt-2 pb-1 bg-white border-b border-neutral-100">
+          <div className="p-1 bg-neutral-100 rounded-xl flex gap-1 text-xs font-semibold">
             <button
               type="button"
-              onClick={async () => {
-                await onToggleStatus(user.userId);
-                onClose();
-              }}
-              className={`px-4 py-2 rounded-[var(--radius-input)] text-xs font-bold border transition-colors cursor-pointer ${
-                user.status === "active"
-                  ? "bg-[var(--color-effort-soft)] hover:bg-[var(--color-effort)]/20 text-[var(--color-effort)] border-[var(--color-effort)]/30"
-                  : "bg-[var(--color-recovery-soft)] hover:bg-[var(--color-recovery)]/20 text-[var(--color-recovery)] border-[var(--color-recovery)]/30"
+              onClick={() => setActiveTab("account")}
+              className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === "account"
+                  ? "bg-white text-neutral-900 shadow-xs font-bold"
+                  : "text-neutral-500 hover:text-neutral-800"
               }`}
             >
-              {user.status === "active" ? "Ban Account" : "Unban Account"}
+              <Shield className="size-3.5 text-indigo-600" />
+              <span>Tài khoản & Phân quyền</span>
             </button>
-          )}
+            <button
+              type="button"
+              onClick={() => setActiveTab("wallet")}
+              className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                activeTab === "wallet"
+                  ? "bg-white text-neutral-900 shadow-xs font-bold"
+                  : "text-neutral-500 hover:text-neutral-800"
+              }`}
+            >
+              <Coins className="size-3.5 text-amber-500" />
+              <span>Ví FitCoins & Sổ cái</span>
+            </button>
+          </div>
+        </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-[var(--radius-input)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text)] text-xs font-semibold border border-[var(--color-border)] transition-colors cursor-pointer ml-auto"
-          >
-            Close
-          </button>
+        {/* Scrollable Content Body */}
+        <div className="p-5 overflow-y-auto overscroll-contain flex-1 bg-white">
+          {activeTab === "account" ? (
+            <div className="space-y-3">
+              {/* Account Quick Metrics Card */}
+              <div className="p-3.5 rounded-xl border border-neutral-200/60 bg-neutral-50/50 space-y-2.5">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 block">
+                  Thông tin hệ thống
+                </span>
+
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-500 flex items-center gap-1.5">
+                      <ShieldCheck className="size-3.5 text-indigo-600" />
+                      Cổng xác thực
+                    </span>
+                    <span className="font-semibold text-neutral-800 capitalize">
+                      {user.provider}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-500 flex items-center gap-1.5">
+                      <Calendar className="size-3.5 text-indigo-600" />
+                      Ngày khởi tạo
+                    </span>
+                    <span className="font-semibold text-neutral-800 font-mono">
+                      {new Date(user.createdAt).toLocaleDateString("vi-VN", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-neutral-500 flex items-center gap-1.5">
+                      <UserCheck className="size-3.5 text-indigo-600" />
+                      Phân quyền vai trò
+                    </span>
+                    <span className="font-semibold text-neutral-800">
+                      {USER_ROLE_LABEL[user.role]}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Security & Access Management Card */}
+              <div className="p-3.5 rounded-xl border border-neutral-200/60 bg-neutral-50/50 space-y-2.5">
+                <div className="flex items-center gap-1.5">
+                  <ShieldAlert className="size-3.5 text-neutral-500" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                    Bảo mật & Trạng thái
+                  </span>
+                </div>
+
+                <p className="text-xs text-neutral-600 leading-relaxed">
+                  {isBanned
+                    ? "Tài khoản hiện đang bị khóa. Người dùng bị vô hiệu hóa quyền truy cập hệ thống."
+                    : "Tài khoản đang hoạt động bình thường, có thể đăng nhập và ghi nhận buổi tập."}
+                </p>
+
+                {onToggleStatus && (
+                  <div className="pt-1">
+                    {isBanned ? (
+                      <Button
+                        type="button"
+                        variant="primary"
+                        loading={isToggling}
+                        onClick={handleToggle}
+                        className="w-full text-xs"
+                      >
+                        <Unlock className="size-3.5" />
+                        <span>Mở khóa tài khoản người dùng</span>
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="danger"
+                        loading={isToggling}
+                        onClick={handleToggle}
+                        className="w-full text-xs"
+                      >
+                        <Lock className="size-3.5" />
+                        <span>Khóa tài khoản người dùng</span>
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <UserWalletPanel userId={user.userId} />
+          )}
         </div>
       </div>
     </div>

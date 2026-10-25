@@ -108,8 +108,9 @@ export async function fetchAdminExercises({
       equipmentId,
       difficulty,
       limit: 100,
-      status: protoStatus,
-      includeAllStatuses,
+      ...(protoStatus !== undefined || includeAllStatuses
+        ? ({ status: protoStatus, includeAllStatuses } as any)
+        : {}),
     });
 
     let exercisesList: AdminExercise[] = (res.exercises || []).map((ex) => ({
@@ -205,6 +206,9 @@ export async function fetchAdminExerciseById(id: string): Promise<AdminExercise 
 }
 
 export async function approveExercise(id: string): Promise<AdminExercise> {
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[approveExercise] FITAI_RPC_URL not configured or RPC failed.");
+  }
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(ExerciseService, createServerTransport(accessToken));
   const res = await client.approveExercise({ id });
@@ -235,6 +239,9 @@ export async function approveExercise(id: string): Promise<AdminExercise> {
 }
 
 export async function archiveExercise(id: string): Promise<AdminExercise> {
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[archiveExercise] FITAI_RPC_URL not configured or RPC failed.");
+  }
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(ExerciseService, createServerTransport(accessToken));
   const res = await client.updateExercise({
@@ -270,6 +277,9 @@ export async function archiveExercise(id: string): Promise<AdminExercise> {
 export async function createExercise(
   data: Omit<AdminExercise, "id" | "createdAt" | "updatedAt">,
 ): Promise<AdminExercise> {
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[createExercise] FITAI_RPC_URL not configured or RPC failed.");
+  }
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(ExerciseService, createServerTransport(accessToken));
   const res = await client.createExercise({
@@ -316,6 +326,9 @@ export async function updateExercise(
   id: string,
   data: Partial<AdminExercise>,
 ): Promise<AdminExercise> {
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[updateExercise] FITAI_RPC_URL not configured or RPC failed.");
+  }
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(ExerciseService, createServerTransport(accessToken));
   const res = await client.updateExercise({
@@ -361,6 +374,9 @@ export async function updateExercise(
 }
 
 export async function deleteExercise(id: string): Promise<boolean> {
+  if (!process.env.FITAI_RPC_URL) {
+    return false;
+  }
   try {
     const { accessToken } = await getAuthenticatedSession();
     const client = createClient(ExerciseService, createServerTransport(accessToken));
@@ -419,6 +435,9 @@ export async function fetchMetadataList(
 }
 
 export async function createMetadataItem(item: Omit<MetadataItem, "id">): Promise<MetadataItem> {
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[createMetadataItem] FITAI_RPC_URL not configured or RPC failed.");
+  }
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(ExerciseService, createServerTransport(accessToken));
 
@@ -440,6 +459,9 @@ export async function updateMetadataItem(
   id: string,
   data: Partial<MetadataItem>,
 ): Promise<MetadataItem> {
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[updateMetadataItem] FITAI_RPC_URL not configured or RPC failed.");
+  }
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(ExerciseService, createServerTransport(accessToken));
 
@@ -457,17 +479,31 @@ export async function updateMetadataItem(
   return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
 }
 
-export async function deleteMetadataItem(id: string): Promise<boolean> {
+export async function deleteMetadataItem(
+  id: string,
+  category?: MetadataItem["category"],
+): Promise<boolean> {
+  if (!process.env.FITAI_RPC_URL) {
+    return false;
+  }
   try {
     const { accessToken } = await getAuthenticatedSession();
     const client = createClient(ExerciseService, createServerTransport(accessToken));
-    // Tạm thời coi ID quyết định category hoặc gọi tuần tự do không có category trong params
-    // Thường ID có tiền tố bp-, eq-, ms-, tg-
-    if (id.startsWith("bp")) {
+    const targetCat =
+      category ||
+      (id.startsWith("bp")
+        ? "bodyPart"
+        : id.startsWith("eq")
+          ? "equipment"
+          : id.startsWith("ms")
+            ? "muscle"
+            : "tag");
+
+    if (targetCat === "bodyPart") {
       await client.deleteBodyPart({ id });
-    } else if (id.startsWith("eq")) {
+    } else if (targetCat === "equipment") {
       await client.deleteEquipment({ id });
-    } else if (id.startsWith("ms")) {
+    } else if (targetCat === "muscle") {
       await client.deleteMuscle({ id });
     } else {
       await client.deleteTag({ id });
@@ -480,5 +516,5 @@ export async function deleteMetadataItem(id: string): Promise<boolean> {
 }
 
 export async function resetExerciseStore(): Promise<void> {
-  // Bỏ logic mock reset vì đã gọi gRPC
+  // Deprecated: In-memory store removed in favor of direct ConnectRPC.
 }

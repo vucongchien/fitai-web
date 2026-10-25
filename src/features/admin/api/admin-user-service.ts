@@ -66,18 +66,6 @@ export async function fetchAdminUsers({
         role,
         status: isLocked ? "banned" : "active",
         provider: (u.identityType as "google" | "facebook" | "email") || "email",
-        biologicalMetrics: {
-          heightCm: 0,
-          weightKg: 0,
-        },
-        experienceLevel: "Standard",
-        goals: [],
-        preferredWorkoutTimes: [],
-        availableEquipment: [],
-        preferredMuscleGroups: [],
-        injuries: [],
-        completionRate: 0,
-        aiCoachActivated: false,
         createdAt: u.createdAt || new Date().toISOString(),
         updatedAt: u.updatedAt || new Date().toISOString(),
         lastActiveAt: u.updatedAt || u.createdAt || new Date().toISOString(),
@@ -107,6 +95,10 @@ export async function toggleUserStatus(
   userId: string,
   currentStatus?: AdminUserStatus,
 ): Promise<AdminUser> {
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[toggleUserStatus] FITAI_RPC_URL not configured or RPC failed.");
+  }
+
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(AuthService, createServerTransport(accessToken));
 
@@ -129,15 +121,6 @@ export async function toggleUserStatus(
     role: "user",
     status: shouldLock ? "banned" : "active",
     provider: "email",
-    biologicalMetrics: { heightCm: 0, weightKg: 0 },
-    experienceLevel: "Standard",
-    goals: [],
-    preferredWorkoutTimes: [],
-    availableEquipment: [],
-    preferredMuscleGroups: [],
-    injuries: [],
-    completionRate: 0,
-    aiCoachActivated: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     lastActiveAt: new Date().toISOString(),

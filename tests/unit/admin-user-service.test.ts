@@ -150,4 +150,13 @@ describe("admin User Service (ConnectRPC Aligned)", () => {
     });
     expect(updated.status).toBe("active");
   });
+
+  it("should throw error when FITAI_RPC_URL is missing for toggleUserStatus", async () => {
+    vi.stubEnv("FITAI_RPC_URL", "");
+
+    const { toggleUserStatus } = await import("@/features/admin/api/admin-user-service");
+    await expect(toggleUserStatus("usr-1", "active")).rejects.toThrow(
+      "FITAI_RPC_URL not configured",
+    );
+  });
 });
