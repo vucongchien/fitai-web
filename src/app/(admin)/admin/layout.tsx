@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
+import { fetchAdminExercises } from "@/features/admin/api/admin-exercise-service";
 import { AdminForbiddenView } from "@/features/admin/ui/admin-forbidden-view";
 import { AdminQueryProvider } from "@/features/admin/ui/admin-query-provider";
 import { AdminSidebar } from "@/features/admin/ui/admin-sidebar";
@@ -38,11 +39,22 @@ async function AdminGate({ children }: { children: React.ReactNode }) {
   }
 
   // 3. User is authorized ADMIN -> Render Admin Dashboard
+  let pendingCount = 0;
+  try {
+    const pendingExercises = await fetchAdminExercises({
+      filters: { status: "submittedForApproval" },
+      limit: 100,
+    });
+    pendingCount = pendingExercises.totalCount || pendingExercises.items.length;
+  } catch {
+    pendingCount = 0;
+  }
+
   return (
     <AdminQueryProvider>
       <div className="min-h-screen bg-[var(--color-canvas)] text-[var(--color-text)] flex font-sans selection:bg-[var(--color-action-soft)] antialiased">
         {/* Sidebar */}
-        <AdminSidebar pendingApprovalCount={3} />
+        <AdminSidebar pendingApprovalCount={pendingCount} />
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0">

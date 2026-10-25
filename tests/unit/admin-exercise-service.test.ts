@@ -4,10 +4,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   ApproveExerciseResponseSchema,
+  CreateBodyPartResponseSchema,
   CreateExerciseResponseSchema,
+  DeleteBodyPartResponseSchema,
   GetCatalogMetadataResponseSchema,
   GetExerciseResponseSchema,
   SearchExercisesResponseSchema,
+  UpdateBodyPartResponseSchema,
   UpdateExerciseResponseSchema,
   ExerciseStatus,
 } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
@@ -22,6 +25,18 @@ const mockUpdateExercise = vi.fn<ExerciseClient["updateExercise"]>();
 const mockCreateExercise = vi.fn<ExerciseClient["createExercise"]>();
 const mockDeleteExercise = vi.fn<ExerciseClient["deleteExercise"]>();
 const mockGetCatalogMetadata = vi.fn<ExerciseClient["getCatalogMetadata"]>();
+const mockCreateBodyPart = vi.fn<ExerciseClient["createBodyPart"]>();
+const mockCreateEquipment = vi.fn<ExerciseClient["createEquipment"]>();
+const mockCreateMuscle = vi.fn<ExerciseClient["createMuscle"]>();
+const mockCreateTag = vi.fn<ExerciseClient["createTag"]>();
+const mockUpdateBodyPart = vi.fn<ExerciseClient["updateBodyPart"]>();
+const mockUpdateEquipment = vi.fn<ExerciseClient["updateEquipment"]>();
+const mockUpdateMuscle = vi.fn<ExerciseClient["updateMuscle"]>();
+const mockUpdateTag = vi.fn<ExerciseClient["updateTag"]>();
+const mockDeleteBodyPart = vi.fn<ExerciseClient["deleteBodyPart"]>();
+const mockDeleteEquipment = vi.fn<ExerciseClient["deleteEquipment"]>();
+const mockDeleteMuscle = vi.fn<ExerciseClient["deleteMuscle"]>();
+const mockDeleteTag = vi.fn<ExerciseClient["deleteTag"]>();
 
 vi.mock("@connectrpc/connect", () => ({
   createClient: (_service: unknown, _transport: unknown) => ({
@@ -32,6 +47,18 @@ vi.mock("@connectrpc/connect", () => ({
     createExercise: mockCreateExercise,
     deleteExercise: mockDeleteExercise,
     getCatalogMetadata: mockGetCatalogMetadata,
+    createBodyPart: mockCreateBodyPart,
+    createEquipment: mockCreateEquipment,
+    createMuscle: mockCreateMuscle,
+    createTag: mockCreateTag,
+    updateBodyPart: mockUpdateBodyPart,
+    updateEquipment: mockUpdateEquipment,
+    updateMuscle: mockUpdateMuscle,
+    updateTag: mockUpdateTag,
+    deleteBodyPart: mockDeleteBodyPart,
+    deleteEquipment: mockDeleteEquipment,
+    deleteMuscle: mockDeleteMuscle,
+    deleteTag: mockDeleteTag,
   }),
 }));
 
@@ -54,6 +81,18 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     mockCreateExercise.mockReset();
     mockDeleteExercise.mockReset();
     mockGetCatalogMetadata.mockReset();
+    mockCreateBodyPart.mockReset();
+    mockCreateEquipment.mockReset();
+    mockCreateMuscle.mockReset();
+    mockCreateTag.mockReset();
+    mockUpdateBodyPart.mockReset();
+    mockUpdateEquipment.mockReset();
+    mockUpdateMuscle.mockReset();
+    mockUpdateTag.mockReset();
+    mockDeleteBodyPart.mockReset();
+    mockDeleteEquipment.mockReset();
+    mockDeleteMuscle.mockReset();
+    mockDeleteTag.mockReset();
   });
 
   afterEach(() => {
@@ -161,6 +200,64 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     const res = await deleteExercise("ex-1");
 
     expect(mockDeleteExercise).toHaveBeenCalled();
+    expect(res).toBe(true);
+  });
+
+  it("nên lấy danh sách metadata và phân loại theo category", async () => {
+    mockGetCatalogMetadata.mockResolvedValue(
+      create(GetCatalogMetadataResponseSchema, {
+        bodyParts: [{ id: "bp-chest", name: "Chest" }],
+        equipments: [{ id: "eq-barbell", name: "Barbell" }],
+        muscles: [{ id: "ms-pectoralis", name: "Pectoralis Major" }],
+        tags: [{ id: "tg-strength", name: "Strength" }],
+      }),
+    );
+
+    const { fetchMetadataList } = await import("@/features/admin/api/admin-exercise-service");
+    const all = await fetchMetadataList();
+    expect(all).toHaveLength(4);
+
+    const onlyBodyParts = await fetchMetadataList("bodyPart");
+    expect(onlyBodyParts).toHaveLength(1);
+    expect(onlyBodyParts[0].name).toBe("Chest");
+  });
+
+  it("nên tạo mới metadata item cho bodyPart", async () => {
+    mockCreateBodyPart.mockResolvedValue(
+      create(CreateBodyPartResponseSchema, {
+        bodyPart: { id: "bp-back", name: "Back" },
+      }),
+    );
+
+    const { createMetadataItem } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await createMetadataItem({ name: "Back", category: "bodyPart" });
+
+    expect(mockCreateBodyPart).toHaveBeenCalledWith({ name: "Back" });
+    expect(res.id).toBe("bp-back");
+    expect(res.category).toBe("bodyPart");
+  });
+
+  it("nên cập nhật metadata item cho bodyPart", async () => {
+    mockUpdateBodyPart.mockResolvedValue(
+      create(UpdateBodyPartResponseSchema, {
+        bodyPart: { id: "bp-back", name: "Upper Back" },
+      }),
+    );
+
+    const { updateMetadataItem } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await updateMetadataItem("bp-back", { name: "Upper Back", category: "bodyPart" });
+
+    expect(mockUpdateBodyPart).toHaveBeenCalledWith({ id: "bp-back", name: "Upper Back" });
+    expect(res.name).toBe("Upper Back");
+  });
+
+  it("nên xóa metadata item với category được chỉ định", async () => {
+    mockDeleteBodyPart.mockResolvedValue(create(DeleteBodyPartResponseSchema, {}));
+
+    const { deleteMetadataItem } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await deleteMetadataItem("bp-back", "bodyPart");
+
+    expect(mockDeleteBodyPart).toHaveBeenCalledWith({ id: "bp-back" });
     expect(res).toBe(true);
   });
 });

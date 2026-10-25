@@ -72,18 +72,18 @@ function buildUserColumns({
       ),
     },
     {
-      header: "Height / Weight",
+      header: "Provider",
       cell: (u) => (
-        <span className="text-xs text-[var(--color-text)] font-mono">
-          {u.biologicalMetrics.heightCm}cm / {u.biologicalMetrics.weightKg}kg
+        <span className="text-xs font-medium text-[var(--color-text-muted)] capitalize">
+          {u.provider}
         </span>
       ),
     },
     {
-      header: "Completion Rate",
+      header: "Joined Date",
       cell: (u) => (
-        <span className="text-xs font-bold text-[var(--color-action)] font-mono">
-          {Math.round(u.completionRate * 100)}%
+        <span className="text-xs text-[var(--color-text)] font-mono">
+          {new Date(u.createdAt).toLocaleDateString()}
         </span>
       ),
     },
