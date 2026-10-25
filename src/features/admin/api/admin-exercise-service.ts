@@ -266,30 +266,26 @@ export async function archiveExercise(id: string): Promise<AdminExercise> {
   }
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(ExerciseService, createServerTransport(accessToken));
-  const res = await client.updateExercise({
-    id,
-    status: mapStatusToProto("archived"),
-  });
-  const ex = res.exercise;
-  if (!ex) {
+  const res = await client.deleteExercise({ id });
+  if (!res.success) {
     throw new Error(`Failed to archive exercise: ${id}`);
   }
 
   return {
-    id: ex.id,
-    name: ex.name,
-    bodyPartId: ex.bodyPartId,
-    equipmentId: ex.equipmentId,
-    targetMuscleId: ex.targetMuscleId,
-    secondaryMuscleIds: ex.secondaryMuscleIds || [],
-    tagIds: ex.tagIds || [],
-    instructions: ex.instructions || "",
-    videoUrl: ex.videoUrl || "",
-    thumbnailUrl: ex.thumbnailUrl || "",
-    difficulty: mapDifficulty(ex.difficulty),
-    defaultRestSeconds: ex.defaultRestSeconds || 90,
-    hasAiSupported: Boolean(ex.hasAiSupported),
-    status: mapStatusToUI(ex.status),
+    id,
+    name: "",
+    bodyPartId: "",
+    equipmentId: "",
+    targetMuscleId: "",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    instructions: "",
+    videoUrl: "",
+    thumbnailUrl: "",
+    difficulty: "beginner",
+    defaultRestSeconds: 90,
+    hasAiSupported: false,
+    status: "archived",
     createdBy: "system",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

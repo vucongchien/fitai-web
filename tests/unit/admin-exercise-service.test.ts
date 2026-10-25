@@ -7,6 +7,7 @@ import {
   CreateBodyPartResponseSchema,
   CreateExerciseResponseSchema,
   DeleteBodyPartResponseSchema,
+  DeleteExerciseResponseSchema,
   GetCatalogMetadataResponseSchema,
   GetExerciseResponseSchema,
   RestoreExerciseResponseSchema,
@@ -158,19 +159,16 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
   });
 
   it("nên lưu trữ (archive) bài tập thành công", async () => {
-    mockUpdateExercise.mockResolvedValue(
-      create(UpdateExerciseResponseSchema, {
-        exercise: { id: "ex-1", name: "Push up", status: ExerciseStatus.ARCHIVED },
+    mockDeleteExercise.mockResolvedValue(
+      create(DeleteExerciseResponseSchema, {
+        success: true,
       }),
     );
 
     const { archiveExercise } = await import("@/features/admin/api/admin-exercise-service");
     const res = await archiveExercise("ex-1");
 
-    expect(mockUpdateExercise).toHaveBeenCalledWith({
-      id: "ex-1",
-      status: ExerciseStatus.ARCHIVED,
-    });
+    expect(mockDeleteExercise).toHaveBeenCalledWith({ id: "ex-1" });
     expect(res.status).toBe("archived");
   });
 
