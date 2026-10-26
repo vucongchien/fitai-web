@@ -7,8 +7,10 @@ import {
   CreateBodyPartResponseSchema,
   CreateExerciseResponseSchema,
   DeleteBodyPartResponseSchema,
+  DeleteExerciseResponseSchema,
   GetCatalogMetadataResponseSchema,
   GetExerciseResponseSchema,
+  RestoreExerciseResponseSchema,
   SearchExercisesResponseSchema,
   UpdateBodyPartResponseSchema,
   UpdateExerciseResponseSchema,
@@ -24,6 +26,7 @@ const mockApproveExercise = vi.fn<ExerciseClient["approveExercise"]>();
 const mockUpdateExercise = vi.fn<ExerciseClient["updateExercise"]>();
 const mockCreateExercise = vi.fn<ExerciseClient["createExercise"]>();
 const mockDeleteExercise = vi.fn<ExerciseClient["deleteExercise"]>();
+const mockRestoreExercise = vi.fn<ExerciseClient["restoreExercise"]>();
 const mockGetCatalogMetadata = vi.fn<ExerciseClient["getCatalogMetadata"]>();
 const mockCreateBodyPart = vi.fn<ExerciseClient["createBodyPart"]>();
 const mockCreateEquipment = vi.fn<ExerciseClient["createEquipment"]>();
@@ -46,6 +49,7 @@ vi.mock("@connectrpc/connect", () => ({
     updateExercise: mockUpdateExercise,
     createExercise: mockCreateExercise,
     deleteExercise: mockDeleteExercise,
+    restoreExercise: mockRestoreExercise,
     getCatalogMetadata: mockGetCatalogMetadata,
     createBodyPart: mockCreateBodyPart,
     createEquipment: mockCreateEquipment,
@@ -80,6 +84,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
     mockUpdateExercise.mockReset();
     mockCreateExercise.mockReset();
     mockDeleteExercise.mockReset();
+    mockRestoreExercise.mockReset();
     mockGetCatalogMetadata.mockReset();
     mockCreateBodyPart.mockReset();
     mockCreateEquipment.mockReset();
@@ -102,20 +107,39 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
   it("nên trả về danh sách bài tập đã được lọc và phân trang", async () => {
     mockSearchExercises.mockResolvedValue(
       create(SearchExercisesResponseSchema, {
-        exercises: [
-          { id: "ex-1", name: "Push up", status: ExerciseStatus.ACTIVE },
-          { id: "ex-2", name: "Pull up", status: ExerciseStatus.PENDING_APPROVAL },
-          { id: "ex-3", name: "Squat", status: ExerciseStatus.DRAFT },
-        ],
+        exercises: [{ id: "ex-1", name: "Push up", status: ExerciseStatus.ACTIVE }],
+        totalCount: 1,
       }),
     );
 
     const { fetchAdminExercises } = await import("@/features/admin/api/admin-exercise-service");
     const res = await fetchAdminExercises({ limit: 2, filters: { status: "approved" } });
 
-    expect(mockSearchExercises).toHaveBeenCalled();
-    expect(res.items).toHaveLength(1); // Chỉ ex-1 active (approved)
+    expect(mockSearchExercises).toHaveBeenCalledWith(
+      expect.objectContaining({
+        limit: 2,
+        offset: 0,
+        status: ExerciseStatus.ACTIVE,
+        includeAllStatuses: false,
+      }),
+    );
+    expect(res.items).toHaveLength(1);
     expect(res.items[0].id).toBe("ex-1");
+    expect(res.totalCount).toBe(1);
+  });
+
+  it("nên khôi phục (restore) bài tập thành công", async () => {
+    mockRestoreExercise.mockResolvedValue(
+      create(RestoreExerciseResponseSchema, {
+        exercise: { id: "ex-1", name: "Push up", status: ExerciseStatus.ACTIVE },
+      }),
+    );
+
+    const { restoreExercise } = await import("@/features/admin/api/admin-exercise-service");
+    const res = await restoreExercise("ex-1");
+
+    expect(mockRestoreExercise).toHaveBeenCalledWith({ id: "ex-1" });
+    expect(res.status).toBe("approved");
   });
 
   it("nên duyệt (approve) bài tập thành công", async () => {
@@ -133,19 +157,16 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
   });
 
   it("nên lưu trữ (archive) bài tập thành công", async () => {
-    mockUpdateExercise.mockResolvedValue(
-      create(UpdateExerciseResponseSchema, {
-        exercise: { id: "ex-1", name: "Push up", status: ExerciseStatus.ARCHIVED },
+    mockDeleteExercise.mockResolvedValue(
+      create(DeleteExerciseResponseSchema, {
+        success: true,
       }),
     );
 
     const { archiveExercise } = await import("@/features/admin/api/admin-exercise-service");
     const res = await archiveExercise("ex-1");
 
-    expect(mockUpdateExercise).toHaveBeenCalledWith({
-      id: "ex-1",
-      status: ExerciseStatus.ARCHIVED,
-    });
+    expect(mockDeleteExercise).toHaveBeenCalledWith({ id: "ex-1" });
     expect(res.status).toBe("archived");
   });
 

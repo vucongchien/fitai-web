@@ -102,18 +102,20 @@ export async function fetchAdminExercises({
         : ExerciseStatus.UNSPECIFIED;
     const includeAllStatuses = !filters?.status || filters.status === "all";
 
+    const offset = cursor ? Math.max(0, parseInt(cursor, 10) || 0) : 0;
+
     const res = await client.searchExercises({
       keyword,
       bodyPartId,
       equipmentId,
       difficulty,
-      limit: 100,
-      ...(protoStatus !== undefined || includeAllStatuses
-        ? ({ status: protoStatus, includeAllStatuses } as any)
-        : {}),
+      limit,
+      offset,
+      status: protoStatus,
+      includeAllStatuses,
     });
 
-    let exercisesList: AdminExercise[] = (res.exercises || []).map((ex) => ({
+    const exercisesList: AdminExercise[] = (res.exercises || []).map((ex) => ({
       id: ex.id,
       name: ex.name,
       bodyPartId: ex.bodyPartId,
@@ -133,26 +135,13 @@ export async function fetchAdminExercises({
       updatedAt: new Date().toISOString(),
     }));
 
-    if (filters?.status && filters.status !== "all") {
-      exercisesList = exercisesList.filter((ex) => ex.status === filters.status);
-    }
-
-    const totalCount = exercisesList.length;
-    let startIndex = 0;
-    if (cursor) {
-      const foundIndex = exercisesList.findIndex((item) => item.id === cursor);
-      if (foundIndex !== -1) {
-        startIndex = foundIndex + 1;
-      }
-    }
-
-    const paginatedItems = exercisesList.slice(startIndex, startIndex + limit);
-    const hasMore = startIndex + limit < exercisesList.length;
-    const nextCursor =
-      hasMore && paginatedItems.length > 0 ? (paginatedItems.at(-1)?.id ?? null) : null;
+    const totalCount = res.totalCount;
+    const nextOffset = offset + exercisesList.length;
+    const hasMore = nextOffset < totalCount && exercisesList.length > 0;
+    const nextCursor = hasMore ? String(nextOffset) : null;
 
     return {
-      items: paginatedItems,
+      items: exercisesList,
       nextCursor,
       totalCount,
     };
@@ -238,19 +227,16 @@ export async function approveExercise(id: string): Promise<AdminExercise> {
   };
 }
 
-export async function archiveExercise(id: string): Promise<AdminExercise> {
+export async function restoreExercise(id: string): Promise<AdminExercise> {
   if (!process.env.FITAI_RPC_URL) {
-    throw new Error("[archiveExercise] FITAI_RPC_URL not configured or RPC failed.");
+    throw new Error("[restoreExercise] FITAI_RPC_URL not configured or RPC failed.");
   }
   const { accessToken } = await getAuthenticatedSession();
   const client = createClient(ExerciseService, createServerTransport(accessToken));
-  const res = await client.updateExercise({
-    id,
-    status: mapStatusToProto("archived"),
-  });
+  const res = await client.restoreExercise({ id });
   const ex = res.exercise;
   if (!ex) {
-    throw new Error(`Failed to archive exercise: ${id}`);
+    throw new Error(`Failed to restore exercise: ${id}`);
   }
 
   return {
@@ -268,6 +254,38 @@ export async function archiveExercise(id: string): Promise<AdminExercise> {
     defaultRestSeconds: ex.defaultRestSeconds || 90,
     hasAiSupported: Boolean(ex.hasAiSupported),
     status: mapStatusToUI(ex.status),
+    createdBy: "system",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+export async function archiveExercise(id: string): Promise<AdminExercise> {
+  if (!process.env.FITAI_RPC_URL) {
+    throw new Error("[archiveExercise] FITAI_RPC_URL not configured or RPC failed.");
+  }
+  const { accessToken } = await getAuthenticatedSession();
+  const client = createClient(ExerciseService, createServerTransport(accessToken));
+  const res = await client.deleteExercise({ id });
+  if (!res.success) {
+    throw new Error(`Failed to archive exercise: ${id}`);
+  }
+
+  return {
+    id,
+    name: "",
+    bodyPartId: "",
+    equipmentId: "",
+    targetMuscleId: "",
+    secondaryMuscleIds: [],
+    tagIds: [],
+    instructions: "",
+    videoUrl: "",
+    thumbnailUrl: "",
+    difficulty: "beginner",
+    defaultRestSeconds: 90,
+    hasAiSupported: false,
+    status: "archived",
     createdBy: "system",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -294,6 +312,7 @@ export async function createExercise(
     thumbnailUrl: data.thumbnailUrl,
     difficulty: data.difficulty,
     defaultRestSeconds: data.defaultRestSeconds,
+    status: mapStatusToProto(data.status),
   });
 
   const ex = res.exercise;
