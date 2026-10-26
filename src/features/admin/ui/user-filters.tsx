@@ -12,15 +12,21 @@ export interface UserFiltersProps {
   filters: UserAdminFilters;
   onChange: (filters: UserAdminFilters) => void;
   onReset: () => void;
+  showRoleFilter?: boolean;
 }
 
-export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
+export function UserFilters({
+  filters,
+  onChange,
+  onReset,
+  showRoleFilter = false,
+}: UserFiltersProps) {
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-card)] p-4 space-y-3 shadow-xs">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--color-action)]">
           <Filter className="size-3.5" />
-          <span>User Filters & Search</span>
+          <span>Filters & Search</span>
         </div>
         <button
           type="button"
@@ -32,9 +38,11 @@ export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div
+        className={`grid grid-cols-1 ${showRoleFilter ? "sm:grid-cols-3" : "sm:grid-cols-3"} gap-3`}
+      >
         {/* Search Input */}
-        <div className="relative">
+        <div className={`relative ${showRoleFilter ? "" : "sm:col-span-2"}`}>
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-[var(--color-text-dim)]" />
           <input
             type="text"
@@ -45,21 +53,23 @@ export function UserFilters({ filters, onChange, onReset }: UserFiltersProps) {
           />
         </div>
 
-        {/* Role Filter */}
-        <div>
-          <select
-            value={filters.role}
-            onChange={(e) =>
-              onChange({ ...filters, role: e.target.value as AdminUserRole | "all" })
-            }
-            className="w-full px-3 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] transition-all cursor-pointer"
-          >
-            <option value="all">All Roles</option>
-            <option value="admin">Administrator</option>
-            <option value="coach">Coach</option>
-            <option value="user">Member</option>
-          </select>
-        </div>
+        {/* Role Filter (Optional) */}
+        {showRoleFilter && (
+          <div>
+            <select
+              value={filters.role ?? "all"}
+              onChange={(e) =>
+                onChange({ ...filters, role: e.target.value as AdminUserRole | "all" })
+              }
+              className="w-full px-3 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] transition-all cursor-pointer"
+            >
+              <option value="all">All Roles</option>
+              <option value="admin">Administrator</option>
+              <option value="brand">Brand Partner</option>
+              <option value="user">Member</option>
+            </select>
+          </div>
+        )}
 
         {/* Status Filter */}
         <div>

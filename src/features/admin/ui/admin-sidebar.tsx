@@ -2,11 +2,13 @@
 
 import {
   ArrowLeft,
+  Building2,
   ChevronRight,
   Dumbbell,
   FolderTree,
   LayoutDashboard,
   Shield,
+  ShieldCheck,
   Sparkles,
   Users,
 } from "lucide-react";
@@ -38,9 +40,19 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
       icon: FolderTree,
     },
     {
-      label: "User Management",
+      label: "Members (Users)",
       href: "/admin/users",
       icon: Users,
+    },
+    {
+      label: "Admin Staff",
+      href: "/admin/admins",
+      icon: ShieldCheck,
+    },
+    {
+      label: "Brand Partners",
+      href: "/admin/brands",
+      icon: Building2,
     },
   ];
 

@@ -54,7 +54,7 @@ export async function fetchAdminUsers({
       const isLocked = u.status === "locked";
       const rawRole = (u.role || "").toLowerCase();
       const role: AdminUserRole =
-        rawRole === "admin" ? "admin" : rawRole === "coach" ? "coach" : "user";
+        rawRole === "admin" ? "admin" : rawRole === "brand" ? "brand" : "user";
       const email = u.identifier || "";
       const displayName =
         u.fullName || (email.includes("@") ? email.split("@")[0] : email) || "User";

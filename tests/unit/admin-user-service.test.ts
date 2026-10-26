@@ -53,9 +53,9 @@ describe("admin User Service (ConnectRPC Aligned)", () => {
         items: [
           {
             id: "usr-1",
-            fullName: "Alex Coach",
+            fullName: "Nike Brand",
             identifier: "alex@fitai.com",
-            role: "coach",
+            role: "brand",
             status: "active",
             identityType: "email",
           },
@@ -85,7 +85,7 @@ describe("admin User Service (ConnectRPC Aligned)", () => {
       status: "",
     });
     expect(res.items).toHaveLength(2);
-    expect(res.items[0].displayName).toBe("Alex Coach");
+    expect(res.items[0].displayName).toBe("Nike Brand");
     expect(res.items[0].status).toBe("active");
     expect(res.items[1].status).toBe("banned");
     expect(res.totalCount).toBe(15);
@@ -104,14 +104,14 @@ describe("admin User Service (ConnectRPC Aligned)", () => {
 
     const { fetchAdminUsers } = await import("@/features/admin/api/admin-user-service");
     await fetchAdminUsers({
-      filters: { q: "alex", role: "coach", status: "banned" },
+      filters: { q: "nike", role: "brand", status: "banned" },
     });
 
     expect(mockListUsers).toHaveBeenCalledWith({
       page: 1,
       pageSize: 10,
-      search: "alex",
-      role: "coach",
+      search: "nike",
+      role: "brand",
       status: "locked",
     });
   });
