@@ -80,6 +80,7 @@ export interface AdminUser {
   role: AdminUserRole;
   status: AdminUserStatus;
   provider: "google" | "facebook" | "email";
+  isBot?: boolean;
   createdAt: string;
   updatedAt: string;
   lastActiveAt: string;
@@ -105,12 +106,14 @@ export interface UserAdminFilters {
   q: string;
   role?: AdminUserRole | "all";
   status: AdminUserStatus | "all";
+  hideBots?: boolean;
 }
 
 export const DEFAULT_USER_ADMIN_FILTERS: UserAdminFilters = {
   q: "",
   role: "all",
   status: "all",
+  hideBots: false,
 };
 
 export interface MetadataItem {

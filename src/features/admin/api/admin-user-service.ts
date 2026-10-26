@@ -56,6 +56,7 @@ export async function fetchAdminUsers({
       const role: AdminUserRole =
         rawRole === "admin" ? "admin" : rawRole === "brand" ? "brand" : "user";
       const email = u.identifier || "";
+      const isBot = email.endsWith("@fitai.bot");
       const displayName =
         u.fullName || (email.includes("@") ? email.split("@")[0] : email) || "User";
 
@@ -66,18 +67,20 @@ export async function fetchAdminUsers({
         role,
         status: isLocked ? "banned" : "active",
         provider: (u.identityType as "google" | "facebook" | "email") || "email",
+        isBot,
         createdAt: u.createdAt || new Date().toISOString(),
         updatedAt: u.updatedAt || new Date().toISOString(),
         lastActiveAt: u.updatedAt || u.createdAt || new Date().toISOString(),
       };
     });
 
+    const displayItems = filters?.hideBots ? items.filter((u) => !u.isBot) : items;
     const totalCount = res.total || items.length;
     const hasMore = page * limit < totalCount;
     const nextCursor = hasMore ? String(page + 1) : null;
 
     return {
-      items,
+      items: displayItems,
       nextCursor,
       totalCount,
     };

@@ -13,6 +13,7 @@ export interface UserFiltersProps {
   onChange: (filters: UserAdminFilters) => void;
   onReset: () => void;
   showRoleFilter?: boolean;
+  showBotToggle?: boolean;
 }
 
 export function UserFilters({
@@ -20,6 +21,7 @@ export function UserFilters({
   onChange,
   onReset,
   showRoleFilter = false,
+  showBotToggle = false,
 }: UserFiltersProps) {
   return (
     <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-card)] p-4 space-y-3 shadow-xs">
@@ -28,14 +30,27 @@ export function UserFilters({
           <Filter className="size-3.5" />
           <span>Filters & Search</span>
         </div>
-        <button
-          type="button"
-          onClick={onReset}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[var(--radius-input)] text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)] border border-transparent hover:border-[var(--color-border)] transition-colors cursor-pointer"
-        >
-          <RotateCcw className="size-3" />
-          <span>Reset</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {showBotToggle && (
+            <label className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={Boolean(filters.hideBots)}
+                onChange={(e) => onChange({ ...filters, hideBots: e.target.checked })}
+                className="size-3.5 rounded border-[var(--color-border)] text-[var(--color-action)] focus:ring-0 cursor-pointer"
+              />
+              <span>Hide AI Bots</span>
+            </label>
+          )}
+          <button
+            type="button"
+            onClick={onReset}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[var(--radius-input)] text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)] border border-transparent hover:border-[var(--color-border)] transition-colors cursor-pointer"
+          >
+            <RotateCcw className="size-3" />
+            <span>Reset</span>
+          </button>
+        </div>
       </div>
 
       <div

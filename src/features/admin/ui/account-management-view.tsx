@@ -40,7 +40,16 @@ function buildUserColumns({
             <UserAvatar alt={u.displayName} size={36} src={u.avatarUrl} />
           </div>
           <div className="min-w-0">
-            <h4 className="font-bold text-[var(--color-text)] text-sm truncate">{u.displayName}</h4>
+            <div className="flex items-center gap-1.5">
+              <h4 className="font-bold text-[var(--color-text)] text-sm truncate">
+                {u.displayName}
+              </h4>
+              {u.isBot && (
+                <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-500/10 text-amber-600 border border-amber-500/20 shrink-0">
+                  AI Bot
+                </span>
+              )}
+            </div>
             <p className="text-xs text-[var(--color-text-muted)] truncate">{u.email}</p>
           </div>
         </div>
@@ -121,12 +130,16 @@ function buildUserColumns({
               {isActive ? (
                 <>
                   <Ban className="size-3.5" />
-                  <span>Ban</span>
+                  <span>
+                    {u.role === "admin" ? "Revoke" : u.role === "brand" ? "Suspend" : "Ban"}
+                  </span>
                 </>
               ) : (
                 <>
                   <CheckCircle className="size-3.5" />
-                  <span>Unban</span>
+                  <span>
+                    {u.role === "admin" ? "Restore" : u.role === "brand" ? "Activate" : "Unban"}
+                  </span>
                 </>
               )}
             </button>
@@ -192,7 +205,13 @@ export function AccountManagementView({
   });
 
   const users = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
-  const totalCount = data?.pages[0]?.totalCount ?? 0;
+  const totalCount = useMemo(() => {
+    if (filters.hideBots) {
+      return users.length;
+    }
+    const rawTotal = data?.pages[0]?.totalCount ?? 0;
+    return Math.max(rawTotal, users.length);
+  }, [data?.pages, filters.hideBots, users.length]);
 
   const toggleMutation = useMutation({
     mutationFn: ({
@@ -260,6 +279,7 @@ export function AccountManagementView({
         onChange={setFilters}
         onReset={handleResetFilters}
         showRoleFilter={false}
+        showBotToggle={accountRole === "user"}
       />
 
       <AdminTable
