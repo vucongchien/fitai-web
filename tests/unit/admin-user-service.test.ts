@@ -53,9 +53,9 @@ describe("admin User Service (ConnectRPC Aligned)", () => {
         items: [
           {
             id: "usr-1",
-            fullName: "Alex Coach",
+            fullName: "Nike Brand",
             identifier: "alex@fitai.com",
-            role: "coach",
+            role: "brand",
             status: "active",
             identityType: "email",
           },
@@ -85,7 +85,7 @@ describe("admin User Service (ConnectRPC Aligned)", () => {
       status: "",
     });
     expect(res.items).toHaveLength(2);
-    expect(res.items[0].displayName).toBe("Alex Coach");
+    expect(res.items[0].displayName).toBe("Nike Brand");
     expect(res.items[0].status).toBe("active");
     expect(res.items[1].status).toBe("banned");
     expect(res.totalCount).toBe(15);
@@ -104,14 +104,14 @@ describe("admin User Service (ConnectRPC Aligned)", () => {
 
     const { fetchAdminUsers } = await import("@/features/admin/api/admin-user-service");
     await fetchAdminUsers({
-      filters: { q: "alex", role: "coach", status: "banned" },
+      filters: { q: "nike", role: "brand", status: "banned" },
     });
 
     expect(mockListUsers).toHaveBeenCalledWith({
       page: 1,
       pageSize: 10,
-      search: "alex",
-      role: "coach",
+      search: "nike",
+      role: "brand",
       status: "locked",
     });
   });
@@ -149,6 +149,43 @@ describe("admin User Service (ConnectRPC Aligned)", () => {
       userId: "usr-2",
     });
     expect(updated.status).toBe("active");
+  });
+
+  it("should filter out bot accounts when hideBots is true", async () => {
+    mockListUsers.mockResolvedValue(
+      create(ListUsersResponseSchema, {
+        items: [
+          {
+            id: "bot-1",
+            fullName: "AI Bot One",
+            identifier: "bot.one@fitai.bot",
+            role: "user",
+            status: "active",
+            identityType: "email",
+          },
+          {
+            id: "usr-real",
+            fullName: "Real User",
+            identifier: "real@gmail.com",
+            role: "user",
+            status: "active",
+            identityType: "email",
+          },
+        ],
+        total: 2,
+        page: 1,
+        pageSize: 10,
+      }),
+    );
+
+    const { fetchAdminUsers } = await import("@/features/admin/api/admin-user-service");
+    const res = await fetchAdminUsers({
+      filters: { hideBots: true },
+    });
+
+    expect(res.items).toHaveLength(1);
+    expect(res.items[0].displayName).toBe("Real User");
+    expect(res.items[0].isBot).toBe(false);
   });
 
   it("should throw error when FITAI_RPC_URL is missing for toggleUserStatus", async () => {

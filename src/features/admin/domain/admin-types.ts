@@ -42,13 +42,13 @@ export type AdminExercise = ExerciseSummary & {
   updatedAt: string;
 };
 
-export type AdminUserRole = "admin" | "coach" | "user";
+export type AdminUserRole = "admin" | "brand" | "user";
 
 export type AdminUserStatus = "active" | "banned";
 
 export const USER_ROLE_LABEL: Record<AdminUserRole, string> = {
   admin: "Administrator",
-  coach: "Coach",
+  brand: "Brand Partner",
   user: "Member",
 };
 
@@ -80,6 +80,7 @@ export interface AdminUser {
   role: AdminUserRole;
   status: AdminUserStatus;
   provider: "google" | "facebook" | "email";
+  isBot?: boolean;
   createdAt: string;
   updatedAt: string;
   lastActiveAt: string;
@@ -103,14 +104,16 @@ export const DEFAULT_EXERCISE_ADMIN_FILTERS: ExerciseAdminFilters = {
 
 export interface UserAdminFilters {
   q: string;
-  role: AdminUserRole | "all";
+  role?: AdminUserRole | "all";
   status: AdminUserStatus | "all";
+  hideBots?: boolean;
 }
 
 export const DEFAULT_USER_ADMIN_FILTERS: UserAdminFilters = {
   q: "",
   role: "all",
   status: "all",
+  hideBots: false,
 };
 
 export interface MetadataItem {

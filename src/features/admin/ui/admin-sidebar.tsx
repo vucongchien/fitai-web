@@ -2,11 +2,13 @@
 
 import {
   ArrowLeft,
+  Building2,
   ChevronRight,
   Dumbbell,
   FolderTree,
   LayoutDashboard,
   Shield,
+  ShieldCheck,
   Sparkles,
   Users,
 } from "lucide-react";
@@ -38,9 +40,19 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
       icon: FolderTree,
     },
     {
-      label: "User Management",
+      label: "Members (Users)",
       href: "/admin/users",
       icon: Users,
+    },
+    {
+      label: "Admin Staff",
+      href: "/admin/admins",
+      icon: ShieldCheck,
+    },
+    {
+      label: "Brand Partners",
+      href: "/admin/brands",
+      icon: Building2,
     },
   ];
 
@@ -75,15 +87,15 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-[var(--radius-input)] text-sm font-medium transition-all duration-150 ${
+                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-[var(--radius-input)] text-sm font-medium ${
                   isActive
-                    ? "bg-[var(--color-surface-subtle)] text-[var(--color-action)] border border-[var(--color-border)] shadow-2xs font-semibold"
+                    ? "bg-[var(--color-surface-subtle)] text-[var(--color-action)]"
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon
-                    className={`size-4.5 transition-colors ${
+                    className={`size-4.5 ${
                       isActive
                         ? "text-[var(--color-action)]"
                         : "text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]"
@@ -99,10 +111,10 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
                     </span>
                   )}
                   <ChevronRight
-                    className={`size-3.5 opacity-0 group-hover:opacity-100 transition-opacity ${
+                    className={`size-3.5 ${
                       isActive
-                        ? "opacity-100 text-[var(--color-action)]"
-                        : "text-[var(--color-text-muted)]"
+                        ? "text-[var(--color-action)]"
+                        : "opacity-0 group-hover:opacity-100 text-[var(--color-text-muted)]"
                     }`}
                   />
                 </div>

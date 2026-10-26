@@ -58,6 +58,33 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
 
   const isBanned = user.status === "banned";
   const isAdmin = user.role === "admin";
+  const isBrand = user.role === "brand";
+
+  const getStatusActionText = () => {
+    if (isAdmin) {
+      return isBanned ? "Khôi phục quyền truy cập Admin" : "Thu hồi quyền truy cập Admin";
+    }
+    if (isBrand) {
+      return isBanned ? "Kích hoạt lại đối tác" : "Tạm ngưng đối tác thương mại";
+    }
+    return isBanned ? "Mở khóa tài khoản học viên" : "Khóa tài khoản học viên";
+  };
+
+  const getSecurityDescription = () => {
+    if (isAdmin) {
+      return isBanned
+        ? "Quyền truy cập Admin đang bị tạm thu hồi. Nhân sự này không thể đăng nhập Control Panel."
+        : "Tài khoản có quyền quản trị toàn bộ hệ thống Control Panel.";
+    }
+    if (isBrand) {
+      return isBanned
+        ? "Đối tác thương mại đang bị tạm ngưng hoạt động."
+        : "Tài khoản đối tác thương mại đang hoạt động bình thường.";
+    }
+    return isBanned
+      ? "Tài khoản hiện đang bị khóa do vi phạm tiêu chuẩn cộng đồng."
+      : "Tài khoản đang hoạt động bình thường, có thể đăng nhập và ghi nhận buổi tập.";
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
@@ -65,7 +92,11 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
         {/* Top Control Bar */}
         <div className="px-5 pt-4 pb-1 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-            Quản trị thành viên
+            {isAdmin
+              ? "Quản trị viên hệ thống"
+              : isBrand
+                ? "Đối tác thương mại"
+                : "Hồ sơ thành viên"}
           </span>
           <button
             type="button"
@@ -77,7 +108,7 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
           </button>
         </div>
 
-        {/* Community Profile Style Header */}
+        {/* Profile Style Header */}
         <div className="px-5 py-3">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
@@ -95,11 +126,19 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
                   className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border ${
                     isAdmin
                       ? "bg-indigo-50 text-indigo-700 border-indigo-200/70"
-                      : "bg-neutral-100 text-neutral-700 border-neutral-200/80"
+                      : isBrand
+                        ? "bg-purple-50 text-purple-700 border-purple-200/70"
+                        : "bg-neutral-100 text-neutral-700 border-neutral-200/80"
                   }`}
                 >
                   {USER_ROLE_LABEL[user.role]}
                 </span>
+
+                {user.isBot && (
+                  <span className="px-2 py-0.5 text-[11px] font-semibold rounded-md border bg-amber-50 text-amber-700 border-amber-200/70">
+                    AI Bot mô phỏng
+                  </span>
+                )}
 
                 <span
                   className={`px-2 py-0.5 text-[11px] font-semibold rounded-md border flex items-center gap-1 ${
@@ -130,46 +169,48 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
               </div>
             </div>
 
-            {/* Avatar Circle on the Right (Community Profile Style) */}
+            {/* Avatar Circle */}
             <div className="relative h-15 w-15 flex-shrink-0 overflow-hidden rounded-full ring-1 ring-neutral-200/90 bg-neutral-100 flex items-center justify-center font-bold text-lg text-neutral-700">
               <UserAvatar alt={user.displayName} size={60} src={user.avatarUrl} />
             </div>
           </div>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="px-5 pt-2 pb-1 bg-white border-b border-neutral-100">
-          <div className="p-1 bg-neutral-100 rounded-xl flex gap-1 text-xs font-semibold">
-            <button
-              type="button"
-              onClick={() => setActiveTab("account")}
-              className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === "account"
-                  ? "bg-white text-neutral-900 shadow-xs font-bold"
-                  : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              <Shield className="size-3.5 text-indigo-600" />
-              <span>Tài khoản & Phân quyền</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("wallet")}
-              className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === "wallet"
-                  ? "bg-white text-neutral-900 shadow-xs font-bold"
-                  : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              <Coins className="size-3.5 text-amber-500" />
-              <span>Ví FitCoins & Sổ cái</span>
-            </button>
+        {/* Tab Switcher - only for normal trainees with FitCoins wallet */}
+        {!isAdmin && !isBrand && (
+          <div className="px-5 pt-2 pb-1 bg-white border-b border-neutral-100">
+            <div className="p-1 bg-neutral-100 rounded-xl flex gap-1 text-xs font-semibold">
+              <button
+                type="button"
+                onClick={() => setActiveTab("account")}
+                className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeTab === "account"
+                    ? "bg-white text-neutral-900 font-bold"
+                    : "text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                <Shield className="size-3.5 text-indigo-600" />
+                <span>Tài khoản & Phân quyền</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("wallet")}
+                className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1.5 cursor-pointer ${
+                  activeTab === "wallet"
+                    ? "bg-white text-neutral-900 font-bold"
+                    : "text-neutral-500 hover:text-neutral-800"
+                }`}
+              >
+                <Coins className="size-3.5 text-amber-500" />
+                <span>Ví FitCoins & Sổ cái</span>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Scrollable Content Body */}
         <div className="p-5 overflow-y-auto overscroll-contain flex-1 bg-white">
-          {activeTab === "account" ? (
+          {activeTab === "account" || isAdmin || isBrand ? (
             <div className="space-y-3">
               {/* Account Quick Metrics Card */}
               <div className="p-3.5 rounded-xl border border-neutral-200/60 bg-neutral-50/50 space-y-2.5">
@@ -219,41 +260,39 @@ export function UserDialog({ isOpen, user, onClose, onToggleStatus }: UserDialog
                 <div className="flex items-center gap-1.5">
                   <ShieldAlert className="size-3.5 text-neutral-500" />
                   <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-                    Bảo mật & Trạng thái
+                    {isAdmin
+                      ? "Bảo mật quyền Admin"
+                      : isBrand
+                        ? "Tình trạng đối tác"
+                        : "Bảo mật & Kỷ luật"}
                   </span>
                 </div>
 
                 <p className="text-xs text-neutral-600 leading-relaxed">
-                  {isBanned
-                    ? "Tài khoản hiện đang bị khóa. Người dùng bị vô hiệu hóa quyền truy cập hệ thống."
-                    : "Tài khoản đang hoạt động bình thường, có thể đăng nhập và ghi nhận buổi tập."}
+                  {getSecurityDescription()}
                 </p>
 
                 {onToggleStatus && (
                   <div className="pt-1">
-                    {isBanned ? (
-                      <Button
-                        type="button"
-                        variant="primary"
-                        loading={isToggling}
-                        onClick={handleToggle}
-                        className="w-full text-xs"
-                      >
-                        <Unlock className="size-3.5" />
-                        <span>Mở khóa tài khoản người dùng</span>
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="danger"
-                        loading={isToggling}
-                        onClick={handleToggle}
-                        className="w-full text-xs"
-                      >
-                        <Lock className="size-3.5" />
-                        <span>Khóa tài khoản người dùng</span>
-                      </Button>
-                    )}
+                    <Button
+                      type="button"
+                      variant={isBanned ? "primary" : "danger"}
+                      loading={isToggling}
+                      onClick={handleToggle}
+                      className="w-full text-xs"
+                    >
+                      {isBanned ? (
+                        <>
+                          <Unlock className="size-3.5" />
+                          <span>{getStatusActionText()}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="size-3.5" />
+                          <span>{getStatusActionText()}</span>
+                        </>
+                      )}
+                    </Button>
                   </div>
                 )}
               </div>
