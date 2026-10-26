@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/supporting/exercise/v1/message/exercise_messages.proto.
  */
 export const file_contracts_supporting_exercise_v1_message_exercise_messages: GenFile = /*@__PURE__*/
-  fileDesc("CkBjb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9tZXNzYWdlL2V4ZXJjaXNlX21lc3NhZ2VzLnByb3RvEihjb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlIuMDCgxFeGVyY2lzZUluZm8SCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIUCgxib2R5X3BhcnRfaWQYAyABKAkSFAoMZXF1aXBtZW50X2lkGAQgASgJEhgKEHRhcmdldF9tdXNjbGVfaWQYBSABKAkSFAoMaW5zdHJ1Y3Rpb25zGAYgASgJEhwKFHNlY29uZGFyeV9tdXNjbGVfaWRzGAcgAygJEhUKDXRodW1ibmFpbF91cmwYCCABKAkSEQoJbWVkaWFfdXJsGAkgASgJEhEKCXZpZGVvX3VybBgKIAEoCRISCgpkaWZmaWN1bHR5GAsgASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAwgASgFEg8KB3RhZ19pZHMYDSADKAkSSAoGc3RhdHVzGA4gASgOMjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZVN0YXR1cxIYChBoYXNfYWlfc3VwcG9ydGVkGA8gASgIElsKEG1lYXN1cmVtZW50X3R5cGUYECABKA4yQS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTWVhc3VyZW1lbnRUeXBlIvwCChVDcmVhdGVFeGVyY2lzZVJlcXVlc3QSDAoEbmFtZRgBIAEoCRIUCgxib2R5X3BhcnRfaWQYAiABKAkSFAoMZXF1aXBtZW50X2lkGAMgASgJEhgKEHRhcmdldF9tdXNjbGVfaWQYBCABKAkSFAoMaW5zdHJ1Y3Rpb25zGAUgASgJEhwKFHNlY29uZGFyeV9tdXNjbGVfaWRzGAYgAygJEhUKDXRodW1ibmFpbF91cmwYByABKAkSEQoJbWVkaWFfdXJsGAggASgJEhEKCXZpZGVvX3VybBgJIAEoCRISCgpkaWZmaWN1bHR5GAogASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAsgASgFEg8KB3RhZ19pZHMYDCADKAkSWwoQbWVhc3VyZW1lbnRfdHlwZRgNIAEoDjJBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VNZWFzdXJlbWVudFR5cGUiYgoWQ3JlYXRlRXhlcmNpc2VSZXNwb25zZRJICghleGVyY2lzZRgBIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvItYDChVVcGRhdGVFeGVyY2lzZVJlcXVlc3QSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIUCgxib2R5X3BhcnRfaWQYAyABKAkSFAoMZXF1aXBtZW50X2lkGAQgASgJEhgKEHRhcmdldF9tdXNjbGVfaWQYBSABKAkSFAoMaW5zdHJ1Y3Rpb25zGAYgASgJEhwKFHNlY29uZGFyeV9tdXNjbGVfaWRzGAcgAygJEhUKDXRodW1ibmFpbF91cmwYCCABKAkSEQoJbWVkaWFfdXJsGAkgASgJEhEKCXZpZGVvX3VybBgKIAEoCRISCgpkaWZmaWN1bHR5GAsgASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAwgASgFEg8KB3RhZ19pZHMYDSADKAkSTAoGc3RhdHVzGA4gASgOMjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZVN0YXR1c0ICGAESWwoQbWVhc3VyZW1lbnRfdHlwZRgPIAEoDjJBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VNZWFzdXJlbWVudFR5cGUiYgoWVXBkYXRlRXhlcmNpc2VSZXNwb25zZRJICghleGVyY2lzZRgBIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvIiMKFURlbGV0ZUV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSIpChZEZWxldGVFeGVyY2lzZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiLgogU3VibWl0RXhlcmNpc2VGb3JBcHByb3ZhbFJlcXVlc3QSCgoCaWQYASABKAkibQohU3VibWl0RXhlcmNpc2VGb3JBcHByb3ZhbFJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iJAoWQXBwcm92ZUV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSJjChdBcHByb3ZlRXhlcmNpc2VSZXNwb25zZRJICghleGVyY2lzZRgBIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvIiAKEkdldEV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSJfChNHZXRFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iGgoYR2V0UmFuZG9tRXhlcmNpc2VSZXF1ZXN0ImUKGUdldFJhbmRvbUV4ZXJjaXNlUmVzcG9uc2USSAoIZXhlcmNpc2UYASABKAsyNi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlSW5mbyLKAgoWU2VhcmNoRXhlcmNpc2VzUmVxdWVzdBIUCgxib2R5X3BhcnRfaWQYASABKAkSFAoMZXF1aXBtZW50X2lkGAIgASgJEhoKEmF2b2lkX2luanVyeV9hcmVhcxgDIAMoCRIPCgd0YWdfaWRzGAQgAygJEhgKEHRhcmdldF9tdXNjbGVfaWQYBSABKAkSHAoUc2Vjb25kYXJ5X211c2NsZV9pZHMYBiADKAkSDwoHa2V5d29yZBgHIAEoCRISCgpkaWZmaWN1bHR5GAggASgJEg0KBWxpbWl0GAkgASgFEg4KBm9mZnNldBgKIAEoBRJbChBtZWFzdXJlbWVudF90eXBlGAsgASgOMkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZU1lYXN1cmVtZW50VHlwZSJkChdTZWFyY2hFeGVyY2lzZXNSZXNwb25zZRJJCglleGVyY2lzZXMYASADKAsyNi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlSW5mbyIkCghCb2R5UGFydBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJIiUKCUVxdWlwbWVudBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJIjgKBk11c2NsZRIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEhQKDGJvZHlfcGFydF9pZBgDIAEoCSIfCgNUYWcSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCSIbChlHZXRDYXRhbG9nTWV0YWRhdGFSZXF1ZXN0Iq0CChpHZXRDYXRhbG9nTWV0YWRhdGFSZXNwb25zZRJGCgpib2R5X3BhcnRzGAEgAygLMjIuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5Cb2R5UGFydBJHCgplcXVpcG1lbnRzGAIgAygLMjMuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FcXVpcG1lbnQSQQoHbXVzY2xlcxgDIAMoCzIwLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlEjsKBHRhZ3MYBCADKAsyLS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlRhZyIlChVDcmVhdGVCb2R5UGFydFJlcXVlc3QSDAoEbmFtZRgBIAEoCSJfChZDcmVhdGVCb2R5UGFydFJlc3BvbnNlEkUKCWJvZHlfcGFydBgBIAEoCzIyLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQm9keVBhcnQiIAoSR2V0Qm9keVBhcnRSZXF1ZXN0EgoKAmlkGAEgASgJIlwKE0dldEJvZHlQYXJ0UmVzcG9uc2USRQoJYm9keV9wYXJ0GAEgASgLMjIuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5Cb2R5UGFydCI1ChRMaXN0Qm9keVBhcnRzUmVxdWVzdBINCgVsaW1pdBgBIAEoBRIOCgZvZmZzZXQYAiABKAUibgoVTGlzdEJvZHlQYXJ0c1Jlc3BvbnNlEkYKCmJvZHlfcGFydHMYASADKAsyMi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkJvZHlQYXJ0Eg0KBXRvdGFsGAIgASgFIjEKFVVwZGF0ZUJvZHlQYXJ0UmVxdWVzdBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJIl8KFlVwZGF0ZUJvZHlQYXJ0UmVzcG9uc2USRQoJYm9keV9wYXJ0GAEgASgLMjIuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5Cb2R5UGFydCIjChVEZWxldGVCb2R5UGFydFJlcXVlc3QSCgoCaWQYASABKAkiKQoWRGVsZXRlQm9keVBhcnRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIiYKFkNyZWF0ZUVxdWlwbWVudFJlcXVlc3QSDAoEbmFtZRgBIAEoCSJhChdDcmVhdGVFcXVpcG1lbnRSZXNwb25zZRJGCgllcXVpcG1lbnQYASABKAsyMy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkVxdWlwbWVudCIhChNHZXRFcXVpcG1lbnRSZXF1ZXN0EgoKAmlkGAEgASgJIl4KFEdldEVxdWlwbWVudFJlc3BvbnNlEkYKCWVxdWlwbWVudBgBIAEoCzIzLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXF1aXBtZW50IjYKFUxpc3RFcXVpcG1lbnRzUmVxdWVzdBINCgVsaW1pdBgBIAEoBRIOCgZvZmZzZXQYAiABKAUicAoWTGlzdEVxdWlwbWVudHNSZXNwb25zZRJHCgplcXVpcG1lbnRzGAEgAygLMjMuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FcXVpcG1lbnQSDQoFdG90YWwYAiABKAUiMgoWVXBkYXRlRXF1aXBtZW50UmVxdWVzdBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJImEKF1VwZGF0ZUVxdWlwbWVudFJlc3BvbnNlEkYKCWVxdWlwbWVudBgBIAEoCzIzLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXF1aXBtZW50IiQKFkRlbGV0ZUVxdWlwbWVudFJlcXVlc3QSCgoCaWQYASABKAkiKgoXRGVsZXRlRXF1aXBtZW50UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCI5ChNDcmVhdGVNdXNjbGVSZXF1ZXN0EgwKBG5hbWUYASABKAkSFAoMYm9keV9wYXJ0X2lkGAIgASgJIlgKFENyZWF0ZU11c2NsZVJlc3BvbnNlEkAKBm11c2NsZRgBIAEoCzIwLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlIh4KEEdldE11c2NsZVJlcXVlc3QSCgoCaWQYASABKAkiVQoRR2V0TXVzY2xlUmVzcG9uc2USQAoGbXVzY2xlGAEgASgLMjAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGUiSQoSTGlzdE11c2NsZXNSZXF1ZXN0EhQKDGJvZHlfcGFydF9pZBgBIAEoCRINCgVsaW1pdBgCIAEoBRIOCgZvZmZzZXQYAyABKAUiZwoTTGlzdE11c2NsZXNSZXNwb25zZRJBCgdtdXNjbGVzGAEgAygLMjAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGUSDQoFdG90YWwYAiABKAUiRQoTVXBkYXRlTXVzY2xlUmVxdWVzdBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEhQKDGJvZHlfcGFydF9pZBgDIAEoCSJYChRVcGRhdGVNdXNjbGVSZXNwb25zZRJACgZtdXNjbGUYASABKAsyMC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZSIhChNEZWxldGVNdXNjbGVSZXF1ZXN0EgoKAmlkGAEgASgJIicKFERlbGV0ZU11c2NsZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiIAoQQ3JlYXRlVGFnUmVxdWVzdBIMCgRuYW1lGAEgASgJIk8KEUNyZWF0ZVRhZ1Jlc3BvbnNlEjoKA3RhZxgBIAEoCzItLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVGFnIhsKDUdldFRhZ1JlcXVlc3QSCgoCaWQYASABKAkiTAoOR2V0VGFnUmVzcG9uc2USOgoDdGFnGAEgASgLMi0uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5UYWciMAoPTGlzdFRhZ3NSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEg4KBm9mZnNldBgCIAEoBSJeChBMaXN0VGFnc1Jlc3BvbnNlEjsKBHRhZ3MYASADKAsyLS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlRhZxINCgV0b3RhbBgCIAEoBSIsChBVcGRhdGVUYWdSZXF1ZXN0EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiTwoRVXBkYXRlVGFnUmVzcG9uc2USOgoDdGFnGAEgASgLMi0uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5UYWciHgoQRGVsZXRlVGFnUmVxdWVzdBIKCgJpZBgBIAEoCSIkChFEZWxldGVUYWdSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIKqwBCg5FeGVyY2lzZVN0YXR1cxIfChtFWEVSQ0lTRV9TVEFUVVNfVU5TUEVDSUZJRUQQABIZChVFWEVSQ0lTRV9TVEFUVVNfRFJBRlQQARIkCiBFWEVSQ0lTRV9TVEFUVVNfUEVORElOR19BUFBST1ZBTBACEhoKFkVYRVJDSVNFX1NUQVRVU19BQ1RJVkUQAxIcChhFWEVSQ0lTRV9TVEFUVVNfQVJDSElWRUQQBCqQAQoXRXhlcmNpc2VNZWFzdXJlbWVudFR5cGUSKQolRVhFUkNJU0VfTUVBU1VSRU1FTlRfVFlQRV9VTlNQRUNJRklFRBAAEiIKHkVYRVJDSVNFX01FQVNVUkVNRU5UX1RZUEVfUkVQUxABEiYKIkVYRVJDSVNFX01FQVNVUkVNRU5UX1RZUEVfRFVSQVRJT04QAkJxWm9naXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9zdXBwb3J0aW5nL2V4ZXJjaXNlL3YxL21lc3NhZ2U7ZXhlcmNpc2V2MW1lc3NhZ2ViBnByb3RvMw");
+  fileDesc("CkBjb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9tZXNzYWdlL2V4ZXJjaXNlX21lc3NhZ2VzLnByb3RvEihjb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlIuMDCgxFeGVyY2lzZUluZm8SCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIUCgxib2R5X3BhcnRfaWQYAyABKAkSFAoMZXF1aXBtZW50X2lkGAQgASgJEhgKEHRhcmdldF9tdXNjbGVfaWQYBSABKAkSFAoMaW5zdHJ1Y3Rpb25zGAYgASgJEhwKFHNlY29uZGFyeV9tdXNjbGVfaWRzGAcgAygJEhUKDXRodW1ibmFpbF91cmwYCCABKAkSEQoJbWVkaWFfdXJsGAkgASgJEhEKCXZpZGVvX3VybBgKIAEoCRISCgpkaWZmaWN1bHR5GAsgASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAwgASgFEg8KB3RhZ19pZHMYDSADKAkSSAoGc3RhdHVzGA4gASgOMjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZVN0YXR1cxIYChBoYXNfYWlfc3VwcG9ydGVkGA8gASgIElsKEG1lYXN1cmVtZW50X3R5cGUYECABKA4yQS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTWVhc3VyZW1lbnRUeXBlIsYDChVDcmVhdGVFeGVyY2lzZVJlcXVlc3QSDAoEbmFtZRgBIAEoCRIUCgxib2R5X3BhcnRfaWQYAiABKAkSFAoMZXF1aXBtZW50X2lkGAMgASgJEhgKEHRhcmdldF9tdXNjbGVfaWQYBCABKAkSFAoMaW5zdHJ1Y3Rpb25zGAUgASgJEhwKFHNlY29uZGFyeV9tdXNjbGVfaWRzGAYgAygJEhUKDXRodW1ibmFpbF91cmwYByABKAkSEQoJbWVkaWFfdXJsGAggASgJEhEKCXZpZGVvX3VybBgJIAEoCRISCgpkaWZmaWN1bHR5GAogASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAsgASgFEg8KB3RhZ19pZHMYDCADKAkSWwoQbWVhc3VyZW1lbnRfdHlwZRgNIAEoDjJBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VNZWFzdXJlbWVudFR5cGUSSAoGc3RhdHVzGA4gASgOMjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZVN0YXR1cyJiChZDcmVhdGVFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8i1gMKFVVwZGF0ZUV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEhQKDGJvZHlfcGFydF9pZBgDIAEoCRIUCgxlcXVpcG1lbnRfaWQYBCABKAkSGAoQdGFyZ2V0X211c2NsZV9pZBgFIAEoCRIUCgxpbnN0cnVjdGlvbnMYBiABKAkSHAoUc2Vjb25kYXJ5X211c2NsZV9pZHMYByADKAkSFQoNdGh1bWJuYWlsX3VybBgIIAEoCRIRCgltZWRpYV91cmwYCSABKAkSEQoJdmlkZW9fdXJsGAogASgJEhIKCmRpZmZpY3VsdHkYCyABKAkSHAoUZGVmYXVsdF9yZXN0X3NlY29uZHMYDCABKAUSDwoHdGFnX2lkcxgNIAMoCRJMCgZzdGF0dXMYDiABKA4yOC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlU3RhdHVzQgIYARJbChBtZWFzdXJlbWVudF90eXBlGA8gASgOMkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZU1lYXN1cmVtZW50VHlwZSJiChZVcGRhdGVFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iIwoVRGVsZXRlRXhlcmNpc2VSZXF1ZXN0EgoKAmlkGAEgASgJIikKFkRlbGV0ZUV4ZXJjaXNlUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCIkChZSZXN0b3JlRXhlcmNpc2VSZXF1ZXN0EgoKAmlkGAEgASgJImMKF1Jlc3RvcmVFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iLgogU3VibWl0RXhlcmNpc2VGb3JBcHByb3ZhbFJlcXVlc3QSCgoCaWQYASABKAkibQohU3VibWl0RXhlcmNpc2VGb3JBcHByb3ZhbFJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iJAoWQXBwcm92ZUV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSJjChdBcHByb3ZlRXhlcmNpc2VSZXNwb25zZRJICghleGVyY2lzZRgBIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvIiAKEkdldEV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSJfChNHZXRFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iGgoYR2V0UmFuZG9tRXhlcmNpc2VSZXF1ZXN0ImUKGUdldFJhbmRvbUV4ZXJjaXNlUmVzcG9uc2USSAoIZXhlcmNpc2UYASABKAsyNi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlSW5mbyKyAwoWU2VhcmNoRXhlcmNpc2VzUmVxdWVzdBIUCgxib2R5X3BhcnRfaWQYASABKAkSFAoMZXF1aXBtZW50X2lkGAIgASgJEhoKEmF2b2lkX2luanVyeV9hcmVhcxgDIAMoCRIPCgd0YWdfaWRzGAQgAygJEhgKEHRhcmdldF9tdXNjbGVfaWQYBSABKAkSHAoUc2Vjb25kYXJ5X211c2NsZV9pZHMYBiADKAkSDwoHa2V5d29yZBgHIAEoCRISCgpkaWZmaWN1bHR5GAggASgJEg0KBWxpbWl0GAkgASgFEg4KBm9mZnNldBgKIAEoBRJbChBtZWFzdXJlbWVudF90eXBlGAsgASgOMkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZU1lYXN1cmVtZW50VHlwZRJICgZzdGF0dXMYDCABKA4yOC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlU3RhdHVzEhwKFGluY2x1ZGVfYWxsX3N0YXR1c2VzGA0gASgIInkKF1NlYXJjaEV4ZXJjaXNlc1Jlc3BvbnNlEkkKCWV4ZXJjaXNlcxgBIAMoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvEhMKC3RvdGFsX2NvdW50GAIgASgFIiQKCEJvZHlQYXJ0EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiJQoJRXF1aXBtZW50EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiOAoGTXVzY2xlEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSFAoMYm9keV9wYXJ0X2lkGAMgASgJIh8KA1RhZxIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJIhsKGUdldENhdGFsb2dNZXRhZGF0YVJlcXVlc3QirQIKGkdldENhdGFsb2dNZXRhZGF0YVJlc3BvbnNlEkYKCmJvZHlfcGFydHMYASADKAsyMi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkJvZHlQYXJ0EkcKCmVxdWlwbWVudHMYAiADKAsyMy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkVxdWlwbWVudBJBCgdtdXNjbGVzGAMgAygLMjAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGUSOwoEdGFncxgEIAMoCzItLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVGFnIiUKFUNyZWF0ZUJvZHlQYXJ0UmVxdWVzdBIMCgRuYW1lGAEgASgJIl8KFkNyZWF0ZUJvZHlQYXJ0UmVzcG9uc2USRQoJYm9keV9wYXJ0GAEgASgLMjIuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5Cb2R5UGFydCIgChJHZXRCb2R5UGFydFJlcXVlc3QSCgoCaWQYASABKAkiXAoTR2V0Qm9keVBhcnRSZXNwb25zZRJFCglib2R5X3BhcnQYASABKAsyMi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkJvZHlQYXJ0IjUKFExpc3RCb2R5UGFydHNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEg4KBm9mZnNldBgCIAEoBSJuChVMaXN0Qm9keVBhcnRzUmVzcG9uc2USRgoKYm9keV9wYXJ0cxgBIAMoCzIyLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQm9keVBhcnQSDQoFdG90YWwYAiABKAUiMQoVVXBkYXRlQm9keVBhcnRSZXF1ZXN0EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiXwoWVXBkYXRlQm9keVBhcnRSZXNwb25zZRJFCglib2R5X3BhcnQYASABKAsyMi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkJvZHlQYXJ0IiMKFURlbGV0ZUJvZHlQYXJ0UmVxdWVzdBIKCgJpZBgBIAEoCSIpChZEZWxldGVCb2R5UGFydFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiJgoWQ3JlYXRlRXF1aXBtZW50UmVxdWVzdBIMCgRuYW1lGAEgASgJImEKF0NyZWF0ZUVxdWlwbWVudFJlc3BvbnNlEkYKCWVxdWlwbWVudBgBIAEoCzIzLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXF1aXBtZW50IiEKE0dldEVxdWlwbWVudFJlcXVlc3QSCgoCaWQYASABKAkiXgoUR2V0RXF1aXBtZW50UmVzcG9uc2USRgoJZXF1aXBtZW50GAEgASgLMjMuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FcXVpcG1lbnQiNgoVTGlzdEVxdWlwbWVudHNSZXF1ZXN0Eg0KBWxpbWl0GAEgASgFEg4KBm9mZnNldBgCIAEoBSJwChZMaXN0RXF1aXBtZW50c1Jlc3BvbnNlEkcKCmVxdWlwbWVudHMYASADKAsyMy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkVxdWlwbWVudBINCgV0b3RhbBgCIAEoBSIyChZVcGRhdGVFcXVpcG1lbnRSZXF1ZXN0EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiYQoXVXBkYXRlRXF1aXBtZW50UmVzcG9uc2USRgoJZXF1aXBtZW50GAEgASgLMjMuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FcXVpcG1lbnQiJAoWRGVsZXRlRXF1aXBtZW50UmVxdWVzdBIKCgJpZBgBIAEoCSIqChdEZWxldGVFcXVpcG1lbnRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIjkKE0NyZWF0ZU11c2NsZVJlcXVlc3QSDAoEbmFtZRgBIAEoCRIUCgxib2R5X3BhcnRfaWQYAiABKAkiWAoUQ3JlYXRlTXVzY2xlUmVzcG9uc2USQAoGbXVzY2xlGAEgASgLMjAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGUiHgoQR2V0TXVzY2xlUmVxdWVzdBIKCgJpZBgBIAEoCSJVChFHZXRNdXNjbGVSZXNwb25zZRJACgZtdXNjbGUYASABKAsyMC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZSJJChJMaXN0TXVzY2xlc1JlcXVlc3QSFAoMYm9keV9wYXJ0X2lkGAEgASgJEg0KBWxpbWl0GAIgASgFEg4KBm9mZnNldBgDIAEoBSJnChNMaXN0TXVzY2xlc1Jlc3BvbnNlEkEKB211c2NsZXMYASADKAsyMC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZRINCgV0b3RhbBgCIAEoBSJFChNVcGRhdGVNdXNjbGVSZXF1ZXN0EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSFAoMYm9keV9wYXJ0X2lkGAMgASgJIlgKFFVwZGF0ZU11c2NsZVJlc3BvbnNlEkAKBm11c2NsZRgBIAEoCzIwLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlIiEKE0RlbGV0ZU11c2NsZVJlcXVlc3QSCgoCaWQYASABKAkiJwoURGVsZXRlTXVzY2xlUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCIgChBDcmVhdGVUYWdSZXF1ZXN0EgwKBG5hbWUYASABKAkiTwoRQ3JlYXRlVGFnUmVzcG9uc2USOgoDdGFnGAEgASgLMi0uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5UYWciGwoNR2V0VGFnUmVxdWVzdBIKCgJpZBgBIAEoCSJMCg5HZXRUYWdSZXNwb25zZRI6CgN0YWcYASABKAsyLS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlRhZyIwCg9MaXN0VGFnc1JlcXVlc3QSDQoFbGltaXQYASABKAUSDgoGb2Zmc2V0GAIgASgFIl4KEExpc3RUYWdzUmVzcG9uc2USOwoEdGFncxgBIAMoCzItLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVGFnEg0KBXRvdGFsGAIgASgFIiwKEFVwZGF0ZVRhZ1JlcXVlc3QSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCSJPChFVcGRhdGVUYWdSZXNwb25zZRI6CgN0YWcYASABKAsyLS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlRhZyIeChBEZWxldGVUYWdSZXF1ZXN0EgoKAmlkGAEgASgJIiQKEURlbGV0ZVRhZ1Jlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgqrAEKDkV4ZXJjaXNlU3RhdHVzEh8KG0VYRVJDSVNFX1NUQVRVU19VTlNQRUNJRklFRBAAEhkKFUVYRVJDSVNFX1NUQVRVU19EUkFGVBABEiQKIEVYRVJDSVNFX1NUQVRVU19QRU5ESU5HX0FQUFJPVkFMEAISGgoWRVhFUkNJU0VfU1RBVFVTX0FDVElWRRADEhwKGEVYRVJDSVNFX1NUQVRVU19BUkNISVZFRBAEKpABChdFeGVyY2lzZU1lYXN1cmVtZW50VHlwZRIpCiVFWEVSQ0lTRV9NRUFTVVJFTUVOVF9UWVBFX1VOU1BFQ0lGSUVEEAASIgoeRVhFUkNJU0VfTUVBU1VSRU1FTlRfVFlQRV9SRVBTEAESJgoiRVhFUkNJU0VfTUVBU1VSRU1FTlRfVFlQRV9EVVJBVElPThACQnFab2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvZXhlcmNpc2UvdjEvbWVzc2FnZTtleGVyY2lzZXYxbWVzc2FnZWIGcHJvdG8z");
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ExerciseInfo
@@ -172,6 +172,11 @@ export type CreateExerciseRequest = Message<"contracts.supporting.exercise.v1.me
    * @generated from field: contracts.supporting.exercise.v1.message.ExerciseMeasurementType measurement_type = 13;
    */
   measurementType: ExerciseMeasurementType;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseStatus status = 14;
+   */
+  status: ExerciseStatus;
 };
 
 /**
@@ -338,6 +343,40 @@ export const DeleteExerciseResponseSchema: GenMessage<DeleteExerciseResponse> = 
   messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 6);
 
 /**
+ * @generated from message contracts.supporting.exercise.v1.message.RestoreExerciseRequest
+ */
+export type RestoreExerciseRequest = Message<"contracts.supporting.exercise.v1.message.RestoreExerciseRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message contracts.supporting.exercise.v1.message.RestoreExerciseRequest.
+ * Use `create(RestoreExerciseRequestSchema)` to create a new message.
+ */
+export const RestoreExerciseRequestSchema: GenMessage<RestoreExerciseRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 7);
+
+/**
+ * @generated from message contracts.supporting.exercise.v1.message.RestoreExerciseResponse
+ */
+export type RestoreExerciseResponse = Message<"contracts.supporting.exercise.v1.message.RestoreExerciseResponse"> & {
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseInfo exercise = 1;
+   */
+  exercise?: ExerciseInfo | undefined;
+};
+
+/**
+ * Describes the message contracts.supporting.exercise.v1.message.RestoreExerciseResponse.
+ * Use `create(RestoreExerciseResponseSchema)` to create a new message.
+ */
+export const RestoreExerciseResponseSchema: GenMessage<RestoreExerciseResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 8);
+
+/**
  * @generated from message contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalRequest
  */
 export type SubmitExerciseForApprovalRequest = Message<"contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalRequest"> & {
@@ -352,7 +391,7 @@ export type SubmitExerciseForApprovalRequest = Message<"contracts.supporting.exe
  * Use `create(SubmitExerciseForApprovalRequestSchema)` to create a new message.
  */
 export const SubmitExerciseForApprovalRequestSchema: GenMessage<SubmitExerciseForApprovalRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 7);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 9);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalResponse
@@ -369,7 +408,7 @@ export type SubmitExerciseForApprovalResponse = Message<"contracts.supporting.ex
  * Use `create(SubmitExerciseForApprovalResponseSchema)` to create a new message.
  */
 export const SubmitExerciseForApprovalResponseSchema: GenMessage<SubmitExerciseForApprovalResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 8);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 10);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ApproveExerciseRequest
@@ -386,7 +425,7 @@ export type ApproveExerciseRequest = Message<"contracts.supporting.exercise.v1.m
  * Use `create(ApproveExerciseRequestSchema)` to create a new message.
  */
 export const ApproveExerciseRequestSchema: GenMessage<ApproveExerciseRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 9);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 11);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ApproveExerciseResponse
@@ -403,7 +442,7 @@ export type ApproveExerciseResponse = Message<"contracts.supporting.exercise.v1.
  * Use `create(ApproveExerciseResponseSchema)` to create a new message.
  */
 export const ApproveExerciseResponseSchema: GenMessage<ApproveExerciseResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 10);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 12);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetExerciseRequest
@@ -420,7 +459,7 @@ export type GetExerciseRequest = Message<"contracts.supporting.exercise.v1.messa
  * Use `create(GetExerciseRequestSchema)` to create a new message.
  */
 export const GetExerciseRequestSchema: GenMessage<GetExerciseRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 11);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 13);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetExerciseResponse
@@ -437,7 +476,7 @@ export type GetExerciseResponse = Message<"contracts.supporting.exercise.v1.mess
  * Use `create(GetExerciseResponseSchema)` to create a new message.
  */
 export const GetExerciseResponseSchema: GenMessage<GetExerciseResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 12);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 14);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetRandomExerciseRequest
@@ -450,7 +489,7 @@ export type GetRandomExerciseRequest = Message<"contracts.supporting.exercise.v1
  * Use `create(GetRandomExerciseRequestSchema)` to create a new message.
  */
 export const GetRandomExerciseRequestSchema: GenMessage<GetRandomExerciseRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 13);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 15);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetRandomExerciseResponse
@@ -467,7 +506,7 @@ export type GetRandomExerciseResponse = Message<"contracts.supporting.exercise.v
  * Use `create(GetRandomExerciseResponseSchema)` to create a new message.
  */
 export const GetRandomExerciseResponseSchema: GenMessage<GetRandomExerciseResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 14);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 16);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.SearchExercisesRequest
@@ -527,6 +566,16 @@ export type SearchExercisesRequest = Message<"contracts.supporting.exercise.v1.m
    * @generated from field: contracts.supporting.exercise.v1.message.ExerciseMeasurementType measurement_type = 11;
    */
   measurementType: ExerciseMeasurementType;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseStatus status = 12;
+   */
+  status: ExerciseStatus;
+
+  /**
+   * @generated from field: bool include_all_statuses = 13;
+   */
+  includeAllStatuses: boolean;
 };
 
 /**
@@ -534,7 +583,7 @@ export type SearchExercisesRequest = Message<"contracts.supporting.exercise.v1.m
  * Use `create(SearchExercisesRequestSchema)` to create a new message.
  */
 export const SearchExercisesRequestSchema: GenMessage<SearchExercisesRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 15);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 17);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.SearchExercisesResponse
@@ -544,6 +593,11 @@ export type SearchExercisesResponse = Message<"contracts.supporting.exercise.v1.
    * @generated from field: repeated contracts.supporting.exercise.v1.message.ExerciseInfo exercises = 1;
    */
   exercises: ExerciseInfo[];
+
+  /**
+   * @generated from field: int32 total_count = 2;
+   */
+  totalCount: number;
 };
 
 /**
@@ -551,7 +605,7 @@ export type SearchExercisesResponse = Message<"contracts.supporting.exercise.v1.
  * Use `create(SearchExercisesResponseSchema)` to create a new message.
  */
 export const SearchExercisesResponseSchema: GenMessage<SearchExercisesResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 16);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 18);
 
 /**
  * Lookup metadata definitions
@@ -575,7 +629,7 @@ export type BodyPart = Message<"contracts.supporting.exercise.v1.message.BodyPar
  * Use `create(BodyPartSchema)` to create a new message.
  */
 export const BodyPartSchema: GenMessage<BodyPart> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 17);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 19);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.Equipment
@@ -597,7 +651,7 @@ export type Equipment = Message<"contracts.supporting.exercise.v1.message.Equipm
  * Use `create(EquipmentSchema)` to create a new message.
  */
 export const EquipmentSchema: GenMessage<Equipment> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 18);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 20);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.Muscle
@@ -624,7 +678,7 @@ export type Muscle = Message<"contracts.supporting.exercise.v1.message.Muscle"> 
  * Use `create(MuscleSchema)` to create a new message.
  */
 export const MuscleSchema: GenMessage<Muscle> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 19);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 21);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.Tag
@@ -646,7 +700,7 @@ export type Tag = Message<"contracts.supporting.exercise.v1.message.Tag"> & {
  * Use `create(TagSchema)` to create a new message.
  */
 export const TagSchema: GenMessage<Tag> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 20);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 22);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetCatalogMetadataRequest
@@ -659,7 +713,7 @@ export type GetCatalogMetadataRequest = Message<"contracts.supporting.exercise.v
  * Use `create(GetCatalogMetadataRequestSchema)` to create a new message.
  */
 export const GetCatalogMetadataRequestSchema: GenMessage<GetCatalogMetadataRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 21);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 23);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetCatalogMetadataResponse
@@ -691,7 +745,7 @@ export type GetCatalogMetadataResponse = Message<"contracts.supporting.exercise.
  * Use `create(GetCatalogMetadataResponseSchema)` to create a new message.
  */
 export const GetCatalogMetadataResponseSchema: GenMessage<GetCatalogMetadataResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 22);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 24);
 
 /**
  * BodyPart CRUD
@@ -710,7 +764,7 @@ export type CreateBodyPartRequest = Message<"contracts.supporting.exercise.v1.me
  * Use `create(CreateBodyPartRequestSchema)` to create a new message.
  */
 export const CreateBodyPartRequestSchema: GenMessage<CreateBodyPartRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 23);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 25);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.CreateBodyPartResponse
@@ -727,7 +781,7 @@ export type CreateBodyPartResponse = Message<"contracts.supporting.exercise.v1.m
  * Use `create(CreateBodyPartResponseSchema)` to create a new message.
  */
 export const CreateBodyPartResponseSchema: GenMessage<CreateBodyPartResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 24);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 26);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetBodyPartRequest
@@ -744,7 +798,7 @@ export type GetBodyPartRequest = Message<"contracts.supporting.exercise.v1.messa
  * Use `create(GetBodyPartRequestSchema)` to create a new message.
  */
 export const GetBodyPartRequestSchema: GenMessage<GetBodyPartRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 25);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 27);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetBodyPartResponse
@@ -761,7 +815,7 @@ export type GetBodyPartResponse = Message<"contracts.supporting.exercise.v1.mess
  * Use `create(GetBodyPartResponseSchema)` to create a new message.
  */
 export const GetBodyPartResponseSchema: GenMessage<GetBodyPartResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 26);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 28);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ListBodyPartsRequest
@@ -783,7 +837,7 @@ export type ListBodyPartsRequest = Message<"contracts.supporting.exercise.v1.mes
  * Use `create(ListBodyPartsRequestSchema)` to create a new message.
  */
 export const ListBodyPartsRequestSchema: GenMessage<ListBodyPartsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 27);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 29);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ListBodyPartsResponse
@@ -805,7 +859,7 @@ export type ListBodyPartsResponse = Message<"contracts.supporting.exercise.v1.me
  * Use `create(ListBodyPartsResponseSchema)` to create a new message.
  */
 export const ListBodyPartsResponseSchema: GenMessage<ListBodyPartsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 28);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 30);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.UpdateBodyPartRequest
@@ -827,7 +881,7 @@ export type UpdateBodyPartRequest = Message<"contracts.supporting.exercise.v1.me
  * Use `create(UpdateBodyPartRequestSchema)` to create a new message.
  */
 export const UpdateBodyPartRequestSchema: GenMessage<UpdateBodyPartRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 29);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 31);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.UpdateBodyPartResponse
@@ -844,7 +898,7 @@ export type UpdateBodyPartResponse = Message<"contracts.supporting.exercise.v1.m
  * Use `create(UpdateBodyPartResponseSchema)` to create a new message.
  */
 export const UpdateBodyPartResponseSchema: GenMessage<UpdateBodyPartResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 30);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 32);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.DeleteBodyPartRequest
@@ -861,7 +915,7 @@ export type DeleteBodyPartRequest = Message<"contracts.supporting.exercise.v1.me
  * Use `create(DeleteBodyPartRequestSchema)` to create a new message.
  */
 export const DeleteBodyPartRequestSchema: GenMessage<DeleteBodyPartRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 31);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 33);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.DeleteBodyPartResponse
@@ -878,7 +932,7 @@ export type DeleteBodyPartResponse = Message<"contracts.supporting.exercise.v1.m
  * Use `create(DeleteBodyPartResponseSchema)` to create a new message.
  */
 export const DeleteBodyPartResponseSchema: GenMessage<DeleteBodyPartResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 32);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 34);
 
 /**
  * Equipment CRUD
@@ -897,7 +951,7 @@ export type CreateEquipmentRequest = Message<"contracts.supporting.exercise.v1.m
  * Use `create(CreateEquipmentRequestSchema)` to create a new message.
  */
 export const CreateEquipmentRequestSchema: GenMessage<CreateEquipmentRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 33);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 35);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.CreateEquipmentResponse
@@ -914,7 +968,7 @@ export type CreateEquipmentResponse = Message<"contracts.supporting.exercise.v1.
  * Use `create(CreateEquipmentResponseSchema)` to create a new message.
  */
 export const CreateEquipmentResponseSchema: GenMessage<CreateEquipmentResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 34);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 36);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetEquipmentRequest
@@ -931,7 +985,7 @@ export type GetEquipmentRequest = Message<"contracts.supporting.exercise.v1.mess
  * Use `create(GetEquipmentRequestSchema)` to create a new message.
  */
 export const GetEquipmentRequestSchema: GenMessage<GetEquipmentRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 35);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 37);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetEquipmentResponse
@@ -948,7 +1002,7 @@ export type GetEquipmentResponse = Message<"contracts.supporting.exercise.v1.mes
  * Use `create(GetEquipmentResponseSchema)` to create a new message.
  */
 export const GetEquipmentResponseSchema: GenMessage<GetEquipmentResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 36);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 38);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ListEquipmentsRequest
@@ -970,7 +1024,7 @@ export type ListEquipmentsRequest = Message<"contracts.supporting.exercise.v1.me
  * Use `create(ListEquipmentsRequestSchema)` to create a new message.
  */
 export const ListEquipmentsRequestSchema: GenMessage<ListEquipmentsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 37);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 39);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ListEquipmentsResponse
@@ -992,7 +1046,7 @@ export type ListEquipmentsResponse = Message<"contracts.supporting.exercise.v1.m
  * Use `create(ListEquipmentsResponseSchema)` to create a new message.
  */
 export const ListEquipmentsResponseSchema: GenMessage<ListEquipmentsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 38);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 40);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.UpdateEquipmentRequest
@@ -1014,7 +1068,7 @@ export type UpdateEquipmentRequest = Message<"contracts.supporting.exercise.v1.m
  * Use `create(UpdateEquipmentRequestSchema)` to create a new message.
  */
 export const UpdateEquipmentRequestSchema: GenMessage<UpdateEquipmentRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 39);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 41);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.UpdateEquipmentResponse
@@ -1031,7 +1085,7 @@ export type UpdateEquipmentResponse = Message<"contracts.supporting.exercise.v1.
  * Use `create(UpdateEquipmentResponseSchema)` to create a new message.
  */
 export const UpdateEquipmentResponseSchema: GenMessage<UpdateEquipmentResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 40);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 42);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.DeleteEquipmentRequest
@@ -1048,7 +1102,7 @@ export type DeleteEquipmentRequest = Message<"contracts.supporting.exercise.v1.m
  * Use `create(DeleteEquipmentRequestSchema)` to create a new message.
  */
 export const DeleteEquipmentRequestSchema: GenMessage<DeleteEquipmentRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 41);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 43);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.DeleteEquipmentResponse
@@ -1065,7 +1119,7 @@ export type DeleteEquipmentResponse = Message<"contracts.supporting.exercise.v1.
  * Use `create(DeleteEquipmentResponseSchema)` to create a new message.
  */
 export const DeleteEquipmentResponseSchema: GenMessage<DeleteEquipmentResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 42);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 44);
 
 /**
  * Muscle CRUD
@@ -1089,7 +1143,7 @@ export type CreateMuscleRequest = Message<"contracts.supporting.exercise.v1.mess
  * Use `create(CreateMuscleRequestSchema)` to create a new message.
  */
 export const CreateMuscleRequestSchema: GenMessage<CreateMuscleRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 43);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 45);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.CreateMuscleResponse
@@ -1106,7 +1160,7 @@ export type CreateMuscleResponse = Message<"contracts.supporting.exercise.v1.mes
  * Use `create(CreateMuscleResponseSchema)` to create a new message.
  */
 export const CreateMuscleResponseSchema: GenMessage<CreateMuscleResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 44);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 46);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetMuscleRequest
@@ -1123,7 +1177,7 @@ export type GetMuscleRequest = Message<"contracts.supporting.exercise.v1.message
  * Use `create(GetMuscleRequestSchema)` to create a new message.
  */
 export const GetMuscleRequestSchema: GenMessage<GetMuscleRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 45);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 47);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetMuscleResponse
@@ -1140,7 +1194,7 @@ export type GetMuscleResponse = Message<"contracts.supporting.exercise.v1.messag
  * Use `create(GetMuscleResponseSchema)` to create a new message.
  */
 export const GetMuscleResponseSchema: GenMessage<GetMuscleResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 46);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 48);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ListMusclesRequest
@@ -1167,7 +1221,7 @@ export type ListMusclesRequest = Message<"contracts.supporting.exercise.v1.messa
  * Use `create(ListMusclesRequestSchema)` to create a new message.
  */
 export const ListMusclesRequestSchema: GenMessage<ListMusclesRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 47);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 49);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ListMusclesResponse
@@ -1189,7 +1243,7 @@ export type ListMusclesResponse = Message<"contracts.supporting.exercise.v1.mess
  * Use `create(ListMusclesResponseSchema)` to create a new message.
  */
 export const ListMusclesResponseSchema: GenMessage<ListMusclesResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 48);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 50);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.UpdateMuscleRequest
@@ -1216,7 +1270,7 @@ export type UpdateMuscleRequest = Message<"contracts.supporting.exercise.v1.mess
  * Use `create(UpdateMuscleRequestSchema)` to create a new message.
  */
 export const UpdateMuscleRequestSchema: GenMessage<UpdateMuscleRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 49);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 51);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.UpdateMuscleResponse
@@ -1233,7 +1287,7 @@ export type UpdateMuscleResponse = Message<"contracts.supporting.exercise.v1.mes
  * Use `create(UpdateMuscleResponseSchema)` to create a new message.
  */
 export const UpdateMuscleResponseSchema: GenMessage<UpdateMuscleResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 50);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 52);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.DeleteMuscleRequest
@@ -1250,7 +1304,7 @@ export type DeleteMuscleRequest = Message<"contracts.supporting.exercise.v1.mess
  * Use `create(DeleteMuscleRequestSchema)` to create a new message.
  */
 export const DeleteMuscleRequestSchema: GenMessage<DeleteMuscleRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 51);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 53);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.DeleteMuscleResponse
@@ -1267,7 +1321,7 @@ export type DeleteMuscleResponse = Message<"contracts.supporting.exercise.v1.mes
  * Use `create(DeleteMuscleResponseSchema)` to create a new message.
  */
 export const DeleteMuscleResponseSchema: GenMessage<DeleteMuscleResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 52);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 54);
 
 /**
  * Tag CRUD
@@ -1286,7 +1340,7 @@ export type CreateTagRequest = Message<"contracts.supporting.exercise.v1.message
  * Use `create(CreateTagRequestSchema)` to create a new message.
  */
 export const CreateTagRequestSchema: GenMessage<CreateTagRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 53);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 55);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.CreateTagResponse
@@ -1303,7 +1357,7 @@ export type CreateTagResponse = Message<"contracts.supporting.exercise.v1.messag
  * Use `create(CreateTagResponseSchema)` to create a new message.
  */
 export const CreateTagResponseSchema: GenMessage<CreateTagResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 54);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 56);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetTagRequest
@@ -1320,7 +1374,7 @@ export type GetTagRequest = Message<"contracts.supporting.exercise.v1.message.Ge
  * Use `create(GetTagRequestSchema)` to create a new message.
  */
 export const GetTagRequestSchema: GenMessage<GetTagRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 55);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 57);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetTagResponse
@@ -1337,7 +1391,7 @@ export type GetTagResponse = Message<"contracts.supporting.exercise.v1.message.G
  * Use `create(GetTagResponseSchema)` to create a new message.
  */
 export const GetTagResponseSchema: GenMessage<GetTagResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 56);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 58);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ListTagsRequest
@@ -1359,7 +1413,7 @@ export type ListTagsRequest = Message<"contracts.supporting.exercise.v1.message.
  * Use `create(ListTagsRequestSchema)` to create a new message.
  */
 export const ListTagsRequestSchema: GenMessage<ListTagsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 57);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 59);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ListTagsResponse
@@ -1381,7 +1435,7 @@ export type ListTagsResponse = Message<"contracts.supporting.exercise.v1.message
  * Use `create(ListTagsResponseSchema)` to create a new message.
  */
 export const ListTagsResponseSchema: GenMessage<ListTagsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 58);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 60);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.UpdateTagRequest
@@ -1403,7 +1457,7 @@ export type UpdateTagRequest = Message<"contracts.supporting.exercise.v1.message
  * Use `create(UpdateTagRequestSchema)` to create a new message.
  */
 export const UpdateTagRequestSchema: GenMessage<UpdateTagRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 59);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 61);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.UpdateTagResponse
@@ -1420,7 +1474,7 @@ export type UpdateTagResponse = Message<"contracts.supporting.exercise.v1.messag
  * Use `create(UpdateTagResponseSchema)` to create a new message.
  */
 export const UpdateTagResponseSchema: GenMessage<UpdateTagResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 60);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 62);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.DeleteTagRequest
@@ -1437,7 +1491,7 @@ export type DeleteTagRequest = Message<"contracts.supporting.exercise.v1.message
  * Use `create(DeleteTagRequestSchema)` to create a new message.
  */
 export const DeleteTagRequestSchema: GenMessage<DeleteTagRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 61);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 63);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.DeleteTagResponse
@@ -1454,7 +1508,7 @@ export type DeleteTagResponse = Message<"contracts.supporting.exercise.v1.messag
  * Use `create(DeleteTagResponseSchema)` to create a new message.
  */
 export const DeleteTagResponseSchema: GenMessage<DeleteTagResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 62);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 64);
 
 /**
  * @generated from enum contracts.supporting.exercise.v1.message.ExerciseStatus

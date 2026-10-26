@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/supporting/exercise/v1/event/exercise_events.proto.
  */
 export const file_contracts_supporting_exercise_v1_event_exercise_events: GenFile = /*@__PURE__*/
-  fileDesc("Cjxjb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9ldmVudC9leGVyY2lzZV9ldmVudHMucHJvdG8SJmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLmV2ZW50InUKFEV4ZXJjaXNlQ3JlYXRlZEV2ZW50EhMKC2V4ZXJjaXNlX2lkGAEgASgJEkgKCGV4ZXJjaXNlGAIgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iggEKIUV4ZXJjaXNlU3VibWl0dGVkRm9yQXBwcm92YWxFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvInYKFUV4ZXJjaXNlQXBwcm92ZWRFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvInYKFUV4ZXJjaXNlQXJjaGl2ZWRFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvQm1aa2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvZXhlcmNpc2UvdjEvZXZlbnQ7ZXhlcmNpc2V2MWV2ZW50YgZwcm90bzM", [file_contracts_supporting_exercise_v1_message_exercise_messages]);
+  fileDesc("Cjxjb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9ldmVudC9leGVyY2lzZV9ldmVudHMucHJvdG8SJmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLmV2ZW50InUKFEV4ZXJjaXNlQ3JlYXRlZEV2ZW50EhMKC2V4ZXJjaXNlX2lkGAEgASgJEkgKCGV4ZXJjaXNlGAIgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iggEKIUV4ZXJjaXNlU3VibWl0dGVkRm9yQXBwcm92YWxFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvInYKFUV4ZXJjaXNlQXBwcm92ZWRFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvInYKFUV4ZXJjaXNlQXJjaGl2ZWRFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvInYKFUV4ZXJjaXNlUmVzdG9yZWRFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvQm1aa2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvZXhlcmNpc2UvdjEvZXZlbnQ7ZXhlcmNpc2V2MWV2ZW50YgZwcm90bzM", [file_contracts_supporting_exercise_v1_message_exercise_messages]);
 
 /**
  * Event payload when a new exercise is created in Draft state
@@ -109,4 +109,28 @@ export type ExerciseArchivedEvent = Message<"contracts.supporting.exercise.v1.ev
  */
 export const ExerciseArchivedEventSchema: GenMessage<ExerciseArchivedEvent> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 3);
+
+/**
+ * Event payload when an exercise is restored
+ *
+ * @generated from message contracts.supporting.exercise.v1.event.ExerciseRestoredEvent
+ */
+export type ExerciseRestoredEvent = Message<"contracts.supporting.exercise.v1.event.ExerciseRestoredEvent"> & {
+  /**
+   * @generated from field: string exercise_id = 1;
+   */
+  exerciseId: string;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseInfo exercise = 2;
+   */
+  exercise?: ExerciseInfo | undefined;
+};
+
+/**
+ * Describes the message contracts.supporting.exercise.v1.event.ExerciseRestoredEvent.
+ * Use `create(ExerciseRestoredEventSchema)` to create a new message.
+ */
+export const ExerciseRestoredEventSchema: GenMessage<ExerciseRestoredEvent> = /*@__PURE__*/
+  messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 4);
 
