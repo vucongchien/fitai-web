@@ -107,9 +107,7 @@ describe("admin Exercise Service (gRPC Mocked)", () => {
   it("nên trả về danh sách bài tập đã được lọc và phân trang", async () => {
     mockSearchExercises.mockResolvedValue(
       create(SearchExercisesResponseSchema, {
-        exercises: [
-          { id: "ex-1", name: "Push up", status: ExerciseStatus.ACTIVE },
-        ],
+        exercises: [{ id: "ex-1", name: "Push up", status: ExerciseStatus.ACTIVE }],
         totalCount: 1,
       }),
     );
