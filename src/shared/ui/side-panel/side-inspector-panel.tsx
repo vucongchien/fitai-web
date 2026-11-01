@@ -1,7 +1,6 @@
 "use client";
 
-import { Bell, Plus, Search, X } from "lucide-react";
-import Link from "next/link";
+import { Bell, Search, X } from "lucide-react";
 import { useSyncExternalStore } from "react";
 
 import { notificationBadgeStore } from "@/shared/ui/header-actions";
@@ -23,39 +22,23 @@ export function SideInspectorPanel() {
     <>
       {/* 1. Top-Right Quick Utility Dock on Desktop */}
       <div className="fixed top-4 right-6 z-30 hidden md:flex items-center gap-2">
-        <Link
-          href="/workouts/adhoc"
-          className="h-10 px-3.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer group"
-          title="Bắt đầu bài tập mới"
-        >
-          <Plus
-            size={16}
-            strokeWidth={2.5}
-            className="group-hover:rotate-90 transition-transform shrink-0"
-          />
-          <span>Bài tập mới</span>
-        </Link>
         <button
-          aria-label="Mở tìm kiếm nhanh"
-          className="h-10 pl-3.5 pr-4 rounded-full bg-white/95 backdrop-blur-md border border-neutral-200 shadow-xs hover:border-neutral-300 hover:shadow-sm text-neutral-500 hover:text-neutral-900 transition-all flex items-center gap-2.5 group cursor-pointer"
+          aria-label="Search exercises"
+          className="relative w-10 h-10 rounded-full bg-white/95 backdrop-blur-md border border-neutral-200 shadow-xs hover:border-neutral-300 hover:shadow-sm flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-all group cursor-pointer"
           onClick={() => openPanel("search")}
-          title="Tìm kiếm bài tập (Ctrl+K)"
+          title="Search exercises (Ctrl+K)"
           type="button"
         >
           <Search
-            className="text-neutral-400 group-hover:text-neutral-700 transition-colors"
-            size={16}
+            className="text-neutral-500 group-hover:text-neutral-800 transition-colors"
+            size={17}
           />
-          <span className="text-xs font-medium">Tìm kiếm...</span>
-          <kbd className="hidden lg:inline-flex text-[10px] font-semibold text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded-md">
-            Ctrl K
-          </kbd>
         </button>
         <button
-          aria-label="Mở thông báo nhanh"
+          aria-label="Notifications"
           className="relative w-10 h-10 rounded-full bg-white/95 backdrop-blur-md border border-neutral-200 shadow-xs hover:border-neutral-300 hover:shadow-sm flex items-center justify-center text-neutral-600 hover:text-neutral-900 transition-all group cursor-pointer"
           onClick={() => openPanel("notifications")}
-          title="Thông báo"
+          title="Notifications"
           type="button"
         >
           <Bell
@@ -88,27 +71,27 @@ export function SideInspectorPanel() {
             <div className="flex items-center flex-1 gap-2" role="tablist">
               <TabButton
                 active={activeTab === "search"}
-                aria-label="Tab tìm kiếm"
+                aria-label="Search tab"
                 className="flex items-center justify-center gap-2"
                 onClick={() => openPanel("search")}
               >
                 <Search size={16} />
-                <span>Tìm kiếm</span>
+                <span>Search</span>
               </TabButton>
               <TabButton
                 active={activeTab === "notifications"}
-                aria-label="Tab thông báo"
+                aria-label="Notifications tab"
                 className="flex items-center justify-center gap-2"
                 onClick={() => openPanel("notifications")}
               >
                 <Bell size={16} />
-                <span>Thông báo</span>
+                <span>Notifications</span>
                 {hasUnread && <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0" />}
               </TabButton>
             </div>
 
             <button
-              aria-label="Đóng bảng phụ"
+              aria-label="Close panel"
               className="w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors ml-2 cursor-pointer"
               onClick={closePanel}
               type="button"

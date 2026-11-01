@@ -64,8 +64,8 @@ describe("SideInspectorPanel", () => {
       </SidePanelProvider>,
     );
 
-    expect(screen.getByRole("button", { name: "Mở tìm kiếm nhanh" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Mở thông báo nhanh" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Search exercises" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Notifications" })).toBeInTheDocument();
   });
 
   it("opens search pane with filter button and muscle chips", async () => {
@@ -75,12 +75,12 @@ describe("SideInspectorPanel", () => {
       </SidePanelProvider>,
     );
 
-    const searchDockBtn = screen.getByRole("button", { name: "Mở tìm kiếm nhanh" });
+    const searchDockBtn = screen.getByRole("button", { name: "Search exercises" });
     fireEvent.click(searchDockBtn);
 
-    expect(screen.getByPlaceholderText(/tìm bài tập/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/search movements/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /filters/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cơ bụng" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Core" })).toBeInTheDocument();
   });
 
   it("switches to notifications when clicking notifications tab", async () => {
@@ -91,9 +91,9 @@ describe("SideInspectorPanel", () => {
     );
 
     fireEvent.click(screen.getByText("Trigger Search"));
-    expect(screen.getByPlaceholderText(/tìm bài tập/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/search movements/i)).toBeInTheDocument();
 
-    const notifTab = screen.getByRole("tab", { name: /thông báo/i });
+    const notifTab = screen.getByRole("tab", { name: /notifications/i });
     fireEvent.click(notifTab);
 
     expect(await screen.findByText("Kỷ lục mới (PR)")).toBeInTheDocument();
@@ -107,12 +107,12 @@ describe("SideInspectorPanel", () => {
     );
 
     fireEvent.click(screen.getByText("Trigger Search"));
-    expect(screen.getByPlaceholderText(/tìm bài tập/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/search movements/i)).toBeInTheDocument();
 
-    const closeBtn = screen.getByRole("button", { name: "Đóng bảng phụ" });
+    const closeBtn = screen.getByRole("button", { name: "Close panel" });
     fireEvent.click(closeBtn);
 
-    expect(screen.queryByPlaceholderText(/tìm bài tập/i)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/search movements/i)).not.toBeInTheDocument();
   });
 
   it("closes when pressing Escape", () => {
@@ -123,9 +123,9 @@ describe("SideInspectorPanel", () => {
     );
 
     fireEvent.click(screen.getByText("Trigger Search"));
-    expect(screen.getByPlaceholderText(/tìm bài tập/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/search movements/i)).toBeInTheDocument();
 
     fireEvent.keyDown(window, { key: "Escape" });
-    expect(screen.queryByPlaceholderText(/tìm bài tập/i)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/search movements/i)).not.toBeInTheDocument();
   });
 });

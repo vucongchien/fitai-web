@@ -16,13 +16,13 @@ import { ExerciseCard } from "@/features/exercise/ui/exercise-card";
 import { FilterPanel } from "@/features/exercise/ui/filter-panel";
 
 const QUICK_BODY_PARTS = [
-  { id: "", label: "Tất cả" },
-  { id: "chest", label: "Ngực" },
-  { id: "back", label: "Lưng" },
-  { id: "legs", label: "Chân" },
-  { id: "shoulders", label: "Vai" },
-  { id: "arms", label: "Tay" },
-  { id: "core", label: "Cơ bụng" },
+  { id: "", label: "All" },
+  { id: "chest", label: "Chest" },
+  { id: "back", label: "Back" },
+  { id: "legs", label: "Legs" },
+  { id: "shoulders", label: "Shoulders" },
+  { id: "arms", label: "Arms" },
+  { id: "core", label: "Core" },
 ] as const;
 
 export function QuickSearchPane() {
@@ -85,7 +85,7 @@ export function QuickSearchPane() {
             className="w-full text-sm"
             inputMode="search"
             onChange={(e) => performSearch({ ...filters, q: e.target.value })}
-            placeholder="Tìm bài tập, cơ bắp, thiết bị..."
+            placeholder="Search movements, muscles, equipment..."
             type="search"
             value={filters.q}
           />
@@ -144,14 +144,14 @@ export function QuickSearchPane() {
 
       {/* 3. Search Metadata bar */}
       <div className="px-4 py-2 flex items-center justify-between text-xs text-neutral-500 border-b border-neutral-100 bg-neutral-50/50">
-        <span>{results.length} bài tập</span>
+        <span>{results.length} movements</span>
         {activeCount > 0 && (
           <button
             className="text-xs font-semibold text-[var(--color-action)] hover:underline cursor-pointer"
             onClick={() => performSearch(EMPTY_FILTERS)}
             type="button"
           >
-            Đặt lại bộ lọc ({activeCount})
+            Reset filters ({activeCount})
           </button>
         )}
       </div>
@@ -167,17 +167,17 @@ export function QuickSearchPane() {
         ) : hasSearched && !isSearching ? (
           <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
             <Dumbbell className="text-neutral-300 mb-2.5" size={36} />
-            <p className="text-sm font-medium text-neutral-700">Không tìm thấy bài tập nào</p>
+            <p className="text-sm font-medium text-neutral-700">No movements found</p>
             <p className="text-xs text-neutral-400 mt-1">
-              Thử từ khóa khác hoặc bấm nút Lọc để đổi tiêu chí
+              Try a different keyword or adjust filters
             </p>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
             <Search className="text-neutral-300 mb-2.5" size={36} />
-            <p className="text-sm font-medium text-neutral-700">Khám phá bài tập nhanh</p>
+            <p className="text-sm font-medium text-neutral-700">Quick Exercise Search</p>
             <p className="text-xs text-neutral-400 mt-1">
-              Nhập tên bài tập hoặc chọn nhóm cơ bên trên để tìm kiếm
+              Type a movement name or choose a muscle group above to search
             </p>
           </div>
         )}

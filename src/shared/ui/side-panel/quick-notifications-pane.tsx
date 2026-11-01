@@ -79,10 +79,10 @@ function formatRelativeTime(dateString: string): string {
     const diffHours = Math.floor(diffMin / 60);
     const diffDays = Math.floor(diffHours / 24);
 
-    if (diffDays > 0) return `${diffDays} ngày trước`;
-    if (diffHours > 0) return `${diffHours} giờ trước`;
-    if (diffMin > 0) return `${diffMin} phút trước`;
-    return "Vừa xong";
+    if (diffDays > 0) return `${diffDays}d ago`;
+    if (diffHours > 0) return `${diffHours}h ago`;
+    if (diffMin > 0) return `${diffMin}m ago`;
+    return "Just now";
   } catch {
     return dateString;
   }
@@ -140,17 +140,17 @@ export function QuickNotificationsPane() {
       {/* Subheader with Mark all as read */}
       <div className="px-4 py-3 border-b border-neutral-100 flex items-center justify-between">
         <span className="text-xs font-medium text-neutral-500">
-          {unreadCount > 0 ? `${unreadCount} thông báo mới` : "Không có thông báo mới"}
+          {unreadCount > 0 ? `${unreadCount} unread` : "No unread notifications"}
         </span>
         {unreadCount > 0 && (
           <button
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors cursor-pointer"
             disabled={isPending}
             onClick={handleMarkAllAsRead}
             type="button"
           >
             <CheckCheck size={14} />
-            Đánh dấu tất cả đã đọc
+            Mark all as read
           </button>
         )}
       </div>
@@ -165,16 +165,17 @@ export function QuickNotificationsPane() {
           notifications.map((item) => {
             const isPr =
               item.title.toLowerCase().includes("pr") ||
+              item.title.toLowerCase().includes("record") ||
               item.title.toLowerCase().includes("kỷ lục");
             const isCoach =
-              item.title.toLowerCase().includes("huấn luyện") ||
-              item.title.toLowerCase().includes("coach");
+              item.title.toLowerCase().includes("coach") ||
+              item.title.toLowerCase().includes("huấn luyện");
             const Icon = isPr ? Trophy : isCoach ? Sparkles : Bell;
 
             return (
               <button
                 key={item.id}
-                className={`w-full text-left py-3 px-3 rounded-xl transition-colors flex items-start gap-3 my-0.5 ${
+                className={`w-full text-left py-3 px-3 rounded-xl transition-colors flex items-start gap-3 my-0.5 cursor-pointer ${
                   item.isRead
                     ? "hover:bg-neutral-50 opacity-80"
                     : "bg-brand-50/40 hover:bg-brand-50/70"
@@ -222,8 +223,8 @@ export function QuickNotificationsPane() {
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
             <Bell className="text-neutral-300 mb-2" size={32} />
-            <p className="text-sm font-medium text-neutral-700">Tất cả đã cập nhật</p>
-            <p className="text-xs text-neutral-400 mt-1">Bạn không có thông báo mới nào</p>
+            <p className="text-sm font-medium text-neutral-700">All caught up</p>
+            <p className="text-xs text-neutral-400 mt-1">You have no new notifications</p>
           </div>
         )}
       </div>
