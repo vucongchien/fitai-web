@@ -25,33 +25,36 @@ export function TodayHeader({ dateLabel = "Today" }: TodayHeaderProps) {
         <h1 className="display-title">{dateLabel}</h1>
       </div>
 
-      {/* Desktop In-Content Quick Triggers (Search & Notifications for Home only) */}
-      <div className="hidden md:flex items-center gap-2">
-        <button
-          aria-label="Search exercises"
-          className="relative w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all flex items-center justify-center cursor-pointer group"
-          onClick={() => openPanel("search")}
-          title="Search exercises (Ctrl+K)"
-          type="button"
-        >
-          <Search size={18} className="group-hover:scale-105 transition-transform" />
-        </button>
+      <div className="flex items-center gap-2.5">
+        {/* Gamification Badges (Streak & Coins portalled here on desktop) */}
+        <div className="today-header__badges flex items-center" id="today-header-badges" />
 
-        <button
-          aria-label="Notifications"
-          className="relative w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all flex items-center justify-center cursor-pointer group"
-          onClick={() => openPanel("notifications")}
-          title="Notifications"
-          type="button"
-        >
-          <Bell size={18} className="group-hover:scale-105 transition-transform" />
-          {hasUnread && (
-            <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-brand-500 ring-2 ring-white" />
-          )}
-        </button>
+        {/* Desktop In-Content Quick Triggers (Search & Notifications for Home only) */}
+        <div className="hidden md:flex items-center gap-2">
+          <button
+            aria-label="Search exercises"
+            className="relative w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all flex items-center justify-center cursor-pointer group"
+            onClick={() => openPanel("search")}
+            title="Search exercises (Ctrl+K)"
+            type="button"
+          >
+            <Search size={18} className="group-hover:scale-105 transition-transform" />
+          </button>
+
+          <button
+            aria-label="Notifications"
+            className="relative w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all flex items-center justify-center cursor-pointer group"
+            onClick={() => openPanel("notifications")}
+            title="Notifications"
+            type="button"
+          >
+            <Bell size={18} className="group-hover:scale-105 transition-transform" />
+            {hasUnread && (
+              <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-brand-500 ring-2 ring-white" />
+            )}
+          </button>
+        </div>
       </div>
-
-      <div className="today-header__badges md:hidden" id="today-header-badges" />
     </header>
   );
 }
