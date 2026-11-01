@@ -1,17 +1,7 @@
-/**
- * Picks the motion engine for an exercise.
- *
- *   models reachable          → WorkerMotionEngine (mmpose inference in a worker)
- *   models missing, dev build → SimulatedMotionEngine (full UI, synthetic reps)
- *   models missing, prod      → ManualMotionEngine (silently the non-AI branch)
- *
- * The probe is a HEAD request, so a session never blocks on a multi-megabyte
- * download just to find out the model is not there.
- */
+// Picks the motion engine for an exercise: WorkerMotionEngine vs Manual
 
 import { ManualMotionEngine } from "@/features/workout/domain/motion-engine";
 import type { MotionEngine } from "@/features/workout/domain/motion-engine";
-import { SimulatedMotionEngine } from "@/features/workout/domain/simulated-motion-engine";
 import { WorkerMotionEngine } from "@/features/workout/domain/worker-motion-engine";
 import type { MotionSpec } from "@/features/workout/model/live-session.types";
 
@@ -33,7 +23,5 @@ export async function resolveMotionEngine(spec: MotionSpec | null): Promise<Moti
     return new WorkerMotionEngine();
   }
 
-  return process.env.NODE_ENV === "production"
-    ? new ManualMotionEngine()
-    : new SimulatedMotionEngine();
+  return new ManualMotionEngine();
 }

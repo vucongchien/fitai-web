@@ -1,13 +1,4 @@
-/**
- * Motion engine contract — the seam between the live UI and pose tracking.
- *
- * Three implementations sit behind it:
- *   - WorkerMotionEngine     real mmpose/RTMPose inference (worker-motion-engine.ts)
- *   - SimulatedMotionEngine  synthetic reps so the UI is testable without a model
- *   - ManualMotionEngine     no camera at all (the non-AI branch)
- *
- * The UI only ever sees events, so swapping engines changes nothing upstream.
- */
+// Motion engine contract — the seam between the live UI and pose tracking.
 
 import type {
   CalibrationDistance,
@@ -42,13 +33,21 @@ export type MotionEngineEvent =
       repCount: number;
       startDeg: number;
       endDeg: number;
+      detectedErrors?: string[];
     }
   | { type: "rep"; count: number; romPercentage: number; counted: boolean }
-  | { type: "form-error"; code: string; message: string; severity: CueSeverity }
+  // source: "coach-cue" marks referee voice lines (not error codes)
+  | {
+      type: "form-error";
+      code: string;
+      message: string;
+      severity: CueSeverity;
+      source?: "referee-error" | "coach-cue";
+    }
   /** Emitted when tracking degrades enough to hand the set back to manual logging. */
   | { type: "fallback"; reason: string };
 
-export type MotionEngineKind = "onnx" | "simulated" | "manual";
+export type MotionEngineKind = "onnx" | "manual";
 
 /** What a finished set produced. Feeds the review sheet and LogWorkoutSet. */
 export interface SetTelemetry {
@@ -60,6 +59,8 @@ export interface SetTelemetry {
   /** Share of frames with a usable skeleton — BR-CC-02. */
   validFrameRatio: number;
   secondsPerRep: number;
+  // Set form score from the Go referee, 0-100 (single source of truth)
+  formScore?: number | null;
 }
 
 export const EMPTY_TELEMETRY: SetTelemetry = {
@@ -89,12 +90,7 @@ export interface MotionEngine {
   stopCalibration(): void;
   /** Rep tracking for one set. */
   startSet(onEvent: MotionEventHandler): void;
-  /**
-   * Stop tracking and return what the set produced.
-   *
-   * Async because the ONNX engine's accumulator lives in a worker — the answer
-   * is one postMessage round trip away.
-   */
+  // Stop tracking and return what the set produced
   stopSet(): Promise<SetTelemetry>;
   dispose(): void;
 }

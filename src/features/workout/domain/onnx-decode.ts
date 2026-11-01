@@ -1,31 +1,21 @@
-/**
- * Pure ONNX I/O maths — tensor packing and keypoint decoding.
- *
- * DOM-free on purpose: this module is imported by inference.worker.ts, which has
- * no `document`. Everything here is a function from typed arrays to typed
- * arrays, which is also why it is directly unit testable (tests/unit/onnx-decode.test.ts).
- *
- * TODO(model): two of the three seams from the original engine live here now —
- * MODEL_IO's tensor names/sizes, and the choice between decodeSimcc and
- * decodeHeatmap. The third (using the detector box to crop before the pose pass)
- * belongs to inference.worker.ts, which owns the sessions.
- */
+// Pure ONNX I/O maths — tensor packing and keypoint decoding.
 
 import type { LetterboxedFrame } from "@/features/workout/domain/frame-sampler";
 
-/**
- * TODO(model): confirm against the shipped export (`python -m onnxruntime.tools
- * .check_onnx_model_mobile_usability` or netron). RTMPose-m 256×192 is the
- * assumed default.
- */
+// Model I/O configuration for YOLOv8-pose and RTMPose
 export const MODEL_IO = {
-  /** Pose model input tensor. */
+  /** Pose model input tensor (RTMPose default). */
   poseInputName: "input",
+  /** YOLOv8-pose input tensor. */
+  yoloInputName: "images",
   /** SimCC heads on RTMPose exports; a single "output" tensor on heatmap exports. */
   poseOutputNames: ["simcc_x", "simcc_y"],
-  /** Model input resolution (width × height). */
+  /** Model input resolution (width × height) for RTMPose default. */
   inputWidth: 192,
   inputHeight: 256,
+  /** YOLOv8-pose input resolution (width × height). */
+  yoloInputWidth: 640,
+  yoloInputHeight: 640,
   /** ImageNet normalisation, as used by mmpose. */
   mean: [123.675, 116.28, 103.53] as const,
   std: [58.395, 57.12, 57.375] as const,
@@ -34,15 +24,7 @@ export const MODEL_IO = {
   detectorSize: 320,
 };
 
-/**
- * Packs a frame into a planar CHW float tensor with ImageNet normalisation.
- *
- * `out` lets the caller supply a scratch buffer. At 192×256 the tensor is 576KB,
- * so allocating one per frame throws ~17MB/s of garbage at the collector during a
- * tracked set — enough GC pressure to show up as jitter in the rep counter. The
- * worker keeps a single buffer alive for the whole session and passes it here.
- * Omitting `out` allocates, which keeps the function pure for its unit tests.
- */
+// Packs a frame into planar CHW float tensor with ImageNet normalisation
 export function normaliseFrame(frame: LetterboxedFrame, out?: Float32Array): Float32Array {
   const { data } = frame.data;
   const pixels = frame.data.width * frame.data.height;
@@ -56,10 +38,64 @@ export function normaliseFrame(frame: LetterboxedFrame, out?: Float32Array): Flo
   return tensor;
 }
 
-/**
- * SimCC decode: two 1-D classification maps per joint (x and y).
- * TODO(model): verify the split dimensions and the simcc_split_ratio of the export.
- */
+// Packs a frame into planar CHW RGB float tensor [0, 1] for YOLOv8
+export function normaliseFrameRgb01(frame: LetterboxedFrame, out?: Float32Array): Float32Array {
+  const { data } = frame.data;
+  const pixels = frame.data.width * frame.data.height;
+  const tensor = out?.length === pixels * 3 ? out : new Float32Array(pixels * 3);
+  const inv255 = 1 / 255;
+  for (let i = 0; i < pixels; i += 1) {
+    const offset = i * 4;
+    tensor[i] = data[offset]! * inv255;
+    tensor[pixels + i] = data[offset + 1]! * inv255;
+    tensor[pixels * 2 + i] = data[offset + 2]! * inv255;
+  }
+  return tensor;
+}
+
+// Decodes YOLOv8-pose output tensor [1, 56, N] anchors
+export function decodeYoloV8Pose(
+  output: Float32Array,
+  numChannels = 56,
+  numAnchors = 8400,
+  keypointCount = 17,
+  minPersonScore = 0.25,
+): { x: number; y: number; score: number }[] | null {
+  let bestAnchor = -1;
+  let bestScore = -Infinity;
+  const scoreRowOffset = 4 * numAnchors;
+
+  for (let a = 0; a < numAnchors; a += 1) {
+    const score = output[scoreRowOffset + a]!;
+    if (score > bestScore) {
+      bestScore = score;
+      bestAnchor = a;
+    }
+  }
+
+  if (bestAnchor < 0 || bestScore < minPersonScore) {
+    return null;
+  }
+
+  const points: { x: number; y: number; score: number }[] = [];
+  for (let k = 0; k < keypointCount; k += 1) {
+    const baseChannel = 5 + k * 3;
+    if (baseChannel + 2 >= numChannels) {
+      break;
+    }
+    const x = output[baseChannel * numAnchors + bestAnchor]!;
+    const y = output[(baseChannel + 1) * numAnchors + bestAnchor]!;
+    const conf = output[(baseChannel + 2) * numAnchors + bestAnchor]!;
+    points.push({
+      score: Math.min(1, Math.max(0, conf)),
+      x,
+      y,
+    });
+  }
+  return points;
+}
+
+// SimCC decode: two 1-D classification maps per joint (x and y)
 export function decodeSimcc(
   simccX: Float32Array,
   simccY: Float32Array,
