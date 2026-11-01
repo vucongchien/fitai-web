@@ -1,29 +1,18 @@
 "use client";
 
-import { Dumbbell, Home, Salad, UserRound, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { isNavDestinationActive, NAV_DESTINATIONS } from "@/shared/config/navigation";
 import { NAV_LATERAL } from "@/shared/ui/transition-types";
-
-const destinations = [
-  { href: "/home", label: "Today", icon: Home },
-  { href: "/nutrition", label: "Nutrition", icon: Salad },
-  { href: "/roadmap", label: "Workout", icon: Dumbbell },
-  { href: "/community", label: "Community", icon: Users },
-  { href: "/profile", label: "Profile", icon: UserRound },
-] as const;
 
 export function BottomNavigation() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Primary navigation" className="bottom-navigation">
-      {destinations.map(({ href, icon: Icon, label }) => {
-        const active =
-          pathname === href ||
-          pathname.startsWith(`${href}/`) ||
-          (href === "/roadmap" && (pathname === "/schedule" || pathname.startsWith("/schedule/")));
+    <nav aria-label="Primary navigation" className="bottom-navigation md:hidden">
+      {NAV_DESTINATIONS.map(({ href, icon: Icon, label }) => {
+        const active = isNavDestinationActive(pathname, href);
 
         return (
           <Link

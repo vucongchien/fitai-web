@@ -44,7 +44,7 @@ class NotificationBadgeStore {
   }
 }
 
-const notificationBadgeStore = new NotificationBadgeStore();
+export const notificationBadgeStore = new NotificationBadgeStore();
 
 export function HeaderActions({ hasNotifications }: HeaderActionsProps) {
   const storeUnread = useSyncExternalStore(

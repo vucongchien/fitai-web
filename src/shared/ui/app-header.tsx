@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { cn } from "@/shared/lib/cn";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
 import { NAV_BACK } from "@/shared/ui/transition-types";
@@ -24,7 +25,10 @@ export function AppHeader() {
   }
 
   return (
-    <header className="app-header">
+    <header
+      data-desktop-hidden={!backDestination || undefined}
+      className={cn("app-header", !backDestination && "md:hidden")}
+    >
       {backDestination ? (
         <Link
           aria-label={`Back to ${backDestination.label}`}
