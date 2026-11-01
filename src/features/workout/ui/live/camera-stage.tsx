@@ -9,6 +9,7 @@ import type { CameraState } from "@/features/workout/model/use-camera-stream";
 import { PoseOverlay } from "@/features/workout/ui/live/pose-overlay";
 
 export function CameraStage({
+  activeErrors,
   alert,
   children,
   customVideoSrc,
@@ -24,6 +25,7 @@ export function CameraStage({
   videoRef: RefObject<HTMLVideoElement | null>;
   state: CameraState;
   pose: Pose | null;
+  activeErrors?: string[];
   alert?: boolean;
   mirrored?: boolean;
   isCustomVideo?: boolean;
@@ -83,45 +85,31 @@ export function CameraStage({
     [onUploadVideo],
   );
 
+  const videoMountRef = useRef<HTMLVideoElement | null>(null);
+
+  const syncDimensions = useCallback(() => {
+    const video = videoMountRef.current;
+    if (!video) return;
+    if (video.videoWidth > 0 && video.videoHeight > 0) {
+      setDimensions((prev) =>
+        prev.width === video.videoWidth && prev.height === video.videoHeight
+          ? prev
+          : { height: video.videoHeight, width: video.videoWidth },
+      );
+    }
+  }, []);
+
   const handleVideoRef = useCallback(
     (video: HTMLVideoElement | null) => {
+      videoMountRef.current = video;
       if (videoRef && "current" in videoRef) {
         (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = video;
       }
-      if (!video) {
-        return;
+      if (video) {
+        syncDimensions();
       }
-
-      const syncDimensions = () => {
-        if (video.videoWidth > 0 && video.videoHeight > 0) {
-          setDimensions({ height: video.videoHeight, width: video.videoWidth });
-        }
-        if (video.paused && customVideoSrc) {
-          safePlay(video);
-        }
-      };
-
-      syncDimensions();
-      if (customVideoSrc) {
-        safePlay(video);
-      }
-
-      video.addEventListener("loadedmetadata", syncDimensions);
-      video.addEventListener("canplay", syncDimensions);
-      video.addEventListener("resize", syncDimensions);
-      video.addEventListener("playing", syncDimensions);
-
-      return () => {
-        video.removeEventListener("loadedmetadata", syncDimensions);
-        video.removeEventListener("canplay", syncDimensions);
-        video.removeEventListener("resize", syncDimensions);
-        video.removeEventListener("playing", syncDimensions);
-        if (videoRef && "current" in videoRef) {
-          (videoRef as React.MutableRefObject<HTMLVideoElement | null>).current = null;
-        }
-      };
     },
-    [customVideoSrc, safePlay, videoRef],
+    [syncDimensions, videoRef],
   );
 
   return (
@@ -137,6 +125,8 @@ export function CameraStage({
         muted
         onCanPlay={handleLoadedMetadata}
         onLoadedMetadata={handleLoadedMetadata}
+        onPlaying={syncDimensions}
+        onResize={syncDimensions}
         playsInline
         ref={handleVideoRef}
         src={customVideoSrc || undefined}
@@ -144,6 +134,7 @@ export function CameraStage({
       />
 
       <PoseOverlay
+        activeErrors={activeErrors}
         alert={alert}
         mirrored={activeMirrored}
         pose={pose}
@@ -151,9 +142,12 @@ export function CameraStage({
         sourceWidth={dimensions.width}
       />
 
-      {/* Top Controls: Custom Video Badge OR Upload Video Button */}
-      <div className="absolute top-3 left-3 z-30 flex items-center gap-2">
-        {onUploadVideo && !isCustomVideo ? (
+      {/* Overlays (PoseStencilOverlay, countdown, etc.) placed behind controls */}
+      {children}
+
+      {/* Top Controls: Custom Video Badge & Upload Video Button */}
+      <div className="absolute top-3 left-3 z-40 flex items-center gap-2">
+        {onUploadVideo ? (
           <>
             <input
               accept="video/mp4,video/webm,video/quicktime"
@@ -165,12 +159,17 @@ export function CameraStage({
             <button
               aria-label="Upload video for tracking"
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[var(--color-surface)]/90 hover:bg-[var(--color-surface)] text-[var(--color-text)] shadow-lg text-xs font-semibold backdrop-blur-md active:scale-95 transition-all border border-[var(--color-border)] cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = "";
+                  fileInputRef.current.click();
+                }
+              }}
               title="Upload video file from your device for AI tracking & rep counting"
               type="button"
             >
               <Upload aria-hidden="true" className="text-[var(--color-recovery)]" size={15} />
-              <span>Upload Video</span>
+              <span>{isCustomVideo ? "Change Video" : "Upload Video"}</span>
             </button>
           </>
         ) : null}
@@ -208,7 +207,7 @@ export function CameraStage({
       )}
 
       {/* Bottom Right Controls (Mirror Toggle & Flip Camera) */}
-      <div className="absolute bottom-3 right-3 z-20 flex items-center gap-2">
+      <div className="absolute bottom-3 right-3 z-40 flex items-center gap-2">
         {!isCustomVideo && state === "ready" ? (
           <button
             aria-label={activeMirrored ? "Tắt lật gương camera" : "Bật lật gương camera"}
@@ -240,8 +239,6 @@ export function CameraStage({
           </button>
         ) : null}
       </div>
-
-      {children}
     </div>
   );
 }
