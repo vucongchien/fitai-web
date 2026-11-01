@@ -5,11 +5,17 @@ import { SideInspectorPanel } from "@/shared/ui/side-panel/side-inspector-panel"
 import { SidePanelProvider, useSidePanel } from "@/shared/ui/side-panel/side-panel-context";
 
 vi.mock("@/features/exercise/server/catalog-actions", () => ({
+  getCatalogMetadataServerAction: vi.fn().mockResolvedValue({
+    success: true,
+    equipments: [],
+    muscles: [],
+    bodyParts: [],
+  }),
   searchExercisesServerAction: vi.fn().mockResolvedValue([
     {
       id: "bench-press",
       name: "Barbell Bench Press",
-      bodyPartId: "CHEST",
+      bodyPartId: "chest",
       difficulty: "INTERMEDIATE",
     },
   ]),
@@ -62,7 +68,7 @@ describe("SideInspectorPanel", () => {
     expect(screen.getByRole("button", { name: "Mở thông báo nhanh" })).toBeInTheDocument();
   });
 
-  it("opens search pane when clicking search dock button", async () => {
+  it("opens search pane with filter button and muscle chips", async () => {
     render(
       <SidePanelProvider>
         <SideInspectorPanel />
@@ -73,7 +79,8 @@ describe("SideInspectorPanel", () => {
     fireEvent.click(searchDockBtn);
 
     expect(screen.getByPlaceholderText(/tìm bài tập/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /cơ bụng/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /filters/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cơ bụng" })).toBeInTheDocument();
   });
 
   it("switches to notifications when clicking notifications tab", async () => {
@@ -86,7 +93,7 @@ describe("SideInspectorPanel", () => {
     fireEvent.click(screen.getByText("Trigger Search"));
     expect(screen.getByPlaceholderText(/tìm bài tập/i)).toBeInTheDocument();
 
-    const notifTab = screen.getByRole("button", { name: "Tab thông báo" });
+    const notifTab = screen.getByRole("tab", { name: /thông báo/i });
     fireEvent.click(notifTab);
 
     expect(await screen.findByText("Kỷ lục mới (PR)")).toBeInTheDocument();
