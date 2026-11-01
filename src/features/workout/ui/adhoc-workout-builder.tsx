@@ -173,9 +173,9 @@ export function AdhocWorkoutBuilder({ initialConfig }: AdhocWorkoutBuilderProps 
         </aside>
       </div>
 
-      <footer className="workout-prep-action">
+      <div className="pt-2">
         <button
-          className={buttonVariants({ size: "large", variant: "primary" })}
+          className={buttonVariants({ size: "large", variant: "primary", className: "w-full" })}
           disabled={sessionLoading || exerciseList.length === 0}
           onClick={handleBeginSession}
           title={exerciseList.length === 0 ? "Add at least one movement to begin" : undefined}
@@ -184,7 +184,7 @@ export function AdhocWorkoutBuilder({ initialConfig }: AdhocWorkoutBuilderProps 
           {sessionLoading ? "Starting…" : "Begin session"}
           <ArrowRight aria-hidden="true" size={18} />
         </button>
-      </footer>
+      </div>
 
       {editingExercise && (
         <ExerciseEditModal

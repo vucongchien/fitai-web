@@ -112,7 +112,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
         </div>
       </div>
 
-      <footer className="workout-prep-action">
+      <div className="pt-2">
         {isAdjusting ? (
           <div className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-[var(--radius-card)] bg-[var(--color-action-soft)] border border-[color-mix(in_srgb,var(--color-action)_25%,transparent)] text-[var(--color-text)] font-semibold text-sm shadow-xs">
             <span className="flex h-2.5 w-2.5 relative">
@@ -123,7 +123,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
           </div>
         ) : (
           <Link
-            className={buttonVariants({ size: "large", variant: "primary" })}
+            className={buttonVariants({ size: "large", variant: "primary", className: "w-full" })}
             href={data.startWorkoutHref}
             transitionTypes={NAV_FORWARD}
           >
@@ -131,7 +131,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
             <ArrowRight aria-hidden="true" size={18} />
           </Link>
         )}
-      </footer>
+      </div>
     </>
   );
 }
