@@ -11,7 +11,6 @@ import { EvidenceSection } from "@/features/home/ui/evidence-section";
 import { ExerciseShowcaseSection } from "@/features/home/ui/exercise-showcase-section";
 import { MuscleGroupSelector } from "@/features/home/ui/muscle-group-selector";
 import { ProfileCompletionBanner } from "@/features/home/ui/profile-completion-banner";
-import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
 import { TodayTimeline } from "@/features/home/ui/today-timeline";
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
@@ -84,8 +83,6 @@ export function HomeView({ data }: HomeViewProps) {
       {data.featuredExercises && data.featuredExercises.length > 0 ? (
         <ExerciseShowcaseSection exercises={data.featuredExercises} />
       ) : null}
-
-      <QuickActionsFab actions={data.quickActions} />
     </div>
   );
 }
