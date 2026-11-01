@@ -201,10 +201,226 @@ function adaptLiveSessionPlan({
   return { ...plan, estimatedDurationMin: estimatedDurationMin(plan) };
 }
 
-/**
- * Everything the live workout screen needs, fetched directly from gRPC Backend.
- */
+const AI_12_EXERCISES_CONFIG: {
+  id: string;
+  name: string;
+  angle: "side" | "front";
+  isTimed?: boolean;
+  isWeighted?: boolean;
+  targetReps: number;
+  durationSeconds: number;
+  instructions: string;
+  formCues: string[];
+  thumbnailUrl?: string;
+  videoUrl?: string;
+}[] = [
+  {
+    id: "push_up",
+    name: "Push-up",
+    angle: "side",
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Keep body in a straight line from shoulders to ankles, lower chest until elbows reach 90°.",
+    formCues: ["Keep core braced", "Elbows at 45°", "Full lockout at top"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/I4hDWkc.gif",
+    videoUrl: "https://www.youtube.com/watch?v=bSkNEdRaJlg",
+  },
+  {
+    id: "squat",
+    name: "Barbell / Bodyweight Squat",
+    angle: "side",
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Send hips back and down until thighs are parallel to the floor, keeping chest upright.",
+    formCues: ["Knees track over toes", "Hit parallel depth", "Drive through heels"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/qXTaZnJ.gif",
+    videoUrl: "https://www.youtube.com/watch?v=wFOgKtxNCiI",
+  },
+  {
+    id: "plank",
+    name: "Forearm Plank",
+    angle: "side",
+    isTimed: true,
+    targetReps: 0,
+    durationSeconds: 30,
+    instructions: "Hold a rigid straight line from shoulders through hips to ankles.",
+    formCues: ["Squeeze glutes", "Do not let hips sag or pike", "Neutral neck"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/VBAWRPG.gif",
+    videoUrl: "https://www.youtube.com/watch?v=pSHjTRCQxIw",
+  },
+  {
+    id: "lunge",
+    name: "Forward Lunge",
+    angle: "side",
+    targetReps: 4,
+    durationSeconds: 0,
+    instructions: "Step forward and lower hips until both knees are bent at ~90 degrees.",
+    formCues: ["Upright torso", "Front knee aligned with foot", "Push back to start"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/RRWFUcw.gif",
+    videoUrl: "https://www.youtube.com/watch?v=QOVaHwm-Q6U",
+  },
+  {
+    id: "bicep_curl",
+    name: "Dumbbell Bicep Curl",
+    angle: "side",
+    isWeighted: true,
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Curl weights toward shoulders while keeping elbows pinned to your sides.",
+    formCues: ["Pin elbows to ribs", "Avoid swinging torso", "Full extension at bottom"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/NbVPDMW.gif",
+    videoUrl: "https://www.youtube.com/watch?v=ykJmrZ5v0Oo",
+  },
+  {
+    id: "shoulder_press",
+    name: "Overhead Shoulder Press",
+    angle: "front",
+    isWeighted: true,
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Press weights overhead to full lockout without arching your lower back.",
+    formCues: ["Core tight", "Full overhead lockout", "Control descent to shoulders"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/znQUdHY.gif",
+    videoUrl: "https://www.youtube.com/watch?v=qEwKCR5JCog",
+  },
+  {
+    id: "bench_press",
+    name: "Bench Press",
+    angle: "side",
+    isWeighted: true,
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Lower the bar under control to mid-chest and press back to full extension.",
+    formCues: ["Retract shoulder blades", "Controlled touch on chest", "Full elbow extension"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/EIeI8Vf.gif",
+    videoUrl: "https://www.youtube.com/watch?v=bSkNEdRaJlg",
+  },
+  {
+    id: "deadlift",
+    name: "Barbell Deadlift",
+    angle: "side",
+    isWeighted: true,
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Hinge at hips, grip the bar, brace your lats and drive the floor away to lockout.",
+    formCues: ["Neutral flat spine", "Bar stays close to shins", "Lock out hips and knees together"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/ila4NZS.gif",
+    videoUrl: "https://www.youtube.com/watch?v=wFOgKtxNCiI",
+  },
+  {
+    id: "pull_up",
+    name: "Pull-up",
+    angle: "front",
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Pull from a dead hang until your chin clears the bar, then lower with control.",
+    formCues: ["Start from full hang", "Pull elbows down to ribs", "Chin over bar"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/lBDjFxJ.gif",
+    videoUrl: "https://www.youtube.com/watch?v=m7mwLAyR3k4",
+  },
+  {
+    id: "sit_up",
+    name: "Sit-up",
+    angle: "side",
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Engage abs to curl your torso all the way up toward your knees, then lower back down.",
+    formCues: ["Do not yank neck", "Exhale on the way up", "Controlled eccentric"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/Bn6TXyO.gif",
+    videoUrl: "https://www.youtube.com/watch?v=1fbU_MkV7NE",
+  },
+  {
+    id: "triceps_dip",
+    name: "Triceps Dip",
+    angle: "side",
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Lower your body by bending elbows until upper arms are parallel to floor, then press up.",
+    formCues: ["Keep shoulders down", "Hit 90° elbow flexion", "Lock out at top"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/X6C6i5Y.gif",
+    videoUrl: "https://www.youtube.com/watch?v=pjo7EMsSWwc",
+  },
+  {
+    id: "lateral_raise",
+    name: "Dumbbell Lateral Raise",
+    angle: "front",
+    isWeighted: true,
+    targetReps: 5,
+    durationSeconds: 0,
+    instructions: "Raise arms out to the sides up to shoulder height with a slight bend in elbows.",
+    formCues: ["Lead with elbows", "Raise to shoulder level", "No torso momentum"],
+    thumbnailUrl: "https://static.exercisedb.dev/media/DsgkuIt.gif",
+    videoUrl: "https://www.youtube.com/watch?v=AJZRMJ7qlbo",
+  },
+];
+
+function buildAi12ExercisesSessionPlan(sessionId: string): LiveSessionPlan {
+  const mainExercises: LiveExercise[] = AI_12_EXERCISES_CONFIG.map((cfg) => ({
+    exerciseId: cfg.id,
+    name: cfg.name,
+    phase: "main",
+    equipmentId: cfg.isWeighted ? "eq-dumbbell" : "eq-bodyweight",
+    targetSets: 1,
+    targetReps: cfg.targetReps,
+    durationSeconds: cfg.durationSeconds,
+    targetWeightKg: cfg.isWeighted ? 15 : 0,
+    isWeighted: Boolean(cfg.isWeighted),
+    restSetSec: 15,
+    restExerciseSec: 15,
+    targetRpe: 7.5,
+    notes: `AI Camera Tracking (${cfg.angle} view recommended)`,
+    instructions: cfg.instructions,
+    formCues: cfg.formCues,
+    commonMistakes: [],
+    breathingCue: "Inhale on eccentric, exhale on effort",
+    videoUrl: cfg.videoUrl || "",
+    thumbnailUrl: cfg.thumbnailUrl || "",
+    hasAiSupported: true,
+  }));
+
+  const motionSpecs: Record<string, MotionSpec> = {};
+  for (const cfg of AI_12_EXERCISES_CONFIG) {
+    motionSpecs[cfg.id] = {
+      exerciseId: cfg.id,
+      onnxDetectorUrl: "/models/yolov8n-pose.onnx",
+      onnxSkeletonUrl: "/models/yolov8n-pose.onnx",
+      localRulesUrl: `/models/rules/${cfg.id}.json`,
+      dialogueEngineUrl: `/models/dialogue/${cfg.id}.json`,
+      recommendedCameraAngle: cfg.angle,
+      romRange: { joints: ["shoulder", "elbow", "wrist"], startDeg: 0, endDeg: 0 },
+      rep_type: cfg.isTimed ? "timed" : "rep",
+      phase_detection: cfg.isTimed ? { metric: "none", thresholds: { always: {} } } : undefined,
+      rules: [],
+      cues: [],
+      cueCooldownSec: {},
+    };
+  }
+
+  const plan: LiveSessionPlan = {
+    sessionId,
+    sessionPlanId: sessionId,
+    title: "12 AI-Supported Exercises Suite",
+    targetRpe: 7.5,
+    estimatedDurationMin: 25,
+    warmUps: [],
+    mainExercises,
+    coolDowns: [],
+    playlists: STATIC_PLAYLISTS,
+    motionSpecs,
+    recentAvgVolumeKg: 1000,
+    personalRecords: {},
+    durationWarnMin: 90,
+  };
+
+  return { ...plan, estimatedDurationMin: estimatedDurationMin(plan) };
+}
+
+// Fetch live workout screen data directly from gRPC backend.
 export async function getLiveSessionData(planId: string): Promise<LiveSessionPlan> {
+  if (planId === "ai-12-exercises" || planId.startsWith("ai-12-")) {
+    return buildAi12ExercisesSessionPlan(planId);
+  }
+
   const { accessToken, userId } = await getAuthenticatedSession();
 
   if (!accessToken || !userId) {

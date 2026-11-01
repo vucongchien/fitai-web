@@ -1,5 +1,6 @@
 "use client";
-import { AlertCircle, CheckCircle2, Play, Volume2, VolumeX, X } from "lucide-react";
+import { AlertCircle, Camera, CheckCircle2, Dumbbell, Play, Volume2, VolumeX, X } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useState } from "react";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
@@ -170,6 +171,31 @@ export function InstructionsSheet({
         </header>
 
         <div className="live-sheet__body">
+          {exercise.thumbnailUrl ? (
+            <div className="detail-thumb">
+              <Image
+                alt={exercise.name}
+                className="detail-thumb__img object-contain bg-[var(--color-surface-subtle)]"
+                fill
+                priority
+                sizes="(max-width: 640px) 100vw, 480px"
+                src={exercise.thumbnailUrl}
+                unoptimized={exercise.thumbnailUrl.endsWith(".gif")}
+              />
+              {exercise.hasAiSupported ? (
+                <span className="ex-card__ai" aria-label="AI form tracking">
+                  <Camera size={11} strokeWidth={2} />
+                  AI
+                </span>
+              ) : null}
+            </div>
+          ) : (
+            <div className="detail-thumb">
+              <div className="detail-thumb__fallback">
+                <Dumbbell size={40} strokeWidth={1.2} />
+              </div>
+            </div>
+          )}
           {steps.length > 1 ? (
             <div className="detail-section">
               <h3>Execution Steps</h3>

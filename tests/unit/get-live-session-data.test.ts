@@ -121,6 +121,19 @@ describe("getLiveSessionData gRPC Live Session Execution", () => {
     expect(plan.mainExercises[0]?.instructions).toBe("Hạ tạ chạm ngực rồi đẩy lên");
   });
 
+  it("returns ai-12-exercises suite with populated thumbnails matching search catalog", async () => {
+    const { getLiveSessionData } = await import("@/features/workout/server/get-live-session-data");
+
+    const plan = await getLiveSessionData("ai-12-exercises");
+
+    expect(plan.mainExercises).toHaveLength(12);
+    const lateralRaise = plan.mainExercises.find((ex) => ex.exerciseId === "lateral_raise");
+    expect(lateralRaise).toBeDefined();
+    expect(lateralRaise?.name).toBe("Dumbbell Lateral Raise");
+    expect(lateralRaise?.thumbnailUrl).toBe("https://static.exercisedb.dev/media/DsgkuIt.gif");
+    expect(lateralRaise?.hasAiSupported).toBe(true);
+  });
+
   it("triggers notFound when session plan is not found on backend", async () => {
     mockGetSessionPlan.mockRejectedValue(new Error("rpc error: code = NotFound"));
 

@@ -16,10 +16,7 @@ import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
 
-/**
- * Search exercise library.
- * gRPC: ExerciseService.searchExercises with repository fallback
- */
+// Search exercise library via ExerciseService with repository fallback.
 export async function searchExercises(query: string): Promise<ExerciseResult[]> {
   const results = await exerciseSearchRepository.search({
     q: query,
@@ -43,9 +40,7 @@ export async function searchExercises(query: string): Promise<ExerciseResult[]> 
   }));
 }
 
-/**
- * Fetch config for Adhoc Workout builder.
- */
+// Fetch config for Adhoc Workout builder.
 export async function getAdhocConfig(): Promise<AdhocConfig> {
   const accessToken = await getAccessToken();
   const userId = await getAuthenticatedUserId();
@@ -183,9 +178,7 @@ export async function getAiRecommendation(
   };
 }
 
-/**
- * Start an ad-hoc session built from selected exercise IDs.
- */
+// Start an ad-hoc session built from selected exercise IDs.
 export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sessionId: string }> {
   if (!exerciseIds || exerciseIds.length === 0) {
     throw new Error("Cannot begin session without at least one exercise.");
@@ -236,6 +229,9 @@ export async function logWorkoutSet(
   sessionId: string,
   set: SetLogDraft,
 ): Promise<{ setLogId: string }> {
+  if (sessionId.startsWith("ai-12-")) {
+    return { setLogId: `local-${sessionId}-${set.exerciseId}-${set.setNumber}` };
+  }
   const accessToken = await getAccessToken();
   if (!accessToken) {
     throw new Error("Unauthenticated");
@@ -274,13 +270,14 @@ export interface SyncErrorItem {
   exerciseId?: string;
 }
 
-/**
- * Flush real-time posture errors up to backend.
- */
+// Flush real-time posture errors up to backend.
 export async function syncWorkoutLogs(
   sessionId: string,
   errors: SyncErrorItem[] = [],
 ): Promise<{ success: boolean }> {
+  if (sessionId.startsWith("ai-12-")) {
+    return { success: true };
+  }
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return { success: true };
@@ -316,14 +313,15 @@ export async function syncWorkoutLogs(
   }
 }
 
-/**
- * Stop a session early.
- */
+// Stop a session early.
 export async function abortWorkoutSession(
   sessionId: string,
   reason: AbortReason,
   note?: string,
 ): Promise<{ abortedAt: number }> {
+  if (sessionId.startsWith("ai-12-")) {
+    return { abortedAt: Date.now() };
+  }
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return { abortedAt: Date.now() };
@@ -351,9 +349,7 @@ export interface CompleteSessionResult {
   oneRepMaxByExercise: Record<string, number>;
 }
 
-/**
- * Close the session and get totals.
- */
+// Close the session and get totals.
 export async function completeWorkoutSession(
   sessionId: string,
   sets: SetLogDraft[],
@@ -370,7 +366,7 @@ export async function completeWorkoutSession(
     oneRepMaxByExercise: bestOneRepMaxByExercise(sets),
   };
 
-  if (!accessToken) {
+  if (!accessToken || sessionId.startsWith("ai-12-")) {
     return localTotals;
   }
 
@@ -426,9 +422,7 @@ export async function completeWorkoutSession(
   }
 }
 
-/**
- * Stored personal records.
- */
+// Stored personal records.
 export async function getPersonalRecords(exerciseIds: string[]): Promise<Record<string, number>> {
   const accessToken = await getAccessToken();
   if (!accessToken) {
