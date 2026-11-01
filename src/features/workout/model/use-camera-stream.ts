@@ -2,14 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 
-/**
- * Camera access for the AI branch.
- *
- * §6 Data requires a >= 720p / 30fps stream; Assumption-02 allows for devices
- * where the camera simply is not available. Every failure path is soft: the
- * caller falls back to the manual branch instead of showing an error wall
- * (ux-flow-spec §5.3).
- */
+// Camera stream management for AI branch with fallback handling
 export type CameraState = "idle" | "requesting" | "ready" | "denied" | "unavailable";
 
 export type FacingMode = "user" | "environment";
@@ -24,9 +17,7 @@ export function useCameraStream() {
   const streamRef = useRef<MediaStream | null>(null);
   const objectUrlRef = useRef<string | null>(null);
 
-  /**
-   * The current facing mode, readable without making it a callback dependency.
-   */
+  // Current facing mode readable without callback dependency
   const facingModeRef = useRef<FacingMode>(facingMode);
 
   const cleanupObjectUrl = useCallback(() => {
@@ -70,12 +61,9 @@ export function useCameraStream() {
       const video = videoRef.current;
       if (video) {
         video.srcObject = null;
-        video.src = objectUrl;
         video.loop = true;
         video.muted = true;
         video.playsInline = true;
-        video.load();
-        void video.play().catch((err) => console.warn("[AI Engine] Custom video play error:", err));
       }
     },
     [cleanupObjectUrl],

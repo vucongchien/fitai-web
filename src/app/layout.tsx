@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
+import { AdminQueryProvider } from "@/features/admin/ui/admin-query-provider";
 import { ToastContainer } from "@/shared/ui/toast/toast-container";
 import { ToastProvider } from "@/shared/ui/toast/toast-context";
 
@@ -64,10 +65,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={`${display.variable} ${body.variable} ${data.variable}`} lang="en">
       <body data-design-direction="triple-lane" data-design-seed="4ff89157">
-        <ToastProvider>
-          {children}
-          <ToastContainer />
-        </ToastProvider>
+        <AdminQueryProvider>
+          <ToastProvider>
+            {children}
+            <ToastContainer />
+          </ToastProvider>
+        </AdminQueryProvider>
       </body>
     </html>
   );
