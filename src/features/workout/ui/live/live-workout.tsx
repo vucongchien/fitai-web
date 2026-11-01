@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 
-import { cancelAllSpeech } from "@/features/workout/domain/audio-cues";
+import { cancelAllSpeech, formatVietnameseRepCount, formatVietnameseSecond, playSyntheticCueTone } from "@/features/workout/domain/audio-cues";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
 import { isTimedExercise } from "@/features/workout/domain/session-guards";
 import {
@@ -23,6 +23,7 @@ import type { EndDialogVariant } from "@/features/workout/ui/live/end-session-di
 import { EndSessionDialog } from "@/features/workout/ui/live/end-session-dialog";
 import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
 import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
+import { PoseStencilOverlay } from "@/features/workout/ui/live/pose-stencil-overlay";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
 import { RuleVoiceModal } from "@/features/workout/ui/live/rule-voice-modal";
 import { SetConfirmDialog } from "@/features/workout/ui/live/set-confirm-dialog";
@@ -40,7 +41,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const audio = useAudioCoach(plan.playlists);
   const camera = useCameraStream();
 
-  const isWorkoutActive = session.status === "working" || session.status === "resting";
+  const isWorkoutActive = session.status !== "complete";
   useWakeLock({ enabled: isWorkoutActive });
 
   const [listening, setListening] = useState(true);
@@ -78,7 +79,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       const cueText = workoutEffects.getCueTextForError(error.code, error.severity, error.message);
       // Enforce post-speech silence gap: 1.5s for Danger (severity 2), 3.0s for Warning (severity 1)
       const gapSec = error.severity === 2 ? 1.5 : 3.0;
-      audio.speakText(cueText, "en-US", { cooldownGapSec: gapSec, priority: "error" });
+      audio.speakText(cueText, undefined, { cooldownGapSec: gapSec, priority: "error" });
     },
     onRep: (rep) => {
       if (rep.counted && session.status === "working") {
@@ -87,9 +88,9 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           const isTimed = isTimedExercise(workoutEffects.exercise, workoutEffects.spec);
 
           if (isTimed) {
-            audio.speakText(String(rep.count), "en-US", { priority: "normal" });
+            audio.speakText(formatVietnameseSecond(rep.count), undefined, { priority: "normal" });
           } else {
-            audio.speakText(`Rep ${rep.count} completed`, "en-US", { priority: "normal" });
+            audio.speakText(formatVietnameseRepCount(rep.count), undefined, { priority: "normal" });
           }
         }
       }
@@ -100,10 +101,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const { abortSession, cameraBranch, exercise, finishSet, finishSession, online, startSet, step } =
     workoutEffects;
 
-  // Back always asks first — mid-set or mid-rest, no exceptions. Leaving a
-  // Running session is not something a single stray tap should be able to do,
-  // And the dialog is where the user chooses between finishing (which saves and
-  // Shows the summary) and stopping early.
+  // Back always asks first before leaving session
   const onBack = useCallback(() => setEndOpen(true), []);
   const onToggleVoice = useCallback(() => {
     setListening((current) => {
@@ -127,9 +125,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     });
   }, [audio, exercise]);
 
-  // An AI set is only ready to run once the engine has loaded and the framing
-  // Check passes. Starting before that would race `motion.prepare()` and count
-  // Reps against a model that is not there yet.
+  // Check if AI camera and model are ready to track
   const sessionStatus = session.status;
   const cameraActive = (cameraBranch || Boolean(workoutEffects.spec)) && cameraOn;
 
@@ -139,28 +135,83 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       : null;
   const { protectionNote } = plan;
 
-  // Ref callback to handle stage transitions and notifications on DOM commit
+  // Stage transitions, effects and cleanup wired cleanly via React 19 ref callback
   const notifiedRef = useRef<{
     durationWarningShown?: string | null;
     offlineShown?: boolean;
     protectionNoteShown?: boolean;
   }>({});
 
+  const [prepCountdown, setPrepCountdown] = useState<number | null>(null);
+  const prepTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const startSetRef = useRef(startSet);
+  startSetRef.current = startSet;
+  const listeningRef = useRef(listening);
+  listeningRef.current = listening;
+  const audioRef = useRef(audio);
+  audioRef.current = audio;
+
+  const triggerStartAfterCountdown = useCallback(() => {
+    motion.stopCalibration();
+    if (prepTimerRef.current !== null) {
+      clearInterval(prepTimerRef.current);
+    }
+    setPrepCountdown(3);
+    playSyntheticCueTone("good");
+    let count = 3;
+    prepTimerRef.current = setInterval(() => {
+      count -= 1;
+      if (count > 0) {
+        setPrepCountdown(count);
+        playSyntheticCueTone("good");
+      } else {
+        if (prepTimerRef.current !== null) {
+          clearInterval(prepTimerRef.current);
+          prepTimerRef.current = null;
+        }
+        setPrepCountdown(null);
+        playSyntheticCueTone("start");
+        startSetRef.current(listeningRef.current);
+      }
+    }, 1000);
+  }, [motion]);
+
+  const beginSetImmediately = useCallback(() => {
+    motion.stopCalibration();
+    if (prepTimerRef.current !== null) {
+      clearInterval(prepTimerRef.current);
+      prepTimerRef.current = null;
+    }
+    setPrepCountdown(null);
+    playSyntheticCueTone("start");
+    startSetRef.current(listeningRef.current);
+  }, [motion]);
+
   const stageRef = useCallback(
     (node: HTMLElement | null) => {
       if (!node) return;
 
-      // Auto-start set immediately when arriving at step
+      // Auto-start or calibrate set
       if (sessionStatus === "ready") {
-        startSet(listening);
+        if (cameraActive) {
+          motion.startCalibration();
+        } else {
+          startSetRef.current(listeningRef.current);
+        }
+      } else {
+        if (prepTimerRef.current !== null) {
+          clearInterval(prepTimerRef.current);
+          prepTimerRef.current = null;
+        }
+        setPrepCountdown(null);
       }
 
       // Cancel all audio playback & speech synthesis when resting or completed
       if (sessionStatus === "resting" || sessionStatus === "complete") {
-        audio.stopCues();
+        audioRef.current.stopCues();
       }
 
-      // Offline notice
+      // Offline warning
       if (!online && !notifiedRef.current.offlineShown) {
         notifiedRef.current.offlineShown = true;
         toast.info("Offline Mode: You're offline. Sets are saved locally.");
@@ -183,6 +234,10 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       const cleanupEffects = workoutEffects.syncEffects(node);
 
       return () => {
+        if (prepTimerRef.current !== null) {
+          clearInterval(prepTimerRef.current);
+          prepTimerRef.current = null;
+        }
         cleanupEffects?.();
         audio.stopAll();
         camera.stop();
@@ -192,13 +247,12 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     [
       audio,
       camera,
+      cameraActive,
       durationWarning,
-      listening,
       motion,
       online,
       protectionNote,
       sessionStatus,
-      startSet,
       workoutEffects,
     ],
   );
@@ -213,8 +267,11 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   // `session.step` already points at the *next* step while resting, so
   // `cameraBranch` and `exercise` describe the upcoming exercise on both screens.
+  const isPreSetReady = sessionStatus === "ready" && cameraActive;
+
   const cameraStage = cameraActive ? (
     <CameraStage
+      activeErrors={motion.activeErrors}
       alert={Boolean(motion.lastError)}
       customVideoSrc={camera.customVideoSrc}
       isCustomVideo={camera.isCustomVideo}
@@ -225,7 +282,31 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       pose={motion.pose}
       state={camera.state}
       videoRef={camera.videoRef}
-    />
+    >
+      {isPreSetReady ? (
+        prepCountdown !== null ? (
+          <div
+            className="absolute inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-xs pointer-events-auto cursor-pointer select-none"
+            onClick={beginSetImmediately}
+            title="Bấm vào bất kỳ đâu để bắt đầu ngay"
+          >
+            <div className="text-8xl md:text-9xl font-black text-[var(--color-recovery)] drop-shadow-md animate-scale-up">
+              {prepCountdown}
+            </div>
+          </div>
+        ) : (
+          <PoseStencilOverlay
+            exerciseId={exercise.exerciseId}
+            onAlignedLock={triggerStartAfterCountdown}
+            onSkip={beginSetImmediately}
+            onSwitchManual={() => workoutEffects.setManualForSet(true)}
+            pose={motion.pose}
+            recommendedAngle={plan.motionSpecs?.[exercise.exerciseId]?.recommendedCameraAngle}
+            setNumber={step.setNumber}
+          />
+        )
+      ) : null}
+    </CameraStage>
   ) : null;
   const onToggleCamera =
     cameraBranch || Boolean(workoutEffects.spec) ? () => setCameraOn((value) => !value) : undefined;
@@ -349,14 +430,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
       {confirmDialog}
 
-      {/*
-        Framing check before an AI set — ux-flow-spec §5.3. It covers the active
-        screen rather than replacing it: `CameraStage` owns the <video> element
-        that `motion.prepare()` and the calibration loop read from, so unmounting
-        the screen would deadlock the check it is trying to run. `shouldCalibrate`
-        keeps it strictly pre-set, so it can never cover a running one. Manual
-        logging is one tap away, so the camera can never trap the user here.
-      */}
+      {/* Pre-set framing check and calibration stencil */}
 
       {guideOpen ? (
         <InstructionsSheet

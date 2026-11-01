@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 class TickerStore {
   private listeners = new Set<() => void>();
@@ -75,34 +75,24 @@ class TickerStore {
 
 const defaultTickerStore = new TickerStore(500);
 
-/**
- * One ticking clock for the whole session.
- *
- * Everything time-based (set countdown, rest countdown, elapsed session time,
- * the BR-WL-01 duration thresholds) is derived from timestamps and this tick, so
- * nothing drifts when the tab is throttled or the phone sleeps.
- *
- * The tick comes from a Dedicated Worker so it keeps firing while the tab is
- * backgrounded — a main-thread setInterval is throttled to ~1/minute there, which
- * makes a rest countdown finish late. Falls back to setInterval where Worker is
- * unavailable (jsdom under test, very old browsers).
- */
+// Single ticking clock for whole session via Dedicated Worker
 export function useTicker(active: boolean, intervalMs = 500): number {
   const store = useMemo(
     () => (intervalMs === 500 ? defaultTickerStore : new TickerStore(intervalMs)),
     [intervalMs],
   );
 
-  return useSyncExternalStore(
-    (callback) => {
+  const subscribe = useCallback(
+    (callback: () => void) => {
       if (!active) {
         return () => {};
       }
       return store.subscribe(callback);
     },
-    store.getSnapshot,
-    () => 0,
+    [active, store],
   );
+
+  return useSyncExternalStore(subscribe, store.getSnapshot, () => 0);
 }
 
 export {

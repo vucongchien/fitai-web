@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
+import { mapCueToSpokenText } from "@/features/workout/domain/audio-cues";
 import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
 import type { SetTelemetry } from "@/features/workout/domain/motion-engine";
 import { formScore } from "@/features/workout/domain/pose-metrics";
@@ -153,6 +154,30 @@ export function useLiveWorkoutEffects({
         gentle: "Nghỉ tay một chút và đặt lại góc khuỷu tay vuông góc nhé.",
       },
     },
+    ERR_INCORRECT_DEPTH: {
+      warning: {
+        normal: "Chưa đủ biên độ, hãy hạ sâu hơn một chút!",
+        strict: "Xuống sâu hơn! Chưa đạt độ sâu tiêu chuẩn!",
+        gentle: "Hạ thấp thêm một chút nữa là hoàn hảo bạn nhé.",
+      },
+      danger: {
+        normal: "Biên độ chuyển động quá ngắn, rep không được tính.",
+        strict: "Hạ người sâu xuống! Đừng chỉ nhấp nhẹ!",
+        gentle: "Cố gắng hạ sâu hơn để cơ bắp kích hoạt tối đa nhé.",
+      },
+    },
+    depth: {
+      warning: {
+        normal: "Chưa đủ biên độ, hãy hạ sâu hơn một chút!",
+        strict: "Xuống sâu hơn! Chưa đạt độ sâu tiêu chuẩn!",
+        gentle: "Hạ thấp thêm một chút nữa là hoàn hảo bạn nhé.",
+      },
+      danger: {
+        normal: "Biên độ chuyển động quá ngắn, rep không được tính.",
+        strict: "Hạ người sâu xuống! Đừng chỉ nhấp nhẹ!",
+        gentle: "Cố gắng hạ sâu hơn để cơ bắp kích hoạt tối đa nhé.",
+      },
+    },
   };
 
   // Fetch Vietnamese dialogue Engine JSON from spec.dialogueEngineUrl dynamically when spec changes
@@ -225,14 +250,23 @@ export function useLiveWorkoutEffects({
   const cameraBranch = Boolean(spec) && !manualForSet;
   const sessionStatus = session.status;
   const wantCameraStream =
-    Boolean(spec) && cameraOn && sessionStatus !== "complete" && sessionStatus !== "resting";
+    Boolean(spec) && cameraOn && sessionStatus !== "complete";
 
   const lastCueTimesRef = useRef<Record<string, number>>({});
+  const autoFinishTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const targetCompletedAnnouncedRef = useRef(false);
+  const lastTargetRepsRef = useRef<number>(0);
 
   // --- Audio cue player helper ---
   const playCueByCode = useCallback(
     (code: string, listening: boolean) => {
       if (!listening) {
+        return;
+      }
+
+      // Audio Priority & Ducking: Suppress form error warnings when set is not actively working
+      // (prevents errors from speaking over set-end chime or during rest period)
+      if (session.status !== "working" && !code.startsWith("set-")) {
         return;
       }
 
@@ -304,13 +338,8 @@ export function useLiveWorkoutEffects({
         }
       }
 
-      // Clean up technical English message text if any remains
-      const clean = fallbackMessage
-        .replace(/^[0-9>-]+cm:\s*/i, "")
-        .replace(/alignment/gi, "đường thẳng")
-        .replace(/signed_hip_y_diff/gi, "Võng lưng hoặc chổng mông quá cao");
-
-      return clean;
+      // Map BE feedback message or code to natural spoken cue
+      return mapCueToSpokenText(fallbackMessage || code, "vi");
     },
     [spec, voiceFeedbacks],
   );
@@ -331,8 +360,13 @@ export function useLiveWorkoutEffects({
   }, [plan.sessionId]);
 
   const recordFormError = useCallback(
-    (error: { code: string; message: string; severity: CueSeverity }) => {
-      if (!exercise) {
+    (error: {
+      code: string;
+      message: string;
+      severity: CueSeverity;
+      source?: "referee-error" | "coach-cue";
+    }) => {
+      if (!exercise || error.source === "coach-cue") {
         return;
       }
       const isCritical =
@@ -340,17 +374,26 @@ export function useLiveWorkoutEffects({
         error.code === "ERR_BAR_TRAPPED" ||
         error.code === "ERR_FALL_DETECTED";
 
-      // Chỉ ghi nhận các lỗi nghiêm trọng (CRITICAL) vào hàng đợi để gửi Backend
-      if (!isCritical) {
+      const currentRep = motion.repCount;
+      const currentSet = step?.setNumber ?? 1;
+
+      // Deduplicate: avoid queuing duplicate errors for the same rep & set
+      const alreadyQueued = pendingErrorsRef.current.some(
+        (e) =>
+          e.errorCode === error.code &&
+          e.repNumber === currentRep &&
+          e.setNumber === currentSet,
+      );
+      if (alreadyQueued) {
         return;
       }
 
       pendingErrorsRef.current.push({
         errorCode: error.code,
         exerciseId: exercise.exerciseId,
-        repNumber: motion.repCount,
-        setNumber: step?.setNumber ?? 1,
-        severity: "CRITICAL",
+        repNumber: currentRep,
+        setNumber: currentSet,
+        severity: isCritical ? "CRITICAL" : "WARNING",
         timestamp: new Date().toISOString(),
       });
       scheduleSync();
@@ -400,7 +443,14 @@ export function useLiveWorkoutEffects({
             ? motion.repCount
             : (exercise.targetReps ?? 10);
       if (timed) {
-        actualReps = customData?.actualSeconds ?? exercise.durationSeconds ?? 30;
+        actualReps =
+          customData?.actualSeconds !== undefined
+            ? customData.actualSeconds
+            : isCamera && telemetry.countedReps > 0
+              ? telemetry.countedReps
+              : motion.repCount > 0
+                ? motion.repCount
+                : (exercise.durationSeconds > 0 ? exercise.durationSeconds : 30);
       } else if (customData?.actualReps !== undefined) {
         actualReps = customData.actualReps;
       }
@@ -412,12 +462,15 @@ export function useLiveWorkoutEffects({
 
       let calculatedFormScore: number | null = null;
       if (isCamera) {
-        calculatedFormScore = formScore({
-          averageRom: telemetry.averageRom,
-          errorCount: telemetry.errorCount,
-          repCount: actualReps,
-          secondsPerRep: telemetry.secondsPerRep,
-        });
+        calculatedFormScore =
+          telemetry.formScore !== undefined && telemetry.formScore !== null
+            ? telemetry.formScore
+            : formScore({
+                averageRom: telemetry.averageRom,
+                errorCount: telemetry.errorCount,
+                repCount: actualReps,
+                secondsPerRep: telemetry.secondsPerRep,
+              });
       }
 
       const setDraft: Omit<SetLogDraft, "loggedAt" | "synced"> = {
@@ -554,14 +607,7 @@ export function useLiveWorkoutEffects({
     ],
   );
 
-  /**
-   * Stop the session without saving it as completed — the "pain / out of time /
-   * doesn't feel right" branch. No report is written, so there is no summary.
-   *
-   * A pain stop gets its own destination rather than the roadmap: dropping
-   * someone who just got hurt back onto a list of upcoming work reads as a
-   * prompt to carry on. `note` is the user's optional description of what hurt.
-   */
+  // Stop session without saving as completed
   const abortSession = useCallback(
     async (reason: AbortReason, note?: string) => {
       setFinishing(true);
@@ -596,6 +642,7 @@ export function useLiveWorkoutEffects({
   );
 
   const lastCameraKeyRef = useRef<string>("");
+  const cameraSyncRunIdRef = useRef(0);
   const autoClosed = useRef(false);
 
   const syncEffects = useCallback(
@@ -605,31 +652,38 @@ export function useLiveWorkoutEffects({
       // 1. Camera & ONNX prepare lifecycle
       const activeCameraKey =
         wantCameraStream && spec
-          ? `${exerciseId}-${sessionStatus}-${Boolean(spec)}-${cameraOn}`
+          ? `${exerciseId}-${Boolean(spec)}-${cameraOn}-${camera.isCustomVideo}-${camera.customVideoSrc ?? ""}`
           : "";
 
       if (activeCameraKey !== lastCameraKeyRef.current) {
         lastCameraKeyRef.current = activeCameraKey;
+        cameraSyncRunIdRef.current += 1;
+        const myRunId = cameraSyncRunIdRef.current;
+
         if (activeCameraKey) {
           const cam = cameraRef.current;
           const mot = motionRef.current;
           void (async () => {
             const started = await cam.start();
-            if (!started) {
+            if (myRunId !== cameraSyncRunIdRef.current) return;
+            if (!started && !cam.isCustomVideo) {
               setManualForSet(true);
               toast.info("Camera is unavailable — this set is logged by hand.");
               return;
             }
+            setManualForSet(false);
             const kind = await mot.prepare(spec, cam.videoRef.current);
+            if (myRunId !== cameraSyncRunIdRef.current) return;
             if (kind === "manual") {
               setManualForSet(true);
               toast.info("AI pose model unavailable — camera preview active with manual logging.");
               return;
             }
-            if (kind === "simulated") {
-              toast.info("Running camera in demo mode — pose model loading.");
+            if (session.status === "working") {
+              mot.startSet();
+            } else if (session.status === "ready") {
+              mot.startCalibration();
             }
-            mot.startSet();
           })();
         } else {
           cameraRef.current.stop();
@@ -637,24 +691,82 @@ export function useLiveWorkoutEffects({
         }
       }
 
-      // 2. Auto finish timed sets (for time-based exercises when clock hits 0)
+      // 1. Manage worker state during Rest vs Ready
+      if (session.status === "resting") {
+        motionRef.current.stopCalibration();
+      }
+
+      // 2. Auto finish timed sets (synchronizing with verified referee hold time)
       if (
         session.status === "working" &&
         exercise &&
-        exercise.durationSeconds > 0 &&
-        session.setLeft === 0
+        exercise.durationSeconds > 0
       ) {
-        audio.stopCues();
-        finishSet(true);
+        const verifiedSeconds = cameraBranch ? motion.repCount : 0;
+        const reachedTarget = cameraBranch
+          ? verifiedSeconds >= exercise.durationSeconds
+          : session.setLeft === 0;
+
+        if (reachedTarget || session.setLeft === 0) {
+          audio.stopCues();
+          const actualSeconds =
+            cameraBranch && verifiedSeconds > 0
+              ? Math.min(verifiedSeconds, exercise.durationSeconds)
+              : (session.setLeft === 0 ? exercise.durationSeconds : verifiedSeconds);
+          void finishSet(true, { actualSeconds });
+        }
       }
 
-      // 3. Auto close on long timeout
+      // 3. Hands-Free: Auto finish rep-based sets when target reps are reached
+      if (
+        session.status === "working" &&
+        exercise &&
+        exercise.durationSeconds === 0 &&
+        exercise.targetReps > 0 &&
+        cameraBranch &&
+        motion.repCount >= exercise.targetReps
+      ) {
+        // If athlete performed another rep (bonus rep), reset the 3-second grace timer
+        if (motion.repCount !== lastTargetRepsRef.current) {
+          lastTargetRepsRef.current = motion.repCount;
+          if (autoFinishTimerRef.current !== null) {
+            clearTimeout(autoFinishTimerRef.current);
+            autoFinishTimerRef.current = null;
+          }
+        }
+
+        if (!targetCompletedAnnouncedRef.current) {
+          targetCompletedAnnouncedRef.current = true;
+          audio.stopCues();
+          playCueByCode("set-end", true);
+        }
+
+        if (autoFinishTimerRef.current === null) {
+          autoFinishTimerRef.current = setTimeout(() => {
+            autoFinishTimerRef.current = null;
+            if (session.status === "working") {
+              void finishSet(true);
+            }
+          }, 3000);
+        }
+      } else {
+        if (session.status !== "working") {
+          targetCompletedAnnouncedRef.current = false;
+          lastTargetRepsRef.current = 0;
+          if (autoFinishTimerRef.current !== null) {
+            clearTimeout(autoFinishTimerRef.current);
+            autoFinishTimerRef.current = null;
+          }
+        }
+      }
+
+      // 4. Auto close on long timeout
       if (session.duration === "auto-close" && !autoClosed.current) {
         autoClosed.current = true;
         void finishSession(true);
       }
 
-      // 4. Complete status auto finish
+      // 5. Complete status auto finish
       if (session.status === "complete" && !finishing) {
         void finishSession(false);
       }
@@ -664,18 +776,25 @@ export function useLiveWorkoutEffects({
           clearTimeout(syncTimeoutRef.current);
           syncTimeoutRef.current = null;
         }
-        cameraRef.current.stop();
-        motionRef.current.stopCalibration();
+        if (autoFinishTimerRef.current !== null) {
+          clearTimeout(autoFinishTimerRef.current);
+          autoFinishTimerRef.current = null;
+        }
       };
     },
     [
       audio,
+      camera.customVideoSrc,
+      camera.isCustomVideo,
+      cameraBranch,
       cameraOn,
       exercise,
       exerciseId,
       finishSession,
       finishSet,
       finishing,
+      motion.repCount,
+      playCueByCode,
       session.duration,
       session.setLeft,
       session.status,
