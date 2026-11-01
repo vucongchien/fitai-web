@@ -1,8 +1,10 @@
-import { SocialContainer } from "./social-container";
-
 export function FeedSkeleton() {
   return (
-    <SocialContainer aria-busy="true" aria-label="Loading feed">
+    <div
+      className="w-full bg-white divide-y divide-neutral-100"
+      aria-busy="true"
+      aria-label="Loading feed"
+    >
       <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-white">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-full bg-neutral-100 animate-pulse" />
@@ -41,6 +43,6 @@ export function FeedSkeleton() {
           </div>
         </div>
       ))}
-    </SocialContainer>
+    </div>
   );
 }

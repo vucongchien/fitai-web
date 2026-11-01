@@ -24,7 +24,11 @@ async function HomeContent() {
 
 function HomeSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading home content" className="home-skeleton">
+    <div
+      aria-busy="true"
+      aria-label="Loading home content"
+      className="home-skeleton px-5 sm:px-6 pb-8 space-y-4"
+    >
       <div className="skeleton-box mb-4 h-12 w-1/2 rounded-[10px] bg-[var(--color-surface-subtle)]" />
       <div className="skeleton-box h-60 w-full rounded-[14px] bg-[var(--color-surface-subtle)]" />
     </div>
@@ -35,7 +39,7 @@ const HOME_FALLBACK = <HomeSkeleton />;
 
 export default function HomePage() {
   return (
-    <PageTransition className="page home-page">
+    <PageTransition className="w-full">
       {/* Static Shell: LCP Title 'Today' and chassis header paint immediately (0ms) */}
       <TodayHeader />
 

@@ -457,9 +457,24 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
+.content-section > .feedback-state {
+  border-top: 0;
+  padding-top: 0;
+}
+
 .content-section {
-  padding: 1.75rem 0;
-  border-top: 1px solid var(--color-border);
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  padding: 1.75rem 1.25rem;
+  border-top: 1px solid var(--color-border-subtle, #e5e5e5);
+}
+
+@media (min-width: 40rem) {
+  .content-section {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 1.75rem 1.5rem;
+  }
 }
 
 .content-section__header {
@@ -812,7 +827,7 @@ button {
 }
 
 .home-week {
-  border-top: 0;
+  border-top: 1px solid var(--color-border-subtle, #e5e5e5);
 }
 
 .week-route {
@@ -1289,6 +1304,17 @@ a.week-route__row:hover {
 
 .roadmap-context {
   align-self: start;
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  padding: 0 1.25rem;
+}
+
+@media (min-width: 40rem) {
+  .roadmap-context {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding: 0 1.5rem;
+  }
 }
 
 .roadmap-context__item:first-child {
@@ -2773,8 +2799,19 @@ a.week-route__row:hover {
 }
 
 .exercise-list {
-  padding-top: 1.75rem;
-  border-top: 1px solid var(--color-border);
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  padding: 1.75rem 1.25rem 0;
+  border-top: 1px solid var(--color-border-subtle, #e5e5e5);
+}
+
+@media (min-width: 40rem) {
+  .exercise-list {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 .exercise-list ol {
@@ -4670,8 +4707,19 @@ a.week-route__row:hover {
 
 /* Adhoc Workout Pure Row & Flex Actions Styles */
 .adhoc-exercise-section {
-  padding-top: 1.75rem;
-  border-top: 1px solid var(--color-border);
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  padding: 1.75rem 1.25rem 0;
+  border-top: 1px solid var(--color-border-subtle, #e5e5e5);
+}
+
+@media (min-width: 40rem) {
+  .adhoc-exercise-section {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 .adhoc-list-container {
@@ -4893,8 +4941,19 @@ a.week-route__row:hover {
 
 .adhoc-estimates-bottom {
   margin-top: 1.75rem;
-  padding-top: 1rem;
-  border-top: 1px dashed var(--color-border);
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  padding: 1rem 1.25rem 0;
+  border-top: 1px dashed var(--color-border-subtle, #e5e5e5);
+}
+
+@media (min-width: 40rem) {
+  .adhoc-estimates-bottom {
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 /* Toast Stack */
@@ -7381,13 +7440,24 @@ a.week-route__row:hover {
 
 .hero-stats {
   display: grid;
-  width: 100%;
-  margin: 1.6rem 0 0;
-  padding: 1.25rem 0 0;
+  width: calc(100% + 2.5rem);
+  margin: 1.6rem -1.25rem 0;
+  padding: 1.25rem 1.25rem 0;
   gap: 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border-subtle, #e5e5e5);
   grid-template-columns: repeat(3, 1fr);
   list-style: none;
+  justify-self: stretch;
+}
+
+@media (min-width: 40rem) {
+  .hero-stats {
+    width: calc(100% + 3rem);
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 .hero-stats__item {
@@ -7468,11 +7538,7 @@ a.week-route__row:hover {
   }
 }
 
-@media (min-width: 48rem) {
-  .hero-stats {
-    max-width: 30rem;
-  }
-}
+/* removed max-width: 30rem so hero-stats divider bleeds to card edges */
 
 /* == Meal timeline ========================================================= */
 

@@ -21,12 +21,16 @@ async function SummaryContent({
 
 function SummarySkeleton() {
   return (
-    <div
-      aria-busy="true"
-      aria-label="Loading workout summary"
-      className="workout-prep-skeleton px-4 py-8"
-    >
-      <div className="skeleton-box h-48 w-full rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)]" />
+    <div className="min-h-screen bg-white sm:bg-canvas px-0 sm:px-4 pt-4 sm:pt-6 pb-12">
+      <div className="w-full max-w-[640px] mx-auto bg-white overflow-hidden shadow-none rounded-none border-0 sm:rounded-[24px] sm:border sm:border-neutral-300 p-6 sm:p-8">
+        <div
+          aria-busy="true"
+          aria-label="Loading workout summary"
+          className="workout-prep-skeleton"
+        >
+          <div className="skeleton-box h-48 w-full rounded-[var(--radius-card)] bg-[var(--color-surface-subtle)]" />
+        </div>
+      </div>
     </div>
   );
 }

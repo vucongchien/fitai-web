@@ -3,5 +3,13 @@ import type { ReactNode } from "react";
 import { AppShell } from "@/shared/ui/app-shell";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
-  return <AppShell>{children}</AppShell>;
+  return (
+    <AppShell>
+      <div className="min-h-screen bg-white sm:bg-canvas px-0 sm:px-4 pt-0 sm:pt-4 pb-8">
+        <div className="w-full max-w-[640px] mx-auto bg-white overflow-hidden shadow-none rounded-none border-0 sm:rounded-[24px] sm:border sm:border-neutral-300">
+          {children}
+        </div>
+      </div>
+    </AppShell>
+  );
 }

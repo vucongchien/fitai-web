@@ -7,7 +7,6 @@ import { useCallback, useState } from "react";
 import type { FeedItemVM } from "../model/social.types";
 import { fetchMoreFeedAction, fetchMoreProfileFeedAction } from "../server/social-actions";
 import { FeedCard } from "./feed-card";
-import { SocialContainer } from "./social-container";
 
 interface Props {
   initialItems: FeedItemVM[];
@@ -59,7 +58,7 @@ export function FeedList({
   );
 
   return (
-    <SocialContainer>
+    <div className="w-full bg-white divide-y divide-neutral-100">
       {header}
 
       {!profileUserId && !header && (
@@ -109,6 +108,6 @@ export function FeedList({
           You're all caught up
         </div>
       )}
-    </SocialContainer>
+    </div>
   );
 }

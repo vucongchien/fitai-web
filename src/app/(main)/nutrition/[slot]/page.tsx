@@ -7,10 +7,7 @@ import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { MEAL_SLOT_LABELS } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { PageTransition } from "@/shared/ui/page-transition";
 
-/**
- * Slugs the app links to, mapped onto the four wire slots. The timeline distinguishes a
- * morning from an afternoon snack, but `DailyMeals` has one `snack` list, so both land here.
- */
+/** Map slug to corresponding wire slot. */
 const SLOT_BY_SLUG: Record<string, MealSlot> = {
   breakfast: "breakfast",
   dinner: "dinner",
@@ -28,7 +25,10 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slot: string }> }) {
   const { slot } = await params;
   const resolved = SLOT_BY_SLUG[slot];
-  return { title: resolved ? MEAL_SLOT_LABELS[resolved] : "Meal" };
+  if (!resolved) {
+    return { title: "Meal detail" };
+  }
+  return { title: `${MEAL_SLOT_LABELS[resolved]} | FITAI` };
 }
 
 async function MealContent({ paramsPromise }: { paramsPromise: Promise<{ slot: string }> }) {
@@ -44,9 +44,9 @@ async function MealContent({ paramsPromise }: { paramsPromise: Promise<{ slot: s
 
 function MealSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading meal" className="meal-skeleton">
-      <div className="meal-skeleton__row" />
-      <div className="meal-skeleton__row" />
+    <div aria-busy="true" aria-label="Loading meal detail" className="nutrition-skeleton">
+      <div className="nutrition-skeleton__dial" />
+      <div className="nutrition-skeleton__line" />
     </div>
   );
 }
@@ -55,7 +55,7 @@ async function MealHeading({ paramsPromise }: { paramsPromise: Promise<{ slot: s
   const { slot } = await paramsPromise;
   const resolved = SLOT_BY_SLUG[slot];
   if (!resolved) {
-    notFound();
+    return <h1>Meal</h1>;
   }
 
   return <h1>{MEAL_SLOT_LABELS[resolved]}</h1>;
@@ -64,14 +64,11 @@ async function MealHeading({ paramsPromise }: { paramsPromise: Promise<{ slot: s
 const HEADING_FALLBACK = <h1>Meal</h1>;
 const MEAL_FALLBACK = <MealSkeleton />;
 
-/**
- * `params` is awaited inside the Suspense children rather than here: under Cache Components
- * awaiting it in the page body makes the whole route block, so the promise is forwarded down.
- */
+/** Forward params promise to Suspense children to prevent route blocking. */
 export default function MealDetailPage({ params }: { params: Promise<{ slot: string }> }) {
   return (
-    <PageTransition className="page meal-page">
-      <header className="page-heading">
+    <PageTransition className="w-full">
+      <header className="page-heading px-5 sm:px-6 pt-6 pb-2">
         <div>
           <Suspense fallback={HEADING_FALLBACK}>
             <MealHeading paramsPromise={params} />
@@ -79,9 +76,11 @@ export default function MealDetailPage({ params }: { params: Promise<{ slot: str
         </div>
       </header>
 
-      <Suspense fallback={MEAL_FALLBACK}>
-        <MealContent paramsPromise={params} />
-      </Suspense>
+      <div className="px-5 sm:px-6 pb-8 bg-white">
+        <Suspense fallback={MEAL_FALLBACK}>
+          <MealContent paramsPromise={params} />
+        </Suspense>
+      </div>
     </PageTransition>
   );
 }

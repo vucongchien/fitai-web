@@ -61,7 +61,7 @@ export function AdhocWorkoutBuilder({ initialConfig }: AdhocWorkoutBuilderProps 
     <>
       <AdhocHero />
 
-      <div className="workout-prep-grid">
+      <div className="flex flex-col gap-6">
         <section className="adhoc-exercise-section">
           <div className="content-section__header">
             <h2>Today&rsquo;s exercises</h2>

@@ -35,8 +35,8 @@ export function ExerciseShowcaseSection({ exercises }: ExerciseShowcaseSectionPr
   }
 
   return (
-    <section className="exercise-showcase-section">
-      <div className="exercise-showcase-header">
+    <section className="content-section exercise-showcase-section">
+      <div className="content-section__header exercise-showcase-header">
         <h2>Featured Workouts</h2>
         <Link
           aria-label="See all exercises"

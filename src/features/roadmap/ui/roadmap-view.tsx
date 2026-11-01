@@ -53,7 +53,7 @@ export function RoadmapView({ data }: RoadmapViewProps) {
   if (data.error) {
     const isNoRoadmap = data.error.type === "NO_ROADMAP";
     return (
-      <div className="roadmap-layout mt-4">
+      <div className="flex flex-col gap-6 mt-4">
         <section className="content-section">
           <FeedbackState
             title={isNoRoadmap ? "Workout roadmap not configured yet" : "Server connection error"}
@@ -79,7 +79,7 @@ export function RoadmapView({ data }: RoadmapViewProps) {
 
   return (
     <>
-      <div className="roadmap-layout">
+      <div className="flex flex-col gap-6">
         <AIAdjustmentBanner />
         <section className="content-section">
           <div className="content-section__header">

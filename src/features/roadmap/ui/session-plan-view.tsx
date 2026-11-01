@@ -33,7 +33,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
   const isAdjusting = Boolean(context?.isAdjusting && context.status === "in_progress");
   return (
     <>
-      <main className="workout-prep-main">
+      <div className="w-full space-y-6">
         <section className="workout-prep-hero">
           <TripleLane active="move" morph />
           <p className="utility-label">
@@ -53,7 +53,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
           </div>
         </section>
 
-        <div className="workout-prep-grid">
+        <div className="flex flex-col gap-6">
           <section className="exercise-list">
             <div className="content-section__header">
               <h2>Today&rsquo;s exercises</h2>
@@ -110,7 +110,7 @@ export function SessionPlanView({ data }: SessionPlanViewProps) {
             )}
           </aside>
         </div>
-      </main>
+      </div>
 
       <footer className="workout-prep-action">
         {isAdjusting ? (

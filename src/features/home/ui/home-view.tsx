@@ -35,7 +35,7 @@ export function HomeView({ data }: HomeViewProps) {
   };
 
   return (
-    <div className="home-container space-y-6">
+    <div className="home-container space-y-6 px-5 sm:px-6 pb-8 bg-white">
       {/* Realtime AI Plan Adjustment Banner (Real Data 100%) */}
       <AIAdjustmentBanner />
 
@@ -48,8 +48,8 @@ export function HomeView({ data }: HomeViewProps) {
         missingFields={data.missingFields}
       />
 
-      {/* Today's Timeline & Evidence Sidebar (Moved to top as requested!) */}
-      <div className="home-grid">
+      {/* Today's Timeline & Evidence Sidebar (Single column stack in 640px card) */}
+      <div className="flex flex-col gap-6">
         <section className="content-section home-week">
           <div className="content-section__header">
             <h2>Today&rsquo;s Schedule</h2>

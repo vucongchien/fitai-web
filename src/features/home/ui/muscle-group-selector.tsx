@@ -10,8 +10,8 @@ interface MuscleGroupSelectorProps {
 
 export function MuscleGroupSelector({ categories }: MuscleGroupSelectorProps) {
   return (
-    <section className="muscle-selector-section">
-      <div className="muscle-selector-section__header flex items-center justify-between">
+    <section className="content-section muscle-selector-section">
+      <div className="content-section__header flex items-center justify-between">
         <h2>Target Muscle Groups</h2>
       </div>
 

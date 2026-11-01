@@ -16,18 +16,20 @@ const SCHEDULE_FALLBACK = <LaneSkeleton />;
 
 export default function SchedulePage() {
   return (
-    <PageTransition className="page schedule-page">
+    <PageTransition className="w-full">
       {/* Static shell: the heading paints before the schedule resolves. */}
-      <header className="page-heading">
+      <header className="page-heading px-5 sm:px-6 pt-6 pb-2">
         <div>
           <h1>Four-week schedule</h1>
           <p>Every session on the route, from week one to week four.</p>
         </div>
       </header>
 
-      <Suspense fallback={SCHEDULE_FALLBACK}>
-        <ScheduleContent />
-      </Suspense>
+      <div className="px-5 sm:px-6 pb-8 bg-white">
+        <Suspense fallback={SCHEDULE_FALLBACK}>
+          <ScheduleContent />
+        </Suspense>
+      </div>
     </PageTransition>
   );
 }

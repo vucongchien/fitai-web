@@ -17,8 +17,8 @@ const FEED_FALLBACK = <FeedSkeleton />;
 
 export default function CommunityPage() {
   return (
-    <PageTransition className="min-h-screen bg-white sm:bg-canvas px-0 sm:px-4 pt-2 sm:pt-4 pb-6">
-      <div className="max-w-[640px] w-full mx-auto mb-3 flex items-center justify-between px-4 sm:px-2">
+    <PageTransition className="w-full">
+      <div className="px-5 sm:px-6 pt-5 pb-3 border-b border-neutral-100 flex items-center justify-between bg-white">
         <h1 className="text-[17px] font-bold text-neutral-900 tracking-tight">For you</h1>
       </div>
 

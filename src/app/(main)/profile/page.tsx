@@ -47,12 +47,10 @@ async function ProfileSection() {
 
 export default function ProfilePage() {
   return (
-    <PageTransition className="min-h-screen bg-white sm:bg-canvas px-0 sm:px-4 pt-0 sm:pt-4 pb-6">
-      <div className="w-full mx-auto">
-        <Suspense fallback={<ProfileTabbedSkeleton />}>
-          <ProfileSection />
-        </Suspense>
-      </div>
+    <PageTransition className="w-full">
+      <Suspense fallback={<ProfileTabbedSkeleton />}>
+        <ProfileSection />
+      </Suspense>
     </PageTransition>
   );
 }

@@ -41,7 +41,7 @@ export default function WorkoutPreparationPage({
   params: Promise<{ sessionPlanId: string }>;
 }) {
   return (
-    <PageTransition className="workout-prep-page">
+    <PageTransition className="min-h-screen bg-white sm:bg-canvas">
       <header className="focused-header">
         <Link
           aria-label="Back to roadmap"
@@ -55,9 +55,13 @@ export default function WorkoutPreparationPage({
         <HeaderActions />
       </header>
 
-      <Suspense fallback={PREP_FALLBACK}>
-        <PrepContent paramsPromise={params} />
-      </Suspense>
+      <div className="w-full max-w-[640px] mx-auto px-0 sm:px-4 pt-0 sm:pt-4 pb-28">
+        <main className="w-full bg-white overflow-hidden shadow-none rounded-none border-0 sm:rounded-[24px] sm:border sm:border-neutral-300 p-5 sm:p-6 space-y-6">
+          <Suspense fallback={PREP_FALLBACK}>
+            <PrepContent paramsPromise={params} />
+          </Suspense>
+        </main>
+      </div>
     </PageTransition>
   );
 }

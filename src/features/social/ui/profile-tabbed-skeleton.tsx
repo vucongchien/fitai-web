@@ -1,8 +1,6 @@
-import { SocialContainer } from "./social-container";
-
 export function ProfileTabbedSkeleton() {
   return (
-    <SocialContainer aria-busy="true" aria-label="Loading profile">
+    <div className="w-full bg-white" aria-busy="true" aria-label="Loading profile">
       <div className="px-5 sm:px-6 pt-6 pb-4 bg-white">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 space-y-2">
@@ -53,6 +51,6 @@ export function ProfileTabbedSkeleton() {
         <div className="h-48 rounded-2xl bg-neutral-100 animate-pulse mt-4" />
         <div className="h-36 rounded-2xl bg-neutral-100 animate-pulse mt-4" />
       </div>
-    </SocialContainer>
+    </div>
   );
 }

@@ -41,21 +41,23 @@ const ROADMAP_FALLBACK = <RoadmapSkeleton />;
 
 export default function RoadmapPage() {
   return (
-    <PageTransition className="page roadmap-page">
-      <header className="page-heading">
+    <PageTransition className="w-full">
+      <header className="page-heading px-5 sm:px-6 pt-6 pb-2">
         <div>
           <h1>Workout</h1>
           <p>What you have completed, and what the four-week route holds next.</p>
         </div>
       </header>
 
-      <Suspense fallback={STATS_FALLBACK}>
-        <WorkoutStatsContent>
-          <Suspense fallback={ROADMAP_FALLBACK}>
-            <RoadmapContent />
-          </Suspense>
-        </WorkoutStatsContent>
-      </Suspense>
+      <div className="px-5 sm:px-6 pb-8 bg-white">
+        <Suspense fallback={STATS_FALLBACK}>
+          <WorkoutStatsContent>
+            <Suspense fallback={ROADMAP_FALLBACK}>
+              <RoadmapContent />
+            </Suspense>
+          </WorkoutStatsContent>
+        </Suspense>
+      </div>
     </PageTransition>
   );
 }

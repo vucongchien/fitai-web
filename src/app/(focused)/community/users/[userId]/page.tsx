@@ -52,10 +52,12 @@ export default function PublicProfilePage({ params }: { params: Promise<{ userId
         <HeaderActions />
       </header>
 
-      <div className="w-full mx-auto px-0 pt-0 pb-6 sm:px-4 sm:pt-4 sm:pb-12">
-        <Suspense fallback={PROFILE_FALLBACK}>
-          <ProfileContent paramsPromise={params} />
-        </Suspense>
+      <div className="w-full max-w-[640px] mx-auto px-0 pt-0 pb-6 sm:px-4 sm:pt-4 sm:pb-12">
+        <div className="w-full bg-white overflow-hidden shadow-none rounded-none border-0 sm:rounded-[24px] sm:border sm:border-neutral-300">
+          <Suspense fallback={PROFILE_FALLBACK}>
+            <ProfileContent paramsPromise={params} />
+          </Suspense>
+        </div>
       </div>
     </PageTransition>
   );

@@ -14,7 +14,6 @@ import { TabButton } from "@/shared/ui/tab-button";
 import type { PublicProfileVM } from "../model/social.types";
 import { FeedList } from "./feed-list";
 import { FollowButton } from "./follow-button";
-import { SocialContainer } from "./social-container";
 
 type Props = {
   profile: PublicProfileVM;
@@ -204,7 +203,7 @@ export function PublicProfileView({ profile, currentUserId, gamification }: Prop
   return (
     <div className="w-full">
       {activeTab === "overview" ? (
-        <SocialContainer hasDividers={false}>
+        <div className="w-full bg-white">
           {profileHeader}
           <div className="space-y-5 pt-4 pb-6 px-5 sm:px-6 bg-white">
             {gamification && <ProfileStatsGrid stats={gamification.stats} />}
@@ -224,7 +223,7 @@ export function PublicProfileView({ profile, currentUserId, gamification }: Prop
               />
             )}
           </div>
-        </SocialContainer>
+        </div>
       ) : (
         <FeedList
           initialItems={activeTab === "threads" ? profile.feedItems : []}
