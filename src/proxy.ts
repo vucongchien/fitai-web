@@ -13,6 +13,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/execution") ||
+    pathname.startsWith("/workouts/live/ai-12-exercises") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname.includes(".");
