@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings } from "lucide-react";
+import { Plus, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useSyncExternalStore } from "react";
@@ -9,7 +9,7 @@ import { isNavDestinationActive, SIDEBAR_NAV_DESTINATIONS } from "@/shared/confi
 import { cn } from "@/shared/lib/cn";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { notificationBadgeStore } from "@/shared/ui/header-actions";
-import { NAV_LATERAL } from "@/shared/ui/transition-types";
+import { NAV_FORWARD, NAV_LATERAL } from "@/shared/ui/transition-types";
 
 interface AppSidebarProps {
   className?: string;
@@ -28,6 +28,22 @@ function AppSidebarInner({ className }: AppSidebarProps) {
       <div className="flex flex-col flex-1 min-h-0">
         <div className="app-sidebar__brand">
           <BrandMark href="/home" className="text-xl" />
+        </div>
+
+        <div className="px-3 pb-3">
+          <Link
+            href="/workouts/adhoc"
+            className="flex items-center justify-center gap-2 h-10 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs transition-all shadow-xs group"
+            title="Bài tập mới"
+            transitionTypes={NAV_FORWARD}
+          >
+            <Plus
+              size={18}
+              strokeWidth={2.5}
+              className="group-hover:rotate-90 transition-transform shrink-0"
+            />
+            <span className="hidden lg:inline whitespace-nowrap">Bài tập mới</span>
+          </Link>
         </div>
 
         <nav aria-label="Desktop primary" className="app-sidebar__nav">

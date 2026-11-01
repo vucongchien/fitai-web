@@ -1,6 +1,7 @@
 "use client";
 
-import { Bell, Search, X } from "lucide-react";
+import { Bell, Plus, Search, X } from "lucide-react";
+import Link from "next/link";
 import { useSyncExternalStore } from "react";
 
 import { notificationBadgeStore } from "@/shared/ui/header-actions";
@@ -22,6 +23,18 @@ export function SideInspectorPanel() {
     <>
       {/* 1. Top-Right Quick Utility Dock on Desktop */}
       <div className="fixed top-4 right-6 z-30 hidden md:flex items-center gap-2">
+        <Link
+          href="/workouts/adhoc"
+          className="h-10 px-3.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-semibold text-xs transition-all shadow-xs flex items-center gap-1.5 cursor-pointer group"
+          title="Bắt đầu bài tập mới"
+        >
+          <Plus
+            size={16}
+            strokeWidth={2.5}
+            className="group-hover:rotate-90 transition-transform shrink-0"
+          />
+          <span>Bài tập mới</span>
+        </Link>
         <button
           aria-label="Mở tìm kiếm nhanh"
           className="h-10 pl-3.5 pr-4 rounded-full bg-white/95 backdrop-blur-md border border-neutral-200 shadow-xs hover:border-neutral-300 hover:shadow-sm text-neutral-500 hover:text-neutral-900 transition-all flex items-center gap-2.5 group cursor-pointer"
