@@ -1,11 +1,14 @@
 // @vitest-environment node
 import fs from "fs";
 import path from "path";
+
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { WebTransportRefereeClient } from "@/features/workout/domain/webtransport-client";
-import { SoloChallengeType } from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
-import type { StreamSoloMatchTrackingResponse } from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
+import {
+  WorkoutTrackingChallengeType,
+  type StreamWorkoutTrackingResponse,
+} from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
 
 interface ScenarioResult {
   exerciseId: string;
@@ -113,14 +116,16 @@ describe.skipIf(!hasDatasets)(
             const annDoc = JSON.parse(fs.readFileSync(annPath, "utf-8"));
             const metaDoc = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
 
-            const rawAngle = (metaDoc.environmental_conditions?.camera_angle || "side").toLowerCase();
+            const rawAngle = (
+              metaDoc.environmental_conditions?.camera_angle || "side"
+            ).toLowerCase();
             const cameraAngle = rawAngle === "front_45" ? "diagonal" : rawAngle;
             const challengeType = annDoc.is_timed
-              ? SoloChallengeType.DURATION
-              : SoloChallengeType.REPS;
+              ? WorkoutTrackingChallengeType.DURATION
+              : WorkoutTrackingChallengeType.REPS;
 
             const client = new WebTransportRefereeClient();
-            const responses: StreamSoloMatchTrackingResponse[] = [];
+            const responses: StreamWorkoutTrackingResponse[] = [];
             const latencies: number[] = [];
             const scenarioStart = Date.now();
 
@@ -128,7 +133,7 @@ describe.skipIf(!hasDatasets)(
               cameraAngle,
               challengeType,
               exerciseId,
-              matchId: `real-e2e-${videoId}-${Date.now()}`,
+              sessionId: `real-e2e-${videoId}-${Date.now()}`,
               onResponse: (resp) => {
                 responses.push(resp);
               },
@@ -158,7 +163,11 @@ describe.skipIf(!hasDatasets)(
               latencies.length > 0 ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
 
             const lastResp = responses[responses.length - 1];
-            const actualReps = lastResp ? lastResp.myConfirmedValue : 0;
+            const actualReps = lastResp
+              ? lastResp.repsCompleted > 0
+                ? lastResp.repsCompleted
+                : Math.round(lastResp.holdDurationSeconds)
+              : 0;
             const actualErrors = Array.from(
               new Set(responses.flatMap((r) => r.detectedErrors || [])),
             );

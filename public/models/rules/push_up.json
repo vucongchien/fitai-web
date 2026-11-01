@@ -20,11 +20,7 @@
       }
     },
     "calculation": {
-      "landmarks": [
-        "Shoulder (P5, P6)",
-        "Elbow (P7, P8)",
-        "Wrist (P9, P10)"
-      ],
+      "landmarks": ["Shoulder (P5, P6)", "Elbow (P7, P8)", "Wrist (P9, P10)"],
       "formula": "θ = arccos((U · W) / (||U|| * ||W||)) * (180 / π)",
       "description": "Góc gập khớp khuỷu tay"
     }
@@ -60,11 +56,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Shoulder (P5, P6)",
-          "Hip (P11, P12)",
-          "Ankle (P15, P16)"
-        ],
+        "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)", "Ankle (P15, P16)"],
         "formula": "signed_hip_y_diff = distance_point_to_line(P_hip, P_shoulder, P_ankle) / torso_length"
       }
     },
@@ -85,7 +77,7 @@
           "severity": 1,
           "status": "Warning",
           "min": 0.65,
-          "max": 1.90
+          "max": 1.9
         },
         {
           "severity": 2,
@@ -95,10 +87,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Shoulder (P5, P6)",
-          "Wrist (P9, P10)"
-        ],
+        "landmarks": ["Shoulder (P5, P6)", "Wrist (P9, P10)"],
         "formula": "hand_width_ratio = |X_wrist_left - X_wrist_right| / |X_shoulder_left - X_shoulder_right|"
       }
     }

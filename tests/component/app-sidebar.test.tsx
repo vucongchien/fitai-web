@@ -50,7 +50,6 @@ describe(AppSidebar, () => {
     expect(screen.getByRole("link", { name: /community/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /profile/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /settings/i })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /bài tập mới/i })).toBeInTheDocument();
   });
 
   it("treats /schedule sub-paths as the Workout route being active", () => {

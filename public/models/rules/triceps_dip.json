@@ -20,11 +20,7 @@
       }
     },
     "calculation": {
-      "landmarks": [
-        "Shoulder (P5, P6)",
-        "Elbow (P7, P8)",
-        "Wrist (P9, P10)"
-      ],
+      "landmarks": ["Shoulder (P5, P6)", "Elbow (P7, P8)", "Wrist (P9, P10)"],
       "formula": "θ = arccos((U · W) / (||U|| * ||W||)) * (180 / π)"
     }
   },
@@ -56,10 +52,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Wrist (P9, P10)",
-          "Hip (P11, P12)"
-        ],
+        "landmarks": ["Wrist (P9, P10)", "Hip (P11, P12)"],
         "formula": "hips_too_far = |X_hip - X_wrist| / torso_length"
       }
     },
@@ -90,10 +83,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Shoulder (P5, P6)",
-          "Hip (P11, P12)"
-        ],
+        "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)"],
         "formula": "torso_lean = atan2(|X_shoulder - X_hip|, |Y_shoulder - Y_hip|) * (180 / π)"
       }
     }

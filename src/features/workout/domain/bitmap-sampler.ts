@@ -56,7 +56,12 @@ export function computeRoiCrop(
     return null;
   }
 
-  return { height: Math.round(cropH), width: Math.round(cropW), x: Math.round(cropX), y: Math.round(cropY) };
+  return {
+    height: Math.round(cropH),
+    width: Math.round(cropW),
+    x: Math.round(cropX),
+    y: Math.round(cropY),
+  };
 }
 
 export class BitmapSampler {
@@ -100,17 +105,7 @@ export class BitmapSampler {
     context.fillStyle = "#000";
     context.fillRect(0, 0, this.width, this.height);
     if (crop) {
-      context.drawImage(
-        bitmap,
-        cropX,
-        cropY,
-        cropW,
-        cropH,
-        padX,
-        padY,
-        drawWidth,
-        drawHeight,
-      );
+      context.drawImage(bitmap, cropX, cropY, cropW, cropH, padX, padY, drawWidth, drawHeight);
     } else {
       context.drawImage(bitmap, padX, padY, drawWidth, drawHeight);
     }

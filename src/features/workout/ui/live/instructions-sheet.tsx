@@ -1,5 +1,14 @@
 "use client";
-import { AlertCircle, Camera, CheckCircle2, Dumbbell, Play, Volume2, VolumeX, X } from "lucide-react";
+import {
+  AlertCircle,
+  Camera,
+  CheckCircle2,
+  Dumbbell,
+  Play,
+  Volume2,
+  VolumeX,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 

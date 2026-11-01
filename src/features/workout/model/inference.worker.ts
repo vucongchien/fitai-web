@@ -6,6 +6,7 @@ import { BitmapSampler, computeRoiCrop } from "@/features/workout/domain/bitmap-
 import type { CroppedLetterboxedFrame, CropRect } from "@/features/workout/domain/bitmap-sampler";
 import { meanBrightness, toSourceCoords } from "@/features/workout/domain/frame-sampler";
 import type { MotionEngineEvent } from "@/features/workout/domain/motion-engine";
+import { PoseFilter } from "@/features/workout/domain/one-euro-filter";
 import {
   decodeHeatmap,
   decodeSimcc,
@@ -14,7 +15,6 @@ import {
   normaliseFrame,
   normaliseFrameRgb01,
 } from "@/features/workout/domain/onnx-decode";
-import { PoseFilter } from "@/features/workout/domain/one-euro-filter";
 import {
   calibrationDistance,
   calibrationHint,
@@ -145,12 +145,7 @@ async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
     const input = isYoloPoseModel
       ? normaliseFrameRgb01(frame, inputBuffer)
       : normaliseFrame(frame, inputBuffer);
-    const tensor = new ort.Tensor("float32", input, [
-      1,
-      3,
-      activeInputHeight,
-      activeInputWidth,
-    ]);
+    const tensor = new ort.Tensor("float32", input, [1, 3, activeInputHeight, activeInputWidth]);
     const output = await poseSession.run({ [activeInputName]: tensor });
 
     let decoded: { x: number; y: number; score: number }[] | null = null;
@@ -236,7 +231,8 @@ async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
 
 async function runCalibration(frame: CroppedLetterboxedFrame): Promise<void> {
   const lighting = calibrationLighting(meanBrightness(frame.data));
-  const pose = lighting === "ok" || isYoloPoseModel ? await inferPose(frame).catch(() => null) : null;
+  const pose =
+    lighting === "ok" || isYoloPoseModel ? await inferPose(frame).catch(() => null) : null;
   const distance = pose ? calibrationDistance(pose, frame.sourceHeight) : ("unknown" as const);
   emit({ pose, type: "pose" });
   emit({

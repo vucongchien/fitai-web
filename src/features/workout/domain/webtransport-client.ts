@@ -4,17 +4,17 @@ import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 
 import {
   SkeletonLandmarkSchema,
-  SoloChallengeType,
-  SoloTrackingAbortSchema,
-  SoloTrackingConfigSchema,
-  SoloTrackingFrameSchema,
-  SoloTrackingSubmitSchema,
-  StreamSoloMatchTrackingRequestSchema,
-  StreamSoloMatchTrackingResponseSchema,
+  StreamWorkoutTrackingRequestSchema,
+  StreamWorkoutTrackingResponseSchema,
+  WorkoutTrackingChallengeType,
+  WorkoutTrackingFrameSchema,
+  WorkoutTrackingHeartbeatSchema,
+  WorkoutTrackingInitSchema,
+  WorkoutTrackingSubmitSchema,
 } from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
 import type {
-  StreamSoloMatchTrackingRequest,
-  StreamSoloMatchTrackingResponse,
+  StreamWorkoutTrackingRequest,
+  StreamWorkoutTrackingResponse,
 } from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
 
 export interface KeypointInput {
@@ -25,11 +25,12 @@ export interface KeypointInput {
 
 export interface WebTransportClientOptions {
   exerciseId: string;
-  matchId?: string;
-  planId?: string;
+  sessionId?: string;
   cameraAngle?: string;
-  challengeType?: SoloChallengeType;
-  onResponse: (response: StreamSoloMatchTrackingResponse) => void;
+  challengeType?: WorkoutTrackingChallengeType;
+  targetReps?: number;
+  targetDurationSeconds?: number;
+  onResponse: (response: StreamWorkoutTrackingResponse) => void;
   onError?: (err: Error) => void;
   onClose?: () => void;
 }
@@ -144,7 +145,10 @@ export class WebTransportRefereeClient {
         connected = true;
         console.log("[RefereeClient] Connected via HTTP/3 WebTransport (QUIC)");
       } catch (wtErr) {
-        console.warn("[RefereeClient] WebTransport connection failed, falling back to WebSocket:", wtErr);
+        console.warn(
+          "[RefereeClient] WebTransport connection failed, falling back to WebSocket:",
+          wtErr,
+        );
       }
     }
 
@@ -154,12 +158,15 @@ export class WebTransportRefereeClient {
       console.log("[RefereeClient] Connected via WebSocket fallback (TCP)");
     }
 
-    // Send initial config message
-    await this.sendConfig();
+    // Send initial init message
+    await this.sendInit();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private async connectWebTransport(config: WtServerConfig, options: WebTransportClientOptions): Promise<void> {
+  private async connectWebTransport(
+    config: WtServerConfig,
+    options: WebTransportClientOptions,
+  ): Promise<void> {
     const certHashBytes = Uint8Array.from(atob(config.cert_hash_b64 || ""), (c) => c.charCodeAt(0));
     const wtUrl = new URL(config.url);
     if (config.token) {
@@ -197,7 +204,7 @@ export class WebTransportRefereeClient {
             decoder.append(value);
             let msgBytes = decoder.nextMessage();
             while (msgBytes) {
-              const resp = fromBinary(StreamSoloMatchTrackingResponseSchema, msgBytes);
+              const resp = fromBinary(StreamWorkoutTrackingResponseSchema, msgBytes);
               options.onResponse(resp);
               msgBytes = decoder.nextMessage();
             }
@@ -215,7 +222,10 @@ export class WebTransportRefereeClient {
     })();
   }
 
-  private async connectWebSocket(config: WtServerConfig, options: WebTransportClientOptions): Promise<void> {
+  private async connectWebSocket(
+    config: WtServerConfig,
+    options: WebTransportClientOptions,
+  ): Promise<void> {
     const loc = window.location;
     const host = loc.hostname || "localhost";
     const port = "8080";
@@ -256,7 +266,7 @@ export class WebTransportRefereeClient {
       ws.onmessage = (evt) => {
         try {
           const buf = new Uint8Array(evt.data as ArrayBuffer);
-          const resp = fromBinary(StreamSoloMatchTrackingResponseSchema, buf);
+          const resp = fromBinary(StreamWorkoutTrackingResponseSchema, buf);
           options.onResponse(resp);
         } catch (err) {
           options.onError?.(err instanceof Error ? err : new Error(String(err)));
@@ -271,30 +281,36 @@ export class WebTransportRefereeClient {
     });
   }
 
-  private async sendConfig(): Promise<void> {
+  private async sendInit(): Promise<void> {
     if (!this.options) {
       return;
     }
-    const matchId = this.options.matchId || `set-${Date.now()}`;
+    const sessionId = this.options.sessionId || `sess-${Date.now()}`;
     const defaultChallengeType =
-      this.options.exerciseId === "plank" ? SoloChallengeType.DURATION : SoloChallengeType.REPS;
-    const req = create(StreamSoloMatchTrackingRequestSchema, {
+      this.options.exerciseId === "plank"
+        ? WorkoutTrackingChallengeType.DURATION
+        : WorkoutTrackingChallengeType.REPS;
+    const req = create(StreamWorkoutTrackingRequestSchema, {
       payload: {
-        case: "config",
-        value: create(SoloTrackingConfigSchema, {
+        case: "init",
+        value: create(WorkoutTrackingInitSchema, {
           cameraAngle: this.options.cameraAngle || "auto",
           challengeType: this.options.challengeType ?? defaultChallengeType,
           exerciseId: this.options.exerciseId,
-          matchId: matchId,
-          planId: this.options.planId || `plan-${this.options.exerciseId}`,
-          timeCeilingSeconds: 600,
+          sessionId: sessionId,
+          targetDurationSeconds: this.options.targetDurationSeconds ?? 0,
+          targetReps: this.options.targetReps ?? 0,
         }),
       },
     });
     await this.sendRequest(req);
   }
 
-  async sendFrame(landmarks: KeypointInput[], timestampMs?: number, cameraAngle?: string): Promise<void> {
+  async sendFrame(
+    landmarks: KeypointInput[],
+    timestampMs?: number,
+    cameraAngle?: string,
+  ): Promise<void> {
     if (this.closed) {
       return;
     }
@@ -302,10 +318,10 @@ export class WebTransportRefereeClient {
     const seconds = BigInt(Math.floor(now / 1000));
     const nanos = (now % 1000) * 1_000_000;
 
-    const req = create(StreamSoloMatchTrackingRequestSchema, {
+    const req = create(StreamWorkoutTrackingRequestSchema, {
       payload: {
         case: "frame",
-        value: create(SoloTrackingFrameSchema, {
+        value: create(WorkoutTrackingFrameSchema, {
           cameraAngle: cameraAngle || this.options?.cameraAngle || "auto",
           landmarks: landmarks.map((k, idx) =>
             create(SkeletonLandmarkSchema, {
@@ -331,48 +347,48 @@ export class WebTransportRefereeClient {
     if (this.closed) {
       return;
     }
-    const req = create(StreamSoloMatchTrackingRequestSchema, {
+    const req = create(StreamWorkoutTrackingRequestSchema, {
       payload: {
         case: "submit",
-        value: create(SoloTrackingSubmitSchema, {}),
+        value: create(WorkoutTrackingSubmitSchema, {}),
       },
     });
     await this.sendRequest(req);
   }
 
-  async abort(reason = "USER_ABORTED"): Promise<void> {
+  async sendHeartbeat(clientTimestampMs?: number): Promise<void> {
     if (this.closed) {
       return;
     }
-    const req = create(StreamSoloMatchTrackingRequestSchema, {
+    const now = clientTimestampMs ?? Date.now();
+    const req = create(StreamWorkoutTrackingRequestSchema, {
       payload: {
-        case: "abort",
-        value: create(SoloTrackingAbortSchema, { reason }),
+        case: "heartbeat",
+        value: create(WorkoutTrackingHeartbeatSchema, {
+          clientTimestamp: {
+            nanos: (now % 1000) * 1_000_000,
+            seconds: BigInt(Math.floor(now / 1000)),
+          },
+        }),
       },
     });
     await this.sendRequest(req);
   }
 
-  // Abort referee session with timeout and close stream
-  async abortAndClose(reason: string, timeoutMs = 500): Promise<void> {
-    try {
-      await Promise.race([
-        this.abort(reason),
-        new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
-      ]);
-    } catch {
-      // Best-effort: the server's disconnect grace period is the backstop.
-    } finally {
-      this.close();
-    }
+  async abortAndClose(_reason = "USER_ABORTED", _timeoutMs = 500): Promise<void> {
+    this.close();
   }
 
-  private async sendRequest(req: StreamSoloMatchTrackingRequest): Promise<void> {
-    const bytes = toBinary(StreamSoloMatchTrackingRequestSchema, req);
+  private async sendRequest(req: StreamWorkoutTrackingRequest): Promise<void> {
+    const bytes = toBinary(StreamWorkoutTrackingRequestSchema, req);
     if (this.transportKind === "webtransport" && this.wtWriter) {
       const framed = encodeUvarintPrefixed(bytes);
       await this.wtWriter.write(framed);
-    } else if (this.transportKind === "websocket" && this.ws && this.ws.readyState === WebSocket.OPEN) {
+    } else if (
+      this.transportKind === "websocket" &&
+      this.ws &&
+      this.ws.readyState === WebSocket.OPEN
+    ) {
       this.ws.send(bytes);
     }
   }

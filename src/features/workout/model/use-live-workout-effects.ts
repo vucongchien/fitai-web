@@ -249,8 +249,7 @@ export function useLiveWorkoutEffects({
 
   const cameraBranch = Boolean(spec) && !manualForSet;
   const sessionStatus = session.status;
-  const wantCameraStream =
-    Boolean(spec) && cameraOn && sessionStatus !== "complete";
+  const wantCameraStream = Boolean(spec) && cameraOn && sessionStatus !== "complete";
 
   const lastCueTimesRef = useRef<Record<string, number>>({});
   const autoFinishTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -380,9 +379,7 @@ export function useLiveWorkoutEffects({
       // Deduplicate: avoid queuing duplicate errors for the same rep & set
       const alreadyQueued = pendingErrorsRef.current.some(
         (e) =>
-          e.errorCode === error.code &&
-          e.repNumber === currentRep &&
-          e.setNumber === currentSet,
+          e.errorCode === error.code && e.repNumber === currentRep && e.setNumber === currentSet,
       );
       if (alreadyQueued) {
         return;
@@ -450,7 +447,9 @@ export function useLiveWorkoutEffects({
               ? telemetry.countedReps
               : motion.repCount > 0
                 ? motion.repCount
-                : (exercise.durationSeconds > 0 ? exercise.durationSeconds : 30);
+                : exercise.durationSeconds > 0
+                  ? exercise.durationSeconds
+                  : 30;
       } else if (customData?.actualReps !== undefined) {
         actualReps = customData.actualReps;
       }
@@ -697,11 +696,7 @@ export function useLiveWorkoutEffects({
       }
 
       // 2. Auto finish timed sets (synchronizing with verified referee hold time)
-      if (
-        session.status === "working" &&
-        exercise &&
-        exercise.durationSeconds > 0
-      ) {
+      if (session.status === "working" && exercise && exercise.durationSeconds > 0) {
         const verifiedSeconds = cameraBranch ? motion.repCount : 0;
         const reachedTarget = cameraBranch
           ? verifiedSeconds >= exercise.durationSeconds
@@ -712,7 +707,9 @@ export function useLiveWorkoutEffects({
           const actualSeconds =
             cameraBranch && verifiedSeconds > 0
               ? Math.min(verifiedSeconds, exercise.durationSeconds)
-              : (session.setLeft === 0 ? exercise.durationSeconds : verifiedSeconds);
+              : session.setLeft === 0
+                ? exercise.durationSeconds
+                : verifiedSeconds;
           void finishSet(true, { actualSeconds });
         }
       }
