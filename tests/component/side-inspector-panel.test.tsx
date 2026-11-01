@@ -26,8 +26,8 @@ vi.mock("@/features/notification/server/notification-actions", () => ({
     notifications: [
       {
         id: "notif-1",
-        title: "Kỷ lục mới (PR)",
-        body: "Bạn đã vượt kỷ lục Bench Press!",
+        title: "New PR Record",
+        body: "You beat your Bench Press record!",
         isRead: false,
         createdAt: new Date().toISOString(),
       },
@@ -57,26 +57,24 @@ function PanelTestConsumer() {
 }
 
 describe("SideInspectorPanel", () => {
-  it("renders collapsed quick actions dock when panel is closed", () => {
-    render(
+  it("renders nothing when panel is closed", () => {
+    const { container } = render(
       <SidePanelProvider>
         <SideInspectorPanel />
       </SidePanelProvider>,
     );
 
-    expect(screen.getByRole("button", { name: "Search exercises" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Notifications" })).toBeInTheDocument();
+    expect(container.firstChild).toBeNull();
   });
 
-  it("opens search pane with filter button and muscle chips", async () => {
+  it("opens search pane when openPanel is triggered", async () => {
     render(
       <SidePanelProvider>
-        <SideInspectorPanel />
+        <PanelTestConsumer />
       </SidePanelProvider>,
     );
 
-    const searchDockBtn = screen.getByRole("button", { name: "Search exercises" });
-    fireEvent.click(searchDockBtn);
+    fireEvent.click(screen.getByText("Trigger Search"));
 
     expect(screen.getByPlaceholderText(/search movements/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /filters/i })).toBeInTheDocument();
@@ -96,7 +94,7 @@ describe("SideInspectorPanel", () => {
     const notifTab = screen.getByRole("tab", { name: /notifications/i });
     fireEvent.click(notifTab);
 
-    expect(await screen.findByText("Kỷ lục mới (PR)")).toBeInTheDocument();
+    expect(await screen.findByText("New PR Record")).toBeInTheDocument();
   });
 
   it("closes when close button is clicked", () => {
