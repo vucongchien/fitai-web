@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import type { Keypoint, Pose } from "@/features/workout/domain/pose-metrics";
-import { isPoseMatchingStencil, PoseStencilOverlay } from "@/features/workout/ui/live/pose-stencil-overlay";
+import {
+  isPoseMatchingStencil,
+  PoseStencilOverlay,
+} from "@/features/workout/ui/live/pose-stencil-overlay";
 
 function createMockPose(keypointOverrides: Partial<Record<number, Partial<Keypoint>>>): Pose {
   // 17 COCO keypoints: default low score

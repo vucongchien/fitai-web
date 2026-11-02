@@ -20,11 +20,7 @@
       }
     },
     "calculation": {
-      "landmarks": [
-        "Shoulder (P5, P6)",
-        "Elbow (P7, P8)",
-        "Wrist (P9, P10)"
-      ],
+      "landmarks": ["Shoulder (P5, P6)", "Elbow (P7, P8)", "Wrist (P9, P10)"],
       "formula": "θ = arccos((U · W) / (||U|| * ||W||)) * (180 / π)"
     }
   },
@@ -56,11 +52,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Shoulder (P5, P6)",
-          "Hip (P11, P12)",
-          "Knee (P13, P14)"
-        ],
+        "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)", "Knee (P13, P14)"],
         "formula": "hip_angle = arccos((U · W) / (||U|| * ||W||)) * (180 / π)"
       }
     },
@@ -91,10 +83,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Shoulder (P5, P6)",
-          "Hip (P11, P12)"
-        ],
+        "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)"],
         "formula": "spine_sway_angle = atan2(|X_shoulder - X_hip|, |Y_shoulder - Y_hip|) * (180 / π)"
       }
     }

@@ -20,11 +20,7 @@
       }
     },
     "calculation": {
-      "landmarks": [
-        "Hip (P11, P12)",
-        "Knee (P13, P14)",
-        "Ankle (P15, P16)"
-      ],
+      "landmarks": ["Hip (P11, P12)", "Knee (P13, P14)", "Ankle (P15, P16)"],
       "formula": "θ = arccos((U · W) / (||U|| * ||W||)) * (180 / π)",
       "description": "Góc gập khớp gối tạo bởi đùi (Hip-Knee) và cẳng chân (Ankle-Knee)"
     }
@@ -60,10 +56,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Shoulder (P5, P6)",
-          "Hip (P11, P12)"
-        ],
+        "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)"],
         "formula": "torso_lean = atan2(|X_shoulder - X_hip|, |Y_shoulder - Y_hip|) * (180 / π)",
         "description": "Góc nghiêng của lưng so với trục thẳng đứng"
       }
@@ -86,22 +79,19 @@
           "severity": 1,
           "status": "Warning",
           "min": 0.38,
-          "max": 0.50,
+          "max": 0.5,
           "comment": "Đầu gối bắt đầu nhô xa quá cổ chân"
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 0.50,
+          "min": 0.5,
           "max": null,
           "comment": "Trọng tâm dồn quá nhiều vào khớp gối"
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Knee (P13, P14)",
-          "Ankle (P15, P16)"
-        ],
+        "landmarks": ["Knee (P13, P14)", "Ankle (P15, P16)"],
         "formula": "knee_over_toe = |X_knee - X_ankle| / torso_length",
         "description": "Độ lệch ngang của đầu gối so với cổ chân chuẩn hóa theo chiều dài lưng"
       }

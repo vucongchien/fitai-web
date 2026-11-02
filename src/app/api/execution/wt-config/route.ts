@@ -6,9 +6,12 @@ export async function GET() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("fitai_access_token")?.value || "dev-client";
-    const res = await fetch(`${backendUrl}/api/v1/execution/wt-config?token=${encodeURIComponent(token)}`, {
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${backendUrl}/api/v1/execution/wt-config?token=${encodeURIComponent(token)}`,
+      {
+        cache: "no-store",
+      },
+    );
     if (!res.ok) {
       return NextResponse.json(
         { error: "Failed to fetch wt-config from backend" },
@@ -22,7 +25,10 @@ export async function GET() {
     });
   } catch (err) {
     return NextResponse.json(
-      { error: "Backend wt-config unreachable", message: err instanceof Error ? err.message : String(err) },
+      {
+        error: "Backend wt-config unreachable",
+        message: err instanceof Error ? err.message : String(err),
+      },
       { status: 502 },
     );
   }

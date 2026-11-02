@@ -15,10 +15,7 @@
       }
     },
     "calculation": {
-      "landmarks": [
-        "Shoulder (P5, P6)",
-        "Ankle (P15, P16)"
-      ],
+      "landmarks": ["Shoulder (P5, P6)", "Ankle (P15, P16)"],
       "formula": "θ_incline = |arctan2(Y_shoulder_mid - Y_ankle_mid, X_shoulder_mid - X_ankle_mid)| * (180 / π)",
       "description": "Góc nghiêng của trục cơ thể (Vai - Cổ chân) so với phương ngang"
     }
@@ -31,9 +28,9 @@
       "apply_in_phases": ["always", "idle"],
       "apply_for_view": "side",
       "ranges": [
-        {"severity": 0, "status": "Correct", "min": 0.0, "max": 25.0},
-        {"severity": 1, "status": "Warning", "min": 25.0, "max": 35.0},
-        {"severity": 2, "status": "Danger", "min": 35.0, "max": null}
+        { "severity": 0, "status": "Correct", "min": 0.0, "max": 25.0 },
+        { "severity": 1, "status": "Warning", "min": 25.0, "max": 35.0 },
+        { "severity": 2, "status": "Danger", "min": 35.0, "max": null }
       ],
       "calculation": {
         "landmarks": ["Shoulder (P5, P6)", "Ankle (P15, P16)"],
@@ -47,9 +44,9 @@
       "apply_in_phases": ["always"],
       "apply_for_view": "side",
       "ranges": [
-        {"severity": 0, "status": "Correct", "min": 70.0, "max": 110.0},
-        {"severity": 1, "status": "Warning", "min": 60.0, "max": 120.0},
-        {"severity": 2, "status": "Danger", "min": 0.0, "max": null}
+        { "severity": 0, "status": "Correct", "min": 70.0, "max": 110.0 },
+        { "severity": 1, "status": "Warning", "min": 60.0, "max": 120.0 },
+        { "severity": 2, "status": "Danger", "min": 0.0, "max": null }
       ],
       "calculation": {
         "landmarks": ["Hip (P11, P12)", "Shoulder (P5, P6)", "Elbow (P7, P8)"],
@@ -63,9 +60,9 @@
       "apply_in_phases": ["always"],
       "apply_for_view": "side",
       "ranges": [
-        {"severity": 0, "status": "Correct", "min": 0.0, "max": 0.11},
-        {"severity": 1, "status": "Warning", "min": 0.11, "max": 0.20},
-        {"severity": 2, "status": "Danger", "min": 0.20, "max": null}
+        { "severity": 0, "status": "Correct", "min": 0.0, "max": 0.11 },
+        { "severity": 1, "status": "Warning", "min": 0.11, "max": 0.2 },
+        { "severity": 2, "status": "Danger", "min": 0.2, "max": null }
       ],
       "calculation": {
         "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)", "Ankle (P15, P16)"],
@@ -79,9 +76,9 @@
       "apply_in_phases": ["always"],
       "apply_for_view": "side",
       "ranges": [
-        {"severity": 0, "status": "Correct", "min": 70.0, "max": 110.0},
-        {"severity": 1, "status": "Warning", "min": 60.0, "max": 120.0},
-        {"severity": 2, "status": "Danger", "min": 0.0, "max": null}
+        { "severity": 0, "status": "Correct", "min": 70.0, "max": 110.0 },
+        { "severity": 1, "status": "Warning", "min": 60.0, "max": 120.0 },
+        { "severity": 2, "status": "Danger", "min": 0.0, "max": null }
       ],
       "calculation": {
         "landmarks": ["Shoulder (P5, P6)", "Elbow (P7, P8)", "Wrist (P9, P10)"],
@@ -95,9 +92,9 @@
       "apply_in_phases": ["always"],
       "apply_for_view": "front",
       "ranges": [
-        {"severity": 0, "status": "Correct", "min": 0.80, "max": 1.25},
-        {"severity": 1, "status": "Warning", "min": 0.65, "max": 1.45},
-        {"severity": 2, "status": "Danger", "min": 0.0, "max": null}
+        { "severity": 0, "status": "Correct", "min": 0.8, "max": 1.25 },
+        { "severity": 1, "status": "Warning", "min": 0.65, "max": 1.45 },
+        { "severity": 2, "status": "Danger", "min": 0.0, "max": null }
       ],
       "calculation": {
         "landmarks": ["Shoulder (P5, P6)", "Elbow (P7, P8)"],

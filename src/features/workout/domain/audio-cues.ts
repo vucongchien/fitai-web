@@ -127,9 +127,36 @@ const VIETNAMESE_DIACRITICS_REGEX =
   /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i;
 
 const VIETNAMESE_UNACCENTED_TOKENS = new Set([
-  "khong", "xuong", "len", "mong", "lung", "bung", "dau", "goi", "tay", "chan",
-  "gong", "siet", "tho", "hit", "thang", "ngay", "nhung", "chut", "ban", "nhe",
-  "bat", "dau", "hiep", "hoan", "thanh", "nghi", "ngoi", "lan", "dung", "nang",
+  "khong",
+  "xuong",
+  "len",
+  "mong",
+  "lung",
+  "bung",
+  "dau",
+  "goi",
+  "tay",
+  "chan",
+  "gong",
+  "siet",
+  "tho",
+  "hit",
+  "thang",
+  "ngay",
+  "nhung",
+  "chut",
+  "ban",
+  "nhe",
+  "bat",
+  "dau",
+  "hiep",
+  "hoan",
+  "thanh",
+  "nghi",
+  "ngoi",
+  "lan",
+  "dung",
+  "nang",
 ]);
 
 // Detects whether the text is Vietnamese ("vi-VN") or English ("en-US")
@@ -197,10 +224,7 @@ const ENGLISH_PHRASE_TRANSLATIONS: Record<string, string> = {
 };
 
 // Maps or translates raw BE codes/phrases to natural spoken feedback
-export function mapCueToSpokenText(
-  raw: string,
-  targetLang: "vi" | "en" = "vi",
-): string {
+export function mapCueToSpokenText(raw: string, targetLang: "vi" | "en" = "vi"): string {
   if (!raw || typeof raw !== "string") {
     return "";
   }
@@ -225,7 +249,10 @@ export function mapCueToSpokenText(
     return ENGLISH_PHRASE_TRANSLATIONS[lowerSentence];
   }
 
-  if (detectLanguage(sanitized) === "vi-VN" || (sanitized.includes(" ") && !sanitized.includes("_"))) {
+  if (
+    detectLanguage(sanitized) === "vi-VN" ||
+    (sanitized.includes(" ") && !sanitized.includes("_"))
+  ) {
     return sanitized;
   }
 

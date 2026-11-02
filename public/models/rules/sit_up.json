@@ -20,11 +20,7 @@
       }
     },
     "calculation": {
-      "landmarks": [
-        "Shoulder (P5, P6)",
-        "Hip (P11, P12)",
-        "Knee (P13, P14)"
-      ],
+      "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)", "Knee (P13, P14)"],
       "formula": "θ = arccos((U · W) / (||U|| * ||W||)) * (180 / π)"
     }
   },
@@ -56,10 +52,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Hip (P11, P12)",
-          "Ankle (P15, P16)"
-        ],
+        "landmarks": ["Hip (P11, P12)", "Ankle (P15, P16)"],
         "formula": "ankle_lift = |Y_hip - Y_ankle| / torso_length"
       }
     }

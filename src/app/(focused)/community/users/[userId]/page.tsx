@@ -7,7 +7,6 @@ import { ProfileTabbedSkeleton } from "@/features/social/ui/profile-tabbed-skele
 import { PublicProfileView } from "@/features/social/ui/public-profile-view";
 import { getAuthenticatedUserId } from "@/shared/auth/session";
 import { BackButton } from "@/shared/ui/back-button";
-import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
 import { PageTransition } from "@/shared/ui/page-transition";
 
@@ -41,23 +40,24 @@ const PROFILE_FALLBACK = <ProfileTabbedSkeleton />;
 
 export default function PublicProfilePage({ params }: { params: Promise<{ userId: string }> }) {
   return (
-    <PageTransition className="min-h-screen bg-white sm:bg-canvas">
-      <header className="focused-header">
-        <BackButton
-          ariaLabel="Back to community"
-          className="focused-header__back"
-          fallbackHref="/community"
-        />
-        <BrandMark />
-        <HeaderActions />
-      </header>
+    <PageTransition className="min-h-screen bg-white sm:bg-canvas px-0 sm:px-4 pt-0 sm:pt-4 pb-8">
+      <div className="w-full max-w-[640px] mx-auto bg-white overflow-hidden shadow-none rounded-none border-0 sm:rounded-[24px] sm:border sm:border-neutral-300">
+        <header className="focused-header border-b border-neutral-200/80">
+          <BackButton
+            ariaLabel="Back to community"
+            className="focused-header__back"
+            fallbackHref="/community"
+          />
+          <span className="font-bold text-sm text-neutral-800">Athlete Profile</span>
+          <span className="focused-header__spacer" />
+          <div className="md:hidden">
+            <HeaderActions />
+          </div>
+        </header>
 
-      <div className="w-full max-w-[640px] mx-auto px-0 pt-0 pb-6 sm:px-4 sm:pt-4 sm:pb-12">
-        <div className="w-full bg-white overflow-hidden shadow-none rounded-none border-0 sm:rounded-[24px] sm:border sm:border-neutral-300">
-          <Suspense fallback={PROFILE_FALLBACK}>
-            <ProfileContent paramsPromise={params} />
-          </Suspense>
-        </div>
+        <Suspense fallback={PROFILE_FALLBACK}>
+          <ProfileContent paramsPromise={params} />
+        </Suspense>
       </div>
     </PageTransition>
   );

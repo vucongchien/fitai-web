@@ -220,7 +220,8 @@ const AI_12_EXERCISES_CONFIG: {
     angle: "side",
     targetReps: 5,
     durationSeconds: 0,
-    instructions: "Keep body in a straight line from shoulders to ankles, lower chest until elbows reach 90°.",
+    instructions:
+      "Keep body in a straight line from shoulders to ankles, lower chest until elbows reach 90°.",
     formCues: ["Keep core braced", "Elbows at 45°", "Full lockout at top"],
     thumbnailUrl: "https://static.exercisedb.dev/media/I4hDWkc.gif",
     videoUrl: "https://www.youtube.com/watch?v=bSkNEdRaJlg",
@@ -231,7 +232,8 @@ const AI_12_EXERCISES_CONFIG: {
     angle: "side",
     targetReps: 5,
     durationSeconds: 0,
-    instructions: "Send hips back and down until thighs are parallel to the floor, keeping chest upright.",
+    instructions:
+      "Send hips back and down until thighs are parallel to the floor, keeping chest upright.",
     formCues: ["Knees track over toes", "Hit parallel depth", "Drive through heels"],
     thumbnailUrl: "https://static.exercisedb.dev/media/qXTaZnJ.gif",
     videoUrl: "https://www.youtube.com/watch?v=wFOgKtxNCiI",
@@ -302,8 +304,13 @@ const AI_12_EXERCISES_CONFIG: {
     isWeighted: true,
     targetReps: 5,
     durationSeconds: 0,
-    instructions: "Hinge at hips, grip the bar, brace your lats and drive the floor away to lockout.",
-    formCues: ["Neutral flat spine", "Bar stays close to shins", "Lock out hips and knees together"],
+    instructions:
+      "Hinge at hips, grip the bar, brace your lats and drive the floor away to lockout.",
+    formCues: [
+      "Neutral flat spine",
+      "Bar stays close to shins",
+      "Lock out hips and knees together",
+    ],
     thumbnailUrl: "https://static.exercisedb.dev/media/ila4NZS.gif",
     videoUrl: "https://www.youtube.com/watch?v=wFOgKtxNCiI",
   },
@@ -324,7 +331,8 @@ const AI_12_EXERCISES_CONFIG: {
     angle: "side",
     targetReps: 5,
     durationSeconds: 0,
-    instructions: "Engage abs to curl your torso all the way up toward your knees, then lower back down.",
+    instructions:
+      "Engage abs to curl your torso all the way up toward your knees, then lower back down.",
     formCues: ["Do not yank neck", "Exhale on the way up", "Controlled eccentric"],
     thumbnailUrl: "https://static.exercisedb.dev/media/Bn6TXyO.gif",
     videoUrl: "https://www.youtube.com/watch?v=1fbU_MkV7NE",
@@ -335,7 +343,8 @@ const AI_12_EXERCISES_CONFIG: {
     angle: "side",
     targetReps: 5,
     durationSeconds: 0,
-    instructions: "Lower your body by bending elbows until upper arms are parallel to floor, then press up.",
+    instructions:
+      "Lower your body by bending elbows until upper arms are parallel to floor, then press up.",
     formCues: ["Keep shoulders down", "Hit 90° elbow flexion", "Lock out at top"],
     thumbnailUrl: "https://static.exercisedb.dev/media/X6C6i5Y.gif",
     videoUrl: "https://www.youtube.com/watch?v=pjo7EMsSWwc",

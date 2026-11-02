@@ -10,10 +10,14 @@ import type {
 import { WebTransportRefereeClient } from "@/features/workout/domain/webtransport-client";
 import { isInferenceResponse } from "@/features/workout/model/inference-protocol";
 import type { InferenceRequest } from "@/features/workout/model/inference-protocol";
-import type { CueSeverity, MotionSpec, RepLogEntry } from "@/features/workout/model/live-session.types";
+import type {
+  CueSeverity,
+  MotionSpec,
+  RepLogEntry,
+} from "@/features/workout/model/live-session.types";
 import {
-  SoloChallengeType,
-  type StreamSoloMatchTrackingResponse,
+  WorkoutTrackingChallengeType,
+  type StreamWorkoutTrackingResponse,
 } from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
 
 /** Where scripts/copy-ort-assets.mjs puts the ORT runtime. */
@@ -78,7 +82,7 @@ export class WorkerMotionEngine implements MotionEngine {
   private lastFormScore = 100;
 
   /** Stable per set so a reconnect resumes the same referee match. */
-  private matchId = "";
+  private streamSessionId = "";
   private reconnectAttempt = 0;
   private reconnectTimer: number | null = null;
   /** First response after a reconnect re-bases the rep count. */
@@ -209,7 +213,7 @@ export class WorkerMotionEngine implements MotionEngine {
     // Connect to Go referee engine over WebTransport (HTTP/3) or WebSocket (TCP).
     // connectReferee() closes whatever stream the previous set left open.
     if (this.spec.exerciseId) {
-      this.matchId = `live-${this.spec.exerciseId}-${Date.now()}`;
+      this.streamSessionId = `live-${this.spec.exerciseId}-${Date.now()}`;
       this.connectReferee();
     }
 
@@ -230,8 +234,8 @@ export class WorkerMotionEngine implements MotionEngine {
 
     const challengeType =
       spec.rep_type === "timed" || spec.exerciseId === "plank"
-        ? SoloChallengeType.DURATION
-        : SoloChallengeType.REPS;
+        ? WorkoutTrackingChallengeType.DURATION
+        : WorkoutTrackingChallengeType.REPS;
 
     // The server sends its first status response right after Config, so the
     // flag must be set before connect() rather than in its `.then`.
@@ -242,7 +246,7 @@ export class WorkerMotionEngine implements MotionEngine {
         cameraAngle: spec.recommendedCameraAngle || "auto",
         challengeType,
         exerciseId: spec.exerciseId,
-        matchId: this.matchId,
+        sessionId: this.streamSessionId,
         onClose: () => {
           if (isCurrent() && this.isStreaming) {
             console.warn("[WorkerMotionEngine] Referee stream dropped — reconnecting");
@@ -298,15 +302,18 @@ export class WorkerMotionEngine implements MotionEngine {
     );
   }
 
-  private handleRefereeResponse(resp: StreamSoloMatchTrackingResponse): void {
+  private handleRefereeResponse(resp: StreamWorkoutTrackingResponse): void {
     if (this.disposed) {
       return;
     }
 
+    const confirmedValue =
+      resp.repsCompleted > 0 ? resp.repsCompleted : Math.round(resp.holdDurationSeconds);
+
     // Submit ack: carries the referee's average form score for the whole set.
-    if (this.submitResolve && resp.isCompleted) {
-      this.applyConfirmedValue(resp.myConfirmedValue, resp.currentAngle);
-      this.settleSubmit(resp.myFormScore);
+    if (this.submitResolve && resp.isSetCompleted) {
+      this.applyConfirmedValue(confirmedValue, resp.currentAngle);
+      this.settleSubmit(resp.formScore);
       return;
     }
     if (!this.isStreaming) {
@@ -319,14 +326,14 @@ export class WorkerMotionEngine implements MotionEngine {
       this.resyncPending = false;
       // Without Redis the server cannot restore progress and restarts at 0;
       // keep the reps already counted instead of silently losing them.
-      if (resp.myConfirmedValue + this.repOffset < this.lastRepCount) {
-        this.repOffset = this.lastRepCount - resp.myConfirmedValue;
+      if (confirmedValue + this.repOffset < this.lastRepCount) {
+        this.repOffset = this.lastRepCount - confirmedValue;
       }
     }
 
-    if (resp.myFormScore > 0) {
-      this.lastFormScore = resp.myFormScore;
-      this.frameScoreSum += resp.myFormScore;
+    if (resp.formScore > 0) {
+      this.lastFormScore = resp.formScore;
+      this.frameScoreSum += resp.formScore;
       this.frameScoreCount += 1;
     }
 
@@ -351,7 +358,7 @@ export class WorkerMotionEngine implements MotionEngine {
     }
     this.prevDetectedErrors = current;
 
-    const repCount = this.applyConfirmedValue(resp.myConfirmedValue, resp.currentAngle);
+    const repCount = this.applyConfirmedValue(confirmedValue, resp.currentAngle);
 
     // Biomechanical verification: Detect Incomplete / Half-reps (ROM < 70%)
     // If athlete starts transitioning into rep depth, but aborts back to rest without reaching active phase
@@ -575,7 +582,10 @@ export class WorkerMotionEngine implements MotionEngine {
           if (now - this.lastFrameSendTime >= SKELETON_STREAM_INTERVAL_MS) {
             this.lastFrameSendTime = now;
             const sw = Math.max(1, response.event.pose.sourceWidth || this.video?.videoWidth || 1);
-            const sh = Math.max(1, response.event.pose.sourceHeight || this.video?.videoHeight || 1);
+            const sh = Math.max(
+              1,
+              response.event.pose.sourceHeight || this.video?.videoHeight || 1,
+            );
             const normKeypoints = response.event.pose.keypoints.map((k) => ({
               score: k.score > 0.4 ? 1.0 : k.score,
               x: k.x / sw,

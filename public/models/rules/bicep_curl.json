@@ -20,15 +20,8 @@
       }
     },
     "calculation": {
-      "landmarks": [
-        "Shoulder (P5, P6)",
-        "Elbow (P7, P8)",
-        "Wrist (P9, P10)"
-      ],
-      "vectors": [
-        "U = Shoulder - Elbow",
-        "W = Wrist - Elbow"
-      ],
+      "landmarks": ["Shoulder (P5, P6)", "Elbow (P7, P8)", "Wrist (P9, P10)"],
+      "vectors": ["U = Shoulder - Elbow", "W = Wrist - Elbow"],
       "formula": "θ = arccos((U · W) / (||U|| * ||W||)) * (180 / π)",
       "description": "Góc gập khớp khuỷu tay hợp bởi cánh tay (vai-khuỷu) và cẳng tay (cổ tay-khuỷu)"
     }
@@ -64,10 +57,7 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Shoulder (P5, P6)",
-          "Elbow (P7, P8)"
-        ],
+        "landmarks": ["Shoulder (P5, P6)", "Elbow (P7, P8)"],
         "formula": "sway = |X_elbow - X_shoulder| / torso_length",
         "description": "Độ lắc ngang X của cùi chỏ so với vai chuẩn hóa theo torso_length"
       }
@@ -102,14 +92,8 @@
         }
       ],
       "calculation": {
-        "landmarks": [
-          "Mid-Shoulder (P5, P6)",
-          "Mid-Hip (P11, P12)"
-        ],
-        "vectors": [
-          "S = Mid-Shoulder - Mid-Hip",
-          "V = [0, -1, 0] (Vertical Vector)"
-        ],
+        "landmarks": ["Mid-Shoulder (P5, P6)", "Mid-Hip (P11, P12)"],
+        "vectors": ["S = Mid-Shoulder - Mid-Hip", "V = [0, -1, 0] (Vertical Vector)"],
         "formula": "θ = arccos((S · V) / (||S|| * ||V||)) * (180 / π)",
         "description": "Góc nghiêng/ưỡn của cột sống thắt lưng"
       }

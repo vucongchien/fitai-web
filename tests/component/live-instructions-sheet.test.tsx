@@ -19,8 +19,7 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
     restExerciseSec: 15,
     targetRpe: 7.5,
     notes: "AI Camera Tracking (front view recommended)",
-    instructions:
-      "Raise arms out to the sides up to shoulder height with a slight bend in elbows.",
+    instructions: "Raise arms out to the sides up to shoulder height with a slight bend in elbows.",
     formCues: ["Lead with elbows", "Raise to shoulder level", "No torso momentum"],
     commonMistakes: ["Using body swing to lift weights"],
     breathingCue: "Inhale on eccentric, exhale on effort",
@@ -81,9 +80,13 @@ describe("InstructionsSheet Component", () => {
     render(<InstructionsSheet exercise={exercise} onClose={vi.fn()} />);
 
     expect(screen.getByText("How to do it")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2, name: "Dumbbell Lateral Raise" })).toBeInTheDocument();
     expect(
-      screen.getByText("Raise arms out to the sides up to shoulder height with a slight bend in elbows."),
+      screen.getByRole("heading", { level: 2, name: "Dumbbell Lateral Raise" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Raise arms out to the sides up to shoulder height with a slight bend in elbows.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("AI Camera Tracking (front view recommended)")).toBeInTheDocument();
     expect(screen.getByText("Inhale on eccentric, exhale on effort")).toBeInTheDocument();
@@ -95,11 +98,7 @@ describe("InstructionsSheet Component", () => {
   it("shows demo video watch button when videoUrl and onWatchVideo are provided", () => {
     const onWatchVideo = vi.fn();
     render(
-      <InstructionsSheet
-        exercise={makeExercise()}
-        onClose={vi.fn()}
-        onWatchVideo={onWatchVideo}
-      />,
+      <InstructionsSheet exercise={makeExercise()} onClose={vi.fn()} onWatchVideo={onWatchVideo} />,
     );
 
     const videoBtn = screen.getByRole("button", { name: "Watch tutorial video" });

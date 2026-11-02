@@ -53,10 +53,8 @@ export function isPoseMatchingStencil(exerciseId: string, pose: Pose | null): bo
   const hipL = pose.keypoints[11];
   const hipR = pose.keypoints[12];
 
-  const shoulder =
-    (shoulderL?.score ?? 0) >= (shoulderR?.score ?? 0) ? shoulderL : shoulderR;
-  const hip =
-    (hipL?.score ?? 0) >= (hipR?.score ?? 0) ? hipL : hipR;
+  const shoulder = (shoulderL?.score ?? 0) >= (shoulderR?.score ?? 0) ? shoulderL : shoulderR;
+  const hip = (hipL?.score ?? 0) >= (hipR?.score ?? 0) ? hipL : hipR;
 
   const hasShoulder = (shoulder?.score ?? 0) >= 0.22;
   const hasHip = (hip?.score ?? 0) >= 0.22;
@@ -75,7 +73,7 @@ export function isPoseMatchingStencil(exerciseId: string, pose: Pose | null): bo
 
   if (isFloor) {
     // Floor exercises require horizontal torso and lower height
-    const isHorizontalTorso = deltaX >= deltaY * 0.80 && deltaX >= 0.16;
+    const isHorizontalTorso = deltaX >= deltaY * 0.8 && deltaX >= 0.16;
     const isFloorHeight = centerY >= 0.35;
 
     return isHorizontalTorso && isFloorHeight;
@@ -289,14 +287,7 @@ export function PoseStencilOverlay({
 
       <svg className="w-full h-full block" height="100%" width="100%">
         <defs>
-          <mask
-            id={maskId}
-            maskUnits="userSpaceOnUse"
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-          >
+          <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
             {/* White covers 100% of entire camera viewport regardless of aspect ratio */}
             <rect fill="white" height="100%" width="100%" x="0" y="0" />
             {/* Cutout hole punches through with undistorted aspect ratio */}

@@ -13,7 +13,14 @@ interface HeaderGamificationChipsProps {
   usePortal?: boolean;
 }
 
-const subscribeNoop = () => () => {};
+const subscribeMedia = (callback: () => void) => {
+  if (typeof window === "undefined") return () => {};
+  const mql = window.matchMedia("(min-width: 768px)");
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+};
+
+const getMediaSnapshot = () => (typeof window !== "undefined" ? window.innerWidth >= 768 : false);
 
 export function HeaderGamificationChips({
   streakDays,
@@ -21,11 +28,7 @@ export function HeaderGamificationChips({
   coins,
   usePortal = true,
 }: HeaderGamificationChipsProps) {
-  const isClient = useSyncExternalStore(
-    subscribeNoop,
-    () => true,
-    () => false,
-  );
+  const isDesktop = useSyncExternalStore(subscribeMedia, getMediaSnapshot, () => false);
 
   const content = (
     <div className="flex items-center gap-2">
@@ -37,8 +40,8 @@ export function HeaderGamificationChips({
             ? "bg-amber-500/10 text-amber-600 border border-amber-500/20 shadow-xs"
             : "bg-neutral-100 text-neutral-600 border border-neutral-200",
         )}
-        title={`${streakDays} ngày streak liên tiếp`}
-        aria-label={`${streakDays} ngày streak`}
+        title={`${streakDays} days streak`}
+        aria-label={`${streakDays} days streak`}
       >
         <Flame
           size={14}
@@ -68,13 +71,16 @@ export function HeaderGamificationChips({
     return content;
   }
 
-  if (!isClient) {
+  if (typeof window === "undefined") {
     return null;
   }
 
-  const portalTarget =
-    document.querySelector("#app-header-gamification") ||
-    document.querySelector("#today-header-badges");
+  const portalTarget = isDesktop
+    ? document.querySelector("#today-header-badges") ||
+      document.querySelector("#app-header-gamification")
+    : document.querySelector("#app-header-gamification") ||
+      document.querySelector("#today-header-badges");
+
   if (!portalTarget) {
     return null;
   }
