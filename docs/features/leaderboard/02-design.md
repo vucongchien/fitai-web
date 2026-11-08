@@ -3,6 +3,7 @@
 ## 1. System Architecture & Component Hierarchy
 
 Hệ thống Bảng Xếp Hạng tuân theo mô hình **Server Component + Client Island Interactive** trong Next.js App Router:
+
 - **Server Component (`LeaderboardPage`):** Tải dữ liệu bất đồng bộ từ ConnectRPC Backend thông qua Server Transport gắn HttpOnly cookie, truyền ViewModel đã chuẩn hóa vào Client View.
 - **Client Component (`LeaderboardView`):** Quản lý trạng thái tab lọc (Global / Weekly), tương tác danh sách, hiển thị Podium và thanh My Standing.
 
@@ -29,6 +30,7 @@ src/features/leaderboard/
 ## 2. Wireframe & Visual Composition (Triple Lane Design)
 
 ### Mobile Layout (360px - 430px)
+
 ```
 +-------------------------------------------------------+
 |  <- Leaderboard                         [Search] [Bell]|  <-- AppHeader
@@ -60,6 +62,7 @@ src/features/leaderboard/
 ```
 
 ### Triple Lane Color Palette & Typography Tokens:
+
 - **Relay Blue (`#4B57F2`):** Tab kích hoạt, viền avatar người dùng hiện tại, điểm nhấn vị trí.
 - **Sprint Coral (`#FF5A47`):** Điểm XP (`Atkinson Hyperlegible Mono`), ngọn lửa thi đua.
 - **Field Green (`#25C77A`):** Huy hiệu cấp độ an toàn, tăng hạng.
@@ -72,6 +75,7 @@ src/features/leaderboard/
 ## 3. Data Flow & Contracts
 
 ### 3.1. Protobuf Wire Contracts (Backend Go: `GamificationService`)
+
 - RPC Method: `GamificationService.GetGlobalLeaderboard(GetGlobalLeaderboardRequest)`
   - Request: `{ limit: 50 }`
   - Response:
@@ -95,6 +99,7 @@ src/features/leaderboard/
     ```
 
 ### 3.2. ViewModels (`src/features/leaderboard/model/leaderboard.types.ts`)
+
 ```typescript
 export interface LeaderboardEntryVM {
   rank: number;
@@ -116,6 +121,7 @@ export interface LeaderboardDataVM {
 ```
 
 ### 3.3. Mapper Logic (`src/features/leaderboard/model/leaderboard.mapper.ts`)
+
 - Chuyển `BigInt(xp)` sang `number` bằng `safeBigIntToNumber`.
 - Điền fallback `displayName = "Athlete"` nếu trường rỗng.
 - So sánh `userId === currentUserId` để đánh dấu `isCurrentUser: true`.
@@ -126,6 +132,7 @@ export interface LeaderboardDataVM {
 ## 4. Key Components Design
 
 ### 4.1. `LeaderboardPodium`
+
 - Hiển thị 3 cột:
   - Cột 1 (Thứ 2): Chiều cao 110px, huy hiệu bạc `#2`, avatar 52px.
   - Cột 2 (Thứ 1): Chiều cao 140px, vương miện vàng hoàng kim `👑`, huy hiệu vàng `#1`, avatar 64px nổi bật với vòng glow nhẹ.
@@ -133,6 +140,7 @@ export interface LeaderboardDataVM {
 - Hiển thị tên (rút gọn nếu quá dài) và tổng điểm XP màu đậm nét thể thao.
 
 ### 4.2. `LeaderboardRow`
+
 - Cột số thứ tự hạng: Phông số đậm mono, màu xám graphite trung tính.
 - Cột Avatar: Bo tròn, viền tinh tế.
 - Cột Tên & Level: Hiển thị tên kèm tag `Lv.X`.
@@ -140,6 +148,7 @@ export interface LeaderboardDataVM {
 - Nếu là hàng của `isCurrentUser`, áp dụng background `bg-indigo-50/70 border border-indigo-200/80` và tag `YOU`.
 
 ### 4.3. `LeaderboardMyStanding`
+
 - Hiển thị thanh nổi (Floating Card) phía đáy danh sách.
 - Luôn hiển thị vị trí hiện tại của user, giúp user biết mình cách Top bao xa.
 - Hỗ trợ trạng thái user chưa có điểm (Unranked).
@@ -147,6 +156,7 @@ export interface LeaderboardDataVM {
 ---
 
 ## 5. Accessibility & Performance
+
 - **Touch Targets:** Các nút tab và hàng danh sách đạt tối thiểu 48px.
 - **Aria Roles:** `role="list"`, `role="listitem"`, `aria-label="Leaderboard ranking"`.
 - **Contrast:** Đạt tỷ lệ tương phản tối thiểu 4.5:1 (WCAG 2.2 AA).

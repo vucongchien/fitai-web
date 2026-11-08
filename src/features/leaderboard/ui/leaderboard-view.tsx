@@ -69,7 +69,9 @@ export function LeaderboardView({ initialData }: LeaderboardViewProps) {
         {hasAthletes && (
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-neutral-100 text-neutral-600 text-[12px] font-semibold">
             <Users className="size-3.5 text-neutral-400" />
-            <span className="font-data">{initialData.totalParticipants.toLocaleString()} Athletes</span>
+            <span className="font-data">
+              {initialData.totalParticipants.toLocaleString()} Athletes
+            </span>
           </div>
         )}
       </header>
@@ -160,7 +162,9 @@ export function LeaderboardView({ initialData }: LeaderboardViewProps) {
           <div className="size-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mb-4">
             <Award className="size-8" />
           </div>
-          <h2 className="text-[17px] font-bold text-neutral-900 font-display">Be the First on the Board!</h2>
+          <h2 className="text-[17px] font-bold text-neutral-900 font-display">
+            Be the First on the Board!
+          </h2>
           <p className="text-[13px] text-neutral-500 max-w-[300px] mt-1 mb-6">
             Complete workouts, maintain your daily streak, and log nutrition to earn XP.
           </p>
@@ -176,10 +180,7 @@ export function LeaderboardView({ initialData }: LeaderboardViewProps) {
           {/* Top 3 Podium */}
           {initialData.podium.length > 0 && (
             <div className="bg-white border-b border-neutral-100">
-              <LeaderboardPodium
-                podium={initialData.podium}
-                currentUserRef={currentUserRef}
-              />
+              <LeaderboardPodium podium={initialData.podium} currentUserRef={currentUserRef} />
             </div>
           )}
 

@@ -28,10 +28,7 @@ export function LeaderboardPodium({ podium, currentUserRef }: LeaderboardPodiumP
     entry.userId ? (entry.isCurrentUser ? "/profile" : `/community/users/${entry.userId}`) : "#";
 
   return (
-    <div
-      aria-label="Top 3 podium"
-      className="w-full max-w-[440px] mx-auto px-4 pt-4 pb-2"
-    >
+    <div aria-label="Top 3 podium" className="w-full max-w-[440px] mx-auto px-4 pt-4 pb-2">
       <div className="flex items-end justify-center gap-2 sm:gap-3.5">
         {/* Rank 2 (Silver) */}
         {second ? (

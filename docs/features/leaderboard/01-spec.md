@@ -7,6 +7,7 @@ Hệ thống Bảng Xếp Hạng (XP Leaderboard) là tính năng cốt lõi thu
 Backend Go (`gym-companion`) đã hoàn thiện và cung cấp RPC `contracts.supporting.gamification.v1.service.GamificationService.GetGlobalLeaderboard` (truy vấn Top 50 vận động viên có tổng điểm XP cao nhất toàn hệ thống, kèm theo thứ hạng và thông số cá nhân `my_standing` của người dùng đang đăng nhập).
 
 Feature này tập trung xây dựng toàn bộ giao diện và luồng tương tác Leaderboard trên Frontend Next.js (`fitai-web`) theo chuẩn Design System **Triple Lane**:
+
 - Tôn vinh Top 3 trên bục vinh quang (Podium) đẳng cấp, tinh gọn, đậm chất thể thao.
 - Bảng xếp hạng cuộn mượt cho các thứ hạng tiếp theo (Rank 4–50) với đầy đủ thông tin: Avatar, Tên, Cấp độ (Level), Tổng XP.
 - Thanh ghim cố định (Sticky Floating Card) hiển thị tức thì vị trí, điểm số và khoảng cách tới hạng tiếp theo của chính người dùng (`my_standing`).
@@ -16,17 +17,18 @@ Feature này tập trung xây dựng toàn bộ giao diện và luồng tương 
 
 ## 2. Actors & Entry Points
 
-| Actor | Entry Point | Trigger |
-| :--- | :--- | :--- |
-| **Vận động viên (Athlete / Gymer)** | `/(main)/leaderboard` | Truy cập trực tiếp trang Bảng Xếp Hạng qua URL hoặc điều hướng nội bộ. |
-| **Vận động viên (Athlete / Gymer)** | `/(main)/profile` | Nhấp vào thẻ chỉ số **"League rank"** trong `ProfileStatsGrid` để xem vị trí của mình trên bảng tổng sắp. |
-| **Vận động viên (Athlete / Gymer)** | `/(main)/challenge` | Nhấp vào banner / link "Leaderboard" tại sảnh Arena / Solo Challenge để xem bảng vàng thi đấu. |
+| Actor                               | Entry Point           | Trigger                                                                                                   |
+| :---------------------------------- | :-------------------- | :-------------------------------------------------------------------------------------------------------- |
+| **Vận động viên (Athlete / Gymer)** | `/(main)/leaderboard` | Truy cập trực tiếp trang Bảng Xếp Hạng qua URL hoặc điều hướng nội bộ.                                    |
+| **Vận động viên (Athlete / Gymer)** | `/(main)/profile`     | Nhấp vào thẻ chỉ số **"League rank"** trong `ProfileStatsGrid` để xem vị trí của mình trên bảng tổng sắp. |
+| **Vận động viên (Athlete / Gymer)** | `/(main)/challenge`   | Nhấp vào banner / link "Leaderboard" tại sảnh Arena / Solo Challenge để xem bảng vàng thi đấu.            |
 
 ---
 
 ## 3. Scope & Non-Goals
 
 ### In-scope
+
 1. **Trang Bảng Xếp Hạng chuyên biệt (`/leaderboard`):**
    - Hỗ trợ SSR tải nhanh kèm Suspense skeleton loader chống giật layout (Cumulative Layout Shift = 0).
    - Gọi ConnectRPC `GamificationService.GetGlobalLeaderboard({ limit: 50 })`.
@@ -50,6 +52,7 @@ Feature này tập trung xây dựng toàn bộ giao diện và luồng tương 
    - Kích thước cảm ứng tối thiểu 48x48px trên mobile, đầy đủ aria-label, hỗ trợ bàn phím.
 
 ### Non-Goals
+
 - Hệ thống giải thưởng trao quà vật lý tự động.
 - Tính năng gian lận điểm hoặc can thiệp vị trí từ phía Client.
 - Thay đổi cấu trúc cơ sở dữ liệu hoặc logic tính rank dưới Redis/Postgres của backend Go.
@@ -58,12 +61,12 @@ Feature này tập trung xây dựng toàn bộ giao diện và luồng tương 
 
 ## 4. Current vs Expected Behavior
 
-| Hạng mục | Hiện tại (Current) | Kỳ vọng mới (Expected) |
-| :--- | :--- | :--- |
-| Tuyến đường `/leaderboard` | Chưa tồn tại (404 Not Found). | Trang SSR tải dữ liệu Top 50 mượt mà, đầy đủ SEO metadata và PageTransition. |
-| Thẻ `League rank` ở Profile | Chỉ hiển thị số tĩnh `#12` hoặc `--`, không thể tương tác. | Trở thành thẻ liên kết tương tác, hover hiệu ứng, click mở ngay `/leaderboard`. |
-| Trải nghiệm thi đua xã hội | Người dùng không thấy được ai đang dẫn đầu, không biết cộng đồng tập luyện ra sao. | Trực quan hóa bục Top 3 rực rỡ, danh sách xếp hạng rõ ràng, khơi dậy tinh thần thể thao. |
-| Trạng thái người dùng ngoài Top 50 | Không biết mình đang ở đâu nếu không vào top đầu. | Thanh Sticky My Standing thể hiện rõ thứ hạng thực tế (ví dụ `#85`), tạo mục tiêu phấn đấu lọt Top. |
+| Hạng mục                           | Hiện tại (Current)                                                                 | Kỳ vọng mới (Expected)                                                                              |
+| :--------------------------------- | :--------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| Tuyến đường `/leaderboard`         | Chưa tồn tại (404 Not Found).                                                      | Trang SSR tải dữ liệu Top 50 mượt mà, đầy đủ SEO metadata và PageTransition.                        |
+| Thẻ `League rank` ở Profile        | Chỉ hiển thị số tĩnh `#12` hoặc `--`, không thể tương tác.                         | Trở thành thẻ liên kết tương tác, hover hiệu ứng, click mở ngay `/leaderboard`.                     |
+| Trải nghiệm thi đua xã hội         | Người dùng không thấy được ai đang dẫn đầu, không biết cộng đồng tập luyện ra sao. | Trực quan hóa bục Top 3 rực rỡ, danh sách xếp hạng rõ ràng, khơi dậy tinh thần thể thao.            |
+| Trạng thái người dùng ngoài Top 50 | Không biết mình đang ở đâu nếu không vào top đầu.                                  | Thanh Sticky My Standing thể hiện rõ thứ hạng thực tế (ví dụ `#85`), tạo mục tiêu phấn đấu lọt Top. |
 
 ---
 
@@ -78,7 +81,7 @@ Feature này tập trung xây dựng toàn bộ giao diện và luồng tương 
 - **FR-05 (Current User Highlighting):** Khi `currentUserId` trùng khớp với một mục trong danh sách, hàng đó được làm nổi bật với viền xanh `relay-blue/20` và huy hiệu `You`.
 - **FR-06 (Sticky My Standing Bar):** Ghim cố định ở cạnh dưới của view danh sách.
   - Hiển thị thứ hạng hiện tại của người dùng, avatar, tên, số XP.
-  - Nếu người dùng chưa có lượt tập (0 XP / unranked), hiển thị thông điệp khuyến khích: *"Hoàn thành buổi tập đầu tiên để ghi danh trên bảng vàng!"*.
+  - Nếu người dùng chưa có lượt tập (0 XP / unranked), hiển thị thông điệp khuyến khích: _"Hoàn thành buổi tập đầu tiên để ghi danh trên bảng vàng!"_.
 - **FR-07 (Navigation Integration):** Thẻ `League rank` trong `ProfileStatsGrid` liên kết trực tiếp tới `/leaderboard`. Thanh `AppHeader` hiển thị nút Back quay lại khi ở trang `/leaderboard`.
 - **FR-08 (Loading & Empty States):** Có `LeaderboardSkeleton` hiển thị trước khi dữ liệu tải xong và Empty State tinh tế khi chưa có dữ liệu bảng xếp hạng.
 

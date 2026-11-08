@@ -14,7 +14,12 @@ interface HeaderGamificationChipsProps {
 }
 
 const emptySubscribe = () => () => {};
-const useMounted = () => useSyncExternalStore(emptySubscribe, () => true, () => false);
+const useMounted = () =>
+  useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
 const subscribeMedia = (callback: () => void) => {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return () => {};

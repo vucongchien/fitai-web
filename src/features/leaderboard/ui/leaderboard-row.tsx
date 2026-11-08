@@ -12,11 +12,7 @@ interface LeaderboardRowProps {
   currentUserRef?: (node: HTMLElement | null) => void;
 }
 
-export function LeaderboardRow({
-  entry,
-  isWeekly = false,
-  currentUserRef,
-}: LeaderboardRowProps) {
+export function LeaderboardRow({ entry, isWeekly = false, currentUserRef }: LeaderboardRowProps) {
   const avatarSrc =
     entry.avatarUrl ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(entry.displayName)}&background=random`;
@@ -119,11 +115,12 @@ export function LeaderboardRow({
         <Link
           href={href}
           aria-label={`View profile of ${entry.displayName}, rank ${entry.rank}`}
-          className={cn(containerClasses, "w-full block focus:outline-none focus-visible:ring-2 focus-visible:ring-action")}
+          className={cn(
+            containerClasses,
+            "w-full block focus:outline-none focus-visible:ring-2 focus-visible:ring-action",
+          )}
         >
-          <div className="flex items-center gap-3 sm:gap-3.5 w-full">
-            {innerContent}
-          </div>
+          <div className="flex items-center gap-3 sm:gap-3.5 w-full">{innerContent}</div>
         </Link>
       ) : (
         <div
