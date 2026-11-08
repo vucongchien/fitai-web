@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 import { AppHeader } from "@/shared/ui/app-header";
 import { AppSidebar } from "@/shared/ui/app-sidebar";
@@ -17,11 +17,15 @@ export function AppShell({ children }: AppShellProps) {
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
           <PullToRefresh activePath="/home">
-            <AppHeader />
+            <Suspense fallback={null}>
+              <AppHeader />
+            </Suspense>
             <main className="app-shell__main flex-1">{children}</main>
           </PullToRefresh>
         </div>
-        <BottomNavigation />
+        <Suspense fallback={null}>
+          <BottomNavigation />
+        </Suspense>
       </div>
     </SidePanelProvider>
   );

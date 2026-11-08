@@ -37,8 +37,10 @@ export interface WebTransportClientOptions {
 
 export interface WtServerConfig {
   url: string;
-  cert_hash_b64?: string;
-  fallback_path?: string;
+  certHashBase64?: string;
+  fallbackPath?: string;
+  soloUrl?: string;
+  soloFallbackPath?: string;
   token?: string;
 }
 
@@ -124,12 +126,20 @@ export class WebTransportRefereeClient {
       if (!res.ok) {
         throw new Error(`wt-config failed with status ${res.status}`);
       }
-      config = await res.json();
+      const raw = await res.json();
+      config = {
+        certHashBase64: raw.certHashBase64 || raw.cert_hash_b64 || "",
+        fallbackPath: raw.fallbackPath || raw.fallback_path || "/api/v1/execution/wt-stream",
+        soloFallbackPath: raw.soloFallbackPath || raw.solo_fallback_path,
+        soloUrl: raw.soloUrl || raw.solo_url,
+        token: raw.token,
+        url: raw.url || "https://localhost:8443/api/v1/execution/wt",
+      };
     } catch {
       // Direct local fallback if Next.js proxy route fails
       config = {
-        cert_hash_b64: "",
-        fallback_path: "/api/v1/execution/wt-stream",
+        certHashBase64: "",
+        fallbackPath: "/api/v1/execution/wt-stream",
         url: "https://localhost:8443/api/v1/execution/wt",
       };
     }
@@ -138,7 +148,7 @@ export class WebTransportRefereeClient {
     let connected = false;
     const isWebTransportAvailable = typeof window !== "undefined" && "WebTransport" in window;
 
-    if (isWebTransportAvailable && config.cert_hash_b64) {
+    if (isWebTransportAvailable && config.certHashBase64) {
       try {
         await this.connectWebTransport(config, options);
         this.transportKind = "webtransport";
@@ -167,7 +177,8 @@ export class WebTransportRefereeClient {
     config: WtServerConfig,
     options: WebTransportClientOptions,
   ): Promise<void> {
-    const certHashBytes = Uint8Array.from(atob(config.cert_hash_b64 || ""), (c) => c.charCodeAt(0));
+    const certHashStr = config.certHashBase64 || "";
+    const certHashBytes = Uint8Array.from(atob(certHashStr), (c) => c.charCodeAt(0));
     const wtUrl = new URL(config.url);
     if (config.token) {
       wtUrl.searchParams.set("token", config.token);
@@ -227,11 +238,24 @@ export class WebTransportRefereeClient {
     options: WebTransportClientOptions,
   ): Promise<void> {
     const loc = window.location;
-    const host = loc.hostname || "localhost";
-    const port = "8080";
     const wsProto = loc.protocol === "https:" ? "wss:" : "ws:";
-    const fallbackPath = config.fallback_path || "/api/v1/execution/wt-stream";
-    const wsUrl = new URL(`${wsProto}//${host}:${port}${fallbackPath}`);
+    const fallbackPath = config.fallbackPath || "/api/v1/execution/wt-stream";
+
+    let targetAuthority = loc.host || "localhost:8080";
+    if (config.url) {
+      try {
+        const parsed = new URL(config.url);
+        if (parsed.hostname && parsed.hostname !== "localhost" && parsed.hostname !== "127.0.0.1") {
+          targetAuthority = parsed.host;
+        } else if (loc.hostname === "localhost" || loc.hostname === "127.0.0.1") {
+          targetAuthority = `${loc.hostname}:8080`;
+        }
+      } catch {
+        // use loc.host
+      }
+    }
+
+    const wsUrl = new URL(`${wsProto}//${targetAuthority}${fallbackPath}`);
     if (config.token) {
       wsUrl.searchParams.set("token", config.token);
     } else {

@@ -99,22 +99,22 @@ export function PoseOverlay({
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       context.clearRect(0, 0, width, height);
 
+      const isPortrait = height > width;
+      const fallbackWidth = isPortrait ? 720 : 1280;
+      const fallbackHeight = isPortrait ? 1280 : 720;
+
       const effectiveSourceWidth =
         pose?.sourceWidth && pose.sourceWidth > 0
           ? pose.sourceWidth
           : sourceWidth > 0
             ? sourceWidth
-            : width > 0
-              ? width
-              : 1280;
+            : fallbackWidth;
       const effectiveSourceHeight =
         pose?.sourceHeight && pose.sourceHeight > 0
           ? pose.sourceHeight
           : sourceHeight > 0
             ? sourceHeight
-            : height > 0
-              ? height
-              : 720;
+            : fallbackHeight;
 
       if (!pose) {
         return;

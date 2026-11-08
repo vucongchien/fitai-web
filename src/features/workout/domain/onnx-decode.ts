@@ -53,27 +53,72 @@ export function normaliseFrameRgb01(frame: LetterboxedFrame, out?: Float32Array)
   return tensor;
 }
 
-// Decodes YOLOv8-pose output tensor [1, 56, N] anchors
+export interface TargetAimPosition {
+  cx: number;
+  cy: number;
+  w?: number;
+  h?: number;
+}
+
+export type DecodedPoseKeypoints = { x: number; y: number; score: number }[] & {
+  box?: { cx: number; cy: number; w: number; h: number };
+  score?: number;
+};
+
+// Decodes YOLOv8/YOLO11-pose output tensor [1, 56, N] anchors with Position-Based Aiming & Continuity Locking
 export function decodeYoloV8Pose(
   output: Float32Array,
   numChannels = 56,
   numAnchors = 8400,
   keypointCount = 17,
   minPersonScore = 0.25,
-): { x: number; y: number; score: number }[] | null {
+  targetAim?: TargetAimPosition | null,
+): DecodedPoseKeypoints | null {
   let bestAnchor = -1;
-  let bestScore = -Infinity;
+  let bestRank = -Infinity;
   const scoreRowOffset = 4 * numAnchors;
 
   for (let a = 0; a < numAnchors; a += 1) {
     const score = output[scoreRowOffset + a]!;
-    if (score > bestScore) {
-      bestScore = score;
+    if (score < minPersonScore) {
+      continue;
+    }
+
+    const cx = output[0 * numAnchors + a]!;
+    const cy = output[1 * numAnchors + a]!;
+    const bw = output[2 * numAnchors + a]!;
+    const bh = output[3 * numAnchors + a]!;
+
+    let rank: number;
+    if (targetAim) {
+      // Spatial Continuity Locking: Prioritize actor closest to previously tracked position
+      const distNorm = Math.hypot(cx - targetAim.cx, cy - targetAim.cy) / 640.0;
+      const proximity = Math.max(0, 1.0 - distNorm / 0.45);
+      const targetArea = (targetAim.w ?? bw) * (targetAim.h ?? bh);
+      const currentArea = bw * bh;
+      const sizeConsistency =
+        targetArea > 0
+          ? Math.max(
+              0,
+              1.0 - Math.abs(currentArea - targetArea) / Math.max(currentArea, targetArea),
+            )
+          : 0.5;
+      rank = score * 0.4 + proximity * 0.45 + sizeConsistency * 0.15;
+    } else {
+      // Initial Setup / Center-Aiming: Prioritize staging area in front of camera
+      const distToCenter = Math.hypot(cx - 320.0, cy - 320.0) / 320.0;
+      const centerFactor = Math.max(0, 1.0 - Math.min(1.0, distToCenter));
+      const areaNorm = Math.min(1.0, (bw * bh) / (640.0 * 640.0 * 0.35));
+      rank = score * 0.5 + areaNorm * 0.3 + centerFactor * 0.2;
+    }
+
+    if (rank > bestRank) {
+      bestRank = rank;
       bestAnchor = a;
     }
   }
 
-  if (bestAnchor < 0 || bestScore < minPersonScore) {
+  if (bestAnchor < 0) {
     return null;
   }
 
@@ -92,7 +137,17 @@ export function decodeYoloV8Pose(
       y,
     });
   }
-  return points;
+
+  const res = points as DecodedPoseKeypoints;
+  res.box = {
+    cx: output[0 * numAnchors + bestAnchor]!,
+    cy: output[1 * numAnchors + bestAnchor]!,
+    h: output[3 * numAnchors + bestAnchor]!,
+    w: output[2 * numAnchors + bestAnchor]!,
+  };
+  res.score = output[scoreRowOffset + bestAnchor]!;
+
+  return res;
 }
 
 // SimCC decode: two 1-D classification maps per joint (x and y)

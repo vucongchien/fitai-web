@@ -9,6 +9,7 @@ import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.type
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
+import { ChallengeEntryCard } from "@/features/solo-match/ui/challenge-entry-card";
 import { FeedbackState } from "@/shared/ui/feedback-state";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
@@ -81,6 +82,7 @@ export function RoadmapView({ data }: RoadmapViewProps) {
     <>
       <div className="flex flex-col gap-6">
         <AIAdjustmentBanner />
+        <ChallengeEntryCard />
         <section className="content-section">
           <div className="content-section__header">
             <h2>

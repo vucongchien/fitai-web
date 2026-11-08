@@ -43,7 +43,9 @@ const CANONICAL_12_EXERCISES = [
   "lateral_raise",
 ];
 
-describe.skipIf(!hasDatasets)(
+const shouldRunBenchmark = hasDatasets && process.env.RUN_E2E_BENCHMARK === "true";
+
+describe.skipIf(!shouldRunBenchmark)(
   "12 Exercises Real Human Video Benchmark Suite (E2E over Network Stream)",
   () => {
     const allResults: ScenarioResult[] = [];

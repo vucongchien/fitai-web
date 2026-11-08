@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 
 import { isNavDestinationActive, NAV_DESTINATIONS } from "@/shared/config/navigation";
 import { NAV_LATERAL } from "@/shared/ui/transition-types";
 
-export function BottomNavigation() {
+function BottomNavigationInner() {
   const pathname = usePathname();
 
   return (
@@ -31,5 +32,15 @@ export function BottomNavigation() {
         );
       })}
     </nav>
+  );
+}
+
+export function BottomNavigation() {
+  return (
+    <Suspense
+      fallback={<nav aria-label="Primary navigation" className="bottom-navigation md:hidden" />}
+    >
+      <BottomNavigationInner />
+    </Suspense>
   );
 }

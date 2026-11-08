@@ -40,13 +40,14 @@ describe(AppSidebar, () => {
     expect(homeLink).not.toHaveAttribute("aria-current");
   });
 
-  it("renders all 5 core navigation destinations and settings", () => {
+  it("renders all 6 core navigation destinations and settings", () => {
     vi.mocked(usePathname).mockReturnValue("/home");
     render(<AppSidebar />);
 
     expect(screen.getByRole("link", { name: /today/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /nutrition/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /workout/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /arena/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /community/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /profile/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /settings/i })).toBeInTheDocument();
@@ -65,6 +66,6 @@ describe(AppSidebar, () => {
     const { container } = render(<AppSidebar />);
 
     const hiddenSvgs = container.querySelectorAll("svg[aria-hidden='true']");
-    expect(hiddenSvgs.length).toBeGreaterThanOrEqual(6);
+    expect(hiddenSvgs.length).toBeGreaterThanOrEqual(7);
   });
 });

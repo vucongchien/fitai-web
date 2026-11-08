@@ -1,6 +1,7 @@
 export const allowedRpcServices = new Set([
   "contracts.core.coaching.v1.service.CoachingService",
   "contracts.core.nutrition.v1.service.NutritionService",
+  "contracts.core.solo_match.v1.service.SoloMatchService",
   "contracts.core.workout_execution.v1.service.WorkoutExecutionService",
   "contracts.generic.audio.v1.service.AudioService",
   "contracts.generic.notification.v1.service.NotificationService",
