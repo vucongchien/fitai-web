@@ -16,6 +16,8 @@ export function AppHeader() {
 
   if (pathname?.startsWith("/nutrition/") && pathname !== "/nutrition") {
     backDestination = { href: "/nutrition", label: "Nutrition" };
+  } else if (pathname?.startsWith("/challenge/") && pathname !== "/challenge") {
+    backDestination = { href: "/challenge", label: "Solo Challenge" };
   } else if (
     (pathname?.startsWith("/roadmap/") && pathname !== "/roadmap") ||
     pathname === "/schedule" ||

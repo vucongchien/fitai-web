@@ -15,6 +15,7 @@ import { QuickActionsFab } from "@/features/home/ui/quick-actions-fab";
 import { TodayTimeline } from "@/features/home/ui/today-timeline";
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
+import { ChallengeEntryCard } from "@/features/solo-match/ui/challenge-entry-card";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 interface HomeViewProps {
@@ -47,6 +48,9 @@ export function HomeView({ data }: HomeViewProps) {
         completionRate={data.profileCompletionRate}
         missingFields={data.missingFields}
       />
+
+      {/* 1v1 Solo Challenge Entry Card */}
+      <ChallengeEntryCard />
 
       {/* Today's Timeline & Evidence Sidebar (Single column stack in 640px card) */}
       <div className="flex flex-col gap-6">

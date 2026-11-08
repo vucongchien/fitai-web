@@ -94,7 +94,7 @@ function adaptLiveSessionPlan({
           onnxDetectorUrl:
             spec.onnxDetectorUrl || spec.onnx_detector_url || "/models/person-detector.onnx",
           onnxSkeletonUrl:
-            spec.onnxSkeletonUrl || spec.onnx_skeleton_url || "/models/rtmpose-17kp.onnx",
+            spec.onnxSkeletonUrl || spec.onnx_skeleton_url || "/models/yolo11n-pose.onnx",
           localRulesUrl: spec.localRulesUrl || spec.rules_url || `/models/rules/${exId}.json`,
           dialogueEngineUrl:
             spec.dialogueEngineUrl || spec.dialogues_url || `/models/dialogue/${exId}.json`,
@@ -140,7 +140,7 @@ function adaptLiveSessionPlan({
         exerciseId: ex.id,
         onnxDetectorUrl:
           ex.onnxDetectorUrl || ex.onnx_detector_url || "/models/person-detector.onnx",
-        onnxSkeletonUrl: ex.onnxSkeletonUrl || ex.onnx_skeleton_url || "/models/rtmpose-17kp.onnx",
+        onnxSkeletonUrl: ex.onnxSkeletonUrl || ex.onnx_skeleton_url || "/models/yolo11n-pose.onnx",
         localRulesUrl: ex.rulesUrl || ex.rules_url || `/models/rules/${ex.id}.json`,
         dialogueEngineUrl: ex.dialoguesUrl || ex.dialogues_url || `/models/dialogue/${ex.id}.json`,
         recommendedCameraAngle: "side",

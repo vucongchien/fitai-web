@@ -6507,6 +6507,23 @@ a.week-route__row:hover {
   grid-template-rows: auto auto minmax(0, 1fr) auto auto;
 }
 
+/* 1v1 Duel Arena variant: header, external scoreboard strip, maximized camera stage, footer. */
+.live-screen--duel {
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+.live-screen--duel[data-spectating="true"] {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.live-screen--duel .live-screen__media {
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+}
+
 .live-media__video,
 .live-media__poster {
   width: 100%;

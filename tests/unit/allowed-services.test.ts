@@ -23,6 +23,12 @@ describe(isAllowedRpcPath, () => {
     ).toBe(true);
   });
 
+  it("allows solo match service methods", () => {
+    expect(
+      isAllowedRpcPath("contracts.core.solo_match.v1.service.SoloMatchService/GetActiveMatch"),
+    ).toBe(true);
+  });
+
   it("blocks admin services", () => {
     expect(
       isAllowedRpcPath(

@@ -38,6 +38,69 @@ describe(decodeYoloV8Pose, () => {
     output[4 * 2 + 1] = 0.2;
     expect(decodeYoloV8Pose(output, 56, 2, 17, 0.25)).toBeNull();
   });
+
+  it("locks onto previous actor position even when a bystander has higher raw confidence", () => {
+    const numChannels = 56;
+    const numAnchors = 2;
+    const output = new Float32Array(numChannels * numAnchors);
+
+    // Anchor 0: Athlete at (310, 310) with score 0.70 (e.g. pushup on floor)
+    output[0 * numAnchors + 0] = 310;
+    output[1 * numAnchors + 0] = 310;
+    output[2 * numAnchors + 0] = 200;
+    output[3 * numAnchors + 0] = 150;
+    output[4 * numAnchors + 0] = 0.7;
+    output[5 * numAnchors + 0] = 310; // nose X
+
+    // Anchor 1: Bystander standing at (80, 80) with score 0.95
+    output[0 * numAnchors + 1] = 80;
+    output[1 * numAnchors + 1] = 80;
+    output[2 * numAnchors + 1] = 120;
+    output[3 * numAnchors + 1] = 250;
+    output[4 * numAnchors + 1] = 0.95;
+    output[5 * numAnchors + 1] = 80; // nose X
+
+    // Target aim from previous frame tracking athlete at (300, 300)
+    const points = decodeYoloV8Pose(output, numChannels, numAnchors, 17, 0.25, {
+      cx: 300,
+      cy: 300,
+      w: 200,
+      h: 150,
+    });
+
+    expect(points).not.toBeNull();
+    // Successfully locked onto Anchor 0 (athlete at 310), ignoring bystander at 80
+    expect(points![0]!.x).toBe(310);
+    expect(points!.box).toBeDefined();
+    expect(points!.box!.cx).toBe(310);
+  });
+
+  it("prioritizes center staging zone on initial frame over edge bystander", () => {
+    const numChannels = 56;
+    const numAnchors = 2;
+    const output = new Float32Array(numChannels * numAnchors);
+
+    // Anchor 0: Center athlete at (320, 320) with size 250x300, score 0.75
+    output[0 * numAnchors + 0] = 320;
+    output[1 * numAnchors + 0] = 320;
+    output[2 * numAnchors + 0] = 250;
+    output[3 * numAnchors + 0] = 300;
+    output[4 * numAnchors + 0] = 0.75;
+    output[5 * numAnchors + 0] = 320;
+
+    // Anchor 1: Corner bystander at (40, 40) with size 80x150, score 0.80
+    output[0 * numAnchors + 1] = 40;
+    output[1 * numAnchors + 1] = 40;
+    output[2 * numAnchors + 1] = 80;
+    output[3 * numAnchors + 1] = 150;
+    output[4 * numAnchors + 1] = 0.8;
+    output[5 * numAnchors + 1] = 40;
+
+    // Initial frame (no target aim)
+    const points = decodeYoloV8Pose(output, numChannels, numAnchors, 17, 0.25, null);
+    expect(points).not.toBeNull();
+    expect(points![0]!.x).toBe(320);
+  });
 });
 
 describe(normaliseFrameRgb01, () => {

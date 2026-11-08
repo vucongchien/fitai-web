@@ -11,6 +11,7 @@ import {
   decodeHeatmap,
   decodeSimcc,
   decodeYoloV8Pose,
+  type DecodedPoseKeypoints,
   MODEL_IO,
   normaliseFrame,
   normaliseFrameRgb01,
@@ -49,6 +50,7 @@ let accumulator: Accumulator = freshAccumulator();
 let darkFrames = 0;
 let inputBuffer: Float32Array | null = null;
 let prevPoseKeypoints: Keypoint[] | null = null;
+let prevActorBox: { cx: number; cy: number; w: number; h: number } | null = null;
 let isYoloPoseModel = false;
 let activeInputWidth = MODEL_IO.inputWidth;
 let activeInputHeight = MODEL_IO.inputHeight;
@@ -148,7 +150,7 @@ async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
     const tensor = new ort.Tensor("float32", input, [1, 3, activeInputHeight, activeInputWidth]);
     const output = await poseSession.run({ [activeInputName]: tensor });
 
-    let decoded: { x: number; y: number; score: number }[] | null = null;
+    let decoded: DecodedPoseKeypoints | null = null;
 
     if (isYoloPoseModel) {
       const yoloOut = output["output0"] ?? Object.values(output)[0];
@@ -162,9 +164,15 @@ async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
         numChannels,
         numAnchors,
         KEYPOINT_NAMES.length,
+        0.25,
+        prevActorBox,
       );
       if (!decoded) {
+        prevActorBox = null;
         return null;
+      }
+      if (decoded.box) {
+        prevActorBox = decoded.box;
       }
     } else {
       const [xName, yName] = MODEL_IO.poseOutputNames;
@@ -300,9 +308,11 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
         accumulator = freshAccumulator();
         darkFrames = 0;
         prevPoseKeypoints = null;
+        prevActorBox = null;
         poseFilter?.reset();
       } else if (request.mode === "idle") {
         prevPoseKeypoints = null;
+        prevActorBox = null;
         poseFilter?.reset();
       }
       return;
@@ -338,6 +348,7 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
     case "stop-set": {
       mode = "idle";
       prevPoseKeypoints = null;
+      prevActorBox = null;
       poseFilter?.reset();
       post({ telemetry: summarise(accumulator), type: "telemetry" });
       return;

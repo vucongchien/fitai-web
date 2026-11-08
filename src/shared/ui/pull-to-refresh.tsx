@@ -2,7 +2,7 @@
 
 import { Dumbbell } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { Suspense, useCallback, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
 interface PullToRefreshProps {
@@ -13,7 +13,7 @@ interface PullToRefreshProps {
   activePath?: string;
 }
 
-export function PullToRefresh({
+function PullToRefreshInner({
   children,
   onRefresh,
   pullThreshold = 75,
@@ -220,5 +220,13 @@ export function PullToRefresh({
         {children}
       </div>
     </div>
+  );
+}
+
+export function PullToRefresh(props: PullToRefreshProps) {
+  return (
+    <Suspense fallback={<div className="pull-to-refresh-content">{props.children}</div>}>
+      <PullToRefreshInner {...props} />
+    </Suspense>
   );
 }
