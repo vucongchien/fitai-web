@@ -13,14 +13,20 @@ interface HeaderGamificationChipsProps {
   usePortal?: boolean;
 }
 
+const emptySubscribe = () => () => {};
+const useMounted = () => useSyncExternalStore(emptySubscribe, () => true, () => false);
+
 const subscribeMedia = (callback: () => void) => {
-  if (typeof window === "undefined") return () => {};
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return () => {};
   const mql = window.matchMedia("(min-width: 768px)");
   mql.addEventListener("change", callback);
   return () => mql.removeEventListener("change", callback);
 };
 
-const getMediaSnapshot = () => (typeof window !== "undefined" ? window.innerWidth >= 768 : false);
+const getMediaSnapshot = () =>
+  typeof window !== "undefined" && typeof window.matchMedia === "function"
+    ? window.innerWidth >= 768
+    : false;
 
 export function HeaderGamificationChips({
   streakDays,
@@ -28,6 +34,7 @@ export function HeaderGamificationChips({
   coins,
   usePortal = true,
 }: HeaderGamificationChipsProps) {
+  const mounted = useMounted();
   const isDesktop = useSyncExternalStore(subscribeMedia, getMediaSnapshot, () => false);
 
   const content = (
@@ -71,7 +78,7 @@ export function HeaderGamificationChips({
     return content;
   }
 
-  if (typeof window === "undefined") {
+  if (!mounted) {
     return null;
   }
 
