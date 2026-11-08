@@ -1,6 +1,17 @@
 "use client";
 
-import { AlertCircle, Camera, Radio, RotateCcw, Shield, Swords, Timer, X } from "lucide-react";
+import {
+  AlertCircle,
+  Camera,
+  Radio,
+  RotateCcw,
+  Shield,
+  Swords,
+  Timer,
+  Trophy,
+  X,
+} from "lucide-react";
+import Link from "next/link";
 
 import {
   BOT_FALLBACK_MAX_SECONDS,
@@ -23,7 +34,7 @@ export function ChallengeLobbyView({ data }: ChallengeLobbyViewProps) {
   return (
     <>
       {/* Standard Clean Page Header */}
-      <header className="page-heading px-5 sm:px-6 pt-6 pb-2">
+      <header className="page-heading px-5 sm:px-6 pt-6 pb-2 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-[var(--color-text)]">
             Solo Challenge
@@ -32,6 +43,14 @@ export function ChallengeLobbyView({ data }: ChallengeLobbyViewProps) {
             Live 1v1 arena with real-time AI referee
           </p>
         </div>
+        <Link
+          href="/leaderboard"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 text-amber-700 border border-amber-500/20 text-xs font-bold hover:bg-amber-500/20 transition-colors shadow-2xs"
+          title="View Leaderboard"
+        >
+          <Trophy className="size-3.5 text-amber-500" />
+          <span>Leaderboard</span>
+        </Link>
       </header>
 
       <div className="px-5 sm:px-6 pb-12 bg-white">
