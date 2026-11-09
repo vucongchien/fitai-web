@@ -9,6 +9,10 @@ import type {
   DialogueEngineConfig,
   PresignedUploadUrlResponse,
 } from "@/features/admin/domain/admin-motion-spec-types";
+import {
+  resolveDialogueAssetUrl,
+  resolveRulesAssetUrl,
+} from "@/features/workout/domain/motion-asset-url";
 import { MotionAssetType as MotionAssetTypeEnum } from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
 import {
   AdminWorkoutExecutionService,
@@ -106,8 +110,12 @@ export async function fetchMotionSpecifications({
         exerciseName: item.exerciseName || "",
         onnxDetectorUrl: item.onnxDetectorUrl || "",
         onnxSkeletonUrl: item.onnxSkeletonUrl || "",
-        localRulesUrl: item.localRulesUrl || "",
-        dialogueEngineUrl: item.dialogueEngineUrl || "",
+        localRulesUrl: hasRules
+          ? resolveRulesAssetUrl(item.localRulesUrl, item.exerciseId, item.exerciseName)
+          : "",
+        dialogueEngineUrl: hasVoice
+          ? resolveDialogueAssetUrl(item.dialogueEngineUrl, item.exerciseId, item.exerciseName)
+          : "",
         recommendedCameraAngle: item.recommendedCameraAngle || "",
         isReady: hasRules && hasVoice && hasOnnx,
         updatedAt: new Date().toISOString(),
@@ -165,8 +173,12 @@ export async function searchMotionSpecifications({
         exerciseName: item.exerciseName || "",
         onnxDetectorUrl: item.onnxDetectorUrl || "",
         onnxSkeletonUrl: item.onnxSkeletonUrl || "",
-        localRulesUrl: item.localRulesUrl || "",
-        dialogueEngineUrl: item.dialogueEngineUrl || "",
+        localRulesUrl: hasRules
+          ? resolveRulesAssetUrl(item.localRulesUrl, item.exerciseId, item.exerciseName)
+          : "",
+        dialogueEngineUrl: hasVoice
+          ? resolveDialogueAssetUrl(item.dialogueEngineUrl, item.exerciseId, item.exerciseName)
+          : "",
         recommendedCameraAngle: item.recommendedCameraAngle || "",
         isReady: hasRules && hasVoice && hasOnnx,
         updatedAt: new Date().toISOString(),
@@ -219,8 +231,10 @@ export async function fetchMotionSpecificationByExerciseId(
           exerciseId: res.exerciseId,
           onnxDetectorUrl: res.onnxDetectorUrl || "",
           onnxSkeletonUrl: res.onnxSkeletonUrl || "",
-          localRulesUrl: res.localRulesUrl || "",
-          dialogueEngineUrl: res.dialogueEngineUrl || "",
+          localRulesUrl: hasRules ? resolveRulesAssetUrl(res.localRulesUrl, res.exerciseId) : "",
+          dialogueEngineUrl: hasVoice
+            ? resolveDialogueAssetUrl(res.dialogueEngineUrl, res.exerciseId)
+            : "",
           recommendedCameraAngle: res.recommendedCameraAngle || "",
           isReady: hasRules && hasVoice && hasOnnx,
           updatedAt: new Date().toISOString(),

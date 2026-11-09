@@ -1,172 +1,113 @@
-import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
+import fs from "node:fs";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
-import { WebTransportRefereeClient } from "@/features/workout/domain/webtransport-client";
+import { EdgeRefereeSession } from "@/features/workout/domain/edge-referee";
 import {
-  StreamWorkoutTrackingRequestSchema,
-  StreamWorkoutTrackingResponseSchema,
-} from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
+  resolveCanonicalExerciseSlug,
+  resolveDialogueAssetUrl,
+  resolveRulesAssetUrl,
+} from "@/features/workout/domain/motion-asset-url";
+import { parseMotionRule } from "@/features/workout/domain/rule-parser";
+import { resolveVoiceFeedbackCueText } from "@/features/workout/model/use-live-workout-effects";
 
-describe("WebTransportRefereeClient End-to-End WebSocket Session", () => {
-  it("completes full session: init handshake -> frame telemetry -> rep count -> submit", async () => {
-    // Mock global fetch for wt-config
-    const originalFetch = global.fetch;
-    global.fetch = async (input: RequestInfo | URL) => {
-      if (input.toString().includes("/api/execution/wt-config")) {
-        return new Response(
-          JSON.stringify({
-            fallback_path: "/api/v1/execution/wt-stream",
-            token: "mock-jwt-token",
-            url: "https://localhost:8443/api/v1/execution/wt",
-          }),
-          { headers: { "Content-Type": "application/json" }, status: 200 },
-        );
-      }
-      return originalFetch(input);
+describe("Edge-First Personal Workout Session Lifecycle", () => {
+  it("completes full edge session: rule load -> neutral frame -> flexed contraction -> rep count -> telemetry", () => {
+    const rulePath = path.resolve(process.cwd(), "public/models/rules/bicep_curl_rule.json");
+    const dialoguePath = path.resolve(
+      process.cwd(),
+      "public/models/dialogue/bicep_curl_dialogue.json",
+    );
+    const rawRule = JSON.parse(fs.readFileSync(rulePath, "utf-8"));
+    const rawDialogue = JSON.parse(fs.readFileSync(dialoguePath, "utf-8"));
+
+    const motionRule = parseMotionRule("bicep_curl", rawRule);
+    const session = new EdgeRefereeSession(motionRule, "SIDE");
+
+    const buildPose = (elbowAngleDeg: number, swayOffset = 0) => {
+      const pts = Array.from({ length: 17 }, () => ({
+        score: 0.95,
+        x: 0.5,
+        y: 0.5,
+      }));
+      const sx = 0.5;
+      const sy = 0.3;
+      const hx = 0.5;
+      const hy = 0.6;
+      const ex = sx + swayOffset;
+      const ey = sy + 0.15;
+      pts[5] = { score: 0.96, x: sx, y: sy };
+      pts[6] = { score: 0.92, x: sx, y: sy };
+      pts[11] = { score: 0.96, x: hx, y: hy };
+      pts[12] = { score: 0.92, x: hx, y: hy };
+      pts[13] = { score: 0.96, x: 0.5, y: 0.8 };
+      pts[14] = { score: 0.92, x: 0.5, y: 0.8 };
+      pts[15] = { score: 0.96, x: 0.5, y: 0.95 };
+      pts[16] = { score: 0.92, x: 0.5, y: 0.95 };
+      pts[7] = { score: 0.96, x: ex, y: ey };
+      pts[8] = { score: 0.92, x: ex, y: ey };
+
+      const baseAngle = Math.atan2(sy - ey, sx - ex);
+      const targetAngle = baseAngle + (elbowAngleDeg * Math.PI) / 180;
+      const wx = ex + 0.14 * Math.cos(targetAngle);
+      const wy = ey + 0.14 * Math.sin(targetAngle);
+      pts[9] = { score: 0.96, x: wx, y: wy };
+      pts[10] = { score: 0.92, x: wx, y: wy };
+      return pts;
     };
 
-    // Mock WebSocket class
-    class MockWebSocket {
-      static OPEN = 1;
-      static CLOSED = 3;
-      binaryType = "arraybuffer";
-      readyState = 1; // OPEN
-      onopen: (() => void) | null = null;
-      onmessage: ((event: { data: ArrayBuffer }) => void) | null = null;
-      onerror: ((err: any) => void) | null = null;
-      onclose: (() => void) | null = null;
-      private repCount = 0;
+    let t = 1000;
+    const stepFrame = (angle: number, sway = 0) => {
+      t += 50;
+      return session.processKeypoints(buildPose(angle, sway), t, "SIDE");
+    };
 
-      constructor(public url: string) {
-        setTimeout(() => this.onopen?.(), 10);
-      }
+    const startSnap = stepFrame(170);
+    expect(startSnap.repPhase).toBe("REST");
+    expect(startSnap.repCount).toBe(0);
 
-      send(data: Uint8Array | ArrayBuffer) {
-        const raw = new Uint8Array(data as ArrayBuffer);
-        const req = fromBinary(StreamWorkoutTrackingRequestSchema, raw);
-
-        if (req.payload.case === "init") {
-          setTimeout(() => {
-            const resp = create(StreamWorkoutTrackingResponseSchema, {
-              currentAngle: 160,
-              detectedErrors: [],
-              formScore: 100,
-              isValidForm: true,
-              personDetected: true,
-              repPhase: "start",
-              repsCompleted: 0,
-            });
-            const bytes = toBinary(StreamWorkoutTrackingResponseSchema, resp);
-            const ab = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-            this.onmessage?.({ data: ab });
-          }, 10);
-        } else if (req.payload.case === "frame") {
-          const frame = req.payload.value;
-          const wrist = frame.landmarks.find(
-            (l) => l.landmarkIndex === 9 || l.landmarkIndex === 10,
-          );
-          const isFlexed = (wrist?.y ?? 100) < 50;
-
-          if (isFlexed && this.repCount === 0) {
-            this.repCount = 1;
-          }
-
-          setTimeout(() => {
-            const resp = create(StreamWorkoutTrackingResponseSchema, {
-              audioCue: isFlexed ? "bicep_curl_elbow_sway_cue" : "",
-              currentAngle: isFlexed ? 45 : 150,
-              detectedErrors: isFlexed ? ["elbow_sway"] : [],
-              formScore: 98,
-              isValidForm: !isFlexed,
-              personDetected: true,
-              repPhase: isFlexed ? "bottom" : "start",
-              repsCompleted: this.repCount,
-            });
-            const bytes = toBinary(StreamWorkoutTrackingResponseSchema, resp);
-            const ab = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-            this.onmessage?.({ data: ab });
-          }, 10);
-        } else if (req.payload.case === "submit") {
-          setTimeout(() => {
-            const resp = create(StreamWorkoutTrackingResponseSchema, {
-              currentAngle: 160,
-              formScore: 98,
-              isSetCompleted: true,
-              isValidForm: true,
-              repPhase: "completed",
-              repsCompleted: this.repCount,
-            });
-            const bytes = toBinary(StreamWorkoutTrackingResponseSchema, resp);
-            const ab = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-            this.onmessage?.({ data: ab });
-          }, 10);
-        }
-      }
-
-      close() {
-        this.readyState = 3; // CLOSED
-        this.onclose?.();
-      }
+    for (let i = 1; i <= 10; i++) {
+      const angle = 170 - (i / 10) * (170 - 60);
+      stepFrame(angle, 0.08);
     }
 
-    const originalWebSocket = global.WebSocket;
-    // @ts-expect-error mock assignment
-    global.WebSocket = MockWebSocket;
+    const bottomSnap = stepFrame(60, 0.08);
+    expect(bottomSnap.repPhase).toBe("ACTIVE");
+    expect(bottomSnap.detectedErrors).toContain("ERR_ELBOW_SWAY");
 
-    const responses: any[] = [];
-    const client = new WebTransportRefereeClient();
+    const cueText = resolveVoiceFeedbackCueText(
+      rawDialogue.voice_feedbacks,
+      "ERR_ELBOW_SWAY",
+      2,
+      "normal",
+      "Khửu tay đung đưa",
+      "elbow_sway",
+    );
+    expect(cueText.length).toBeGreaterThan(5);
 
-    try {
-      await client.connect({
-        exerciseId: "bicep_curl",
-        onError: (err) => console.error("TEST onError:", err),
-        onResponse: (resp) => responses.push(resp),
-        sessionId: "live-set-123",
-      });
-
-      expect(client.isConnected).toBe(true);
-      expect(client.kind).toBe("websocket");
-
-      // Wait for init response
-      await new Promise((r) => setTimeout(r, 40));
-      expect(responses.length).toBeGreaterThanOrEqual(1);
-      expect(responses[0]?.repPhase).toBe("start");
-
-      // Send neutral frame (wrists low at y=100)
-      const neutralKeypoints = Array.from({ length: 17 }, () => ({
-        score: 0.9,
-        x: 100,
-        y: 100,
-      }));
-      await client.sendFrame(neutralKeypoints);
-      await new Promise((r) => setTimeout(r, 40));
-
-      // Send flexed frame (wrists curled up at y=30)
-      const flexedKeypoints = Array.from({ length: 17 }, (_, i) => ({
-        score: 0.9,
-        x: 100,
-        y: i === 9 || i === 10 ? 30 : 100,
-      }));
-      await client.sendFrame(flexedKeypoints);
-      await new Promise((r) => setTimeout(r, 40));
-
-      const latestResp = responses[responses.length - 1];
-      expect(latestResp?.repsCompleted).toBe(1);
-      expect(latestResp?.currentAngle).toBe(45);
-      expect(latestResp?.repPhase).toBe("bottom");
-      expect(latestResp?.detectedErrors).toContain("elbow_sway");
-      expect(latestResp?.audioCue).toBe("bicep_curl_elbow_sway_cue");
-
-      // Submit set
-      await client.submit();
-      await new Promise((r) => setTimeout(r, 40));
-
-      const finalResp = responses[responses.length - 1];
-      expect(finalResp?.isSetCompleted).toBe(true);
-    } finally {
-      client.close();
-      global.fetch = originalFetch;
-      global.WebSocket = originalWebSocket;
+    for (let i = 9; i >= 0; i--) {
+      const angle = 170 - (i / 10) * (170 - 60);
+      stepFrame(angle, 0);
     }
+
+    expect(session.getConfirmedValue()).toBe(1);
+    const summary = session.buildSetTelemetry(0.95);
+    expect(summary.countedReps).toBe(1);
+    expect(summary.reps).toHaveLength(1);
+    expect(summary.reps[0]?.romPercentage).toBeGreaterThanOrEqual(80);
+  });
+
+  it("normalizes relative backend rules_url and dialogues_url to canonical public paths", () => {
+    expect(resolveCanonicalExerciseSlug("barbell_squat")).toBe("squat");
+    expect(resolveRulesAssetUrl("rules/squat_rule.json", "squat")).toBe(
+      "/models/rules/squat_rule.json",
+    );
+    expect(resolveRulesAssetUrl("/models/rules/push_up.json", "push_up")).toBe(
+      "/models/rules/push_up_rule.json",
+    );
+    expect(resolveDialogueAssetUrl("dialogues/plank_dialogue.json", "plank")).toBe(
+      "/models/dialogue/plank_dialogue.json",
+    );
   });
 });

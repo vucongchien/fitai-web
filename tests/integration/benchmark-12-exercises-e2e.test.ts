@@ -1,14 +1,11 @@
 // @vitest-environment node
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
 
-import { WebTransportRefereeClient } from "@/features/workout/domain/webtransport-client";
-import {
-  WorkoutTrackingChallengeType,
-  type StreamWorkoutTrackingResponse,
-} from "@/shared/api/gen/contracts/core/workout_execution/v1/message/workout_execution_messages_pb";
+import { EdgeRefereeSession, type EdgeFrameUpdate } from "@/features/workout/domain/edge-referee";
+import { parseMotionRule } from "@/features/workout/domain/rule-parser";
 
 interface ScenarioResult {
   exerciseId: string;
@@ -46,21 +43,10 @@ const CANONICAL_12_EXERCISES = [
 const shouldRunBenchmark = hasDatasets && process.env.RUN_E2E_BENCHMARK === "true";
 
 describe.skipIf(!shouldRunBenchmark)(
-  "12 Exercises Real Human Video Benchmark Suite (E2E over Network Stream)",
+  "12 Exercises Real Human Video Benchmark Suite (Edge Referee Engine)",
   () => {
     const allResults: ScenarioResult[] = [];
     const startTime = Date.now();
-
-    beforeAll(() => {
-      // @ts-expect-error test override for node environment
-      globalThis.window = {
-        location: {
-          hostname: "localhost",
-          port: "8080",
-          protocol: "http:",
-        },
-      };
-    });
 
     afterAll(() => {
       const totalTimeMs = Date.now() - startTime;
@@ -78,14 +64,14 @@ describe.skipIf(!shouldRunBenchmark)(
 
       console.log(`\n======================================================`);
       console.log(
-        `📊 REAL VIDEO E2E STREAM COMPLETE: ${exactMatches}/${countedScenarios.length} EXACT REP MATCHES (${
+        `📊 REAL VIDEO EDGE BENCHMARK COMPLETE: ${exactMatches}/${countedScenarios.length} EXACT REP MATCHES (${
           countedScenarios.length > 0
             ? ((exactMatches / countedScenarios.length) * 100).toFixed(1)
             : 0
         }%)`,
       );
       console.log(
-        `   MAE: ${mae.toFixed(3)} reps | Avg Frame Latency: ${avgLatency.toFixed(2)}ms | Total Time: ${(
+        `   MAE: ${mae.toFixed(3)} reps | Avg Frame Latency: ${avgLatency.toFixed(4)}ms | Total Time: ${(
           totalTimeMs / 1000
         ).toFixed(2)}s`,
       );
@@ -95,6 +81,10 @@ describe.skipIf(!shouldRunBenchmark)(
     for (const exerciseId of CANONICAL_12_EXERCISES) {
       const exDir = path.join(datasetsRoot, exerciseId);
       if (!fs.existsSync(exDir)) continue;
+
+      const rulePath = path.resolve(process.cwd(), `public/models/rules/${exerciseId}_rule.json`);
+      const rawRule = JSON.parse(fs.readFileSync(rulePath, "utf-8"));
+      const motionRule = parseMotionRule(exerciseId, rawRule);
 
       const videoDirs = fs
         .readdirSync(exDir, { withFileTypes: true })
@@ -113,7 +103,7 @@ describe.skipIf(!shouldRunBenchmark)(
             continue;
           }
 
-          it(`streams real human pose frames for ${videoId}`, async () => {
+          it(`evaluates real human pose frames on edge for ${videoId}`, () => {
             const poseDoc = JSON.parse(fs.readFileSync(posePath, "utf-8"));
             const annDoc = JSON.parse(fs.readFileSync(annPath, "utf-8"));
             const metaDoc = JSON.parse(fs.readFileSync(metaPath, "utf-8"));
@@ -122,26 +112,11 @@ describe.skipIf(!shouldRunBenchmark)(
               metaDoc.environmental_conditions?.camera_angle || "side"
             ).toLowerCase();
             const cameraAngle = rawAngle === "front_45" ? "diagonal" : rawAngle;
-            const challengeType = annDoc.is_timed
-              ? WorkoutTrackingChallengeType.DURATION
-              : WorkoutTrackingChallengeType.REPS;
 
-            const client = new WebTransportRefereeClient();
-            const responses: StreamWorkoutTrackingResponse[] = [];
+            const session = new EdgeRefereeSession(motionRule, cameraAngle);
+            const snapshots: EdgeFrameUpdate[] = [];
             const latencies: number[] = [];
             const scenarioStart = Date.now();
-
-            await client.connect({
-              cameraAngle,
-              challengeType,
-              exerciseId,
-              sessionId: `real-e2e-${videoId}-${Date.now()}`,
-              onResponse: (resp) => {
-                responses.push(resp);
-              },
-            });
-
-            await new Promise((r) => setTimeout(r, 15));
 
             for (const frame of poseDoc.frames) {
               const landmarks = (frame.keypoints || []).map(
@@ -152,26 +127,30 @@ describe.skipIf(!shouldRunBenchmark)(
                 }),
               );
               const sendTime = performance.now();
-              await client.sendFrame(landmarks, frame.timestamp_ms, cameraAngle);
+              const snap = session.processKeypoints(
+                landmarks,
+                frame.timestamp_ms ?? 0,
+                cameraAngle,
+                1,
+                1,
+                false,
+              );
+              snapshots.push(snap);
               latencies.push(performance.now() - sendTime);
             }
-
-            await client.submit();
-            await new Promise((r) => setTimeout(r, 25));
-            client.close();
 
             const durationMs = Date.now() - scenarioStart;
             const avgLatencyMs =
               latencies.length > 0 ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
 
-            const lastResp = responses[responses.length - 1];
-            const actualReps = lastResp
-              ? lastResp.repsCompleted > 0
-                ? lastResp.repsCompleted
-                : Math.round(lastResp.holdDurationSeconds)
+            const lastSnap = snapshots[snapshots.length - 1];
+            const actualReps = lastSnap
+              ? lastSnap.repCount > 0
+                ? lastSnap.repCount
+                : Math.round(lastSnap.holdDurationSeconds)
               : 0;
             const actualErrors = Array.from(
-              new Set(responses.flatMap((r) => r.detectedErrors || [])),
+              new Set(snapshots.flatMap((r) => r.detectedErrors || [])),
             );
             const expectedErrors = Array.from(
               new Set<string>(
@@ -200,8 +179,8 @@ describe.skipIf(!shouldRunBenchmark)(
               videoId,
             });
 
-            expect(responses.length).toBeGreaterThan(0);
-            expect(repsPassed).toBe(true);
+            expect(snapshots.length).toBeGreaterThan(0);
+            expect(repsPassed).toBeTruthy();
           }, 20000);
         }
       });

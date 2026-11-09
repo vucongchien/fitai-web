@@ -3,11 +3,14 @@
 import { useCallback, useRef, useState } from "react";
 
 import { playSyntheticCueTone } from "@/features/workout/domain/audio-cues";
+import { resolveCanonicalExerciseSlug } from "@/features/workout/domain/motion-asset-url";
 import type { Pose } from "@/features/workout/domain/pose-metrics";
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
 
 export interface PoseStencilOverlayProps {
   exerciseId: string;
+  exerciseName?: string;
+  rulesUrl?: string;
   pose: Pose | null;
   onAlignedLock: () => void;
   onSkip: () => void;
@@ -17,7 +20,12 @@ export interface PoseStencilOverlayProps {
 }
 
 // Strict biometric matching requiring visible shoulders and hips
-export function isPoseMatchingStencil(exerciseId: string, pose: Pose | null): boolean {
+export function isPoseMatchingStencil(
+  exerciseId: string,
+  pose: Pose | null,
+  exerciseName?: string,
+  rulesUrl?: string,
+): boolean {
   if (!pose || !pose.keypoints || pose.keypoints.length === 0) {
     return false;
   }
@@ -68,8 +76,10 @@ export function isPoseMatchingStencil(exerciseId: string, pose: Pose | null): bo
   const deltaX = Math.abs(hip.x - shoulder.x) / sw;
   const deltaY = Math.abs(hip.y - shoulder.y) / sh;
 
+  const canonicalId =
+    resolveCanonicalExerciseSlug(exerciseId, exerciseName, rulesUrl) ?? exerciseId;
   const floorExercises = new Set(["push_up", "plank", "sit_up", "bench_press"]);
-  const isFloor = floorExercises.has(exerciseId);
+  const isFloor = floorExercises.has(canonicalId);
 
   if (isFloor) {
     // Floor exercises require horizontal torso and lower height
@@ -89,7 +99,8 @@ export function isPoseMatchingStencil(exerciseId: string, pose: Pose | null): bo
 
 // Exercise silhouette shapes on 1000x1000 viewBox
 function getExerciseSilhouetteShapes(exerciseId: string) {
-  switch (exerciseId) {
+  const canonicalId = resolveCanonicalExerciseSlug(exerciseId) ?? exerciseId;
+  switch (canonicalId) {
     case "push_up": {
       // Horizontal inclined push-up stance across 84% width
       return (
@@ -206,22 +217,26 @@ function getExerciseSilhouetteShapes(exerciseId: string) {
 // High-end stencil mask with full-bleed frosted overlay
 export function PoseStencilOverlay({
   exerciseId,
+  exerciseName,
   onAlignedLock,
   onSkip,
   pose,
   recommendedAngle,
+  rulesUrl,
 }: PoseStencilOverlayProps) {
   const [isAligned, setIsAligned] = useState(false);
   const alignedStartRef = useRef<number | null>(null);
   const lastMatchedRef = useRef<number>(0);
   const lockedRef = useRef(false);
+  const resolvedExerciseId =
+    resolveCanonicalExerciseSlug(exerciseId, exerciseName, rulesUrl) ?? exerciseId;
 
   const checkAlignment = useCallback(() => {
     if (lockedRef.current) {
       return;
     }
 
-    const matched = isPoseMatchingStencil(exerciseId, pose);
+    const matched = isPoseMatchingStencil(resolvedExerciseId, pose, exerciseName, rulesUrl);
     const now = Date.now();
 
     if (matched) {
@@ -247,7 +262,7 @@ export function PoseStencilOverlay({
         setIsAligned(false);
       }
     }
-  }, [exerciseId, onAlignedLock, pose]);
+  }, [exerciseName, onAlignedLock, pose, resolvedExerciseId, rulesUrl]);
 
   const rootRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -257,7 +272,7 @@ export function PoseStencilOverlay({
     [checkAlignment],
   );
 
-  const maskId = `stencil-mask-${exerciseId}`;
+  const maskId = `stencil-mask-${resolvedExerciseId}`;
   // App signature brand green (#25c77a) when matched; clean slate otherwise (no neon)
   const strokeColor = isAligned ? "#25c77a" : "rgba(51, 65, 85, 0.75)";
   const strokeW = isAligned ? 5 : 3.5;
@@ -299,7 +314,7 @@ export function PoseStencilOverlay({
               x="0"
               y="0"
             >
-              <g fill="black">{getExerciseSilhouetteShapes(exerciseId)}</g>
+              <g fill="black">{getExerciseSilhouetteShapes(resolvedExerciseId)}</g>
             </svg>
           </mask>
         </defs>
@@ -338,7 +353,7 @@ export function PoseStencilOverlay({
           {/* Subtle brand tint inside the cutout hole when matched */}
           {isAligned ? (
             <g className="transition-all duration-300" fill="rgba(37, 199, 122, 0.08)">
-              {getExerciseSilhouetteShapes(exerciseId)}
+              {getExerciseSilhouetteShapes(resolvedExerciseId)}
             </g>
           ) : null}
 
@@ -352,7 +367,7 @@ export function PoseStencilOverlay({
             strokeLinejoin="round"
             strokeWidth={strokeW}
           >
-            {getExerciseSilhouetteShapes(exerciseId)}
+            {getExerciseSilhouetteShapes(resolvedExerciseId)}
           </g>
         </svg>
       </svg>

@@ -40,6 +40,7 @@ export type MotionEngineEvent =
   | {
       type: "form-error";
       code: string;
+      metric?: string;
       message: string;
       severity: CueSeverity;
       source?: "referee-error" | "coach-cue";

@@ -112,17 +112,17 @@ export function ActiveExerciseScreen({
   const timed = isTimedExercise(exercise, spec);
 
   const durationTarget = exercise.durationSeconds > 0 ? exercise.durationSeconds : 30;
+  const setTotal = setTotalSeconds > 0 ? setTotalSeconds : durationTarget;
   const tracking = !timed && repCount !== undefined && exercise.targetReps > 0;
   const hasInstrument = timed || tracking;
 
   const display = timed
     ? repCount && repCount > 0
-      ? `${repCount}s / ${durationTarget}s`
+      ? `${repCount}s / ${setTotal}s`
       : formatCountdown(Math.max(0, secondsLeft))
     : `${repCount ?? 0} / ${exercise.targetReps}`;
 
   const ringLabel = timed ? "Time remaining in this set" : "Reps completed in this set";
-  const setTotal = setTotalSeconds > 0 ? setTotalSeconds : durationTarget;
   const progress = timed
     ? repCount && repCount > 0
       ? Math.min(1, repCount / setTotal)

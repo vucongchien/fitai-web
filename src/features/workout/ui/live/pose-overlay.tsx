@@ -13,17 +13,31 @@ const ERROR_KEYPOINT_MAP: Record<string, number[]> = {
   ERR_HIP_SAGGING: [11, 12],
   hip_sagging: [11, 12],
   ERR_HIP_PIKE: [11, 12],
+  hip_pike: [11, 12],
+  ERR_HIPS_TOO_FAR: [11, 12, 5, 6],
+  hips_too_far: [11, 12, 5, 6],
   ERR_BODY_INCLINE_ANGLE: [5, 6, 11, 12, 15, 16],
+  body_incline_angle: [5, 6, 11, 12, 15, 16],
   body_alignment: [5, 6, 11, 12, 15, 16],
   ERR_TORSO_LEAN: [5, 6, 11, 12],
   torso_lean: [5, 6, 11, 12],
   ERR_SPINE_SWAY: [5, 6, 11, 12],
+  ERR_SPINE_SWAY_ANGLE: [5, 6, 11, 12],
   spine_sway: [5, 6, 11, 12],
+  spine_sway_angle: [5, 6, 11, 12],
+  spine_angle: [5, 6, 11, 12],
 
-  // Elbows & Arms
+  // Elbows, Shoulders & Arms
   ERR_BENT_ELBOW_CHEAT: [5, 6, 7, 8, 9, 10],
   bent_elbow_cheat: [5, 6, 7, 8, 9, 10],
+  ERR_ELBOW_ANGLE: [5, 7, 9, 6, 8, 10],
   ERR_ELBOW_ANGLE_TOO_LOW: [5, 7, 9, 6, 8, 10],
+  ERR_ELBOW_ANGLE_TOO_HIGH: [5, 7, 9, 6, 8, 10],
+  ERR_ARM_TO_TORSO_ANGLE: [5, 6, 7, 8, 11, 12],
+  ERR_ARM_TO_TORSO_ANGLE_TOO_LOW: [5, 6, 7, 8, 11, 12],
+  ERR_ARM_TO_TORSO_ANGLE_TOO_HIGH: [5, 6, 7, 8, 11, 12],
+  arm_to_torso_angle: [5, 6, 7, 8, 11, 12],
+  shoulder_abduction_angle: [5, 6, 7, 8, 11, 12],
   ERR_ELBOW_FLARE: [5, 6, 7, 8],
   elbow_flare: [5, 6, 7, 8],
   ERR_ELBOW_SWAY: [7, 8],
@@ -34,23 +48,50 @@ const ERROR_KEYPOINT_MAP: Record<string, number[]> = {
   // Wrists & Hands
   ERR_WRIST_SYMMETRY: [9, 10],
   wrist_symmetry: [9, 10],
+  ERR_HAND_WIDTH_RATIO: [9, 10, 5, 6],
+  ERR_HAND_WIDTH_RATIO_TOO_LOW: [9, 10, 5, 6],
   ERR_HAND_WIDTH_RATIO_TOO_HIGH: [9, 10, 5, 6],
+  hand_width_ratio: [9, 10, 5, 6],
   ERR_BAR_DRIFT: [9, 10],
+  bar_drift: [9, 10],
 
   // Knees, Hips & Depth
   ERR_KNEE_OVER_TOE: [13, 14, 15, 16],
   knee_over_toe: [13, 14, 15, 16],
+  knee_toe_distance: [13, 14, 15, 16],
   ERR_EXCESSIVE_KNEE_FLEXION: [13, 14],
+  excessive_knee_flexion: [13, 14],
   ERR_KNEE_VALGUS: [13, 14],
+  knee_valgus: [13, 14],
   knee_angle: [13, 14],
+  hip_angle: [11, 12, 13, 14],
+  hip_flexion_angle: [5, 6, 11, 12, 13, 14],
   depth: [11, 12, 13, 14],
   ERR_INCORRECT_DEPTH: [11, 12, 13, 14],
   ERR_ANKLE_LIFT: [15, 16],
+  ankle_lift: [15, 16],
 
   // Pull & Neck
   ERR_KIPPING_SWING: [11, 12, 13, 14],
+  kipping_swing: [11, 12, 13, 14],
   ERR_NECK_PULL: [0, 1, 2, 3, 4],
+  neck_pull: [0, 1, 2, 3, 4],
+  neck_pull_angle: [0, 1, 2, 3, 4],
 };
+
+function resolveErrorJointIndices(rawCode: string): number[] | undefined {
+  const key = rawCode.trim();
+  const normalized = key
+    .toLowerCase()
+    .replace(/^err_/, "")
+    .replace(/_(too_low|too_high|too_acute|too_obtuse)$/, "");
+  return (
+    ERROR_KEYPOINT_MAP[key] ??
+    ERROR_KEYPOINT_MAP[key.toLowerCase()] ??
+    ERROR_KEYPOINT_MAP[normalized] ??
+    ERROR_KEYPOINT_MAP[`ERR_${normalized.toUpperCase()}`]
+  );
+}
 
 /** Minimum visual hold duration for errors (1.2 seconds) so athletes have time to notice */
 const ERROR_HOLD_MS = 1200;
@@ -143,8 +184,7 @@ export function PoseOverlay({
       // Build set of joints that have an active error
       const errorJoints = new Set<number>();
       for (const err of validErrors) {
-        const key = err.trim();
-        const mapped = ERROR_KEYPOINT_MAP[key] ?? ERROR_KEYPOINT_MAP[key.toLowerCase()];
+        const mapped = resolveErrorJointIndices(err);
         if (mapped) {
           for (const idx of mapped) {
             errorJoints.add(idx);

@@ -73,7 +73,7 @@ export async function GET() {
     const data = await res.json();
     return NextResponse.json({
       ...data,
-      token: accessToken,
+      token: data.token || accessToken,
     });
   } catch (err) {
     return NextResponse.json(

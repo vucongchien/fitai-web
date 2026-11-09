@@ -1,14 +1,7 @@
-/**
- * Pose maths: joint angles, ROM, rep counting, form rules, Form Score.
- *
- * Pure module — it takes keypoints and returns numbers, so it can be unit tested
- * without a camera or a model. The ONNX engine feeds it; the simulated engine
- * feeds it too.
- *
- * FR-CC-02 (ROM), FR-CC-03 (error detection), FR-CC-05 (Form Score 0-100),
- * BR-CC-01 (a rep only counts at ROM >= 70%).
- */
-
+import {
+  matchesThresholdCondition,
+  resolveCriterionSeverity,
+} from "@/features/workout/domain/rule-parser";
 import type { FormRule, RomRange } from "@/features/workout/model/live-session.types";
 
 /** COCO-17 order, the layout mmpose / RTMPose models output (FR-CC-01). */
@@ -112,7 +105,6 @@ export function keypoint(pose: Pose, name: string): Keypoint | null {
   return null;
 }
 
-/** A pose is usable when at least 1 shoulder and 1 hip are tracked (supports side-view exercises like Sit-up & Push-up). */
 export function isPoseUsable(pose: Pose): boolean {
   const hasLeftUpper =
     keypoint(pose, "left_shoulder") !== null && keypoint(pose, "left_hip") !== null;
@@ -169,7 +161,6 @@ export function angleOfJoints(pose: Pose, joints?: [string, string, string]): nu
   }
   let [a, b, c] = joints.map((name) => keypoint(pose, name as KeypointName));
   if (!a || !b || !c) {
-    // Opposite side fallback if primary side is obscured in side-view videos (e.g. left_hip -> right_hip)
     const altJoints = joints.map((name) => {
       if (name.startsWith("left_")) return name.replace("left_", "right_");
       if (name.startsWith("right_")) return name.replace("right_", "left_");
@@ -187,10 +178,6 @@ export function angleOfJoints(pose: Pose, joints?: [string, string, string]): nu
   return jointAngle(a, b, c);
 }
 
-/**
- * How far into the movement we are, as a percentage of the standard range.
- * Works in both directions (flexion or extension) — see RomRange.
- */
 export function romPercent(angleDeg: number, range: RomRange): number {
   const span = range.endDeg - range.startDeg;
   if (span === 0) {
@@ -212,10 +199,10 @@ export interface RepCounterState {
 }
 
 /** Hysteresis thresholds for strict 5-step sequential phase transitions. */
-const START_ROM_MAX = 30; // Below 30% ROM is considered START position
-const MOVING_START_MIN = 20; // Moving above 20% transitions to MOVING_TO_TARGET
-const TARGET_REACH_MIN = 60; // Reaching >= 60% ROM reaches TARGET_REACHED
-const MOVING_START_MAX = 70; // Dropping below 70% after target reached transitions to MOVING_TO_START
+const START_ROM_MAX = 30;
+const MOVING_START_MIN = 20;
+const TARGET_REACH_MIN = 60;
+const MOVING_START_MAX = 70;
 
 export function createRepCounter(): RepCounterState {
   return { phase: "start", count: 0, peakRom: 0, completedRoms: [] };
@@ -227,17 +214,11 @@ export interface RepCounterTick {
   completedRep: { repNumber: number; romPercentage: number; counted: boolean } | null;
 }
 
-/**
- * Strict 5-step sequential state machine:
- * START (<=25%) -> MOVING_TO_TARGET (>=35%) -> TARGET_REACHED (>=70%) -> MOVING_TO_START (<=60%) -> RETURNED TO START (<=25%) (Rep + 1)
- * Must follow exact sequential order without skipping steps!
- */
 export function feedRepCounter(state: RepCounterState, rom: number): RepCounterTick {
   const peakRom = Math.max(state.peakRom, rom);
 
   switch (state.phase) {
     case "start": {
-      // Step 1: rest (start position). Transition to Step 2: transition (moving_to_target)
       if (rom >= MOVING_START_MIN) {
         return {
           state: { ...state, phase: "moving_to_target", peakRom },
@@ -248,14 +229,12 @@ export function feedRepCounter(state: RepCounterState, rom: number): RepCounterT
     }
 
     case "moving_to_target": {
-      // Step 2: transition (moving_to_target). Must reach Step 3: active (target_reached)
       if (rom >= TARGET_REACH_MIN) {
         return {
           state: { ...state, phase: "target_reached", peakRom },
           completedRep: null,
         };
       }
-      // If user turns back early to start (< 30%) WITHOUT reaching active, reset to start without incrementing!
       if (rom <= START_ROM_MAX) {
         return {
           state: { ...state, phase: "start", peakRom: 0 },
@@ -266,9 +245,7 @@ export function feedRepCounter(state: RepCounterState, rom: number): RepCounterT
     }
 
     case "target_reached": {
-      // Step 3: active (target_reached). Returning to rest (<= 30%) or transition (<= 70%)
       if (rom <= START_ROM_MAX) {
-        // Returned to rest position (<=30%) after reaching active — full sequence complete!
         const counted = peakRom >= VALID_REP_ROM;
         if (!counted) {
           return {
@@ -293,8 +270,6 @@ export function feedRepCounter(state: RepCounterState, rom: number): RepCounterT
     }
 
     case "moving_to_start": {
-      // Step 4 & 5: transition (moving_to_start). Returning fully to Step 5: rest (start position <= 30%)
-      // Sequence COMPLETE: rest -> transition -> active -> transition -> rest! Rep + 1!
       if (rom <= START_ROM_MAX) {
         const counted = peakRom >= VALID_REP_ROM;
         if (!counted) {
@@ -353,11 +328,6 @@ export interface FormScoreInput {
   secondsPerRep?: number;
 }
 
-/**
- * FR-CC-05 — Form Score 0-100 from ROM, joint alignment (rule violations) and tempo.
- * ROM carries most of the weight; errors are penalised per rep so a long set is
- * not punished harder than a short one for the same error rate.
- */
 export function formScore(input: FormScoreInput): number {
   const romPart = Math.min(100, Math.max(0, input.averageRom)) * 0.7;
 
@@ -374,11 +344,6 @@ export function formScore(input: FormScoreInput): number {
 export type CalibrationDistance = "too-far" | "too-close" | "ok" | "unknown";
 export type CalibrationLighting = "low" | "ok";
 
-/**
- * Distance proxy: the fraction of frame height the body occupies. At 1.5-2 m with
- * a phone in portrait the tracked body spans roughly 55-85% of the frame
- * (Assumption-01). Outside that we ask the user to step in or out.
- */
 export function calibrationDistance(pose: Pose, frameHeight: number): CalibrationDistance {
   if (frameHeight <= 0 || !isPoseUsable(pose)) {
     return "unknown";
@@ -518,9 +483,6 @@ export function signedHipYDiff(pose: Pose): number | null {
   return Math.abs(perpDist) / torsoLength;
 }
 
-/**
- * Dynamic metric evaluation driven by the `calculation` spec (landmarks, formula) in each rule JSON file.
- */
 export function evaluateMetricValue(
   metricName: string,
   landmarks: string[] | undefined,
@@ -531,7 +493,6 @@ export function evaluateMetricValue(
     return null;
   }
 
-  // 1. Dynamic Landmark Point Resolution
   const pts: { x: number; y: number }[] = [];
   if (landmarks && Array.isArray(landmarks)) {
     for (const lm of landmarks) {
@@ -542,7 +503,6 @@ export function evaluateMetricValue(
 
   const formulaStr = (formula ?? "").toLowerCase();
 
-  // Formula Case 1: Point to Line Distance (e.g. signed_hip_y_diff)
   if (
     formulaStr.includes("signed_distance_point_to_line") ||
     metricName.includes("signed_hip_y_diff") ||
@@ -566,7 +526,20 @@ export function evaluateMetricValue(
     return Math.abs(perpDist) / torsoLen;
   }
 
-  // Formula Case 2: Angle Relative to Vertical Vector [0, -1, 0] (e.g. spine_angle, spine_sway_angle)
+  if (
+    metricName.includes("incline") ||
+    formulaStr.includes("arctan2") ||
+    formulaStr.includes("horizontal")
+  ) {
+    const p1 = pts[0] ?? resolveLandmarkPoint(pose, "shoulder");
+    const p2 = pts[1] ?? resolveLandmarkPoint(pose, "ankle");
+    if (!p1 || !p2) return null;
+    const dx = Math.abs(p1.x - p2.x);
+    const dy = Math.abs(p1.y - p2.y);
+    if (dx === 0 && dy === 0) return 0;
+    return (Math.atan2(dy, dx) * 180) / Math.PI;
+  }
+
   if (
     formulaStr.includes("[0, -1") ||
     formulaStr.includes("vertical") ||
@@ -586,7 +559,6 @@ export function evaluateMetricValue(
     return (Math.acos(clamped) * 180) / Math.PI;
   }
 
-  // Formula Case 3: Horizontal Sway / Translation Offset (e.g. elbow_sway, knee_toe_distance)
   if (
     formulaStr.includes("sway") ||
     formulaStr.includes("x_") ||
@@ -606,12 +578,10 @@ export function evaluateMetricValue(
     return dx / torsoLen;
   }
 
-  // Formula Case 4: 3-Point Joint Interior Angle (e.g. knee_angle, elbow_angle, hip_angle, neck_pull_angle)
   if (pts.length >= 3) {
     return jointAngle(pts[0]!, pts[1]!, pts[2]!);
   }
 
-  // Fallbacks based on landmarks string parsing
   if (landmarks && landmarks.length >= 3) {
     const parsedJoints = landmarks.slice(0, 3).map((item) => {
       const clean = item.split(" ")[0] ?? item;
@@ -623,7 +593,6 @@ export function evaluateMetricValue(
     }
   }
 
-  // Fallbacks based on metric name
   if (metricName.includes("knee") || metricName.includes("leg")) {
     return angleOfJoints(pose, ["hip", "knee", "ankle"]);
   }
@@ -647,13 +616,7 @@ export function detectPhaseFromRuleJson(
 
   const phaseDet = ruleFile.phase_detection;
 
-  // Handle Timed / Isometric / Static exercises (e.g. Plank, Wall Sit, rep_type: "timed", metric: "none")
-  if (
-    !phaseDet ||
-    phaseDet.metric === "none" ||
-    ruleFile.rep_type === "timed" ||
-    Boolean(phaseDet.thresholds?.always)
-  ) {
+  if (!phaseDet || phaseDet.metric === "none") {
     return { endDeg: 0, metricName: "none", phase: "always", startDeg: 0 };
   }
 
@@ -666,6 +629,18 @@ export function detectPhaseFromRuleJson(
   );
 
   const thresholds = phaseDet.thresholds ?? {};
+
+  if (ruleFile.rep_type === "timed" || Boolean(thresholds.always)) {
+    const idleCond = thresholds.idle;
+    const alwaysCond = thresholds.always;
+    const startDeg = idleCond?.gt ?? idleCond?.gte ?? 45;
+    const endDeg = alwaysCond?.lte ?? alwaysCond?.lt ?? 35;
+    if (val !== null && matchesThresholdCondition(idleCond, val)) {
+      return { endDeg, metricName, phase: "idle", startDeg };
+    }
+    return { endDeg, metricName, phase: "always", startDeg };
+  }
+
   const restCond = thresholds.rest ?? {};
   const activeCond = thresholds.active ?? {};
 
@@ -676,8 +651,6 @@ export function detectPhaseFromRuleJson(
     return { endDeg: activeLte, metricName, phase: "start", startDeg: restGt };
   }
 
-  // Parse conditions dynamically:
-  // 1. Check rest condition (gt: Greater than, gte: Greater than or equal)
   const isRest =
     (restCond.gt !== undefined && val > restCond.gt) ||
     (restCond.gte !== undefined && val >= restCond.gte) ||
@@ -687,7 +660,6 @@ export function detectPhaseFromRuleJson(
     return { endDeg: activeLte, metricName, phase: "start", startDeg: restGt };
   }
 
-  // 2. Check active condition (lte: Less than or equal to, lt: Less than)
   const isActive =
     (activeCond.lte !== undefined && val <= activeCond.lte) ||
     (activeCond.lt !== undefined && val < activeCond.lt) ||
@@ -697,7 +669,6 @@ export function detectPhaseFromRuleJson(
     return { endDeg: activeLte, metricName, phase: "target_reached", startDeg: restGt };
   }
 
-  // 3. Fallback: transition condition (gt 115: Greater than 115 and <= 150)
   return { endDeg: activeLte, metricName, phase: "moving_to_target", startDeg: restGt };
 }
 
@@ -710,10 +681,11 @@ export function evaluateGenericRuleJson(
     return { currentPhase: "start", violations };
   }
 
-  // 1. Dynamic Phase Detection
   const { phase: currentPhase } = detectPhaseFromRuleJson(ruleFile, pose);
+  if (currentPhase === "idle") {
+    return { currentPhase, violations };
+  }
 
-  // 2. Dynamic Rule Ranges Evaluation
   if (ruleFile.rules && Array.isArray(ruleFile.rules)) {
     for (const rule of ruleFile.rules) {
       const value = evaluateMetricValue(
@@ -726,23 +698,31 @@ export function evaluateGenericRuleJson(
         continue;
       }
 
-      for (const range of rule.ranges) {
-        if (range.severity === 0) {
-          continue;
-        }
+      const isValidRange = rule.ranges.some(
+        (range) =>
+          range.severity === 0 &&
+          (range.min === null || value >= range.min) &&
+          (range.max === null || value <= range.max),
+      );
+      if (isValidRange) {
+        continue;
+      }
 
-        if (
-          (range.min !== null && range.max !== null && value >= range.min && value <= range.max) ||
-          (range.min !== null && range.max === null && value >= range.min) ||
-          (range.min === null && range.max !== null && value <= range.max)
-        ) {
-          violations.push({
-            code: rule.metric,
-            message: range.comment || rule.description || `Form error: ${rule.metric}`,
-            severity: range.severity,
-          });
-          break;
-        }
+      const resolvedSeverity = resolveCriterionSeverity(rule.ranges, value);
+      const matchedRange =
+        rule.ranges.find(
+          (range) =>
+            range.severity === resolvedSeverity &&
+            (range.min === null || value >= range.min) &&
+            (range.max === null || value <= range.max),
+        ) ?? rule.ranges.find((range) => range.severity > 0);
+
+      if (matchedRange) {
+        violations.push({
+          code: rule.metric,
+          message: matchedRange.comment || rule.description || `Form error: ${rule.metric}`,
+          severity: resolvedSeverity,
+        });
       }
     }
   }

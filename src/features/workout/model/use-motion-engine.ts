@@ -28,6 +28,7 @@ export interface MotionEngineOptions {
   /** Called on every detected form error, already carrying the cue copy. */
   onFormError?: (error: {
     code: string;
+    metric?: string;
     message: string;
     severity: CueSeverity;
     source?: "referee-error" | "coach-cue";
