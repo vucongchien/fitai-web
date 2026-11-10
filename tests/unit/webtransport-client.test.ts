@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   encodeUvarintPrefixed,
   UvarintFrameDecoder,
-} from "@/features/workout/domain/webtransport-client";
+} from "@/features/solo-match/domain/uvarint-framing";
 
 describe("Uvarint Framing Protocol", () => {
   it("encodes and decodes single-byte length prefixes correctly", () => {

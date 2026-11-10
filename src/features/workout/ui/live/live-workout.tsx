@@ -10,11 +10,6 @@ import {
 } from "@/features/workout/domain/audio-cues";
 import { totalExerciseCount } from "@/features/workout/domain/session-flow";
 import { isTimedExercise } from "@/features/workout/domain/session-guards";
-import {
-  isAnomalousLoad,
-  loadRatio,
-  sessionVolumeKg,
-} from "@/features/workout/domain/training-load";
 import type { LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useAudioCoach } from "@/features/workout/model/use-audio-coach";
 import { useCameraStream } from "@/features/workout/model/use-camera-stream";
@@ -23,21 +18,14 @@ import { useLiveWorkoutEffects } from "@/features/workout/model/use-live-workout
 import { useMotionEngine } from "@/features/workout/model/use-motion-engine";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
 import { CameraStage } from "@/features/workout/ui/live/camera-stage";
-import { DemoVideoOverlay } from "@/features/workout/ui/live/demo-video-overlay";
-import type { EndDialogVariant } from "@/features/workout/ui/live/end-session-dialog";
-import { EndSessionDialog } from "@/features/workout/ui/live/end-session-dialog";
-import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
-import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
+import { LiveWorkoutModals } from "@/features/workout/ui/live/live-workout-modals";
 import { PoseStencilOverlay } from "@/features/workout/ui/live/pose-stencil-overlay";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
-import { RuleVoiceModal } from "@/features/workout/ui/live/rule-voice-modal";
-import { SetConfirmDialog } from "@/features/workout/ui/live/set-confirm-dialog";
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
 import { useFullscreenScope } from "@/shared/lib/use-fullscreen-scope";
 import { useWakeLock } from "@/shared/lib/use-wake-lock";
 import { toast } from "@/shared/ui/toast";
 
-/** Seconds the "+" button adds — same amount on both screens. */
 const ADD_SECONDS = 10;
 
 export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
@@ -60,7 +48,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   const motion = useMotionEngine({
     onFallback: (reason) => {
-      // Don't switch to manual logging if playing user video file!
       if (camera.isCustomVideo) {
         return;
       }
@@ -81,8 +68,12 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       if (!listening || confirmSetOpen || session.status !== "working") {
         return;
       }
-      const cueText = workoutEffects.getCueTextForError(error.code, error.severity, error.message);
-      // Enforce post-speech silence gap: 1.5s for Danger (severity 2), 3.0s for Warning (severity 1)
+      const cueText = workoutEffects.getCueTextForError(
+        error.code,
+        error.severity,
+        error.message,
+        error.metric,
+      );
       const gapSec = error.severity === 2 ? 1.5 : 3.0;
       audio.speakText(cueText, undefined, { cooldownGapSec: gapSec, priority: "error" });
     },
@@ -91,7 +82,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         hapticFeedback.repSuccess();
         if (listening && !confirmSetOpen) {
           const isTimed = isTimedExercise(workoutEffects.exercise, workoutEffects.spec);
-
           if (isTimed) {
             audio.speakText(formatVietnameseSecond(rep.count), undefined, { priority: "normal" });
           } else {
@@ -106,7 +96,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   const { abortSession, cameraBranch, exercise, finishSet, finishSession, online, startSet, step } =
     workoutEffects;
 
-  // Back always asks first before leaving session
   const onBack = useCallback(() => setEndOpen(true), []);
   const onToggleVoice = useCallback(() => {
     setListening((current) => {
@@ -130,7 +119,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     });
   }, [audio, exercise]);
 
-  // Check if AI camera and model are ready to track
   const sessionStatus = session.status;
   const cameraActive = (cameraBranch || Boolean(workoutEffects.spec)) && cameraOn;
 
@@ -140,7 +128,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       : null;
   const { protectionNote } = plan;
 
-  // Stage transitions, effects and cleanup wired cleanly via React 19 ref callback
   const notifiedRef = useRef<{
     durationWarningShown?: string | null;
     offlineShown?: boolean;
@@ -196,7 +183,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     (node: HTMLElement | null) => {
       if (!node) return;
 
-      // Auto-start or calibrate set
       if (sessionStatus === "ready") {
         if (cameraActive) {
           motion.startCalibration();
@@ -211,12 +197,10 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         setPrepCountdown(null);
       }
 
-      // Cancel all audio playback & speech synthesis when resting or completed
       if (sessionStatus === "resting" || sessionStatus === "complete") {
         audioRef.current.stopCues();
       }
 
-      // Offline warning
       if (!online && !notifiedRef.current.offlineShown) {
         notifiedRef.current.offlineShown = true;
         toast.info("Offline Mode: You're offline. Sets are saved locally.");
@@ -224,13 +208,11 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         notifiedRef.current.offlineShown = false;
       }
 
-      // Duration warning
       if (durationWarning && notifiedRef.current.durationWarningShown !== durationWarning) {
         notifiedRef.current.durationWarningShown = durationWarning;
         toast.info(`Session Duration: ${durationWarning}`);
       }
 
-      // Protection note
       if (protectionNote && !notifiedRef.current.protectionNoteShown) {
         notifiedRef.current.protectionNoteShown = true;
         toast.info(`${protectionNote.title}: ${protectionNote.description}`);
@@ -270,8 +252,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     );
   }
 
-  // `session.step` already points at the *next* step while resting, so
-  // `cameraBranch` and `exercise` describe the upcoming exercise on both screens.
   const isPreSetReady = sessionStatus === "ready" && cameraActive;
 
   const cameraStage = cameraActive ? (
@@ -302,84 +282,65 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         ) : (
           <PoseStencilOverlay
             exerciseId={exercise.exerciseId}
+            exerciseName={exercise.name}
             onAlignedLock={triggerStartAfterCountdown}
             onSkip={beginSetImmediately}
             onSwitchManual={() => workoutEffects.setManualForSet(true)}
             pose={motion.pose}
             recommendedAngle={plan.motionSpecs?.[exercise.exerciseId]?.recommendedCameraAngle}
+            rulesUrl={workoutEffects.spec?.localRulesUrl}
             setNumber={step.setNumber}
           />
         )
       ) : null}
     </CameraStage>
   ) : null;
+
   const onToggleCamera =
     cameraBranch || Boolean(workoutEffects.spec) ? () => setCameraOn((value) => !value) : undefined;
 
-  // The confirmation behind the Back button. With nothing logged there is no
-  // Session worth saving, so the dialog offers to cancel instead of "finish".
-  const { loggedSets } = session;
-  const volumeKg = sessionVolumeKg(loggedSets);
-  const isOverload = isAnomalousLoad(volumeKg, plan.recentAvgVolumeKg);
-  const endVariant: EndDialogVariant =
-    loggedSets.length === 0 ? "empty" : isOverload ? "overload" : "complete";
-  const endDialog = endOpen ? (
-    <EndSessionDialog
-      loadRatio={loadRatio(volumeKg, plan.recentAvgVolumeKg)}
-      onAbort={(reason) => {
-        setEndOpen(false);
-        void abortSession(reason);
-      }}
-      onClose={() => setEndOpen(false)}
-      onFinish={(confirmOverload) => {
-        setEndOpen(false);
-        void finishSession(confirmOverload);
-      }}
-      totalSets={loggedSets.length}
-      variant={endVariant}
-    />
-  ) : null;
+  const secondsElapsed = session.setTotal > 0 ? session.setTotal - session.setLeft : 0;
+  const aiCountedReps = cameraActive ? (motion.repCount ?? 0) : 0;
 
-  // Pain is reportable from either screen, so the dialog lives here rather than
-  // Inside one of them.
-  const painDialog = painOpen ? (
-    <PainReportDialog
-      onDismiss={() => setPainOpen(false)}
-      onStop={(note) => {
-        setPainOpen(false);
-        void abortSession("pain", note);
-      }}
-    />
-  ) : null;
-
-  const confirmDialog =
-    confirmSetOpen && exercise ? (
-      <SetConfirmDialog
-        aiCountedReps={cameraActive ? (motion.repCount ?? 0) : 0}
-        currentSet={step.setNumber}
-        exercise={exercise}
-        onClose={() => setConfirmSetOpen(false)}
-        onConfirm={(data) => {
-          audio.stopCues();
-          setConfirmSetOpen(false);
-          finishSet(listening, {
-            actualReps: data.actualReps,
-            actualSeconds: data.actualSeconds,
-            weightKg: data.weightKg,
-            rpe: data.rpe,
-          });
-        }}
-        secondsElapsed={session.setTotal > 0 ? session.setTotal - session.setLeft : 0}
-        totalSets={Math.max(1, exercise.targetSets)}
-      />
-    ) : null;
+  const modalsProps = {
+    aiCountedReps,
+    confirmSetOpen,
+    currentSet: step.setNumber,
+    endOpen,
+    exercise,
+    guideOpen,
+    loggedSets: session.loggedSets,
+    onAbortSession: (reason: Parameters<typeof abortSession>[0], note?: string) =>
+      void abortSession(reason, note),
+    onCloseConfirmSet: () => setConfirmSetOpen(false),
+    onCloseEnd: () => setEndOpen(false),
+    onCloseGuide: () => setGuideOpen(false),
+    onClosePain: () => setPainOpen(false),
+    onCloseRuleModal: () => setRuleModalOpen(false),
+    onCloseVideo: () => setVideoOpen(false),
+    onConfirmSet: (data: {
+      actualReps: number;
+      actualSeconds: number;
+      weightKg: number;
+      rpe: number;
+    }) => {
+      audio.stopCues();
+      setConfirmSetOpen(false);
+      void finishSet(listening, data);
+    },
+    onFinishSession: (confirmOverload: boolean) => void finishSession(confirmOverload),
+    onOpenVideo: () => setVideoOpen(true),
+    painOpen,
+    plan,
+    ruleModalOpen,
+    secondsElapsed,
+    spec: workoutEffects.spec,
+    videoOpen,
+  };
 
   if (session.status === "resting") {
     const next = session.step;
-    if (!next) {
-      return null;
-    }
-
+    if (!next) return null;
     return (
       <div className="live-workout-root contents" ref={stageRef}>
         <RestScreen
@@ -397,9 +358,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           voiceOn={listening}
           workoutTitle={plan.title}
         />
-        {painDialog}
-        {endDialog}
-        {confirmDialog}
+        <LiveWorkoutModals {...modalsProps} includeActiveModals={false} />
       </div>
     );
   }
@@ -411,7 +370,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         cameraSlot={cameraStage}
         currentSet={step.setNumber}
         exercise={exercise}
-        spec={workoutEffects.spec}
         metrics={motion.metrics}
         onAddTime={() => session.actions.addSetTime(ADD_SECONDS)}
         onBack={onBack}
@@ -426,42 +384,14 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         onToggleVoice={onToggleVoice}
         onWatchVideo={undefined}
         recommendedAngle={plan.motionSpecs?.[exercise.exerciseId]?.recommendedCameraAngle}
-        repCount={cameraActive ? (motion.repCount ?? 0) : 0}
+        repCount={aiCountedReps}
         secondsLeft={session.setLeft}
         setTotalSeconds={session.setTotal}
+        spec={workoutEffects.spec}
         totalSets={Math.max(1, exercise.targetSets)}
         voiceOn={listening}
       />
-
-      {confirmDialog}
-
-      {/* Pre-set framing check and calibration stencil */}
-
-      {guideOpen ? (
-        <InstructionsSheet
-          exercise={exercise}
-          onClose={() => setGuideOpen(false)}
-          onWatchVideo={exercise.videoUrl ? () => setVideoOpen(true) : undefined}
-        />
-      ) : null}
-
-      {videoOpen && exercise.videoUrl ? (
-        <DemoVideoOverlay
-          name={exercise.name}
-          onClose={() => setVideoOpen(false)}
-          posterUrl={exercise.thumbnailUrl}
-          videoUrl={exercise.videoUrl}
-        />
-      ) : null}
-
-      <RuleVoiceModal
-        isOpen={ruleModalOpen}
-        onClose={() => setRuleModalOpen(false)}
-        spec={workoutEffects.spec}
-      />
-
-      {painDialog}
-      {endDialog}
+      <LiveWorkoutModals {...modalsProps} includeActiveModals />
     </div>
   );
 }

@@ -23,11 +23,9 @@ export async function resolveMotionEngine(spec: MotionSpec | null): Promise<Moti
     return new WorkerMotionEngine();
   }
 
-  // Fallback to local default YOLO pose models before falling back to manual logging
   for (const fallbackUrl of ["/models/yolo11n-pose.onnx", "/models/yolov8n-pose.onnx"]) {
     if (fallbackUrl !== spec.onnxSkeletonUrl && (await isReachable(fallbackUrl))) {
-      spec.onnxSkeletonUrl = fallbackUrl;
-      return new WorkerMotionEngine();
+      return new WorkerMotionEngine(fallbackUrl);
     }
   }
 

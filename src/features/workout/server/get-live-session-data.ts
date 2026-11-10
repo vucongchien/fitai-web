@@ -1,6 +1,11 @@
 import { createClient } from "@connectrpc/connect";
 import { notFound } from "next/navigation";
 
+import {
+  isTimedExerciseSlug,
+  resolveDialogueAssetUrl,
+  resolveRulesAssetUrl,
+} from "@/features/workout/domain/motion-asset-url";
 import { estimatedDurationMin } from "@/features/workout/domain/session-flow";
 import type {
   LiveExercise,
@@ -89,24 +94,21 @@ function adaptLiveSessionPlan({
       const spec = specRes.motionSpecification || specRes;
       const exId = spec.exerciseId;
       if (exId) {
+        const info = infosRes.find((inf) => inf.exercise?.id === exId)?.exercise;
+        const rawRulesUrl = spec.localRulesUrl || spec.rules_url;
+        const rawDialogueUrl = spec.dialogueEngineUrl || spec.dialogues_url;
         motionSpecs[exId] = {
           exerciseId: exId,
           onnxDetectorUrl:
-            spec.onnxDetectorUrl || spec.onnx_detector_url || "/models/person-detector.onnx",
+            spec.onnxDetectorUrl || spec.onnx_detector_url || "/models/yolo11n-pose.onnx",
           onnxSkeletonUrl:
             spec.onnxSkeletonUrl || spec.onnx_skeleton_url || "/models/yolo11n-pose.onnx",
-          localRulesUrl: spec.localRulesUrl || spec.rules_url || `/models/rules/${exId}.json`,
-          dialogueEngineUrl:
-            spec.dialogueEngineUrl || spec.dialogues_url || `/models/dialogue/${exId}.json`,
-          recommendedCameraAngle: spec.recommendedCameraAngle || "side",
+          localRulesUrl: resolveRulesAssetUrl(rawRulesUrl, exId, info?.name),
+          dialogueEngineUrl: resolveDialogueAssetUrl(rawDialogueUrl, exId, info?.name),
+          recommendedCameraAngle: (spec.recommendedCameraAngle || "side").toLowerCase(),
           romRange: spec.romRange || { joints: [], startDeg: 0, endDeg: 0 },
           rep_type:
-            spec.rep_type ||
-            (exId.toLowerCase().includes("plank") ||
-            exId.toLowerCase().includes("hold") ||
-            exId.toLowerCase().includes("wall_sit")
-              ? "timed"
-              : "rep"),
+            spec.rep_type || (isTimedExerciseSlug(exId, info?.name, rawRulesUrl) ? "timed" : "rep"),
           phase_detection: spec.phase_detection,
           rules: (spec.rules || []).map((rule: any) => ({
             code: rule.code,
@@ -132,21 +134,19 @@ function adaptLiveSessionPlan({
   for (const infoRes of infosRes) {
     const ex = infoRes?.exercise;
     if (ex && ex.hasAiSupported && !motionSpecs[ex.id]) {
-      const isTimedName =
-        ex.id.toLowerCase().includes("plank") ||
-        ex.id.toLowerCase().includes("hold") ||
-        ex.id.toLowerCase().includes("wall_sit");
+      const rawRulesUrl = ex.rulesUrl || ex.rules_url;
+      const rawDialogueUrl = ex.dialoguesUrl || ex.dialogues_url;
+      const isTimedName = isTimedExerciseSlug(ex.id, ex.name, rawRulesUrl);
       motionSpecs[ex.id] = {
         exerciseId: ex.id,
-        onnxDetectorUrl:
-          ex.onnxDetectorUrl || ex.onnx_detector_url || "/models/person-detector.onnx",
+        onnxDetectorUrl: ex.onnxDetectorUrl || ex.onnx_detector_url || "/models/yolo11n-pose.onnx",
         onnxSkeletonUrl: ex.onnxSkeletonUrl || ex.onnx_skeleton_url || "/models/yolo11n-pose.onnx",
-        localRulesUrl: ex.rulesUrl || ex.rules_url || `/models/rules/${ex.id}.json`,
-        dialogueEngineUrl: ex.dialoguesUrl || ex.dialogues_url || `/models/dialogue/${ex.id}.json`,
+        localRulesUrl: resolveRulesAssetUrl(rawRulesUrl, ex.id, ex.name),
+        dialogueEngineUrl: resolveDialogueAssetUrl(rawDialogueUrl, ex.id, ex.name),
         recommendedCameraAngle: "side",
         romRange: { joints: ["shoulder", "elbow", "wrist"], startDeg: 0, endDeg: 0 },
         rep_type: isTimedName ? "timed" : "rep",
-        phase_detection: isTimedName ? { metric: "none", thresholds: { always: {} } } : undefined,
+        phase_detection: undefined,
         rules: [],
         cues: [],
         cueCooldownSec: {},
@@ -391,14 +391,14 @@ function buildAi12ExercisesSessionPlan(sessionId: string): LiveSessionPlan {
   for (const cfg of AI_12_EXERCISES_CONFIG) {
     motionSpecs[cfg.id] = {
       exerciseId: cfg.id,
-      onnxDetectorUrl: "/models/yolov8n-pose.onnx",
-      onnxSkeletonUrl: "/models/yolov8n-pose.onnx",
-      localRulesUrl: `/models/rules/${cfg.id}.json`,
-      dialogueEngineUrl: `/models/dialogue/${cfg.id}.json`,
+      onnxDetectorUrl: "/models/yolo11n-pose.onnx",
+      onnxSkeletonUrl: "/models/yolo11n-pose.onnx",
+      localRulesUrl: resolveRulesAssetUrl(undefined, cfg.id, cfg.name),
+      dialogueEngineUrl: resolveDialogueAssetUrl(undefined, cfg.id, cfg.name),
       recommendedCameraAngle: cfg.angle,
       romRange: { joints: ["shoulder", "elbow", "wrist"], startDeg: 0, endDeg: 0 },
       rep_type: cfg.isTimed ? "timed" : "rep",
-      phase_detection: cfg.isTimed ? { metric: "none", thresholds: { always: {} } } : undefined,
+      phase_detection: undefined,
       rules: [],
       cues: [],
       cueCooldownSec: {},

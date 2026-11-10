@@ -1,44 +1,22 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
-import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
 import { mapCueToSpokenText } from "@/features/workout/domain/audio-cues";
-import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
-import type { SetTelemetry } from "@/features/workout/domain/motion-engine";
-import { formScore } from "@/features/workout/domain/pose-metrics";
-import { countUnverifiedSets } from "@/features/workout/domain/session-guards";
-import {
-  averageFormScore,
-  averageRpe,
-  estimateCalories,
-  findNewPersonalRecords,
-  sessionVolumeKg,
-} from "@/features/workout/domain/training-load";
+import { resolveDialogueAssetUrl } from "@/features/workout/domain/motion-asset-url";
 import type {
-  AbortReason,
   CoachingStyle,
   CueSeverity,
   LiveSessionPlan,
   MotionSpec,
-  SessionReport,
-  SetLogDraft,
   VoiceFeedbackMetric,
 } from "@/features/workout/model/live-session.types";
-import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import type { AudioCoach } from "@/features/workout/model/use-audio-coach";
 import type { useCameraStream } from "@/features/workout/model/use-camera-stream";
 import type { LiveSessionController } from "@/features/workout/model/use-live-session";
 import type { useMotionEngine } from "@/features/workout/model/use-motion-engine";
-import {
-  abortWorkoutSession,
-  completeWorkoutSession,
-  logWorkoutSet,
-  syncWorkoutLogs,
-} from "@/features/workout/server/workout-actions";
-import type { SyncErrorItem } from "@/features/workout/server/workout-actions";
+import { useWorkoutSessionSync } from "@/features/workout/model/use-workout-session-sync";
 import { toast } from "@/shared/ui/toast";
 
 const subscribeOnline = (callback: () => void) => {
@@ -85,6 +63,136 @@ export function resolveCoachingStyle(): CoachingStyle {
   return "normal";
 }
 
+const FALLBACK_VIETNAMESE_DIALOGUES: Record<
+  string,
+  Record<"warning" | "danger", Record<CoachingStyle, string>>
+> = {
+  depth: {
+    danger: {
+      gentle: "Cố gắng hạ sâu hơn để cơ bắp kích hoạt tối đa nhé.",
+      normal: "Biên độ chuyển động quá ngắn, rep không được tính.",
+      strict: "Hạ người sâu xuống! Đừng chỉ nhấp nhẹ!",
+    },
+    warning: {
+      gentle: "Hạ thấp thêm một chút nữa là hoàn hảo bạn nhé.",
+      normal: "Chưa đủ biên độ, hãy hạ sâu hơn một chút!",
+      strict: "Xuống sâu hơn! Chưa đạt độ sâu tiêu chuẩn!",
+    },
+  },
+  elbow_angle: {
+    danger: {
+      gentle: "Nghỉ tay một chút và đặt lại góc khuỷu tay vuông góc nhé.",
+      normal: "Khớp khuỷu tay bị áp lực quá mức, hãy dừng lại kiểm tra vị trí tay.",
+      strict: "Dừng lại chỉnh tay ngay! Tránh chấn thương khớp khuỷu tay!",
+    },
+    warning: {
+      gentle: "Điều chỉnh nhẹ tay một chút cho thoải mái và vững hơn bạn nhé.",
+      normal: "Góc khuỷu tay chưa chuẩn, hãy điều chỉnh góc gập tay.",
+      strict: "Điều chỉnh khuỷu tay ngay! Đặt tay đúng vị trí chịu lực!",
+    },
+  },
+  err_incorrect_depth: {
+    danger: {
+      gentle: "Cố gắng hạ sâu hơn để cơ bắp kích hoạt tối đa nhé.",
+      normal: "Biên độ chuyển động quá ngắn, rep không được tính.",
+      strict: "Hạ người sâu xuống! Đừng chỉ nhấp nhẹ!",
+    },
+    warning: {
+      gentle: "Hạ thấp thêm một chút nữa là hoàn hảo bạn nhé.",
+      normal: "Chưa đủ biên độ, hãy hạ sâu hơn một chút!",
+      strict: "Xuống sâu hơn! Chưa đạt độ sâu tiêu chuẩn!",
+    },
+  },
+  knee_angle: {
+    danger: {
+      gentle: "Chú ý điều chỉnh hướng đầu gối theo chiều mũi chân để bảo vệ khớp nhé.",
+      normal: "Đầu gối vượt quá mũi chân hoặc khuỳnh ra ngoài quá nhiều.",
+      strict: "Chỉnh lại chân ngay! Đừng để đầu gối chịu toàn bộ áp lực!",
+    },
+    warning: {
+      gentle: "Hạ mông thấp hơn một chút nữa để tập vào đùi tốt hơn bạn nhé.",
+      normal: "Đầu gối chưa đạt độ sâu chuẩn, hãy hạ thấp mông thêm chút nữa.",
+      strict: "Xuống sâu hơn nữa! Đưa mông xuống ngang tầm đầu gối!",
+    },
+  },
+  signed_hip_y_diff: {
+    danger: {
+      gentle: "Hãy hạ gối xuống nghỉ chút nào, hông bị lệch nhiều làm đau lưng dưới đó.",
+      normal: "Võng lưng hoặc chổng mông quá nặng, hãy giữ lưng-hông-chân thẳng hàng.",
+      strict: "Đau thắt lưng đấy! Hạ mông xuống hoặc nâng hông lên đường thẳng ngay!",
+    },
+    warning: {
+      gentle: "Hơi võng hông rồi bạn ơi, gồng nhẹ bụng đẩy hông lên bằng vai nhé.",
+      normal: "Hông hơi võng hoặc nhô cao, hãy siết chặt mông và bụng để giữ thẳng.",
+      strict: "Gồng cơ bụng ngay! Không được để sụp hông!",
+    },
+  },
+};
+
+export function normalizeErrorCodeToMetricKey(code: string, metric?: string): string {
+  if (metric && metric.trim().length > 0) {
+    return metric.trim().toLowerCase();
+  }
+  return code
+    .trim()
+    .toLowerCase()
+    .replace(/^err_/, "")
+    .replace(/_(too_low|too_high|too_acute|too_obtuse)$/, "");
+}
+
+export function resolveVoiceFeedbackCueText(
+  feedbacks: Record<string, VoiceFeedbackMetric> | null | undefined,
+  code: string,
+  severity: CueSeverity,
+  style: CoachingStyle,
+  fallbackMessage: string,
+  metric?: string,
+): string {
+  const normalizedMetric = normalizeErrorCodeToMetricKey(code, metric);
+  const candidates = Array.from(
+    new Set([metric, code, normalizedMetric, code.toLowerCase()].filter(Boolean) as string[]),
+  );
+  const severityKey = severity === 2 ? "danger" : "warning";
+
+  if (feedbacks) {
+    for (const key of candidates) {
+      const fb = feedbacks[key];
+      const block = fb?.severities?.[severityKey];
+      if (block?.styles) {
+        const text = block.styles[style]?.text ?? block.styles.normal?.text;
+        if (text) {
+          return text;
+        }
+      }
+    }
+
+    if (severityKey === "danger") {
+      for (const key of candidates) {
+        const fb = feedbacks[key];
+        const warnBlock = fb?.severities?.warning;
+        if (warnBlock?.styles) {
+          const text = warnBlock.styles[style]?.text ?? warnBlock.styles.normal?.text;
+          if (text) {
+            return text;
+          }
+        }
+      }
+    }
+  }
+
+  for (const key of candidates) {
+    const entry = FALLBACK_VIETNAMESE_DIALOGUES[key.toLowerCase()];
+    if (entry) {
+      const text = entry[severityKey]?.[style] ?? entry[severityKey]?.normal;
+      if (text) {
+        return text;
+      }
+    }
+  }
+
+  return mapCueToSpokenText(fallbackMessage || code, "vi");
+}
+
 export function useLiveWorkoutEffects({
   audio,
   camera,
@@ -100,9 +208,7 @@ export function useLiveWorkoutEffects({
   motion: ReturnType<typeof useMotionEngine>;
   cameraOn?: boolean;
 }) {
-  const router = useRouter();
   const online = useSyncExternalStore(subscribeOnline, getOnlineSnapshot, getOnlineServerSnapshot);
-  const [finishing, setFinishing] = useState(false);
 
   const elapsedSecRef = useRef(session.elapsedSec);
   elapsedSecRef.current = session.elapsedSec;
@@ -114,79 +220,20 @@ export function useLiveWorkoutEffects({
     [exercise, plan.motionSpecs],
   );
 
-  const FALLBACK_VIETNAMESE_DIALOGUES: Record<
-    string,
-    Record<"warning" | "danger", Record<CoachingStyle, string>>
-  > = {
-    signed_hip_y_diff: {
-      warning: {
-        normal: "Hông hơi võng hoặc nhô cao, hãy siết chặt mông và bụng để giữ thẳng.",
-        strict: "Gồng cơ bụng ngay! Không được để sụp hông khi plank!",
-        gentle: "Hơi võng hông rồi bạn ơi, gồng nhẹ bụng đẩy hông lên bằng vai nhé.",
-      },
-      danger: {
-        normal: "Võng lưng hoặc chổng mông quá nặng, tư thế plank không còn tác dụng.",
-        strict: "Đau thắt lưng đấy! Hạ mông xuống hoặc nâng hông lên đường thẳng ngay!",
-        gentle: "Hãy hạ gối xuống nghỉ chút nào, hông bị lệch nhiều làm đau lưng dưới đó.",
-      },
-    },
-    knee_angle: {
-      warning: {
-        normal: "Đầu gối chưa đạt độ sâu chuẩn, hãy hạ thấp mông thêm chút nữa.",
-        strict: "Xuống sâu hơn nữa! Đưa mông xuống ngang tầm đầu gối!",
-        gentle: "Hạ mông thấp hơn một chút nữa để tập vào đùi tốt hơn bạn nhé.",
-      },
-      danger: {
-        normal: "Đầu gối vượt quá mũi chân hoặc khuỳnh ra ngoài quá nhiều.",
-        strict: "Chỉnh lại chân ngay! Đừng để đầu gối chịu toàn bộ áp lực!",
-        gentle: "Chú ý điều chỉnh hướng đầu gối theo chiều mũi chân để bảo vệ khớp nhé.",
-      },
-    },
-    elbow_angle: {
-      warning: {
-        normal: "Góc khuỷu tay chưa chuẩn, hãy điều chỉnh góc gập tay.",
-        strict: "Điều chỉnh khuỷu tay ngay! Đặt tay đúng vị trí chịu lực!",
-        gentle: "Điều chỉnh nhẹ tay một chút cho thoải mái và vững hơn bạn nhé.",
-      },
-      danger: {
-        normal: "Khớp khuỷu tay bị áp lực quá mức, hãy dừng lại kiểm tra vị trí tay.",
-        strict: "Dừng lại chỉnh tay ngay! Tránh chấn thương khớp khuỷu tay!",
-        gentle: "Nghỉ tay một chút và đặt lại góc khuỷu tay vuông góc nhé.",
-      },
-    },
-    ERR_INCORRECT_DEPTH: {
-      warning: {
-        normal: "Chưa đủ biên độ, hãy hạ sâu hơn một chút!",
-        strict: "Xuống sâu hơn! Chưa đạt độ sâu tiêu chuẩn!",
-        gentle: "Hạ thấp thêm một chút nữa là hoàn hảo bạn nhé.",
-      },
-      danger: {
-        normal: "Biên độ chuyển động quá ngắn, rep không được tính.",
-        strict: "Hạ người sâu xuống! Đừng chỉ nhấp nhẹ!",
-        gentle: "Cố gắng hạ sâu hơn để cơ bắp kích hoạt tối đa nhé.",
-      },
-    },
-    depth: {
-      warning: {
-        normal: "Chưa đủ biên độ, hãy hạ sâu hơn một chút!",
-        strict: "Xuống sâu hơn! Chưa đạt độ sâu tiêu chuẩn!",
-        gentle: "Hạ thấp thêm một chút nữa là hoàn hảo bạn nhé.",
-      },
-      danger: {
-        normal: "Biên độ chuyển động quá ngắn, rep không được tính.",
-        strict: "Hạ người sâu xuống! Đừng chỉ nhấp nhẹ!",
-        gentle: "Cố gắng hạ sâu hơn để cơ bắp kích hoạt tối đa nhé.",
-      },
-    },
-  };
+  const normalizedDialogueUrl = useMemo(
+    () =>
+      spec?.dialogueEngineUrl
+        ? resolveDialogueAssetUrl(spec.dialogueEngineUrl, spec.exerciseId, exercise?.name)
+        : "",
+    [exercise?.name, spec],
+  );
 
-  // Fetch Vietnamese dialogue Engine JSON from spec.dialogueEngineUrl dynamically when spec changes
   const { data: fetchedVoiceFeedbacks } = useQuery({
-    queryKey: ["dialogue-engine", spec?.dialogueEngineUrl],
+    enabled: Boolean(normalizedDialogueUrl),
     queryFn: async () => {
-      if (!spec?.dialogueEngineUrl) return null;
+      if (!normalizedDialogueUrl) return null;
       try {
-        const res = await fetch(spec.dialogueEngineUrl);
+        const res = await fetch(normalizedDialogueUrl);
         if (!res.ok) return null;
         const data = await res.json();
         return (data?.voice_feedbacks as Record<string, VoiceFeedbackMetric>) ?? null;
@@ -194,50 +241,16 @@ export function useLiveWorkoutEffects({
         return null;
       }
     },
-    enabled: Boolean(spec?.dialogueEngineUrl),
+    queryKey: ["dialogue-engine", normalizedDialogueUrl],
     staleTime: 5 * 60_000,
   });
   const voiceFeedbacks = fetchedVoiceFeedbacks ?? null;
-
-  // Fetch Rule JSON spec on main thread to parse rep_type and phase_detection dynamically
-  const exId = spec?.exerciseId || exercise?.exerciseId;
-  useQuery({
-    queryKey: ["exercise-rules", exId],
-    queryFn: async () => {
-      if (!spec || !exId) return null;
-      const ruleUrls = [
-        spec.localRulesUrl,
-        `/models/rules/${exId}.json`,
-        `/rule/${exId}.json`,
-      ].filter(Boolean) as string[];
-
-      for (const url of ruleUrls) {
-        try {
-          const res = await fetch(url);
-          if (res.ok) {
-            const data = await res.json();
-            if (data) {
-              if (data.rep_type) spec.rep_type = data.rep_type;
-              if (data.phase_detection) spec.phase_detection = data.phase_detection;
-              return data;
-            }
-          }
-        } catch {
-          // Try next URL
-        }
-      }
-      return null;
-    },
-    enabled: Boolean(spec && exId),
-    staleTime: 5 * 60_000,
-  });
 
   const cameraRef = useRef(camera);
   const motionRef = useRef(motion);
   cameraRef.current = camera;
   motionRef.current = motion;
 
-  // --- Exercise reset ---
   const exerciseId = exercise?.exerciseId ?? null;
   const [prevExerciseId, setPrevExerciseId] = useState(exerciseId);
   const [manualForSet, setManualForSet] = useState(false);
@@ -252,30 +265,24 @@ export function useLiveWorkoutEffects({
   const wantCameraStream = Boolean(spec) && cameraOn && sessionStatus !== "complete";
 
   const lastCueTimesRef = useRef<Record<string, number>>({});
-  const autoFinishTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoFinishTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const targetCompletedAnnouncedRef = useRef(false);
   const lastTargetRepsRef = useRef<number>(0);
 
-  // --- Audio cue player helper ---
   const playCueByCode = useCallback(
     (code: string, listening: boolean) => {
       if (!listening) {
         return;
       }
-
-      // Audio Priority & Ducking: Suppress form error warnings when set is not actively working
-      // (prevents errors from speaking over set-end chime or during rest period)
       if (session.status !== "working" && !code.startsWith("set-")) {
         return;
       }
 
-      // Check cooldown for warning cues based on spec setup or default 180s (3 minutes)
       const nowSec = Date.now() / 1000;
       const cooldownSec = spec?.cueCooldownSec?.[code] ?? (code.startsWith("set-") ? 0 : 180.0);
       const lastTime = lastCueTimesRef.current[code] ?? 0;
 
       if (nowSec - lastTime < cooldownSec) {
-        // Cooldown active according to rule setup — skip duplicate audio/speech
         return;
       }
       lastCueTimesRef.current[code] = nowSec;
@@ -290,7 +297,6 @@ export function useLiveWorkoutEffects({
           return;
         }
       }
-      // Fallback voice cue using TTS when audio MP3 cue is missing or exercise has no AI spec
       if (code === "set-start") {
         const exName = exercise?.name || "exercise";
         const repsOrTime = exercise?.durationSeconds
@@ -306,99 +312,32 @@ export function useLiveWorkoutEffects({
         audio.speakText(msg);
       }
     },
-    [audio, exercise, spec, step],
+    [audio, exercise, session.status, spec, step],
   );
 
   const getCueTextForError = useCallback(
-    (code: string, severity: CueSeverity, fallbackMessage: string): string => {
+    (code: string, severity: CueSeverity, fallbackMessage: string, metric?: string): string => {
       const style = resolveCoachingStyle();
       const feedbacks = voiceFeedbacks ?? spec?.voiceFeedbacks;
-      if (feedbacks) {
-        const feedback = feedbacks[code];
-        if (feedback?.severities) {
-          const severityKey = severity === 2 ? "danger" : "warning";
-          const severityBlock = feedback.severities[severityKey];
-          if (severityBlock?.styles) {
-            const styleContent = severityBlock.styles[style] ?? severityBlock.styles.normal;
-            if (styleContent?.text) {
-              return styleContent.text;
-            }
-          }
-        }
-      }
-
-      // Check in-memory Vietnamese fallback dictionary
-      const fallbackEntry = FALLBACK_VIETNAMESE_DIALOGUES[code];
-      if (fallbackEntry) {
-        const severityKey = severity === 2 ? "danger" : "warning";
-        const text = fallbackEntry[severityKey]?.[style] ?? fallbackEntry[severityKey]?.normal;
-        if (text) {
-          return text;
-        }
-      }
-
-      // Map BE feedback message or code to natural spoken cue
-      return mapCueToSpokenText(fallbackMessage || code, "vi");
+      return resolveVoiceFeedbackCueText(feedbacks, code, severity, style, fallbackMessage, metric);
     },
-    [spec, voiceFeedbacks],
+    [spec?.voiceFeedbacks, voiceFeedbacks],
   );
 
-  const pendingErrorsRef = useRef<SyncErrorItem[]>([]);
-  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { abortSession, clearSyncTimer, finishSession, finishSet, finishing, recordFormError } =
+    useWorkoutSessionSync({
+      audio,
+      camera,
+      cameraBranch,
+      elapsedSecRef,
+      exercise,
+      motion,
+      plan,
+      playCueByCode,
+      session,
+      spec,
+    });
 
-  const scheduleSync = useCallback(() => {
-    if (syncTimeoutRef.current !== null) return;
-    syncTimeoutRef.current = setTimeout(() => {
-      syncTimeoutRef.current = null;
-      if (pendingErrorsRef.current.length > 0 && plan.sessionId) {
-        const toSync = [...pendingErrorsRef.current];
-        pendingErrorsRef.current = [];
-        void syncWorkoutLogs(plan.sessionId, toSync);
-      }
-    }, 15000);
-  }, [plan.sessionId]);
-
-  const recordFormError = useCallback(
-    (error: {
-      code: string;
-      message: string;
-      severity: CueSeverity;
-      source?: "referee-error" | "coach-cue";
-    }) => {
-      if (!exercise || error.source === "coach-cue") {
-        return;
-      }
-      const isCritical =
-        error.severity === 2 ||
-        error.code === "ERR_BAR_TRAPPED" ||
-        error.code === "ERR_FALL_DETECTED";
-
-      const currentRep = motion.repCount;
-      const currentSet = step?.setNumber ?? 1;
-
-      // Deduplicate: avoid queuing duplicate errors for the same rep & set
-      const alreadyQueued = pendingErrorsRef.current.some(
-        (e) =>
-          e.errorCode === error.code && e.repNumber === currentRep && e.setNumber === currentSet,
-      );
-      if (alreadyQueued) {
-        return;
-      }
-
-      pendingErrorsRef.current.push({
-        errorCode: error.code,
-        exerciseId: exercise.exerciseId,
-        repNumber: currentRep,
-        setNumber: currentSet,
-        severity: isCritical ? "CRITICAL" : "WARNING",
-        timestamp: new Date().toISOString(),
-      });
-      scheduleSync();
-    },
-    [exercise, motion.repCount, scheduleSync, step?.setNumber],
-  );
-
-  // --- Set actions ---
   const startSet = useCallback(
     (listening: boolean) => {
       if (!exercise) {
@@ -414,232 +353,6 @@ export function useLiveWorkoutEffects({
     [cameraBranch, exercise, motion, playCueByCode, session.actions],
   );
 
-  const finishSet = useCallback(
-    async (
-      listening: boolean,
-      customData?: { actualReps?: number; actualSeconds?: number; weightKg?: number; rpe?: number },
-    ) => {
-      if (!exercise || !step) {
-        return;
-      }
-      // Clear all audio & speech synthesis queue from the current set to prevent lingering/repeating audio
-      audio.stopCues();
-      playCueByCode("set-end", listening);
-      const isCamera = cameraBranch && camera.state === "ready";
-      const timed = exercise.durationSeconds > 0;
-
-      let telemetry: SetTelemetry = EMPTY_TELEMETRY;
-      if (isCamera) {
-        telemetry = await motion.stopSet();
-      }
-
-      let actualReps =
-        isCamera && telemetry.countedReps > 0
-          ? telemetry.countedReps
-          : motion.repCount > 0
-            ? motion.repCount
-            : (exercise.targetReps ?? 10);
-      if (timed) {
-        actualReps =
-          customData?.actualSeconds !== undefined
-            ? customData.actualSeconds
-            : isCamera && telemetry.countedReps > 0
-              ? telemetry.countedReps
-              : motion.repCount > 0
-                ? motion.repCount
-                : exercise.durationSeconds > 0
-                  ? exercise.durationSeconds
-                  : 30;
-      } else if (customData?.actualReps !== undefined) {
-        actualReps = customData.actualReps;
-      }
-
-      const weightKg =
-        customData?.weightKg !== undefined ? customData.weightKg : (exercise.targetWeightKg ?? 0);
-
-      const rpe = customData?.rpe !== undefined ? customData.rpe : 8.0;
-
-      let calculatedFormScore: number | null = null;
-      if (isCamera) {
-        calculatedFormScore =
-          telemetry.formScore !== undefined && telemetry.formScore !== null
-            ? telemetry.formScore
-            : formScore({
-                averageRom: telemetry.averageRom,
-                errorCount: telemetry.errorCount,
-                repCount: actualReps,
-                secondsPerRep: telemetry.secondsPerRep,
-              });
-      }
-
-      const setDraft: Omit<SetLogDraft, "loggedAt" | "synced"> = {
-        actualReps,
-        cameraAngle: spec?.recommendedCameraAngle ?? "",
-        exerciseId: exercise.exerciseId,
-        formScore: calculatedFormScore,
-        phase: exercise.phase,
-        reps: telemetry.reps,
-        rpe,
-        setNumber: step.setNumber,
-        source: isCamera ? "camera" : "manual",
-        targetReps: timed ? exercise.durationSeconds : exercise.targetReps,
-        validFrameRatio: isCamera ? telemetry.validFrameRatio : null,
-        weightKg,
-      };
-
-      session.actions.saveSet(setDraft);
-
-      // Directly sync this set and its reps to Backend immediately
-      if (plan.sessionId) {
-        void logWorkoutSet(plan.sessionId, {
-          ...setDraft,
-          loggedAt: Date.now(),
-          synced: false,
-        })
-          .then(() => {
-            session.actions.markSetSynced(exercise.exerciseId, step.setNumber);
-          })
-          .catch((err) => {
-            console.warn(`[finishSet] Failed to sync set ${step.setNumber}:`, err);
-          });
-      }
-
-      // Flush any remaining unsynced errors on set completion
-      if (pendingErrorsRef.current.length > 0 && plan.sessionId) {
-        const toSync = [...pendingErrorsRef.current];
-        pendingErrorsRef.current = [];
-        void syncWorkoutLogs(plan.sessionId, toSync);
-      }
-
-      toast.success("Set completed!");
-    },
-    [
-      audio,
-      cameraBranch,
-      camera.state,
-      exercise,
-      motion,
-      playCueByCode,
-      plan.sessionId,
-      session.actions,
-      spec,
-      step,
-    ],
-  );
-
-  // --- Session report & completion ---
-  const buildReport = useCallback(
-    (sets: SetLogDraft[]): SessionReport => {
-      const nameById = new Map(
-        [...plan.warmUps, ...plan.mainExercises, ...plan.coolDowns].map((item) => [
-          item.exerciseId,
-          item.name,
-        ]),
-      );
-      const volume = sessionVolumeKg(sets);
-      const durationMin = Math.max(1, Math.round(elapsedSecRef.current / 60));
-      return {
-        averageFormScore: averageFormScore(sets),
-        averageRpe: averageRpe(sets),
-        durationMin,
-        estimatedCalories: estimateCalories(durationMin, volume),
-        hasUnverifiedSets: countUnverifiedSets(sets) > 0,
-        personalRecords: findNewPersonalRecords(sets, plan.personalRecords).map((record) => ({
-          exerciseId: record.exerciseId,
-          name: nameById.get(record.exerciseId) ?? record.exerciseId,
-          oneRepMaxKg: Math.round(record.oneRepMaxKg * 10) / 10,
-        })),
-        recentAvgVolumeKg: plan.recentAvgVolumeKg,
-        sessionId: plan.sessionId,
-        totalSets: sets.length,
-        totalVolumeKg: volume,
-      };
-    },
-    [plan],
-  );
-
-  const isFinishingSessionRef = useRef(false);
-
-  const finishSession = useCallback(
-    async (confirmOverload: boolean) => {
-      if (isFinishingSessionRef.current) {
-        return;
-      }
-      isFinishingSessionRef.current = true;
-      const sets = session.loggedSets;
-      setFinishing(true);
-      audio.stopAll();
-      camera.stop();
-      motion.dispose();
-
-      try {
-        const totals = await completeWorkoutSession(plan.sessionId, sets, confirmOverload);
-        const report = buildReport(sets);
-        sessionStorage.setItem(
-          reportStorageKey(plan.sessionId),
-          JSON.stringify({
-            ...report,
-            averageFormScore: totals.averageFormScore ?? report.averageFormScore,
-            averageRpe: totals.averageRpe ?? report.averageRpe,
-            totalVolumeKg: totals.totalVolumeKg ?? report.totalVolumeKg,
-          }),
-        );
-        session.actions.clearDraft();
-        router.push(`/workouts/live/${plan.sessionId}/summary`, {
-          transitionTypes: ["workout-complete"],
-        });
-      } catch {
-        isFinishingSessionRef.current = false;
-        setFinishing(false);
-        toast.error("Could not save session report. Please try again.");
-      }
-    },
-    [
-      audio,
-      buildReport,
-      camera,
-      motion,
-      plan.sessionId,
-      router,
-      session.actions,
-      session.loggedSets,
-    ],
-  );
-
-  // Stop session without saving as completed
-  const abortSession = useCallback(
-    async (reason: AbortReason, note?: string) => {
-      setFinishing(true);
-      audio.stopAll();
-      camera.stop();
-      motion.dispose();
-
-      try {
-        await abortWorkoutSession(plan.sessionId, reason, note);
-        session.actions.clearDraft();
-        // Replace(), not push(): the live screen must not be one Back tap away
-        // Once the session has been ended.
-        if (reason === "pain") {
-          startAIAdjustment({
-            reason: "injury_reported",
-            muscleGroup: note
-              ? note.length > 20
-                ? note.slice(0, 20) + "..."
-                : note
-              : "Reported Area",
-          });
-          router.replace(`/workouts/live/${plan.sessionId}/stopped`);
-        } else {
-          router.replace("/roadmap");
-        }
-      } catch {
-        setFinishing(false);
-        toast.error("Could not end the session. Please try again.");
-      }
-    },
-    [audio, camera, motion, plan.sessionId, router, session.actions],
-  );
-
   const lastCameraKeyRef = useRef<string>("");
   const cameraSyncRunIdRef = useRef(0);
   const autoClosed = useRef(false);
@@ -648,7 +361,6 @@ export function useLiveWorkoutEffects({
     (node: HTMLElement | null) => {
       if (!node) return;
 
-      // 1. Camera & ONNX prepare lifecycle
       const activeCameraKey =
         wantCameraStream && spec
           ? `${exerciseId}-${Boolean(spec)}-${cameraOn}-${camera.isCustomVideo}-${camera.customVideoSrc ?? ""}`
@@ -690,31 +402,27 @@ export function useLiveWorkoutEffects({
         }
       }
 
-      // 1. Manage worker state during Rest vs Ready
       if (session.status === "resting") {
         motionRef.current.stopCalibration();
       }
 
-      // 2. Auto finish timed sets (synchronizing with verified referee hold time)
       if (session.status === "working" && exercise && exercise.durationSeconds > 0) {
+        const targetDuration = session.setTotal > 0 ? session.setTotal : exercise.durationSeconds;
         const verifiedSeconds = cameraBranch ? motion.repCount : 0;
         const reachedTarget = cameraBranch
-          ? verifiedSeconds >= exercise.durationSeconds
+          ? verifiedSeconds >= targetDuration
           : session.setLeft === 0;
 
-        if (reachedTarget || session.setLeft === 0) {
+        if (reachedTarget) {
           audio.stopCues();
           const actualSeconds =
             cameraBranch && verifiedSeconds > 0
-              ? Math.min(verifiedSeconds, exercise.durationSeconds)
-              : session.setLeft === 0
-                ? exercise.durationSeconds
-                : verifiedSeconds;
+              ? Math.min(verifiedSeconds, targetDuration)
+              : targetDuration;
           void finishSet(true, { actualSeconds });
         }
       }
 
-      // 3. Hands-Free: Auto finish rep-based sets when target reps are reached
       if (
         session.status === "working" &&
         exercise &&
@@ -723,7 +431,6 @@ export function useLiveWorkoutEffects({
         cameraBranch &&
         motion.repCount >= exercise.targetReps
       ) {
-        // If athlete performed another rep (bonus rep), reset the 3-second grace timer
         if (motion.repCount !== lastTargetRepsRef.current) {
           lastTargetRepsRef.current = motion.repCount;
           if (autoFinishTimerRef.current !== null) {
@@ -746,33 +453,26 @@ export function useLiveWorkoutEffects({
             }
           }, 3000);
         }
-      } else {
-        if (session.status !== "working") {
-          targetCompletedAnnouncedRef.current = false;
-          lastTargetRepsRef.current = 0;
-          if (autoFinishTimerRef.current !== null) {
-            clearTimeout(autoFinishTimerRef.current);
-            autoFinishTimerRef.current = null;
-          }
+      } else if (session.status !== "working") {
+        targetCompletedAnnouncedRef.current = false;
+        lastTargetRepsRef.current = 0;
+        if (autoFinishTimerRef.current !== null) {
+          clearTimeout(autoFinishTimerRef.current);
+          autoFinishTimerRef.current = null;
         }
       }
 
-      // 4. Auto close on long timeout
       if (session.duration === "auto-close" && !autoClosed.current) {
         autoClosed.current = true;
         void finishSession(true);
       }
 
-      // 5. Complete status auto finish
       if (session.status === "complete" && !finishing) {
         void finishSession(false);
       }
 
       return () => {
-        if (syncTimeoutRef.current !== null) {
-          clearTimeout(syncTimeoutRef.current);
-          syncTimeoutRef.current = null;
-        }
+        clearSyncTimer();
         if (autoFinishTimerRef.current !== null) {
           clearTimeout(autoFinishTimerRef.current);
           autoFinishTimerRef.current = null;
@@ -785,6 +485,7 @@ export function useLiveWorkoutEffects({
       camera.isCustomVideo,
       cameraBranch,
       cameraOn,
+      clearSyncTimer,
       exercise,
       exerciseId,
       finishSession,
@@ -794,29 +495,29 @@ export function useLiveWorkoutEffects({
       playCueByCode,
       session.duration,
       session.setLeft,
+      session.setTotal,
       session.status,
-      sessionStatus,
       spec,
       wantCameraStream,
     ],
   );
 
   return {
+    abortSession,
     cameraBranch,
     exercise,
+    finishSession,
     finishSet,
     finishing,
+    getCueTextForError,
     manualForSet,
     online,
     playCueByCode,
-    getCueTextForError,
     recordFormError,
     setManualForSet,
     spec,
     startSet,
     step,
-    finishSession,
-    abortSession,
     syncEffects,
   };
 }

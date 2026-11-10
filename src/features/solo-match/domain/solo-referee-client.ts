@@ -5,8 +5,8 @@ import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import {
   UvarintFrameDecoder,
   encodeUvarintPrefixed,
-} from "@/features/workout/domain/webtransport-client";
-import type { KeypointInput, WtServerConfig } from "@/features/workout/domain/webtransport-client";
+} from "@/features/solo-match/domain/uvarint-framing";
+import type { KeypointInput, WtServerConfig } from "@/features/solo-match/domain/uvarint-framing";
 import {
   SkeletonLandmarkSchema,
   SoloChallengeType,
@@ -32,7 +32,7 @@ export interface SoloRefereeClientOptions {
   onReconnecting?: (attempt: number) => void;
   onResponse: (response: StreamSoloMatchTrackingResponse) => void;
   planId?: string;
-  /** Override backoff schedule in tests; defaults to exponential backoff within 45s grace window. */
+  // Override backoff schedule in tests; defaults to exponential backoff within 45s grace window.
   reconnectDelaysMs?: number[];
   timeCeilingSeconds?: number;
 }
@@ -84,8 +84,6 @@ export class SoloRefereeClient {
             : typeof raw.cert_hash_b64 === "string"
               ? raw.cert_hash_b64
               : "",
-        fallbackPath:
-          typeof raw.fallbackPath === "string" ? raw.fallbackPath : "/api/v1/execution/wt-stream",
         soloFallbackPath:
           typeof raw.soloFallbackPath === "string"
             ? raw.soloFallbackPath
@@ -99,15 +97,12 @@ export class SoloRefereeClient {
               ? raw.solo_url
               : "https://localhost:8443/api/v1/execution/solo-wt",
         token: typeof raw.token === "string" ? raw.token : undefined,
-        url: typeof raw.url === "string" ? raw.url : "https://localhost:8443/api/v1/execution/wt",
       };
     } catch {
       return {
         certHashBase64: "",
-        fallbackPath: "/api/v1/execution/wt-stream",
         soloFallbackPath: "/api/v1/execution/solo-stream",
         soloUrl: "https://localhost:8443/api/v1/execution/solo-wt",
-        url: "https://localhost:8443/api/v1/execution/wt",
       };
     }
   }

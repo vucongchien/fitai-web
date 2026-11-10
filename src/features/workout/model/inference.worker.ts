@@ -1,10 +1,15 @@
 /// <reference lib="webworker" />
 
-// Pose inference off main thread with ROI crop and OneEuroFilter
+// Pose inference and Edge biomechanical referee off main thread
 
 import { BitmapSampler, computeRoiCrop } from "@/features/workout/domain/bitmap-sampler";
 import type { CroppedLetterboxedFrame, CropRect } from "@/features/workout/domain/bitmap-sampler";
+import { EdgeRefereeSession } from "@/features/workout/domain/edge-referee";
 import { meanBrightness, toSourceCoords } from "@/features/workout/domain/frame-sampler";
+import {
+  resolveDialogueAssetUrl,
+  resolveRulesAssetUrl,
+} from "@/features/workout/domain/motion-asset-url";
 import type { MotionEngineEvent } from "@/features/workout/domain/motion-engine";
 import { PoseFilter } from "@/features/workout/domain/one-euro-filter";
 import {
@@ -24,6 +29,7 @@ import {
   KEYPOINT_NAMES,
 } from "@/features/workout/domain/pose-metrics";
 import type { Keypoint, Pose } from "@/features/workout/domain/pose-metrics";
+import { parseMotionRule } from "@/features/workout/domain/rule-parser";
 import { freshAccumulator, summarise } from "@/features/workout/domain/set-telemetry";
 import type { Accumulator } from "@/features/workout/domain/set-telemetry";
 import type {
@@ -56,6 +62,11 @@ let activeInputWidth = MODEL_IO.inputWidth;
 let activeInputHeight = MODEL_IO.inputHeight;
 let activeInputName = MODEL_IO.poseInputName;
 
+let activeSpec: MotionSpec | null = null;
+let edgeReferee: EdgeRefereeSession | null = null;
+let refereeInitPromise: Promise<void> | null = null;
+const jsonAssetCache = new Map<string, Record<string, any>>();
+
 function post(response: InferenceResponse): void {
   scope.postMessage(response);
 }
@@ -70,10 +81,8 @@ async function fetchModel(url: string): Promise<ArrayBuffer> {
       const cache = await caches.open(MODEL_CACHE);
       const hit = await cache.match(url);
       if (hit) {
-        console.log("[AI Worker Cache] Hit cached ONNX model:", url);
         return await hit.arrayBuffer();
       }
-      console.log("[AI Worker Cache] Fetching new ONNX model from network:", url);
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Model fetch failed: ${response.status}`);
@@ -91,21 +100,72 @@ async function fetchModel(url: string): Promise<ArrayBuffer> {
   return await response.arrayBuffer();
 }
 
+async function fetchJsonAsset(url: string): Promise<Record<string, any> | null> {
+  if (!url) {
+    return null;
+  }
+  const cached = jsonAssetCache.get(url);
+  if (cached) {
+    return cached;
+  }
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return null;
+    }
+    const data = (await response.json()) as Record<string, any>;
+    if (data && typeof data === "object") {
+      jsonAssetCache.set(url, data);
+      return data;
+    }
+  } catch {
+    // Ignore asset fetch failure
+  }
+  return null;
+}
+
+async function initEdgeReferee(spec: MotionSpec | null): Promise<void> {
+  if (!spec || !spec.localRulesUrl) {
+    edgeReferee = null;
+    return;
+  }
+  const rulesUrl = resolveRulesAssetUrl(spec.localRulesUrl, spec.exerciseId);
+  const dialogueUrl = spec.dialogueEngineUrl
+    ? resolveDialogueAssetUrl(spec.dialogueEngineUrl, spec.exerciseId)
+    : "";
+
+  const [rawRule, rawDialogue] = await Promise.all([
+    fetchJsonAsset(rulesUrl),
+    dialogueUrl ? fetchJsonAsset(dialogueUrl) : Promise.resolve(null),
+  ]);
+
+  if (!rawRule) {
+    edgeReferee = null;
+    return;
+  }
+
+  const motionRule = parseMotionRule(
+    spec.exerciseId,
+    rawRule,
+    rawDialogue,
+    spec.recommendedCameraAngle || "side",
+  );
+  edgeReferee = new EdgeRefereeSession(motionRule, spec.recommendedCameraAngle || "side");
+}
+
 async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
-  console.log("[AI Worker] Initializing ONNX pose engine for exercise:", next.exerciseId);
+  activeSpec = next;
   ort = await import("onnxruntime-web/all");
   ort.env.wasm.wasmPaths = wasmPaths;
   ort.env.wasm.numThreads = 1;
 
   const skeletonBuffer = await fetchModel(next.onnxSkeletonUrl);
 
-  let usedProvider = "wasm";
   for (const ep of ["webgpu", "webgl", "wasm"] as const) {
     try {
       poseSession = await ort.InferenceSession.create(skeletonBuffer, {
         executionProviders: [ep],
       });
-      usedProvider = ep;
       break;
     } catch {
       // Fallback to next execution provider
@@ -130,11 +190,6 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
 
   sampler = new BitmapSampler(activeInputWidth, activeInputHeight);
   poseFilter = new PoseFilter(KEYPOINT_NAMES.length, 2.5, 0.04, 1.0);
-
-  console.log(
-    `[AI Worker] ONNX Pose model loaded (${isYoloPoseModel ? "YOLOv8-pose 640x640" : "RTMPose 192x256"}, EP=${usedProvider}) for:`,
-    next.exerciseId,
-  );
 }
 
 async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
@@ -204,7 +259,6 @@ async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
       }
     }
 
-    // Map keypoints back to source image coordinates (with cropOffset if ROI was cropped)
     const rawKeypoints: Keypoint[] = decoded.map((point) => {
       const mapped = toSourceCoords(point.x, point.y, frame);
       if (frame.cropOffset) {
@@ -214,17 +268,11 @@ async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
       return { score: point.score, x: mapped.x, y: mapped.y };
     });
 
-    // 1-Euro adaptive smoothing across frames (higher minCutoff & beta for responsive zero-lag tracking)
     poseFilter ??= new PoseFilter(KEYPOINT_NAMES.length, 2.5, 0.04, 1.0);
     const keypoints = poseFilter.filter(rawKeypoints, performance.now());
     prevPoseKeypoints = keypoints;
 
     const score = keypoints.reduce((total, point) => total + point.score, 0) / keypoints.length;
-    if (accumulator.totalFrames <= 5 || accumulator.totalFrames % 20 === 0) {
-      console.log(
-        `[AI Worker] Frame #${accumulator.totalFrames} inferred: score=${score.toFixed(2)} usable=${isPoseUsable({ keypoints, score })} kp5=(${Math.round(keypoints[5]?.x ?? 0)},${Math.round(keypoints[5]?.y ?? 0)})`,
-      );
-    }
     return {
       keypoints,
       score,
@@ -270,7 +318,6 @@ async function runSetFrame(frame: CroppedLetterboxedFrame): Promise<void> {
   if (pose && isPoseUsable(pose)) {
     accumulator.validFrames += 1;
   } else {
-    // Person lost or obscured: reset ROI crop for next frame
     prevPoseKeypoints = null;
     if (calibrationLighting(meanBrightness(frame.data)) === "low") {
       darkFrames += 1;
@@ -281,13 +328,58 @@ async function runSetFrame(frame: CroppedLetterboxedFrame): Promise<void> {
     }
   }
 
-  // Thin vision client sends skeleton pose to main thread.
-  // Main thread streams keypoints over WebTransport/WebSocket to Go referee.
   emit({ pose, type: "pose" });
+
+  if (refereeInitPromise) {
+    await refereeInitPromise;
+  }
+
+  if (edgeReferee && pose && isPoseUsable(pose)) {
+    const update = edgeReferee.processKeypoints(
+      pose.keypoints,
+      performance.now(),
+      activeSpec?.recommendedCameraAngle,
+      frame.sourceWidth,
+      frame.sourceHeight,
+      true,
+    );
+
+    for (const err of update.newFormErrors) {
+      emit({
+        code: err.code,
+        message: err.message,
+        metric: err.metric,
+        severity: err.severity,
+        source: err.source,
+        type: "form-error",
+      });
+    }
+
+    if (update.repCompleted) {
+      emit({
+        count: update.repCompleted.count,
+        counted: update.repCompleted.counted,
+        romPercentage: update.repCompleted.romPercentage,
+        type: "rep",
+      });
+    }
+
+    emit({
+      angle: Math.round(update.currentAngle),
+      detectedErrors: update.detectedErrors,
+      endDeg: update.endDeg,
+      frameIndex: update.frameIndex,
+      metricName: update.metricName,
+      phase: update.repPhase.toLowerCase(),
+      repCount: update.repCount,
+      rom: update.rom,
+      startDeg: update.startDeg,
+      type: "metrics",
+    });
+  }
 }
 
-scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>) => {
-  const request = message.data;
+async function handleMessage(request: InferenceRequest): Promise<void> {
   switch (request.type) {
     case "init": {
       try {
@@ -304,24 +396,28 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
 
     case "mode": {
       mode = request.mode;
+      if (request.spec) {
+        activeSpec = request.spec;
+      }
       if (request.mode === "set") {
         accumulator = freshAccumulator();
         darkFrames = 0;
         prevPoseKeypoints = null;
         prevActorBox = null;
         poseFilter?.reset();
+        refereeInitPromise = initEdgeReferee(activeSpec);
       } else if (request.mode === "idle") {
         prevPoseKeypoints = null;
         prevActorBox = null;
         poseFilter?.reset();
+        edgeReferee = null;
+        refereeInitPromise = null;
       }
       return;
     }
 
     case "frame": {
       try {
-        // Dynamic ROI crop (Tracking-by-Pose) is only needed for small 192x256 single-person crop models (RTMPose).
-        // YOLOv8-pose operates on full 640x640 letterboxed frames directly, avoiding feedback drift!
         let crop: CropRect | null = null;
         if (mode === "set" && prevPoseKeypoints && !isYoloPoseModel) {
           crop = computeRoiCrop(prevPoseKeypoints, request.bitmap.width, request.bitmap.height);
@@ -350,8 +446,28 @@ scope.addEventListener("message", async (message: MessageEvent<InferenceRequest>
       prevPoseKeypoints = null;
       prevActorBox = null;
       poseFilter?.reset();
-      post({ telemetry: summarise(accumulator), type: "telemetry" });
+      if (refereeInitPromise) {
+        await refereeInitPromise.catch(() => {});
+        refereeInitPromise = null;
+      }
+      const baseTelemetry = summarise(accumulator);
+      const telemetry = edgeReferee
+        ? edgeReferee.buildSetTelemetry(baseTelemetry.validFrameRatio)
+        : baseTelemetry;
+      edgeReferee = null;
+      post({ telemetry, type: "telemetry" });
       return;
     }
   }
+}
+
+let messageQueue = Promise.resolve();
+
+scope.addEventListener("message", (message: MessageEvent<InferenceRequest>) => {
+  const request = message.data;
+  messageQueue = messageQueue
+    .then(() => handleMessage(request))
+    .catch((err) => {
+      console.error("[AI Worker] Unhandled message queue error:", err);
+    });
 });

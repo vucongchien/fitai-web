@@ -182,4 +182,73 @@ describe("Dynamic Rule Calculation & Metric Evaluation Engine", () => {
     expect(resDanger.violations[0]?.severity).toBe(2);
     expect(resDanger.violations[0]?.message).toContain(">18cm: mất kiểm soát hoàn toàn");
   });
+
+  it("handles two_sided ranges without false-flagging valid 90-degree angles or misclassifying warning as danger", () => {
+    const twoSidedPlankRule: GenericRuleFile = {
+      display_name: "Plank",
+      phase_detection: {
+        calculation: {
+          formula: "degrees(arctan2(|y_shoulder - y_ankle|, |x_shoulder - x_ankle|))",
+          landmarks: ["left_shoulder (11)", "left_ankle (15)"],
+        },
+        metric: "body_incline_angle",
+        thresholds: {
+          always: { lte: 35 },
+          idle: { gt: 35 },
+        },
+      },
+      rep_type: "timed",
+      rules: [
+        {
+          calculation: {
+            formula: "degrees(arccos(dot(BA, BC) / (|BA| * |BC|)))",
+            landmarks: ["Shoulder (P5, P6)", "Elbow (P7, P8)", "Wrist (P9, P10)"],
+          },
+          evaluation_type: "two_sided",
+          metric: "elbow_angle",
+          ranges: [
+            { comment: "Valid 70-110", max: 110, min: 70, severity: 0, status: "Correct" },
+            { comment: "Warning 60-120", max: 120, min: 60, severity: 1, status: "Warning" },
+            { comment: "Danger <60 or >120", max: null, min: 0, severity: 2, status: "Danger" },
+          ],
+        },
+      ],
+    };
+
+    const makePlankPose = (wristX: number, wristY: number, ankleY = 200): Pose => ({
+      keypoints: [
+        { score: 0.9, x: 100, y: 100 },
+        { score: 0, x: 0, y: 0 },
+        { score: 0, x: 0, y: 0 },
+        { score: 0, x: 0, y: 0 },
+        { score: 0, x: 0, y: 0 },
+        { score: 0.9, x: 100, y: 100 },
+        { score: 0.9, x: 100, y: 100 },
+        { score: 0.9, x: 100, y: 200 },
+        { score: 0.9, x: 100, y: 200 },
+        { score: 0.9, x: wristX, y: wristY },
+        { score: 0.9, x: wristX, y: wristY },
+        { score: 0.9, x: 250, y: 150 },
+        { score: 0.9, x: 250, y: 150 },
+        { score: 0, x: 0, y: 0 },
+        { score: 0, x: 0, y: 0 },
+        { score: 0.9, x: 450, y: ankleY },
+        { score: 0.9, x: 450, y: ankleY },
+      ],
+      score: 0.9,
+    });
+
+    const validRes = evaluateGenericRuleJson(twoSidedPlankRule, makePlankPose(200, 200, 100));
+    expect(validRes.currentPhase).toBe("always");
+    expect(validRes.violations).toHaveLength(0);
+
+    const warnRes = evaluateGenericRuleJson(twoSidedPlankRule, makePlankPose(190, 158, 100));
+    expect(warnRes.currentPhase).toBe("always");
+    expect(warnRes.violations).toHaveLength(1);
+    expect(warnRes.violations[0]?.severity).toBe(1);
+
+    const idleRes = evaluateGenericRuleJson(twoSidedPlankRule, makePlankPose(200, 200, 500));
+    expect(idleRes.currentPhase).toBe("idle");
+    expect(idleRes.violations).toHaveLength(0);
+  });
 });

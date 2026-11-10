@@ -1,14 +1,3 @@
-/**
- * Guard rails around saving and ending a session.
- *
- * BR-WL-01: warn at 90 min (beginner) / 180 min (experienced); at 240 min with no
- *           interaction the session auto-closes and is flagged `Anomalous Session`.
- * BR-CC-02: < 50% valid skeleton frames → the set is not camera-verified.
- * ux-flow-spec §5.4: bodyweight/warm-up/stretch sets may have weight 0 silently;
- *           other work with reps 0 and weight 0 gets a soft warning before saving.
- * ux-flow-spec §5.5: ending with no logged set asks to cancel instead of saving empty.
- */
-
 import type {
   LiveExercise,
   MotionSpec,
@@ -19,7 +8,6 @@ export const SESSION_WARN_MIN = 90;
 export const SESSION_LONG_WARN_MIN = 180;
 export const SESSION_AUTO_CLOSE_MIN = 240;
 
-/** Share of frames that must track for a camera set to count as verified. */
 export const VERIFIED_FRAME_RATIO = 0.5;
 
 export type DurationState = "ok" | "long" | "very-long" | "auto-close";
@@ -37,7 +25,6 @@ export function durationState(elapsedMin: number): DurationState {
   return "ok";
 }
 
-/** Soft banner copy — the user can always keep going (ux-flow-spec §5.5). */
 export function durationWarning(elapsedMin: number): string | null {
   const state = durationState(elapsedMin);
   if (state === "ok") {
@@ -49,12 +36,10 @@ export function durationWarning(elapsedMin: number): string | null {
   return "This session has run long. Want to wrap it up?";
 }
 
-/** Ux-flow-spec §5.5 — never save an empty session; offer to cancel it. */
 export function needsEmptySessionPrompt(sets: SetLogDraft[]): boolean {
   return sets.length === 0;
 }
 
-/** Ux-flow-spec §5.4 — weight 0 is normal for bodyweight, warm-ups and stretches. */
 export function allowsZeroLoad(exercise: LiveExercise): boolean {
   return !exercise.isWeighted || exercise.phase !== "main" || exercise.durationSeconds > 0;
 }
@@ -72,7 +57,6 @@ export function zeroLoadWarning(
   return "This set has no reps and no weight. Save it anyway?";
 }
 
-/** BR-CC-02 — only meaningful for camera sets; manual sets are never "unverified". */
 export function isCameraVerified(set: Pick<SetLogDraft, "source" | "validFrameRatio">): boolean {
   if (set.source !== "camera") {
     return true;
@@ -87,7 +71,6 @@ export function countUnverifiedSets(sets: SetLogDraft[]): number {
   return sets.filter((set) => !isCameraVerified(set)).length;
 }
 
-/** Gentle wording — ux-flow-spec §5.3 forbids accusatory copy such as "cheating". */
 export function verificationNote(sets: SetLogDraft[]): string | null {
   const unverified = countUnverifiedSets(sets);
   if (unverified === 0) {
@@ -98,29 +81,26 @@ export function verificationNote(sets: SetLogDraft[]): string | null {
     : `${unverified} sets could not be verified by the camera.`;
 }
 
-/**
- * Determines if an exercise is timed ("tính s") vs rep-based ("đếm rep"):
- * 1. AI-supported exercises (spec present): PRIORITIZE 100% data from rule JSON file.
- *    - phase_detection.metric === "none" -> Timed exercise ("tính s")
- *    - phase_detection.metric !== "none" (e.g. "elbow_angle", "knee_angle") -> Rep exercise ("đếm rep")
- * 2. Non-AI exercises (spec is null): Fallback to API prescription data (durationSeconds > 0).
- */
 export function isTimedExercise(
   exercise?: Partial<LiveExercise> | null,
   spec?: Partial<MotionSpec> | null,
 ): boolean {
-  // Branch 1: AI-supported exercise (spec exists) -> PRIORITIZE 100% RULE FILE DATA!
   if (spec) {
-    const generic = spec as any;
-    if (generic.phase_detection?.metric !== undefined) {
-      return generic.phase_detection.metric === "none";
-    }
+    const generic = spec as {
+      rep_type?: string;
+      phase_detection?: { metric?: string; thresholds?: Record<string, unknown> };
+    };
     if (generic.rep_type !== undefined) {
       return generic.rep_type === "timed";
     }
+    if (generic.phase_detection?.thresholds?.always !== undefined) {
+      return true;
+    }
+    if (generic.phase_detection?.metric !== undefined) {
+      return generic.phase_detection.metric === "none";
+    }
   }
 
-  // Branch 2: Non-AI exercise (spec is null) -> USE API PRESCRIPTION DATA
   if (exercise && (exercise.durationSeconds ?? 0) > 0) {
     return true;
   }
