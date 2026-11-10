@@ -1,11 +1,27 @@
 import { cookies } from "next/headers";
 
+function decodeJwtPayload(base64Payload: string): Record<string, unknown> {
+  let base64 = base64Payload.replaceAll("-", "+").replaceAll("_", "/");
+  while (base64.length % 4) {
+    base64 += "=";
+  }
+  if (typeof atob === "function") {
+    const binary = atob(base64);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+  if (typeof Buffer !== "undefined") {
+    return JSON.parse(Buffer.from(base64, "base64").toString("utf-8"));
+  }
+  throw new Error("No base64 decoder available in current runtime");
+}
+
 function parseJWTRole(token?: string): string | undefined {
   if (!token) return undefined;
   try {
     const parts = token.split(".");
     if (parts.length === 3) {
-      const payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf-8"));
+      const payload = decodeJwtPayload(parts[1]) as Record<string, string | undefined>;
       return (
         payload.role ||
         payload.Role ||
