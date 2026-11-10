@@ -15,7 +15,7 @@ function parseJWTRole(token?: string): string | undefined {
   } catch {
     // Ignore error
   }
-  if (token.startsWith("mock_dev_access_token_admin")) {
+  if (process.env.NODE_ENV !== "production" && token.startsWith("mock_dev_access_token_admin")) {
     return "ADMIN";
   }
   return undefined;
@@ -33,10 +33,13 @@ export async function getAuthenticatedSession(): Promise<{
   const refreshToken = cookieStore.get("fitai_refresh_token")?.value;
   let userId = cookieStore.get("fitai_user_id")?.value;
   const userName = cookieStore.get("fitai_user_name")?.value;
-  const cookieRole = cookieStore.get("fitai_user_role")?.value;
-  const role = cookieRole || parseJWTRole(accessToken);
+  const role = parseJWTRole(accessToken);
 
-  if (!userId && accessToken?.startsWith("mock_dev_access_token_")) {
+  if (
+    process.env.NODE_ENV !== "production" &&
+    !userId &&
+    accessToken?.startsWith("mock_dev_access_token_")
+  ) {
     userId = accessToken.replace("mock_dev_access_token_", "");
   }
 

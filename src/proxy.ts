@@ -65,6 +65,17 @@ export async function proxy(request: NextRequest) {
         return response;
       } catch (error) {
         console.warn("[proxy] Token refresh failed:", error);
+        if (pathname.startsWith("/rpc") || pathname.startsWith("/api/")) {
+          const apiResponse = NextResponse.json(
+            { code: "unauthenticated", message: "Session expired, re-authentication required" },
+            { status: 401 },
+          );
+          apiResponse.cookies.delete("fitai_access_token");
+          apiResponse.cookies.delete("fitai_refresh_token");
+          apiResponse.cookies.delete("fitai_user_id");
+          return apiResponse;
+        }
+
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         const response = NextResponse.redirect(loginUrl);
@@ -73,6 +84,13 @@ export async function proxy(request: NextRequest) {
         response.cookies.delete("fitai_user_id");
         return response;
       }
+    }
+
+    if (pathname.startsWith("/rpc") || pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { code: "unauthenticated", message: "Authentication required" },
+        { status: 401 },
+      );
     }
 
     const loginUrl = new URL("/login", request.url);
