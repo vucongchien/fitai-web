@@ -121,6 +121,7 @@ export interface MetadataItem {
   name: string;
   category: "bodyPart" | "equipment" | "muscle" | "tag";
   description?: string;
+  bodyPartId?: string;
 }
 
 export interface PaginatedResponse<T> {

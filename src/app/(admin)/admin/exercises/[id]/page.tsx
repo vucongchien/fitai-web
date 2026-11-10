@@ -24,12 +24,13 @@ import {
   fetchMetadataList,
   updateExercise,
 } from "@/features/admin/api/admin-exercise-service";
-import type {
-  AdminExercise,
-  AdminExerciseStatus,
-  MetadataItem,
+import {
+  EXERCISE_STATUS_LABEL,
+  EXERCISE_STATUS_STYLE,
+  type AdminExercise,
+  type AdminExerciseStatus,
+  type MetadataItem,
 } from "@/features/admin/domain/admin-types";
-import { EXERCISE_STATUS_LABEL, EXERCISE_STATUS_STYLE } from "@/features/admin/domain/admin-types";
 import { MotionSpecDialog } from "@/features/admin/ui/motion-spec-dialog";
 import type { Difficulty } from "@/features/exercise/domain/exercise";
 import { toast } from "@/shared/ui/toast";
@@ -107,9 +108,13 @@ function AdminExerciseForm({
   const [bodyPartId, setBodyPartId] = useState(initialExercise.bodyPartId);
   const [equipmentId, setEquipmentId] = useState(initialExercise.equipmentId);
   const [targetMuscleId, setTargetMuscleId] = useState(initialExercise.targetMuscleId);
-  const secondaryMuscleIds = initialExercise.secondaryMuscleIds || [];
+  const [secondaryMuscleIds, setSecondaryMuscleIds] = useState<string[]>(
+    initialExercise.secondaryMuscleIds || [],
+  );
   const [difficulty, setDifficulty] = useState<Difficulty>(initialExercise.difficulty);
   const [defaultRestSeconds, setDefaultRestSeconds] = useState(initialExercise.defaultRestSeconds);
+  const [videoUrl, setVideoUrl] = useState(initialExercise.videoUrl || "");
+  const [thumbnailUrl, setThumbnailUrl] = useState(initialExercise.thumbnailUrl || "");
   const [instructions, setInstructions] = useState(initialExercise.instructions || "");
   const [formCues, setFormCues] = useState<string[]>(initialExercise.formCues || []);
   const [commonMistakes, setCommonMistakes] = useState<string[]>(
@@ -138,6 +143,8 @@ function AdminExerciseForm({
         secondaryMuscleIds,
         difficulty,
         defaultRestSeconds,
+        videoUrl: videoUrl.trim() || undefined,
+        thumbnailUrl: thumbnailUrl.trim() || undefined,
         instructions,
         formCues,
         commonMistakes,
@@ -438,6 +445,47 @@ function AdminExerciseForm({
               className="w-full px-3.5 py-2.5 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
             />
           </div>
+
+          {/* Media & Video Demonstration */}
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-6 space-y-4 shadow-xs">
+            <h3 className="text-sm font-bold text-[var(--color-text)] border-b border-[var(--color-border)] pb-3">
+              Media & Video Demonstration
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label
+                  className="text-xs font-bold text-[var(--color-text-muted)]"
+                  htmlFor={`${fieldIdBase}-video-url`}
+                >
+                  Video URL (MP4 / WebM / Stream)
+                </label>
+                <input
+                  id={`${fieldIdBase}-video-url`}
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  placeholder="https://.../video.mp4"
+                  className="w-full px-3.5 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label
+                  className="text-xs font-bold text-[var(--color-text-muted)]"
+                  htmlFor={`${fieldIdBase}-thumbnail-url`}
+                >
+                  Thumbnail Image URL
+                </label>
+                <input
+                  id={`${fieldIdBase}-thumbnail-url`}
+                  type="url"
+                  value={thumbnailUrl}
+                  onChange={(e) => setThumbnailUrl(e.target.value)}
+                  placeholder="https://.../thumb.webp"
+                  className="w-full px-3.5 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Right Column: Arrays (Form Cues, Common Mistakes, Secondary Muscles, Tags) */}
@@ -571,6 +619,45 @@ function AdminExerciseForm({
                   </button>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Secondary Muscles Multi-select */}
+          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
+            <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center justify-between">
+              <span>Secondary Muscles</span>
+              <span className="text-xs text-[var(--color-action)] font-mono">
+                {secondaryMuscleIds.length} Selected
+              </span>
+            </h3>
+            <div className="flex flex-wrap gap-1.5">
+              {muscleOptions
+                .filter((m) => m.id !== targetMuscleId)
+                .map((ms) => {
+                  const isSelected = secondaryMuscleIds.includes(ms.id);
+                  return (
+                    <button
+                      key={ms.id}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          setSecondaryMuscleIds(
+                            secondaryMuscleIds.filter((muscleId) => muscleId !== ms.id),
+                          );
+                        } else {
+                          setSecondaryMuscleIds([...secondaryMuscleIds, ms.id]);
+                        }
+                      }}
+                      className={`px-2.5 py-1 rounded-[var(--radius-input)] text-xs font-semibold transition-all border cursor-pointer ${
+                        isSelected
+                          ? "bg-[var(--color-action)] text-[var(--color-action-contrast)] border-[var(--color-action)]"
+                          : "bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)] border-[var(--color-border)] hover:text-[var(--color-text)]"
+                      }`}
+                    >
+                      {ms.name}
+                    </button>
+                  );
+                })}
             </div>
           </div>
         </div>

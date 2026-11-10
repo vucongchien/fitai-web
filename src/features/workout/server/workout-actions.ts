@@ -370,12 +370,13 @@ export async function completeWorkoutSession(
     return localTotals;
   }
 
-  // Ensure all sets (Set 1, Set 2, Set 3, etc.) are logged and saved to DB before completing
-  for (const set of sets) {
+  // Ensure any unsynced sets (e.g. offline queue or failed live sync) are saved before completing
+  const unsyncedSets = sets.filter((s) => !s.synced);
+  for (const set of unsyncedSets) {
     try {
       await logWorkoutSet(sessionId, set);
     } catch (err) {
-      console.warn(`[completeWorkoutSession] Logging set ${set.setNumber} before completion:`, err);
+      console.warn(`[completeWorkoutSession] Logging unsynced set ${set.setNumber} before completion:`, err);
     }
   }
 

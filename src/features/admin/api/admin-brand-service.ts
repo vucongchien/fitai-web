@@ -74,8 +74,8 @@ function mapProtoToBrandItem(item: BrandRequest): AdminBrandRequestItem {
     status: mapProtoToStatus(item.status),
     rejectionReason: item.rejectionReason || "",
     reviewedBy: item.reviewedBy || "",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: item.createdAt || new Date().toISOString(),
+    updatedAt: item.updatedAt || item.reviewedAt || item.createdAt || new Date().toISOString(),
   };
 }
 

@@ -17,7 +17,6 @@ import {
   cleanMealDisplayName,
   normalizeTodayMenu,
 } from "@/features/nutrition/model/meal-detail.mapper";
-import { readLocalMeals } from "@/features/nutrition/server/local-meal-log";
 import type { ProfileViewModel } from "@/features/profile/model/profile.types";
 import { getProfileData } from "@/features/profile/server/get-profile-data";
 import { dayKeyFromLoggedAt, dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
@@ -218,7 +217,6 @@ export async function getHomePageData(): Promise<HomePageData> {
         exerciseRes,
         catalog,
         nutHistoryRes,
-        localMealsRes,
         gamificationRes,
       ] = await Promise.allSettled([
         coachingClient.getActiveRoadmap({ userId: userId || "" }),
@@ -235,7 +233,6 @@ export async function getHomePageData(): Promise<HomePageData> {
               userId: userId || "",
             })
           : Promise.resolve({ meals: [] }),
-        readLocalMeals(),
         getHomeGamificationData(),
       ]);
 
@@ -253,8 +250,7 @@ export async function getHomePageData(): Promise<HomePageData> {
         nutHistoryRes.status === "fulfilled" && nutHistoryRes.value?.meals
           ? nutHistoryRes.value.meals
           : [];
-      const localMeals = localMealsRes.status === "fulfilled" ? localMealsRes.value : [];
-      const allMealRows = deduplicateMealRows([...nutHistoryMeals, ...localMeals]);
+      const allMealRows = deduplicateMealRows(nutHistoryMeals);
       const todayLoggedMeals = allMealRows.filter((row) => {
         const key = dayKeyFromLoggedAt(row.loggedAt);
         if (!key) {
@@ -569,9 +565,7 @@ export async function getHomePageData(): Promise<HomePageData> {
     }),
   );
 
-  const localRows = await readLocalMeals();
-  const todayStr = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
-  const todayLoggedMeals = localRows.filter((row) => dayKeyFromLoggedAt(row.loggedAt) === todayStr);
+  const todayLoggedMeals: any[] = [];
 
   const fallbackTodayTimeline: TodayTimelineItem[] = [];
   const fallbackMealSlots: Array<{

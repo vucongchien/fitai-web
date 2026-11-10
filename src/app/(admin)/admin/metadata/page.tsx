@@ -37,6 +37,11 @@ export default function AdminMetadataPage() {
     queryFn: () => fetchMetadataList(activeTab),
   });
 
+  const { data: bodyParts = [] } = useQuery({
+    queryKey: ["admin-metadata", "bodyPart"],
+    queryFn: () => fetchMetadataList("bodyPart"),
+  });
+
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MetadataItem | null>(null);
@@ -169,6 +174,7 @@ export default function AdminMetadataPage() {
         isOpen={isDialogOpen}
         category={activeTab}
         item={selectedItem}
+        bodyParts={bodyParts}
         onClose={handleCloseDialog}
         onSave={handleSave}
       />

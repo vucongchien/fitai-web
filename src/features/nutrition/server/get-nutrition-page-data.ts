@@ -9,8 +9,6 @@ import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/s
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
-import { readLocalMeals } from "./local-meal-log";
-
 const DEFAULT_SUMMARY = {
   consumedCalories: 0,
   targetCalories: 2000,
@@ -23,7 +21,6 @@ async function getRealNutritionPageData(
   const transport = createServerTransport(accessToken);
   const client = createClient(NutritionService, transport);
   const today = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
-  const localRows = await readLocalMeals();
 
   console.info(`[getRealNutritionPageData] Calling gRPC for userId=${userId}, today=${today}`);
 
@@ -56,7 +53,7 @@ async function getRealNutritionPageData(
     summaryRes.status === "fulfilled" && summaryRes.value ? summaryRes.value : DEFAULT_SUMMARY;
   const historyRaw =
     historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
-  const history = deduplicateMealRows([...historyRaw, ...localRows]);
+  const history = deduplicateMealRows(historyRaw);
 
   const todayMenu =
     menuRes.status === "fulfilled" && menuRes.value
@@ -68,7 +65,6 @@ async function getRealNutritionPageData(
 
 export async function getNutritionPageData(): Promise<NutritionPageData> {
   const { accessToken, userId } = await getAuthenticatedSession();
-  const localRows = await readLocalMeals();
   const today = toDayKey(new Date()) ?? new Date().toISOString().split("T")[0];
 
   console.info(
@@ -86,5 +82,5 @@ export async function getNutritionPageData(): Promise<NutritionPageData> {
     }
   }
 
-  return adaptNutritionPageData(DEFAULT_SUMMARY, localRows, today);
+  return adaptNutritionPageData(DEFAULT_SUMMARY, [], today);
 }
