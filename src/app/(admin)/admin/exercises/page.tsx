@@ -201,10 +201,7 @@ export default function AdminExercisesPage() {
     () => allMetadata.filter((m) => m.category === "equipment"),
     [allMetadata],
   );
-  const muscles = useMemo(
-    () => allMetadata.filter((m) => m.category === "muscle"),
-    [allMetadata],
-  );
+  const muscles = useMemo(() => allMetadata.filter((m) => m.category === "muscle"), [allMetadata]);
 
   // TanStack Infinite Query
   const {

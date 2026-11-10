@@ -259,9 +259,15 @@ export function BrandRequestsTable() {
         {items.length > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-[var(--color-border)] bg-[var(--color-surface-subtle)] text-xs text-[var(--color-text-muted)]">
             <div>
-              Showing <span className="font-bold text-[var(--color-text)]">{(page - 1) * pageSize + 1}</span> to{" "}
-              <span className="font-bold text-[var(--color-text)]">{Math.min(page * pageSize, total)}</span> of{" "}
-              <span className="font-bold text-[var(--color-text)]">{total}</span> requests
+              Showing{" "}
+              <span className="font-bold text-[var(--color-text)]">
+                {(page - 1) * pageSize + 1}
+              </span>{" "}
+              to{" "}
+              <span className="font-bold text-[var(--color-text)]">
+                {Math.min(page * pageSize, total)}
+              </span>{" "}
+              of <span className="font-bold text-[var(--color-text)]">{total}</span> requests
             </div>
             <div className="flex items-center gap-1.5">
               <button

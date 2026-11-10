@@ -497,7 +497,11 @@ export async function updateMetadataItem(
     const res = await client.updateEquipment({ id, name: data.name });
     return { id: res.equipment?.id || "", name: res.equipment?.name || "", category: "equipment" };
   } else if (data.category === "muscle") {
-    const res = await client.updateMuscle({ id, name: data.name, bodyPartId: data.bodyPartId || "" });
+    const res = await client.updateMuscle({
+      id,
+      name: data.name,
+      bodyPartId: data.bodyPartId || "",
+    });
     return {
       id: res.muscle?.id || "",
       name: res.muscle?.name || "",

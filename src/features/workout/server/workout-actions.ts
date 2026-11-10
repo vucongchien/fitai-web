@@ -376,7 +376,10 @@ export async function completeWorkoutSession(
     try {
       await logWorkoutSet(sessionId, set);
     } catch (err) {
-      console.warn(`[completeWorkoutSession] Logging unsynced set ${set.setNumber} before completion:`, err);
+      console.warn(
+        `[completeWorkoutSession] Logging unsynced set ${set.setNumber} before completion:`,
+        err,
+      );
     }
   }
 
