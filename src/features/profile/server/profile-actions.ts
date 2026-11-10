@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createClient } from "@connectrpc/connect";
+import { revalidatePath } from "next/cache";
 
 import { formatWorkoutTimesToProto } from "@/features/onboarding/domain/workout-times-normalizer";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
