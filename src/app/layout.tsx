@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { AdminQueryProvider } from "@/features/admin/ui/admin-query-provider";
 import { ToastContainer } from "@/shared/ui/toast/toast-container";
 import { ToastProvider } from "@/shared/ui/toast/toast-context";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "./globals.css";
 
@@ -71,6 +73,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <ToastContainer />
           </ToastProvider>
         </AdminQueryProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

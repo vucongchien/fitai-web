@@ -1,4 +1,9 @@
+import bundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const nextConfig: NextConfig = {
   output: process.env.VERCEL ? undefined : "standalone",
@@ -24,7 +29,13 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     useTypeScriptCli: true,
-    optimizePackageImports: ["lucide-react", "sonner", "@tanstack/react-query"],
+    optimizePackageImports: [
+      "lucide-react",
+      "sonner",
+      "@tanstack/react-query",
+      "@vercel/analytics",
+      "@vercel/speed-insights",
+    ],
   },
 
   async headers() {
@@ -35,6 +46,28 @@ const nextConfig: NextConfig = {
           {
             key: "Cache-Control",
             value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+        ],
+      },
+      {
+        source: "/ort/:path*.wasm",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/wasm",
+          },
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/ort/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
@@ -70,4 +103,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
