@@ -1,6 +1,6 @@
 "use client";
 
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Archive, CheckCircle2, Dumbbell, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -11,6 +11,7 @@ import {
   createExercise,
   deleteExercise,
   fetchAdminExercises,
+  fetchMetadataList,
   restoreExercise,
 } from "@/features/admin/api/admin-exercise-service";
 import type { AdminExercise, ExerciseAdminFilters } from "@/features/admin/domain/admin-types";
@@ -186,6 +187,22 @@ export default function AdminExercisesPage() {
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState<ExerciseAdminFilters>(DEFAULT_EXERCISE_ADMIN_FILTERS);
 
+  // Metadata for filters and draft defaults
+  const { data: allMetadata = [] } = useQuery({
+    queryKey: ["admin-metadata"],
+    queryFn: () => fetchMetadataList(),
+  });
+
+  const bodyParts = useMemo(
+    () => allMetadata.filter((m) => m.category === "bodyPart"),
+    [allMetadata],
+  );
+  const equipments = useMemo(
+    () => allMetadata.filter((m) => m.category === "equipment"),
+    [allMetadata],
+  );
+  const muscles = useMemo(() => allMetadata.filter((m) => m.category === "muscle"), [allMetadata]);
+
   // TanStack Infinite Query
   const {
     data,
@@ -242,11 +259,15 @@ export default function AdminExercisesPage() {
   });
 
   const handleCreateNew = async () => {
+    const defaultBodyPartId = bodyParts[0]?.id || "bp-chest";
+    const defaultEquipmentId = equipments[0]?.id || "eq-dumbbell";
+    const defaultMuscleId = muscles[0]?.id || "ms-pectoralis-major";
+
     const created = await createExercise({
       name: "New Exercise Draft",
-      bodyPartId: "bp-chest",
-      equipmentId: "eq-dumbbell",
-      targetMuscleId: "ms-pectoralis-major",
+      bodyPartId: defaultBodyPartId,
+      equipmentId: defaultEquipmentId,
+      targetMuscleId: defaultMuscleId,
       secondaryMuscleIds: [],
       difficulty: "beginner",
       defaultRestSeconds: 60,
@@ -343,7 +364,13 @@ export default function AdminExercisesPage() {
       </div>
 
       {/* Filters */}
-      <ExerciseFilters filters={filters} onChange={setFilters} onReset={handleResetFilters} />
+      <ExerciseFilters
+        filters={filters}
+        onChange={setFilters}
+        onReset={handleResetFilters}
+        bodyParts={bodyParts}
+        equipments={equipments}
+      />
 
       {/* Table with Infinite Scroll */}
       <AdminTable

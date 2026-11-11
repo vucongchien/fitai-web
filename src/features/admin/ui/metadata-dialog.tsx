@@ -11,11 +11,19 @@ export interface MetadataDialogProps {
   isOpen: boolean;
   category: MetadataItem["category"];
   item?: MetadataItem | null;
+  bodyParts?: { id: string; name: string }[];
   onClose: () => void;
   onSave: (data: Omit<MetadataItem, "id">) => Promise<void>;
 }
 
-export function MetadataDialog({ isOpen, category, item, onClose, onSave }: MetadataDialogProps) {
+export function MetadataDialog({
+  isOpen,
+  category,
+  item,
+  bodyParts = [],
+  onClose,
+  onSave,
+}: MetadataDialogProps) {
   useScrollLock(isOpen);
 
   if (!isOpen) {
@@ -28,6 +36,7 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
         key={item?.id ?? "new"}
         category={category}
         item={item}
+        bodyParts={bodyParts}
         onClose={onClose}
         onSave={onSave}
       />
@@ -38,17 +47,20 @@ export function MetadataDialog({ isOpen, category, item, onClose, onSave }: Meta
 function MetadataDialogForm({
   category,
   item,
+  bodyParts = [],
   onClose,
   onSave,
 }: {
   category: MetadataItem["category"];
   item?: MetadataItem | null;
+  bodyParts?: { id: string; name: string }[];
   onClose: () => void;
   onSave: (data: Omit<MetadataItem, "id">) => Promise<void>;
 }) {
   const fieldIdBase = useId();
   const [name, setName] = useState(item?.name || "");
   const [description, setDescription] = useState(item?.description || "");
+  const [bodyPartId, setBodyPartId] = useState(item?.bodyPartId || (bodyParts[0]?.id ?? ""));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,12 +70,18 @@ function MetadataDialogForm({
       return;
     }
 
+    if (category === "muscle" && !bodyPartId.trim()) {
+      toast.error("Please select a parent body part for this muscle");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await onSave({
         name: name.trim(),
         category,
         description: description.trim(),
+        bodyPartId: category === "muscle" ? bodyPartId.trim() : undefined,
       });
       onClose();
     } finally {
@@ -120,6 +138,30 @@ function MetadataDialogForm({
             className="w-full px-3.5 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] transition-all"
           />
         </div>
+
+        {category === "muscle" ? (
+          <div className="space-y-1.5">
+            <label
+              className="text-xs font-bold text-[var(--color-text)]"
+              htmlFor={`${fieldIdBase}-bodypart`}
+            >
+              Parent Body Part *
+            </label>
+            <select
+              id={`${fieldIdBase}-bodypart`}
+              value={bodyPartId}
+              onChange={(e) => setBodyPartId(e.target.value)}
+              className="w-full px-3.5 py-2 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] transition-all cursor-pointer"
+            >
+              <option value="">Select a body part</option>
+              {bodyParts.map((bp) => (
+                <option key={bp.id} value={bp.id}>
+                  {bp.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
 
         <div className="space-y-1.5">
           <label

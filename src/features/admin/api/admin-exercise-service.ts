@@ -434,6 +434,7 @@ export async function fetchMetadataList(
       id: ms.id,
       name: ms.name,
       category: "muscle" as const,
+      bodyPartId: ms.bodyPartId,
     }));
     const tags = res.tags.map((tg) => ({
       id: tg.id,
@@ -467,8 +468,13 @@ export async function createMetadataItem(item: Omit<MetadataItem, "id">): Promis
     const res = await client.createEquipment({ name: item.name });
     return { id: res.equipment?.id || "", name: res.equipment?.name || "", category: "equipment" };
   } else if (item.category === "muscle") {
-    const res = await client.createMuscle({ name: item.name, bodyPartId: "" });
-    return { id: res.muscle?.id || "", name: res.muscle?.name || "", category: "muscle" };
+    const res = await client.createMuscle({ name: item.name, bodyPartId: item.bodyPartId || "" });
+    return {
+      id: res.muscle?.id || "",
+      name: res.muscle?.name || "",
+      category: "muscle",
+      bodyPartId: res.muscle?.bodyPartId || item.bodyPartId,
+    };
   }
   const res = await client.createTag({ name: item.name });
   return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
@@ -491,8 +497,17 @@ export async function updateMetadataItem(
     const res = await client.updateEquipment({ id, name: data.name });
     return { id: res.equipment?.id || "", name: res.equipment?.name || "", category: "equipment" };
   } else if (data.category === "muscle") {
-    const res = await client.updateMuscle({ id, name: data.name, bodyPartId: "" });
-    return { id: res.muscle?.id || "", name: res.muscle?.name || "", category: "muscle" };
+    const res = await client.updateMuscle({
+      id,
+      name: data.name,
+      bodyPartId: data.bodyPartId || "",
+    });
+    return {
+      id: res.muscle?.id || "",
+      name: res.muscle?.name || "",
+      category: "muscle",
+      bodyPartId: res.muscle?.bodyPartId || data.bodyPartId,
+    };
   }
   const res = await client.updateTag({ id, name: data.name });
   return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };

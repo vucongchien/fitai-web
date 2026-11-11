@@ -11,8 +11,6 @@ import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/s
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
-import { readLocalMeals } from "./local-meal-log";
-
 const EMPTY_DAILY_MENU: DailyMenuRows = {
   breakfast: [],
   lunch: [],
@@ -26,7 +24,6 @@ const EMPTY_DAILY_MENU: DailyMenuRows = {
 export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageData> {
   const { accessToken, userId } = await getAuthenticatedSession();
   const today = toDayKey(new Date());
-  const localRows = await readLocalMeals();
 
   const todayStr = today || new Date().toISOString().split("T")[0];
 
@@ -46,7 +43,7 @@ export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageD
 
       const history =
         historyRes.status === "fulfilled" && historyRes.value?.meals ? historyRes.value.meals : [];
-      const rows = deduplicateMealRows([...history, ...localRows]);
+      const rows = deduplicateMealRows(history);
 
       if (menuRes.status === "fulfilled" && menuRes.value) {
         const menu = (menuRes.value.meals as any) || menuRes.value;
@@ -59,5 +56,5 @@ export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageD
     }
   }
 
-  return adaptMealDetailPageData(EMPTY_DAILY_MENU, localRows, slot, todayStr);
+  return adaptMealDetailPageData(EMPTY_DAILY_MENU, [], slot, todayStr);
 }

@@ -3,7 +3,6 @@
 import { createClient } from "@connectrpc/connect";
 import { revalidatePath } from "next/cache";
 
-import { appendLocalMeal } from "@/features/nutrition/server/local-meal-log";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
@@ -122,9 +121,6 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
   const userId = await getAuthenticatedUserId();
   const cleanName = cleanMealDisplayName(input.mealName);
 
-  // Always write to local storage first so the local session UI immediately shows the meal
-  const localMealId = await appendLocalMeal({ ...input, mealName: cleanName, loggedAt });
-
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {
       const client = createClient(NutritionService, createServerTransport(accessToken));
@@ -158,20 +154,21 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
       }
 
       revalidateReaders(input.slot);
-      return { mealLogId: response.mealLogId || localMealId, ok: true };
+      return { mealLogId: response.mealLogId || `meal-${Date.now()}`, ok: true };
     } catch (error) {
       if (isUnreachable(error)) {
-        revalidateReaders(input.slot);
-        return { mealLogId: localMealId, ok: true };
+        console.warn("[logMeal] Backend unreachable:", error);
+        return { message: "Backend service is currently unreachable.", ok: false };
       }
 
       const detail = error instanceof Error ? error.message : "Unknown transport error";
+      console.error("[logMeal] ConnectRPC error:", error);
       return { message: `Could not save the meal: ${detail}`, ok: false };
     }
   }
 
   revalidateReaders(input.slot);
-  return { mealLogId: localMealId, ok: true };
+  return { mealLogId: `dev-meal-${Date.now()}`, ok: true };
 }
 
 export interface PantryMealOption {

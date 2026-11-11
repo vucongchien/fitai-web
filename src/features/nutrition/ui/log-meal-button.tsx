@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Plus } from "lucide-react";
-import { useActionState } from "react";
+import { useActionState, useOptimistic } from "react";
 
 import { logMealAction } from "@/features/nutrition/server/nutrition-actions";
 import type { LogMealState } from "@/features/nutrition/server/nutrition-actions";
@@ -19,28 +19,34 @@ interface LogMealButtonProps {
 const INITIAL: LogMealState = { status: "idle" };
 
 /**
- * One-tap logging for a menu option.
+ * One-tap logging for a menu option with optimistic UI.
  *
- * Driven by the form's `action` prop rather than an onClick handler: a Server Function only
- * gets to write cookies and return fresh UI in the same roundtrip when it is used as a form
- * action. Calling it from an event handler leaves the `Set-Cookie` unapplied.
- *
- * The menu option already carries every figure `LogMealRequest` needs, so nothing is typed.
+ * Driven by the form's `action` prop. The menu option already carries every figure
+ * `LogMealRequest` needs, so nothing is typed.
  */
 export function LogMealButton(props: LogMealButtonProps) {
   const [state, formAction, pending] = useActionState(logMealAction, INITIAL);
+  const [optimisticSaved, setOptimisticSaved] = useOptimistic(
+    state.status === "saved",
+    (_current, next: boolean) => next,
+  );
 
-  if (state.status === "saved") {
+  if (optimisticSaved) {
     return (
       <p className="log-meal log-meal--done">
         <Check aria-hidden="true" size={15} />
-        Logged
+        {pending ? "Saving…" : "Logged"}
       </p>
     );
   }
 
+  const handleAction = async (formData: FormData) => {
+    setOptimisticSaved(true);
+    await formAction(formData);
+  };
+
   return (
-    <form action={formAction} className="log-meal__form">
+    <form action={handleAction} className="log-meal__form">
       <input name="mealName" type="hidden" value={props.mealName} />
       <input name="slot" type="hidden" value={props.slot} />
       <input name="calories" type="hidden" value={props.calories} />

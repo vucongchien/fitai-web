@@ -1,7 +1,19 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, CheckCircle2, Clock, Filter, RotateCcw, X, XCircle } from "lucide-react";
+import {
+  Check,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Clock,
+  Filter,
+  RotateCcw,
+  X,
+  XCircle,
+} from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -16,12 +28,14 @@ import { Button } from "@/shared/ui/button";
 export function BrandRequestsTable() {
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<AdminBrandRequestStatus>("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const [rejectingItem, setRejectingItem] = useState<AdminBrandRequestItem | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["admin-brand-requests", statusFilter],
-    queryFn: () => fetchBrandRequests({ status: statusFilter, page: 1, pageSize: 20 }),
+    queryKey: ["admin-brand-requests", statusFilter, page],
+    queryFn: () => fetchBrandRequests({ status: statusFilter, page, pageSize }),
   });
 
   const approveMutation = useMutation({
@@ -56,6 +70,8 @@ export function BrandRequestsTable() {
   };
 
   const items = data?.items || [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const pendingCount = items.filter((i) => i.status === "pending").length;
 
   return (
@@ -80,7 +96,10 @@ export function BrandRequestsTable() {
               <button
                 key={tab.value}
                 type="button"
-                onClick={() => setStatusFilter(tab.value)}
+                onClick={() => {
+                  setStatusFilter(tab.value);
+                  setPage(1);
+                }}
                 className={`px-3 py-1 rounded-md text-xs font-semibold cursor-pointer transition-colors ${
                   statusFilter === tab.value
                     ? "bg-[var(--color-surface)] text-[var(--color-text)] shadow-xs"
@@ -148,6 +167,21 @@ export function BrandRequestsTable() {
                       <p className="text-xs text-[var(--color-text-muted)] mt-0.5 max-w-sm line-clamp-2">
                         {req.description || "No description provided."}
                       </p>
+                      {req.createdAt ? (
+                        <div className="text-[10px] text-[var(--color-text-muted)] mt-1 flex items-center gap-1">
+                          <Clock className="size-3 text-[var(--color-text-dim)]" />
+                          <span>
+                            Submitted:{" "}
+                            {new Date(req.createdAt).toLocaleDateString("vi-VN", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                      ) : null}
                     </td>
 
                     <td className="py-3 px-4">
@@ -220,27 +254,85 @@ export function BrandRequestsTable() {
             </table>
           </div>
         )}
+
+        {/* Pagination Toolbar */}
+        {items.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-[var(--color-border)] bg-[var(--color-surface-subtle)] text-xs text-[var(--color-text-muted)]">
+            <div>
+              Showing{" "}
+              <span className="font-bold text-[var(--color-text)]">
+                {(page - 1) * pageSize + 1}
+              </span>{" "}
+              to{" "}
+              <span className="font-bold text-[var(--color-text)]">
+                {Math.min(page * pageSize, total)}
+              </span>{" "}
+              of <span className="font-bold text-[var(--color-text)]">{total}</span> requests
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage(1)}
+                className="p-1 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                title="First Page"
+              >
+                <ChevronsLeft className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                disabled={page <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="p-1 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                title="Previous Page"
+              >
+                <ChevronLeft className="size-3.5" />
+              </button>
+              <span className="px-2 font-semibold text-[var(--color-text)]">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                className="p-1 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                title="Next Page"
+              >
+                <ChevronRight className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                disabled={page >= totalPages}
+                onClick={() => setPage(totalPages)}
+                className="p-1 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                title="Last Page"
+              >
+                <ChevronsRight className="size-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Reject Modal */}
       {rejectingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-neutral-200 p-5 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--color-scrim)] backdrop-blur-xs">
+          <div className="w-full max-w-md bg-[var(--color-surface)] rounded-[var(--radius-card)] shadow-xl border border-[var(--color-border)] p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-neutral-900 text-sm">
+              <h3 className="font-bold text-[var(--color-text)] text-sm">
                 Từ chối yêu cầu: {rejectingItem.brandName}
               </h3>
               <button
                 type="button"
                 onClick={() => setRejectingItem(null)}
-                className="size-7 rounded-full hover:bg-neutral-100 flex items-center justify-center text-neutral-400 hover:text-neutral-700 cursor-pointer"
+                className="size-7 rounded-full hover:bg-[var(--color-surface-subtle)] flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
               >
                 <X className="size-4" />
               </button>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-neutral-700">
+              <label className="text-xs font-semibold text-[var(--color-text)]">
                 Lý do từ chối đơn đăng ký:
               </label>
               <textarea
@@ -248,7 +340,7 @@ export function BrandRequestsTable() {
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 placeholder="Nhập lý do (ví dụ: Thiếu hồ sơ pháp lý, số điện thoại không liên lạc được...)"
-                className="w-full p-2.5 text-xs rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-neutral-900 placeholder:text-neutral-400"
+                className="w-full p-2.5 text-xs rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-subtle)] focus:border-[var(--color-action)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)]"
               />
             </div>
 
