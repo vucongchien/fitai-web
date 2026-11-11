@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@connectrpc/connect";
+import { revalidatePath } from "next/cache";
 
 import { formatWorkoutTimesToProto } from "@/features/onboarding/domain/workout-times-normalizer";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
@@ -10,6 +11,14 @@ import { getAccessToken } from "@/shared/auth/session";
 import { mapCoachStyleToEnum, mapEquipmentToEnum, mapGoalToEnum } from "../model/profile.mapper";
 import type { ProfileViewModel } from "../model/profile.types";
 import { getProfileData } from "./get-profile-data";
+
+function safeRevalidatePath(path: string): void {
+  try {
+    revalidatePath(path);
+  } catch {
+    // Silently continue if called outside active request context (e.g. unit tests)
+  }
+}
 
 /**
  * Server Action gọi gRPC ProfileService.UpdateProfile
@@ -86,6 +95,11 @@ export async function updateProfileServerAction(
       bodyFatPercent,
     });
 
+    if (res.success) {
+      safeRevalidatePath("/profile");
+      safeRevalidatePath("/home");
+    }
+
     return { success: res.success, message: res.message || "Profile updated successfully" };
   } catch (error: any) {
     console.error("[gRPC ProfileService.UpdateProfile] Error:", error?.message || error);
@@ -113,6 +127,9 @@ export async function logBodyMetricsServerAction(metrics: {
       heightCm: metrics.heightCm ?? 0,
       progressPhotoUrl: metrics.progressPhotoUrl ?? "",
     });
+
+    safeRevalidatePath("/profile");
+    safeRevalidatePath("/home");
 
     return {
       success: true,
@@ -146,6 +163,11 @@ export async function reportInjuryServerAction(injury: {
       notes: injury.notes,
     });
 
+    if (res.success) {
+      safeRevalidatePath("/profile");
+      safeRevalidatePath("/home");
+    }
+
     return { success: res.success, injuryId: res.injuryId, message: res.message };
   } catch (error: any) {
     console.error("[gRPC ProfileService.ReportInjury] Error:", error?.message || error);
@@ -165,6 +187,12 @@ export async function recoverInjuryServerAction(
     const client = createClient(ProfileService, transport);
 
     const res = await client.recoverInjury({ injuryId });
+
+    if (res.success) {
+      safeRevalidatePath("/profile");
+      safeRevalidatePath("/home");
+    }
+
     return { success: res.success, message: res.message };
   } catch (error: any) {
     console.error("[gRPC ProfileService.RecoverInjury] Error:", error?.message || error);
