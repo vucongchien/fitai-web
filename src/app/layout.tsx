@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
@@ -71,6 +73,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <ToastContainer />
           </ToastProvider>
         </AdminQueryProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
