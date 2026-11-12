@@ -1,11 +1,4 @@
-import {
-  ArrowLeft,
-  ArrowRight,
-  Camera,
-  Dumbbell,
-  Play,
-  Video,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, Dumbbell, Play, Video } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
