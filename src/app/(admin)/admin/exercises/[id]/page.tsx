@@ -1,15 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  Archive,
-  ArrowLeft,
-  CheckCircle2,
-  Dumbbell,
-  Save,
-  Sparkles,
-  Trash2,
-} from "lucide-react";
+import { Archive, ArrowLeft, CheckCircle2, Dumbbell, Save, Sparkles, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useId, useState } from "react";
