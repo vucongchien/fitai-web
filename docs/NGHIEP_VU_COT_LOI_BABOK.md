@@ -71,7 +71,7 @@
 
 | Mã           | Nghiệp vụ chi tiết                                                                                | MoSCoW |
 | ------------ | ------------------------------------------------------------------------------------------------- | ------ |
-| **FR-UM-01** | **Đăng ký/Đăng nhập**: Qua Email, SĐT (xác thực OTP) và liên kết MXH (Google, Apple, Facebook).   | M      |
+| **FR-UM-01** | **Đăng ký/Đăng nhập**: Qua Email, SĐT (xác thực OTP) và liên kết MXH (Google, Facebook).          | M      |
 | **FR-UM-02** | **Hồ sơ sức khỏe**: Khai báo tuổi, giới tính, chiều cao, cân nặng, mục tiêu, chấn thương/bệnh lý. | M      |
 | **FR-UM-03** | **Khung giờ cố định**: Bắt buộc chọn tối thiểu 1 khung giờ tập cố định trong ngày để nhắc lịch.   | M      |
 | **FR-UM-04** | **Nhắc lịch tự động**: Push Notification trước 15 phút theo phong cách AI Coach đã chọn.          | S      |
