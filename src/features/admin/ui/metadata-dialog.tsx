@@ -59,7 +59,6 @@ function MetadataDialogForm({
 }) {
   const fieldIdBase = useId();
   const [name, setName] = useState(item?.name || "");
-  const [description, setDescription] = useState(item?.description || "");
   const [bodyPartId, setBodyPartId] = useState(item?.bodyPartId || (bodyParts[0]?.id ?? ""));
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -80,7 +79,6 @@ function MetadataDialogForm({
       await onSave({
         name: name.trim(),
         category,
-        description: description.trim(),
         bodyPartId: category === "muscle" ? bodyPartId.trim() : undefined,
       });
       onClose();
@@ -162,23 +160,6 @@ function MetadataDialogForm({
             </select>
           </div>
         ) : null}
-
-        <div className="space-y-1.5">
-          <label
-            className="text-xs font-bold text-[var(--color-text)]"
-            htmlFor={`${fieldIdBase}-2`}
-          >
-            Description (Optional)
-          </label>
-          <textarea
-            id={`${fieldIdBase}-2`}
-            rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Brief summary or anatomical note..."
-            className="w-full px-3.5 py-2.5 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] focus:border-[var(--color-action)] focus:bg-[var(--color-surface)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-dim)] focus:outline-none focus:ring-2 focus:ring-[var(--color-action-soft)] transition-all"
-          />
-        </div>
       </form>
 
       {/* Footer */}
