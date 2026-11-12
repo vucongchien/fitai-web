@@ -274,8 +274,6 @@ export default function AdminExercisesPage() {
       tagIds: [],
       hasAiSupported: false,
       instructions: "Add detailed step-by-step instructions here...",
-      formCues: ["Keep core engaged"],
-      commonMistakes: ["Flaring elbows"],
       status: "created",
       createdBy: "admin@fitai.com",
     });

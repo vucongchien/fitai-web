@@ -6,11 +6,9 @@ import {
   ArrowLeft,
   CheckCircle2,
   Dumbbell,
-  Plus,
   Save,
   Sparkles,
   Trash2,
-  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -116,15 +114,7 @@ function AdminExerciseForm({
   const [videoUrl, setVideoUrl] = useState(initialExercise.videoUrl || "");
   const [thumbnailUrl, setThumbnailUrl] = useState(initialExercise.thumbnailUrl || "");
   const [instructions, setInstructions] = useState(initialExercise.instructions || "");
-  const [formCues, setFormCues] = useState<string[]>(initialExercise.formCues || []);
-  const [commonMistakes, setCommonMistakes] = useState<string[]>(
-    initialExercise.commonMistakes || [],
-  );
   const [tagIds, setTagIds] = useState<string[]>(initialExercise.tagIds || []);
-
-  // New item inputs
-  const [newCueInput, setNewCueInput] = useState("");
-  const [newMistakeInput, setNewMistakeInput] = useState("");
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,8 +136,6 @@ function AdminExerciseForm({
         videoUrl: videoUrl.trim() || undefined,
         thumbnailUrl: thumbnailUrl.trim() || undefined,
         instructions,
-        formCues,
-        commonMistakes,
         tagIds,
       });
       setExercise(updated);
@@ -175,30 +163,6 @@ function AdminExerciseForm({
       await deleteExercise(id);
       router.push("/admin/exercises");
     }
-  };
-
-  const addFormCue = () => {
-    if (!newCueInput.trim()) {
-      return;
-    }
-    setFormCues([...formCues, newCueInput.trim()]);
-    setNewCueInput("");
-  };
-
-  const removeFormCue = (index: number) => {
-    setFormCues(formCues.filter((_, i) => i !== index));
-  };
-
-  const addCommonMistake = () => {
-    if (!newMistakeInput.trim()) {
-      return;
-    }
-    setCommonMistakes([...commonMistakes, newMistakeInput.trim()]);
-    setNewMistakeInput("");
-  };
-
-  const removeCommonMistake = (index: number) => {
-    setCommonMistakes(commonMistakes.filter((_, i) => i !== index));
   };
 
   const bodyPartOptions = metadata.filter((m) => m.category === "bodyPart");
@@ -488,110 +452,8 @@ function AdminExerciseForm({
           </div>
         </div>
 
-        {/* Right Column: Arrays (Form Cues, Common Mistakes, Secondary Muscles, Tags) */}
+        {/* Right Column: Arrays (Category Tags, Secondary Muscles) */}
         <div className="space-y-6">
-          {/* Form Cues Array */}
-          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
-            <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center justify-between">
-              <span>Form Cues (Array)</span>
-              <span className="text-xs text-[var(--color-action)] font-mono">
-                {formCues.length} Cues
-              </span>
-            </h3>
-
-            <div className="space-y-2">
-              {formCues.map((cue, idx) => (
-                <div
-                  key={idx}
-                  className="p-2.5 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] border border-[var(--color-border)] text-xs flex items-center justify-between gap-2"
-                >
-                  <span className="text-[var(--color-text)] font-medium">{cue}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeFormCue(idx)}
-                    className="text-[var(--color-text-muted)] hover:text-[var(--color-danger)] p-1 transition-colors cursor-pointer"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-2 pt-2">
-              <input
-                type="text"
-                value={newCueInput}
-                onChange={(e) => setNewCueInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addFormCue();
-                  }
-                }}
-                placeholder="Add form cue..."
-                className="flex-1 px-3 py-1.5 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={addFormCue}
-                className="p-2 rounded-[var(--radius-input)] bg-[var(--color-action-soft)] text-[var(--color-action)] hover:bg-[var(--color-action)] hover:text-[var(--color-action-contrast)] font-bold text-xs transition-colors cursor-pointer"
-              >
-                <Plus className="size-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Common Mistakes Array */}
-          <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
-            <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center justify-between">
-              <span>Common Mistakes (Array)</span>
-              <span className="text-xs text-[var(--color-danger)] font-mono">
-                {commonMistakes.length} Items
-              </span>
-            </h3>
-
-            <div className="space-y-2">
-              {commonMistakes.map((mistake, idx) => (
-                <div
-                  key={idx}
-                  className="p-2.5 rounded-[var(--radius-input)] bg-[var(--color-danger-soft)] border border-[color-mix(in_srgb,var(--color-danger)_20%,transparent)] text-xs flex items-center justify-between gap-2"
-                >
-                  <span className="text-[var(--color-danger)] font-medium">{mistake}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeCommonMistake(idx)}
-                    className="text-[var(--color-danger)] hover:opacity-70 p-1 transition-colors cursor-pointer"
-                  >
-                    <X className="size-3.5" />
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-2 pt-2">
-              <input
-                type="text"
-                value={newMistakeInput}
-                onChange={(e) => setNewMistakeInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addCommonMistake();
-                  }
-                }}
-                placeholder="Add common mistake..."
-                className="flex-1 px-3 py-1.5 text-xs bg-[var(--color-surface-subtle)] border border-[var(--color-border)] rounded-[var(--radius-input)] text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={addCommonMistake}
-                className="p-2 rounded-[var(--radius-input)] bg-[var(--color-danger-soft)] text-[var(--color-danger)] hover:bg-[var(--color-danger)] hover:text-[var(--color-action-contrast)] font-bold text-xs transition-colors cursor-pointer"
-              >
-                <Plus className="size-4" />
-              </button>
-            </div>
-          </div>
-
           {/* Category Tags Multi-select */}
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[var(--radius-hero)] p-5 space-y-3 shadow-xs">
             <h3 className="text-sm font-bold text-[var(--color-text)]">Category Tags</h3>

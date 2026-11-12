@@ -1,9 +1,7 @@
 import {
-  AlertCircle,
   ArrowLeft,
   ArrowRight,
   Camera,
-  CheckCircle2,
   Dumbbell,
   Play,
   Video,
@@ -216,34 +214,6 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
             </div>
           ) : null}
         </dl>
-
-        {exercise.formCues && exercise.formCues.length > 0 ? (
-          <section className="detail-section">
-            <h2>Form Cues</h2>
-            <ul className="cue-list">
-              {exercise.formCues.map((cue) => (
-                <li key={cue}>
-                  <CheckCircle2 aria-hidden="true" size={16} />
-                  <span>{cue}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
-
-        {exercise.commonMistakes && exercise.commonMistakes.length > 0 ? (
-          <section className="detail-section">
-            <h2>Common Mistakes</h2>
-            <ul className="cue-list cue-list--warn">
-              {exercise.commonMistakes.map((mistake) => (
-                <li key={mistake}>
-                  <AlertCircle aria-hidden="true" size={16} />
-                  <span>{mistake}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
 
         {videoMediaUrl ? (
           <section className="detail-section">
