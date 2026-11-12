@@ -8,7 +8,7 @@ import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
 
 import { mapComment, mapFeedItem } from "../model/social.mapper";
-import type { ActivityFeedVM, CommentVM } from "../model/social.types";
+import type { ActivityFeedVM, CommentVM, FeedItemVM } from "../model/social.types";
 
 async function getSocialClient() {
   const accessToken = await getAccessToken();
@@ -159,3 +159,34 @@ export async function fetchMoreProfileFeedAction(
     return { items: [], nextCursor: "" };
   }
 }
+
+export async function createPostAction(input: {
+  caption: string;
+  mediaUrls?: string[];
+  visibility?: string;
+}): Promise<{ success: boolean; item?: FeedItemVM; message?: string }> {
+  try {
+    const client = await getSocialClient();
+    const res = await client.createPost({
+      caption: input.caption.trim(),
+      mediaUrls: input.mediaUrls ?? [],
+      visibility: input.visibility || "PUBLIC",
+    });
+
+    if (!res.item) {
+      return { success: false, message: "No feed item returned from server" };
+    }
+
+    return {
+      success: true,
+      item: mapFeedItem(res.item),
+    };
+  } catch (error: any) {
+    console.error("[createPostAction]", error?.message);
+    return {
+      success: false,
+      message: error?.message ?? "Failed to create post",
+    };
+  }
+}
+

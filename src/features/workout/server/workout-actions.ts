@@ -443,3 +443,40 @@ export async function getPersonalRecords(exerciseIds: string[]): Promise<Record<
   }
   return recordMap;
 }
+
+export async function shareWorkoutSessionAction(input: {
+  sessionId: string;
+  caption?: string;
+  mediaUrls?: string[];
+  visibility?: string;
+}): Promise<{ success: boolean; isShared: boolean; message?: string }> {
+  try {
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      return { success: false, isShared: false, message: "Authentication required" };
+    }
+
+    const transport = createServerTransport(accessToken);
+    const executionClient = createClient(WorkoutExecutionService, transport);
+
+    const res = await executionClient.shareWorkoutSession({
+      sessionId: input.sessionId,
+      caption: input.caption?.trim() || "",
+      mediaUrls: input.mediaUrls ?? [],
+      visibility: input.visibility || "PUBLIC",
+    });
+
+    return {
+      success: true,
+      isShared: res.isShared,
+    };
+  } catch (error: any) {
+    console.error("[shareWorkoutSessionAction]", error?.message);
+    return {
+      success: false,
+      isShared: false,
+      message: error?.message ?? "Failed to share workout session",
+    };
+  }
+}
+

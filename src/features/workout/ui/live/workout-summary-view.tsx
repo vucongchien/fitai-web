@@ -5,16 +5,19 @@ import {
   ArrowLeft,
   Check,
   Minus,
+  Share2,
   TrendingDown,
   TrendingUp,
   Trophy,
 } from "lucide-react";
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { toast } from "sonner";
 
 import { getFatigueLevel } from "@/features/workout/domain/pose-metrics";
 import type { SessionReport } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
+import { ShareWorkoutModal } from "@/features/workout/ui/live/share-workout-modal";
 import { buttonVariants } from "@/shared/ui/button";
 import { PageTransition } from "@/shared/ui/page-transition";
 
@@ -41,6 +44,9 @@ function getReportSnapshot(sessionId: string): SessionReport | null {
 const emptySubscribe = () => () => {};
 
 export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [isShared, setIsShared] = useState(false);
+
   const isClient = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -221,11 +227,43 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
             </section>
           ) : null}
 
-          <div className="summary-actions">
-            <Link className={buttonVariants({ size: "large", variant: "primary" })} href="/home">
+          <div className="summary-actions flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              disabled={isShared}
+              onClick={() => setShareModalOpen(true)}
+              className={buttonVariants({
+                size: "large",
+                variant: isShared ? "secondary" : "quiet",
+                className: "gap-2 w-full justify-center !border !border-neutral-300",
+              })}
+            >
+              {isShared ? (
+                <>
+                  <Check size={18} className="text-emerald-600" />
+                  Shared to Community
+                </>
+              ) : (
+                <>
+                  <Share2 size={18} />
+                  Share to Community
+                </>
+              )}
+            </button>
+            <Link className={buttonVariants({ size: "large", variant: "primary", className: "w-full justify-center" })} href="/home">
               Done
             </Link>
           </div>
+
+          <ShareWorkoutModal
+            isOpen={shareModalOpen}
+            onClose={() => setShareModalOpen(false)}
+            report={report}
+            onSuccess={() => {
+              setIsShared(true);
+              toast.success("Workout shared to Community Activity Feed!");
+            }}
+          />
         </main>
       </div>
     </PageTransition>
