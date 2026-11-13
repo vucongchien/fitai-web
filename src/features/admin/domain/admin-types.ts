@@ -120,7 +120,6 @@ export interface MetadataItem {
   id: string;
   name: string;
   category: "bodyPart" | "equipment" | "muscle" | "tag";
-  description?: string;
   bodyPartId?: string;
 }
 
