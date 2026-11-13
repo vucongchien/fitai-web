@@ -18,10 +18,7 @@ async function SettingsContent() {
     }),
   ]);
   return (
-    <ProfileSettingsView
-      profile={profileData}
-      initialNotificationSettings={notificationSettings}
-    />
+    <ProfileSettingsView profile={profileData} initialNotificationSettings={notificationSettings} />
   );
 }
 

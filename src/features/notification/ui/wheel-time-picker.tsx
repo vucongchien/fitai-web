@@ -173,11 +173,7 @@ export function TimeSelectPill({
 
       {open && (
         <>
-          <div
-            aria-hidden="true"
-            className="fixed inset-0 z-20"
-            onClick={() => setOpen(false)}
-          />
+          <div aria-hidden="true" className="fixed inset-0 z-20" onClick={() => setOpen(false)} />
           <div
             role="dialog"
             aria-label={`${label} time picker`}

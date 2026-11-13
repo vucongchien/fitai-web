@@ -31,22 +31,14 @@ interface ChannelToggleRowProps {
   onToggle: (nextValue: boolean) => void;
 }
 
-function ChannelToggleRow({
-  id,
-  label,
-  description,
-  checked,
-  onToggle,
-}: ChannelToggleRowProps) {
+function ChannelToggleRow({ id, label, description, checked, onToggle }: ChannelToggleRowProps) {
   return (
     <label
       htmlFor={id}
       className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer select-none"
     >
       <div className="min-w-0">
-        <div className="text-[16px] font-bold text-neutral-800 leading-snug truncate">
-          {label}
-        </div>
+        <div className="text-[16px] font-bold text-neutral-800 leading-snug truncate">{label}</div>
         <div className="text-[13px] font-medium text-neutral-400 mt-0.5 truncate">
           {description}
         </div>
@@ -65,9 +57,7 @@ function ChannelToggleRow({
   );
 }
 
-export function NotificationSettingsSection({
-  initialSettings,
-}: NotificationSettingsSectionProps) {
+export function NotificationSettingsSection({ initialSettings }: NotificationSettingsSectionProps) {
   const [loaded, setLoaded] = useState(initialSettings !== null);
   const [isRetrying, setIsRetrying] = useState(false);
   const [isSavingQuietHours, setIsSavingQuietHours] = useState(false);
@@ -230,9 +220,7 @@ export function NotificationSettingsSection({
           id="notif-push-toggle"
           label="Push Notifications"
           description={
-            pushStatus === "denied"
-              ? "Blocked in browser settings"
-              : "Workout, meal, and PR alerts"
+            pushStatus === "denied" ? "Blocked in browser settings" : "Workout, meal, and PR alerts"
           }
           checked={savedSettings.enablePush}
           onToggle={(val) => handleToggleChannel("enablePush", val)}

@@ -55,7 +55,10 @@ export async function GET(request: Request) {
       refreshToken = loginAfterReg.refreshToken;
       userId = loginAfterReg.userId;
     } catch (regError: any) {
-      console.error("[dev-login] Failed to authenticate with backend:", regError?.message || regError);
+      console.error(
+        "[dev-login] Failed to authenticate with backend:",
+        regError?.message || regError,
+      );
       return NextResponse.json(
         {
           error: "DEV_LOGIN_FAILED",
@@ -75,7 +78,11 @@ export async function GET(request: Request) {
 
   const response = NextResponse.redirect(new URL(account.dest, origin));
 
-  response.cookies.set("fitai_access_token", accessToken, createAuthCookieOptions({ maxAge: 60 * 60 }));
+  response.cookies.set(
+    "fitai_access_token",
+    accessToken,
+    createAuthCookieOptions({ maxAge: 60 * 60 }),
+  );
   response.cookies.set(
     "fitai_refresh_token",
     refreshToken,
@@ -83,7 +90,9 @@ export async function GET(request: Request) {
   );
   response.cookies.set("fitai_user_id", userId, createAuthCookieOptions({ maxAge: 60 * 60 * 24 }));
 
-  console.info(`[dev-login] Authenticated real backend user=${userId} target=${target} -> dest=${account.dest}`);
+  console.info(
+    `[dev-login] Authenticated real backend user=${userId} target=${target} -> dest=${account.dest}`,
+  );
 
   return response;
 }

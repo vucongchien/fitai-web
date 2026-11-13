@@ -71,10 +71,7 @@ class NotificationListStore {
     this.emit();
     try {
       const res = await listNotificationsAction(PANE_PAGE_SIZE, this.notifications.length);
-      this.notifications = mergeUniqueNotifications(
-        this.notifications,
-        res.notifications || [],
-      );
+      this.notifications = mergeUniqueNotifications(this.notifications, res.notifications || []);
       this.totalCount = res.totalCount;
     } catch {
       // Keep current list on failure so the user can retry.
