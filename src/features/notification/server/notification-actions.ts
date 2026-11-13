@@ -2,9 +2,15 @@
 
 import { createClient } from "@connectrpc/connect";
 
+import type { GetNotificationSettingsResponse } from "@/shared/api/gen/contracts/generic/notification/v1/message/notification_messages_pb";
 import { NotificationService } from "@/shared/api/gen/contracts/generic/notification/v1/service/notification_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
+
+export type NotificationSettings = Pick<
+  GetNotificationSettingsResponse,
+  "enablePush" | "enableEmail" | "enableSms" | "quietHoursStart" | "quietHoursEnd"
+>;
 
 export interface NotificationItemDTO {
   id: string;
@@ -75,5 +81,77 @@ export async function markNotificationAsReadAction(notificationId: string): Prom
       error,
     );
     return false;
+  }
+}
+
+const TIME_OF_DAY_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+function isValidTimeOrEmpty(value: string): boolean {
+  return value === "" || TIME_OF_DAY_REGEX.test(value);
+}
+
+export async function getNotificationSettingsAction(): Promise<NotificationSettings> {
+  const { accessToken, userId } = await getAuthenticatedSession();
+  if (!accessToken || !userId) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  try {
+    const transport = createServerTransport(accessToken);
+    const client = createClient(NotificationService, transport);
+
+    const response = await client.getNotificationSettings({ userId });
+
+    return {
+      enablePush: response.enablePush,
+      enableEmail: response.enableEmail,
+      enableSms: response.enableSms,
+      quietHoursStart: response.quietHoursStart,
+      quietHoursEnd: response.quietHoursEnd,
+    };
+  } catch (error) {
+    console.error("[getNotificationSettingsAction] Failed to get notification settings:", error);
+    throw new Error("FAILED_TO_FETCH_NOTIFICATION_SETTINGS", { cause: error });
+  }
+}
+
+export async function updateNotificationSettingsAction(
+  input: NotificationSettings,
+): Promise<{ success: boolean; message?: string }> {
+  const { accessToken, userId } = await getAuthenticatedSession();
+  if (!accessToken || !userId) {
+    throw new Error("UNAUTHENTICATED");
+  }
+
+  if (!isValidTimeOrEmpty(input.quietHoursStart) || !isValidTimeOrEmpty(input.quietHoursEnd)) {
+    return {
+      success: false,
+      message: "Quiet hours must be in HH:MM format.",
+    };
+  }
+
+  try {
+    const transport = createServerTransport(accessToken);
+    const client = createClient(NotificationService, transport);
+
+    const response = await client.updateNotificationSettings({
+      userId,
+      enablePush: input.enablePush,
+      enableEmail: input.enableEmail,
+      enableSms: input.enableSms,
+      quietHoursStart: input.quietHoursStart,
+      quietHoursEnd: input.quietHoursEnd,
+    });
+
+    return {
+      success: response.success,
+      message: response.message || undefined,
+    };
+  } catch (error) {
+    console.error("[updateNotificationSettingsAction] Failed to update settings:", error);
+    return {
+      success: false,
+      message: "Failed to save notification settings.",
+    };
   }
 }
