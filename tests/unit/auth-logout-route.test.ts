@@ -104,19 +104,20 @@ describe("/api/auth/logout Route Handler", () => {
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_access_token");
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_refresh_token");
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_user_id");
+    expect(mockCookieDelete).toHaveBeenCalledWith("fitai_user_name");
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_oauth_state");
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_oauth_popup");
     expect(res.status).toBe(200);
   });
 
-  it("redirects to /login when request accepts text/html or is GET request", async () => {
+  it("redirects to /login when request accepts text/html via POST", async () => {
     mockGetCookie.mockReturnValue({ value: "token_abc" });
     mockLogout.mockResolvedValue(create(LogoutResponseSchema, { success: true, message: "OK" }));
 
-    const { GET } = await import("@/app/api/auth/logout/route");
-    const res = await GET(
+    const { POST } = await import("@/app/api/auth/logout/route");
+    const res = await POST(
       makeRequest(`${ORIGIN}/api/auth/logout`, {
-        method: "GET",
+        method: "POST",
         headers: { accept: "text/html" },
       }),
     );
@@ -125,6 +126,12 @@ describe("/api/auth/logout Route Handler", () => {
     expect(res.headers.get("location")).toContain("/login");
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_access_token");
     expect(mockCookieDelete).toHaveBeenCalledWith("fitai_refresh_token");
+  });
+
+  it("does not expose HTTP GET method to prevent CSRF logout attacks", async () => {
+    const routeModule = (await import("@/app/api/auth/logout/route")) as Record<string, unknown>;
+    expect(routeModule.GET).toBeUndefined();
+    expect(typeof routeModule.POST).toBe("function");
   });
 
   it("safely proceeds and deletes cookies even if gRPC AuthService.Logout throws", async () => {

@@ -4,6 +4,9 @@ import type { NextRequest } from "next/server";
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
 import { refreshSessionTokens } from "@/shared/auth/refresh";
 
+const STATIC_EXT_REGEX =
+  /\.(ico|png|jpg|jpeg|svg|webp|gif|woff2?|ttf|css|m?js|map|wasm|onnx|webmanifest|mp4)$/i;
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   let accessToken = request.cookies.get("fitai_access_token")?.value;
@@ -16,8 +19,10 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/execution") ||
     pathname.startsWith("/workouts/live/ai-12-exercises") ||
     pathname.startsWith("/_next") ||
+    pathname.startsWith("/ort/") ||
+    pathname.startsWith("/models/") ||
     pathname === "/favicon.ico" ||
-    pathname.includes(".");
+    STATIC_EXT_REGEX.test(pathname);
 
   if (!isPublicRoute && !accessToken) {
     if (refreshToken) {

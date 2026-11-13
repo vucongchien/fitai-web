@@ -9,6 +9,7 @@ const AUTH_COOKIES = [
   "fitai_access_token",
   "fitai_refresh_token",
   "fitai_user_id",
+  "fitai_user_name",
   "fitai_oauth_state",
   "fitai_oauth_popup",
 ] as const;
@@ -29,12 +30,10 @@ async function performLogout(request: Request) {
   }
 
   const acceptsHtml = request.headers.get("accept")?.includes("text/html");
-  const isGet = request.method === "GET";
 
-  const response =
-    acceptsHtml || isGet
-      ? NextResponse.redirect(new URL("/login", origin))
-      : NextResponse.json({ success: true, message: "Logged out successfully" });
+  const response = acceptsHtml
+    ? NextResponse.redirect(new URL("/login", origin))
+    : NextResponse.json({ success: true, message: "Logged out successfully" });
 
   for (const cookieName of AUTH_COOKIES) {
     response.cookies.delete(cookieName);
@@ -44,9 +43,5 @@ async function performLogout(request: Request) {
 }
 
 export async function POST(request: Request) {
-  return performLogout(request);
-}
-
-export async function GET(request: Request) {
   return performLogout(request);
 }
