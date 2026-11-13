@@ -24,10 +24,7 @@ export async function initiateRoadmapServerAction(): Promise<{
       message: "4-week roadmap generated successfully",
     };
   } catch (error: any) {
-    console.error(
-      "[gRPC CoachingService.InitiateRoadmap] Error:",
-      error?.message || error,
-    );
+    console.error("[gRPC CoachingService.InitiateRoadmap] Error:", error?.message || error);
     return {
       success: false,
       message: error?.message || "Failed to initiate roadmap",
