@@ -84,14 +84,8 @@ export default function AdminMotionSpecsPage() {
   });
 
   const specs = listRes?.items || [];
-  const configuredSpecs = specs.filter((item) =>
-    Boolean(
-      (item.localRulesUrl && item.localRulesUrl.trim().length > 0) ||
-      (item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0),
-    ),
-  );
-  const displayedSpecs = filterConfiguredOnly ? configuredSpecs : specs;
-  const totalCount = filterConfiguredOnly ? configuredSpecs.length : listRes?.totalCount || 0;
+  const displayedSpecs = specs;
+  const totalCount = listRes?.totalCount || 0;
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const validCurrentPage = Math.min(currentPage, totalPages);
@@ -201,7 +195,7 @@ export default function AdminMotionSpecsPage() {
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               }`}
             >
-              Đang có AI Rules / Voice ({stats.activePoseRules || configuredSpecs.length})
+              Đang có AI Rules / Voice ({stats.activePoseRules})
             </button>
             <button
               type="button"
