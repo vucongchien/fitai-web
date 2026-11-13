@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@connectrpc/connect";
+import { revalidatePath } from "next/cache";
 
 import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
 import {
@@ -466,17 +467,19 @@ export async function shareWorkoutSessionAction(input: {
       visibility: input.visibility || "PUBLIC",
     });
 
+    revalidatePath("/community");
+
     return {
       success: true,
       isShared: res.isShared,
     };
-  } catch (error: any) {
-    console.error("[shareWorkoutSessionAction]", error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to share workout session";
+    console.error("[shareWorkoutSessionAction]", message);
     return {
       success: false,
       isShared: false,
-      message: error?.message ?? "Failed to share workout session",
+      message,
     };
   }
 }
-

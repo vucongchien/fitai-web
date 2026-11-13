@@ -250,7 +250,14 @@ export function WorkoutSummaryView({ sessionId }: { sessionId: string }) {
                 </>
               )}
             </button>
-            <Link className={buttonVariants({ size: "large", variant: "primary", className: "w-full justify-center" })} href="/home">
+            <Link
+              className={buttonVariants({
+                size: "large",
+                variant: "primary",
+                className: "w-full justify-center",
+              })}
+              href="/home"
+            >
               Done
             </Link>
           </div>

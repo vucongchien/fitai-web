@@ -1,10 +1,19 @@
+import type { Client } from "@connectrpc/connect";
 import { describe, expect, it, vi } from "vitest";
 
-import { shareWorkoutSessionAction } from "@/features/workout/server/workout-actions";
 import { createPostAction } from "@/features/social/server/social-actions";
+import { shareWorkoutSessionAction } from "@/features/workout/server/workout-actions";
+import type { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
+import type { SocialService } from "@/shared/api/gen/contracts/supporting/social/v1/service/social_service_pb";
+
+const mockRevalidatePath = vi.fn<(path: string) => void>();
+
+vi.mock("next/cache", () => ({
+  revalidatePath: (path: string) => mockRevalidatePath(path),
+}));
 
 vi.mock("@/shared/auth/session", () => ({
-  getAccessToken: vi.fn(),
+  getAccessToken: vi.fn<() => Promise<string | undefined>>(),
 }));
 
 vi.mock("@connectrpc/connect", () => ({
@@ -41,7 +50,7 @@ describe("Workout & Social Sharing Actions (Issue #26)", () => {
     });
     vi.mocked(createClient).mockReturnValueOnce({
       shareWorkoutSession: mockShareRpc,
-    } as any);
+    } as unknown as Client<typeof WorkoutExecutionService>);
 
     const res = await shareWorkoutSessionAction({
       sessionId: "sess-123",
@@ -57,6 +66,7 @@ describe("Workout & Social Sharing Actions (Issue #26)", () => {
       mediaUrls: [],
       visibility: "PUBLIC",
     });
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/community");
   });
 
   it("createPostAction returns failure if no accessToken", async () => {
@@ -92,7 +102,7 @@ describe("Workout & Social Sharing Actions (Issue #26)", () => {
     });
     vi.mocked(createClient).mockReturnValueOnce({
       createPost: mockCreatePostRpc,
-    } as any);
+    } as unknown as Client<typeof SocialService>);
 
     const res = await createPostAction({
       caption: "Let's hit a new PR today!",
@@ -104,5 +114,6 @@ describe("Workout & Social Sharing Actions (Issue #26)", () => {
     expect(res.item?.id).toBe("post-999");
     expect(res.item?.caption).toBe("Let's hit a new PR today!");
     expect(res.item?.authorName).toBe("Coach Alex");
+    expect(mockRevalidatePath).toHaveBeenCalledWith("/community");
   });
 });

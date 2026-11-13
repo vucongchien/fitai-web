@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@connectrpc/connect";
+import { revalidatePath } from "next/cache";
 
 import { ReactionType as ProtoReactionType } from "@/shared/api/gen/contracts/supporting/social/v1/message/social_messages_pb";
 import { SocialService } from "@/shared/api/gen/contracts/supporting/social/v1/service/social_service_pb";
@@ -177,16 +178,18 @@ export async function createPostAction(input: {
       return { success: false, message: "No feed item returned from server" };
     }
 
+    revalidatePath("/community");
+
     return {
       success: true,
       item: mapFeedItem(res.item),
     };
-  } catch (error: any) {
-    console.error("[createPostAction]", error?.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to create post";
+    console.error("[createPostAction]", message);
     return {
       success: false,
-      message: error?.message ?? "Failed to create post",
+      message,
     };
   }
 }
-

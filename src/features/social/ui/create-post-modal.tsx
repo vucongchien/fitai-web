@@ -4,9 +4,10 @@ import { Globe, ImagePlus, Loader2, Users, X } from "lucide-react";
 import Image from "next/image";
 import { useState, useTransition } from "react";
 
+import { Button } from "@/shared/ui/button";
+
 import type { FeedItemVM } from "../model/social.types";
 import { createPostAction } from "../server/social-actions";
-import { Button } from "@/shared/ui/button";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -104,13 +105,7 @@ export function CreatePostModal({
         {/* User Info Bar */}
         <div className="mt-4 flex items-center gap-3">
           <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-neutral-200 bg-neutral-100 flex-shrink-0">
-            <Image
-              src={userAvatarUrl}
-              alt={userName}
-              fill
-              sizes="40px"
-              className="object-cover"
-            />
+            <Image src={userAvatarUrl} alt={userName} fill sizes="40px" className="object-cover" />
           </div>
           <div>
             <span className="text-sm font-semibold text-neutral-900 block leading-tight">
@@ -160,7 +155,10 @@ export function CreatePostModal({
         {mediaUrls.length > 0 && (
           <div className="mt-2 grid grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-xl p-1 bg-neutral-50 border border-neutral-100">
             {mediaUrls.map((url, idx) => (
-              <div key={idx} className="relative h-28 w-full rounded-lg overflow-hidden border border-neutral-200 group">
+              <div
+                key={idx}
+                className="relative h-28 w-full rounded-lg overflow-hidden border border-neutral-200 group"
+              >
                 <Image
                   src={url}
                   alt={`Attachment ${idx + 1}`}
@@ -223,9 +221,7 @@ export function CreatePostModal({
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-[11px] text-neutral-400">
-              {caption.length}/1000
-            </span>
+            <span className="text-[11px] text-neutral-400">{caption.length}/1000</span>
             <Button
               type="button"
               size="medium"
