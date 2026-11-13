@@ -1,3 +1,4 @@
+import { Code, ConnectError } from "@connectrpc/connect";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -24,7 +25,7 @@ function AdminLoadingFallback() {
   );
 }
 
-async function AdminGate({ children }: { children: React.ReactNode }) {
+export async function AdminGate({ children }: { children: React.ReactNode }) {
   const session = await getAuthenticatedSession();
 
   // 1. If not authenticated at all -> Redirect to login
@@ -38,7 +39,7 @@ async function AdminGate({ children }: { children: React.ReactNode }) {
     return <AdminForbiddenView userName={session.userName} role={session.role} />;
   }
 
-  // 3. User is authorized ADMIN -> Render Admin Dashboard
+  // 3. User is authorized ADMIN -> Validate with backend & Render Admin Dashboard
   let pendingCount = 0;
   try {
     const pendingExercises = await fetchAdminExercises({
@@ -46,7 +47,14 @@ async function AdminGate({ children }: { children: React.ReactNode }) {
       limit: 100,
     });
     pendingCount = pendingExercises.totalCount || pendingExercises.items.length;
-  } catch {
+  } catch (error) {
+    const connectError = ConnectError.from(error);
+    if (connectError.code === Code.Unauthenticated) {
+      redirect("/login?redirect=/admin");
+    }
+    if (connectError.code === Code.PermissionDenied) {
+      return <AdminForbiddenView userName={session.userName} role={session.role} />;
+    }
     pendingCount = 0;
   }
 

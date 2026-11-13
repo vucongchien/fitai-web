@@ -107,4 +107,41 @@ describe("Middleware Proxy Auto-refresh (src/proxy.ts)", () => {
     expect(setCookieHeader).toContain("fitai_access_token=;");
     expect(setCookieHeader).toContain("fitai_refresh_token=;");
   });
+
+  it("allows static assets with recognized extensions without authentication", async () => {
+    const { proxy } = await import("@/proxy");
+    const allowedUrls = [
+      "/ort/ort-wasm-simd.wasm",
+      "/ort/ort.all.bundle.min.mjs",
+      "/models/pose_detector.onnx",
+      "/models/rules/squat_rule.json",
+      "/models/dialogue/squat_dialogue.json",
+      "/images/hero.webp",
+      "/icons/icon.svg",
+      "/site.webmanifest",
+    ];
+
+    for (const url of allowedUrls) {
+      const req = makeNextRequest(url);
+      const res = await proxy(req);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+    }
+  });
+
+  it("redirects unauthenticated requests to dot-containing routes that are not static assets", async () => {
+    const { proxy } = await import("@/proxy");
+    const protectedUrls = [
+      "/profile.settings",
+      "/admin.json",
+      "/community/user.dr.john",
+    ];
+
+    for (const url of protectedUrls) {
+      const req = makeNextRequest(url);
+      const res = await proxy(req);
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toContain("/login");
+    }
+  });
 });

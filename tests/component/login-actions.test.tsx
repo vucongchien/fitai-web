@@ -166,6 +166,24 @@ describe(LoginActions, () => {
     expect(mockLocationAssign).not.toHaveBeenCalled();
   });
 
+  it("ignores messages with null or missing origin", () => {
+    const fakePopup = makePopupStub();
+    mockWindowOpen.mockReturnValue(fakePopup);
+
+    render(<LoginActions />);
+    fireEvent.click(screen.getByRole("button", { name: /Continue with Google/i }));
+
+    act(() => {
+      capturedMessageHandler?.({
+        origin: "null",
+        source: fakePopup,
+        data: { type: "OAUTH_COMPLETE", dest: "/admin" },
+      } as unknown as MessageEvent);
+    });
+
+    expect(mockLocationAssign).not.toHaveBeenCalled();
+  });
+
   // ─── postMessage OAUTH_ERROR ─────────────────────────────────────────────────
 
   it("does not navigate on OAUTH_ERROR – resets pending state", () => {
