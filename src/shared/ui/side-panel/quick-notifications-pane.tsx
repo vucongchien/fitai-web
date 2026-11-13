@@ -1,8 +1,15 @@
 "use client";
 
 import { Bell, CheckCheck, Loader2, Sparkles, Trophy } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useSyncExternalStore, useTransition } from "react";
 
+import {
+  formatNotificationRelativeTime,
+  getNotificationIconType,
+  mergeUniqueNotifications,
+  resolveNotificationHref,
+} from "@/features/notification/model/notification-routing";
 import {
   listNotificationsAction,
   markNotificationAsReadAction,
@@ -10,9 +17,13 @@ import {
 } from "@/features/notification/server/notification-actions";
 import { notificationBadgeStore } from "@/shared/ui/header-actions";
 
+const PANE_PAGE_SIZE = 30;
+
 class NotificationListStore {
   private notifications: NotificationItemDTO[] = [];
+  private totalCount = 0;
   private isLoading = true;
+  private isLoadingMore = false;
   private fetched = false;
   private fetching = false;
   private listeners = new Set<() => void>();
@@ -30,20 +41,42 @@ class NotificationListStore {
   getSnapshot = () => this.notifications;
   getServerSnapshot = () => [];
   getLoadingSnapshot = () => this.isLoading;
+  getLoadingMoreSnapshot = () => this.isLoadingMore;
+  getTotalCountSnapshot = () => this.totalCount;
 
   async refresh() {
     this.fetching = true;
     this.isLoading = true;
     this.emit();
     try {
-      const res = await listNotificationsAction(30, 0);
+      const res = await listNotificationsAction(PANE_PAGE_SIZE, 0);
       this.notifications = res.notifications || [];
+      this.totalCount = res.totalCount;
       this.fetched = true;
     } catch {
       this.notifications = [];
+      this.totalCount = 0;
     } finally {
       this.isLoading = false;
       this.fetching = false;
+      this.emit();
+    }
+  }
+
+  async loadMore() {
+    if (this.isLoadingMore || this.notifications.length >= this.totalCount) {
+      return;
+    }
+    this.isLoadingMore = true;
+    this.emit();
+    try {
+      const res = await listNotificationsAction(PANE_PAGE_SIZE, this.notifications.length);
+      this.notifications = mergeUniqueNotifications(this.notifications, res.notifications || []);
+      this.totalCount = res.totalCount;
+    } catch {
+      // Keep current list on failure so the user can retry.
+    } finally {
+      this.isLoadingMore = false;
       this.emit();
     }
   }
@@ -71,24 +104,8 @@ class NotificationListStore {
 
 export const notificationListStore = new NotificationListStore();
 
-function formatRelativeTime(dateString: string): string {
-  try {
-    const diffMs = Date.now() - new Date(dateString).getTime();
-    const diffSec = Math.floor(diffMs / 1000);
-    const diffMin = Math.floor(diffSec / 60);
-    const diffHours = Math.floor(diffMin / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffDays > 0) return `${diffDays}d ago`;
-    if (diffHours > 0) return `${diffHours}h ago`;
-    if (diffMin > 0) return `${diffMin}m ago`;
-    return "Just now";
-  } catch {
-    return dateString;
-  }
-}
-
 export function QuickNotificationsPane() {
+  const router = useRouter();
   const notifications = useSyncExternalStore(
     notificationListStore.subscribe,
     notificationListStore.getSnapshot,
@@ -101,9 +118,22 @@ export function QuickNotificationsPane() {
     () => false,
   );
 
+  const isLoadingMore = useSyncExternalStore(
+    notificationListStore.subscribe,
+    notificationListStore.getLoadingMoreSnapshot,
+    () => false,
+  );
+
+  const totalCount = useSyncExternalStore(
+    notificationListStore.subscribe,
+    notificationListStore.getTotalCountSnapshot,
+    () => 0,
+  );
+
   const [isPending, startTransition] = useTransition();
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const hasMore = notifications.length < totalCount;
 
   const handleMarkAsRead = (id: string, isRead: boolean) => {
     if (isRead) return;
@@ -118,6 +148,14 @@ export function QuickNotificationsPane() {
         notificationListStore.revertRead(id);
       }
     });
+  };
+
+  const handleNotificationClick = (item: NotificationItemDTO) => {
+    handleMarkAsRead(item.id, item.isRead);
+    const targetHref = resolveNotificationHref(item.data);
+    if (targetHref) {
+      router.push(targetHref);
+    }
   };
 
   const handleMarkAllAsRead = () => {
@@ -162,64 +200,73 @@ export function QuickNotificationsPane() {
             <Loader2 className="animate-spin text-brand-500" size={24} />
           </div>
         ) : notifications.length > 0 ? (
-          notifications.map((item) => {
-            const isPr =
-              item.title.toLowerCase().includes("pr") ||
-              item.title.toLowerCase().includes("record") ||
-              item.title.toLowerCase().includes("kỷ lục");
-            const isCoach =
-              item.title.toLowerCase().includes("coach") ||
-              item.title.toLowerCase().includes("huấn luyện");
-            const Icon = isPr ? Trophy : isCoach ? Sparkles : Bell;
+          <>
+            {notifications.map((item) => {
+              const iconType = getNotificationIconType(item.title, item.data);
+              const Icon = iconType === "pr" ? Trophy : iconType === "coach" ? Sparkles : Bell;
 
-            return (
-              <button
-                key={item.id}
-                className={`w-full text-left py-3 px-3 rounded-xl transition-colors flex items-start gap-3 my-0.5 cursor-pointer ${
-                  item.isRead
-                    ? "hover:bg-neutral-50 opacity-80"
-                    : "bg-brand-50/40 hover:bg-brand-50/70"
-                }`}
-                onClick={() => handleMarkAsRead(item.id, item.isRead)}
-                type="button"
-              >
-                <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+              return (
+                <button
+                  key={item.id}
+                  className={`w-full text-left py-3 px-3 rounded-xl transition-colors flex items-start gap-3 my-0.5 cursor-pointer ${
                     item.isRead
-                      ? "bg-neutral-100 text-neutral-500"
-                      : "bg-brand-500 text-white shadow-xs"
+                      ? "hover:bg-neutral-50 opacity-80"
+                      : "bg-brand-50/40 hover:bg-brand-50/70"
                   }`}
+                  onClick={() => handleNotificationClick(item)}
+                  type="button"
                 >
-                  <Icon size={18} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <p
-                      className={`text-sm truncate ${
-                        item.isRead
-                          ? "font-medium text-neutral-800"
-                          : "font-semibold text-neutral-900"
-                      }`}
-                    >
-                      {item.title}
-                    </p>
-                    {!item.isRead && (
-                      <span
-                        aria-hidden="true"
-                        className="w-2 h-2 rounded-full bg-brand-500 shrink-0"
-                      />
-                    )}
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                      item.isRead
+                        ? "bg-neutral-100 text-neutral-500"
+                        : "bg-brand-500 text-white shadow-xs"
+                    }`}
+                  >
+                    <Icon size={18} />
                   </div>
-                  <p className="text-xs text-neutral-600 line-clamp-2 mt-0.5 leading-relaxed">
-                    {item.body}
-                  </p>
-                  <span className="text-[11px] text-neutral-400 mt-1 block">
-                    {formatRelativeTime(item.createdAt)}
-                  </span>
-                </div>
-              </button>
-            );
-          })
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <p
+                        className={`text-sm truncate ${
+                          item.isRead
+                            ? "font-medium text-neutral-800"
+                            : "font-semibold text-neutral-900"
+                        }`}
+                      >
+                        {item.title}
+                      </p>
+                      {!item.isRead && (
+                        <span
+                          aria-hidden="true"
+                          className="w-2 h-2 rounded-full bg-brand-500 shrink-0"
+                        />
+                      )}
+                    </div>
+                    <p className="text-xs text-neutral-600 line-clamp-2 mt-0.5 leading-relaxed">
+                      {item.body}
+                    </p>
+                    <span className="text-[11px] text-neutral-400 mt-1 block">
+                      {formatNotificationRelativeTime(item.createdAt)}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+            {hasMore && (
+              <div className="pt-3 pb-2 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => void notificationListStore.loadMore()}
+                  disabled={isLoadingMore}
+                  className="inline-flex items-center gap-1.5 rounded-lg !border !border-solid !border-neutral-200 bg-white px-3 py-1.5 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 cursor-pointer"
+                >
+                  {isLoadingMore && <Loader2 className="animate-spin" size={14} />}
+                  {isLoadingMore ? "Loading..." : "Load more"}
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
             <Bell className="text-neutral-300 mb-2" size={32} />

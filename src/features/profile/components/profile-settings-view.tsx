@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import type { NotificationSettings } from "@/features/notification/server/notification-actions";
+import { NotificationSettingsSection } from "@/features/notification/ui/notification-settings-section";
 import { PageHeader } from "@/shared/ui/page-header";
 
 import type { ProfileViewModel } from "../model/profile.types";
@@ -11,11 +13,13 @@ import { SettingsRow } from "./settings-row";
 
 interface ProfileSettingsViewProps {
   profile: ProfileViewModel;
+  initialNotificationSettings?: NotificationSettings | null;
   onSaveProfile?: (updated: Partial<ProfileViewModel>) => void;
 }
 
 export function ProfileSettingsView({
   profile: initialProfile,
+  initialNotificationSettings = null,
   onSaveProfile,
 }: ProfileSettingsViewProps) {
   const [profile, setProfile] = useState<ProfileViewModel>(initialProfile);
@@ -113,17 +117,14 @@ export function ProfileSettingsView({
           </h2>
           <div className="rounded-2xl border border-neutral-200/90 bg-white shadow-2xs divide-y divide-neutral-200/80 overflow-hidden">
             <SettingsRow
-              label="Notifications"
-              value="System alerts & workout reminders"
-              href="/notifications"
-            />
-            <SettingsRow
               label="Membership Plan"
               value="Choose or upgrade your plan"
               href="/pricing"
             />
           </div>
         </section>
+
+        <NotificationSettingsSection initialSettings={initialNotificationSettings} />
 
         {/* Group 3: Support & Feedback */}
         <section className="space-y-2">

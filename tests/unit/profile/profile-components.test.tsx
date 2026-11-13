@@ -33,8 +33,10 @@ describe("profile UI Components - ProfileSettingsView", () => {
 
     // Group 2: Preferences & Membership
     expect(screen.getByText("Preferences & Membership")).toBeInTheDocument();
-    expect(screen.getByText("Notifications")).toBeInTheDocument();
     expect(screen.getByText("Membership Plan")).toBeInTheDocument();
+
+    // Notification Channels
+    expect(screen.getByText("Notification Channels")).toBeInTheDocument();
 
     // Group 3: Support
     expect(screen.getByText("Support")).toBeInTheDocument();
