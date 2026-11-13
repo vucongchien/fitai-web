@@ -53,18 +53,22 @@ export function ProfileDetailsModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-xs p-0 sm:p-4 transition-opacity">
-      <div className="relative w-full max-h-[90vh] max-w-xl overflow-y-auto bg-[var(--color-surface)] rounded-t-[var(--radius-card)] sm:rounded-[var(--radius-card)] shadow-2xl border border-[var(--color-border)] font-body">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-[2px] transition-opacity">
+      <div
+        className="relative w-full max-h-[90vh] max-w-md overflow-y-auto [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:h-0 rounded-2xl border border-neutral-200 bg-white p-5 shadow-xl font-body"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
         {/* Header Close Button */}
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-[var(--radius-input)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)] transition-colors z-10 cursor-pointer"
+          className="absolute top-4 right-4 rounded-lg p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-colors z-10 cursor-pointer"
           aria-label="Close modal"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
         </button>
 
-        <div className="p-6 sm:p-8">
+        <div>
           {activeModal === "BODY_METRICS" && (
             <BodyMetricsForm profile={profile} onSave={onSaveProfile} onClose={onClose} />
           )}
@@ -140,31 +144,29 @@ function SelectableTile({
       type="button"
       onClick={onClick}
       className={cn(
-        "w-full flex items-center justify-between p-4 rounded-[var(--radius-card)] text-left transition-colors cursor-pointer min-h-[64px] border-[1.5px]",
+        "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-left transition-colors cursor-pointer border",
         selected
-          ? "border-[var(--color-action)] bg-[var(--color-action-soft)]"
-          : "border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)]",
+          ? "border-sky-500 bg-sky-50/70"
+          : "border-neutral-200 bg-neutral-50/50 hover:bg-neutral-100/80",
       )}
     >
       <div>
         <div
           className={cn(
             "text-sm font-semibold transition-colors",
-            selected ? "text-[var(--color-action)]" : "text-[var(--color-text)]",
+            selected ? "text-sky-700" : "text-neutral-900",
           )}
         >
           {label}
         </div>
-        {description && (
-          <div className="text-xs mt-0.5 text-[var(--color-text-muted)]">{description}</div>
-        )}
+        {description && <div className="text-xs mt-0.5 text-neutral-500">{description}</div>}
       </div>
       <div
         className={cn(
-          "flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors ml-3 border-2",
+          "flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors ml-3 border",
           selected
-            ? "border-[var(--color-action)] bg-[var(--color-action)] text-[var(--color-action-contrast)]"
-            : "border-[var(--color-border)] bg-[var(--color-surface)] text-transparent",
+            ? "border-sky-500 bg-sky-500 text-white"
+            : "border-neutral-300 bg-white text-transparent",
         )}
       >
         <Check className="h-3.5 w-3.5" />
@@ -685,10 +687,10 @@ function PersonalInfoForm({
                     type="button"
                     onClick={() => setGender(g)}
                     className={cn(
-                      "h-11 px-2 rounded-[var(--radius-input)] text-xs font-semibold text-center transition-colors cursor-pointer border-[1.5px]",
+                      "h-11 px-2 rounded-xl text-xs font-semibold text-center transition-colors cursor-pointer border",
                       isSelected
-                        ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)]"
-                        : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
+                        ? "border-sky-500 bg-sky-50 text-sky-700"
+                        : "border-neutral-200 bg-neutral-50/70 text-neutral-700 hover:bg-neutral-100",
                     )}
                   >
                     {g}

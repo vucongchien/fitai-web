@@ -14,6 +14,7 @@ import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1
 import { createServerTransport } from "@/shared/api/server/transport";
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
 import { resolveEntryRoute } from "@/shared/auth/route-decision";
+import { getAccessToken } from "@/shared/auth/session";
 
 export type AuthActionResult<T = void> =
   | { success: true; data: T }
@@ -241,6 +242,51 @@ export async function resetPasswordAction(
     return {
       success: false,
       error: cleanAuthErrorMessage(error, "Failed to reset password. Please try again."),
+    };
+  }
+}
+
+export async function changePasswordAction(
+  oldPassword: string,
+  newPassword: string,
+  confirmPassword: string,
+): Promise<AuthActionResult<{ message: string }>> {
+  if (!oldPassword) {
+    return { success: false, error: "Current password is required." };
+  }
+  if (newPassword.length < 8) {
+    return { success: false, error: "Password must be at least 8 characters." };
+  }
+  if (newPassword !== confirmPassword) {
+    return { success: false, error: "Passwords do not match." };
+  }
+  if (oldPassword === newPassword) {
+    return { success: false, error: "New password must be different from current password." };
+  }
+
+  const accessToken = await getAccessToken();
+  if (!accessToken) {
+    return { success: false, error: "Your session has expired. Please log in again." };
+  }
+
+  if (!process.env.FITAI_RPC_URL) {
+    return { success: true, data: { message: "Password updated successfully." } };
+  }
+
+  try {
+    const client = createClient(AuthService, createServerTransport(accessToken));
+    const response = await client.changePassword({ oldPassword, newPassword, confirmPassword });
+    if (!response.success) {
+      return { success: false, error: response.message || "Failed to change password." };
+    }
+    return {
+      success: true,
+      data: { message: response.message || "Password updated successfully." },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: cleanAuthErrorMessage(error, "Failed to change password. Please try again."),
     };
   }
 }

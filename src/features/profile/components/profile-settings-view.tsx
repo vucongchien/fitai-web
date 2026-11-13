@@ -7,6 +7,7 @@ import { NotificationSettingsSection } from "@/features/notification/ui/notifica
 import { PageHeader } from "@/shared/ui/page-header";
 
 import type { ProfileViewModel } from "../model/profile.types";
+import { ChangePasswordModal } from "./change-password-modal";
 import type { ModalType } from "./profile-details-modal";
 import { ProfileDetailsModal } from "./profile-details-modal";
 import { SettingsRow } from "./settings-row";
@@ -24,6 +25,7 @@ export function ProfileSettingsView({
 }: ProfileSettingsViewProps) {
   const [profile, setProfile] = useState<ProfileViewModel>(initialProfile);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -126,7 +128,21 @@ export function ProfileSettingsView({
 
         <NotificationSettingsSection initialSettings={initialNotificationSettings} />
 
-        {/* Group 3: Support & Feedback */}
+        {/* Group 3: Account & Security */}
+        <section className="space-y-2">
+          <h2 className="text-[15px] font-bold text-neutral-500 px-1 tracking-tight">
+            Account & Security
+          </h2>
+          <div className="rounded-2xl border border-neutral-200/90 bg-white shadow-2xs divide-y divide-neutral-200/80 overflow-hidden">
+            <SettingsRow
+              label="Change Password"
+              value="Update your account password"
+              onClick={() => setIsPasswordModalOpen(true)}
+            />
+          </div>
+        </section>
+
+        {/* Group 4: Support & Feedback */}
         <section className="space-y-2">
           <h2 className="text-[15px] font-bold text-neutral-500 px-1 tracking-tight">Support</h2>
           <div className="rounded-2xl border border-neutral-200/90 bg-white shadow-2xs divide-y divide-neutral-200/80 overflow-hidden">
@@ -160,6 +176,11 @@ export function ProfileSettingsView({
           onSaveProfile={handleSave}
         />
       )}
+
+      <ChangePasswordModal
+        open={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </div>
   );
 }
