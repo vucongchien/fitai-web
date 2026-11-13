@@ -4,6 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 import { SideInspectorPanel } from "@/shared/ui/side-panel/side-inspector-panel";
 import { SidePanelProvider, useSidePanel } from "@/shared/ui/side-panel/side-panel-context";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    back: vi.fn(),
+  }),
+}));
+
 vi.mock("@/features/exercise/server/catalog-actions", () => ({
   getCatalogMetadataServerAction: vi.fn().mockResolvedValue({
     success: true,

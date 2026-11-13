@@ -1,5 +1,7 @@
+import { unstable_rethrow } from "next/navigation";
 import { Suspense } from "react";
 
+import { getNotificationSettingsAction } from "@/features/notification/server/notification-actions";
 import { ProfileSettingsView } from "@/features/profile/components/profile-settings-view";
 import { getProfileData } from "@/features/profile/server/get-profile-data";
 import { PageTransition } from "@/shared/ui/page-transition";
@@ -7,8 +9,20 @@ import { PageTransition } from "@/shared/ui/page-transition";
 export const metadata = { title: "Settings | FITAI" };
 
 async function SettingsContent() {
-  const profileData = await getProfileData();
-  return <ProfileSettingsView profile={profileData} />;
+  const [profileData, notificationSettings] = await Promise.all([
+    getProfileData(),
+    getNotificationSettingsAction().catch((error) => {
+      unstable_rethrow(error);
+      console.error("[SettingsContent] failed to load notification settings:", error);
+      return null;
+    }),
+  ]);
+  return (
+    <ProfileSettingsView
+      profile={profileData}
+      initialNotificationSettings={notificationSettings}
+    />
+  );
 }
 
 function SettingsSkeleton() {

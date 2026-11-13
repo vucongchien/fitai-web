@@ -1,24 +1,27 @@
 "use client";
 
-import { ArrowLeft, Bell, Sparkles, Trophy } from "lucide-react";
+import { ArrowLeft, Bell, Loader2, Sparkles, Trophy } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { markNotificationAsReadAction } from "@/features/notification/server/notification-actions";
+import {
+  mapNotificationDtoToViewModel,
+  mergeUniqueNotifications,
+  resolveNotificationHref,
+  type NotificationItemViewModel,
+} from "@/features/notification/model/notification-routing";
+import {
+  listNotificationsAction,
+  markNotificationAsReadAction,
+} from "@/features/notification/server/notification-actions";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { EmptyState } from "@/shared/ui/empty-state";
 import { HeaderActions } from "@/shared/ui/header-actions";
 import { PullToRefresh } from "@/shared/ui/pull-to-refresh";
 import { NAV_BACK } from "@/shared/ui/transition-types";
 
-export interface NotificationItem {
-  id: string;
-  icon: "coach" | "pr" | "plan";
-  title: string;
-  body: string;
-  time: string;
-  read: boolean;
-}
+export type NotificationItem = NotificationItemViewModel;
 
 const ICON = {
   coach: Sparkles,
@@ -28,10 +31,20 @@ const ICON = {
 
 interface NotificationsViewProps {
   initialNotifications: NotificationItem[];
+  initialTotalCount?: number;
+  pageSize?: number;
 }
 
-export function NotificationsView({ initialNotifications }: NotificationsViewProps) {
+export function NotificationsView({
+  initialNotifications,
+  initialTotalCount = initialNotifications.length,
+  pageSize = 20,
+}: NotificationsViewProps) {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
+  const [totalCount, setTotalCount] = useState<number>(initialTotalCount);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
 
   const handleMarkAsRead = async (id: string, currentlyRead: boolean) => {
     if (currentlyRead) {
@@ -55,6 +68,36 @@ export function NotificationsView({ initialNotifications }: NotificationsViewPro
       setNotifications((prev) =>
         prev.map((item) => (item.id === id ? { ...item, read: false } : item)),
       );
+    }
+  };
+
+  const handleNotificationClick = (item: NotificationItem) => {
+    void handleMarkAsRead(item.id, item.read);
+    const targetHref = resolveNotificationHref(item.data);
+    if (targetHref) {
+      router.push(targetHref);
+    }
+  };
+
+  const hasMore = notifications.length < totalCount;
+
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMore) {
+      return;
+    }
+
+    setIsLoadingMore(true);
+    setLoadMoreError(null);
+    try {
+      const result = await listNotificationsAction(pageSize, notifications.length);
+      const mapped = result.notifications.map(mapNotificationDtoToViewModel);
+      setNotifications((prev) => mergeUniqueNotifications(prev, mapped));
+      setTotalCount(result.totalCount);
+    } catch (error) {
+      console.error("[NotificationsView] failed to load more notifications:", error);
+      setLoadMoreError("Không thể tải thêm thông báo. Vui lòng thử lại.");
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -139,31 +182,56 @@ export function NotificationsView({ initialNotifications }: NotificationsViewPro
               />
             </div>
           ) : (
-            <ol className="notification-list">
-              {notifications.map((item) => {
-                const Icon = ICON[item.icon];
-                return (
-                  <li
-                    className="notification-item"
-                    data-unread={!item.read || undefined}
-                    key={item.id}
-                    onClick={() => handleMarkAsRead(item.id, item.read)}
-                    style={{ cursor: item.read ? "default" : "pointer" }}
-                  >
-                    <span className="notification-item__icon" aria-hidden="true">
-                      <Icon size={18} />
-                    </span>
-                    <div className="notification-item__body">
-                      <div className="notification-item__head">
-                        <strong>{item.title}</strong>
-                        <span>{item.time}</span>
+            <>
+              <ol className="notification-list">
+                {notifications.map((item) => {
+                  const Icon = ICON[item.icon];
+                  const targetHref = resolveNotificationHref(item.data);
+                  const isInteractive = !item.read || Boolean(targetHref);
+                  return (
+                    <li
+                      className="notification-item"
+                      data-unread={!item.read || undefined}
+                      key={item.id}
+                      onClick={() => handleNotificationClick(item)}
+                      style={{ cursor: isInteractive ? "pointer" : "default" }}
+                    >
+                      <span className="notification-item__icon" aria-hidden="true">
+                        <Icon size={18} />
+                      </span>
+                      <div className="notification-item__body">
+                        <div className="notification-item__head">
+                          <strong>{item.title}</strong>
+                          <span>{item.time}</span>
+                        </div>
+                        <p>{item.body}</p>
                       </div>
-                      <p>{item.body}</p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
+                    </li>
+                  );
+                })}
+              </ol>
+
+              {(hasMore || loadMoreError) && (
+                <div className="mt-4 flex flex-col items-center gap-2">
+                  {loadMoreError && (
+                    <p className="text-xs text-red-600" role="alert">
+                      {loadMoreError}
+                    </p>
+                  )}
+                  {hasMore && (
+                    <button
+                      type="button"
+                      onClick={handleLoadMore}
+                      disabled={isLoadingMore}
+                      className="inline-flex items-center gap-2 rounded-xl !border !border-solid !border-neutral-200 bg-white px-4 py-2 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 cursor-pointer"
+                    >
+                      {isLoadingMore && <Loader2 className="animate-spin" size={16} />}
+                      {isLoadingMore ? "Đang tải..." : "Tải thêm thông báo"}
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>
