@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@connectrpc/connect";
+import { revalidatePath } from "next/cache";
 
 import { ReactionType as ProtoReactionType } from "@/shared/api/gen/contracts/supporting/social/v1/message/social_messages_pb";
 import { SocialService } from "@/shared/api/gen/contracts/supporting/social/v1/service/social_service_pb";
@@ -8,7 +9,7 @@ import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
 
 import { mapComment, mapFeedItem } from "../model/social.mapper";
-import type { ActivityFeedVM, CommentVM } from "../model/social.types";
+import type { ActivityFeedVM, CommentVM, FeedItemVM } from "../model/social.types";
 
 async function getSocialClient() {
   const accessToken = await getAccessToken();
@@ -157,5 +158,38 @@ export async function fetchMoreProfileFeedAction(
   } catch (error: any) {
     console.error("[fetchMoreProfileFeedAction]", error?.message);
     return { items: [], nextCursor: "" };
+  }
+}
+
+export async function createPostAction(input: {
+  caption: string;
+  mediaUrls?: string[];
+  visibility?: string;
+}): Promise<{ success: boolean; item?: FeedItemVM; message?: string }> {
+  try {
+    const client = await getSocialClient();
+    const res = await client.createPost({
+      caption: input.caption.trim(),
+      mediaUrls: input.mediaUrls ?? [],
+      visibility: input.visibility || "PUBLIC",
+    });
+
+    if (!res.item) {
+      return { success: false, message: "No feed item returned from server" };
+    }
+
+    revalidatePath("/community");
+
+    return {
+      success: true,
+      item: mapFeedItem(res.item),
+    };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to create post";
+    console.error("[createPostAction]", message);
+    return {
+      success: false,
+      message,
+    };
   }
 }

@@ -3,9 +3,11 @@
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
 import type { FeedItemVM } from "../model/social.types";
 import { fetchMoreFeedAction, fetchMoreProfileFeedAction } from "../server/social-actions";
+import { CreatePostModal } from "./create-post-modal";
 import { FeedCard } from "./feed-card";
 
 interface Props {
@@ -26,6 +28,7 @@ export function FeedList({
   const [items, setItems] = useState<FeedItemVM[]>(initialItems);
   const [cursor, setCursor] = useState(initialNextCursor);
   const [loading, setLoading] = useState(false);
+  const [createPostOpen, setCreatePostOpen] = useState(false);
   const loadMore = useCallback(async () => {
     if (!cursor || loading) return;
     setLoading(true);
@@ -63,7 +66,10 @@ export function FeedList({
 
       {!profileUserId && !header && (
         <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-white">
-          <div className="flex items-center gap-3 min-w-0">
+          <div
+            onClick={() => setCreatePostOpen(true)}
+            className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
+          >
             <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-neutral-200 bg-neutral-100 flex-shrink-0">
               <Image
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80"
@@ -73,16 +79,28 @@ export function FeedList({
                 className="object-cover"
               />
             </div>
-            <span className="text-[14px] text-neutral-400 font-normal truncate">What's new?</span>
+            <span className="text-[14px] text-neutral-400 font-normal truncate hover:text-neutral-600 transition-colors">
+              What&apos;s new?
+            </span>
           </div>
           <button
             type="button"
+            onClick={() => setCreatePostOpen(true)}
             className="flex-shrink-0 h-[34px] px-4 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-[13px] font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-95 transition-all shadow-none cursor-pointer"
           >
             Post
           </button>
         </div>
       )}
+
+      <CreatePostModal
+        isOpen={createPostOpen}
+        onClose={() => setCreatePostOpen(false)}
+        onPostCreated={(newItem) => {
+          setItems((prev) => [newItem, ...prev]);
+          toast.success("Post published to community feed!");
+        }}
+      />
 
       {items.length === 0 && !loading && (
         <div className="py-16 text-center px-4">

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@connectrpc/connect";
+import { revalidatePath } from "next/cache";
 
 import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
 import {
@@ -442,4 +443,43 @@ export async function getPersonalRecords(exerciseIds: string[]): Promise<Record<
     recordMap[pr.exerciseId] = pr.oneRepMax;
   }
   return recordMap;
+}
+
+export async function shareWorkoutSessionAction(input: {
+  sessionId: string;
+  caption?: string;
+  mediaUrls?: string[];
+  visibility?: string;
+}): Promise<{ success: boolean; isShared: boolean; message?: string }> {
+  try {
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      return { success: false, isShared: false, message: "Authentication required" };
+    }
+
+    const transport = createServerTransport(accessToken);
+    const executionClient = createClient(WorkoutExecutionService, transport);
+
+    const res = await executionClient.shareWorkoutSession({
+      sessionId: input.sessionId,
+      caption: input.caption?.trim() || "",
+      mediaUrls: input.mediaUrls ?? [],
+      visibility: input.visibility || "PUBLIC",
+    });
+
+    revalidatePath("/community");
+
+    return {
+      success: true,
+      isShared: res.isShared,
+    };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to share workout session";
+    console.error("[shareWorkoutSessionAction]", message);
+    return {
+      success: false,
+      isShared: false,
+      message,
+    };
+  }
 }
