@@ -6,9 +6,6 @@ import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/ser
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
 
-/**
- * Server Action khởi tạo lộ trình tập 4 tuần
- */
 export async function initiateRoadmapServerAction(): Promise<{
   success: boolean;
   roadmapId?: string;
@@ -27,21 +24,14 @@ export async function initiateRoadmapServerAction(): Promise<{
       message: "4-week roadmap generated successfully",
     };
   } catch (error: any) {
-    console.warn(
-      "[gRPC CoachingService.InitiateRoadmap] Endpoint not ready (404/Unimplemented):",
-      error?.message || error,
-    );
+    console.error("[gRPC CoachingService.InitiateRoadmap] Error:", error?.message || error);
     return {
-      success: true,
-      roadmapId: `rdm-${Date.now()}`,
-      message: "Roadmap created locally (gRPC fallback)",
+      success: false,
+      message: error?.message || "Failed to initiate roadmap",
     };
   }
 }
 
-/**
- * Server Action tái hiệu chỉnh lịch tập tương lai
- */
 export async function regenerateScheduleServerAction(
   roadmapId: string,
   reason: string,
@@ -71,9 +61,6 @@ export async function regenerateScheduleServerAction(
   }
 }
 
-/**
- * Server Action tạo buổi tập bộc phát (Ad-hoc Session)
- */
 export async function createAdhocSessionPlanServerAction(
   exerciseIds: string[],
 ): Promise<{ success: boolean; sessionPlanId?: string; message?: string }> {
