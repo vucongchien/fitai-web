@@ -92,6 +92,8 @@ export interface ExerciseAdminFilters {
   bodyPartId: string;
   equipmentId: string;
   difficulty: Difficulty | "all";
+  hasMotionSpec?: boolean;
+  hasVoiceSpec?: boolean;
 }
 
 export const DEFAULT_EXERCISE_ADMIN_FILTERS: ExerciseAdminFilters = {
