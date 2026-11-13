@@ -131,11 +131,7 @@ describe("Middleware Proxy Auto-refresh (src/proxy.ts)", () => {
 
   it("redirects unauthenticated requests to dot-containing routes that are not static assets", async () => {
     const { proxy } = await import("@/proxy");
-    const protectedUrls = [
-      "/profile.settings",
-      "/admin.json",
-      "/community/user.dr.john",
-    ];
+    const protectedUrls = ["/profile.settings", "/admin.json", "/community/user.dr.john"];
 
     for (const url of protectedUrls) {
       const req = makeNextRequest(url);

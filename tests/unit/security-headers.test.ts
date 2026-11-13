@@ -13,9 +13,7 @@ describe("HTTP Security Headers (next.config.ts)", () => {
 
     expect(globalRule).toBeDefined();
 
-    const headersMap = new Map(
-      globalRule?.headers.map((h) => [h.key, h.value]),
-    );
+    const headersMap = new Map(globalRule?.headers.map((h) => [h.key, h.value]));
 
     expect(headersMap.get("X-Frame-Options")).toBe("DENY");
     expect(headersMap.get("X-Content-Type-Options")).toBe("nosniff");

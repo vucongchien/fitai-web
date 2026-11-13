@@ -129,7 +129,7 @@ describe("/api/auth/logout Route Handler", () => {
   });
 
   it("does not expose HTTP GET method to prevent CSRF logout attacks", async () => {
-    const routeModule = await import("@/app/api/auth/logout/route") as Record<string, unknown>;
+    const routeModule = (await import("@/app/api/auth/logout/route")) as Record<string, unknown>;
     expect(routeModule.GET).toBeUndefined();
     expect(typeof routeModule.POST).toBe("function");
   });
