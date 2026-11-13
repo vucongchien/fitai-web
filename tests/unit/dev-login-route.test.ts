@@ -28,6 +28,24 @@ vi.mock<typeof import("next/server")>(import("next/server"), () => {
   return { NextResponse: FakeNextResponse };
 });
 
+const mockLogin = vi.fn().mockResolvedValue({
+  accessToken: "mock-access-token",
+  refreshToken: "mock-refresh-token",
+  userId: "user-123",
+});
+const mockRegister = vi.fn().mockResolvedValue({});
+
+vi.mock("@connectrpc/connect", () => ({
+  createClient: () => ({
+    login: mockLogin,
+    register: mockRegister,
+  }),
+}));
+
+vi.mock("@/shared/api/server/transport", () => ({
+  createServerTransport: () => ({}),
+}));
+
 vi.mock<typeof import("@/shared/auth/cookies")>(import("@/shared/auth/cookies"), () => ({
   createAuthCookieOptions: ({ maxAge }: { maxAge: number }) => ({
     httpOnly: true,
