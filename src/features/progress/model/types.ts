@@ -44,3 +44,63 @@ export interface UserProgressStats {
   personalRecords: PersonalRecord[];
   weeklyNutrition: WeeklyNutritionSummary;
 }
+
+export type MetricKey = "weightKg" | "bodyFatPercent";
+
+export interface BodyMetricEntry {
+  id: string;
+  loggedAt: string;
+  dateLabel: string;
+  weightKg: number;
+  bodyFatPercent: number;
+  heightCm: number;
+  bmi: number;
+  leanMassKg: number;
+  fatMassKg: number;
+  progressPhotoUrl: string;
+}
+
+export interface HeatmapDay {
+  date: string; // YYYY-MM-DD
+  dayLabel: string; // e.g. "Nov 12"
+  count: number;
+  totalMinutes: number;
+  intensity: 0 | 1 | 2 | 3;
+}
+
+export interface HeatmapWeek {
+  weekIndex: number;
+  monthLabel?: string;
+  days: HeatmapDay[];
+}
+
+export type BodyZoneId = "full" | "upper" | "core" | "lower";
+
+export interface ActiveInjurySummary {
+  muscleGroup: string;
+  severity: string;
+}
+
+export interface ProgressDashboardData {
+  athleteName: string;
+  currentWeightKg: number;
+  targetWeightKg: number;
+  currentBodyFatPercent: number;
+  targetBodyFatPercent: number;
+  heightCm: number;
+  entries: BodyMetricEntry[];
+  photos: BodyMetricEntry[];
+  weeklyGoal: {
+    completed: number;
+    target: number;
+    percentage: number;
+  };
+  streakDays: number;
+  totalWorkouts: number;
+  totalVolumeKg: number;
+  adherencePercentage: number;
+  heatmapWeeks: HeatmapWeek[];
+  preferredMuscleGroups: string[];
+  activeInjuries: ActiveInjurySummary[];
+  gender?: string;
+}

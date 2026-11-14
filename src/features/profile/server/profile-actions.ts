@@ -20,10 +20,6 @@ function safeRevalidatePath(path: string): void {
   }
 }
 
-/**
- * Server Action gọi gRPC ProfileService.UpdateProfile
- * Tự động fetch profile hiện tại và merge, ngăn chặn Data Overwrite Bug làm mất dữ liệu các modal khác.
- */
 export async function updateProfileServerAction(
   updated: Partial<ProfileViewModel>,
 ): Promise<{ success: boolean; message: string }> {
@@ -107,9 +103,6 @@ export async function updateProfileServerAction(
   }
 }
 
-/**
- * Server Action gọi gRPC ProfileService.LogPeriodicMetrics
- */
 export async function logBodyMetricsServerAction(metrics: {
   weightKg: number;
   bodyFatPercent: number;
@@ -130,6 +123,7 @@ export async function logBodyMetricsServerAction(metrics: {
 
     safeRevalidatePath("/profile");
     safeRevalidatePath("/home");
+    safeRevalidatePath("/progress");
 
     return {
       success: true,
@@ -142,9 +136,6 @@ export async function logBodyMetricsServerAction(metrics: {
   }
 }
 
-/**
- * Server Action gọi gRPC ProfileService.ReportInjury
- */
 export async function reportInjuryServerAction(injury: {
   muscleGroup: string;
   severity: string;
@@ -175,9 +166,6 @@ export async function reportInjuryServerAction(injury: {
   }
 }
 
-/**
- * Server Action gọi gRPC ProfileService.RecoverInjury
- */
 export async function recoverInjuryServerAction(
   injuryId: string,
 ): Promise<{ success: boolean; message?: string }> {

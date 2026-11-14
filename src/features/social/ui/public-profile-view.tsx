@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, MoreHorizontal, Settings } from "lucide-react";
+import { Bell, MoreHorizontal, Settings, TrendingUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -151,6 +151,13 @@ export function PublicProfileView({ profile, currentUserId, gamification }: Prop
             </>
           ) : (
             <>
+              <Link
+                href="/progress"
+                className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <TrendingUp size={15} className="text-[var(--color-action)]" />
+                Progress
+              </Link>
               <Link
                 href="/profile/settings"
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"
