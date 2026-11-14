@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { StrictMode } from "react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { SoloMatchSummary } from "@/features/solo-match/model/solo-match.types";
@@ -662,6 +663,98 @@ describe(DuelArenaView, () => {
       act(() => {
         vi.advanceTimersByTime(600);
       });
+      expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-tie-active", "false");
+      expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "tie-idle");
+      expect(screen.getByTestId("duel-opponent-bar")).toHaveAttribute("data-state", "tie-idle");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("expires tie-active pulse cleanly under React StrictMode and when rival catches up to tie", () => {
+    vi.useFakeTimers();
+    try {
+      const baseState = {
+        connectionPhase: "connected" as const,
+        currentAngle: 95,
+        detectedErrors: [],
+        isSettling: false,
+        lastCoachCue: "",
+        matchEnded: false,
+        myFormScore: 95,
+        myStatus: "ACTIVE" as const,
+        myValue: 2,
+        opponentFormScore: 90,
+        opponentStatus: "ACTIVE" as const,
+        opponentValue: 1,
+        personDetected: true,
+        reconnectAttempt: 0,
+        remainingCeilingSeconds: 180,
+        repPhase: "active",
+      };
+
+      const cameraMock = {
+        clearCustomVideo: vi.fn(),
+        customVideoSrc: null,
+        facingMode: "user" as const,
+        flip: vi.fn(),
+        isCustomVideo: false,
+        loadVideoFile: vi.fn(),
+        start: vi.fn(),
+        state: "ready" as const,
+        stop: vi.fn(),
+        videoRef: { current: null },
+      };
+
+      vi.mocked(useSoloDuel).mockReturnValue({
+        camera: cameraMock,
+        forfeitMatch: vi.fn(),
+        liveState: baseState,
+        pose: null,
+        submitScore: vi.fn(),
+      });
+
+      const { rerender } = render(
+        <StrictMode>
+          <DuelArenaView
+            currentUserId="user-me"
+            match={buildLiveMatch()}
+            onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+            recommendedCameraAngle="side"
+          />
+        </StrictMode>,
+      );
+
+      expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "leading");
+
+      // Opponent catches up 2 - 2 -> tie-active
+      vi.mocked(useSoloDuel).mockReturnValue({
+        camera: cameraMock,
+        forfeitMatch: vi.fn(),
+        liveState: { ...baseState, opponentValue: 2 },
+        pose: null,
+        submitScore: vi.fn(),
+      });
+
+      rerender(
+        <StrictMode>
+          <DuelArenaView
+            currentUserId="user-me"
+            match={buildLiveMatch()}
+            onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+            recommendedCameraAngle="side"
+          />
+        </StrictMode>,
+      );
+
+      expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-tie-active", "true");
+      expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "tie-active");
+      expect(screen.getByTestId("duel-opponent-bar")).toHaveAttribute("data-state", "tie-active");
+
+      act(() => {
+        vi.advanceTimersByTime(1200);
+      });
+
       expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-tie-active", "false");
       expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "tie-idle");
       expect(screen.getByTestId("duel-opponent-bar")).toHaveAttribute("data-state", "tie-idle");

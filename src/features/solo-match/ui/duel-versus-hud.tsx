@@ -18,6 +18,7 @@ function useScoreIncreasePulse(
 ): boolean {
   const storeRef = useRef<{
     active: boolean;
+    expiresAt: number;
     listeners: Set<() => void>;
     prevMy: number;
     prevOpp: number;
@@ -27,6 +28,7 @@ function useScoreIncreasePulse(
   if (storeRef.current === null) {
     storeRef.current = {
       active: false,
+      expiresAt: 0,
       listeners: new Set(),
       prevMy: myValue,
       prevOpp: opponentValue,
@@ -35,20 +37,23 @@ function useScoreIncreasePulse(
   }
 
   const store = storeRef.current;
+  const expirePulse = useCallback(() => {
+    store.active = false;
+    store.timer = null;
+    for (const listener of store.listeners) {
+      listener();
+    }
+  }, [store]);
+
   if (myValue > store.prevMy || opponentValue > store.prevOpp) {
     store.prevMy = myValue;
     store.prevOpp = opponentValue;
     store.active = true;
+    store.expiresAt = Date.now() + durationMs;
     if (store.timer !== null) {
       globalThis.clearTimeout(store.timer);
     }
-    store.timer = globalThis.setTimeout(() => {
-      store.active = false;
-      store.timer = null;
-      for (const listener of store.listeners) {
-        listener();
-      }
-    }, durationMs);
+    store.timer = globalThis.setTimeout(expirePulse, durationMs);
   } else if (myValue !== store.prevMy || opponentValue !== store.prevOpp) {
     store.prevMy = myValue;
     store.prevOpp = opponentValue;
@@ -57,6 +62,14 @@ function useScoreIncreasePulse(
   const subscribe = useCallback(
     (listener: () => void) => {
       store.listeners.add(listener);
+      if (store.active && store.timer === null) {
+        const remainingMs = store.expiresAt - Date.now();
+        if (remainingMs <= 0) {
+          store.active = false;
+        } else {
+          store.timer = globalThis.setTimeout(expirePulse, remainingMs);
+        }
+      }
       return () => {
         store.listeners.delete(listener);
         if (store.listeners.size === 0 && store.timer !== null) {
@@ -65,7 +78,7 @@ function useScoreIncreasePulse(
         }
       };
     },
-    [store],
+    [expirePulse, store],
   );
 
   return useSyncExternalStore(
