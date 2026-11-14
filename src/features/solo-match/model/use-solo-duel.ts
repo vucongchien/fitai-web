@@ -2,6 +2,11 @@
 
 import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 
+import {
+  advanceComboState,
+  createInitialComboState,
+} from "@/features/solo-match/domain/combo-tracker";
+import type { ComboState } from "@/features/solo-match/domain/combo-tracker";
 import { speakSoloAudioCue, triggerSoloHaptic } from "@/features/solo-match/domain/solo-feedback";
 import { SoloRefereeClient } from "@/features/solo-match/domain/solo-referee-client";
 import type { SoloMatchSummary } from "@/features/solo-match/model/solo-match.types";
@@ -24,11 +29,14 @@ export type SoloStreamStatusLabel =
   | "DISCONNECTED";
 
 export interface SoloDuelLiveState {
+  comboStreak?: number;
   connectionPhase: "connecting" | "connected" | "reconnecting" | "ended" | "error";
   currentAngle: number;
   detectedErrors: string[];
   isSettling: boolean;
   lastCoachCue: string;
+  lastMilestone?: number | null;
+  lastRepConfirmedAtMs?: number;
   matchEnded: boolean;
   myFormScore: number;
   myStatus: SoloStreamStatusLabel;
@@ -86,11 +94,14 @@ export function useSoloDuel({
 
   const [pose, setPose] = useState<Pose | null>(null);
   const [liveState, setLiveState] = useState<SoloDuelLiveState>(() => ({
+    comboStreak: 0,
     connectionPhase: "connecting",
     currentAngle: 0,
     detectedErrors: [],
     isSettling: false,
     lastCoachCue: "",
+    lastMilestone: null,
+    lastRepConfirmedAtMs: 0,
     matchEnded: match?.status === "COMPLETED" || match?.status === "CANCELLED",
     myFormScore: 100,
     myStatus: "WAITING",
@@ -110,6 +121,8 @@ export function useSoloDuel({
   const pendingFrameRef = useRef(false);
   const lastFrameSentMsRef = useRef(0);
   const prevMyValueRef = useRef(0);
+  const comboStateRef = useRef<ComboState>(createInitialComboState());
+  const lastRepConfirmedAtMsRef = useRef(0);
   const prevAudioCueRef = useRef("");
   const matchEndedHandledRef = useRef(false);
   const isSpectatingOrDoneRef = useRef(false);
@@ -151,10 +164,20 @@ export function useSoloDuel({
         return;
       }
 
-      if (resp.myConfirmedValue > prevMyValueRef.current) {
+      const nowMs = Date.now();
+      const repIncremented = resp.myConfirmedValue > prevMyValueRef.current;
+      if (repIncremented) {
         prevMyValueRef.current = resp.myConfirmedValue;
+        lastRepConfirmedAtMsRef.current = nowMs;
         triggerSoloHaptic(35);
       }
+
+      const detectedErrors = resp.detectedErrors ?? [];
+      comboStateRef.current = advanceComboState(comboStateRef.current, {
+        hasFormError: detectedErrors.length > 0,
+        nowMs,
+        repIncremented,
+      });
 
       if (resp.audioCue && resp.audioCue !== prevAudioCueRef.current) {
         prevAudioCueRef.current = resp.audioCue;
@@ -174,11 +197,14 @@ export function useSoloDuel({
       }
 
       setLiveState((prev) => ({
+        comboStreak: comboStateRef.current.streak,
         connectionPhase: resp.matchEnded ? "ended" : "connected",
         currentAngle: Math.round(resp.currentAngle || 0),
-        detectedErrors: resp.detectedErrors ?? [],
+        detectedErrors,
         isSettling: prev.isSettling || resp.matchEnded,
         lastCoachCue: resp.audioCue || prev.lastCoachCue,
+        lastMilestone: comboStateRef.current.lastMilestone,
+        lastRepConfirmedAtMs: lastRepConfirmedAtMsRef.current,
         matchEnded: resp.matchEnded,
         myFormScore: resp.myFormScore > 0 ? Math.round(resp.myFormScore) : prev.myFormScore,
         myStatus: resp.isCompleted && mappedMyStatus === "ACTIVE" ? "SPECTATING" : mappedMyStatus,

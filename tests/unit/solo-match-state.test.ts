@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   computeRelativeLaneProgress,
   computeRemainingReadySeconds,
+  computeSoloRepProgressPercent,
+  computeTugOfWarSplit,
   createInitialMatchmakingState,
   formatChallengeScore,
   formatSecondsClock,
@@ -163,5 +165,73 @@ describe("Solo Match Domain State & Invariants", () => {
     expect(formatChallengeScore(125, "DURATION")).toBe("2m 05s");
     expect(formatSecondsClock(245)).toBe("04:05");
     expect(computeRemainingReadySeconds(null, 1000, 60)).toBe(60);
+  });
+
+  it("computes tug-of-war split with 50/50 tie and clamped [12, 88] bounds", () => {
+    expect(computeTugOfWarSplit(0, 0)).toEqual({
+      delta: 0,
+      leader: "tie",
+      myShare: 50,
+      opponentShare: 50,
+    });
+
+    expect(computeTugOfWarSplit(12, 12)).toEqual({
+      delta: 0,
+      leader: "tie",
+      myShare: 50,
+      opponentShare: 50,
+    });
+
+    expect(computeTugOfWarSplit(15, 5)).toEqual({
+      delta: 10,
+      leader: "me",
+      myShare: 75,
+      opponentShare: 25,
+    });
+
+    // Extreme lead clamps at 88 / 12 so the trailing side remains visible
+    expect(computeTugOfWarSplit(50, 0)).toEqual({
+      delta: 50,
+      leader: "me",
+      myShare: 88,
+      opponentShare: 12,
+    });
+
+    expect(computeTugOfWarSplit(1, 30)).toEqual({
+      delta: -29,
+      leader: "opponent",
+      myShare: 12,
+      opponentShare: 88,
+    });
+  });
+
+  it("computes solo rep progress percent for REPS and DURATION modes", () => {
+    expect(
+      computeSoloRepProgressPercent({
+        challengeType: "DURATION",
+        currentAngle: 0,
+        exerciseId: "plank",
+        myFormScore: 92,
+      }),
+    ).toBe(92);
+
+    // Push-up: 170 deg (start) -> 0%, 90 deg (bottom) -> 85%
+    expect(
+      computeSoloRepProgressPercent({
+        challengeType: "REPS",
+        currentAngle: 170,
+        exerciseId: "push_up",
+        myFormScore: 100,
+      }),
+    ).toBe(0);
+
+    expect(
+      computeSoloRepProgressPercent({
+        challengeType: "REPS",
+        currentAngle: 90,
+        exerciseId: "push_up",
+        myFormScore: 100,
+      }),
+    ).toBe(85);
   });
 });
