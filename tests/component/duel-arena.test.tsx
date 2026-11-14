@@ -375,6 +375,7 @@ describe(DuelArenaView, () => {
     expect(dividerBefore).toHaveStyle({ left: "50%" });
     expect(screen.getByTestId("duel-rep-gauge")).toHaveAttribute("data-percent", "88");
     expect(screen.getByTestId("duel-rep-gauge")).toHaveTextContent("FORM");
+    expect(screen.queryByTestId("duel-rep-threshold")).not.toBeInTheDocument();
 
     vi.mocked(useSoloDuel).mockReturnValue({
       camera: {
@@ -433,10 +434,10 @@ describe(DuelArenaView, () => {
         matchEnded: false,
         myFormScore: 95,
         myStatus: "ACTIVE",
-        myValue: 1,
+        myValue: 100,
         opponentFormScore: 90,
         opponentStatus: "ACTIVE",
-        opponentValue: 100,
+        opponentValue: 1000,
         personDetected: true,
         reconnectAttempt: 0,
         remainingCeilingSeconds: 180,
@@ -458,8 +459,8 @@ describe(DuelArenaView, () => {
     const tugBar = screen.getByTestId("duel-tug-of-war-bar");
     expect(tugBar).toHaveAttribute("data-my-share", "12");
     expect(tugBar).toHaveAttribute("data-opponent-share", "88");
-    expect(within(tugBar).getByTestId("duel-my-bar-score")).toHaveTextContent("1");
-    expect(within(tugBar).getByTestId("duel-opponent-bar-score")).toHaveTextContent("100");
+    expect(within(tugBar).getByTestId("duel-my-bar-score")).toHaveTextContent("100");
+    expect(within(tugBar).getByTestId("duel-opponent-bar-score")).toHaveTextContent("1000");
     expect(screen.getByTestId("duel-rep-threshold")).toHaveAttribute("data-threshold", "85");
     expect(screen.queryByText("Keep going!")).not.toBeInTheDocument();
   });

@@ -27,13 +27,15 @@ export function DuelRepGauge({
     myFormScore,
   });
 
-  const isAboveThreshold = percent >= REP_THRESHOLD_PERCENT;
+  const showRepThreshold = challengeType !== "DURATION";
+  const isAboveThreshold = showRepThreshold && percent >= REP_THRESHOLD_PERCENT;
 
-  const fillClass = isAboveThreshold
-    ? "bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]"
-    : percent >= 50
-      ? "bg-[var(--color-action)]"
-      : "bg-sky-400";
+  const fillClass =
+    percent >= REP_THRESHOLD_PERCENT
+      ? "bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.85)]"
+      : percent >= 50
+        ? "bg-[var(--color-action)]"
+        : "bg-sky-400";
 
   const label = challengeType === "DURATION" ? "FORM" : "REP";
 
@@ -63,30 +65,32 @@ export function DuelRepGauge({
           ) : null}
         </div>
 
-        {/* Rep-count threshold marker line at 85% */}
-        <div
-          className="pointer-events-none absolute inset-x-0 z-10 flex items-center"
-          data-testid="duel-rep-threshold"
-          data-threshold={REP_THRESHOLD_PERCENT}
-          style={{ bottom: `${REP_THRESHOLD_PERCENT}%`, transform: "translateY(50%)" }}
-        >
+        {/* Rep-count threshold marker line at 85% (REPS mode only) */}
+        {showRepThreshold ? (
           <div
-            className="pointer-events-none absolute top-1/2 -translate-y-1/2 flex items-center gap-1 whitespace-nowrap"
-            style={{ right: "calc(100% + 4px)" }}
+            className="pointer-events-none absolute inset-x-0 z-10 flex items-center"
+            data-testid="duel-rep-threshold"
+            data-threshold={REP_THRESHOLD_PERCENT}
+            style={{ bottom: `${REP_THRESHOLD_PERCENT}%`, transform: "translateY(50%)" }}
           >
-            <span className="rounded bg-black/80 px-1.5 py-0.5 text-[9px] font-bold leading-none text-white border border-white/25 tabular-nums">
-              {REP_THRESHOLD_PERCENT}%
-            </span>
-            <span className="block h-0.5 w-1.5 bg-white" />
+            <div
+              className="pointer-events-none absolute top-1/2 -translate-y-1/2 flex items-center gap-1 whitespace-nowrap"
+              style={{ right: "calc(100% + 4px)" }}
+            >
+              <span className="rounded bg-black/80 px-1.5 py-0.5 text-[9px] font-bold leading-none text-white border border-white/25 tabular-nums">
+                {REP_THRESHOLD_PERCENT}%
+              </span>
+              <span className="block h-0.5 w-1.5 bg-white" />
+            </div>
+            <div
+              className={`h-0.5 w-full ${
+                isAboveThreshold
+                  ? "bg-emerald-200 shadow-[0_0_8px_rgba(52,211,153,0.95)]"
+                  : "bg-white shadow-[0_0_6px_rgba(255,255,255,0.95)]"
+              }`}
+            />
           </div>
-          <div
-            className={`h-0.5 w-full ${
-              isAboveThreshold
-                ? "bg-emerald-200 shadow-[0_0_8px_rgba(52,211,153,0.95)]"
-                : "bg-white shadow-[0_0_6px_rgba(255,255,255,0.95)]"
-            }`}
-          />
-        </div>
+        ) : null}
       </div>
 
       <span className="rounded-full bg-black/70 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold tracking-widest text-white/80 backdrop-blur-sm border border-white/15 uppercase">
