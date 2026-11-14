@@ -279,7 +279,7 @@ export function DuelArenaView({
             {/* Left: Forfeit secondary action with pepper-grey border */}
             <button
               aria-label="Forfeit match"
-              className="flex h-12 min-w-[4.5rem] items-center justify-center gap-1.5 rounded-xl border border-neutral-300 bg-white/95 px-4 text-xs font-bold text-neutral-600 shadow-xs transition-all hover:bg-neutral-50 hover:text-neutral-900 active:scale-95 cursor-pointer justify-self-start"
+              className="flex h-12 min-w-0 sm:min-w-[4.5rem] items-center justify-center gap-1 sm:gap-1.5 rounded-xl border border-neutral-300 bg-white/95 px-3 sm:px-4 text-xs font-bold text-neutral-600 shadow-xs transition-all hover:bg-neutral-50 hover:text-neutral-900 active:scale-95 cursor-pointer justify-self-start whitespace-nowrap"
               data-testid="open-forfeit-modal-button"
               onClick={() => setConfirmAction("forfeit")}
               type="button"
@@ -301,7 +301,7 @@ export function DuelArenaView({
             {/* Right: Submit Score primary action (Vibrant Relay Blue) */}
             <button
               aria-label="Submit Score"
-              className="flex h-12 min-w-[5rem] items-center justify-center gap-1.5 rounded-xl bg-[var(--color-action)] hover:bg-[var(--color-action-hover)] px-5 text-xs font-bold text-white shadow-md shadow-indigo-500/20 transition-all active:scale-95 cursor-pointer justify-self-end"
+              className="flex h-12 min-w-0 sm:min-w-[5rem] items-center justify-center gap-1 sm:gap-1.5 rounded-xl bg-[var(--color-action)] hover:bg-[var(--color-action-hover)] px-3 sm:px-5 text-xs font-bold text-white shadow-md shadow-indigo-500/20 transition-all active:scale-95 cursor-pointer justify-self-end whitespace-nowrap"
               data-testid="open-submit-modal-button"
               onClick={() => setConfirmAction("submit")}
               type="button"
