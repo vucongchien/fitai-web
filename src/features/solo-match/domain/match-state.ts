@@ -72,6 +72,7 @@ export function mapProtoMatchToSummary(view: SoloMatchView): SoloMatchSummary {
     result: normalizeParticipantResult(p.result ?? "PENDING"),
     scoreValue: Number(p.scoreValue ?? 0),
     userId: p.user?.userId ?? "",
+    xp: Math.max(0, Number(p.user?.xp ?? 0)),
   }));
 
   return {

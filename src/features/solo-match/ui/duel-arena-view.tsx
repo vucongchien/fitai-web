@@ -134,9 +134,11 @@ export function DuelArenaView({
             myDisplayName={myDisplayName}
             myStatus={liveState.myStatus}
             myValue={liveState.myValue}
+            myXp={me?.xp ?? 0}
             opponentDisplayName={opponentDisplayName}
             opponentStatus={liveState.opponentStatus}
             opponentValue={liveState.opponentValue}
+            opponentXp={opponent?.xp ?? 0}
           />
         </div>
       ) : null}

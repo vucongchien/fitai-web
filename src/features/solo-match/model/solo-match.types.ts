@@ -13,6 +13,7 @@ export interface SoloParticipant {
   userId: string;
   displayName: string;
   avatarUrl: string;
+  xp?: number;
   scoreValue: number;
   formScore?: number;
   isCompleted: boolean;
