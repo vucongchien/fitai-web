@@ -118,21 +118,24 @@ describe(DuelArenaView, () => {
       />,
     );
 
-    expect(screen.getByTestId("duel-my-score")).toHaveTextContent("18 reps");
-    expect(screen.getByTestId("duel-opponent-score")).toHaveTextContent("15 reps");
-    expect(screen.getByTestId("duel-lead-badge")).toHaveTextContent("+3");
     const hud = screen.getByTestId("duel-versus-hud");
     expect(hud).toHaveClass("w-full");
     expect(hud).not.toHaveClass("max-w-[640px]");
+    expect(within(hud).queryByText("18 reps")).not.toBeInTheDocument();
+    expect(within(hud).queryByText("15 reps")).not.toBeInTheDocument();
+    expect(within(hud).getByText("VS")).toBeInTheDocument();
+    expect(screen.getByTestId("duel-lead-badge")).toHaveTextContent("+3");
     const tugBar = screen.getByTestId("duel-tug-of-war-bar");
     expect(tugBar).toHaveAttribute("data-my-share", "55");
-    expect(within(tugBar).getByTestId("duel-my-bar-score")).toHaveTextContent("18");
-    expect(within(tugBar).getByTestId("duel-opponent-bar-score")).toHaveTextContent("15");
-    expect(screen.getByTestId("duel-rep-gauge")).toBeInTheDocument();
+    expect(within(tugBar).getByTestId("duel-my-score")).toHaveTextContent("18");
+    expect(within(tugBar).getByTestId("duel-opponent-score")).toHaveTextContent("15");
+    const repGauge = screen.getByTestId("duel-rep-gauge");
+    expect(repGauge).toBeInTheDocument();
+    expect(within(repGauge).queryByText(/%|REP|FORM/i)).not.toBeInTheDocument();
     const repThreshold = screen.getByTestId("duel-rep-threshold");
     expect(repThreshold).toHaveAttribute("data-threshold", "85");
     expect(repThreshold).toHaveStyle({ bottom: "85%" });
-    expect(repThreshold).toHaveTextContent("85%");
+    expect(repThreshold).toHaveTextContent("");
     expect(screen.getByTestId("duel-particle-canvas")).toBeInTheDocument();
     expect(screen.getByTestId("duel-ceiling-timer")).toHaveTextContent("03:35");
     expect(screen.queryByText("Solid squat depth!")).not.toBeInTheDocument();
@@ -373,8 +376,10 @@ describe(DuelArenaView, () => {
 
     const dividerBefore = screen.getByTestId("duel-tug-of-war-divider");
     expect(dividerBefore).toHaveStyle({ left: "50%" });
-    expect(screen.getByTestId("duel-rep-gauge")).toHaveAttribute("data-percent", "88");
-    expect(screen.getByTestId("duel-rep-gauge")).toHaveTextContent("FORM");
+    const repGauge = screen.getByTestId("duel-rep-gauge");
+    expect(repGauge).toHaveAttribute("data-percent", "88");
+    expect(repGauge).toHaveAttribute("aria-label", "FORM progress 88%");
+    expect(within(repGauge).queryByText(/%|REP|FORM/i)).not.toBeInTheDocument();
     expect(screen.queryByTestId("duel-rep-threshold")).not.toBeInTheDocument();
 
     vi.mocked(useSoloDuel).mockReturnValue({
@@ -459,9 +464,209 @@ describe(DuelArenaView, () => {
     const tugBar = screen.getByTestId("duel-tug-of-war-bar");
     expect(tugBar).toHaveAttribute("data-my-share", "12");
     expect(tugBar).toHaveAttribute("data-opponent-share", "88");
-    expect(within(tugBar).getByTestId("duel-my-bar-score")).toHaveTextContent("100");
-    expect(within(tugBar).getByTestId("duel-opponent-bar-score")).toHaveTextContent("1000");
+    expect(within(tugBar).getByTestId("duel-my-score")).toHaveTextContent("100");
+    expect(within(tugBar).getByTestId("duel-opponent-score")).toHaveTextContent("1000");
     expect(screen.getByTestId("duel-rep-threshold")).toHaveAttribute("data-threshold", "85");
     expect(screen.queryByText("Keep going!")).not.toBeInTheDocument();
+  });
+
+  it("renders advantage glow on leading side and pushback shade on trailing side", () => {
+    const baseState = {
+      connectionPhase: "connected" as const,
+      currentAngle: 95,
+      detectedErrors: [],
+      isSettling: false,
+      lastCoachCue: "",
+      matchEnded: false,
+      myFormScore: 95,
+      myStatus: "ACTIVE" as const,
+      myValue: 18,
+      opponentFormScore: 90,
+      opponentStatus: "ACTIVE" as const,
+      opponentValue: 14,
+      personDetected: true,
+      reconnectAttempt: 0,
+      remainingCeilingSeconds: 180,
+      repPhase: "active",
+    };
+
+    const cameraMock = {
+      clearCustomVideo: vi.fn(),
+      customVideoSrc: null,
+      facingMode: "user" as const,
+      flip: vi.fn(),
+      isCustomVideo: false,
+      loadVideoFile: vi.fn(),
+      start: vi.fn(),
+      state: "ready" as const,
+      stop: vi.fn(),
+      videoRef: { current: null },
+    };
+
+    vi.mocked(useSoloDuel).mockReturnValue({
+      camera: cameraMock,
+      forfeitMatch: vi.fn(),
+      liveState: baseState,
+      pose: null,
+      submitScore: vi.fn(),
+    });
+
+    const { rerender } = render(
+      <DuelArenaView
+        currentUserId="user-me"
+        match={buildLiveMatch()}
+        onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+        recommendedCameraAngle="side"
+      />,
+    );
+
+    expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "leading");
+    expect(screen.getByTestId("duel-my-bar")).toHaveClass("brightness-110", "saturate-125");
+    expect(screen.queryByTestId("duel-my-pushback-shade")).not.toBeInTheDocument();
+
+    expect(screen.getByTestId("duel-opponent-bar")).toHaveAttribute("data-state", "trailing");
+    expect(screen.getByTestId("duel-opponent-bar")).toHaveClass("brightness-75", "saturate-75");
+    expect(screen.getByTestId("duel-opponent-pushback-shade")).toBeInTheDocument();
+
+    vi.mocked(useSoloDuel).mockReturnValue({
+      camera: cameraMock,
+      forfeitMatch: vi.fn(),
+      liveState: { ...baseState, myValue: 18, opponentValue: 22 },
+      pose: null,
+      submitScore: vi.fn(),
+    });
+
+    rerender(
+      <DuelArenaView
+        currentUserId="user-me"
+        match={buildLiveMatch()}
+        onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+        recommendedCameraAngle="side"
+      />,
+    );
+
+    expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "trailing");
+    expect(screen.getByTestId("duel-my-bar")).toHaveClass("brightness-75", "saturate-75");
+    expect(screen.getByTestId("duel-my-pushback-shade")).toBeInTheDocument();
+
+    expect(screen.getByTestId("duel-opponent-bar")).toHaveAttribute("data-state", "leading");
+    expect(screen.getByTestId("duel-opponent-bar")).toHaveClass("brightness-110", "saturate-125");
+    expect(screen.queryByTestId("duel-opponent-pushback-shade")).not.toBeInTheDocument();
+  });
+
+  it("lights up both sides when tied and actively increasing, then returns to baseline when idle", () => {
+    vi.useFakeTimers();
+    try {
+      const baseState = {
+        connectionPhase: "connected" as const,
+        currentAngle: 95,
+        detectedErrors: [],
+        isSettling: false,
+        lastCoachCue: "",
+        matchEnded: false,
+        myFormScore: 95,
+        myStatus: "ACTIVE" as const,
+        myValue: 0,
+        opponentFormScore: 90,
+        opponentStatus: "ACTIVE" as const,
+        opponentValue: 0,
+        personDetected: true,
+        reconnectAttempt: 0,
+        remainingCeilingSeconds: 180,
+        repPhase: "active",
+      };
+
+      const cameraMock = {
+        clearCustomVideo: vi.fn(),
+        customVideoSrc: null,
+        facingMode: "user" as const,
+        flip: vi.fn(),
+        isCustomVideo: false,
+        loadVideoFile: vi.fn(),
+        start: vi.fn(),
+        state: "ready" as const,
+        stop: vi.fn(),
+        videoRef: { current: null },
+      };
+
+      vi.mocked(useSoloDuel).mockReturnValue({
+        camera: cameraMock,
+        forfeitMatch: vi.fn(),
+        liveState: baseState,
+        pose: null,
+        submitScore: vi.fn(),
+      });
+
+      const { rerender } = render(
+        <DuelArenaView
+          currentUserId="user-me"
+          match={buildLiveMatch()}
+          onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+          recommendedCameraAngle="side"
+        />,
+      );
+
+      // 0 - 0 initial idle tie -> baseline colors
+      expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-tie-active", "false");
+      expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "tie-idle");
+      expect(screen.getByTestId("duel-opponent-bar")).toHaveAttribute("data-state", "tie-idle");
+      expect(screen.getByTestId("duel-my-bar")).not.toHaveClass("brightness-110");
+      expect(screen.getByTestId("duel-opponent-bar")).not.toHaveClass("brightness-110");
+
+      // Both scores increase to 1 - 1 -> tied AND actively increasing
+      vi.mocked(useSoloDuel).mockReturnValue({
+        camera: cameraMock,
+        forfeitMatch: vi.fn(),
+        liveState: { ...baseState, myValue: 1, opponentValue: 1 },
+        pose: null,
+        submitScore: vi.fn(),
+      });
+
+      rerender(
+        <DuelArenaView
+          currentUserId="user-me"
+          match={buildLiveMatch()}
+          onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+          recommendedCameraAngle="side"
+        />,
+      );
+
+      expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-tie-active", "true");
+      expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "tie-active");
+      expect(screen.getByTestId("duel-opponent-bar")).toHaveAttribute("data-state", "tie-active");
+      expect(screen.getByTestId("duel-my-bar")).toHaveClass("brightness-110", "saturate-125");
+      expect(screen.getByTestId("duel-opponent-bar")).toHaveClass("brightness-110", "saturate-125");
+
+      // Unrelated angle update within 1.2s window preserves tie-active state
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+      vi.mocked(useSoloDuel).mockReturnValue({
+        camera: cameraMock,
+        forfeitMatch: vi.fn(),
+        liveState: { ...baseState, currentAngle: 110, myValue: 1, opponentValue: 1 },
+        pose: null,
+        submitScore: vi.fn(),
+      });
+      rerender(
+        <DuelArenaView
+          currentUserId="user-me"
+          match={buildLiveMatch()}
+          onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+          recommendedCameraAngle="side"
+        />,
+      );
+      expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-tie-active", "true");
+
+      // After the 1.2s active window expires, both return to baseline tie-idle
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
+      expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-tie-active", "false");
+      expect(screen.getByTestId("duel-my-bar")).toHaveAttribute("data-state", "tie-idle");
+      expect(screen.getByTestId("duel-opponent-bar")).toHaveAttribute("data-state", "tie-idle");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
