@@ -20,7 +20,7 @@ import {
   calculateAdherencePercentage,
   mapPeriodicMetricsToEntries,
 } from "../model/progress-aggregator";
-import type { ProgressDashboardData } from "../model/types";
+import type { MuscleLoadSummary, ProgressDashboardData } from "../model/types";
 
 export async function getProgressDashboardData(): Promise<ProgressDashboardData> {
   const { accessToken, userId, userName } = await getAuthenticatedSession();
@@ -81,9 +81,15 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       profileClient.getInjuryHistory({ userId: userId || "" }),
       workoutClient.getWorkoutHistory({ limit: 120, offset: 0 }),
       coachingClient.getActiveRoadmap({ userId: userId || "" }),
-      typeof workoutClient.getMuscleLoadStats === "function"
-        ? workoutClient.getMuscleLoadStats({ windowDays: 7 })
-        : Promise.resolve({ items: [] }),
+      typeof (workoutClient as { getMuscleLoadStats?: unknown }).getMuscleLoadStats === "function"
+        ? (
+            workoutClient as unknown as {
+              getMuscleLoadStats: (req: {
+                windowDays: number;
+              }) => Promise<{ items?: MuscleLoadSummary[] }>;
+            }
+          ).getMuscleLoadStats({ windowDays: 7 })
+        : Promise.resolve({ items: [] as MuscleLoadSummary[] }),
       typeof nutritionClient.getNutritionSummary === "function"
         ? nutritionClient.getNutritionSummary({ userId: userId || "" })
         : Promise.resolve({ targetCalories: 0 }),
