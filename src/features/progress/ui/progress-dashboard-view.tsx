@@ -60,6 +60,7 @@ export function ProgressDashboardView({ data }: ProgressDashboardViewProps) {
         totalVolumeKg={data.totalVolumeKg}
         adherencePercentage={data.adherencePercentage}
         entries={data.entries}
+        nutrition={data.nutrition}
       />
 
       {/* Interactive Body Silhouette & Composition */}
@@ -70,6 +71,7 @@ export function ProgressDashboardView({ data }: ProgressDashboardViewProps) {
         preferredMuscleGroups={data.preferredMuscleGroups}
         activeInjuries={data.activeInjuries}
         gender={data.gender}
+        muscleLoad={data.muscleLoad}
       />
 
       {/* Single-Metric Trend Chart + Plain-Language Summary + Compact History Table */}
@@ -77,6 +79,7 @@ export function ProgressDashboardView({ data }: ProgressDashboardViewProps) {
         entries={data.entries}
         targetWeightKg={data.targetWeightKg}
         targetBodyFatPercent={data.targetBodyFatPercent}
+        nutrition={data.nutrition}
         onOpenLogModal={() => setIsLogModalOpen(true)}
       />
 

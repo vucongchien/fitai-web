@@ -285,15 +285,19 @@ export function useWorkoutSessionSync({
       try {
         const totals = await completeWorkoutSession(plan.sessionId, sets, confirmOverload);
         const report = buildReport(sets);
-        sessionStorage.setItem(
-          reportStorageKey(plan.sessionId),
-          JSON.stringify({
-            ...report,
-            averageFormScore: totals.averageFormScore ?? report.averageFormScore,
-            averageRpe: totals.averageRpe ?? report.averageRpe,
-            totalVolumeKg: totals.totalVolumeKg ?? report.totalVolumeKg,
-          }),
-        );
+        const serializedReport = JSON.stringify({
+          ...report,
+          averageFormScore: totals.averageFormScore ?? report.averageFormScore,
+          averageRpe: totals.averageRpe ?? report.averageRpe,
+          totalVolumeKg: totals.totalVolumeKg ?? report.totalVolumeKg,
+        });
+        const reportKey = reportStorageKey(plan.sessionId);
+        sessionStorage.setItem(reportKey, serializedReport);
+        try {
+          localStorage.setItem(reportKey, serializedReport);
+        } catch {
+          // Ignore quota or disabled localStorage
+        }
         session.actions.clearDraft();
         router.push(`/workouts/live/${plan.sessionId}/summary`, {
           transitionTypes: ["workout-complete"],

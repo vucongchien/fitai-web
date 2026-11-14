@@ -45,7 +45,22 @@ export interface UserProgressStats {
   weeklyNutrition: WeeklyNutritionSummary;
 }
 
-export type MetricKey = "weightKg" | "bodyFatPercent";
+export type MetricKey = "weightKg" | "bodyFatPercent" | "calories";
+
+export interface NutritionTrendEntry {
+  date: string; // YYYY-MM-DD
+  dateLabel: string; // e.g. "Nov 14"
+  calories: number;
+  proteinGrams: number;
+}
+
+export interface ProgressNutritionSummary {
+  adherencePercentage: number;
+  avgDailyCalories: number;
+  targetDailyCalories: number;
+  loggedDays: number;
+  trend: NutritionTrendEntry[];
+}
 
 export interface BodyMetricEntry {
   id: string;
@@ -81,6 +96,15 @@ export interface ActiveInjurySummary {
   severity: string;
 }
 
+export interface MuscleLoadSummary {
+  muscleId: string;
+  muscleName: string;
+  weightedSets: number;
+  previousWeightedSets: number;
+  volumeKg: number;
+  loadScore: number;
+}
+
 export interface ProgressDashboardData {
   athleteName: string;
   currentWeightKg: number;
@@ -103,4 +127,6 @@ export interface ProgressDashboardData {
   preferredMuscleGroups: string[];
   activeInjuries: ActiveInjurySummary[];
   gender?: string;
+  muscleLoad?: Record<string, MuscleLoadSummary>;
+  nutrition?: ProgressNutritionSummary;
 }

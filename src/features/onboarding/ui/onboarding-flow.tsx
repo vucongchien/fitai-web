@@ -26,7 +26,7 @@ function getInitialOnboardingValues(): OnboardingValues {
     return onboardingDefaults;
   }
   try {
-    const stored = sessionStorage.getItem(storageKey);
+    const stored = localStorage.getItem(storageKey);
     if (!stored) {
       return onboardingDefaults;
     }
@@ -43,7 +43,7 @@ function getInitialOnboardingValues(): OnboardingValues {
       return { ...onboardingDefaults, ...parsed.data };
     }
   } catch {
-    sessionStorage.removeItem(storageKey);
+    localStorage.removeItem(storageKey);
   }
   return onboardingDefaults;
 }
@@ -51,7 +51,7 @@ function getInitialOnboardingValues(): OnboardingValues {
 function saveDraftToStorage(data: Partial<OnboardingValues>) {
   if (typeof window !== "undefined") {
     try {
-      sessionStorage.setItem(storageKey, JSON.stringify(data));
+      localStorage.setItem(storageKey, JSON.stringify(data));
     } catch {
       // Ignore quota or disabled storage
     }
