@@ -51,6 +51,7 @@ function buildLiveMatch(): SoloMatchSummary {
         result: "PENDING",
         scoreValue: 18,
         userId: "user-me",
+        xp: 1250,
       },
       {
         avatarUrl: "",
@@ -59,6 +60,7 @@ function buildLiveMatch(): SoloMatchSummary {
         result: "PENDING",
         scoreValue: 15,
         userId: "user-rival",
+        xp: 980,
       },
     ],
     readyDeadlineIso: null,
@@ -125,6 +127,9 @@ describe(DuelArenaView, () => {
     expect(within(hud).queryByText("18 reps")).not.toBeInTheDocument();
     expect(within(hud).queryByText("15 reps")).not.toBeInTheDocument();
     expect(within(hud).getByText("VS")).toBeInTheDocument();
+    expect(within(hud).getByTestId("duel-my-xp")).toHaveTextContent("1,250");
+    expect(within(hud).getByTestId("duel-opponent-xp")).toHaveTextContent("980");
+    expect(within(hud).queryByText(/Lv\./i)).not.toBeInTheDocument();
     expect(screen.getByTestId("duel-lead-badge")).toHaveTextContent("+3");
     const tugBar = screen.getByTestId("duel-tug-of-war-bar");
     expect(tugBar).toHaveAttribute("data-my-share", "55");

@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -8,10 +9,16 @@ import {
   createInitialMatchmakingState,
   formatChallengeScore,
   formatSecondsClock,
+  mapProtoMatchToSummary,
   reduceMatchmakingState,
   resolveParticipants,
 } from "@/features/solo-match/domain/match-state";
 import type { SoloMatchSummary } from "@/features/solo-match/model/solo-match.types";
+import {
+  ParticipantViewSchema,
+  SoloMatchViewSchema,
+  UserSnapshotViewSchema,
+} from "@/shared/api/gen/contracts/core/solo_match/v1/message/match_message_pb";
 
 function makeMockMatch(overrides: Partial<SoloMatchSummary> = {}): SoloMatchSummary {
   return {
@@ -233,5 +240,43 @@ describe("Solo Match Domain State & Invariants", () => {
         myFormScore: 100,
       }),
     ).toBe(85);
+  });
+
+  it("maps proto SoloMatchView participant xp (including bigint and negative clamp)", () => {
+    const view = create(SoloMatchViewSchema, {
+      challengeType: "REPS",
+      exerciseId: "push_up",
+      exerciseName: "Push-Up",
+      matchId: "m-xp-1",
+      participants: [
+        create(ParticipantViewSchema, {
+          isCompleted: false,
+          result: "PENDING",
+          scoreValue: 10,
+          user: create(UserSnapshotViewSchema, {
+            avatarUrl: "",
+            displayName: "Minjun",
+            userId: "u-1",
+            xp: 1250n,
+          }),
+        }),
+        create(ParticipantViewSchema, {
+          isCompleted: false,
+          result: "PENDING",
+          scoreValue: 8,
+          user: create(UserSnapshotViewSchema, {
+            avatarUrl: "",
+            displayName: "Seojun",
+            userId: "u-2",
+            xp: -10n,
+          }),
+        }),
+      ],
+      status: "IN_PROGRESS",
+    });
+
+    const summary = mapProtoMatchToSummary(view);
+    expect(summary.participants[0]?.xp).toBe(1250);
+    expect(summary.participants[1]?.xp).toBe(0);
   });
 });

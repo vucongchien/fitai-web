@@ -1,6 +1,6 @@
 "use client";
 
-import { WifiOff } from "lucide-react";
+import { WifiOff, Zap } from "lucide-react";
 import { useCallback, useRef, useSyncExternalStore } from "react";
 
 import { computeTugOfWarSplit } from "@/features/solo-match/domain/match-state";
@@ -126,9 +126,16 @@ export interface DuelVersusHudProps {
   myDisplayName: string;
   myStatus: SoloStreamStatusLabel;
   myValue: number;
+  myXp?: number;
   opponentDisplayName: string;
   opponentStatus: SoloStreamStatusLabel;
   opponentValue: number;
+  opponentXp?: number;
+}
+
+function formatXp(value: number): string {
+  const safe = Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0;
+  return safe.toLocaleString("en-US");
 }
 
 export function DuelVersusHud({
@@ -139,9 +146,11 @@ export function DuelVersusHud({
   myDisplayName,
   myStatus: _myStatus,
   myValue,
+  myXp = 0,
   opponentDisplayName,
   opponentStatus,
   opponentValue,
+  opponentXp = 0,
 }: DuelVersusHudProps) {
   const { delta, leader, myShare, opponentShare } = computeTugOfWarSplit(myValue, opponentValue);
   const isScoreIncreasing = useScoreIncreasePulse(myValue, opponentValue, TIE_ACTIVE_PULSE_MS);
@@ -172,9 +181,19 @@ export function DuelVersusHud({
     >
       <div className="flex items-center justify-between gap-2 sm:gap-3">
         {/* Left: You (Relay Blue) */}
-        <div className="flex items-center min-w-0 flex-1">
-          <span className="text-[11px] sm:text-xs font-bold tracking-wider text-[var(--color-action)] uppercase truncate max-w-full">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1">
+          <span className="text-[11px] sm:text-xs font-bold tracking-wider text-[var(--color-action)] uppercase truncate">
             {myDisplayName || "You"}
+          </span>
+          <span
+            className="inline-flex items-center gap-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-bold text-amber-700 tabular-nums shrink-0"
+            data-testid="duel-my-xp"
+          >
+            <Zap
+              aria-hidden="true"
+              className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-500 fill-amber-500 shrink-0"
+            />
+            {formatXp(myXp)}
           </span>
         </div>
 
@@ -194,7 +213,7 @@ export function DuelVersusHud({
         </div>
 
         {/* Right: Rival */}
-        <div className="flex items-center justify-end gap-1 min-w-0 flex-1">
+        <div className="flex items-center justify-end gap-1.5 min-w-0 flex-1">
           {isOpponentDisconnected ? (
             <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-ping shrink-0" />
           ) : isOpponentCompleted ? (
@@ -202,6 +221,16 @@ export function DuelVersusHud({
               [Done]
             </span>
           ) : null}
+          <span
+            className="inline-flex items-center gap-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-bold text-amber-700 tabular-nums shrink-0"
+            data-testid="duel-opponent-xp"
+          >
+            <Zap
+              aria-hidden="true"
+              className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-500 fill-amber-500 shrink-0"
+            />
+            {formatXp(opponentXp)}
+          </span>
           <span className="truncate text-[11px] sm:text-xs font-bold tracking-wider text-rose-600 uppercase">
             {opponentDisplayName || "Rival"}
           </span>
