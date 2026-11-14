@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import "@/features/landing/ui/landing-page.css";
+import { LandingKnowledgeFooter } from "@/features/lab/ui/landing-knowledge-footer";
 import { AdaptiveRoadmapSection } from "@/features/landing/ui/adaptive-roadmap-section";
 import { BodyEvidenceSection } from "@/features/landing/ui/body-evidence-section";
 import { CommunitySoloSection } from "@/features/landing/ui/community-solo-section";
@@ -50,6 +51,7 @@ export default function LandingPage() {
         <BodyEvidenceSection />
         <TrialConsultSection />
       </main>
+      <LandingKnowledgeFooter />
     </div>
   );
 }

@@ -52,13 +52,25 @@ describe("Middleware Proxy Auto-refresh (src/proxy.ts)", () => {
     expect(res.headers.get("location")).toBeNull();
   });
 
-  it("treats landing route / as public and returns 200 without redirecting to /login", async () => {
+  it("allows crawler, public lab, and guide routes without auth", async () => {
     const { proxy } = await import("@/proxy");
-    const req = makeNextRequest("/");
-    const res = await proxy(req);
 
-    expect(res.status).toBe(200);
-    expect(res.headers.get("location")).toBeNull();
+    for (const path of [
+      "/lab",
+      "/lab/squat",
+      "/guides",
+      "/guides/4-week-adaptive-roadmap",
+      "/robots.txt",
+      "/sitemap.xml",
+      "/llms.txt",
+      "/llms-full.txt",
+      "/opengraph-image",
+    ]) {
+      const req = makeNextRequest(path);
+      const res = await proxy(req);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+    }
     expect(mockRefreshToken).not.toHaveBeenCalled();
   });
 

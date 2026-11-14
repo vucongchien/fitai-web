@@ -59,7 +59,6 @@ async function fetchEndpoint(url, userAgent = "Googlebot/2.1 (+http://www.google
     url,
     status: res.status,
     location: res.headers.get("location"),
-    contentType: res.headers.get("content-type") || "",
     ttfbMs,
     body,
   };
@@ -143,9 +142,8 @@ function parseRobotsRules(robotsText) {
 
   const botAccess = {};
   for (const bot of AI_BOTS_TO_CHECK) {
-    const specific = blocks.find((b) =>
-      new RegExp(`^User-agent:\\s*${bot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "im").test(b),
-    );
+    const escaped = bot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const specific = blocks.find((b) => new RegExp(`^User-agent:\\s*${escaped}\\b`, "im").test(b));
     const wildcard = blocks.find((b) => /^User-agent:\s*\*/im.test(b));
     const chosen = specific || wildcard || "";
     const disallowsRoot = /^Disallow:\s*\/\s*$/im.test(chosen);
@@ -173,39 +171,43 @@ function validateLlmsTxt(text, domain) {
   };
 }
 
-function validateAeoSchema(jsonLdBlocks, html) {
-  const validBlocks = jsonLdBlocks.filter((b) => b.valid).map((b) => b.data);
-  const types = validBlocks.map((d) => d["@type"]).filter(Boolean);
-  const hasWebsite = validBlocks.some(
-    (d) => d["@type"] === "WebSite" && d["@context"] === "https://schema.org" && d.name && d.url,
-  );
-  const hasSoftwareApp = validBlocks.some(
-    (d) =>
-      d["@type"] === "SoftwareApplication" &&
-      d["@context"] === "https://schema.org" &&
-      d.name &&
-      d.applicationCategory &&
-      d.operatingSystem,
-  );
-  const h1Count = (html.match(/<h1[\s>]/gi) || []).length;
-  const h2Count = (html.match(/<h2[\s>]/gi) || []).length;
+function collectSchemaTypes(html) {
+  const blocks = extractJsonLdBlocks(html);
+  const valid = blocks.length > 0 && blocks.every((b) => b.valid);
+  const types = blocks
+    .filter((b) => b.valid)
+    .map((b) => b.data["@type"])
+    .filter(Boolean);
+  return { valid, types };
+}
 
-  const checks = {
-    validJsonLdSyntax: jsonLdBlocks.length > 0 && jsonLdBlocks.every((b) => b.valid),
-    hasWebsiteSchema: hasWebsite,
-    hasSoftwareAppSchema: hasSoftwareApp,
-    singleH1: h1Count === 1,
-    hasSubheadings: h2Count >= 2,
-  };
-  const passed = Object.values(checks).filter(Boolean).length;
-
-  return {
-    types,
-    h1Count,
-    h2Count,
-    checks,
-    readinessPct: Math.round((passed / Object.keys(checks).length) * 100),
-  };
+async function crawlSitemapUrls(baseUrl, sitemapBody) {
+  const locs = Array.from(sitemapBody.matchAll(/<loc>([^<]+)<\/loc>/gi)).map((m) => m[1].trim());
+  const paths = locs.map((loc) => {
+    try {
+      return new URL(loc).pathname;
+    } catch {
+      return "/";
+    }
+  });
+  const results = await Promise.all(
+    paths.map(async (routePath) => {
+      const res = await fetchEndpoint(`${baseUrl}${routePath}`);
+      const text = stripHtmlToText(res.body);
+      const wordCount = text ? text.split(/\s+/).length : 0;
+      const schema = collectSchemaTypes(res.body);
+      const h1Count = (res.body.match(/<h1[\s>]/gi) || []).length;
+      return {
+        path: routePath,
+        status: res.status,
+        wordCount,
+        h1Count,
+        validJsonLd: schema.valid,
+        schemaTypes: schema.types,
+      };
+    }),
+  );
+  return results;
 }
 
 async function runGeminiSearchBenchmarks(querySet, apiKey) {
@@ -224,15 +226,11 @@ async function runGeminiSearchBenchmarks(querySet, apiKey) {
     const matchedKeywords = item.expectedKeywords.filter((kw) => text.includes(kw.toLowerCase()));
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     const citedUrls = chunks.map((c) => c.web?.uri || c.web?.title || "").filter(Boolean);
-    const domainCited =
-      text.includes(domain) || citedUrls.some((u) => u.toLowerCase().includes(domain));
-
     aeoResults.push({
       id: item.id,
       accurate: matchedKeywords.length >= Math.ceil(item.expectedKeywords.length / 2),
       matchedKeywords,
-      domainCited,
-      citedCount: citedUrls.length,
+      domainCited: text.includes(domain) || citedUrls.some((u) => u.toLowerCase().includes(domain)),
     });
   }
 
@@ -251,15 +249,7 @@ async function runGeminiSearchBenchmarks(querySet, apiKey) {
       uri: c.web?.uri || "",
       domain: c.web?.domain || "",
     }));
-
-    const brandIdx = brandNames.reduce((best, b) => {
-      const idx = text.indexOf(b);
-      if (idx === -1) return best;
-      return best === -1 ? idx : Math.min(best, idx);
-    }, -1);
-
-    const mentioned = brandIdx !== -1;
-    const earlyMention = mentioned && rawText.length > 0 && brandIdx / rawText.length <= 0.5;
+    const mentioned = brandNames.some((b) => text.includes(b));
     const cited =
       text.includes(domain) ||
       citedSources.some(
@@ -268,32 +258,20 @@ async function runGeminiSearchBenchmarks(querySet, apiKey) {
           s.uri.toLowerCase().includes(domain) ||
           s.domain.toLowerCase().includes(domain),
       );
-
-    geoResults.push({
-      id: item.id,
-      category: item.category,
-      mentioned,
-      earlyMention,
-      cited,
-      citedCount: citedSources.length,
-    });
+    geoResults.push({ id: item.id, category: item.category, mentioned, cited });
   }
-
-  const aeoAccuracyPct = Math.round(
-    (aeoResults.filter((r) => r.accurate).length / aeoResults.length) * 100,
-  );
-  const geoMentionPct = Math.round(
-    (geoResults.filter((r) => r.mentioned).length / geoResults.length) * 100,
-  );
-  const geoCitationPct = Math.round(
-    (geoResults.filter((r) => r.cited).length / geoResults.length) * 100,
-  );
 
   return {
     provider: "google-gemini-2.5-flash (googleSearch grounding, free tier)",
-    aeoAccuracyPct,
-    geoMentionPct,
-    geoCitationPct,
+    aeoAccuracyPct: Math.round(
+      (aeoResults.filter((r) => r.accurate).length / aeoResults.length) * 100,
+    ),
+    geoMentionPct: Math.round(
+      (geoResults.filter((r) => r.mentioned).length / geoResults.length) * 100,
+    ),
+    geoCitationPct: Math.round(
+      (geoResults.filter((r) => r.cited).length / geoResults.length) * 100,
+    ),
     aeoResults,
     geoResults,
   };
@@ -306,12 +284,11 @@ function loadPreviousReport(todayFilename) {
     .filter((f) => f.endsWith(".json") && f !== todayFilename)
     .sort();
   if (files.length === 0) return null;
-  const prevPath = path.join(REPORTS_DIR, files[files.length - 1]);
   try {
-    return {
-      filename: files[files.length - 1],
-      data: JSON.parse(fs.readFileSync(prevPath, "utf8")),
-    };
+    const data = JSON.parse(
+      fs.readFileSync(path.join(REPORTS_DIR, files[files.length - 1]), "utf8"),
+    );
+    return { filename: files[files.length - 1], data };
   } catch {
     return null;
   }
@@ -332,18 +309,23 @@ async function main() {
   console.log(`\n=== FITAI SEO / AEO / GEO Benchmark ===`);
   console.log(`Target: ${baseUrl}\n`);
 
-  // 1. Live HTTP Crawl (Googlebot User-Agent, no cookies)
-  const [homeRes, loginRes, robotsRes, sitemapRes, llmsRes, ogRes] = await Promise.all([
-    fetchEndpoint(`${baseUrl}/`),
-    fetchEndpoint(`${baseUrl}/login`),
-    fetchEndpoint(`${baseUrl}/robots.txt`),
-    fetchEndpoint(`${baseUrl}/sitemap.xml`),
-    fetchEndpoint(`${baseUrl}/llms.txt`),
-    fetchEndpoint(`${baseUrl}/opengraph-image`),
-  ]);
+  const [homeRes, loginRes, robotsRes, sitemapRes, llmsRes, llmsFullRes, ogRes] = await Promise.all(
+    [
+      fetchEndpoint(`${baseUrl}/`),
+      fetchEndpoint(`${baseUrl}/login`),
+      fetchEndpoint(`${baseUrl}/robots.txt`),
+      fetchEndpoint(`${baseUrl}/sitemap.xml`),
+      fetchEndpoint(`${baseUrl}/llms.txt`),
+      fetchEndpoint(`${baseUrl}/llms-full.txt`),
+      fetchEndpoint(`${baseUrl}/opengraph-image`),
+    ],
+  );
 
-  const homeText = stripHtmlToText(homeRes.body);
-  const homeWordCount = homeText ? homeText.split(/\s+/).length : 0;
+  const sitemapPages =
+    sitemapRes.status === 200 ? await crawlSitemapUrls(baseUrl, sitemapRes.body) : [];
+  const allSitemapReturn200 =
+    sitemapPages.length > 0 && sitemapPages.every((p) => p.status === 200 && p.h1Count === 1);
+
   const homeTitle = extractTagContent(homeRes.body, /<title[^>]*>([\s\S]*?)<\/title>/i);
   const homeDesc = extractTagContent(
     homeRes.body,
@@ -358,15 +340,13 @@ async function main() {
     /<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']*)["']/i,
   );
   const loginTitle = extractTagContent(loginRes.body, /<title[^>]*>([\s\S]*?)<\/title>/i);
-
-  const sitemapLocMatches = sitemapRes.body.match(/<loc>([^<]+)<\/loc>/gi) || [];
-  const sitemapUrlCount = sitemapLocMatches.length;
+  const homeWordCount = stripHtmlToText(homeRes.body).split(/\s+/).filter(Boolean).length;
 
   const seoChecks = {
     homeReturns200: homeRes.status === 200,
-    loginReturns200: loginRes.status === 200,
+    allSitemapUrlsHealthy: allSitemapReturn200,
     robotsReturns200: robotsRes.status === 200 && /Sitemap:/i.test(robotsRes.body),
-    sitemapReturns200: sitemapRes.status === 200 && sitemapUrlCount > 0,
+    sitemapReturns200: sitemapRes.status === 200 && sitemapPages.length > 0,
     ogImageReturns200: ogRes.status === 200,
     hasTitleAndDesc: Boolean(homeTitle && homeDesc),
     noDuplicateBrandInLoginTitle: Boolean(loginTitle && !/FITAI\s*·\s*FITAI/i.test(loginTitle)),
@@ -377,7 +357,6 @@ async function main() {
     (Object.values(seoChecks).filter(Boolean).length / Object.keys(seoChecks).length) * 100,
   );
 
-  // PageSpeed Insights API (optional skip for localhost)
   let psi = { ok: false, reason: "Skipped" };
   if (!args.skipPsi && !isLocalhostUrl(baseUrl)) {
     psi = await runPageSpeedAudit(`${baseUrl}/`);
@@ -386,15 +365,31 @@ async function main() {
   }
 
   const indexationRatePct =
-    args.gscIndexed != null && sitemapUrlCount > 0
-      ? Math.round((args.gscIndexed / sitemapUrlCount) * 100)
+    args.gscIndexed != null && sitemapPages.length > 0
+      ? Math.round((args.gscIndexed / sitemapPages.length) * 100)
       : null;
 
-  // 2. AEO Checks (Schema.org + Semantic Structure)
-  const jsonLdBlocks = extractJsonLdBlocks(homeRes.body);
-  const aeoSchema = validateAeoSchema(jsonLdBlocks, homeRes.body);
+  const squatSample = sitemapPages.find((p) => p.path === "/lab/squat");
+  const guideSample = sitemapPages.find((p) => p.path === "/guides/4-week-adaptive-roadmap");
+  const homeSchema = collectSchemaTypes(homeRes.body);
+  const aeoChecks = {
+    homeSchemaValid: homeSchema.valid && homeSchema.types.includes("SoftwareApplication"),
+    labHowToAndFaqValid: Boolean(
+      squatSample?.validJsonLd &&
+      squatSample.schemaTypes.includes("HowTo") &&
+      squatSample.schemaTypes.includes("FAQPage"),
+    ),
+    guideArticleAndFaqValid: Boolean(
+      guideSample?.validJsonLd &&
+      guideSample.schemaTypes.includes("TechArticle") &&
+      guideSample.schemaTypes.includes("FAQPage"),
+    ),
+    allContentPagesHaveH1: sitemapPages.length > 0 && sitemapPages.every((p) => p.h1Count === 1),
+  };
+  const aeoSchemaPct = Math.round(
+    (Object.values(aeoChecks).filter(Boolean).length / Object.keys(aeoChecks).length) * 100,
+  );
 
-  // 3. GEO Checks (RFC 9309 AI Crawler Access + llmstxt.org)
   const aiBotAccess = parseRobotsRules(robotsRes.body);
   const allowedAiBotsCount = Object.values(aiBotAccess).filter((b) => b.allowedRoot).length;
   const aiCrawlerAccessPct =
@@ -403,9 +398,11 @@ async function main() {
     llmsRes.status === 200
       ? validateLlmsTxt(llmsRes.body, querySet.targetDomain)
       : { checks: {}, readinessPct: 0 };
-  const geoReadinessPct = Math.round((aiCrawlerAccessPct + llmsCheck.readinessPct) / 2);
+  const llmsFullReady = llmsFullRes.status === 200 && llmsFullRes.body.length > 500 ? 100 : 0;
+  const geoReadinessPct = Math.round(
+    (aiCrawlerAccessPct + llmsCheck.readinessPct + llmsFullReady) / 3,
+  );
 
-  // Live Gemini Search Grounding (Free Tier) if GEMINI_API_KEY is present
   let aiSearchMetrics = null;
   const geminiKey = process.env.GEMINI_API_KEY?.trim();
   if (!args.skipAi && geminiKey) {
@@ -416,18 +413,19 @@ async function main() {
   const today = new Date().toISOString().slice(0, 10);
   const todayFile = `${today}.json`;
   const previous = loadPreviousReport(todayFile);
-
   const report = {
     timestamp: new Date().toISOString(),
     targetUrl: baseUrl,
+    sitemapUrlCount: sitemapPages.length,
     endpoints: {
       "/": { status: homeRes.status, ttfbMs: homeRes.ttfbMs, wordCount: homeWordCount },
-      "/login": { status: loginRes.status, ttfbMs: loginRes.ttfbMs, title: loginTitle },
       "/robots.txt": { status: robotsRes.status },
-      "/sitemap.xml": { status: sitemapRes.status, urls: sitemapUrlCount },
+      "/sitemap.xml": { status: sitemapRes.status, urls: sitemapPages.length },
       "/llms.txt": { status: llmsRes.status },
+      "/llms-full.txt": { status: llmsFullRes.status },
       "/opengraph-image": { status: ogRes.status },
     },
+    sitemapPages,
     metrics: {
       seo: {
         technicalReadinessPct: seoTechnicalPct,
@@ -439,19 +437,18 @@ async function main() {
         psiNote: psi.ok ? undefined : psi.reason,
       },
       aeo: {
-        schemaReadinessPct: aeoSchema.readinessPct,
+        schemaReadinessPct: aeoSchemaPct,
         answerAccuracyPct: aiSearchMetrics ? aiSearchMetrics.aeoAccuracyPct : null,
-        schemaTypes: aeoSchema.types,
-        checks: aeoSchema.checks,
+        checks: aeoChecks,
       },
       geo: {
         geoReadinessPct,
         aiCrawlerAccessPct,
         llmsTxtReadinessPct: llmsCheck.readinessPct,
+        llmsFullReadyPct: llmsFullReady,
         brandMentionRatePct: aiSearchMetrics ? aiSearchMetrics.geoMentionPct : null,
         citationLinkRatePct: aiSearchMetrics ? aiSearchMetrics.geoCitationPct : null,
         aiBotAccess,
-        llmsChecks: llmsCheck.checks,
       },
     },
     aiSearchBenchmark: aiSearchMetrics,
@@ -462,13 +459,13 @@ async function main() {
   fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 
   const prevMetrics = previous?.data?.metrics;
-
+  console.log(`Indexed Sitemap URLs Crawled: ${sitemapPages.length}`);
   console.log("3 Core Pillars Summary:");
   console.log(
     `1. [SEO] Technical Readiness: ${seoTechnicalPct}%${formatDelta(seoTechnicalPct, prevMetrics?.seo?.technicalReadinessPct)} | Lighthouse SEO: ${psi.ok ? `${psi.seoScore}/100` : `N/A (${psi.reason})`} | Indexation: ${indexationRatePct != null ? `${indexationRatePct}%` : "Pass --gsc-indexed <count>"}`,
   );
   console.log(
-    `2. [AEO] Schema Readiness:    ${aeoSchema.readinessPct}%${formatDelta(aeoSchema.readinessPct, prevMetrics?.aeo?.schemaReadinessPct)} | Gemini Answer Accuracy: ${aiSearchMetrics ? `${aiSearchMetrics.aeoAccuracyPct}%` : "Set GEMINI_API_KEY to measure"}`,
+    `2. [AEO] Schema Readiness:    ${aeoSchemaPct}%${formatDelta(aeoSchemaPct, prevMetrics?.aeo?.schemaReadinessPct)} | Gemini Answer Accuracy: ${aiSearchMetrics ? `${aiSearchMetrics.aeoAccuracyPct}%` : "Set GEMINI_API_KEY to measure"}`,
   );
   console.log(
     `3. [GEO] Infra Readiness:     ${geoReadinessPct}%${formatDelta(geoReadinessPct, prevMetrics?.geo?.geoReadinessPct)} | Gemini Brand Mention: ${aiSearchMetrics ? `${aiSearchMetrics.geoMentionPct}%` : "Set GEMINI_API_KEY"} | Citation Link: ${aiSearchMetrics ? `${aiSearchMetrics.geoCitationPct}%` : "Set GEMINI_API_KEY"}`,
