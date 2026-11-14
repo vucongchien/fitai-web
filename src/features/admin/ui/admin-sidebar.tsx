@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AdminObservabilityLinks } from "./admin-observability-links";
 
 export interface AdminSidebarProps {
   pendingApprovalCount?: number;
@@ -122,6 +123,8 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
             );
           })}
         </nav>
+
+        <AdminObservabilityLinks />
       </div>
 
       {/* Footer Info & Back to Client App */}
