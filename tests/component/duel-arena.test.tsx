@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import type { SoloMatchSummary } from "@/features/solo-match/model/solo-match.types";
@@ -120,6 +120,10 @@ describe(DuelArenaView, () => {
 
     expect(screen.getByTestId("duel-my-score")).toHaveTextContent("18 reps");
     expect(screen.getByTestId("duel-opponent-score")).toHaveTextContent("15 reps");
+    expect(screen.getByTestId("duel-lead-badge")).toHaveTextContent("+3");
+    expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-my-share", "55");
+    expect(screen.getByTestId("duel-rep-gauge")).toBeInTheDocument();
+    expect(screen.getByTestId("duel-particle-canvas")).toBeInTheDocument();
     expect(screen.getByTestId("duel-ceiling-timer")).toHaveTextContent("03:35");
     expect(screen.getByText("Solid squat depth!")).toBeInTheDocument();
 
@@ -239,5 +243,66 @@ describe(DuelArenaView, () => {
     expect(within(splash).getByText(/Calculating official verdict/i)).toBeInTheDocument();
     expect(within(splash).getByText("6 reps")).toBeInTheDocument();
     expect(within(splash).getByText("5 reps")).toBeInTheDocument();
+  });
+
+  it("renders combo streak badge and milestone celebration banner when comboStreak >= 3", () => {
+    vi.useFakeTimers();
+    try {
+      vi.mocked(useSoloDuel).mockReturnValue({
+        camera: {
+          clearCustomVideo: vi.fn(),
+          customVideoSrc: null,
+          facingMode: "user",
+          flip: vi.fn(),
+          isCustomVideo: false,
+          loadVideoFile: vi.fn(),
+          start: vi.fn(),
+          state: "ready",
+          stop: vi.fn(),
+          videoRef: { current: null },
+        },
+        forfeitMatch: vi.fn(),
+        liveState: {
+          comboStreak: 5,
+          connectionPhase: "connected",
+          currentAngle: 95,
+          detectedErrors: [],
+          isSettling: false,
+          lastCoachCue: "",
+          lastMilestone: 5,
+          lastRepConfirmedAtMs: 1_700_000_005_000,
+          matchEnded: false,
+          myFormScore: 98,
+          myStatus: "ACTIVE",
+          myValue: 5,
+          opponentFormScore: 89,
+          opponentStatus: "ACTIVE",
+          opponentValue: 4,
+          personDetected: true,
+          reconnectAttempt: 0,
+          remainingCeilingSeconds: 240,
+          repPhase: "active",
+        },
+        pose: null,
+        submitScore: vi.fn(),
+      });
+
+      render(
+        <DuelArenaView
+          currentUserId="user-me"
+          match={buildLiveMatch()}
+          onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+          recommendedCameraAngle="side"
+        />,
+      );
+
+      expect(screen.getByTestId("duel-combo-badge")).toHaveTextContent("5x COMBO");
+      act(() => {
+        vi.advanceTimersByTime(10);
+      });
+      expect(screen.getByTestId("duel-combo-milestone-banner")).toHaveTextContent("5x ON FIRE!");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

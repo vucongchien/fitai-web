@@ -3,7 +3,7 @@
 import { AlertTriangle, Sparkles, WifiOff } from "lucide-react";
 
 import {
-  computeRelativeLaneProgress,
+  computeTugOfWarSplit,
   formatChallengeScore,
 } from "@/features/solo-match/domain/match-state";
 import type { SoloChallengeType } from "@/features/solo-match/model/solo-match.types";
@@ -36,16 +36,25 @@ export function DuelVersusHud({
   opponentStatus,
   opponentValue,
 }: DuelVersusHudProps) {
-  const { myPercent, opponentPercent } = computeRelativeLaneProgress(myValue, opponentValue);
+  const { delta, leader, myShare, opponentShare } = computeTugOfWarSplit(myValue, opponentValue);
 
   const isReconnecting = connectionPhase === "reconnecting";
   const isOpponentDisconnected = opponentStatus === "DISCONNECTED";
   const isOpponentCompleted = opponentStatus === "COMPLETED";
 
+  const clashKey = `${myValue}-${opponentValue}`;
+  const leadLabel = delta > 0 ? `+${delta}` : delta < 0 ? `${delta}` : "TIED";
+  const leadBadgeClass =
+    leader === "me"
+      ? "bg-[var(--color-action-soft)] text-[var(--color-action)] border-[var(--color-action)]/25"
+      : leader === "opponent"
+        ? "bg-rose-50 text-rose-600 border-rose-200"
+        : "bg-neutral-100 text-neutral-500 border-neutral-200";
+
   return (
-    <div className="w-full max-w-[640px] mx-auto px-2.5 sm:px-4 py-1.5 sm:py-2 bg-white border border-neutral-200/90 rounded-2xl shadow-xs">
-      <div className="flex items-center justify-between gap-1.5 sm:gap-3">
-        {/* Left: You (Relay Blue name, NO redundant '(YOU)', bold score without slashed zero) */}
+    <div className="w-full max-w-[640px] mx-auto px-2.5 sm:px-4 py-2 sm:py-2.5 bg-white border border-neutral-200/90 rounded-2xl shadow-xs">
+      <div className="flex items-center justify-between gap-2 sm:gap-3">
+        {/* Left: You (Relay Blue) */}
         <div className="flex flex-col items-start min-w-0 flex-1">
           <span className="text-[10px] sm:text-xs font-bold tracking-wider text-[var(--color-action)] uppercase truncate max-w-full">
             {myDisplayName || "You"}
@@ -58,24 +67,22 @@ export function DuelVersusHud({
           </span>
         </div>
 
-        {/* Center: Symmetrical VS Pill & Tug-of-War Bar */}
-        <div className="flex flex-col items-center justify-center w-14 sm:w-28 shrink-0 px-1">
-          <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-neutral-100 text-[9px] sm:text-[10px] font-extrabold text-neutral-400 mb-0.5 sm:mb-1">
+        {/* Center: VS & Lead Delta Pill */}
+        <div className="flex flex-col items-center justify-center shrink-0 px-1">
+          <span className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-neutral-100 text-[9px] sm:text-[10px] font-extrabold text-neutral-500">
             VS
           </span>
-          <div className="relative h-1 sm:h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
-            <div
-              className="absolute inset-y-0 left-0 bg-[var(--color-action)] rounded-full transition-all duration-300"
-              style={{ width: `${Math.max(4, myPercent)}%` }}
-            />
-            <div
-              className="absolute inset-y-0 right-0 bg-neutral-400 rounded-full transition-all duration-300"
-              style={{ width: `${Math.max(4, opponentPercent)}%` }}
-            />
-          </div>
+          <span
+            className={`mt-1 inline-flex items-center justify-center rounded-full border px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold tracking-tight tabular-nums ${leadBadgeClass}`}
+            data-testid="duel-lead-badge"
+            key={`lead-${clashKey}`}
+            style={{ animation: "soloClashBump 320ms ease-out" }}
+          >
+            {leadLabel}
+          </span>
         </div>
 
-        {/* Right: Rival (Slate name, single-line truncate, bold score) */}
+        {/* Right: Rival */}
         <div className="flex flex-col items-end min-w-0 flex-1">
           <div className="flex items-center gap-1 max-w-full">
             {isOpponentDisconnected ? (
@@ -85,7 +92,7 @@ export function DuelVersusHud({
                 [Done]
               </span>
             ) : null}
-            <span className="truncate text-[10px] sm:text-xs font-bold tracking-wider text-neutral-600 uppercase">
+            <span className="truncate text-[10px] sm:text-xs font-bold tracking-wider text-rose-600 uppercase">
               {opponentDisplayName || "Rival"}
             </span>
           </div>
@@ -97,6 +104,38 @@ export function DuelVersusHud({
           </span>
         </div>
       </div>
+
+      {/* Full-Width Tug-of-War Clash Bar (------/----) */}
+      <div
+        aria-label={`Tug of war score split: ${myShare}% vs ${opponentShare}%`}
+        className="relative mt-2 h-3 sm:h-3.5 w-full overflow-hidden rounded-full bg-neutral-100 ring-1 ring-neutral-200/80"
+        data-my-share={myShare}
+        data-opponent-share={opponentShare}
+        data-testid="duel-tug-of-war-bar"
+      >
+        {/* Left push bar (You) */}
+        <div
+          className="absolute inset-y-0 left-0 bg-[var(--color-action)] bg-linear-to-r from-[var(--color-action)] to-sky-400 transition-[width] duration-300 ease-out"
+          style={{ width: `${myShare}%` }}
+        />
+        {/* Right push bar (Opponent) */}
+        <div
+          className="absolute inset-y-0 right-0 bg-rose-500 bg-linear-to-l from-rose-600 to-rose-400 transition-[width] duration-300 ease-out"
+          style={{ width: `${opponentShare}%` }}
+        />
+        {/* Diagonal Clash Divider (/) */}
+        <div
+          className="absolute inset-y-0 w-1.5 -translate-x-1/2 -skew-x-12 bg-white shadow-[0_0_10px_rgba(255,255,255,0.95)] transition-[left] duration-300 ease-out"
+          key={`slash-${clashKey}`}
+          style={{ animation: "soloClashBump 320ms ease-out", left: `${myShare}%` }}
+        />
+      </div>
+      <style>{`
+        @keyframes soloClashBump {
+          0% { transform: scale(1.16); }
+          100% { transform: scale(1); }
+        }
+      `}</style>
 
       {/* System Warning Banners (Only displayed when abnormal) */}
       {isReconnecting ? (

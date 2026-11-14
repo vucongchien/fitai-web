@@ -9,6 +9,7 @@ import type {
   SoloParticipant,
   SoloParticipantResult,
 } from "@/features/solo-match/model/solo-match.types";
+import { computeAngleRomPercent } from "@/features/workout/domain/edge-referee";
 import type { SoloMatchView } from "@/shared/api/gen/contracts/core/solo_match/v1/message/match_message_pb";
 
 export const CHECKIN_WINDOW_SECONDS = 60;
@@ -131,6 +132,80 @@ export function computeRelativeLaneProgress(
     myPercent: Math.min(100, Math.round((safeMy / maxVal) * 100)),
     opponentPercent: Math.min(100, Math.round((safeOpp / maxVal) * 100)),
   };
+}
+
+export interface TugOfWarSplit {
+  delta: number;
+  leader: "me" | "opponent" | "tie";
+  myShare: number;
+  opponentShare: number;
+}
+
+const TUG_OF_WAR_MIN_SHARE = 12;
+const TUG_OF_WAR_MAX_SHARE = 88;
+
+export function computeTugOfWarSplit(myValue: number, opponentValue: number): TugOfWarSplit {
+  const safeMy = Math.max(0, myValue);
+  const safeOpp = Math.max(0, opponentValue);
+  const delta = safeMy - safeOpp;
+  const leader: TugOfWarSplit["leader"] = delta > 0 ? "me" : delta < 0 ? "opponent" : "tie";
+
+  if (safeMy === safeOpp) {
+    return {
+      delta: 0,
+      leader: "tie",
+      myShare: 50,
+      opponentShare: 50,
+    };
+  }
+
+  const total = safeMy + safeOpp;
+  const rawMyShare = total > 0 ? Math.round((safeMy / total) * 100) : 50;
+  const myShare = Math.max(TUG_OF_WAR_MIN_SHARE, Math.min(TUG_OF_WAR_MAX_SHARE, rawMyShare));
+
+  return {
+    delta,
+    leader,
+    myShare,
+    opponentShare: 100 - myShare,
+  };
+}
+
+const SOLO_EXERCISE_ROM_TABLE: Record<string, { endDeg: number; startDeg: number }> = {
+  bicep_curl: { endDeg: 45, startDeg: 160 },
+  lunge: { endDeg: 90, startDeg: 170 },
+  push_up: { endDeg: 90, startDeg: 170 },
+  sit_up: { endDeg: 55, startDeg: 145 },
+  squat: { endDeg: 90, startDeg: 170 },
+};
+
+const DEFAULT_SOLO_ROM = { endDeg: 90, startDeg: 170 };
+
+export function resolveSoloExerciseRomBounds(exerciseId: string): {
+  endDeg: number;
+  startDeg: number;
+} {
+  const normalized = exerciseId.trim().toLowerCase().replace(/-/g, "_");
+  for (const [key, bounds] of Object.entries(SOLO_EXERCISE_ROM_TABLE)) {
+    if (normalized === key || normalized.includes(key)) {
+      return bounds;
+    }
+  }
+  return DEFAULT_SOLO_ROM;
+}
+
+export function computeSoloRepProgressPercent(params: {
+  challengeType: SoloChallengeType;
+  currentAngle: number;
+  exerciseId: string;
+  myFormScore: number;
+}): number {
+  if (params.challengeType === "DURATION") {
+    return Math.max(0, Math.min(100, Math.round(params.myFormScore)));
+  }
+
+  const { startDeg, endDeg } = resolveSoloExerciseRomBounds(params.exerciseId);
+  return computeAngleRomPercent(params.currentAngle, startDeg, endDeg);
 }
 
 export function resolveParticipants(

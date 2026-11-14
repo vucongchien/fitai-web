@@ -12,6 +12,9 @@ import {
 } from "@/features/solo-match/domain/match-state";
 import type { SoloMatchSummary } from "@/features/solo-match/model/solo-match.types";
 import { useSoloDuel } from "@/features/solo-match/model/use-solo-duel";
+import { DuelComboOverlay } from "@/features/solo-match/ui/duel-combo-overlay";
+import { DuelParticleCanvas } from "@/features/solo-match/ui/duel-particle-canvas";
+import { DuelRepGauge } from "@/features/solo-match/ui/duel-rep-gauge";
 import { DuelCueToast, DuelVersusHud } from "@/features/solo-match/ui/duel-versus-hud";
 import { CameraStage } from "@/features/workout/ui/live/camera-stage";
 import { CountdownRing } from "@/features/workout/ui/live/countdown-ring";
@@ -225,6 +228,30 @@ export function DuelArenaView({
                 recommendedAngle={recommendedCameraAngle}
               />
             ) : null}
+
+            {/* Live Rep / Form Progress Gauge */}
+            <DuelRepGauge
+              challengeType={match.challengeType}
+              currentAngle={liveState.currentAngle}
+              exerciseId={match.exerciseId || "push_up"}
+              lastRepConfirmedAtMs={liveState.lastRepConfirmedAtMs}
+              myFormScore={liveState.myFormScore}
+            />
+
+            {/* Combo Streak & Milestone Celebrations */}
+            <DuelComboOverlay
+              comboStreak={liveState.comboStreak}
+              lastMilestone={liveState.lastMilestone}
+              lastRepConfirmedAtMs={liveState.lastRepConfirmedAtMs}
+            />
+
+            {/* Hybrid 2D Canvas Particle Burst */}
+            <DuelParticleCanvas
+              lastMilestone={liveState.lastMilestone}
+              lastRepConfirmedAtMs={liveState.lastRepConfirmedAtMs}
+              myValue={liveState.myValue}
+              opponentValue={liveState.opponentValue}
+            />
 
             {/* Floating Coach Cue / Form Correction (At bottom edge of camera feed) */}
             <DuelCueToast
