@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Sparkles, WifiOff } from "lucide-react";
+import { WifiOff } from "lucide-react";
 
 import {
   computeTugOfWarSplit,
@@ -52,7 +52,10 @@ export function DuelVersusHud({
         : "bg-neutral-100 text-neutral-500 border-neutral-200";
 
   return (
-    <div className="w-full max-w-[640px] mx-auto px-2.5 sm:px-4 py-2 sm:py-2.5 bg-white border border-neutral-200/90 rounded-2xl shadow-xs">
+    <div
+      className="w-full px-3 sm:px-5 py-2 sm:py-2.5 bg-white border border-neutral-200/90 rounded-2xl shadow-xs"
+      data-testid="duel-versus-hud"
+    >
       <div className="flex items-center justify-between gap-2 sm:gap-3">
         {/* Left: You (Relay Blue) */}
         <div className="flex flex-col items-start min-w-0 flex-1">
@@ -108,7 +111,7 @@ export function DuelVersusHud({
       {/* Full-Width Tug-of-War Clash Bar (------/----) */}
       <div
         aria-label={`Tug of war score split: ${myShare}% vs ${opponentShare}%`}
-        className="relative mt-2 h-3 sm:h-3.5 w-full overflow-hidden rounded-full bg-neutral-100 ring-1 ring-neutral-200/80"
+        className="relative mt-2 h-6 sm:h-7 w-full overflow-hidden rounded-full bg-neutral-100 ring-1 ring-neutral-200/80"
         data-my-share={myShare}
         data-opponent-share={opponentShare}
         data-testid="duel-tug-of-war-bar"
@@ -123,6 +126,19 @@ export function DuelVersusHud({
           className="absolute inset-y-0 right-0 bg-rose-500 bg-linear-to-l from-rose-600 to-rose-400 transition-[width] duration-300 ease-out"
           style={{ width: `${opponentShare}%` }}
         />
+        {/* High-contrast score numbers inside the bar */}
+        <span
+          className="pointer-events-none absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 z-10 text-[11px] sm:text-xs font-extrabold tracking-tight text-white tabular-nums leading-none whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
+          data-testid="duel-my-bar-score"
+        >
+          {myValue}
+        </span>
+        <span
+          className="pointer-events-none absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 z-10 text-[11px] sm:text-xs font-extrabold tracking-tight text-white tabular-nums leading-none whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
+          data-testid="duel-opponent-bar-score"
+        >
+          {opponentValue}
+        </span>
         {/* Diagonal Clash Divider (/) */}
         <div
           className="absolute inset-y-0 w-1.5 -translate-x-1/2 -skew-x-12 transition-[left] duration-300 ease-out"
@@ -166,36 +182,6 @@ export function DuelVersusHud({
           <span>Lane: Sync</span>
         </div>
       ) : null}
-    </div>
-  );
-}
-
-export function DuelCueToast({
-  coachCue,
-  detectedErrors,
-}: {
-  coachCue?: string;
-  detectedErrors: string[];
-}) {
-  const activeCue = detectedErrors.length > 0 ? detectedErrors.join(" · ") : coachCue || null;
-
-  if (!activeCue) {
-    return null;
-  }
-
-  return (
-    <div
-      aria-live="polite"
-      className="pointer-events-none absolute bottom-4 inset-x-4 z-30 mx-auto max-w-[460px]"
-    >
-      <div className="flex items-center justify-center gap-2 rounded-xl bg-black/80 px-4 py-2.5 text-center text-xs sm:text-sm font-semibold text-white backdrop-blur-md border border-white/15 shadow-xl animate-in fade-in duration-200">
-        {detectedErrors.length > 0 ? (
-          <AlertTriangle aria-hidden="true" className="shrink-0 text-amber-400" size={16} />
-        ) : (
-          <Sparkles aria-hidden="true" className="shrink-0 text-[var(--color-action)]" size={16} />
-        )}
-        <span className="leading-snug">{activeCue}</span>
-      </div>
     </div>
   );
 }
