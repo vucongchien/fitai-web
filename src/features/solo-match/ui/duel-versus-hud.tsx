@@ -11,10 +11,8 @@ import type { SoloStreamStatusLabel } from "@/features/solo-match/model/use-solo
 
 export interface DuelVersusHudProps {
   challengeType: SoloChallengeType;
-  coachCue?: string;
   connectionPhase: string;
   currentAngle?: number;
-  detectedErrors: string[];
   isDebug?: boolean;
   myDisplayName: string;
   myStatus: SoloStreamStatusLabel;
@@ -128,13 +126,13 @@ export function DuelVersusHud({
         />
         {/* High-contrast score numbers inside the bar */}
         <span
-          className="pointer-events-none absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 z-10 text-[11px] sm:text-xs font-extrabold tracking-tight text-white tabular-nums leading-none whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
+          className="pointer-events-none absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 z-10 text-[11px] sm:text-xs font-extrabold tracking-tight text-white tabular-nums leading-none whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
           data-testid="duel-my-bar-score"
         >
           {myValue}
         </span>
         <span
-          className="pointer-events-none absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 z-10 text-[11px] sm:text-xs font-extrabold tracking-tight text-white tabular-nums leading-none whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
+          className="pointer-events-none absolute right-2.5 sm:right-3.5 top-1/2 -translate-y-1/2 z-10 text-[11px] sm:text-xs font-extrabold tracking-tight text-white tabular-nums leading-none whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.65)]"
           data-testid="duel-opponent-bar-score"
         >
           {opponentValue}

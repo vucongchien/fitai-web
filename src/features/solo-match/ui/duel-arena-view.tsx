@@ -129,10 +129,8 @@ export function DuelArenaView({
         <div className="w-full pt-1 pb-1">
           <DuelVersusHud
             challengeType={match.challengeType}
-            coachCue={liveState.lastCoachCue}
             connectionPhase={liveState.connectionPhase}
             currentAngle={liveState.currentAngle}
-            detectedErrors={liveState.detectedErrors}
             myDisplayName={myDisplayName}
             myStatus={liveState.myStatus}
             myValue={liveState.myValue}
