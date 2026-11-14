@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import type { ReactNode } from "react";
 
 import { AdminQueryProvider } from "@/features/admin/ui/admin-query-provider";
+import { getSiteUrl, SITE_DESCRIPTION, SITE_NAME } from "@/shared/seo/site-config";
 import { ToastContainer } from "@/shared/ui/toast/toast-container";
 import { ToastProvider } from "@/shared/ui/toast/toast-context";
 
@@ -38,20 +39,37 @@ const data = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "FITAI",
+    title: SITE_NAME,
   },
-  description: "A four-week training plan that adapts to your progress.",
+  description: SITE_DESCRIPTION,
   icons: {
     apple: "/icons/icon-192.png",
     icon: "/icons/icon-192.png",
   },
   manifest: "/manifest.webmanifest",
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: "FITAI — Evidence-Based Adaptive Fitness & Form Coaching",
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   title: {
-    default: "FITAI",
+    default: SITE_NAME,
     template: "%s · FITAI",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FITAI — Evidence-Based Adaptive Fitness & Form Coaching",
+    description: SITE_DESCRIPTION,
   },
 };
 

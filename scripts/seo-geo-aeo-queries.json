@@ -1,0 +1,63 @@
+{
+  "targetDomain": "fitai.chien204.id.vn",
+  "brandNames": ["fitai", "fitai.chien204.id.vn"],
+  "aeoQueries": [
+    {
+      "id": "aeo-what-is-fitai",
+      "category": "aeo",
+      "prompt": "What is FITAI at fitai.chien204.id.vn and what does its 4-week training plan do?",
+      "expectedKeywords": ["four-week", "4-week", "adaptive", "training", "workout"]
+    },
+    {
+      "id": "aeo-form-check",
+      "category": "aeo",
+      "prompt": "How does FITAI check workout form and what happens if a camera is unavailable?",
+      "expectedKeywords": ["squat", "push-up", "plank", "manual", "camera"]
+    },
+    {
+      "id": "aeo-injury-guard",
+      "category": "aeo",
+      "prompt": "How does FITAI handle injuries or missed sessions in a training roadmap?",
+      "expectedKeywords": ["injury", "recover", "adjust", "replace", "load"]
+    },
+    {
+      "id": "aeo-medical-scope",
+      "category": "aeo",
+      "prompt": "Does FITAI provide medical diagnosis or fitness guidance?",
+      "expectedKeywords": ["not medical", "guidance", "fitness"]
+    },
+    {
+      "id": "aeo-nutrition",
+      "category": "aeo",
+      "prompt": "Does FITAI at fitai.chien204.id.vn include nutrition planning alongside workouts?",
+      "expectedKeywords": ["nutrition", "calorie", "macro", "meal"]
+    }
+  ],
+  "geoQueries": [
+    {
+      "id": "geo-branded-domain",
+      "category": "branded",
+      "prompt": "Tell me about fitai.chien204.id.vn. What features does FITAI offer?"
+    },
+    {
+      "id": "geo-branded-name",
+      "category": "branded",
+      "prompt": "What is FITAI adaptive fitness coaching web app?"
+    },
+    {
+      "id": "geo-discovery-4week",
+      "category": "discovery",
+      "prompt": "Recommend a free mobile-first web app for a 4-week adaptive workout roadmap without streak shaming."
+    },
+    {
+      "id": "geo-discovery-form",
+      "category": "discovery",
+      "prompt": "Best web app for real-time squat and push-up biomechanical form feedback with manual workout logging fallback."
+    },
+    {
+      "id": "geo-discovery-injury",
+      "category": "discovery",
+      "prompt": "Which fitness web app automatically adjusts your weekly workout load and swaps exercises when you report an injury?"
+    }
+  ]
+}
