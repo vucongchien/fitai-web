@@ -15,7 +15,7 @@ import { useSoloDuel } from "@/features/solo-match/model/use-solo-duel";
 import { DuelComboOverlay } from "@/features/solo-match/ui/duel-combo-overlay";
 import { DuelParticleCanvas } from "@/features/solo-match/ui/duel-particle-canvas";
 import { DuelRepGauge } from "@/features/solo-match/ui/duel-rep-gauge";
-import { DuelCueToast, DuelVersusHud } from "@/features/solo-match/ui/duel-versus-hud";
+import { DuelVersusHud } from "@/features/solo-match/ui/duel-versus-hud";
 import { CameraStage } from "@/features/workout/ui/live/camera-stage";
 import { CountdownRing } from "@/features/workout/ui/live/countdown-ring";
 import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
@@ -126,7 +126,7 @@ export function DuelArenaView({
 
       {/* Row 2: Top Arena Scoreboard Strip (OUTSIDE and ABOVE Camera Stage) */}
       {!isSpectating ? (
-        <div className="w-full px-3 pt-1 pb-2">
+        <div className="w-full pt-1 pb-1">
           <DuelVersusHud
             challengeType={match.challengeType}
             coachCue={liveState.lastCoachCue}
@@ -251,12 +251,6 @@ export function DuelArenaView({
               lastRepConfirmedAtMs={liveState.lastRepConfirmedAtMs}
               myValue={liveState.myValue}
               opponentValue={liveState.opponentValue}
-            />
-
-            {/* Floating Coach Cue / Form Correction (At bottom edge of camera feed) */}
-            <DuelCueToast
-              coachCue={liveState.lastCoachCue}
-              detectedErrors={liveState.detectedErrors}
             />
           </CameraStage>
         </div>

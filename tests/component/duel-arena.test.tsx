@@ -121,11 +121,21 @@ describe(DuelArenaView, () => {
     expect(screen.getByTestId("duel-my-score")).toHaveTextContent("18 reps");
     expect(screen.getByTestId("duel-opponent-score")).toHaveTextContent("15 reps");
     expect(screen.getByTestId("duel-lead-badge")).toHaveTextContent("+3");
-    expect(screen.getByTestId("duel-tug-of-war-bar")).toHaveAttribute("data-my-share", "55");
+    const hud = screen.getByTestId("duel-versus-hud");
+    expect(hud).toHaveClass("w-full");
+    expect(hud).not.toHaveClass("max-w-[640px]");
+    const tugBar = screen.getByTestId("duel-tug-of-war-bar");
+    expect(tugBar).toHaveAttribute("data-my-share", "55");
+    expect(within(tugBar).getByTestId("duel-my-bar-score")).toHaveTextContent("18");
+    expect(within(tugBar).getByTestId("duel-opponent-bar-score")).toHaveTextContent("15");
     expect(screen.getByTestId("duel-rep-gauge")).toBeInTheDocument();
+    const repThreshold = screen.getByTestId("duel-rep-threshold");
+    expect(repThreshold).toHaveAttribute("data-threshold", "85");
+    expect(repThreshold).toHaveStyle({ bottom: "85%" });
+    expect(repThreshold).toHaveTextContent("85%");
     expect(screen.getByTestId("duel-particle-canvas")).toBeInTheDocument();
     expect(screen.getByTestId("duel-ceiling-timer")).toHaveTextContent("03:35");
-    expect(screen.getByText("Solid squat depth!")).toBeInTheDocument();
+    expect(screen.queryByText("Solid squat depth!")).not.toBeInTheDocument();
 
     // Verify raw debug information is not exposed in standard user-facing mode
     expect(screen.queryByText(/match-live-777/i)).not.toBeInTheDocument();
@@ -397,5 +407,60 @@ describe(DuelArenaView, () => {
     const dividerAfter = screen.getByTestId("duel-tug-of-war-divider");
     expect(dividerAfter).toBe(dividerBefore);
     expect(dividerAfter).toHaveStyle({ left: "60%" });
+  });
+
+  it("renders in-bar scores at 12% minimum clamp width and highlights 85% rep threshold", () => {
+    vi.mocked(useSoloDuel).mockReturnValue({
+      camera: {
+        clearCustomVideo: vi.fn(),
+        customVideoSrc: null,
+        facingMode: "user",
+        flip: vi.fn(),
+        isCustomVideo: false,
+        loadVideoFile: vi.fn(),
+        start: vi.fn(),
+        state: "ready",
+        stop: vi.fn(),
+        videoRef: { current: null },
+      },
+      forfeitMatch: vi.fn(),
+      liveState: {
+        connectionPhase: "connected",
+        currentAngle: 95,
+        detectedErrors: [],
+        isSettling: false,
+        lastCoachCue: "Keep going!",
+        matchEnded: false,
+        myFormScore: 95,
+        myStatus: "ACTIVE",
+        myValue: 1,
+        opponentFormScore: 90,
+        opponentStatus: "ACTIVE",
+        opponentValue: 100,
+        personDetected: true,
+        reconnectAttempt: 0,
+        remainingCeilingSeconds: 180,
+        repPhase: "active",
+      },
+      pose: null,
+      submitScore: vi.fn(),
+    });
+
+    render(
+      <DuelArenaView
+        currentUserId="user-me"
+        match={buildLiveMatch()}
+        onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+        recommendedCameraAngle="side"
+      />,
+    );
+
+    const tugBar = screen.getByTestId("duel-tug-of-war-bar");
+    expect(tugBar).toHaveAttribute("data-my-share", "12");
+    expect(tugBar).toHaveAttribute("data-opponent-share", "88");
+    expect(within(tugBar).getByTestId("duel-my-bar-score")).toHaveTextContent("1");
+    expect(within(tugBar).getByTestId("duel-opponent-bar-score")).toHaveTextContent("100");
+    expect(screen.getByTestId("duel-rep-threshold")).toHaveAttribute("data-threshold", "85");
+    expect(screen.queryByText("Keep going!")).not.toBeInTheDocument();
   });
 });
