@@ -1,0 +1,32 @@
+# FITAI — Full Knowledge & Biomechanical Movement Lab Reference
+
+> Complete reference for LLM and answer-engine indexing of FITAI (https://fitai.chien204.id.vn/). Covers product architecture, 4-week adaptive roadmap rules, Injury Guard recovery caps, and all 12 documented biomechanical exercise specifications.
+
+## 1. Platform Overview
+
+- **Product:** FITAI
+- **Domain:** https://fitai.chien204.id.vn/
+- **Target Users:** People new to structured exercise or returning after a break who need clear next sessions without streak-shaming or unsafe training pressure.
+- **Training Cycle:** 4 weeks (week / day / session hierarchy), maximum 6 sessions per week.
+- **Medical Disclaimer:** FITAI provides fitness guidance only and does not diagnose medical conditions.
+
+## 2. Architecture Guides
+
+- [How FITAI Builds a 4-Week Adaptive Training Roadmap](https://fitai.chien204.id.vn/guides/4-week-adaptive-roadmap): Explains onboarding thresholds, calendar slot placement, RPE-based load tapering, and zero-punishment adaptive rest.
+- [On-Device Pose Estimation & 3-Phase Rep Referee](https://fitai.chien204.id.vn/guides/on-device-pose-ai): Explains browser-local `YOLOv8n-Pose` / `YOLO11n-Pose` via ONNX Runtime Web, 17 COCO keypoints, One-Euro Filter smoothing, 3-phase rep state machine (`REST -> TRANSITION -> ACTIVE`), and complete Manual Mode logging parity.
+- [Injury Guard: Automatic Load Caps & Safe Movement Swaps](https://fitai.chien204.id.vn/guides/injury-guard-recovery): Explains immediate session stop on injury report, 50% PR recovery load cap, and anatomical muscle substitution.
+
+## 3. Public Movement Lab — 12 Biomechanical Exercise Specs
+
+- [Squat](https://fitai.chien204.id.vn/lab/squat) (`counted`, side view): `knee_angle` phase detection (REST > 160°, TRANSITION 100–160°, ACTIVE <= 100°). Guardrails: `torso_lean` (Correct <= 42°, Warning 42–52°, Danger > 52°) and `knee_over_toe`.
+- [Push-up](https://fitai.chien204.id.vn/lab/push-up) (`counted`, side & front): `elbow_angle` phase detection. Guardrails: `signed_hip_y_diff` (sag/pike check) and `hand_width_ratio`.
+- [Plank](https://fitai.chien204.id.vn/lab/plank) (`timed`, side & front): `body_incline_angle` <= 35° activates timing. Guardrails: `body_incline_angle`, `arm_to_torso_angle` (70–110°), `signed_hip_y_diff` (<= 0.11), `elbow_angle` (70–110°), and `hand_width_ratio` (0.8–1.25).
+- [Deadlift](https://fitai.chien204.id.vn/lab/deadlift) (`counted`, side view): `hip_angle` phase detection. Guardrails: `excessive_knee_flexion` and horizontal `bar_drift`.
+- [Lunge](https://fitai.chien204.id.vn/lab/lunge) (`counted`, side view): `knee_angle` phase detection. Guardrails: `torso_lean` and `knee_over_toe`.
+- [Barbell Bench Press](https://fitai.chien204.id.vn/lab/bench-press) (`counted`, front & side): `elbow_angle` phase detection. Guardrails: `wrist_symmetry` and `elbow_flare`.
+- [Bicep Curl](https://fitai.chien204.id.vn/lab/bicep-curl) (`counted`, side view): `elbow_angle` phase detection. Guardrails: `elbow_sway` and `spine_sway_angle`.
+- [Lateral Raise](https://fitai.chien204.id.vn/lab/lateral-raise) (`counted`, front view): `shoulder_abduction_angle` phase detection. Guardrails: `bent_elbow_cheat` and `wrist_symmetry`.
+- [Pull-up](https://fitai.chien204.id.vn/lab/pull-up) (`counted`, front or side): `elbow_angle` phase detection. Guardrails: `kipping_swing` and `spine_sway_angle`.
+- [Shoulder Press](https://fitai.chien204.id.vn/lab/shoulder-press) (`counted`, front & side): `elbow_angle` phase detection. Guardrails: `wrist_symmetry` and `spine_sway_angle`.
+- [Sit-up](https://fitai.chien204.id.vn/lab/sit-up) (`counted`, side view): `hip_flexion_angle` phase detection. Guardrail: `ankle_lift`.
+- [Triceps Dip](https://fitai.chien204.id.vn/lab/triceps-dip) (`counted`, side view): `elbow_angle` phase detection. Guardrails: `hips_too_far` and `torso_lean`.

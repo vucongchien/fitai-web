@@ -9,40 +9,40 @@
       "expectedKeywords": ["four-week", "4-week", "adaptive", "training", "workout"]
     },
     {
-      "id": "aeo-form-check",
+      "id": "aeo-squat-angles",
       "category": "aeo",
-      "prompt": "How does FITAI check workout form and what happens if a camera is unavailable?",
-      "expectedKeywords": ["squat", "push-up", "plank", "manual", "camera"]
+      "prompt": "According to FITAI Movement Lab, what knee angle and torso lean thresholds define a valid Squat rep?",
+      "expectedKeywords": ["100", "42", "knee", "torso", "squat"]
+    },
+    {
+      "id": "aeo-plank-rules",
+      "category": "aeo",
+      "prompt": "How does FITAI detect Plank hold timing and hip alignment errors?",
+      "expectedKeywords": ["35", "0.11", "plank", "hip", "elbow"]
     },
     {
       "id": "aeo-injury-guard",
       "category": "aeo",
-      "prompt": "How does FITAI handle injuries or missed sessions in a training roadmap?",
-      "expectedKeywords": ["injury", "recover", "adjust", "replace", "load"]
+      "prompt": "How does FITAI Injury Guard handle soreness or injuries in a 4-week roadmap?",
+      "expectedKeywords": ["injury", "50%", "recover", "adjust", "stop"]
     },
     {
-      "id": "aeo-medical-scope",
+      "id": "aeo-pose-privacy",
       "category": "aeo",
-      "prompt": "Does FITAI provide medical diagnosis or fitness guidance?",
-      "expectedKeywords": ["not medical", "guidance", "fitness"]
-    },
-    {
-      "id": "aeo-nutrition",
-      "category": "aeo",
-      "prompt": "Does FITAI at fitai.chien204.id.vn include nutrition planning alongside workouts?",
-      "expectedKeywords": ["nutrition", "calorie", "macro", "meal"]
+      "prompt": "Where does FITAI run pose estimation models and can you log workouts without a camera?",
+      "expectedKeywords": ["onnx", "browser", "local", "manual", "camera"]
     }
   ],
   "geoQueries": [
     {
       "id": "geo-branded-domain",
       "category": "branded",
-      "prompt": "Tell me about fitai.chien204.id.vn. What features does FITAI offer?"
+      "prompt": "Tell me about fitai.chien204.id.vn and its Movement Lab biomechanical rules."
     },
     {
       "id": "geo-branded-name",
       "category": "branded",
-      "prompt": "What is FITAI adaptive fitness coaching web app?"
+      "prompt": "What is FITAI adaptive fitness coaching and on-device form checking?"
     },
     {
       "id": "geo-discovery-4week",
@@ -50,14 +50,14 @@
       "prompt": "Recommend a free mobile-first web app for a 4-week adaptive workout roadmap without streak shaming."
     },
     {
-      "id": "geo-discovery-form",
+      "id": "geo-discovery-biomechanics",
       "category": "discovery",
-      "prompt": "Best web app for real-time squat and push-up biomechanical form feedback with manual workout logging fallback."
+      "prompt": "Web fitness app that checks squat knee angle <= 100 degrees and torso lean <= 42 degrees in the browser with ONNX Runtime Web."
     },
     {
       "id": "geo-discovery-injury",
       "category": "discovery",
-      "prompt": "Which fitness web app automatically adjusts your weekly workout load and swaps exercises when you report an injury?"
+      "prompt": "Which fitness web app automatically applies a 50% PR load cap and swaps exercises when you report an injury?"
     }
   ]
 }
