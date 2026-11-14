@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  aggregateNutritionProgress,
   buildConsistencyHeatmap,
   calculateAdherencePercentage,
   classifyBmi,
@@ -152,5 +153,23 @@ describe("progress-aggregator", () => {
     expect(calculateAdherencePercentage(0, 0)).toBe(0);
     expect(formatVolumeKg(2450)).toBe("2.5t");
     expect(formatVolumeKg(850)).toBe("850 kg");
+  });
+
+  it("aggregates nutrition progress across logged days without penalizing unlogged days", () => {
+    const summary = aggregateNutritionProgress(
+      [
+        { date: "2026-11-10", calories: 1000, proteinGrams: 70 },
+        { date: "2026-11-10", calories: 950, proteinGrams: 60 }, // 1950 kcal -> on target for 2000
+        { date: "2026-11-12", calories: 2800, proteinGrams: 120 }, // off target (> 115% of 2000)
+      ],
+      2000,
+    );
+
+    expect(summary.loggedDays).toBe(2);
+    expect(summary.avgDailyCalories).toBe(2375);
+    expect(summary.adherencePercentage).toBe(50);
+    expect(summary.trend).toHaveLength(2);
+    expect(summary.trend[0]?.calories).toBe(1950);
+    expect(summary.trend[1]?.calories).toBe(2800);
   });
 });

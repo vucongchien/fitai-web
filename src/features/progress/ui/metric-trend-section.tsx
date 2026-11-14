@@ -6,12 +6,13 @@ import { useState } from "react";
 import { TrendLineChart, type TrendPoint } from "@/shared/ui/charts/trend-line-chart";
 
 import { summarizeMetricTrend } from "../model/progress-aggregator";
-import type { BodyMetricEntry, MetricKey } from "../model/types";
+import type { BodyMetricEntry, MetricKey, ProgressNutritionSummary } from "../model/types";
 
 interface MetricTrendSectionProps {
   entries: readonly BodyMetricEntry[];
   targetWeightKg: number;
   targetBodyFatPercent: number;
+  nutrition?: ProgressNutritionSummary;
   onOpenLogModal: () => void;
 }
 
@@ -19,18 +20,44 @@ export function MetricTrendSection({
   entries,
   targetWeightKg,
   targetBodyFatPercent,
+  nutrition,
   onOpenLogModal,
 }: MetricTrendSectionProps) {
   const [selectedMetric, setSelectedMetric] = useState<MetricKey>("weightKg");
   const [showAllRows, setShowAllRows] = useState(false);
 
-  const targetValue = selectedMetric === "weightKg" ? targetWeightKg : targetBodyFatPercent;
-  const summaryLine = summarizeMetricTrend(entries, selectedMetric, targetValue);
+  const isCalories = selectedMetric === "calories";
+  const targetValue = isCalories
+    ? (nutrition?.targetDailyCalories ?? 0)
+    : selectedMetric === "weightKg"
+      ? targetWeightKg
+      : targetBodyFatPercent;
 
-  const chartPoints: TrendPoint[] = entries.map((entry) => ({
-    label: entry.dateLabel,
-    value: entry[selectedMetric] > 0 ? entry[selectedMetric] : null,
-  }));
+  const summaryLine = isCalories
+    ? nutrition && nutrition.loggedDays > 0
+      ? `Avg ${nutrition.avgDailyCalories.toLocaleString("en-US")} kcal/day across ${nutrition.loggedDays} logged ${nutrition.loggedDays === 1 ? "day" : "days"}${targetValue > 0 ? ` (Goal: ${targetValue.toLocaleString("en-US")} kcal)` : ""}.`
+      : "No meals logged in the last 14 days."
+    : summarizeMetricTrend(entries, selectedMetric, targetValue);
+
+  const rawChartPoints: TrendPoint[] = isCalories
+    ? (nutrition?.trend ?? []).map((day) => ({
+        label: day.dateLabel,
+        value: day.calories > 0 ? day.calories : null,
+      }))
+    : entries.map((entry) => ({
+        label: entry.dateLabel,
+        value: entry[selectedMetric] > 0 ? entry[selectedMetric] : null,
+      }));
+
+  // Chart stack requires unique x-axis labels; keep the latest value per day label.
+  const chartPoints: TrendPoint[] = Array.from(
+    rawChartPoints
+      .reduce((map, point) => {
+        map.set(point.label, point);
+        return map;
+      }, new Map<string, TrendPoint>())
+      .values(),
+  );
 
   const newestFirst = [...entries].reverse();
   const visibleRows = showAllRows ? newestFirst : newestFirst.slice(0, 5);
@@ -40,15 +67,17 @@ export function MetricTrendSection({
       aria-label="Metric trend and check-in history"
       className="rounded-2xl border border-neutral-200 bg-white p-4 sm:p-5 space-y-4"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="min-w-0 flex-1">
           <h2 className="font-display text-base sm:text-lg font-bold text-[var(--color-text)]">
             Metric Trend
           </h2>
-          <p className="text-xs sm:text-[13px] text-neutral-600 mt-0.5">{summaryLine}</p>
+          <p className="text-xs sm:text-[13px] text-neutral-600 mt-0.5 truncate" title={summaryLine}>
+            {summaryLine}
+          </p>
         </div>
 
-        <div className="flex items-center gap-1 rounded-xl bg-neutral-100 p-1" role="tablist">
+        <div className="flex shrink-0 items-center gap-1 rounded-xl bg-neutral-100 p-1 self-start sm:self-auto" role="tablist">
           <button
             type="button"
             role="tab"
@@ -75,6 +104,19 @@ export function MetricTrendSection({
           >
             Body Fat (%)
           </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={selectedMetric === "calories"}
+            onClick={() => setSelectedMetric("calories")}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+              selectedMetric === "calories"
+                ? "bg-white text-[var(--color-text)] shadow-xs"
+                : "text-neutral-500 hover:text-neutral-800"
+            }`}
+          >
+            Calories
+          </button>
         </div>
       </div>
 
@@ -82,11 +124,17 @@ export function MetricTrendSection({
       <div>
         <TrendLineChart
           ariaLabel={
-            selectedMetric === "weightKg"
-              ? "Weight trend over time in kilograms"
-              : "Body fat percentage trend over time"
+            isCalories
+              ? "Daily calorie intake trend over time"
+              : selectedMetric === "weightKg"
+                ? "Weight trend over time in kilograms"
+                : "Body fat percentage trend over time"
           }
-          emptyMessage="No check-ins logged yet for this metric."
+          emptyMessage={
+            isCalories
+              ? "No meals logged yet for this period."
+              : "No check-ins logged yet for this metric."
+          }
           height={190}
           points={chartPoints}
           reference={
@@ -98,7 +146,7 @@ export function MetricTrendSection({
               : undefined
           }
           tone={selectedMetric === "weightKg" ? "action" : "effort"}
-          yLabel={selectedMetric === "weightKg" ? "kg" : "%"}
+          yLabel={isCalories ? "kcal" : selectedMetric === "weightKg" ? "kg" : "%"}
         />
       </div>
 

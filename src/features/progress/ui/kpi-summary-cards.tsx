@@ -1,7 +1,8 @@
-import { Activity, Flame, Scale, TrendingDown, TrendingUp } from "lucide-react";
+import { Activity, Flame, Scale, TrendingDown, TrendingUp, Utensils } from "lucide-react";
+import Link from "next/link";
 
 import { formatVolumeKg } from "../model/progress-aggregator";
-import type { BodyMetricEntry } from "../model/types";
+import type { BodyMetricEntry, ProgressNutritionSummary } from "../model/types";
 
 interface KpiSummaryCardsProps {
   currentWeightKg: number;
@@ -13,6 +14,7 @@ interface KpiSummaryCardsProps {
   totalVolumeKg: number;
   adherencePercentage: number;
   entries: readonly BodyMetricEntry[];
+  nutrition?: ProgressNutritionSummary;
 }
 
 function computeDelta(entries: readonly BodyMetricEntry[], key: "weightKg" | "bodyFatPercent") {
@@ -35,6 +37,7 @@ export function KpiSummaryCards({
   totalVolumeKg,
   adherencePercentage,
   entries,
+  nutrition,
 }: KpiSummaryCardsProps) {
   const weightDelta = computeDelta(entries, "weightKg");
   const bfDelta = computeDelta(entries, "bodyFatPercent");
@@ -139,6 +142,41 @@ export function KpiSummaryCards({
         </div>
         <p className="mt-1.5 text-[11px] text-neutral-500">Cumulative weight lifted</p>
       </div>
+
+      {/* Calorie Adherence Card */}
+      <Link
+        href="/nutrition"
+        className="col-span-2 rounded-2xl border border-neutral-200 bg-white p-3.5 sm:p-4 flex items-center justify-between gap-3 hover:border-neutral-300 transition-colors"
+      >
+        <div>
+          <div className="flex items-center gap-1.5">
+            <Utensils aria-hidden="true" className="text-[var(--color-action)]" size={14} />
+            <span className="text-xs font-semibold text-neutral-500">Calorie Adherence</span>
+          </div>
+          <div className="mt-1.5 flex items-baseline gap-1.5">
+            <strong className="font-display text-xl sm:text-2xl font-bold text-[var(--color-text)] tabular-nums">
+              {nutrition && nutrition.loggedDays > 0 ? `${nutrition.adherencePercentage}%` : "—"}
+            </strong>
+            {nutrition && nutrition.loggedDays > 0 ? (
+              <span className="text-xs font-medium text-neutral-500">
+                on target ({nutrition.loggedDays}d logged)
+              </span>
+            ) : null}
+          </div>
+          <p className="mt-1 text-[11px] text-neutral-500">
+            {nutrition && nutrition.loggedDays > 0
+              ? `Avg ${nutrition.avgDailyCalories.toLocaleString("en-US")} kcal / ${
+                  nutrition.targetDailyCalories > 0
+                    ? `${nutrition.targetDailyCalories.toLocaleString("en-US")} kcal goal`
+                    : "day"
+                }`
+              : "Log meals in Nutrition to track calorie consistency"}
+          </p>
+        </div>
+        <span className="shrink-0 rounded-xl bg-neutral-100 px-2.5 py-1.5 text-xs font-semibold text-[var(--color-text)]">
+          Nutrition →
+        </span>
+      </Link>
     </section>
   );
 }

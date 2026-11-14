@@ -28,7 +28,8 @@ let lastSessionId: string | null = null;
 function getReportSnapshot(sessionId: string): SessionReport | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.sessionStorage.getItem(reportStorageKey(sessionId));
+    const key = reportStorageKey(sessionId);
+    const raw = window.sessionStorage.getItem(key) ?? window.localStorage.getItem(key);
     if (raw === lastRawReport && sessionId === lastSessionId) {
       return cachedReport;
     }

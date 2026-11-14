@@ -3,9 +3,11 @@ import { redirect } from "next/navigation";
 import "server-only";
 
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
-import { toDayKey } from "@/shared/api/bff/aggregate/day-key";
+import { dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
+import { deduplicateMealRows } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { flattenSessionPlans, historyInWindow } from "@/shared/api/bff/aggregate/workout-adherence";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
+import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
@@ -13,6 +15,7 @@ import { getAuthenticatedSession } from "@/shared/auth/session";
 import { calculateConsecutiveStreakDays } from "@/shared/utils/streak";
 
 import {
+  aggregateNutritionProgress,
   buildConsistencyHeatmap,
   calculateAdherencePercentage,
   mapPeriodicMetricsToEntries,
@@ -60,15 +63,38 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
     const profileClient = createClient(ProfileService, transport);
     const workoutClient = createClient(WorkoutExecutionService, transport);
     const coachingClient = createClient(CoachingService, transport);
+    const nutritionClient = createClient(NutritionService, transport);
+    const nutritionStartDate = dayKeyRange(todayStr, 14)[0] ?? todayStr;
 
-    const [profileRes, metricsHistoryRes, injuryHistoryRes, workoutHistoryRes, roadmapRes] =
-      await Promise.allSettled([
-        profileClient.getProfile({ userId: userId || "" }),
-        profileClient.getBodyMetricsHistory({ userId: userId || "" }),
-        profileClient.getInjuryHistory({ userId: userId || "" }),
-        workoutClient.getWorkoutHistory({ limit: 120, offset: 0 }),
-        coachingClient.getActiveRoadmap({ userId: userId || "" }),
-      ]);
+    const [
+      profileRes,
+      metricsHistoryRes,
+      injuryHistoryRes,
+      workoutHistoryRes,
+      roadmapRes,
+      muscleLoadRes,
+      nutritionSummaryRes,
+      nutritionHistoryRes,
+    ] = await Promise.allSettled([
+      profileClient.getProfile({ userId: userId || "" }),
+      profileClient.getBodyMetricsHistory({ userId: userId || "" }),
+      profileClient.getInjuryHistory({ userId: userId || "" }),
+      workoutClient.getWorkoutHistory({ limit: 120, offset: 0 }),
+      coachingClient.getActiveRoadmap({ userId: userId || "" }),
+      typeof workoutClient.getMuscleLoadStats === "function"
+        ? workoutClient.getMuscleLoadStats({ windowDays: 7 })
+        : Promise.resolve({ items: [] }),
+      typeof nutritionClient.getNutritionSummary === "function"
+        ? nutritionClient.getNutritionSummary({ userId: userId || "" })
+        : Promise.resolve({ targetCalories: 0 }),
+      typeof nutritionClient.getNutritionHistory === "function"
+        ? nutritionClient.getNutritionHistory({
+            userId: userId || "",
+            startDate: nutritionStartDate,
+            endDate: todayStr,
+          })
+        : Promise.resolve({ meals: [] }),
+    ]);
 
     const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
     const rawMetrics =
@@ -131,6 +157,35 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
         severity: inj.severity,
       }));
 
+    const muscleLoadItems =
+      muscleLoadRes.status === "fulfilled" ? (muscleLoadRes.value.items ?? []) : [];
+    const muscleLoad = Object.fromEntries(
+      muscleLoadItems.map((item) => [
+        item.muscleId,
+        {
+          muscleId: item.muscleId,
+          muscleName: item.muscleName,
+          weightedSets: item.weightedSets,
+          previousWeightedSets: item.previousWeightedSets,
+          volumeKg: item.volumeKg,
+          loadScore: item.loadScore,
+        },
+      ]),
+    );
+
+    const targetDailyCalories =
+      nutritionSummaryRes.status === "fulfilled" && nutritionSummaryRes.value?.targetCalories
+        ? nutritionSummaryRes.value.targetCalories
+        : 0;
+    const rawMeals =
+      nutritionHistoryRes.status === "fulfilled" && nutritionHistoryRes.value?.meals
+        ? nutritionHistoryRes.value.meals
+        : [];
+    const nutrition = aggregateNutritionProgress(
+      deduplicateMealRows(rawMeals),
+      targetDailyCalories,
+    );
+
     return {
       athleteName: profileProto?.fullName || athleteName,
       currentWeightKg,
@@ -153,6 +208,8 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       preferredMuscleGroups: profileProto?.preferredMuscleGroups ?? [],
       activeInjuries,
       gender: profileProto?.gender ?? "",
+      muscleLoad,
+      nutrition,
     };
   } catch (error) {
     console.warn("[getProgressDashboardData] gRPC call failed:", error);

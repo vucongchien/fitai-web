@@ -1,4 +1,11 @@
-import type { BodyMetricEntry, HeatmapDay, HeatmapWeek, MetricKey, PersonalRecord } from "./types";
+import type {
+  BodyMetricEntry,
+  HeatmapDay,
+  HeatmapWeek,
+  NutritionTrendEntry,
+  PersonalRecord,
+  ProgressNutritionSummary,
+} from "./types";
 
 export function calculateAdherencePercentage(completed: number, scheduled: number): number {
   if (scheduled <= 0) {
@@ -130,7 +137,7 @@ export function mapPeriodicMetricsToEntries(
 
 export function summarizeMetricTrend(
   entries: readonly BodyMetricEntry[],
-  metric: MetricKey,
+  metric: "weightKg" | "bodyFatPercent",
   targetValue?: number,
 ): string {
   const valid = entries.filter((e) => e[metric] > 0);
@@ -305,4 +312,80 @@ export function buildConsistencyHeatmap(
   }
 
   return result;
+}
+
+export interface RawNutritionMealRow {
+  date?: string;
+  loggedAt?: string | { seconds?: number | bigint };
+  calories?: number;
+  proteinGrams?: number;
+}
+
+export function aggregateNutritionProgress(
+  meals: readonly RawNutritionMealRow[],
+  targetDailyCalories: number,
+): ProgressNutritionSummary {
+  const byDate = new Map<string, { calories: number; proteinGrams: number }>();
+
+  for (const meal of meals) {
+    const dateKey =
+      (meal.date && /^\d{4}-\d{2}-\d{2}/.test(meal.date) ? meal.date.slice(0, 10) : null) ??
+      resolveSessionDateKey({ completedAt: meal.loggedAt });
+    if (!dateKey) {
+      continue;
+    }
+    const calories = Number(meal.calories) || 0;
+    const proteinGrams = Number(meal.proteinGrams) || 0;
+    if (calories <= 0 && proteinGrams <= 0) {
+      continue;
+    }
+    const prev = byDate.get(dateKey) ?? { calories: 0, proteinGrams: 0 };
+    byDate.set(dateKey, {
+      calories: prev.calories + calories,
+      proteinGrams: prev.proteinGrams + proteinGrams,
+    });
+  }
+
+  const sortedDates = Array.from(byDate.keys()).sort((a, b) => a.localeCompare(b));
+  const trend: NutritionTrendEntry[] = sortedDates.map((date) => {
+    const totals = byDate.get(date)!;
+    const d = new Date(`${date}T00:00:00Z`);
+    const dateLabel = Number.isNaN(d.getTime())
+      ? date
+      : d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          timeZone: "UTC",
+        });
+    return {
+      date,
+      dateLabel,
+      calories: Math.round(totals.calories),
+      proteinGrams: Math.round(totals.proteinGrams),
+    };
+  });
+
+  const loggedDays = trend.length;
+  const avgDailyCalories =
+    loggedDays > 0
+      ? Math.round(trend.reduce((sum, d) => sum + d.calories, 0) / loggedDays)
+      : 0;
+
+  let adherencePercentage = 0;
+  if (loggedDays > 0 && targetDailyCalories > 0) {
+    const minCal = targetDailyCalories * 0.8;
+    const maxCal = targetDailyCalories * 1.15;
+    const onTargetDays = trend.filter(
+      (d) => d.calories >= minCal && d.calories <= maxCal,
+    ).length;
+    adherencePercentage = Math.round((onTargetDays / loggedDays) * 100);
+  }
+
+  return {
+    adherencePercentage,
+    avgDailyCalories,
+    targetDailyCalories: Math.round(targetDailyCalories),
+    loggedDays,
+    trend,
+  };
 }
