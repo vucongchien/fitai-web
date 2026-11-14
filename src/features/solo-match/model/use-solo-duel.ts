@@ -155,6 +155,9 @@ export function useSoloDuel({
     let cancelled = false;
     matchEndedHandledRef.current = false;
     isSpectatingOrDoneRef.current = false;
+    prevMyValueRef.current = 0;
+    lastRepConfirmedAtMsRef.current = 0;
+    comboStateRef.current = createInitialComboState();
 
     const client = new SoloRefereeClient();
     refereeClientRef.current = client;

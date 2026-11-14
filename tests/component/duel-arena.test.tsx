@@ -305,4 +305,97 @@ describe(DuelArenaView, () => {
       vi.useRealTimers();
     }
   });
+
+  it("keeps the tug-of-war divider mounted across score updates and shows FORM gauge for DURATION", () => {
+    const baseState = {
+      connectionPhase: "connected" as const,
+      currentAngle: 0,
+      detectedErrors: [],
+      isSettling: false,
+      lastCoachCue: "",
+      matchEnded: false,
+      myFormScore: 88,
+      myStatus: "ACTIVE" as const,
+      myValue: 10,
+      opponentFormScore: 85,
+      opponentStatus: "ACTIVE" as const,
+      opponentValue: 10,
+      personDetected: true,
+      reconnectAttempt: 0,
+      remainingCeilingSeconds: 180,
+      repPhase: "active",
+    };
+
+    const durationMatch: SoloMatchSummary = {
+      ...buildLiveMatch(),
+      challengeType: "DURATION",
+      exerciseId: "plank",
+      exerciseName: "Forearm Plank",
+    };
+
+    vi.mocked(useSoloDuel).mockReturnValue({
+      camera: {
+        clearCustomVideo: vi.fn(),
+        customVideoSrc: null,
+        facingMode: "user",
+        flip: vi.fn(),
+        isCustomVideo: false,
+        loadVideoFile: vi.fn(),
+        start: vi.fn(),
+        state: "ready",
+        stop: vi.fn(),
+        videoRef: { current: null },
+      },
+      forfeitMatch: vi.fn(),
+      liveState: baseState,
+      pose: null,
+      submitScore: vi.fn(),
+    });
+
+    const { rerender } = render(
+      <DuelArenaView
+        currentUserId="user-me"
+        match={durationMatch}
+        onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+        recommendedCameraAngle="side"
+      />,
+    );
+
+    const dividerBefore = screen.getByTestId("duel-tug-of-war-divider");
+    expect(dividerBefore).toHaveStyle({ left: "50%" });
+    expect(screen.getByTestId("duel-rep-gauge")).toHaveAttribute("data-percent", "88");
+    expect(screen.getByTestId("duel-rep-gauge")).toHaveTextContent("FORM");
+
+    vi.mocked(useSoloDuel).mockReturnValue({
+      camera: {
+        clearCustomVideo: vi.fn(),
+        customVideoSrc: null,
+        facingMode: "user",
+        flip: vi.fn(),
+        isCustomVideo: false,
+        loadVideoFile: vi.fn(),
+        start: vi.fn(),
+        state: "ready",
+        stop: vi.fn(),
+        videoRef: { current: null },
+      },
+      forfeitMatch: vi.fn(),
+      liveState: { ...baseState, myValue: 15, opponentValue: 10 },
+      pose: null,
+      submitScore: vi.fn(),
+    });
+
+    rerender(
+      <DuelArenaView
+        currentUserId="user-me"
+        match={durationMatch}
+        onnxSkeletonUrl="/models/yolo11n-pose.onnx"
+        recommendedCameraAngle="side"
+      />,
+    );
+
+    const dividerAfter = screen.getByTestId("duel-tug-of-war-divider");
+    expect(dividerAfter).toBe(dividerBefore);
+    expect(dividerAfter).toHaveStyle({ left: "60%" });
+  });
 });

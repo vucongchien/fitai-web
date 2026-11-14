@@ -125,10 +125,16 @@ export function DuelVersusHud({
         />
         {/* Diagonal Clash Divider (/) */}
         <div
-          className="absolute inset-y-0 w-1.5 -translate-x-1/2 -skew-x-12 bg-white shadow-[0_0_10px_rgba(255,255,255,0.95)] transition-[left] duration-300 ease-out"
-          key={`slash-${clashKey}`}
-          style={{ animation: "soloClashBump 320ms ease-out", left: `${myShare}%` }}
-        />
+          className="absolute inset-y-0 w-1.5 -translate-x-1/2 -skew-x-12 transition-[left] duration-300 ease-out"
+          data-testid="duel-tug-of-war-divider"
+          style={{ left: `${myShare}%` }}
+        >
+          <div
+            className="h-full w-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.95)]"
+            key={`slash-${clashKey}`}
+            style={{ animation: "soloClashBump 320ms ease-out" }}
+          />
+        </div>
       </div>
       <style>{`
         @keyframes soloClashBump {
