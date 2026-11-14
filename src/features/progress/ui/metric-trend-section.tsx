@@ -72,12 +72,18 @@ export function MetricTrendSection({
           <h2 className="font-display text-base sm:text-lg font-bold text-[var(--color-text)]">
             Metric Trend
           </h2>
-          <p className="text-xs sm:text-[13px] text-neutral-600 mt-0.5 truncate" title={summaryLine}>
+          <p
+            className="text-xs sm:text-[13px] text-neutral-600 mt-0.5 truncate"
+            title={summaryLine}
+          >
             {summaryLine}
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-1 rounded-xl bg-neutral-100 p-1 self-start sm:self-auto" role="tablist">
+        <div
+          className="flex shrink-0 items-center gap-1 rounded-xl bg-neutral-100 p-1 self-start sm:self-auto"
+          role="tablist"
+        >
           <button
             type="button"
             role="tab"

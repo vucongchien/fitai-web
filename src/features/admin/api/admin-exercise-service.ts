@@ -113,8 +113,6 @@ export async function fetchAdminExercises({
       offset,
       status: protoStatus,
       includeAllStatuses,
-      hasMotionSpec: filters?.hasMotionSpec,
-      hasVoiceSpec: filters?.hasVoiceSpec,
     });
 
     const exercisesList: AdminExercise[] = (res.exercises || []).map((ex) => ({

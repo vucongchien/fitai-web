@@ -16,6 +16,7 @@ import { TodayTimeline } from "@/features/home/ui/today-timeline";
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
 import { ChallengeEntryCard } from "@/features/solo-match/ui/challenge-entry-card";
+import { toast } from "@/shared/ui/toast";
 import { NAV_FORWARD } from "@/shared/ui/transition-types";
 
 interface HomeViewProps {
@@ -28,9 +29,15 @@ export function HomeView({ data }: HomeViewProps) {
 
   const handleGenerateRoadmap = () => {
     startTransition(async () => {
-      const res = await initiateRoadmapServerAction();
-      if (res.success) {
-        router.refresh();
+      try {
+        const res = await initiateRoadmapServerAction();
+        if (res.success) {
+          router.refresh();
+        } else {
+          toast.error(res.message || "Could not generate your roadmap. Please try again.");
+        }
+      } catch {
+        toast.error("Could not generate your roadmap. Please try again.");
       }
     });
   };

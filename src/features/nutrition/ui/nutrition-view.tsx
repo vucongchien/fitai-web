@@ -13,7 +13,7 @@ interface NutritionViewProps {
 const MACRO_ICONS = [Beef, Wheat, Droplet] as const;
 
 export function NutritionView({ data }: NutritionViewProps) {
-  const todayCalories = data.todayStats?.calories ?? data.caloriesAverage ?? 0;
+  const todayCalories = data.todayStats?.calories ?? 0;
 
   return (
     <>

@@ -1,5 +1,28 @@
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
-export default function IndexPage() {
-  redirect("/home");
+import "@/features/landing/ui/landing-page.css";
+import { AdaptiveRoadmapSection } from "@/features/landing/ui/adaptive-roadmap-section";
+import { BodyEvidenceSection } from "@/features/landing/ui/body-evidence-section";
+import { CommunitySoloSection } from "@/features/landing/ui/community-solo-section";
+import { LandingHeader } from "@/features/landing/ui/landing-header";
+import { LandingHero } from "@/features/landing/ui/landing-hero";
+import { MovementLabSection } from "@/features/landing/ui/movement-lab-section";
+import { TrialConsultSection } from "@/features/landing/ui/trial-consult-section";
+
+export default function LandingPage() {
+  return (
+    <div className="fl-page">
+      <LandingHeader />
+      <main id="main-content">
+        <LandingHero />
+        <AdaptiveRoadmapSection />
+        <MovementLabSection />
+        <Suspense fallback={null}>
+          <CommunitySoloSection />
+        </Suspense>
+        <BodyEvidenceSection />
+        <TrialConsultSection />
+      </main>
+    </div>
+  );
 }
