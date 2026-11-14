@@ -1,0 +1,28 @@
+# FITAI
+
+> FITAI is a mobile-first web application that turns body profile, goals, equipment, and safety constraints into a four-week adaptive training roadmap with real-time biomechanical form checks, nutrition guidance, and injury-safe recovery adjustments.
+
+Canonical URL: https://fitai.chien204.id.vn/
+
+## Who FITAI Serves
+
+- People new to structured exercise or returning after a break who want to know what safe session to do next.
+- Users training in a gym or at home without streak-shaming or unsafe training pressure.
+
+## Core Capabilities
+
+- **Four-Week Adaptive Roadmap (Plan):** Schedules up to 6 sessions per week on real calendar days, adjusts weekly volume and target RPE around performance, missed slots, and recovery needs.
+- **Biomechanical Form Lab & Manual Logging (Move):** Real-time joint-angle form feedback for squat, push-up, and plank using an internal camera adapter, paired with a complete manual workout logging path when a camera is unavailable.
+- **Injury Guard & Body Evidence (Recover):** Tracks muscle-group load across front and back anatomy and substitutes movements when an injury is reported, capping load safely.
+- **Goal-Based Nutrition Guidance:** Daily calorie and macro targets aligned to the active training goal alongside meal slot logging.
+- **Solo Match & Community Challenges:** Optional accountability through structured challenges and leaderboard progress.
+
+## Public Pages
+
+- [FITAI Home](https://fitai.chien204.id.vn/): Product overview, adaptive 4-week roadmap preview, biomechanical form check showcase, and body recovery overview.
+- [Sign in](https://fitai.chien204.id.vn/login): Authentication via Google or Facebook to start onboarding and create a personalized 4-week plan.
+
+## Scope and Safety
+
+- FITAI provides AI-assisted fitness and training guidance, not medical diagnosis or medical treatment.
+- Reporting an active injury halts the current workout flow and routes the user toward recovery and schedule adjustment.

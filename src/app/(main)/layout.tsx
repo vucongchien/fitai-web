@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { AppShell } from "@/shared/ui/app-shell";
 import { SideInspectorPanel } from "@/shared/ui/side-panel/side-inspector-panel";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (

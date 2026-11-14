@@ -12,6 +12,10 @@ import { getAuthenticatedSession, isAdmin } from "@/shared/auth/session";
 export const metadata: Metadata = {
   title: "FITAI Admin Dashboard",
   description: "Administrative control panel for FITAI exercise catalog and user management.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 function AdminLoadingFallback() {
