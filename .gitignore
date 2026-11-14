@@ -58,4 +58,7 @@ skills-lock.json
 /.playwright-mcp/
 
 # Stitch capture artifacts
+
+# SEO / AEO / GEO benchmark reports
+/reports/
 /.stitch/
