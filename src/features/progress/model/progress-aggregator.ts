@@ -367,17 +367,13 @@ export function aggregateNutritionProgress(
 
   const loggedDays = trend.length;
   const avgDailyCalories =
-    loggedDays > 0
-      ? Math.round(trend.reduce((sum, d) => sum + d.calories, 0) / loggedDays)
-      : 0;
+    loggedDays > 0 ? Math.round(trend.reduce((sum, d) => sum + d.calories, 0) / loggedDays) : 0;
 
   let adherencePercentage = 0;
   if (loggedDays > 0 && targetDailyCalories > 0) {
     const minCal = targetDailyCalories * 0.8;
     const maxCal = targetDailyCalories * 1.15;
-    const onTargetDays = trend.filter(
-      (d) => d.calories >= minCal && d.calories <= maxCal,
-    ).length;
+    const onTargetDays = trend.filter((d) => d.calories >= minCal && d.calories <= maxCal).length;
     adherencePercentage = Math.round((onTargetDays / loggedDays) * 100);
   }
 

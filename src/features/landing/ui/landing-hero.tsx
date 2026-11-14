@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const HERO_PILLARS = [
   "AI Workout & Meal Plans",

@@ -2,8 +2,15 @@
 
 import { useState } from "react";
 
-import { BIOMECHANICAL_EXERCISES, SKELETON_BONE_PAIRS } from "@/features/landing/model/landing-data";
-import type { ExercisePhaseFrame, ExerciseRuleId, JointPoint } from "@/features/landing/model/landing-data";
+import {
+  BIOMECHANICAL_EXERCISES,
+  SKELETON_BONE_PAIRS,
+} from "@/features/landing/model/landing-data";
+import type {
+  ExercisePhaseFrame,
+  ExerciseRuleId,
+  JointPoint,
+} from "@/features/landing/model/landing-data";
 import { cn } from "@/shared/lib/cn";
 
 const GRID_PATH =
@@ -113,7 +120,10 @@ export function MovementLabSection() {
               {BIOMECHANICAL_EXERCISES.map((ex) => (
                 <button
                   aria-pressed={exerciseId === ex.id}
-                  className={cn("fl-seg-btn min-h-11", exerciseId === ex.id && "fl-seg-btn--active")}
+                  className={cn(
+                    "fl-seg-btn min-h-11",
+                    exerciseId === ex.id && "fl-seg-btn--active",
+                  )}
                   key={ex.id}
                   onClick={() => setExerciseId(ex.id)}
                   type="button"

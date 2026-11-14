@@ -120,7 +120,8 @@
 
 .fl-hero {
   padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(3rem, 6vw, 5rem);
-  background: radial-gradient(circle at 80% 15%, rgba(75, 87, 242, 0.08) 0%, rgba(255, 255, 255, 0) 55%),
+  background:
+    radial-gradient(circle at 80% 15%, rgba(75, 87, 242, 0.08) 0%, rgba(255, 255, 255, 0) 55%),
     #ffffff;
   border-bottom: 1px solid #e6ecff;
 }
@@ -2079,7 +2080,9 @@
   background: #ffffff;
   cursor: pointer;
   text-align: left;
-  transition: border-color 140ms ease, background-color 140ms ease;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
 }
 
 .fl-muscle-btn:hover,

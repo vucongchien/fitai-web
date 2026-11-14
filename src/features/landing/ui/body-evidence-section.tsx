@@ -75,11 +75,7 @@ export function BodyEvidenceSection() {
                   const isCalloutActive = activeCalloutIds.has(m.id);
                   const muscleLoadScore = LOAD_BY_SVG_ID.get(m.id) ?? 0;
                   const baseOpacity = 0.25 + (muscleLoadScore / 10) * 0.75;
-                  const fillOpacity = activeCalloutObj
-                    ? isCalloutActive
-                      ? 1
-                      : 0.16
-                    : baseOpacity;
+                  const fillOpacity = activeCalloutObj ? (isCalloutActive ? 1 : 0.16) : baseOpacity;
 
                   return (
                     <path

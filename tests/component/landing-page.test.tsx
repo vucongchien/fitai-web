@@ -12,8 +12,14 @@ describe("LandingPage", () => {
     render(<LandingPage />);
     expect(screen.getByRole("heading", { level: 1, name: /Train with evidence/i })).toBeTruthy();
     expect(screen.getByText("AI Workout & Meal Plans")).toBeTruthy();
-    expect(screen.getAllByRole("link", { name: /Start training|Start your 4-week plan|Start 4-week trial/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("link", { name: /Open Today view|Preview Today/i }).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole("link", {
+        name: /Start training|Start your 4-week plan|Start 4-week trial/i,
+      }).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole("link", { name: /Open Today view|Preview Today/i }).length,
+    ).toBeGreaterThan(0);
   });
 
   it("renders compact user-group cards", () => {
