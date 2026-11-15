@@ -31,6 +31,12 @@
       "category": "aeo",
       "prompt": "Where does FITAI run pose estimation models and can you log workouts without a camera?",
       "expectedKeywords": ["onnx", "browser", "local", "manual", "camera"]
+    },
+    {
+      "id": "aeo-epley-load-guard",
+      "category": "aeo",
+      "prompt": "How does FITAI calculate estimated 1RM and when does its anomalous load check warn users?",
+      "expectedKeywords": ["epley", "250%", "volume", "weight", "reps"]
     }
   ],
   "geoQueries": [

@@ -23,6 +23,7 @@
     "audit:seo": "node scripts/seo-geo-aeo-benchmark.mjs",
     "audit:skills": "node scripts/audit-skills.mjs",
     "audit:comments": "node scripts/audit-comments.mjs",
+    "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "precommit": "node scripts/pre-commit.mjs",
     "prepare": "node -e \"if (require('fs').existsSync('.git')) { try { require('child_process').execSync('git config core.hooksPath .githooks'); } catch {} }\""
   },

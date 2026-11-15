@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { KNOWLEDGE_GUIDES } from "@/features/lab/model/guides-data";
 import { LAB_EXERCISES_META } from "@/features/lab/model/lab-catalog";
 import { BrandMark } from "@/shared/ui/brand-mark";
 
@@ -31,6 +32,12 @@ function PublicLabShell({ children }: PublicLabShellProps) {
                 href="/lab"
               >
                 Movement Lab
+              </Link>
+              <Link
+                className="text-sm font-medium text-neutral-700 hover:text-neutral-950"
+                href="/lab/glossary"
+              >
+                Glossary
               </Link>
               <Link
                 className="text-sm font-medium text-neutral-700 hover:text-neutral-950"
@@ -94,30 +101,16 @@ function PublicLabShell({ children }: PublicLabShellProps) {
                 Training Architecture Guides
               </h2>
               <ul className="mt-3 space-y-2 text-sm">
-                <li>
-                  <Link
-                    className="text-neutral-700 hover:text-[var(--color-action)] hover:underline"
-                    href="/guides/4-week-adaptive-roadmap"
-                  >
-                    4-Week Adaptive Roadmap
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="text-neutral-700 hover:text-[var(--color-action)] hover:underline"
-                    href="/guides/on-device-pose-ai"
-                  >
-                    On-Device Pose AI &amp; Referee
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="text-neutral-700 hover:text-[var(--color-action)] hover:underline"
-                    href="/guides/injury-guard-recovery"
-                  >
-                    Injury Guard &amp; Load Caps
-                  </Link>
-                </li>
+                {KNOWLEDGE_GUIDES.map((guide) => (
+                  <li key={guide.slug}>
+                    <Link
+                      className="text-neutral-700 hover:text-[var(--color-action)] hover:underline"
+                      href={`/guides/${guide.slug}`}
+                    >
+                      {guide.title}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -137,9 +130,35 @@ function PublicLabShell({ children }: PublicLabShellProps) {
                 <li>
                   <Link
                     className="text-neutral-700 hover:text-[var(--color-action)] hover:underline"
+                    href="/lab/glossary"
+                  >
+                    Biomechanics Glossary
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="text-neutral-700 hover:text-[var(--color-action)] hover:underline"
                     href="/guides"
                   >
                     Evidence &amp; Coaching Guides
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="text-neutral-700 hover:text-[var(--color-action)] hover:underline"
+                    href="/knowledge.json"
+                    prefetch={false}
+                  >
+                    knowledge.json
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    className="text-neutral-700 hover:text-[var(--color-action)] hover:underline"
+                    href="/feed.xml"
+                    prefetch={false}
+                  >
+                    RSS feed (/feed.xml)
                   </Link>
                 </li>
                 <li>

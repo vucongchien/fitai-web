@@ -1,5 +1,6 @@
 import type {
   BreadcrumbList,
+  DefinedTermSet,
   FAQPage,
   HowTo,
   SoftwareApplication,
@@ -8,6 +9,7 @@ import type {
   WithContext,
 } from "schema-dts";
 
+import type { GlossaryTerm } from "@/features/lab/model/glossary-data";
 import type { KnowledgeGuide } from "@/features/lab/model/guides-data";
 import type { LabFaqItem } from "@/features/lab/model/lab-catalog";
 import type { LabExerciseSpec } from "@/features/lab/server/load-lab-catalog";
@@ -126,6 +128,22 @@ function buildTechArticleJsonLd(guide: KnowledgeGuide): WithContext<TechArticle>
   };
 }
 
+function buildDefinedTermSetJsonLd(terms: readonly GlossaryTerm[]): WithContext<DefinedTermSet> {
+  const siteUrl = getSiteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "DefinedTermSet",
+    name: "FITAI Biomechanics & Pose AI Glossary",
+    url: `${siteUrl}/lab/glossary`,
+    hasDefinedTerm: terms.map((item) => ({
+      "@type": "DefinedTerm",
+      name: item.term,
+      description: `${item.definition} (${item.formulaOrThreshold})`,
+      url: `${siteUrl}/lab/glossary#${item.id}`,
+    })),
+  };
+}
+
 function serializeJsonLd(data: unknown): string {
   // Escape '<' to prevent closing </script> tags inside serialized JSON-LD.
   return JSON.stringify(data).replaceAll("<", String.raw`\u003c`);
@@ -133,6 +151,7 @@ function serializeJsonLd(data: unknown): string {
 
 export {
   buildBreadcrumbJsonLd,
+  buildDefinedTermSetJsonLd,
   buildExerciseHowToJsonLd,
   buildFaqPageJsonLd,
   buildSoftwareApplicationJsonLd,
