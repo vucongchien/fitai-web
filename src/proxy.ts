@@ -22,6 +22,9 @@ export async function proxy(request: NextRequest) {
     pathname === "/sitemap.xml" ||
     pathname === "/llms.txt" ||
     pathname === "/llms-full.txt" ||
+    pathname === "/feed.xml" ||
+    pathname === "/knowledge.json" ||
+    pathname === "/fitai-indexnow-20261115.txt" ||
     pathname.startsWith("/opengraph-image") ||
     pathname.startsWith("/twitter-image") ||
     pathname.startsWith("/login") ||

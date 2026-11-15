@@ -22,6 +22,7 @@ function parseArgs(argv) {
   const args = {
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://fitai.chien204.id.vn",
     gscIndexed: null,
+    psiKey: process.env.PAGESPEED_API_KEY?.trim() || process.env.GOOGLE_PSI_API_KEY?.trim() || null,
     skipPsi: false,
     skipAi: false,
   };
@@ -33,6 +34,8 @@ function parseArgs(argv) {
     } else if (token === "--gsc-indexed" && argv[i + 1]) {
       const n = Number(argv[++i]);
       if (Number.isFinite(n) && n >= 0) args.gscIndexed = n;
+    } else if (token === "--psi-key" && argv[i + 1]) {
+      args.psiKey = argv[++i];
     } else if (token === "--skip-psi") {
       args.skipPsi = true;
     } else if (token === "--skip-ai") {
@@ -101,8 +104,8 @@ function isLocalhostUrl(url) {
   }
 }
 
-async function runPageSpeedAudit(targetUrl) {
-  const key = process.env.PAGESPEED_API_KEY?.trim();
+async function runPageSpeedAudit(targetUrl, explicitKey) {
+  const key = explicitKey || process.env.PAGESPEED_API_KEY?.trim() || "";
   const params = new URLSearchParams({
     url: targetUrl,
     strategy: "mobile",
@@ -197,6 +200,19 @@ async function crawlSitemapUrls(baseUrl, sitemapBody) {
       const wordCount = text ? text.split(/\s+/).length : 0;
       const schema = collectSchemaTypes(res.body);
       const h1Count = (res.body.match(/<h1[\s>]/gi) || []).length;
+      const ogMeta = extractTagContent(
+        res.body,
+        /<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']*)["']/i,
+      );
+      let ogImagePath = null;
+      if (ogMeta) {
+        try {
+          const parsed = new URL(ogMeta, baseUrl);
+          ogImagePath = `${parsed.pathname}${parsed.search}`;
+        } catch {
+          ogImagePath = null;
+        }
+      }
       return {
         path: routePath,
         status: res.status,
@@ -204,6 +220,7 @@ async function crawlSitemapUrls(baseUrl, sitemapBody) {
         h1Count,
         validJsonLd: schema.valid,
         schemaTypes: schema.types,
+        ogImagePath,
       };
     }),
   );
@@ -309,20 +326,42 @@ async function main() {
   console.log(`\n=== FITAI SEO / AEO / GEO Benchmark ===`);
   console.log(`Target: ${baseUrl}\n`);
 
-  const [homeRes, loginRes, robotsRes, sitemapRes, llmsRes, llmsFullRes, ogRes] = await Promise.all(
-    [
-      fetchEndpoint(`${baseUrl}/`),
-      fetchEndpoint(`${baseUrl}/login`),
-      fetchEndpoint(`${baseUrl}/robots.txt`),
-      fetchEndpoint(`${baseUrl}/sitemap.xml`),
-      fetchEndpoint(`${baseUrl}/llms.txt`),
-      fetchEndpoint(`${baseUrl}/llms-full.txt`),
-      fetchEndpoint(`${baseUrl}/opengraph-image`),
-    ],
-  );
+  const [
+    homeRes,
+    loginRes,
+    robotsRes,
+    sitemapRes,
+    llmsRes,
+    llmsFullRes,
+    ogRes,
+    feedRes,
+    knowledgeRes,
+    indexNowRes,
+  ] = await Promise.all([
+    fetchEndpoint(`${baseUrl}/`),
+    fetchEndpoint(`${baseUrl}/login`),
+    fetchEndpoint(`${baseUrl}/robots.txt`),
+    fetchEndpoint(`${baseUrl}/sitemap.xml`),
+    fetchEndpoint(`${baseUrl}/llms.txt`),
+    fetchEndpoint(`${baseUrl}/llms-full.txt`),
+    fetchEndpoint(`${baseUrl}/opengraph-image`),
+    fetchEndpoint(`${baseUrl}/feed.xml`),
+    fetchEndpoint(`${baseUrl}/knowledge.json`),
+    fetchEndpoint(`${baseUrl}/fitai-indexnow-20261115.txt`),
+  ]);
 
   const sitemapPages =
     sitemapRes.status === 200 ? await crawlSitemapUrls(baseUrl, sitemapRes.body) : [];
+  const labPageMeta = sitemapPages.find((p) => p.path === "/lab");
+  const guidesPageMeta = sitemapPages.find((p) => p.path === "/guides");
+  const [labOgRes, guidesOgRes] = await Promise.all([
+    labPageMeta?.ogImagePath
+      ? fetchEndpoint(`${baseUrl}${labPageMeta.ogImagePath}`)
+      : Promise.resolve({ status: 0 }),
+    guidesPageMeta?.ogImagePath
+      ? fetchEndpoint(`${baseUrl}${guidesPageMeta.ogImagePath}`)
+      : Promise.resolve({ status: 0 }),
+  ]);
   const allSitemapReturn200 =
     sitemapPages.length > 0 && sitemapPages.every((p) => p.status === 200 && p.h1Count === 1);
 
@@ -342,12 +381,27 @@ async function main() {
   const loginTitle = extractTagContent(loginRes.body, /<title[^>]*>([\s\S]*?)<\/title>/i);
   const homeWordCount = stripHtmlToText(homeRes.body).split(/\s+/).filter(Boolean).length;
 
+  let knowledgeValid = false;
+  if (knowledgeRes.status === 200) {
+    try {
+      const parsedKnowledge = JSON.parse(knowledgeRes.body);
+      knowledgeValid =
+        Array.isArray(parsedKnowledge.exercises) && parsedKnowledge.exercises.length >= 12;
+    } catch {
+      knowledgeValid = false;
+    }
+  }
+
   const seoChecks = {
     homeReturns200: homeRes.status === 200,
     allSitemapUrlsHealthy: allSitemapReturn200,
     robotsReturns200: robotsRes.status === 200 && /Sitemap:/i.test(robotsRes.body),
     sitemapReturns200: sitemapRes.status === 200 && sitemapPages.length > 0,
-    ogImageReturns200: ogRes.status === 200,
+    ogImageReturns200:
+      ogRes.status === 200 && labOgRes.status === 200 && guidesOgRes.status === 200,
+    rssFeedHealthy: feedRes.status === 200 && /<rss[\s>]/i.test(feedRes.body),
+    indexNowKeyReady:
+      indexNowRes.status === 200 && indexNowRes.body.trim() === "fitai-indexnow-20261115",
     hasTitleAndDesc: Boolean(homeTitle && homeDesc),
     noDuplicateBrandInLoginTitle: Boolean(loginTitle && !/FITAI\s*·\s*FITAI/i.test(loginTitle)),
     hasCanonicalAndOgImage: Boolean(homeCanonical && homeOgImage),
@@ -359,7 +413,7 @@ async function main() {
 
   let psi = { ok: false, reason: "Skipped" };
   if (!args.skipPsi && !isLocalhostUrl(baseUrl)) {
-    psi = await runPageSpeedAudit(`${baseUrl}/`);
+    psi = await runPageSpeedAudit(`${baseUrl}/`, args.psiKey);
   } else if (isLocalhostUrl(baseUrl)) {
     psi = { ok: false, reason: "Localhost URL cannot be reached by public PageSpeed API" };
   }
@@ -371,9 +425,13 @@ async function main() {
 
   const squatSample = sitemapPages.find((p) => p.path === "/lab/squat");
   const guideSample = sitemapPages.find((p) => p.path === "/guides/4-week-adaptive-roadmap");
+  const glossarySample = sitemapPages.find((p) => p.path === "/lab/glossary");
   const homeSchema = collectSchemaTypes(homeRes.body);
   const aeoChecks = {
-    homeSchemaValid: homeSchema.valid && homeSchema.types.includes("SoftwareApplication"),
+    homeSchemaValid:
+      homeSchema.valid &&
+      homeSchema.types.includes("SoftwareApplication") &&
+      homeSchema.types.includes("FAQPage"),
     labHowToAndFaqValid: Boolean(
       squatSample?.validJsonLd &&
       squatSample.schemaTypes.includes("HowTo") &&
@@ -383,6 +441,9 @@ async function main() {
       guideSample?.validJsonLd &&
       guideSample.schemaTypes.includes("TechArticle") &&
       guideSample.schemaTypes.includes("FAQPage"),
+    ),
+    glossaryDefinedTermSetValid: Boolean(
+      glossarySample?.validJsonLd && glossarySample.schemaTypes.includes("DefinedTermSet"),
     ),
     allContentPagesHaveH1: sitemapPages.length > 0 && sitemapPages.every((p) => p.h1Count === 1),
   };
@@ -399,8 +460,9 @@ async function main() {
       ? validateLlmsTxt(llmsRes.body, querySet.targetDomain)
       : { checks: {}, readinessPct: 0 };
   const llmsFullReady = llmsFullRes.status === 200 && llmsFullRes.body.length > 500 ? 100 : 0;
+  const knowledgeJsonReady = knowledgeValid ? 100 : 0;
   const geoReadinessPct = Math.round(
-    (aiCrawlerAccessPct + llmsCheck.readinessPct + llmsFullReady) / 3,
+    (aiCrawlerAccessPct + llmsCheck.readinessPct + llmsFullReady + knowledgeJsonReady) / 4,
   );
 
   let aiSearchMetrics = null;
@@ -423,7 +485,12 @@ async function main() {
       "/sitemap.xml": { status: sitemapRes.status, urls: sitemapPages.length },
       "/llms.txt": { status: llmsRes.status },
       "/llms-full.txt": { status: llmsFullRes.status },
+      "/feed.xml": { status: feedRes.status },
+      "/knowledge.json": { status: knowledgeRes.status, valid: knowledgeValid },
+      "/fitai-indexnow-20261115.txt": { status: indexNowRes.status },
       "/opengraph-image": { status: ogRes.status },
+      "/lab/opengraph-image": { status: labOgRes.status },
+      "/guides/opengraph-image": { status: guidesOgRes.status },
     },
     sitemapPages,
     metrics: {
@@ -446,6 +513,7 @@ async function main() {
         aiCrawlerAccessPct,
         llmsTxtReadinessPct: llmsCheck.readinessPct,
         llmsFullReadyPct: llmsFullReady,
+        knowledgeJsonReadyPct: knowledgeJsonReady,
         brandMentionRatePct: aiSearchMetrics ? aiSearchMetrics.geoMentionPct : null,
         citationLinkRatePct: aiSearchMetrics ? aiSearchMetrics.geoCitationPct : null,
         aiBotAccess,

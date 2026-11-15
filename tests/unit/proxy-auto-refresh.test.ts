@@ -64,6 +64,10 @@ describe("Middleware Proxy Auto-refresh (src/proxy.ts)", () => {
       "/sitemap.xml",
       "/llms.txt",
       "/llms-full.txt",
+      "/feed.xml",
+      "/knowledge.json",
+      "/fitai-indexnow-20261115.txt",
+      "/lab/glossary",
       "/opengraph-image",
     ]) {
       const req = makeNextRequest(path);

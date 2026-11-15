@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import "@/features/landing/ui/landing-page.css";
+import { LANDING_FAQS } from "@/features/lab/model/landing-faqs";
 import { LandingKnowledgeFooter } from "@/features/lab/ui/landing-knowledge-footer";
 import { AdaptiveRoadmapSection } from "@/features/landing/ui/adaptive-roadmap-section";
 import { BodyEvidenceSection } from "@/features/landing/ui/body-evidence-section";
@@ -12,6 +13,7 @@ import { MovementLabSection } from "@/features/landing/ui/movement-lab-section";
 import { TrialConsultSection } from "@/features/landing/ui/trial-consult-section";
 import { SITE_DESCRIPTION } from "@/shared/seo/site-config";
 import {
+  buildFaqPageJsonLd,
   buildSoftwareApplicationJsonLd,
   buildWebsiteJsonLd,
   serializeJsonLd,
@@ -34,12 +36,14 @@ export const metadata: Metadata = {
 
 const WEBSITE_JSON_LD = { __html: serializeJsonLd(buildWebsiteJsonLd()) };
 const SOFTWARE_APP_JSON_LD = { __html: serializeJsonLd(buildSoftwareApplicationJsonLd()) };
+const LANDING_FAQ_JSON_LD = { __html: serializeJsonLd(buildFaqPageJsonLd(LANDING_FAQS)) };
 
 export default function LandingPage() {
   return (
     <div className="fl-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={WEBSITE_JSON_LD} />
       <script type="application/ld+json" dangerouslySetInnerHTML={SOFTWARE_APP_JSON_LD} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={LANDING_FAQ_JSON_LD} />
       <LandingHeader />
       <main id="main-content">
         <LandingHero />
