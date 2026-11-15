@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import {
   cancelAllSpeech,
@@ -179,13 +179,20 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     startSetRef.current(listeningRef.current);
   }, [motion]);
 
+  const cameraRef = useRef(camera);
+  cameraRef.current = camera;
+  const motionRef = useRef(motion);
+  motionRef.current = motion;
+  const workoutEffectsRef = useRef(workoutEffects);
+  workoutEffectsRef.current = workoutEffects;
+
   const stageRef = useCallback(
-    (node: HTMLElement | null) => {
+    (node: HTMLDivElement | null) => {
       if (!node) return;
 
       if (sessionStatus === "ready") {
         if (cameraActive) {
-          motion.startCalibration();
+          motionRef.current.startCalibration();
         } else {
           startSetRef.current(listeningRef.current);
         }
@@ -194,7 +201,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           clearInterval(prepTimerRef.current);
           prepTimerRef.current = null;
         }
-        setPrepCountdown(null);
+        setPrepCountdown((prev) => (prev === null ? prev : null));
       }
 
       if (sessionStatus === "resting" || sessionStatus === "complete") {
@@ -218,7 +225,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         toast.info(`${protectionNote.title}: ${protectionNote.description}`);
       }
 
-      const cleanupEffects = workoutEffects.syncEffects(node);
+      const cleanupEffects = workoutEffectsRef.current.syncEffects(node);
 
       return () => {
         if (prepTimerRef.current !== null) {
@@ -228,17 +235,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         cleanupEffects?.();
       };
     },
-    [
-      audio,
-      camera,
-      cameraActive,
-      durationWarning,
-      motion,
-      online,
-      protectionNote,
-      sessionStatus,
-      workoutEffects,
-    ],
+    [cameraActive, durationWarning, online, protectionNote, sessionStatus],
   );
 
   // Clean up media and engine resources safely on unmount without trigger ref loops
@@ -318,6 +315,16 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   const secondsElapsed = session.setTotal > 0 ? session.setTotal - session.setLeft : 0;
   const aiCountedReps = cameraActive ? (motion.repCount ?? 0) : 0;
+  const totalVolumeKg = useMemo(
+    () =>
+      Math.round(
+        session.loggedSets.reduce(
+          (sum, s) => sum + (s.weightKg > 0 && s.actualReps > 0 ? s.weightKg * s.actualReps : 0),
+          0,
+        ),
+      ),
+    [session.loggedSets],
+  );
 
   const modalsProps = {
     aiCountedReps,
@@ -406,6 +413,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         setTotalSeconds={session.setTotal}
         spec={workoutEffects.spec}
         totalSets={Math.max(1, exercise.targetSets)}
+        totalVolumeKg={totalVolumeKg}
         voiceOn={listening}
       />
       <LiveWorkoutModals {...modalsProps} includeActiveModals />

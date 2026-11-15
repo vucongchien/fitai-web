@@ -259,7 +259,7 @@ export function PoseStencilOverlay({
       // 200ms grace period for transient camera jitter or dropped frames
       if (now - lastMatchedRef.current > 200) {
         alignedStartRef.current = null;
-        setIsAligned(false);
+        setIsAligned((prev) => (prev ? false : prev));
       }
     }
   }, [exerciseName, onAlignedLock, pose, resolvedExerciseId, rulesUrl]);
