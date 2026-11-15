@@ -225,7 +225,7 @@ function SetConfirmDialogContent({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setWeightKg((w) => Math.max(0, parseFloat((w - 1).toFixed(1))))}
+                  onClick={() => setWeightKg((w) => Math.max(0, parseFloat((w - 0.5).toFixed(1))))}
                   className="w-8 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
                   aria-label="Decrease weight"
                 >
@@ -240,7 +240,7 @@ function SetConfirmDialogContent({
                 />
                 <button
                   type="button"
-                  onClick={() => setWeightKg((w) => parseFloat((w + 1).toFixed(1)))}
+                  onClick={() => setWeightKg((w) => parseFloat((w + 0.5).toFixed(1)))}
                   className="w-8 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
                   aria-label="Increase weight"
                 >

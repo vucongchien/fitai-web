@@ -17,9 +17,11 @@ export interface HeaderAction {
 export function SessionHeader({
   actions,
   onBack,
+  subtitle,
   title,
 }: {
   title: string;
+  subtitle?: string;
   onBack: () => void;
   actions: HeaderAction[];
 }) {
@@ -29,10 +31,16 @@ export function SessionHeader({
         <ArrowLeft aria-hidden="true" size={20} />
       </button>
 
-      <h1 className="live-screen__title">{title}</h1>
+      <div className="min-w-0 text-center">
+        <h1 className="live-screen__title">{title}</h1>
+        {subtitle ? (
+          <span className="block font-mono text-[11px] font-semibold text-[var(--color-text-muted)]">
+            {subtitle}
+          </span>
+        ) : null}
+      </div>
 
-      {/* No slice: every action passed here is one the screen decided to offer,
-          and silently dropping the fourth would drop the pain control. */}
+      {/* Render every action so safety controls are never dropped. */}
       <div className="live-screen__actions">
         {actions.map((action) => (
           <button
