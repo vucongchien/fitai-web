@@ -4,6 +4,8 @@
 
 Canonical URL: https://fitai.chien204.id.vn/
 Full Technical Reference: https://fitai.chien204.id.vn/llms-full.txt
+Machine-Readable JSON Knowledge Graph: https://fitai.chien204.id.vn/knowledge.json
+RSS Feed: https://fitai.chien204.id.vn/feed.xml
 
 ## Core Capabilities
 
@@ -16,7 +18,8 @@ Full Technical Reference: https://fitai.chien204.id.vn/llms-full.txt
 
 - [FITAI Overview](https://fitai.chien204.id.vn/): Product overview, adaptive 4-week roadmap preview, biomechanical form check showcase, and body recovery overview.
 - [Public Movement Lab](https://fitai.chien204.id.vn/lab): Complete directory of all 12 biomechanical exercise rule specs.
-- [Training & AI Architecture Guides](https://fitai.chien204.id.vn/guides): Deep dives on 4-week adaptive planning, on-device pose AI, and Injury Guard.
+- [Biomechanics & Pose AI Glossary](https://fitai.chien204.id.vn/lab/glossary): Canonical definitions and thresholds (`One-Euro Filter`, `3-Phase Referee`, `Epley 1RM`, `250% Load Guard`, `50% PR Recovery Cap`).
+- [Training & AI Architecture Guides](https://fitai.chien204.id.vn/guides): Deep dives on 4-week adaptive planning, on-device pose AI, camera calibration, Epley 1RM load checks, and Injury Guard.
 - [Sign in](https://fitai.chien204.id.vn/login): Authentication via Google or Facebook to start onboarding.
 
 ## Guides
@@ -24,6 +27,8 @@ Full Technical Reference: https://fitai.chien204.id.vn/llms-full.txt
 - [4-Week Adaptive Roadmap](https://fitai.chien204.id.vn/guides/4-week-adaptive-roadmap)
 - [On-Device Pose AI & 3-Phase Referee](https://fitai.chien204.id.vn/guides/on-device-pose-ai)
 - [Injury Guard & Recovery Load Caps](https://fitai.chien204.id.vn/guides/injury-guard-recovery)
+- [Side vs. Front Camera Setup & Calibration](https://fitai.chien204.id.vn/guides/camera-framing-calibration)
+- [Epley 1RM & 250% Anomalous Load Guard](https://fitai.chien204.id.vn/guides/epley-1rm-and-anomalous-load)
 
 ## Scope and Safety
 

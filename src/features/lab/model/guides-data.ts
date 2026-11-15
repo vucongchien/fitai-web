@@ -165,6 +165,105 @@ const KNOWLEDGE_GUIDES: readonly KnowledgeGuide[] = [
       },
     ],
   },
+  {
+    slug: "camera-framing-calibration",
+    title: "Side vs. Front Camera Setup & Framing Calibration for 12 Exercises",
+    kicker: "GUIDE 04 · SETUP",
+    description:
+      "How camera orientation maps to FITAI's 12 biomechanical specs, why framing calibration only runs pre-set, and when to switch smoothly to Manual Mode.",
+    lane: "Move",
+    readTime: "4 min read",
+    updatedAt: "2026-11-15",
+    summaryPoints: [
+      { label: "Side-Profile Specs", value: "Squat, Deadlift, Lunge, Curl, Sit-up, Dip" },
+      { label: "Front-Profile Spec", value: "Lateral Raise (shoulder abduction symmetry)" },
+      { label: "Dual-Angle Specs", value: "Push-up, Plank, Bench, Pull-up, Shoulder Press" },
+      { label: "Calibration Window", value: "Pre-set ready state only (never mid-set)" },
+    ],
+    sections: [
+      {
+        questionHeading: "Should I set my phone at a side or front angle?",
+        directAnswer:
+          "Choose side profile when the primary rule checks spine, hip, or knee travel in the sagittal plane (Squat, Deadlift, Lunge, Bicep Curl, Sit-up, Triceps Dip). Choose front profile for wrist or abduction symmetry checks (Lateral Raise), while Push-up, Plank, Bench Press, Pull-up, and Shoulder Press support both angles.",
+        bullets: [
+          "Keep full ankle-to-head visibility inside frame during pre-set framing.",
+          "Contrast clothing subtly against the background for steadier 17-keypoint detection.",
+          "Place the camera at roughly hip-to-chest height two to three meters away.",
+        ],
+      },
+      {
+        questionHeading: "Why does FITAI never re-lock the screen for calibration mid-set?",
+        directAnswer:
+          "Calibration is strictly a pre-set gate active while session status is ready and camera readiness is still false. Once your working set starts, FITAI locks out full-screen calibration prompts so timers and rep counts continue uninterrupted.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Which exercises in FITAI work best from a side camera angle?",
+        answer:
+          "Squat, Deadlift, Lunge, Bicep Curl, Sit-up, and Triceps Dip are calibrated primarily for side-profile evaluation of torso lean, hip hinge, and knee travel.",
+      },
+      {
+        question: "Can I switch off the camera mid-workout?",
+        answer:
+          "Yes. Disabling the camera preview bypasses the framing gate immediately and lets you finish logging reps, timed holds, and RPE with Manual Logging Parity.",
+      },
+      {
+        question: "Why does Lateral Raise prefer a front camera angle?",
+        answer:
+          "Lateral Raise evaluates bilateral shoulder abduction height and left-right wrist symmetry across the coronal plane, which are cleanly visible from the front.",
+      },
+    ],
+  },
+  {
+    slug: "epley-1rm-and-anomalous-load",
+    title: "Evidence-Based Load Tracking: Epley 1RM & 250% Anomaly Guard",
+    kicker: "GUIDE 05 · PROGRESS",
+    description:
+      "How FITAI calculates session volume in kg, estimates 1-rep max via the Epley formula without risky testing, and flags > 250% volume spikes before saving.",
+    lane: "Plan",
+    readTime: "4 min read",
+    updatedAt: "2026-11-15",
+    summaryPoints: [
+      { label: "Set Volume", value: "max(0, reps) * max(0, weightKg)" },
+      { label: "PR Metric", value: "Epley 1RM = weight * (1 + reps / 30)" },
+      { label: "Anomaly Threshold", value: "> 250% mean of last 5 sessions" },
+      { label: "Zero-Baseline Safety", value: "Never blocks bodyweight or Day 1 logs" },
+    ],
+    sections: [
+      {
+        questionHeading: "How does FITAI detect Personal Records without testing 1-rep maxes?",
+        directAnswer:
+          "For weighted exercises where both load and reps are positive, FITAI applies the standard Epley formula (weightKg * (1 + reps / 30)) across every completed set in your session and tracks the highest estimated 1RM per exercise.",
+        bullets: [
+          "Repetition-based progress at submaximal weights updates your estimated strength ceiling safely.",
+          "Bodyweight exercises (0 kg external load) return 0 for Epley 1RM and measure progress via reps, hold time, and RPE instead.",
+        ],
+      },
+      {
+        questionHeading: "What is the 250% Anomalous Load Guardrail?",
+        directAnswer:
+          "Before persisting a weighted workout summary, FITAI compares total session volume against the mean of your last five comparable sessions. If current volume exceeds 250% (ratio > 2.5), the app asks you to confirm the numbers so accidental weight typos (like 200 kg instead of 20 kg) never corrupt your 4-week plan.",
+      },
+    ],
+    faqs: [
+      {
+        question: "Does the 250% load check block beginners on their first workout?",
+        answer:
+          "No. When recent comparable session volume is zero (such as first sessions or bodyweight-only blocks), the anomaly guard explicitly returns false and never blocks saving.",
+      },
+      {
+        question: "What formula does FITAI use for weighted set volume?",
+        answer:
+          "Each set's volume is calculated as max(0, actualReps) multiplied by max(0, weightKg), summed across all logged sets in the session.",
+      },
+      {
+        question: "How does Epley 1RM help progressive overload across 4 weeks?",
+        answer:
+          "Because 8 reps at 60 kg (76 kg est. 1RM) and 10 reps at 57.5 kg (76.7 kg est. 1RM) map onto a shared scale, the adaptive planner recognizes strength gains even when weekly rep targets shift.",
+      },
+    ],
+  },
 ];
 
 function getGuideBySlug(slug: string): KnowledgeGuide | null {

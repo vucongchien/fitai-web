@@ -40,6 +40,16 @@ const data = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        {
+          url: "/feed.xml",
+          title: "FITAI Open Movement Lab & Guides RSS",
+        },
+      ],
+    },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

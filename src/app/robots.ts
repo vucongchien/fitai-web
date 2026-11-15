@@ -23,7 +23,18 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: AI_AND_SEARCH_BOTS.map((userAgent) => ({
       userAgent,
-      allow: ["/", "/lab", "/guides", "/login", "/llms.txt", "/llms-full.txt", "/opengraph-image"],
+      allow: [
+        "/",
+        "/lab",
+        "/guides",
+        "/login",
+        "/llms.txt",
+        "/llms-full.txt",
+        "/feed.xml",
+        "/knowledge.json",
+        "/fitai-indexnow-20261115.txt",
+        "/opengraph-image",
+      ],
       disallow,
     })),
     sitemap: `${siteUrl}/sitemap.xml`,

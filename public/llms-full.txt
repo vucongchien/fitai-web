@@ -6,6 +6,7 @@
 
 - **Product:** FITAI
 - **Domain:** https://fitai.chien204.id.vn/
+- **Machine-Readable Endpoints:** `/knowledge.json` (structured specs + thresholds JSON), `/feed.xml` (RSS 2.0), `/lab/glossary` (`DefinedTermSet` glossary).
 - **Target Users:** People new to structured exercise or returning after a break who need clear next sessions without streak-shaming or unsafe training pressure.
 - **Training Cycle:** 4 weeks (week / day / session hierarchy), maximum 6 sessions per week.
 - **Medical Disclaimer:** FITAI provides fitness guidance only and does not diagnose medical conditions.
@@ -13,8 +14,10 @@
 ## 2. Architecture Guides
 
 - [How FITAI Builds a 4-Week Adaptive Training Roadmap](https://fitai.chien204.id.vn/guides/4-week-adaptive-roadmap): Explains onboarding thresholds, calendar slot placement, RPE-based load tapering, and zero-punishment adaptive rest.
-- [On-Device Pose Estimation & 3-Phase Rep Referee](https://fitai.chien204.id.vn/guides/on-device-pose-ai): Explains browser-local `YOLOv8n-Pose` / `YOLO11n-Pose` via ONNX Runtime Web, 17 COCO keypoints, One-Euro Filter smoothing, 3-phase rep state machine (`REST -> TRANSITION -> ACTIVE`), and complete Manual Mode logging parity.
+- [On-Device Pose Estimation & 3-Phase Rep Referee](https://fitai.chien204.id.vn/guides/on-device-pose-ai): Explains browser-local `YOLOv8n-Pose` / `YOLO11n-Pose` via ONNX Runtime Web, 17 COCO keypoints, One-Euro Filter (`minCutoff = 1.0`, `beta = 0.007`, `dCutoff = 1.0`), 3-phase rep state machine (`REST -> TRANSITION -> ACTIVE`), and complete Manual Mode logging parity.
 - [Injury Guard: Automatic Load Caps & Safe Movement Swaps](https://fitai.chien204.id.vn/guides/injury-guard-recovery): Explains immediate session stop on injury report, 50% PR recovery load cap, and anatomical muscle substitution.
+- [Side vs. Front Camera Setup & Framing Calibration](https://fitai.chien204.id.vn/guides/camera-framing-calibration): Maps camera orientations across all 12 exercises and explains why calibration stays pre-set (`ready` state only).
+- [Epley 1RM & 250% Anomalous Load Guard](https://fitai.chien204.id.vn/guides/epley-1rm-and-anomalous-load): Documents `setVolumeKg = max(0, reps) * max(0, weightKg)`, `epley1RM = weightKg * (1 + reps / 30)`, and BR-WL-02 `> 250%` recent 5-session average confirmation guard.
 
 ## 3. Public Movement Lab — 12 Biomechanical Exercise Specs
 

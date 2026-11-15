@@ -70,6 +70,21 @@ export default async function MovementLabPage() {
             three-tier severity bands (Correct, Warning, Danger) inside the browser—with full manual
             logging parity whenever a camera is unavailable.
           </p>
+          <div className="flex flex-wrap gap-3 pt-1">
+            <Link
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-4 text-sm font-semibold text-neutral-900 hover:border-[var(--color-action)]"
+              href="/lab/glossary"
+            >
+              <span>Inspect Formulas &amp; Glossary</span>
+              <ArrowRight aria-hidden="true" size={15} />
+            </Link>
+            <Link
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-4 text-sm font-semibold text-neutral-900 hover:border-[var(--color-action)]"
+              href="/guides"
+            >
+              <span>Read 5 Engineering Guides</span>
+            </Link>
+          </div>
         </section>
 
         <section aria-labelledby="lab-exercises-heading" className="space-y-5">
