@@ -26,9 +26,9 @@ import { registerBrandAction } from "@/features/partner/api/partner-brand-servic
 describe("registerBrandAction", () => {
   const validInput = {
     brandName: "FitGear Vietnam",
-    description: "Cung cấp thiết bị tập luyện và phụ kiện gym chính hãng.",
+    description: "Official distributor of gym equipment and fitness accessories.",
     contactPhone: "0901234567",
-    address: "123 Nguyễn Huệ, Quận 1, TP.HCM",
+    address: "123 Nguyen Hue, District 1, HCMC",
   };
 
   beforeEach(() => {
@@ -47,7 +47,7 @@ describe("registerBrandAction", () => {
     const result = await registerBrandAction(validInput);
     expect(result).toEqual({
       ok: false,
-      error: "Vui lòng đăng nhập trước khi gửi hồ sơ Brand Partner.",
+      error: "Please sign in before submitting a Brand Partner application.",
     });
     expect(mockRegisterBrand).not.toHaveBeenCalled();
   });
@@ -56,13 +56,13 @@ describe("registerBrandAction", () => {
     mockGetAuthenticatedSession.mockResolvedValue({ accessToken: "token-123" });
     mockRegisterBrand.mockResolvedValue({
       success: true,
-      message: "Đã tiếp nhận hồ sơ.",
+      message: "Application received.",
     });
 
     const result = await registerBrandAction(validInput);
     expect(result).toEqual({
       ok: true,
-      message: "Đã tiếp nhận hồ sơ.",
+      message: "Application received.",
     });
     expect(mockRegisterBrand).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -78,13 +78,13 @@ describe("registerBrandAction", () => {
     mockGetAuthenticatedSession.mockResolvedValue({ accessToken: "token-123" });
     mockRegisterBrand.mockResolvedValue({
       success: false,
-      message: "Tài khoản đã gửi yêu cầu trước đó.",
+      message: "An application has already been submitted for this account.",
     });
 
     const result = await registerBrandAction(validInput);
     expect(result).toEqual({
       ok: false,
-      error: "Tài khoản đã gửi yêu cầu trước đó.",
+      error: "An application has already been submitted for this account.",
     });
   });
 });

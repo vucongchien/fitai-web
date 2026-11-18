@@ -10,14 +10,14 @@ import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
 const registerBrandInputSchema = z.object({
-  brandName: z.string().trim().min(2, "Tên thương hiệu cần ít nhất 2 ký tự").max(120),
-  description: z.string().trim().min(10, "Mô tả cần ít nhất 10 ký tự").max(1000),
+  brandName: z.string().trim().min(2, "Brand name must be at least 2 characters").max(120),
+  description: z.string().trim().min(10, "Description must be at least 10 characters").max(1000),
   contactPhone: z
     .string()
     .trim()
-    .min(8, "Số điện thoại liên hệ không hợp lệ")
-    .max(20, "Số điện thoại tối đa 20 ký tự"),
-  address: z.string().trim().min(5, "Địa chỉ cần ít nhất 5 ký tự").max(255),
+    .min(8, "Contact phone number is invalid")
+    .max(20, "Contact phone number must be at most 20 characters"),
+  address: z.string().trim().min(5, "Address must be at least 5 characters").max(255),
 });
 
 export type RegisterBrandInput = z.infer<typeof registerBrandInputSchema>;
@@ -29,17 +29,17 @@ export async function registerBrandAction(
 ): Promise<RegisterBrandResult> {
   const parsed = registerBrandInputSchema.safeParse(rawInput);
   if (!parsed.success) {
-    const firstIssue = parsed.error.issues[0]?.message ?? "Dữ liệu đăng ký không hợp lệ";
+    const firstIssue = parsed.error.issues[0]?.message ?? "Invalid brand registration input";
     return { ok: false, error: firstIssue };
   }
 
   if (!process.env.FITAI_RPC_URL) {
-    return { ok: false, error: "Hệ thống chưa cấu hình kết nối máy chủ (FITAI_RPC_URL)." };
+    return { ok: false, error: "Server RPC endpoint is not configured (FITAI_RPC_URL)." };
   }
 
   const { accessToken } = await getAuthenticatedSession();
   if (!accessToken) {
-    return { ok: false, error: "Vui lòng đăng nhập trước khi gửi hồ sơ Brand Partner." };
+    return { ok: false, error: "Please sign in before submitting a Brand Partner application." };
   }
 
   try {
@@ -55,7 +55,7 @@ export async function registerBrandAction(
     if (!response.success) {
       return {
         ok: false,
-        error: response.message || "Không thể gửi yêu cầu đăng ký Brand Partner.",
+        error: response.message || "Unable to submit Brand Partner application.",
       };
     }
 
@@ -63,14 +63,14 @@ export async function registerBrandAction(
       ok: true,
       message:
         response.message ||
-        "Đã gửi hồ sơ Brand Partner thành công. Quản trị viên sẽ xét duyệt trong thời gian sớm nhất.",
+        "Brand Partner application submitted successfully. Our admin team will review it shortly.",
     };
   } catch (error) {
     const connectError = ConnectError.from(error);
     console.warn("[registerBrandAction] RPC failed:", connectError.message);
     return {
       ok: false,
-      error: connectError.rawMessage || "Có lỗi xảy ra khi gửi hồ sơ. Vui lòng thử lại.",
+      error: connectError.rawMessage || "Failed to submit application. Please try again.",
     };
   }
 }

@@ -24,69 +24,68 @@ export interface PartnerLandingProps {
 const ECOSYSTEM_PILLARS = [
   {
     icon: Cpu,
-    title: "AI Coach Real-Time trên Trình Duyệt",
+    title: "Real-Time On-Device AI Coach",
     description:
-      "Người dùng tập luyện với hệ thống nhận diện tư thế ONNX Runtime Web và đếm rep tự động ngay trên thiết bị, giữ trải nghiệm mượt mà và riêng tư.",
-    badge: "Đang hoạt động",
-    isAvailable: true,
+      "Members train with ONNX Runtime Web pose estimation and automatic rep counting directly in the browser—low latency and privacy-first.",
+    badge: "Live",
   },
   {
     icon: Users,
-    title: "Cộng Đồng Social & Tìm Kiếm Brand",
+    title: "Social Community & Brand Discovery",
     description:
-      "Tài khoản Brand Partner sau khi xác thực được phân loại riêng trên hệ thống tìm kiếm cộng đồng, giúp người tập dễ dàng kết nối với thương hiệu.",
-    badge: "Đang hoạt động",
-    isAvailable: true,
+      "Verified Brand Partner accounts are indexed separately in community search, helping athletes discover and connect with trusted fitness brands.",
+    badge: "Live",
   },
   {
     icon: Swords,
     title: "Gamification, FitCoins & Solo-Match",
     description:
-      "Hệ sinh thái tích điểm FitCoins, bảng xếp hạng Leaderboard và thi đấu 1v1 tạo động lực quay lại tập luyện mỗi ngày.",
-    badge: "Nền tảng sẵn sàng",
-    isAvailable: true,
+      "Daily streaks, FitCoins ledger, global leaderboards, and 1v1 Solo-Match battles keep members engaged and returning every day.",
+    badge: "Platform Ready",
   },
 ];
 
 const PARTNER_ROADMAP = [
   {
     icon: Sparkles,
-    title: "Bài viết tài trợ (Sponsored Feed)",
+    title: "Sponsored Community Feed",
     description:
-      "Phân phối nội dung quảng bá sản phẩm/phòng tập trực tiếp trên bảng tin Community.",
-    status: "Sắp ra mắt",
+      "Promote fitness products, supplements, and gym memberships directly in the Community feed.",
+    status: "Coming Soon",
   },
   {
     icon: Award,
-    title: "Đổi Voucher bằng FitCoins",
-    description: "Cho phép người tập dùng FitCoins tích lũy để đổi mã giảm giá từ Brand Partner.",
-    status: "Sắp ra mắt",
+    title: "FitCoins Voucher Rewards",
+    description:
+      "Let athletes redeem earned FitCoins for exclusive discount codes and partner perks.",
+    status: "Coming Soon",
   },
   {
     icon: Activity,
-    title: "Tài trợ Giải đấu & Solo-Match",
-    description: "Gắn thương hiệu vào các thử thách cộng đồng và sự kiện thi đấu hàng tuần.",
-    status: "Sắp ra mắt",
+    title: "Solo-Match & Challenge Sponsorships",
+    description: "Sponsor weekly community challenges and head-to-head workout tournaments.",
+    status: "Coming Soon",
   },
 ];
 
 const ONBOARDING_STEPS = [
   {
     step: "01",
-    title: "Gửi hồ sơ thương hiệu",
-    detail: "Điền tên thương hiệu, mô tả, số điện thoại liên hệ và địa chỉ qua biểu mẫu bên dưới.",
+    title: "Submit Brand Profile",
+    detail:
+      "Provide your brand name, overview, contact phone, and business address using the form below.",
   },
   {
     step: "02",
-    title: "Quản trị viên xét duyệt",
+    title: "Admin Verification",
     detail:
-      "Đội ngũ FITAI kiểm tra thông tin đối tác và phê duyệt trực tiếp trên Admin Backoffice.",
+      "The FITAI operations team reviews and approves your application in the Admin Backoffice.",
   },
   {
     step: "03",
-    title: "Kích hoạt Brand Partner",
+    title: "Partner Activation",
     detail:
-      "Tài khoản được nâng cấp vai trò Brand, mở khóa Partner Dashboard và hiện diện trên hệ thống.",
+      "Your account is upgraded to the Brand role, unlocking the Partner Dashboard and verified discovery.",
   },
 ];
 
@@ -117,7 +116,7 @@ export function PartnerLanding({ isAuthenticated, isBrandAccount, userName }: Pa
                 href="#register"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[var(--radius-input)] bg-[var(--color-action)] text-[var(--color-action-contrast)] text-xs font-semibold hover:opacity-90 transition-opacity"
               >
-                Đăng ký đối tác
+                Become a Partner
               </a>
             )}
           </div>
@@ -132,19 +131,19 @@ export function PartnerLanding({ isAuthenticated, isBrandAccount, userName }: Pa
             FITAI Partner Ecosystem
           </div>
           <h1 className="text-3xl md:text-5xl font-bold tracking-tight font-display leading-tight">
-            Đồng hành cùng cộng đồng tập luyện AI{" "}
+            Grow with the AI-Powered Fitness Community at{" "}
             <span className="text-[var(--color-action)]">FITAI</span>
           </h1>
           <p className="text-base md:text-lg text-[var(--color-text-muted)] leading-relaxed">
-            Kết nối thương hiệu phòng tập, thực phẩm bổ sung và thiết bị thể thao với người dùng
-            đang tập luyện mỗi ngày qua hệ thống AI Coach, Community và Gamification.
+            Connect your gym, nutrition, or fitness gear brand with dedicated athletes training
+            daily through our AI Coach, Social Community, and Gamification platform.
           </p>
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <a
               href="#register"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-[var(--radius-input)] bg-[var(--color-action)] text-[var(--color-action-contrast)] text-sm font-semibold hover:opacity-90 transition-opacity"
             >
-              {isBrandAccount ? "Xem trạng thái đối tác" : "Đăng ký Brand Partner"}
+              {isBrandAccount ? "View Partner Status" : "Apply as Brand Partner"}
               <ArrowRight className="size-4" />
             </a>
             {isBrandAccount ? (
@@ -152,7 +151,7 @@ export function PartnerLanding({ isAuthenticated, isBrandAccount, userName }: Pa
                 href="/partner/dashboard"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-sm font-semibold hover:bg-[var(--color-surface-subtle)] transition-colors"
               >
-                Mở Dashboard
+                Open Dashboard
               </Link>
             ) : null}
           </div>
@@ -161,9 +160,9 @@ export function PartnerLanding({ isAuthenticated, isBrandAccount, userName }: Pa
         {/* Ecosystem Pillars (Live) */}
         <section className="space-y-6">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold font-display">Nền tảng hệ sinh thái FITAI</h2>
+            <h2 className="text-2xl font-bold font-display">Inside the FITAI Ecosystem</h2>
             <p className="text-sm text-[var(--color-text-muted)]">
-              Các hạ tầng cốt lõi đang vận hành thực tế trên ứng dụng FITAI.
+              Core capabilities currently live in the FITAI web platform.
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-3">
@@ -196,9 +195,9 @@ export function PartnerLanding({ isAuthenticated, isBrandAccount, userName }: Pa
         {/* Roadmap (Coming Soon) */}
         <section className="space-y-6">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold font-display">Lộ trình mở rộng cho Brand Partner</h2>
+            <h2 className="text-2xl font-bold font-display">Brand Partner Roadmap</h2>
             <p className="text-sm text-[var(--color-text-muted)]">
-              Các tính năng thương mại đang được phát triển cho giai đoạn tiếp theo.
+              Commercial tools currently in development for upcoming releases.
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-3">
@@ -231,9 +230,9 @@ export function PartnerLanding({ isAuthenticated, isBrandAccount, userName }: Pa
         {/* 3-Step Onboarding */}
         <section className="space-y-6">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold font-display">Quy trình trở thành đối tác</h2>
+            <h2 className="text-2xl font-bold font-display">How Partner Onboarding Works</h2>
             <p className="text-sm text-[var(--color-text-muted)]">
-              Kết nối trực tiếp với quy trình xét duyệt Brand Partner trên hệ thống FITAI.
+              Connected directly to the FITAI Brand Partner review workflow.
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-3">
@@ -243,7 +242,7 @@ export function PartnerLanding({ isAuthenticated, isBrandAccount, userName }: Pa
                 className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 space-y-2"
               >
                 <span className="text-xs font-bold tracking-wider text-[var(--color-action)]">
-                  BƯỚC {item.step}
+                  STEP {item.step}
                 </span>
                 <h3 className="text-base font-bold font-display">{item.title}</h3>
                 <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">

@@ -13,14 +13,14 @@ import {
 } from "@/features/partner/api/partner-brand-service";
 
 const formSchema = z.object({
-  brandName: z.string().trim().min(2, "Vui lòng nhập tên thương hiệu (ít nhất 2 ký tự)").max(120),
-  description: z.string().trim().min(10, "Mô tả cần ít nhất 10 ký tự").max(1000),
+  brandName: z.string().trim().min(2, "Please enter a brand name (at least 2 characters)").max(120),
+  description: z.string().trim().min(10, "Description must be at least 10 characters").max(1000),
   contactPhone: z
     .string()
     .trim()
-    .min(8, "Vui lòng nhập số điện thoại hợp lệ")
-    .max(20, "Số điện thoại tối đa 20 ký tự"),
-  address: z.string().trim().min(5, "Vui lòng nhập địa chỉ (ít nhất 5 ký tự)").max(255),
+    .min(8, "Please enter a valid phone number")
+    .max(20, "Phone number must be at most 20 characters"),
+  address: z.string().trim().min(5, "Please enter an address (at least 5 characters)").max(255),
 });
 
 export interface BrandRegisterFormProps {
@@ -58,20 +58,20 @@ export function BrandRegisterForm({
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-8 space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)] text-xs font-semibold">
           <ShieldCheck className="size-4" />
-          Tài khoản Brand Partner đã kích hoạt
+          Brand Partner Account Active
         </div>
         <h3 className="text-xl font-bold text-[var(--color-text)] font-display">
-          Chào mừng trở lại{userName ? `, ${userName}` : ""}!
+          Welcome back{userName ? `, ${userName}` : ""}!
         </h3>
         <p className="text-sm text-[var(--color-text-muted)]">
-          Tài khoản của bạn đã được phê duyệt vai trò Brand Partner. Truy cập bảng điều khiển để
-          theo dõi trạng thái đối tác và các tính năng sắp ra mắt.
+          Your account is verified as a Brand Partner. Open your dashboard to review partner status
+          and upcoming commercial tools.
         </p>
         <Link
           href="/partner/dashboard"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[var(--radius-input)] bg-[var(--color-action)] text-[var(--color-action-contrast)] text-sm font-semibold hover:opacity-90 transition-opacity"
         >
-          Vào Partner Dashboard
+          Open Partner Dashboard
           <ArrowRight className="size-4" />
         </Link>
       </div>
@@ -83,21 +83,21 @@ export function BrandRegisterForm({
       <div className="rounded-[var(--radius-card)] border border-[var(--color-border)] bg-[var(--color-surface)] p-8 space-y-4">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)] text-xs font-semibold">
           <Building2 className="size-4" />
-          Đăng ký Brand Partner
+          Brand Partner Onboarding
         </div>
         <h3 className="text-xl font-bold text-[var(--color-text)] font-display">
-          Đăng nhập để gửi hồ sơ đối tác
+          Sign in to submit your partner application
         </h3>
         <p className="text-sm text-[var(--color-text-muted)]">
-          Hồ sơ Brand Partner được gắn với tài khoản FITAI của bạn để quản trị viên xét duyệt và cấp
-          quyền trực tiếp.
+          Brand Partner applications are linked to your FITAI account so our admin team can review
+          and activate your partner role directly.
         </p>
         <Link
           href="/login?redirect=/partner#register"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[var(--radius-input)] bg-[var(--color-action)] text-[var(--color-action-contrast)] text-sm font-semibold hover:opacity-90 transition-opacity"
         >
           <LogIn className="size-4" />
-          Đăng nhập ngay
+          Sign in to apply
         </Link>
       </div>
     );
@@ -108,12 +108,12 @@ export function BrandRegisterForm({
       <div className="rounded-[var(--radius-card)] border border-[var(--color-recovery)]/40 bg-[var(--color-surface)] p-8 space-y-4">
         <div className="flex items-center gap-2 text-[var(--color-recovery)] font-semibold">
           <CheckCircle2 className="size-5" />
-          <span>Gửi hồ sơ thành công</span>
+          <span>Application Submitted</span>
         </div>
         <p className="text-sm text-[var(--color-text)]">{successMessage}</p>
         <p className="text-xs text-[var(--color-text-muted)]">
-          Đội ngũ vận hành sẽ kiểm tra yêu cầu của bạn tại mục duyệt Brand Partners. Sau khi được
-          duyệt, hãy đăng nhập lại để cập nhật quyền Brand.
+          Our operations team will review your request in the Brand Partners console. Once approved,
+          please sign in again to refresh your Brand role.
         </p>
       </div>
     );
@@ -139,10 +139,10 @@ export function BrandRegisterForm({
     >
       <div className="space-y-1">
         <h3 className="text-xl font-bold text-[var(--color-text)] font-display">
-          Gửi hồ sơ đăng ký Brand Partner
+          Apply as a Brand Partner
         </h3>
         <p className="text-sm text-[var(--color-text-muted)]">
-          Đang đăng nhập với tài khoản{" "}
+          Signed in as{" "}
           <span className="font-medium text-[var(--color-text)]">{userName || "FITAI Member"}</span>
           .
         </p>
@@ -160,12 +160,12 @@ export function BrandRegisterForm({
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-1.5">
           <label htmlFor="brandName" className="block text-sm font-medium text-[var(--color-text)]">
-            Tên thương hiệu *
+            Brand Name *
           </label>
           <input
             id="brandName"
             type="text"
-            placeholder="VD: FitGear Vietnam"
+            placeholder="e.g., FitGear Vietnam"
             disabled={isPending}
             {...register("brandName")}
             className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-canvas)] px-3.5 py-2.5 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-action)]"
@@ -180,12 +180,12 @@ export function BrandRegisterForm({
             htmlFor="contactPhone"
             className="block text-sm font-medium text-[var(--color-text)]"
           >
-            Số điện thoại liên hệ *
+            Contact Phone *
           </label>
           <input
             id="contactPhone"
             type="tel"
-            placeholder="VD: 0901234567"
+            placeholder="e.g., +84 901 234 567"
             disabled={isPending}
             {...register("contactPhone")}
             className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-canvas)] px-3.5 py-2.5 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-action)]"
@@ -198,12 +198,12 @@ export function BrandRegisterForm({
 
       <div className="space-y-1.5">
         <label htmlFor="address" className="block text-sm font-medium text-[var(--color-text)]">
-          Địa chỉ doanh nghiệp / Phòng tập *
+          Business / Gym Address *
         </label>
         <input
           id="address"
           type="text"
-          placeholder="VD: 123 Nguyễn Huệ, Quận 1, TP.HCM"
+          placeholder="e.g., 123 Nguyen Hue, District 1, Ho Chi Minh City"
           disabled={isPending}
           {...register("address")}
           className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-canvas)] px-3.5 py-2.5 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-action)]"
@@ -215,12 +215,12 @@ export function BrandRegisterForm({
 
       <div className="space-y-1.5">
         <label htmlFor="description" className="block text-sm font-medium text-[var(--color-text)]">
-          Giới thiệu thương hiệu & Mục tiêu hợp tác *
+          Brand Overview & Partnership Goals *
         </label>
         <textarea
           id="description"
           rows={4}
-          placeholder="Mô tả sản phẩm/dịch vụ fitness của bạn và hình thức muốn đồng hành cùng cộng đồng FITAI..."
+          placeholder="Describe your fitness products or services and how you want to collaborate with the FITAI community..."
           disabled={isPending}
           {...register("description")}
           className="w-full rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-canvas)] px-3.5 py-2.5 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-action)]"
@@ -238,11 +238,11 @@ export function BrandRegisterForm({
         {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
-            Đang gửi hồ sơ...
+            Submitting application...
           </>
         ) : (
           <>
-            Gửi yêu cầu đối tác
+            Submit Partner Application
             <ArrowRight className="size-4" />
           </>
         )}

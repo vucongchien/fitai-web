@@ -5,9 +5,9 @@ import { PartnerLanding } from "@/features/partner/ui/partner-landing";
 import { getAuthenticatedSession, isBrand } from "@/shared/auth/session";
 
 export const metadata: Metadata = {
-  title: "FITAI Partner Portal — Đồng hành cùng cộng đồng tập luyện AI",
+  title: "FITAI Partner Portal — Grow with the AI Fitness Community",
   description:
-    "Cổng thông tin và đăng ký đối tác thương hiệu (Brand Partner) trên nền tảng tập luyện AI FITAI.",
+    "Official Brand Partner portal and onboarding application for the FITAI AI fitness ecosystem.",
 };
 
 async function PartnerLandingGate() {
@@ -27,7 +27,7 @@ export default function PartnerPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[var(--color-canvas)] flex items-center justify-center text-sm text-[var(--color-text-muted)]">
-          Đang tải FITAI Partner Portal...
+          Loading FITAI Partner Portal...
         </div>
       }
     >

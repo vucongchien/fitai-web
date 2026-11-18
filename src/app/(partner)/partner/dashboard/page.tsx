@@ -9,7 +9,7 @@ import { BrandMark } from "@/shared/ui/brand-mark";
 
 export const metadata: Metadata = {
   title: "FITAI Partner Dashboard",
-  description: "Bảng điều khiển dành cho Brand Partner trên hệ thống FITAI.",
+  description: "Brand Partner workspace on the FITAI platform.",
   robots: {
     index: false,
     follow: false,
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 function PartnerDashboardSkeleton() {
   return (
     <div className="min-h-screen bg-[var(--color-canvas)] flex items-center justify-center text-sm text-[var(--color-text-muted)]">
-      Đang xác thực quyền Brand Partner...
+      Verifying Brand Partner session...
     </div>
   );
 }
@@ -38,25 +38,25 @@ async function PartnerDashboardGate() {
           <div className="mx-auto size-12 rounded-full bg-[var(--color-danger)]/10 text-[var(--color-danger)] flex items-center justify-center">
             <ShieldAlert className="size-6" />
           </div>
-          <h1 className="text-xl font-bold font-display">Chưa có quyền Brand Partner</h1>
+          <h1 className="text-xl font-bold font-display">Brand Partner Access Required</h1>
           <p className="text-sm text-[var(--color-text-muted)]">
-            Tài khoản hiện tại ({session.userName || "Member"}, vai trò:{" "}
+            Your current account ({session.userName || "Member"}, role:{" "}
             <span className="font-semibold text-[var(--color-text)]">{session.role || "USER"}</span>
-            ) chưa được kích hoạt quyền Brand Partner.
+            ) does not have Brand Partner permissions yet.
           </p>
           <div className="flex flex-col gap-2 pt-2">
             <Link
               href="/partner#register"
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[var(--radius-input)] bg-[var(--color-action)] text-[var(--color-action-contrast)] text-sm font-semibold hover:opacity-90 transition-opacity"
             >
-              Đăng ký hồ sơ Brand Partner
+              Apply as Brand Partner
             </Link>
             <Link
               href="/partner"
               className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-[var(--radius-input)] text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             >
               <ArrowLeft className="size-4" />
-              Quay lại Partner Portal
+              Back to Partner Portal
             </Link>
           </div>
         </div>
@@ -67,13 +67,13 @@ async function PartnerDashboardGate() {
   const upcomingModules = [
     {
       icon: Sparkles,
-      title: "Chiến dịch Sponsored Feed",
-      description: "Tạo và quản lý bài viết quảng bá hiển thị trên bảng tin Community.",
+      title: "Sponsored Feed Campaigns",
+      description: "Create and manage promotional posts in the FITAI Community feed.",
     },
     {
       icon: Award,
-      title: "Quản lý Voucher FitCoins",
-      description: "Phát hành mã ưu đãi để người tập đổi bằng FitCoins tích lũy.",
+      title: "FitCoins Voucher Rewards",
+      description: "Issue discount codes and rewards redeemable with member FitCoins.",
     },
   ];
 
@@ -94,7 +94,7 @@ async function PartnerDashboardGate() {
             href="/partner"
             className="text-xs font-medium text-[var(--color-action)] hover:underline"
           >
-            Trang giới thiệu
+            Partner Overview
           </Link>
         </div>
       </header>
@@ -107,12 +107,12 @@ async function PartnerDashboardGate() {
             </div>
             <div>
               <h1 className="text-xl font-bold font-display">
-                Xin chào, {session.userName || "Brand Partner"}
+                Welcome, {session.userName || "Brand Partner"}
               </h1>
               <p className="text-sm text-[var(--color-text-muted)]">
-                Trạng thái tài khoản:{" "}
+                Account status:{" "}
                 <span className="text-[var(--color-recovery)] font-semibold">
-                  Đã xác thực Brand Partner
+                  Verified Brand Partner
                 </span>
               </p>
             </div>
@@ -123,7 +123,7 @@ async function PartnerDashboardGate() {
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-lg font-bold font-display">Tính năng quản lý chiến dịch</h2>
+          <h2 className="text-lg font-bold font-display">Campaign Management Modules</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {upcomingModules.map((mod) => {
               const Icon = mod.icon;
@@ -138,7 +138,7 @@ async function PartnerDashboardGate() {
                     </div>
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-muted)] text-[11px] font-semibold">
                       <Clock className="size-3" />
-                      Đang phát triển
+                      Coming Soon
                     </span>
                   </div>
                   <h3 className="text-base font-bold font-display">{mod.title}</h3>
