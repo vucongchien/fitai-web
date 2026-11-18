@@ -105,3 +105,9 @@ export async function isAdmin(): Promise<boolean> {
   if (!role) return false;
   return role.toUpperCase() === "ADMIN" || role.toUpperCase() === "SUPERADMIN";
 }
+
+export async function isBrand(): Promise<boolean> {
+  const { role } = await getAuthenticatedSession();
+  if (!role) return false;
+  return role.toUpperCase() === "BRAND";
+}
