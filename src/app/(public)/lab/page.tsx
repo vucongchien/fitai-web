@@ -57,8 +57,8 @@ export default async function MovementLabPage() {
       <JsonLdScript data={BREADCRUMB_DATA} />
       <JsonLdScript data={FAQ_DATA} />
 
-      <div className="space-y-12">
-        <section className="space-y-4">
+      <div className="space-y-16 sm:space-y-20">
+        <section className="space-y-6">
           <p className="font-mono text-xs font-semibold uppercase tracking-widest text-[var(--color-action)]">
             PUBLIC BIOMECHANICAL LAB · 12 EXERCISES
           </p>
@@ -70,7 +70,7 @@ export default async function MovementLabPage() {
             three-tier severity bands (Correct, Warning, Danger) inside the browser—with full manual
             logging parity whenever a camera is unavailable.
           </p>
-          <div className="flex flex-wrap gap-3 pt-1">
+          <div className="flex flex-wrap gap-3.5 pt-2">
             <Link
               className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-neutral-300 bg-white px-4 text-sm font-semibold text-neutral-900 hover:border-[var(--color-action)]"
               href="/lab/glossary"
@@ -87,7 +87,7 @@ export default async function MovementLabPage() {
           </div>
         </section>
 
-        <section aria-labelledby="lab-exercises-heading" className="space-y-5">
+        <section aria-labelledby="lab-exercises-heading" className="space-y-6">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h2
               className="font-display text-2xl font-bold tracking-tight"
@@ -100,7 +100,7 @@ export default async function MovementLabPage() {
             </span>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {exercises.map((exercise) => (
               <Link
                 className="group flex flex-col justify-between rounded-2xl border border-neutral-200 bg-white p-5 transition-colors hover:border-[var(--color-action)]"
@@ -133,11 +133,11 @@ export default async function MovementLabPage() {
           </div>
         </section>
 
-        <section aria-labelledby="lab-guides-heading" className="space-y-5">
+        <section aria-labelledby="lab-guides-heading" className="space-y-6">
           <h2 className="font-display text-2xl font-bold tracking-tight" id="lab-guides-heading">
             Training &amp; AI Architecture Guides
           </h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-5 sm:gap-6 md:grid-cols-3">
             {KNOWLEDGE_GUIDES.map((guide) => (
               <Link
                 className="rounded-2xl border border-neutral-200 bg-white p-5 transition-colors hover:border-[var(--color-action)]"
