@@ -31,7 +31,6 @@ const nextConfig: NextConfig = {
     useTypeScriptCli: true,
     optimizePackageImports: [
       "lucide-react",
-      "sonner",
       "@tanstack/react-query",
       "@vercel/analytics",
       "@vercel/speed-insights",

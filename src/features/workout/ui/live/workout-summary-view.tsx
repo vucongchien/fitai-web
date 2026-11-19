@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
-import { toast } from "sonner";
 
 import { getFatigueLevel } from "@/features/workout/domain/pose-metrics";
 import type { SessionReport } from "@/features/workout/model/live-session.types";
@@ -20,6 +19,7 @@ import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import { ShareWorkoutModal } from "@/features/workout/ui/live/share-workout-modal";
 import { buttonVariants } from "@/shared/ui/button";
 import { PageTransition } from "@/shared/ui/page-transition";
+import { toast } from "@/shared/ui/toast";
 
 let lastRawReport: string | null = null;
 let cachedReport: SessionReport | null = null;

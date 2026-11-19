@@ -6,6 +6,7 @@ import { useCallback, useRef, useSyncExternalStore } from "react";
 import { computeTugOfWarSplit } from "@/features/solo-match/domain/match-state";
 import type { SoloChallengeType } from "@/features/solo-match/model/solo-match.types";
 import type { SoloStreamStatusLabel } from "@/features/solo-match/model/use-solo-duel";
+import { useKamehaTugClash } from "@/features/solo-match/ui/kameha-clash-fx";
 
 const TIE_ACTIVE_PULSE_MS = 1200;
 
@@ -155,11 +156,21 @@ export function DuelVersusHud({
   const { delta, leader, myShare, opponentShare } = computeTugOfWarSplit(myValue, opponentValue);
   const isScoreIncreasing = useScoreIncreasePulse(myValue, opponentValue, TIE_ACTIVE_PULSE_MS);
 
+  const dividerRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
   const isTieActive = leader === "tie" && isScoreIncreasing;
   const myBarState = resolveSideState("me", leader, isTieActive);
   const opponentBarState = resolveSideState("opponent", leader, isTieActive);
   const myBarClass = MY_BAR_CLASSES[myBarState];
   const opponentBarClass = OPPONENT_BAR_CLASSES[opponentBarState];
+
+  useKamehaTugClash({
+    canvasRef,
+    dividerRef,
+    isTieActive,
+    myShare,
+  });
 
   const isReconnecting = connectionPhase === "reconnecting";
   const isOpponentDisconnected = opponentStatus === "DISCONNECTED";
@@ -291,6 +302,7 @@ export function DuelVersusHud({
         </div>
         {/* Diagonal Clash Divider (/) */}
         <div
+          ref={dividerRef}
           className="absolute inset-y-0 z-10 w-1.5 -translate-x-1/2 -skew-x-12 transition-[left] duration-300 ease-out"
           data-testid="duel-tug-of-war-divider"
           style={{ left: `${myShare}%` }}
@@ -298,7 +310,9 @@ export function DuelVersusHud({
           <div
             className="h-full w-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.95)]"
             key={`slash-${clashKey}`}
-            style={{ animation: "soloClashBump 320ms ease-out" }}
+            style={{
+              animation: isTieActive ? "clashRumble 80ms infinite" : "soloClashBump 320ms ease-out",
+            }}
           />
         </div>
       </div>
@@ -307,7 +321,20 @@ export function DuelVersusHud({
           0% { transform: scale(1.16); }
           100% { transform: scale(1); }
         }
+        @keyframes clashRumble {
+          0% { transform: scale(1.18) translateX(-1.5px); }
+          50% { transform: scale(1.18) translateX(1.5px); }
+          100% { transform: scale(1.18) translateX(-1.5px); }
+        }
       `}</style>
+
+      {/* Kameha VFX Overlay Canvas */}
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-50 h-screen w-screen"
+        data-testid="duel-kameha-canvas"
+      />
 
       {/* System Warning Banners (Only displayed when abnormal) */}
       {isReconnecting ? (

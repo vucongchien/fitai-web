@@ -1,16 +1,34 @@
 "use client";
 
 import { Flame, Sparkles } from "lucide-react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 
 import {
   COMBO_TIMEOUT_MS,
   getComboMilestoneLabel,
 } from "@/features/solo-match/domain/combo-tracker";
+import { triggerKamehaCheer } from "@/features/solo-match/ui/kameha-clash-fx";
 
 export interface DuelComboOverlayProps {
   comboStreak?: number;
   lastMilestone?: number | null;
   lastRepConfirmedAtMs?: number;
+}
+
+function resolveCheerText(
+  comboStreak: number,
+  milestoneLabel: string | null,
+): { col: string; text: string } {
+  if (milestoneLabel) {
+    return { col: "#ffdf00", text: milestoneLabel.toUpperCase() };
+  }
+  if (comboStreak % 3 === 0) {
+    return { col: "#fb923c", text: "COMBO!" };
+  }
+  if (comboStreak % 2 === 0) {
+    return { col: "#38bdf8", text: "NICE!" };
+  }
+  return { col: "#facc15", text: `${comboStreak}x!` };
 }
 
 export function DuelComboOverlay({
@@ -19,6 +37,56 @@ export function DuelComboOverlay({
   lastRepConfirmedAtMs = 0,
 }: DuelComboOverlayProps) {
   const milestoneLabel = lastMilestone ? getComboMilestoneLabel(lastMilestone) : null;
+  const badgeRef = useRef<HTMLDivElement | null>(null);
+  const bannerRef = useRef<HTMLDivElement | null>(null);
+  const prevRef = useRef({ comboStreak, lastMilestone, lastRepConfirmedAtMs });
+
+  const subscribeCheer = useCallback(() => {
+    const prev = prevRef.current;
+    const isNewRep = lastRepConfirmedAtMs > 0 && lastRepConfirmedAtMs !== prev.lastRepConfirmedAtMs;
+    const isNewMilestone = lastMilestone !== null && lastMilestone !== prev.lastMilestone;
+    prevRef.current = { comboStreak, lastMilestone, lastRepConfirmedAtMs };
+
+    if (!isNewRep && !isNewMilestone) {
+      return () => {};
+    }
+
+    if (typeof window === "undefined") {
+      return () => {};
+    }
+
+    const { col, text } = resolveCheerText(comboStreak, isNewMilestone ? milestoneLabel : null);
+
+    if (isNewMilestone && milestoneLabel) {
+      if (bannerRef.current) {
+        triggerKamehaCheer(bannerRef.current, {
+          col,
+          size: 1.25,
+          text,
+        });
+      } else {
+        triggerKamehaCheer({ x: window.innerWidth * 0.5, y: 100 }, { col, size: 1.25, text });
+      }
+    } else if (isNewRep && comboStreak >= 2) {
+      if (badgeRef.current) {
+        triggerKamehaCheer(badgeRef.current, {
+          col,
+          size: 1.05,
+          text,
+        });
+      } else {
+        triggerKamehaCheer({ x: 90, y: 40 }, { col, size: 1.05, text });
+      }
+    }
+
+    return () => {};
+  }, [comboStreak, lastMilestone, lastRepConfirmedAtMs, milestoneLabel]);
+
+  useSyncExternalStore(
+    subscribeCheer,
+    () => 0,
+    () => 0,
+  );
 
   if (comboStreak < 2 && !milestoneLabel) {
     return null;
@@ -28,6 +96,7 @@ export function DuelComboOverlay({
     <>
       {comboStreak >= 2 ? (
         <div
+          ref={badgeRef}
           className="pointer-events-none absolute top-3 left-3 z-20 flex flex-col overflow-hidden rounded-xl bg-neutral-950/85 px-3 py-1.5 text-white backdrop-blur-md border border-amber-400/50 shadow-lg"
           data-testid="duel-combo-badge"
         >
@@ -57,6 +126,7 @@ export function DuelComboOverlay({
 
       {milestoneLabel ? (
         <div
+          ref={bannerRef}
           aria-live="polite"
           className="pointer-events-none absolute top-14 inset-x-0 z-25 flex justify-center px-4"
           data-testid="duel-combo-milestone-banner"
