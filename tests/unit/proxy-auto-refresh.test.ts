@@ -52,6 +52,44 @@ describe("Middleware Proxy Auto-refresh (src/proxy.ts)", () => {
     expect(res.headers.get("location")).toBeNull();
   });
 
+  it("allows crawler, public lab, and guide routes without auth", async () => {
+    const { proxy } = await import("@/proxy");
+
+    for (const path of [
+      "/lab",
+      "/lab/squat",
+      "/guides",
+      "/guides/4-week-adaptive-roadmap",
+      "/robots.txt",
+      "/sitemap.xml",
+      "/llms.txt",
+      "/llms-full.txt",
+      "/feed.xml",
+      "/knowledge.json",
+      "/fitai-indexnow-20261115.txt",
+      "/lab/glossary",
+      "/opengraph-image",
+    ]) {
+      const req = makeNextRequest(path);
+      const res = await proxy(req);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+    }
+    expect(mockRefreshToken).not.toHaveBeenCalled();
+  });
+
+  it("allows crawler and discovery files (/robots.txt, /sitemap.xml, /llms.txt, /opengraph-image) without auth", async () => {
+    const { proxy } = await import("@/proxy");
+
+    for (const path of ["/robots.txt", "/sitemap.xml", "/llms.txt", "/opengraph-image"]) {
+      const req = makeNextRequest(path);
+      const res = await proxy(req);
+      expect(res.status).toBe(200);
+      expect(res.headers.get("location")).toBeNull();
+    }
+    expect(mockRefreshToken).not.toHaveBeenCalled();
+  });
+
   it("redirects to /login when both access_token and refresh_token are absent on private route", async () => {
     const { proxy } = await import("@/proxy");
     const req = makeNextRequest("/home");

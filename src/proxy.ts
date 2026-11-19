@@ -3,26 +3,47 @@ import type { NextRequest } from "next/server";
 
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
 import { refreshSessionTokens } from "@/shared/auth/refresh";
+import { detectSubdomain, resolveSubdomainRewrite } from "@/shared/routing/subdomain";
 
 const STATIC_EXT_REGEX =
   /\.(ico|png|jpg|jpeg|svg|webp|gif|woff2?|ttf|css|m?js|map|wasm|onnx|webmanifest|mp4)$/i;
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get("host");
+  const subdomain = detectSubdomain(host);
+  const rewritePath = resolveSubdomainRewrite(host, pathname);
+  const effectivePathname = rewritePath ?? pathname;
+
   let accessToken = request.cookies.get("fitai_access_token")?.value;
   const refreshToken = request.cookies.get("fitai_refresh_token")?.value;
 
   const isPublicRoute =
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/execution") ||
-    pathname.startsWith("/workouts/live/ai-12-exercises") ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/ort/") ||
-    pathname.startsWith("/models/") ||
-    pathname === "/favicon.ico" ||
-    STATIC_EXT_REGEX.test(pathname);
+    (subdomain === "main" && effectivePathname === "/") ||
+    effectivePathname === "/partner" ||
+    effectivePathname === "/lab" ||
+    effectivePathname.startsWith("/lab/") ||
+    effectivePathname === "/guides" ||
+    effectivePathname.startsWith("/guides/") ||
+    effectivePathname === "/robots.txt" ||
+    effectivePathname === "/sitemap.xml" ||
+    effectivePathname === "/llms.txt" ||
+    effectivePathname === "/llms-full.txt" ||
+    effectivePathname === "/feed.xml" ||
+    effectivePathname === "/knowledge.json" ||
+    effectivePathname === "/fitai-indexnow-20261115.txt" ||
+    effectivePathname.startsWith("/opengraph-image") ||
+    effectivePathname.startsWith("/twitter-image") ||
+    effectivePathname.startsWith("/login") ||
+    effectivePathname.startsWith("/auth") ||
+    effectivePathname.startsWith("/api/auth") ||
+    effectivePathname.startsWith("/api/execution") ||
+    effectivePathname.startsWith("/workouts/live/ai-12-exercises") ||
+    effectivePathname.startsWith("/_next") ||
+    effectivePathname.startsWith("/ort/") ||
+    effectivePathname.startsWith("/models/") ||
+    effectivePathname === "/favicon.ico" ||
+    STATIC_EXT_REGEX.test(effectivePathname);
 
   if (!isPublicRoute && !accessToken) {
     if (refreshToken) {
@@ -50,11 +71,17 @@ export async function proxy(request: NextRequest) {
 
         requestHeaders.set("cookie", updatedCookies.join("; "));
 
-        const response = NextResponse.next({
-          request: {
-            headers: requestHeaders,
-          },
-        });
+        const response = rewritePath
+          ? NextResponse.rewrite(new URL(rewritePath, request.url), {
+              request: {
+                headers: requestHeaders,
+              },
+            })
+          : NextResponse.next({
+              request: {
+                headers: requestHeaders,
+              },
+            });
 
         response.cookies.set(
           "fitai_access_token",
@@ -101,6 +128,10 @@ export async function proxy(request: NextRequest) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  if (rewritePath) {
+    return NextResponse.rewrite(new URL(rewritePath, request.url));
   }
 
   return NextResponse.next();

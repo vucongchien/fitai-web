@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { AppSidebar } from "@/shared/ui/app-sidebar";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function FocusedLayout({ children }: { children: ReactNode }) {
   return (

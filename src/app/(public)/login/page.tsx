@@ -1,11 +1,19 @@
 import { ArrowDown } from "lucide-react";
+import type { Metadata } from "next";
 
 import { AuthPanel } from "@/features/auth/ui/auth-panel";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { PageTransition } from "@/shared/ui/page-transition";
 import { TripleLane } from "@/shared/ui/triple-lane";
 
-export const metadata = { title: "Sign in | FITAI" };
+export const metadata: Metadata = {
+  title: "Sign in",
+  description:
+    "Sign in to FITAI with Google or Facebook to start onboarding and get your four-week adaptive workout roadmap.",
+  alternates: {
+    canonical: "/login",
+  },
+};
 
 export default function LoginPage() {
   return (

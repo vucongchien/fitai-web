@@ -20,8 +20,10 @@
     "test:e2e": "playwright test",
     "proto:gen": "buf generate ../gym-companion/proto --template buf.gen.yaml",
     "audit:deadcode": "pnpm dlx knip",
+    "audit:seo": "node scripts/seo-geo-aeo-benchmark.mjs",
     "audit:skills": "node scripts/audit-skills.mjs",
     "audit:comments": "node scripts/audit-comments.mjs",
+    "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "precommit": "node scripts/pre-commit.mjs",
     "prepare": "node -e \"if (require('fs').existsSync('.git')) { try { require('child_process').execSync('git config core.hooksPath .githooks'); } catch {} }\""
   },
@@ -61,6 +63,7 @@
   "devDependencies": {
     "@bufbuild/buf": "1.72.0",
     "@bufbuild/protoc-gen-es": "2.13.0",
+    "@google/genai": "^3.3.0",
     "@next/bundle-analyzer": "^16.4.5",
     "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.3.3",
@@ -74,6 +77,7 @@
     "jsdom": "30.0.1",
     "oxfmt": "0.61.0",
     "oxlint": "1.76.0",
+    "schema-dts": "^2.1.0",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
     "vitest": "4.1.10"

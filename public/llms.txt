@@ -1,0 +1,36 @@
+# FITAI
+
+> FITAI is a mobile-first web application that turns body profile, goals, equipment, and safety constraints into a four-week adaptive training roadmap with on-device biomechanical form checks, nutrition guidance, and injury-safe recovery adjustments.
+
+Canonical URL: https://fitai.chien204.id.vn/
+Full Technical Reference: https://fitai.chien204.id.vn/llms-full.txt
+Machine-Readable JSON Knowledge Graph: https://fitai.chien204.id.vn/knowledge.json
+RSS Feed: https://fitai.chien204.id.vn/feed.xml
+
+## Core Capabilities
+
+- **Four-Week Adaptive Roadmap (Plan):** Schedules up to 6 sessions per week on real calendar days, adjusts weekly volume and target RPE around performance, missed slots, and recovery needs.
+- **Public Movement Lab (12 Exercises):** Deterministic biomechanical angle rules and 3-phase rep detection (REST, TRANSITION, ACTIVE) running locally in the browser via ONNX Runtime Web (`YOLOv8n-Pose` / `YOLO11n-Pose`) with One-Euro smoothing and full Manual Logging parity.
+- **Injury Guard & Body Evidence (Recover):** Tracks muscle-group load across front and back anatomy, halts workouts when injury is flagged, caps load at 50% PR, and swaps aggravating movements.
+- **Goal-Based Nutrition Guidance:** Daily calorie and macro targets aligned to the active training goal alongside meal slot logging.
+
+## Public Pages
+
+- [FITAI Overview](https://fitai.chien204.id.vn/): Product overview, adaptive 4-week roadmap preview, biomechanical form check showcase, and body recovery overview.
+- [Public Movement Lab](https://fitai.chien204.id.vn/lab): Complete directory of all 12 biomechanical exercise rule specs.
+- [Biomechanics & Pose AI Glossary](https://fitai.chien204.id.vn/lab/glossary): Canonical definitions and thresholds (`One-Euro Filter`, `3-Phase Referee`, `Epley 1RM`, `250% Load Guard`, `50% PR Recovery Cap`).
+- [Training & AI Architecture Guides](https://fitai.chien204.id.vn/guides): Deep dives on 4-week adaptive planning, on-device pose AI, camera calibration, Epley 1RM load checks, and Injury Guard.
+- [Sign in](https://fitai.chien204.id.vn/login): Authentication via Google or Facebook to start onboarding.
+
+## Guides
+
+- [4-Week Adaptive Roadmap](https://fitai.chien204.id.vn/guides/4-week-adaptive-roadmap)
+- [On-Device Pose AI & 3-Phase Referee](https://fitai.chien204.id.vn/guides/on-device-pose-ai)
+- [Injury Guard & Recovery Load Caps](https://fitai.chien204.id.vn/guides/injury-guard-recovery)
+- [Side vs. Front Camera Setup & Calibration](https://fitai.chien204.id.vn/guides/camera-framing-calibration)
+- [Epley 1RM & 250% Anomalous Load Guard](https://fitai.chien204.id.vn/guides/epley-1rm-and-anomalous-load)
+
+## Scope and Safety
+
+- FITAI provides AI-assisted fitness and training guidance, not medical diagnosis or medical treatment.
+- Reporting an active injury halts the current workout flow and routes the user toward recovery and schedule adjustment.
