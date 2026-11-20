@@ -1,6 +1,6 @@
 "use client";
 
-import { Image as ImageIcon, Send, X } from "lucide-react";
+import { Send, X } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 
@@ -198,21 +198,9 @@ export function ThreadView({
                 replyingTo ? `Reply to @${replyingTo.authorName}…` : `Reply to ${post.authorName}…`
               }
               disabled={submitting}
-              className="min-w-0 flex-1 bg-transparent text-sm text-neutral-900 outline-none border-none p-0 focus:outline-none focus:ring-0 placeholder:text-neutral-400"
+              style={{ outline: "none" }}
+              className="min-w-0 flex-1 bg-transparent text-sm text-neutral-900 outline-none border-none p-0 focus:outline-none focus-visible:outline-none focus:ring-0 placeholder:text-neutral-400"
             />
-            <button
-              type="button"
-              aria-label="Add image"
-              className="text-neutral-400 hover:text-neutral-600 cursor-pointer p-0.5 transition-colors"
-            >
-              <ImageIcon size={17} />
-            </button>
-            <span
-              aria-hidden="true"
-              className="text-[10px] font-bold text-neutral-400 border border-neutral-300 rounded px-1 select-none"
-            >
-              GIF
-            </span>
           </div>
 
           <button
@@ -288,21 +276,9 @@ export function ThreadView({
                 replyingTo ? `Trả lời @${replyingTo.authorName}…` : `Trả lời ${post.authorName}…`
               }
               disabled={submitting}
-              className="min-w-0 flex-1 bg-transparent text-[14px] text-neutral-900 outline-none border-none p-0 focus:outline-none focus:ring-0 placeholder:text-neutral-400"
+              style={{ outline: "none" }}
+              className="min-w-0 flex-1 bg-transparent text-[14px] text-neutral-900 outline-none border-none p-0 focus:outline-none focus-visible:outline-none focus:ring-0 placeholder:text-neutral-400"
             />
-            <button
-              type="button"
-              aria-label="Add image"
-              className="text-neutral-400 hover:text-neutral-600 cursor-pointer p-0.5 transition-colors"
-            >
-              <ImageIcon size={16} />
-            </button>
-            <span
-              aria-hidden="true"
-              className="text-[9px] font-bold text-neutral-400 border border-neutral-300 rounded px-1 select-none"
-            >
-              GIF
-            </span>
           </div>
 
           <button

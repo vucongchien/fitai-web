@@ -3,7 +3,8 @@
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useState } from "react";
-import { toast } from "sonner";
+
+import { toast } from "@/shared/ui/toast";
 
 import type { FeedItemVM } from "../model/social.types";
 import { fetchMoreFeedAction, fetchMoreProfileFeedAction } from "../server/social-actions";

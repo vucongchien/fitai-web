@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, use, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { toast as sonnerToast } from "sonner";
+
+import { toast as internalToast } from "./toast-store";
 
 export type ToastType = "info" | "success" | "error";
 
@@ -32,27 +33,21 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const dismissToast = useCallback((id: string) => {
-    sonnerToast.dismiss(id);
+    internalToast.dismiss(id);
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const showToast = useCallback((item: Omit<ToastItem, "id" | "exiting">) => {
     const type = item.type ?? "info";
-    const duration = item.durationMs;
     const action = item.action
       ? { label: item.action.label, onClick: item.action.onClick }
       : undefined;
 
-    let id: string | number;
-    if (type === "success") {
-      id = sonnerToast.success(item.message, { duration, action });
-    } else if (type === "error") {
-      id = sonnerToast.error(item.message, { duration, action });
-    } else {
-      id = sonnerToast.info(item.message, { duration, action });
-    }
-
-    const toastId = String(id);
+    const toastId = internalToast.show(item.message, {
+      type,
+      durationMs: item.durationMs,
+      action,
+    });
     const newToast: ToastItem = { ...item, id: toastId };
     setToasts((prev) => [...prev, newToast]);
 
