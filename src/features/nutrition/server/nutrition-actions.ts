@@ -35,9 +35,6 @@ function readNumber(form: FormData, key: string) {
   return Number(raw);
 }
 
-/**
- * Form-action entry point.
- */
 export async function logMealAction(
   _previous: LogMealState,
   form: FormData,
@@ -106,10 +103,6 @@ function validate(input: LogMealInput): string | null {
 
 import { cleanMealDisplayName } from "@/features/nutrition/model/meal-detail.mapper";
 
-/**
- * Logs one meal.
- * gRPC: NutritionService.logMeal
- */
 export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
   const invalid = validate(input);
   if (invalid) {
@@ -190,9 +183,6 @@ export interface PantryRecalibrateResult {
   success: boolean;
 }
 
-/**
- * Server Action tái hiệu chỉnh thực đơn theo nguyên liệu sẵn có trong tủ lạnh
- */
 export async function recalibratePantryAction(
   availableIngredients: string[],
 ): Promise<PantryRecalibrateResult> {

@@ -18,9 +18,6 @@ const EMPTY_DAILY_MENU: DailyMenuRows = {
   snack: [],
 };
 
-/**
- * Fetches meal detail from live gRPC backend.
- */
 export async function getMealDetailData(slot: MealSlot): Promise<MealDetailPageData> {
   const { accessToken } = await getAuthenticatedSession();
   const today = toDayKey(new Date());

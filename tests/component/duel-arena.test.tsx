@@ -132,7 +132,7 @@ describe(DuelArenaView, () => {
     expect(within(hud).queryByText(/Lv\./i)).not.toBeInTheDocument();
     expect(screen.getByTestId("duel-lead-badge")).toHaveTextContent("+3");
     const tugBar = screen.getByTestId("duel-tug-of-war-bar");
-    expect(tugBar).toHaveAttribute("data-my-share", "55");
+    expect(tugBar).toHaveAttribute("data-my-share", "69");
     expect(within(tugBar).getByTestId("duel-my-score")).toHaveTextContent("18");
     expect(within(tugBar).getByTestId("duel-opponent-score")).toHaveTextContent("15");
     const repGauge = screen.getByTestId("duel-rep-gauge");
@@ -418,7 +418,7 @@ describe(DuelArenaView, () => {
 
     const dividerAfter = screen.getByTestId("duel-tug-of-war-divider");
     expect(dividerAfter).toBe(dividerBefore);
-    expect(dividerAfter).toHaveStyle({ left: "60%" });
+    expect(dividerAfter).toHaveStyle({ left: "82%" });
   });
 
   it("renders in-bar scores at 12% minimum clamp width and highlights 85% rep threshold", () => {

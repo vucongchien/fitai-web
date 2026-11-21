@@ -37,16 +37,14 @@ describe("AdhocAiGeneratorModal", () => {
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.getByText("Generate Adhoc Workout")).toBeInTheDocument();
 
-    const textarea = screen.getByRole("textbox");
+    const textarea = screen.getByPlaceholderText(/Ask AI Coach/i);
     fireEvent.change(textarea, { target: { value: "Chest and triceps with dumbbells" } });
     expect(textarea).toHaveValue("Chest and triceps with dumbbells");
 
-    // Choose duration 30m
-    const duration30 = screen.getByRole("button", { name: "30m" });
-    fireEvent.click(duration30);
-    expect(duration30).toHaveClass("is-active");
+    fireEvent.click(screen.getByRole("button", { name: /45 min/i }));
+    fireEvent.click(screen.getByRole("option", { name: /30 min/i }));
+    expect(screen.getByRole("button", { name: /30 min/i })).toBeInTheDocument();
   });
 
   it("generates workout and allows applying to workout builder", async () => {
@@ -83,7 +81,7 @@ describe("AdhocAiGeneratorModal", () => {
       />,
     );
 
-    const generateBtn = screen.getByRole("button", { name: /Generate Smart Workout/i });
+    const generateBtn = screen.getByRole("button", { name: /Send prompt/i });
     fireEvent.click(generateBtn);
 
     await waitFor(() => {
@@ -91,9 +89,8 @@ describe("AdhocAiGeneratorModal", () => {
       expect(screen.getByText("Incline Dumbbell Press")).toBeInTheDocument();
     });
 
-    // Click Apply All
-    const applyAllBtn = screen.getByRole("button", { name: /Apply All/i });
-    fireEvent.click(applyAllBtn);
+    const replaceBtn = screen.getByRole("button", { name: /Replace \(1\)/i });
+    fireEvent.click(replaceBtn);
 
     expect(onApply).toHaveBeenCalledTimes(1);
     expect(onApply).toHaveBeenCalledWith(
