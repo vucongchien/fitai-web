@@ -143,7 +143,7 @@ describe("getProgressDashboardData", () => {
     expect(result.currentWeightKg).toBe(73.5);
     expect(result.heightCm).toBe(175);
     expect(result.photos).toHaveLength(1);
-    expect(result.activeInjuries).toEqual([{ muscleGroup: "SHOULDERS", severity: "MILD" }]);
+    expect(result.activeInjuries).toEqual([{ muscleGroup: "Shoulders", severity: "MILD" }]);
     expect(result.totalWorkouts).toBe(2);
     expect(result.totalVolumeKg).toBe(4200);
     expect(result.weeklyGoal).toEqual({ completed: 2, target: 4, percentage: 50 });

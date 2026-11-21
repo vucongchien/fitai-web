@@ -128,5 +128,6 @@ export interface ProgressDashboardData {
   activeInjuries: ActiveInjurySummary[];
   gender?: string;
   muscleLoad?: Record<string, MuscleLoadSummary>;
+  catalogMuscles?: Array<{ id: string; name: string }>;
   nutrition?: ProgressNutritionSummary;
 }

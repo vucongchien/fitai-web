@@ -72,6 +72,7 @@ export function ProgressDashboardView({ data }: ProgressDashboardViewProps) {
         activeInjuries={data.activeInjuries}
         gender={data.gender}
         muscleLoad={data.muscleLoad}
+        catalogMuscles={data.catalogMuscles}
       />
 
       {/* Single-Metric Trend Chart + Plain-Language Summary + Compact History Table */}

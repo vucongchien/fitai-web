@@ -2,6 +2,7 @@ import { createClient } from "@connectrpc/connect";
 import { redirect } from "next/navigation";
 import "server-only";
 
+import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
 import { dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
 import { deduplicateMealRows } from "@/shared/api/bff/aggregate/nutrition-daily";
@@ -75,6 +76,7 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       muscleLoadRes,
       nutritionSummaryRes,
       nutritionHistoryRes,
+      catalogRes,
     ] = await Promise.allSettled([
       profileClient.getProfile({ userId: userId || "" }),
       profileClient.getBodyMetricsHistory({ userId: userId || "" }),
@@ -99,7 +101,15 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
             endDate: todayStr,
           })
         : Promise.resolve({ meals: [] }),
+      getCatalogMetadataServerAction(),
     ]);
+
+    const muscleNameById = new Map<string, string>(
+      catalogRes.status === "fulfilled"
+        ? catalogRes.value.muscles.map((m) => [m.id.toLowerCase(), m.name])
+        : [],
+    );
+    const resolveMuscleName = (raw: string) => muscleNameById.get(raw.toLowerCase()) ?? raw;
 
     const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
     const rawMetrics =
@@ -210,10 +220,17 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       totalVolumeKg,
       adherencePercentage: workoutStats.adherence.percentage || weeklyPercentage,
       heatmapWeeks: buildConsistencyHeatmap(historySessions as any, new Date(), 12),
-      preferredMuscleGroups: profileProto?.preferredMuscleGroups ?? [],
-      activeInjuries,
+      preferredMuscleGroups: (profileProto?.preferredMuscleGroups ?? []).map(resolveMuscleName),
+      activeInjuries: activeInjuries.map((inj) => ({
+        ...inj,
+        muscleGroup: resolveMuscleName(inj.muscleGroup),
+      })),
       gender: profileProto?.gender ?? "",
       muscleLoad,
+      catalogMuscles:
+        catalogRes.status === "fulfilled"
+          ? catalogRes.value.muscles.map((m) => ({ id: m.id, name: m.name }))
+          : [],
       nutrition,
     };
   } catch (error) {
