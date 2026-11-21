@@ -52,16 +52,13 @@ export function mapExperienceToProto(exp: string): string {
 
 export function mapCoachStyleToProto(style: string): string {
   switch (style?.toLowerCase()) {
-    case "motivational":
-    case "calm": {
+    case "motivational": {
       return "MOTIVATIONAL";
     }
-    case "strict":
-    case "direct": {
+    case "strict": {
       return "STRICT";
     }
-    case "scientific":
-    case "balanced": {
+    case "scientific": {
       return "SCIENTIFIC";
     }
     default: {

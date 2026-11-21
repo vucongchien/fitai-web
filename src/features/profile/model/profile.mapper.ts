@@ -16,12 +16,10 @@ export function mapGoalToEnum(goal: string): string {
 
 export function mapCoachStyleToEnum(style: string): string {
   switch (style?.toLowerCase()) {
-    case "strict":
-    case "direct": {
+    case "strict": {
       return "STRICT";
     }
-    case "scientific":
-    case "balanced": {
+    case "scientific": {
       return "SCIENTIFIC";
     }
     default: {
