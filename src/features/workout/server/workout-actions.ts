@@ -4,6 +4,7 @@ import { createClient } from "@connectrpc/connect";
 import { revalidatePath } from "next/cache";
 
 import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
+import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
 import {
   averageFormScore,
   averageRpe,
@@ -19,39 +20,50 @@ import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
 
 // Search exercise library via ExerciseService with repository fallback.
 export async function searchExercises(query: string): Promise<ExerciseResult[]> {
-  const results = await exerciseSearchRepository.search({
-    q: query,
-    bodyPartIds: [],
-    targetMuscleIds: [],
-    equipmentIds: [],
-    difficulty: [],
-    tagIds: [],
-    aiOnly: false,
-  });
+  const [results, catalog] = await Promise.all([
+    exerciseSearchRepository.search({
+      q: query,
+      bodyPartIds: [],
+      targetMuscleIds: [],
+      equipmentIds: [],
+      difficulty: [],
+      tagIds: [],
+      aiOnly: false,
+    }),
+    getCatalogMetadataServerAction(),
+  ]);
 
-  return results.map((ex) => ({
-    id: ex.id,
-    name: ex.name,
-    equipmentId: ex.equipmentId || "eq-standard",
-    isWeighted: ex.equipmentId !== "bodyweight",
-    defaultWeightKg: ex.equipmentId === "bodyweight" ? undefined : 10,
-    prescription: "3 × 10",
-    rest: `${ex.defaultRestSeconds || 90} sec`,
-    note: ex.instructions || "",
-  }));
+  const bodyweightIds = new Set(
+    catalog.equipments
+      .filter((e) => e.name.toLowerCase().replaceAll(/[\s_-]+/g, "") === "bodyweight")
+      .map((e) => e.id),
+  );
+
+  return results.map((ex) => {
+    const isBodyweight = !ex.equipmentId || bodyweightIds.has(ex.equipmentId);
+    return {
+      id: ex.id,
+      name: ex.name,
+      equipmentId: ex.equipmentId || "eq-standard",
+      isWeighted: !isBodyweight,
+      defaultWeightKg: isBodyweight ? undefined : 10,
+      prescription: "3 × 10",
+      rest: `${ex.defaultRestSeconds || 90} sec`,
+      note: ex.instructions || "",
+    };
+  });
 }
 
 // Fetch config for Adhoc Workout builder.
 export async function getAdhocConfig(): Promise<AdhocConfig> {
   const accessToken = await getAccessToken();
-  const userId = await getAuthenticatedUserId();
 
   if (process.env.FITAI_RPC_URL && accessToken) {
     try {
       const transport = createServerTransport(accessToken);
       const coachingClient = createClient(CoachingService, transport);
 
-      const res = await coachingClient.getActiveRoadmap({ userId: userId || "" });
+      const res = await coachingClient.getActiveRoadmap({});
       const currentWeek = res.roadmap?.weekPlans[0];
       return {
         targetRpe: currentWeek?.targetRpe ?? 6.5,
@@ -137,7 +149,6 @@ export async function getAiRecommendation(
     : undefined;
 
   const res = await coachingClient.suggestAdHocSession({
-    userId,
     hint: protoHint,
   });
 
@@ -198,7 +209,6 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
   let planId = "";
   try {
     const adhocPlan = await coachingClient.createAdhocSessionPlan({
-      userId,
       exerciseIds,
     });
     planId = adhocPlan.sessionPlan?.sessionPlanId || "";
@@ -208,9 +218,8 @@ export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sess
       error?.message,
     );
     try {
-      await coachingClient.initiateRoadmap({ userId });
+      await coachingClient.initiateRoadmap({});
       const retryPlan = await coachingClient.createAdhocSessionPlan({
-        userId,
         exerciseIds,
       });
       planId = retryPlan.sessionPlan?.sessionPlanId || "";

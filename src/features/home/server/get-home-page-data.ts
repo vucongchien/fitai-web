@@ -219,9 +219,9 @@ export async function getHomePageData(): Promise<HomePageData> {
         nutHistoryRes,
         gamificationRes,
       ] = await Promise.allSettled([
-        coachingClient.getActiveRoadmap({ userId: userId || "" }),
-        nutritionClient.getNutritionSummary({ userId: userId || "" }),
-        nutritionClient.getTodayMenu({ userId: userId || "" }),
+        coachingClient.getActiveRoadmap({}),
+        nutritionClient.getNutritionSummary({}),
+        nutritionClient.getTodayMenu({}),
         workoutClient.getWorkoutHistory({ limit: 20, offset: 0 }),
         profileClient.getProfile({ userId: userId || "" }),
         exerciseClient.searchExercises({ keyword: "", limit: 4 }),
@@ -230,7 +230,6 @@ export async function getHomePageData(): Promise<HomePageData> {
           ? nutritionClient.getNutritionHistory({
               endDate: todayStr,
               startDate: dayKeyRange(todayStr, 7)[0] ?? todayStr,
-              userId: userId || "",
             })
           : Promise.resolve({ meals: [] }),
         getHomeGamificationData(),
@@ -293,6 +292,12 @@ export async function getHomePageData(): Promise<HomePageData> {
 
       let featuredExercises: FeaturedExerciseItem[] = [];
 
+      const isBodyweightEquipment = (equipmentId?: string) => {
+        if (!equipmentId) return true;
+        const name = resolveEquipment(equipmentId);
+        return name.toLowerCase().replaceAll(/[\s_-]+/g, "") === "bodyweight";
+      };
+
       if (exerciseRes.status === "fulfilled" && exerciseRes.value.exercises?.length) {
         featuredExercises = exerciseRes.value.exercises.slice(0, 4).map((ex, idx) => ({
           id: ex.id || `ex-${idx}`,
@@ -302,8 +307,8 @@ export async function getHomePageData(): Promise<HomePageData> {
           durationMins: ex.defaultRestSeconds
             ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
             : 10,
-          prescription: "3 × 10 reps",
-          isWeighted: ex.equipmentId ? ex.equipmentId.toLowerCase() !== "bodyweight" : true,
+          isWeighted: !isBodyweightEquipment(ex.equipmentId),
+          hasAiSupported: Boolean(ex.hasAiSupported),
           imageUrl: ex.thumbnailUrl || ex.mediaUrl || ex.videoUrl || undefined,
         }));
       } else {
@@ -324,8 +329,8 @@ export async function getHomePageData(): Promise<HomePageData> {
           durationMins: ex.defaultRestSeconds
             ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
             : 10,
-          prescription: "3 × 10 reps",
-          isWeighted: ex.equipmentId !== "bodyweight",
+          isWeighted: !isBodyweightEquipment(ex.equipmentId),
+          hasAiSupported: Boolean(ex.hasAiSupported),
           imageUrl: ex.thumbnailUrl || undefined,
         }));
       }
@@ -559,8 +564,10 @@ export async function getHomePageData(): Promise<HomePageData> {
       durationMins: ex.defaultRestSeconds
         ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
         : 10,
-      prescription: "3 × 10 reps",
-      isWeighted: ex.equipmentId !== "bodyweight",
+      isWeighted:
+        Boolean(ex.equipmentId) &&
+        ex.equipmentId.toLowerCase().replaceAll(/[\s_-]+/g, "") !== "bodyweight",
+      hasAiSupported: Boolean(ex.hasAiSupported),
       imageUrl: ex.thumbnailUrl || undefined,
     }),
   );
