@@ -14,29 +14,6 @@ export function mapGoalToEnum(goal: string): string {
   return "BUILD_MUSCLE";
 }
 
-export function mapEquipmentToEnum(equipment: string): string {
-  const upper = equipment?.toUpperCase() || "";
-  if (upper.includes("FULL GYM") || upper.includes("FULL_GYM") || upper.includes("CABLE")) {
-    return "FULL_GYM";
-  }
-  if (upper.includes("DUMBBELL")) {
-    return "DUMBBELL_ONLY";
-  }
-  if (upper.includes("BARBELL")) {
-    return "BARBELL";
-  }
-  if (upper.includes("BAND")) {
-    return "RESISTANCE_BAND";
-  }
-  if (upper.includes("KETTLEBELL")) {
-    return "KETTLEBELL";
-  }
-  if (upper.includes("MACHINE")) {
-    return "MACHINE";
-  }
-  return "BODYWEIGHT";
-}
-
 export function mapCoachStyleToEnum(style: string): string {
   switch (style?.toLowerCase()) {
     case "strict":
@@ -286,11 +263,10 @@ export function mapRawDataToProfileViewModel(raw: {
     bmiCategory: bmiInfo.category,
     targetBodyFatPercent: profile.targetBodyFatPercent || 0,
     goals: (profile.goals || []).map(translateGoal),
-    preferredMuscleGroups: (profile.preferredMuscleGroups || []).map(translateMuscleGroup),
+    preferredMuscleGroups: profile.preferredMuscleGroups || [],
   };
 
   const userName = raw.user?.name || profile.fullName || "Athlete";
-  console.log(raw.user);
   return {
     user: {
       id: raw.user?.id || profile.userId || "usr-me",
@@ -318,14 +294,14 @@ export function mapRawDataToProfileViewModel(raw: {
     healthMetrics,
     injuries: (profile.injuries || []).map((inj: any, idx: number) => ({
       id: inj.injuryId || `inj-${idx}`,
-      muscleGroup: translateMuscleGroup(inj.muscleGroup || ""),
+      muscleGroup: inj.muscleGroup || "",
       severity: inj.severity || "MILD",
       notes: inj.notes || "",
       isRecovered: Boolean(inj.isRecovered),
       reportedAt: inj.reportedAt || new Date().toISOString().split("T")[0],
     })),
     settings: {
-      availableEquipment: (profile.availableEquipment || []).map(translateEquipment),
+      availableEquipment: profile.availableEquipment || [],
       preferredWorkoutTimes: profile.preferredWorkoutTimes || [],
       coachStyle: translateCoachStyle(profile.coachStyle || ""),
     },

@@ -478,12 +478,12 @@ function GoalsForm({
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {catalogMuscleGroups.map((mg) => {
-                const isSelected = muscles.includes(mg.name);
+                const isSelected = muscles.includes(mg.id);
                 return (
                   <button
                     key={mg.id}
                     type="button"
-                    onClick={() => toggleMuscle(mg.name)}
+                    onClick={() => toggleMuscle(mg.id)}
                     className={cn(
                       "flex items-center justify-center p-3 rounded-[var(--radius-input)] text-center transition-colors cursor-pointer min-h-[48px] border-[1.5px]",
                       isSelected
@@ -491,7 +491,9 @@ function GoalsForm({
                         : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
                     )}
                   >
-                    <span className="text-xs font-semibold">{mg.name}</span>
+                    <span className="text-xs font-semibold">
+                      {mg.name === "Cardiovascular System" ? "Cardio & Stamina" : mg.name}
+                    </span>
                   </button>
                 );
               })}
@@ -589,8 +591,8 @@ function EquipmentForm({
             <SelectableTile
               key={item.id}
               label={item.name}
-              selected={equipment.includes(item.name)}
-              onClick={() => toggleEquipment(item.name)}
+              selected={equipment.includes(item.id)}
+              onClick={() => toggleEquipment(item.id)}
             />
           ))}
         </div>
@@ -761,58 +763,36 @@ function InjuryHistoryForm({
     "All" | "Upper Body" | "Lower Body" | "Core & Joints"
   >("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const { muscles: dynamicDbMuscles, bodyParts: dynamicDbBodyParts } = useCatalogMetadata();
   const [newInjury, setNewInjury] = useState({
-    muscleGroup: "Shoulders",
+    muscleGroup: "",
     severity: "Mild",
     notes: "",
   });
   const [confirmRecoverId, setConfirmRecoverId] = useState<string | null>(null);
 
-  const { muscles: dynamicDbMuscles } = useCatalogMetadata();
+  const bodyPartNameById = new Map(dynamicDbBodyParts.map((bp) => [bp.id, bp.name]));
+  const resolveCategoryFromBodyPart = (
+    bodyPartId?: string,
+  ): "Upper Body" | "Lower Body" | "Core & Joints" => {
+    const bpName = (bodyPartId ? bodyPartNameById.get(bodyPartId) || bodyPartId : "").toLowerCase();
+    if (bpName.includes("leg") || bpName.includes("lower")) return "Lower Body";
+    if (bpName.includes("waist") || bpName.includes("core") || bpName.includes("abs")) {
+      return "Core & Joints";
+    }
+    return "Upper Body";
+  };
 
-  const baseAnatomyAreas = [
-    // Upper Body
-    { name: "Shoulders", category: "Upper Body", hint: "Deltoids & Rotator Cuff" },
-    { name: "Chest", category: "Upper Body", hint: "Pectorals" },
-    { name: "Upper Back", category: "Upper Body", hint: "Rhomboids & Traps" },
-    { name: "Lats", category: "Upper Body", hint: "Latissimus Dorsi" },
-    { name: "Biceps", category: "Upper Body", hint: "Front Arm" },
-    { name: "Triceps", category: "Upper Body", hint: "Back Arm" },
-    { name: "Forearms", category: "Upper Body", hint: "Brachioradialis" },
-    { name: "Wrist", category: "Upper Body", hint: "Wrist Joint & Tendons" },
-    { name: "Elbow", category: "Upper Body", hint: "Elbow Joint" },
-    { name: "Neck", category: "Upper Body", hint: "Cervical Spine" },
-    { name: "Traps", category: "Upper Body", hint: "Upper Trapezius" },
+  const anatomyAreas = dynamicDbMuscles.map((dbM) => ({
+    id: dbM.id,
+    name: dbM.name,
+    category: resolveCategoryFromBodyPart(dbM.bodyPartId),
+    hint: (dbM.bodyPartId && bodyPartNameById.get(dbM.bodyPartId)) || "Muscle Group",
+  }));
 
-    // Lower Body
-    { name: "Knee", category: "Lower Body", hint: "Patella & Meniscus" },
-    { name: "Quadriceps", category: "Lower Body", hint: "Front Thigh" },
-    { name: "Hamstrings", category: "Lower Body", hint: "Back Thigh" },
-    { name: "Glutes", category: "Lower Body", hint: "Gluteus Maximus" },
-    { name: "Calves", category: "Lower Body", hint: "Gastrocnemius" },
-    { name: "Ankle", category: "Lower Body", hint: "Ankle Joint & Achilles" },
-    { name: "Hip", category: "Lower Body", hint: "Hip Joint & Flexors" },
-    { name: "Groin", category: "Lower Body", hint: "Adductors" },
-
-    // Core & Joints
-    { name: "Lower Back", category: "Core & Joints", hint: "Lumbar Spine" },
-    { name: "Abs", category: "Core & Joints", hint: "Rectus Abdominis" },
-    { name: "Obliques", category: "Core & Joints", hint: "Side Core" },
-  ];
-
-  // Merge DB catalog muscles seamlessly
-  const anatomyAreas = [
-    ...baseAnatomyAreas,
-    ...dynamicDbMuscles
-      .filter(
-        (dbM) => !baseAnatomyAreas.some((b) => b.name.toLowerCase() === dbM.name.toLowerCase()),
-      )
-      .map((dbM) => ({
-        name: dbM.name,
-        category: "Upper Body" as "Upper Body" | "Lower Body" | "Core & Joints",
-        hint: "From Database Catalog",
-      })),
-  ];
+  const selectedMuscleId = newInjury.muscleGroup || anatomyAreas[0]?.id || "";
+  const selectedMuscleName =
+    anatomyAreas.find((a) => a.id === selectedMuscleId)?.name || selectedMuscleId;
 
   const filteredMuscles = anatomyAreas.filter((m) => {
     const matchesCategory = categoryFilter === "All" || m.category === categoryFilter;
@@ -824,19 +804,20 @@ function InjuryHistoryForm({
   });
 
   const handleSubmitInjury = async () => {
+    if (!selectedMuscleId) return;
     setIsSubmitting(true);
     setShowConfirmReport(false);
     try {
       const notesPayload = newInjury.notes.trim() || "Reported via profile";
       const res = await reportInjuryServerAction({
-        muscleGroup: newInjury.muscleGroup,
+        muscleGroup: selectedMuscleId,
         severity: newInjury.severity,
         notes: notesPayload,
       });
 
       const item: InjuryItem = {
         id: res.injuryId || Date.now().toString(),
-        muscleGroup: newInjury.muscleGroup,
+        muscleGroup: selectedMuscleName,
         severity: newInjury.severity,
         notes: notesPayload,
         isRecovered: false,
@@ -847,10 +828,10 @@ function InjuryHistoryForm({
       onSave({ injuries: updated });
       startAIAdjustment({
         reason: "injury_reported",
-        muscleGroup: newInjury.muscleGroup,
+        muscleGroup: selectedMuscleName,
       });
       setShowReport(false);
-      setNewInjury({ muscleGroup: "Shoulders", severity: "Mild", notes: "" });
+      setNewInjury({ muscleGroup: "", severity: "Mild", notes: "" });
     } catch (error) {
       console.error("Failed to submit injury report:", error);
     } finally {
@@ -952,12 +933,12 @@ function InjuryHistoryForm({
               {/* Muscle Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-48 overflow-y-auto pr-1">
                 {filteredMuscles.map((m) => {
-                  const isSelected = newInjury.muscleGroup === m.name;
+                  const isSelected = selectedMuscleId === m.id;
                   return (
                     <button
-                      key={m.name}
+                      key={m.id}
                       type="button"
-                      onClick={() => setNewInjury({ ...newInjury, muscleGroup: m.name })}
+                      onClick={() => setNewInjury({ ...newInjury, muscleGroup: m.id })}
                       className={cn(
                         "p-2 text-left rounded-[var(--radius-input)] transition-all cursor-pointer border-[1.5px]",
                         isSelected

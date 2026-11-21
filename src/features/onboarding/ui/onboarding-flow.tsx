@@ -18,6 +18,7 @@ import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/worko
 import { calculateBMI } from "@/features/profile/model/profile.mapper";
 import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
+import { toast } from "@/shared/ui/toast";
 
 const storageKey = "fitai-onboarding-draft-v2";
 
@@ -247,13 +248,14 @@ export function OnboardingFlow() {
       const result = await saveOnboardingProfileServerAction(getValues());
       if (!result.success) {
         console.error("[OnboardingFlow] Server returned error:", result.message);
+        toast.error(result.message || "Failed to save profile. Please review your information.");
+        return;
       }
       sessionStorage.setItem("fitai-onboarding-complete", "true");
       router.push("/home", { transitionTypes: ["nav-forward"] });
     } catch (error) {
       console.error("Failed to submit onboarding via gRPC:", error);
-      sessionStorage.setItem("fitai-onboarding-complete", "true");
-      router.push("/home", { transitionTypes: ["nav-forward"] });
+      toast.error("Network or server error while saving profile. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -509,9 +511,9 @@ export function OnboardingFlow() {
                   <div className="chip-options">
                     {catalogEquipments.map((eq) => (
                       <ChoiceButton
-                        active={(equipment || []).includes(eq.name as any)}
+                        active={(equipment || []).includes(eq.id as any)}
                         key={eq.id}
-                        onClick={() => toggleList("equipment", eq.name)}
+                        onClick={() => toggleList("equipment", eq.id)}
                       >
                         <span>{eq.name}</span>
                       </ChoiceButton>
@@ -532,11 +534,11 @@ export function OnboardingFlow() {
                   <div className="chip-options">
                     {catalogMuscles.map((m) => (
                       <ChoiceButton
-                        active={(muscleFocus || []).includes(m.name)}
+                        active={(muscleFocus || []).includes(m.id)}
                         key={m.id}
-                        onClick={() => toggleList("muscleFocus", m.name)}
+                        onClick={() => toggleList("muscleFocus", m.id)}
                       >
-                        <span>{m.name}</span>
+                        <span>{m.name === "Cardiovascular System" ? "Cardio & Stamina" : m.name}</span>
                       </ChoiceButton>
                     ))}
                   </div>
@@ -586,13 +588,13 @@ export function OnboardingFlow() {
                   Target Injury Muscle Area
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                  {["Shoulders", "Knee", "Lower Back", "Wrist", "Hip"].map((m) => {
-                    const isSelected = (injuryMuscleGroup || "Shoulders") === m;
+                  {catalogMuscles.map((m) => {
+                    const isSelected = injuryMuscleGroup === m.id;
                     return (
                       <button
-                        key={m}
+                        key={m.id}
                         type="button"
-                        onClick={() => setValue("injuryMuscleGroup", m)}
+                        onClick={() => setValue("injuryMuscleGroup", m.id)}
                         className={cn(
                           "py-2 px-1 text-center rounded-[var(--radius-input)] text-xs font-semibold transition-colors cursor-pointer min-h-[38px] border-[1.5px]",
                           isSelected
@@ -600,7 +602,7 @@ export function OnboardingFlow() {
                             : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
                         )}
                       >
-                        {m}
+                        {m.name}
                       </button>
                     );
                   })}
@@ -696,7 +698,11 @@ export function OnboardingFlow() {
               </div>
               <div>
                 <dt>Equipment</dt>
-                <dd>{(equipment || []).join(", ")}</dd>
+                <dd>
+                  {(equipment || [])
+                    .map((id) => catalogEquipments.find((eq) => eq.id === id)?.name || id)
+                    .join(", ")}
+                </dd>
               </div>
             </dl>
           </section>
