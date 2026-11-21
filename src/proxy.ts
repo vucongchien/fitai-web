@@ -23,6 +23,7 @@ export async function proxy(request: NextRequest) {
     effectivePathname === "/partner" ||
     effectivePathname === "/lab" ||
     effectivePathname.startsWith("/lab/") ||
+    (process.env.NODE_ENV !== "production" && effectivePathname === "/test-ui") ||
     effectivePathname === "/guides" ||
     effectivePathname.startsWith("/guides/") ||
     effectivePathname === "/robots.txt" ||
