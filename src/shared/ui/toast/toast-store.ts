@@ -27,8 +27,7 @@ export { dingToast };
 export const toast = {
   show: (message: string, opts?: ToastOpts & { type?: ToastType | DingToastType }): string =>
     dingToast.show(opts?.type ?? "info", message, toDingOptions(opts)),
-  info: (message: string, opts?: ToastOpts): string =>
-    dingToast.info(message, toDingOptions(opts)),
+  info: (message: string, opts?: ToastOpts): string => dingToast.info(message, toDingOptions(opts)),
   success: (message: string, opts?: ToastOpts): string =>
     dingToast.success(message, toDingOptions(opts)),
   error: (message: string, opts?: ToastOpts): string =>

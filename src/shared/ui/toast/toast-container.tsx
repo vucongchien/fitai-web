@@ -35,12 +35,7 @@ function DingToastItem({ t, i, labels }: ToastItemProps) {
   const sticky = t.duration === 0 && t.type !== "loading" && !t.secondary;
 
   return (
-    <div
-      className="tst-slot"
-      ref={slotRef}
-      style={{ "--tst-i": i } as CSSProperties}
-      tabIndex={-1}
-    >
+    <div className="tst-slot" ref={slotRef} style={{ "--tst-i": i } as CSSProperties} tabIndex={-1}>
       <div
         className={t.className ? `tst ${t.className}` : "tst"}
         data-phase={t.phase}
