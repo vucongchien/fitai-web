@@ -1,13 +1,3 @@
-/**
- * Nutrition reshaping for display.
- *
- * Reshape only: filter, group, sum, count, sort, format. No estimation, no derived
- * targets, no formula the backend did not send.
- *
- * `GetNutritionHistory` returns a flat list of meal rows — not a per-day series and not a
- * per-slot total — so grouping happens here.
- */
-
 import type { DayKey } from "./day-key";
 import { clockLabel, dayKeyFromLoggedAt, dayKeyRange, minutesOfDay } from "./day-key";
 
@@ -299,28 +289,9 @@ export function normalizeTodayMenu(menuInput: any): Record<MealSlot, MealOptionR
     }
   }
 
-  // 6. Self-healing fallback: If snack contains all options and 3 main meals are empty, redistribute across slots
-  if (
-    result.snack.length >= 4 &&
-    result.breakfast.length === 0 &&
-    result.lunch.length === 0 &&
-    result.dinner.length === 0
-  ) {
-    const all = [...result.snack];
-    result.snack = [];
-    for (let i = 0; i < all.length; i++) {
-      const targetSlot = slots[i % 4] ?? "snack";
-      result[targetSlot].push(all[i]!);
-    }
-  }
-
   return result;
 }
 
-/**
- * Groups a day's rows into the four slots, ordered by clock time.
- * Every slot is present so the timeline can render its own empty state.
- */
 export function groupMealsBySlot(
   rows: readonly MealLogRow[],
   key: DayKey,
@@ -374,10 +345,6 @@ export function groupMealsBySlot(
   });
 }
 
-/**
- * Calories per day over a trailing window.
- * A day with no rows yields `null`, so charts can show absence rather than a measured zero.
- */
 export function dailyCalorieSeries(
   rows: readonly MealLogRow[],
   endKey: DayKey,

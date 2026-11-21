@@ -7,9 +7,13 @@ import {
 } from "@/features/onboarding/domain/onboarding-schema";
 
 describe("onboarding Zod Schema & Validation Rules", () => {
+  const validDefaults = {
+    ...onboardingDefaults,
+    equipment: ["7740d3bf-cff0-46e2-931e-e6df19988e31"],
+  };
   it("accepts a valid onboarding profile with multi-goals and valid attributes", () => {
     const result = onboardingSchema.safeParse({
-      ...onboardingDefaults,
+      ...validDefaults,
       goals: ["build-muscle", "fat-loss"],
       experienceLevel: "beginner",
       dateOfBirth: "1995-06-20",
@@ -25,7 +29,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
   describe("goals validation", () => {
     it("accepts single goal selection", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         goals: ["build-muscle"],
       });
       expect(result.success).toBe(true);
@@ -33,7 +37,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("accepts dual goal selection (Build Muscle + Fat Loss)", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         goals: ["build-muscle", "fat-loss"],
       });
       expect(result.success).toBe(true);
@@ -41,7 +45,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("rejects empty goals array", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         goals: [],
       });
       expect(result.success).toBe(false);
@@ -59,7 +63,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("accepts a valid birthdate for a 25-year-old", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         dateOfBirth: "1998-05-15",
       });
       expect(result.success).toBe(true);
@@ -69,7 +73,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
       const currentYear = new Date().getFullYear();
       const underAgeDob = `${currentYear - 10}-01-01`;
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         dateOfBirth: underAgeDob,
       });
       expect(result.success).toBe(false);
@@ -78,7 +82,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("rejects birthdate for age over 90", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         dateOfBirth: "1910-01-01",
       });
       expect(result.success).toBe(false);
@@ -87,7 +91,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("rejects invalid date format", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         dateOfBirth: "15/05/1998",
       });
       expect(result.success).toBe(false);
@@ -98,7 +102,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
   describe("body Fat Percent validation (5% to 60%)", () => {
     it("accepts valid body fat percentages like 15.5% or 22%", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         bodyFatPercent: 15.5,
       });
       expect(result.success).toBe(true);
@@ -106,7 +110,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("rejects body fat percentage below 5%", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         bodyFatPercent: 3.5,
       });
       expect(result.success).toBe(false);
@@ -115,7 +119,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("rejects body fat percentage above 60%", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         bodyFatPercent: 65,
       });
       expect(result.success).toBe(false);
@@ -126,7 +130,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
   describe("preferred Workout Times validation", () => {
     it("accepts selected Key-Value preferredWorkoutTimes map", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         preferredWorkoutTimes: {
           mon: ["06:00-07:30", "17:30-19:00"],
           wed: ["06:00-07:30"],
@@ -138,7 +142,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("accepts legacy string array workout slots", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         preferredWorkoutTimes: ["Mon PM", "Wed PM", "Fri PM"],
       });
       expect(result.success).toBe(true);
@@ -146,7 +150,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("rejects empty workout time array", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         preferredWorkoutTimes: [],
       });
       expect(result.success).toBe(false);
@@ -157,7 +161,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("rejects empty workout time map with no slots", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         preferredWorkoutTimes: {},
       });
       expect(result.success).toBe(false);
@@ -170,7 +174,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
   describe("equipment validation", () => {
     it("accepts dynamic equipment list from catalog (Assisted, Band, Barbell, Body Weight, Bosu Ball, Cable)", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         equipment: ["Assisted", "Band", "Barbell", "Body Weight", "Bosu Ball", "Cable"],
       });
       expect(result.success).toBe(true);
@@ -178,7 +182,7 @@ describe("onboarding Zod Schema & Validation Rules", () => {
 
     it("rejects empty equipment array", () => {
       const result = onboardingSchema.safeParse({
-        ...onboardingDefaults,
+        ...validDefaults,
         equipment: [],
       });
       expect(result.success).toBe(false);

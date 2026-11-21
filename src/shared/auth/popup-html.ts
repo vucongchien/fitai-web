@@ -8,7 +8,16 @@ export function popupResponse(
   const safeFallback = fallbackUrl.startsWith("/") ? fallbackUrl : "/home";
   const targetOrigin = origin && origin.startsWith("http") ? origin : "*";
   const html = `<!doctype html><html><head><meta charset="utf-8"></head><body><script>
-(function(){try{if(window.opener&&!window.opener.closed){window.opener.postMessage(${JSON.stringify(message)}, ${JSON.stringify(targetOrigin)});return;}}catch(e){}window.location.assign(${JSON.stringify(safeFallback)});})();
+(function(){
+  try {
+    if (window.opener && !window.opener.closed) {
+      window.opener.postMessage(${JSON.stringify(message)}, ${JSON.stringify(targetOrigin)});
+      setTimeout(function() { window.close(); }, 100);
+      return;
+    }
+  } catch(e) {}
+  window.location.assign(${JSON.stringify(safeFallback)});
+})();
 </script><noscript><meta http-equiv="refresh" content="0;url=${safeFallback}"></noscript></body></html>`;
 
   const res = new NextResponse(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });

@@ -101,7 +101,6 @@ describe("workout Execution gRPC Actions", () => {
     const res = await beginWorkoutSession(["ex-squat"]);
 
     expect(mockCreateAdhocSessionPlan).toHaveBeenCalledWith({
-      userId: "usr-workout-live",
       exerciseIds: ["ex-squat"],
     });
     expect(res.sessionId).toBe("plan-777");

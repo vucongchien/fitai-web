@@ -81,7 +81,6 @@ describe("notification Server Actions", () => {
       const result = await listNotificationsAction(10, 0);
 
       expect(mockListNotifications).toHaveBeenCalledWith({
-        userId: "user-123",
         limit: 10,
         offset: 0,
       });
@@ -139,7 +138,6 @@ describe("notification Server Actions", () => {
       const result = await markNotificationAsReadAction("notif-1");
 
       expect(mockMarkNotificationAsRead).toHaveBeenCalledWith({
-        userId: "user-123",
         notificationId: "notif-1",
       });
       expect(result).toBe(true);

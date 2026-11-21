@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   mapCoachStyleToEnum,
-  mapEquipmentToEnum,
   mapGoalToEnum,
 } from "../../../src/features/profile/model/profile.mapper";
 import { updateProfileServerAction } from "../../../src/features/profile/server/profile-actions";
@@ -31,16 +30,6 @@ describe("profile Actions", () => {
       expect(mapGoalToEnum("FAT_LOSS")).toBe("FAT_LOSS");
       expect(mapGoalToEnum("Strength")).toBe("STRENGTH");
       expect(mapGoalToEnum("Endurance")).toBe("ENDURANCE");
-    });
-
-    it("maps equipment to protobuf enums", () => {
-      expect(mapEquipmentToEnum("Full Gym")).toBe("FULL_GYM");
-      expect(mapEquipmentToEnum("Dumbbells")).toBe("DUMBBELL_ONLY");
-      expect(mapEquipmentToEnum("Barbell")).toBe("BARBELL");
-      expect(mapEquipmentToEnum("Bodyweight")).toBe("BODYWEIGHT");
-      expect(mapEquipmentToEnum("Resistance Band")).toBe("RESISTANCE_BAND");
-      expect(mapEquipmentToEnum("Kettlebell")).toBe("KETTLEBELL");
-      expect(mapEquipmentToEnum("Machine")).toBe("MACHINE");
     });
 
     it("maps coach style to protobuf enums", () => {
@@ -98,8 +87,8 @@ describe("profile Actions", () => {
           gender: "MALE",
           goals: ["BUILD_MUSCLE", "STRENGTH"],
           experienceLevel: "ADVANCED",
-          availableEquipment: ["FULL_GYM", "BARBELL"],
-          preferredMuscleGroups: ["CHEST", "BACK", "LEGS"],
+          availableEquipment: ["Full Gym", "Barbell"],
+          preferredMuscleGroups: ["Chest", "Back", "Legs"],
           preferredWorkoutTimes: ["mon:17:30-19:00", "wed:17:30-19:00", "fri:17:30-19:00"],
           coachStyle: "STRICT",
         }),
@@ -143,7 +132,7 @@ describe("profile Actions", () => {
       expect(result.success).toBe(true);
       expect(result.injuryId).toBe("inj-test-123");
       expect(mockReportInjury).toHaveBeenCalledWith({
-        muscleGroup: "LOWER BACK",
+        muscleGroup: "Lower Back",
         severity: "MODERATE",
         notes: "",
       });

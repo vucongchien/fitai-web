@@ -76,7 +76,8 @@ button {
 
 .brand-mark {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
+  gap: 0.35rem;
   font-family: var(--font-display);
   font-size: 1.1rem;
   font-variation-settings: "wdth" 92;
@@ -84,8 +85,45 @@ button {
   letter-spacing: -0.03em;
 }
 
+.brand-mark__icon {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.brand-mark__wordmark {
+  display: inline-flex;
+  align-items: baseline;
+}
+
 .brand-mark__ai {
   color: var(--color-action);
+}
+
+@keyframes fl-mascot-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(14deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(12deg);
+  }
+}
+
+.fl-mascot-arm {
+  transform-origin: 76px 66px;
+  animation: fl-mascot-wave 2.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-mascot-arm {
+    animation: none;
+  }
 }
 
 .ui-button {
@@ -8926,8 +8964,31 @@ details[open] > .meal-recipe__summary::after {
 .exercise-showcase-card__body {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   padding: 0.75rem 0.85rem 0.85rem;
-  gap: 0.3rem;
+  gap: 0.35rem;
+}
+
+.exercise-showcase-card__header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 1.25rem;
+  gap: 0.5rem;
+}
+
+.exercise-showcase-card__ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.12rem 0.4rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-recovery-ink);
+  background: var(--color-recovery-soft);
+  border-radius: var(--radius-round, 9999px);
+  margin-left: auto;
 }
 
 .exercise-showcase-card__tag {
@@ -8941,6 +9002,9 @@ details[open] > .meal-recipe__summary::after {
 .exercise-showcase-card__title {
   color: var(--color-text);
   text-decoration: none;
+  min-height: 2.4rem;
+  display: flex;
+  align-items: flex-start;
 }
 
 .exercise-showcase-card__title h3 {
@@ -8948,6 +9012,10 @@ details[open] > .meal-recipe__summary::after {
   font-size: 0.88rem;
   font-weight: 700;
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .exercise-showcase-card__meta {
@@ -8960,8 +9028,8 @@ details[open] > .meal-recipe__summary::after {
 }
 
 .exercise-showcase-card__actions {
-  margin-top: 0.4rem;
-  padding-top: 0.45rem;
+  margin-top: auto;
+  padding-top: 0.6rem;
   border-top: 1px solid var(--color-border);
 }
 

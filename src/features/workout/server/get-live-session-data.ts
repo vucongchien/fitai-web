@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
 import {
   isTimedExerciseSlug,
   resolveDialogueAssetUrl,
@@ -43,6 +44,7 @@ function adaptLiveSessionPlan({
   specsRes,
   historyRes,
   recordsRes,
+  bodyweightEquipmentIds = new Set<string>(),
 }: {
   sessionId: string;
   planId: string;
@@ -51,12 +53,13 @@ function adaptLiveSessionPlan({
   specsRes: any[];
   historyRes: any;
   recordsRes: any;
+  bodyweightEquipmentIds?: ReadonlySet<string>;
 }): LiveSessionPlan {
   const prescription = sessionRes.prescription || { warmUps: [], mainExercises: [], coolDowns: [] };
 
   const mapExercise = (prescribed: any, phase: "warmup" | "main" | "cooldown"): LiveExercise => {
     const info = infosRes.find((inf) => inf.exercise?.id === prescribed.exerciseId)?.exercise;
-    const isWeighted = info ? info.equipmentId !== "eq-bodyweight" : false;
+    const isWeighted = info?.equipmentId ? !bodyweightEquipmentIds.has(info.equipmentId) : false;
 
     return {
       exerciseId: prescribed.exerciseId,
@@ -368,7 +371,7 @@ function buildAi12ExercisesSessionPlan(sessionId: string): LiveSessionPlan {
     exerciseId: cfg.id,
     name: cfg.name,
     phase: "main",
-    equipmentId: cfg.isWeighted ? "eq-dumbbell" : "eq-bodyweight",
+    equipmentId: "",
     targetSets: 1,
     targetReps: cfg.targetReps,
     durationSeconds: cfg.durationSeconds,
@@ -446,7 +449,7 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
 
   // 1. Tải thông tin kế hoạch bài tập (Prescription) từ Coaching Service
   try {
-    sessionRes = await coaching.getSessionPlan({ userId, sessionPlanId: targetPlanId });
+    sessionRes = await coaching.getSessionPlan({ sessionPlanId: targetPlanId });
   } catch (err) {
     console.warn(
       `[getLiveSessionData] coaching.getSessionPlan failed for targetPlanId=${targetPlanId}:`,
@@ -461,6 +464,7 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
 
   // 2. Kích hoạt phiên tập trong Execution Service để lấy workout_session_id (UUID)
   let activeSessionId = "";
+  let isConflict = false;
   try {
     const startRes = await execution.startWorkoutSession({ planId: targetPlanId });
     if (startRes.sessionId) {
@@ -468,34 +472,25 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
     }
   } catch (startErr: any) {
     console.warn(
-      "[getLiveSessionData] startWorkoutSession returned error (resolving conflict):",
+      "[getLiveSessionData] startWorkoutSession returned error:",
       startErr?.message || startErr,
     );
-    try {
-      const historyRes = await execution.getWorkoutHistory({ limit: 10, offset: 0 });
-      const firstSession = historyRes.sessions?.[0];
-      if (firstSession?.sessionId) {
-        console.log("[getLiveSessionData] Aborting hanging session:", firstSession.sessionId);
-        await execution.abortWorkoutSession({
-          sessionId: firstSession.sessionId,
-          reason: "SYSTEM_ABORT_FOR_NEW_SESSION",
-        });
-      }
-      const retryRes = await execution.startWorkoutSession({ planId: targetPlanId });
-      if (retryRes.sessionId) {
-        activeSessionId = retryRes.sessionId;
-      }
-    } catch (retryErr) {
-      console.error(
-        "[getLiveSessionData] Failed to resolve active session conflict & start session:",
-        retryErr,
-      );
-    }
+    isConflict =
+      startErr?.code === 9 ||
+      String(startErr?.message || "")
+        .toLowerCase()
+        .includes("active session already exists");
   }
 
   // ĐẢM BẢO NGHIÊM NGẶT: activeSessionId bắt buộc phải là UUID hợp lệ của workout_execution
   // Tuyệt đối KHÔNG BAO GIỜ fallback activeSessionId = planId!
   if (!activeSessionId) {
+    if (isConflict) {
+      console.warn(
+        "[getLiveSessionData] Active session conflict detected. Redirecting to recovery.",
+      );
+      redirect("/roadmap?conflict=active_session");
+    }
     console.error("[getLiveSessionData] CRITICAL ERROR: Could not obtain execution session UUID.");
     notFound();
   }
@@ -541,7 +536,7 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
   const aiIds = infosRes
     .filter((res: any) => res.exercise?.hasAiSupported)
     .map((res: any) => res.exercise!.id);
-  const [specsRes, historyRes, recordsRes] = await Promise.all([
+  const [specsRes, historyRes, recordsRes, catalog] = await Promise.all([
     Promise.all(
       aiIds.map((id: string) =>
         execution
@@ -553,7 +548,14 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
     ),
     execution.getWorkoutHistory({ limit: 10, offset: 0 }).catch(() => ({ sessions: [] })),
     execution.getPersonalRecords({ exerciseIds: ids }).catch(() => ({ records: [] })),
+    getCatalogMetadataServerAction(),
   ]);
+
+  const bodyweightEquipmentIds = new Set(
+    catalog.equipments
+      .filter((e) => e.name.toLowerCase().replaceAll(/[\s_-]+/g, "") === "bodyweight")
+      .map((e) => e.id),
+  );
 
   return adaptLiveSessionPlan({
     sessionId: activeSessionId,
@@ -563,5 +565,6 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
     specsRes,
     historyRes,
     recordsRes,
+    bodyweightEquipmentIds,
   });
 }

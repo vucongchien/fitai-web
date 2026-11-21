@@ -109,7 +109,7 @@ describe("nutrition gRPC Actions & Services", () => {
       await import("@/features/nutrition/server/get-nutrition-page-data");
     const data = await getNutritionPageData();
 
-    expect(mockGetNutritionSummary).toHaveBeenCalledWith({ userId: "usr-nutri-888" });
+    expect(mockGetNutritionSummary).toHaveBeenCalledWith({});
     expect(data.targetKcal).toBe(2200);
     expect(data.loggedKcal).toBe(1500);
   });
@@ -138,7 +138,6 @@ describe("nutrition gRPC Actions & Services", () => {
         mealName: "Salmon Salad",
         mealType: "LUNCH",
         calories: 550,
-        userId: "usr-nutri-888",
       }),
     );
     expect(result.ok).toBe(true);
@@ -157,7 +156,6 @@ describe("nutrition gRPC Actions & Services", () => {
     const res = await recalibratePantryAction(["Eggs", "Spinach", "Tofu"]);
 
     expect(mockRecalibratePlanWithPantry).toHaveBeenCalledWith({
-      userId: "usr-nutri-888",
       availableIngredients: ["Eggs", "Spinach", "Tofu"],
     });
     expect(res.success).toBe(true);

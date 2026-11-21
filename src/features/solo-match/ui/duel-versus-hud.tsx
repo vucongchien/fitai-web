@@ -260,7 +260,7 @@ export function DuelVersusHud({
       >
         {/* Left push bar (You) — score rides the right edge just left of (/) */}
         <div
-          className={`absolute inset-y-0 left-0 flex items-center justify-end pr-3 sm:pr-3.5 transition-[width,filter,box-shadow] duration-300 ease-out ${myBarClass}`}
+          className={`absolute inset-y-0 left-0 flex items-center justify-end pr-3 sm:pr-3.5 transition-[width,filter,box-shadow] duration-500 [transition-timing-function:cubic-bezier(0.25,1,0.5,1)] ${myBarClass}`}
           data-state={myBarState}
           data-testid="duel-my-bar"
           style={{ paddingRight: "12px", width: `${myShare}%` }}
@@ -281,7 +281,7 @@ export function DuelVersusHud({
         </div>
         {/* Right push bar (Opponent) — score rides the left edge just right of (/) */}
         <div
-          className={`absolute inset-y-0 right-0 flex items-center justify-start pl-3 sm:pl-3.5 transition-[width,filter,box-shadow] duration-300 ease-out ${opponentBarClass}`}
+          className={`absolute inset-y-0 right-0 flex items-center justify-start pl-3 sm:pl-3.5 transition-[width,filter,box-shadow] duration-500 [transition-timing-function:cubic-bezier(0.25,1,0.5,1)] ${opponentBarClass}`}
           data-state={opponentBarState}
           data-testid="duel-opponent-bar"
           style={{ paddingLeft: "12px", width: `${opponentShare}%` }}
@@ -303,7 +303,7 @@ export function DuelVersusHud({
         {/* Diagonal Clash Divider (/) */}
         <div
           ref={dividerRef}
-          className="absolute inset-y-0 z-10 w-1.5 -translate-x-1/2 -skew-x-12 transition-[left] duration-300 ease-out"
+          className="absolute inset-y-0 z-10 w-1.5 -translate-x-1/2 -skew-x-12 transition-[left] duration-500 [transition-timing-function:cubic-bezier(0.25,1,0.5,1)]"
           data-testid="duel-tug-of-war-divider"
           style={{ left: `${myShare}%` }}
         >

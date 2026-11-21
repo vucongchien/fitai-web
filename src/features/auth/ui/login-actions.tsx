@@ -57,22 +57,13 @@ export function LoginActions() {
       }
 
       let cleanedUp = false;
-
-      const cleanup = () => {
-        if (cleanedUp) {
-          return;
-        }
-        cleanedUp = true;
-        clearInterval(pollClosed);
-        setPending(false);
-      };
+      let pollClosed: number | null = null;
 
       const onMessage = (event: MessageEvent<OAuthMessage>) => {
         if (event.origin !== window.location.origin) {
           return;
         }
         if (event.data?.type === "OAUTH_COMPLETE") {
-          window.removeEventListener("message", onMessage);
           try {
             popup.close();
           } catch {}
@@ -86,7 +77,6 @@ export function LoginActions() {
         }
 
         if (event.data?.type === "OAUTH_ERROR") {
-          window.removeEventListener("message", onMessage);
           try {
             popup.close();
           } catch {}
@@ -95,11 +85,24 @@ export function LoginActions() {
         }
       };
 
+      const cleanup = () => {
+        if (cleanedUp) {
+          return;
+        }
+        cleanedUp = true;
+        window.removeEventListener("message", onMessage);
+        if (pollClosed !== null) {
+          window.clearInterval(pollClosed);
+          pollClosed = null;
+        }
+        setPending(false);
+      };
+
       window.addEventListener("message", onMessage);
 
-      const pollClosed = window.setInterval(() => {
+      pollClosed = window.setInterval(() => {
         if (popup.closed) {
-          setPending(false);
+          cleanup();
         }
       }, 300);
     },

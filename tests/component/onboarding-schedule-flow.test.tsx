@@ -82,6 +82,8 @@ describe("OnboardingFlow Component & Schedule State Lifecycle", () => {
 
     // STEP 4: Training Setup
     expect(await screen.findByText(/build around what you have/i)).toBeInTheDocument();
+    const dumbbellBtn = screen.getByRole("button", { name: /dumbbells/i });
+    fireEvent.click(dumbbellBtn);
     clickNext();
 
     // STEP 5: Safety Constraints

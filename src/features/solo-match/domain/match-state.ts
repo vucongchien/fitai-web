@@ -144,6 +144,7 @@ export interface TugOfWarSplit {
 
 const TUG_OF_WAR_MIN_SHARE = 12;
 const TUG_OF_WAR_MAX_SHARE = 88;
+const TUG_OF_WAR_MAX_SWING_DELTA = 6;
 
 export function computeTugOfWarSplit(myValue: number, opponentValue: number): TugOfWarSplit {
   const safeMy = Math.max(0, myValue);
@@ -160,8 +161,14 @@ export function computeTugOfWarSplit(myValue: number, opponentValue: number): Tu
     };
   }
 
-  const total = safeMy + safeOpp;
-  const rawMyShare = total > 0 ? Math.round((safeMy / total) * 100) : 50;
+  // Linear delta-step model: each rep advantage nudges the slider proportionally
+  // rather than jumping directly to the boundary on early reps (e.g. 1-0).
+  const clampedDelta = Math.max(
+    -TUG_OF_WAR_MAX_SWING_DELTA,
+    Math.min(TUG_OF_WAR_MAX_SWING_DELTA, delta),
+  );
+  const maxSwing = (TUG_OF_WAR_MAX_SHARE - TUG_OF_WAR_MIN_SHARE) / 2; // 38%
+  const rawMyShare = Math.round(50 + (clampedDelta / TUG_OF_WAR_MAX_SWING_DELTA) * maxSwing);
   const myShare = Math.max(TUG_OF_WAR_MIN_SHARE, Math.min(TUG_OF_WAR_MAX_SHARE, rawMyShare));
 
   return {

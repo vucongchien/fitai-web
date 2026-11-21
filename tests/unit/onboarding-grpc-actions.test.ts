@@ -87,17 +87,11 @@ describe("onboarding Server Actions & Enum Normalization", () => {
         preferredWorkoutTimes: ["mon:17:30-19:00", "wed:17:30-19:00", "fri:17:30-19:00"],
         experienceLevel: "INTERMEDIATE",
         coachStyle: "SCIENTIFIC",
-        availableEquipment: [
-          "FULL_GYM",
-          "DUMBBELL_ONLY",
-          "BARBELL",
-          "BODYWEIGHT",
-          "RESISTANCE_BAND",
-        ],
-        preferredMuscleGroups: ["CHEST", "BACK", "LEGS"],
+        availableEquipment: ["Full Gym", "Dumbbells", "Barbell", "Bodyweight", "Resistance Band"],
+        preferredMuscleGroups: ["Chest", "Back", "Legs"],
         injuries: [
           {
-            muscleGroup: "SHOULDERS",
+            muscleGroup: "Shoulders",
             severity: "MILD",
             notes: "Minor impingement",
           },
@@ -142,7 +136,7 @@ describe("onboarding Server Actions & Enum Normalization", () => {
         preferredWorkoutTimes: ["tue:06:00-07:30", "thu:06:00-07:30"],
         experienceLevel: "BEGINNER",
         coachStyle: "MOTIVATIONAL",
-        availableEquipment: ["BODYWEIGHT"],
+        availableEquipment: ["Bodyweight"],
         injuries: [],
       }),
     );
@@ -180,14 +174,7 @@ describe("onboarding Server Actions & Enum Normalization", () => {
 
     expect(mockSaveHealthProfile).toHaveBeenCalledWith(
       expect.objectContaining({
-        availableEquipment: [
-          "ASSISTED",
-          "RESISTANCE_BAND",
-          "BARBELL",
-          "BODYWEIGHT",
-          "BOSU_BALL",
-          "CABLE",
-        ],
+        availableEquipment: ["Assisted", "Band", "Barbell", "Body Weight", "Bosu Ball", "Cable"],
       }),
     );
   });

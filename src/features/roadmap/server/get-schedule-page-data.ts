@@ -15,10 +15,10 @@ const EMPTY_SCHEDULE_DATA: SchedulePageData = {
 
 async function getRealSchedulePageData(
   accessToken: string,
-  userId: string,
+  _userId: string,
 ): Promise<SchedulePageData> {
   const client = createClient(CoachingService, createServerTransport(accessToken));
-  const res = await client.getActiveRoadmap({ userId });
+  const res = await client.getActiveRoadmap({});
   if (!res.roadmap) {
     throw new Error("Active roadmap not found.");
   }

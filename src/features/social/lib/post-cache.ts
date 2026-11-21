@@ -1,9 +1,25 @@
 import type { FeedItemVM } from "../model/social.types";
 
+const MAX_CACHE_SIZE = 100;
 const memoryCache = new Map<string, FeedItemVM>();
 
 export function cacheFeedItem(item: FeedItemVM): void {
   if (!item?.id) return;
+
+  if (memoryCache.size >= MAX_CACHE_SIZE && !memoryCache.has(item.id)) {
+    const oldestKey = memoryCache.keys().next().value;
+    if (oldestKey) {
+      memoryCache.delete(oldestKey);
+      try {
+        if (typeof window !== "undefined" && window.sessionStorage) {
+          window.sessionStorage.removeItem(`feed_post_${oldestKey}`);
+        }
+      } catch {
+        // Ignore sessionStorage errors
+      }
+    }
+  }
+
   memoryCache.set(item.id, item);
   try {
     if (typeof window !== "undefined" && window.sessionStorage) {

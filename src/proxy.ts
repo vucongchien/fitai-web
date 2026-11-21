@@ -46,7 +46,21 @@ export async function proxy(request: NextRequest) {
     effectivePathname === "/favicon.ico" ||
     STATIC_EXT_REGEX.test(effectivePathname);
 
-  if (!isPublicRoute && !accessToken) {
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const part = token.split(".")[1];
+      if (!part) return false;
+      const base64 = part.replaceAll("-", "+").replaceAll("_", "/");
+      const payload = JSON.parse(atob(base64)) as { exp?: number };
+      if (typeof payload.exp !== "number") return false;
+      return Date.now() >= payload.exp * 1000 - 30_000;
+    } catch {
+      return false;
+    }
+  };
+
+  const needsRefresh = !accessToken || isTokenExpired(accessToken);
+  if (!isPublicRoute && needsRefresh) {
     if (refreshToken) {
       try {
         const refreshed = await refreshSessionTokens(refreshToken);

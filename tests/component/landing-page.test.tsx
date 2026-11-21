@@ -8,10 +8,12 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("LandingPage", () => {
-  it("renders the hero, capability pillars, and primary CTAs", () => {
+  it("renders the mascot 4-week hero and primary CTAs", () => {
     render(<LandingPage />);
-    expect(screen.getByRole("heading", { level: 1, name: /Train with evidence/i })).toBeTruthy();
-    expect(screen.getByText("AI Workout & Meal Plans")).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { level: 1, name: /Ready for your 4-week plan\?/i }),
+    ).toBeTruthy();
+    expect(screen.getByRole("img", { name: /FitAI waving mascot/i })).toBeTruthy();
     expect(
       screen.getAllByRole("link", {
         name: /Start training|Start your 4-week plan|Start 4-week trial/i,

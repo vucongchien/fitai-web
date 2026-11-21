@@ -126,7 +126,6 @@ export async function getSoloMatchSessionData(matchId: string): Promise<SoloMatc
         try {
           const coachingClient = createClient(CoachingService, transport);
           const planRes = await coachingClient.createAdhocSessionPlan({
-            userId: currentUserId,
             exerciseIds: [match.exerciseId],
           });
           if (planRes.sessionPlan?.sessionPlanId) {

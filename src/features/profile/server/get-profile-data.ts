@@ -36,7 +36,7 @@ export async function getProfileData(): Promise<ProfileViewModel> {
           ? workoutClient.getPersonalRecords({})
           : Promise.resolve({ records: [] }),
         typeof notificationClient.getNotificationSettings === "function"
-          ? notificationClient.getNotificationSettings({ userId: userId || "" })
+          ? notificationClient.getNotificationSettings({})
           : Promise.resolve(undefined),
         typeof workoutClient.getWorkoutHistory === "function"
           ? workoutClient.getWorkoutHistory({ limit: 50, offset: 0 })

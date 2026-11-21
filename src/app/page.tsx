@@ -8,7 +8,6 @@ import { AdaptiveRoadmapSection } from "@/features/landing/ui/adaptive-roadmap-s
 import { BodyEvidenceSection } from "@/features/landing/ui/body-evidence-section";
 import { CommunitySoloSection } from "@/features/landing/ui/community-solo-section";
 import { LandingHeader } from "@/features/landing/ui/landing-header";
-import { LandingHero } from "@/features/landing/ui/landing-hero";
 import { MovementLabSection } from "@/features/landing/ui/movement-lab-section";
 import { TrialConsultSection } from "@/features/landing/ui/trial-consult-section";
 import { SITE_DESCRIPTION } from "@/shared/seo/site-config";
@@ -46,14 +45,13 @@ export default function LandingPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={LANDING_FAQ_JSON_LD} />
       <LandingHeader />
       <main id="main-content">
-        <LandingHero />
+        <TrialConsultSection />
         <AdaptiveRoadmapSection />
         <MovementLabSection />
         <Suspense fallback={null}>
           <CommunitySoloSection />
         </Suspense>
         <BodyEvidenceSection />
-        <TrialConsultSection />
       </main>
       <LandingKnowledgeFooter />
     </div>

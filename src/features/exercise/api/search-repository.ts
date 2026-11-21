@@ -6,6 +6,7 @@ import type {
   ExerciseFilters,
   ExerciseSummary,
 } from "@/features/exercise/domain/exercise";
+import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
 import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
@@ -133,9 +134,7 @@ export const exerciseSearchRepository: ExerciseSearchRepository = {
   async getCatalog() {
     if (process.env.FITAI_RPC_URL) {
       try {
-        const accessToken = await getAccessToken();
-        const client = createClient(ExerciseService, createServerTransport(accessToken));
-        const res = await client.getCatalogMetadata({});
+        const res = await getCatalogMetadataServerAction();
 
         const bodyParts = dedupeCatalogEntries(
           (res.bodyParts || []).map((b) => ({ id: b.id, name: b.name })),
@@ -144,7 +143,11 @@ export const exerciseSearchRepository: ExerciseSearchRepository = {
           (res.equipments || []).map((e) => ({ id: e.id, name: e.name })),
         );
         const muscles = dedupeCatalogEntries(
-          (res.muscles || []).map((m) => ({ id: m.id, name: m.name, bodyPartId: m.bodyPartId })),
+          (res.muscles || []).map((m) => ({
+            id: m.id,
+            name: m.name,
+            bodyPartId: m.bodyPartId ?? "",
+          })),
         );
         const tags = dedupeCatalogEntries(
           (res.tags || []).map((t) => ({ id: t.id, name: t.name })),

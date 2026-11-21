@@ -237,7 +237,7 @@ describe("user Health Profile gRPC Services & Actions", () => {
     });
 
     expect(mockReportInjury).toHaveBeenCalledWith({
-      muscleGroup: "KNEE",
+      muscleGroup: "Knee",
       severity: "MODERATE",
       notes: "Slight pain during deep squat",
     });

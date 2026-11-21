@@ -122,7 +122,12 @@ export function DuelParticleCanvas({
       rafIdRef.current = requestAnimationFrame(tick);
     }
 
-    return () => {};
+    return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+    };
   }, [lastMilestone, lastRepConfirmedAtMs, myValue, opponentValue]);
 
   useSyncExternalStore(

@@ -8,7 +8,7 @@ import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
 
-import { mapCoachStyleToEnum, mapEquipmentToEnum, mapGoalToEnum } from "../model/profile.mapper";
+import { mapCoachStyleToEnum, mapGoalToEnum } from "../model/profile.mapper";
 import type { ProfileViewModel } from "../model/profile.types";
 import { getProfileData } from "./get-profile-data";
 
@@ -59,13 +59,13 @@ export async function updateProfileServerAction(
       current?.healthMetrics.goals ?? ["BUILD_MUSCLE"];
     const goalsEnum = await Promise.all(rawGoals.map(mapGoalToEnum));
 
-    const rawEquipment = updated.settings?.availableEquipment ??
-      current?.settings.availableEquipment ?? ["FULL_GYM"];
-    const equipmentEnum = await Promise.all(rawEquipment.map(mapEquipmentToEnum));
+    const rawEquipment =
+      updated.settings?.availableEquipment ?? current?.settings.availableEquipment ?? [];
 
-    const rawMuscles = updated.healthMetrics?.preferredMuscleGroups ??
-      current?.healthMetrics.preferredMuscleGroups ?? ["CHEST", "BACK", "LEGS"];
-    const muscleGroupsEnum = rawMuscles.map((m) => m.replaceAll(/\s+/g, "_").toUpperCase());
+    const rawMuscles =
+      updated.healthMetrics?.preferredMuscleGroups ??
+      current?.healthMetrics.preferredMuscleGroups ??
+      [];
 
     const coachStyleStr =
       updated.settings?.coachStyle ?? current?.settings.coachStyle ?? "MOTIVATIONAL";
@@ -83,8 +83,8 @@ export async function updateProfileServerAction(
       goals: goalsEnum,
       experienceLevel,
       preferredWorkoutTimes,
-      availableEquipment: equipmentEnum,
-      preferredMuscleGroups: muscleGroupsEnum,
+      availableEquipment: rawEquipment,
+      preferredMuscleGroups: rawMuscles,
       coachStyle: coachStyleEnum,
       targetWeightKg,
       targetBodyFatPercent,
@@ -149,7 +149,7 @@ export async function reportInjuryServerAction(injury: {
     const severityUpper = (injury.severity || "MILD").toUpperCase();
 
     const res = await client.reportInjury({
-      muscleGroup: injury.muscleGroup.toUpperCase(),
+      muscleGroup: injury.muscleGroup,
       severity: severityUpper,
       notes: injury.notes,
     });

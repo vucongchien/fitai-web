@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { NextResponse } from "next/server";
 
+import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
 import { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
@@ -16,6 +17,11 @@ const DEV_ACCOUNTS = {
     password: process.env.DEV_NEW_PASSWORD || "DevPassword123!",
     dest: "/onboarding",
   },
+  user2: {
+    identifier: process.env.DEV_USER2_EMAIL || "dev-user2@fitai.local",
+    password: process.env.DEV_USER2_PASSWORD || "DevPassword123!",
+    dest: "/onboarding",
+  },
 } as const;
 
 export async function GET(request: Request) {
@@ -24,7 +30,9 @@ export async function GET(request: Request) {
   }
 
   const { searchParams, origin } = new URL(request.url);
-  const target = searchParams.get("target") === "existing" ? "existing" : "new";
+  const targetParam = searchParams.get("target");
+  const target =
+    targetParam === "existing" ? "existing" : targetParam === "user2" ? "user2" : "new";
   const account = DEV_ACCOUNTS[target];
 
   const client = createClient(AuthService, createServerTransport());
@@ -46,6 +54,14 @@ export async function GET(request: Request) {
       await client.register({
         identifier: account.identifier,
         password: account.password,
+        fullName:
+          target === "existing"
+            ? "Dev Existing User"
+            : target === "user2"
+              ? "Dev User 2"
+              : "Dev New User",
+        gender: Gender.MALE,
+        dateOfBirth: "2000-01-01",
       });
       const loginAfterReg = await client.login({
         identifier: account.identifier,
@@ -62,7 +78,7 @@ export async function GET(request: Request) {
       return NextResponse.json(
         {
           error: "DEV_LOGIN_FAILED",
-          message: regError?.message || "Failed to authenticate dev user with backend",
+          message: "Failed to authenticate dev user with backend",
         },
         { status: 502 },
       );

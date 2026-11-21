@@ -80,7 +80,7 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       profileClient.getBodyMetricsHistory({ userId: userId || "" }),
       profileClient.getInjuryHistory({ userId: userId || "" }),
       workoutClient.getWorkoutHistory({ limit: 120, offset: 0 }),
-      coachingClient.getActiveRoadmap({ userId: userId || "" }),
+      coachingClient.getActiveRoadmap({}),
       typeof (workoutClient as { getMuscleLoadStats?: unknown }).getMuscleLoadStats === "function"
         ? (
             workoutClient as unknown as {
@@ -91,11 +91,10 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
           ).getMuscleLoadStats({ windowDays: 7 })
         : Promise.resolve({ items: [] as MuscleLoadSummary[] }),
       typeof nutritionClient.getNutritionSummary === "function"
-        ? nutritionClient.getNutritionSummary({ userId: userId || "" })
+        ? nutritionClient.getNutritionSummary({})
         : Promise.resolve({ targetCalories: 0 }),
       typeof nutritionClient.getNutritionHistory === "function"
         ? nutritionClient.getNutritionHistory({
-            userId: userId || "",
             startDate: nutritionStartDate,
             endDate: todayStr,
           })

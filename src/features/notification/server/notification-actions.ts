@@ -35,7 +35,6 @@ export async function listNotificationsAction(
     const client = createClient(NotificationService, transport);
 
     const response = await client.listNotifications({
-      userId,
       limit,
       offset,
     });
@@ -70,7 +69,6 @@ export async function markNotificationAsReadAction(notificationId: string): Prom
     const client = createClient(NotificationService, transport);
 
     const response = await client.markNotificationAsRead({
-      userId,
       notificationId,
     });
 
@@ -100,7 +98,7 @@ export async function getNotificationSettingsAction(): Promise<NotificationSetti
     const transport = createServerTransport(accessToken);
     const client = createClient(NotificationService, transport);
 
-    const response = await client.getNotificationSettings({ userId });
+    const response = await client.getNotificationSettings({});
 
     return {
       enablePush: response.enablePush,
@@ -135,7 +133,6 @@ export async function updateNotificationSettingsAction(
     const client = createClient(NotificationService, transport);
 
     const response = await client.updateNotificationSettings({
-      userId,
       enablePush: input.enablePush,
       enableEmail: input.enableEmail,
       enableSms: input.enableSms,

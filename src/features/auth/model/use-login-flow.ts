@@ -50,13 +50,66 @@ export function useLoginFlow(defaultIdentifier: string = "") {
     }
   };
 
-  const handleGoogleLogin = useCallback(() => {
-    openOAuthPopup("google");
+  const triggerOAuth = useCallback((provider: "google" | "facebook") => {
+    setIsPending(true);
+    setErrorMessage(null);
+    const popup = openOAuthPopup(provider);
+    if (!popup) {
+      setIsPending(false);
+      return;
+    }
+
+    let cleanedUp = false;
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      clearInterval(pollClosed);
+      setIsPending(false);
+    };
+
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type === "OAUTH_COMPLETE") {
+        window.removeEventListener("message", onMessage);
+        try {
+          popup.close();
+        } catch {}
+        cleanup();
+        const dest =
+          typeof event.data.dest === "string" && event.data.dest.startsWith("/")
+            ? event.data.dest
+            : "/home";
+        window.location.assign(dest);
+        return;
+      }
+
+      if (event.data?.type === "OAUTH_ERROR") {
+        window.removeEventListener("message", onMessage);
+        try {
+          popup.close();
+        } catch {}
+        cleanup();
+        setErrorMessage(event.data.message || "OAuth login failed");
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+
+    const pollClosed = window.setInterval(() => {
+      if (popup.closed) {
+        window.removeEventListener("message", onMessage);
+        cleanup();
+      }
+    }, 300);
   }, []);
 
+  const handleGoogleLogin = useCallback(() => {
+    triggerOAuth("google");
+  }, [triggerOAuth]);
+
   const handleFacebookLogin = useCallback(() => {
-    openOAuthPopup("facebook");
-  }, []);
+    triggerOAuth("facebook");
+  }, [triggerOAuth]);
 
   return {
     identifier,

@@ -13,11 +13,16 @@ import {
 } from "@/features/onboarding/domain/onboarding-schema";
 import type { OnboardingValues } from "@/features/onboarding/domain/onboarding-schema";
 import { calculateWeeklyScheduleStats } from "@/features/onboarding/domain/workout-times-normalizer";
-import { saveOnboardingProfileServerAction } from "@/features/onboarding/server/onboarding-actions";
+import {
+  initiateOnboardingRoadmapServerAction,
+  saveOnboardingProfileServerAction,
+} from "@/features/onboarding/server/onboarding-actions";
+import { PlanGeneratingView } from "@/features/onboarding/ui/components/plan-generating-view";
 import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { calculateBMI } from "@/features/profile/model/profile.mapper";
 import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
+import { toast } from "@/shared/ui/toast";
 
 const storageKey = "fitai-onboarding-draft-v2";
 
@@ -124,6 +129,8 @@ export function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generationState, setGenerationState] = useState<"idle" | "generating" | "error">("idle");
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const {
     equipments: catalogEquipments,
     muscles: catalogMuscles,
@@ -241,22 +248,79 @@ export function OnboardingFlow() {
       return;
     }
 
+    const runRoadmapGeneration = async () => {
+      setGenerationState("generating");
+      setGenerationError(null);
+      try {
+        const roadmapRes = await initiateOnboardingRoadmapServerAction();
+        if (!roadmapRes.success) {
+          setGenerationState("error");
+          setGenerationError(roadmapRes.message);
+          return;
+        }
+        sessionStorage.setItem("fitai-onboarding-complete", "true");
+        router.push("/home", { transitionTypes: ["nav-forward"] });
+      } catch (error) {
+        console.error("Failed to generate roadmap via gRPC:", error);
+        setGenerationState("error");
+        setGenerationError("Network or server error while generating your 4-week plan.");
+      }
+    };
+
     setIsSubmitting(true);
     try {
       // Dùng getValues() để lấy snapshot đầy đủ tại thời điểm submit
       const result = await saveOnboardingProfileServerAction(getValues());
       if (!result.success) {
         console.error("[OnboardingFlow] Server returned error:", result.message);
+        toast.error(result.message || "Failed to save profile. Please review your information.");
+        return;
+      }
+    } catch (error) {
+      console.error("Failed to submit onboarding via gRPC:", error);
+      toast.error("Network or server error while saving profile. Please try again.");
+      return;
+    } finally {
+      setIsSubmitting(false);
+    }
+
+    await runRoadmapGeneration();
+  }
+
+  const handleRetryGeneration = useCallback(async () => {
+    setGenerationState("generating");
+    setGenerationError(null);
+    try {
+      const roadmapRes = await initiateOnboardingRoadmapServerAction();
+      if (!roadmapRes.success) {
+        setGenerationState("error");
+        setGenerationError(roadmapRes.message);
+        return;
       }
       sessionStorage.setItem("fitai-onboarding-complete", "true");
       router.push("/home", { transitionTypes: ["nav-forward"] });
     } catch (error) {
-      console.error("Failed to submit onboarding via gRPC:", error);
-      sessionStorage.setItem("fitai-onboarding-complete", "true");
-      router.push("/home", { transitionTypes: ["nav-forward"] });
-    } finally {
-      setIsSubmitting(false);
+      console.error("Failed to retry roadmap generation via gRPC:", error);
+      setGenerationState("error");
+      setGenerationError("Network or server error while generating your 4-week plan.");
     }
+  }, [router]);
+
+  const handleContinueAnyway = useCallback(() => {
+    sessionStorage.setItem("fitai-onboarding-complete", "true");
+    router.push("/home", { transitionTypes: ["nav-forward"] });
+  }, [router]);
+
+  if (generationState !== "idle") {
+    return (
+      <PlanGeneratingView
+        errorMessage={generationError}
+        onContinueAnyway={handleContinueAnyway}
+        onRetry={handleRetryGeneration}
+        status={generationState}
+        values={getValues()}
+      />
+    );
   }
 
   const errorMessage = Object.values(errors)[0]?.message;
@@ -509,9 +573,9 @@ export function OnboardingFlow() {
                   <div className="chip-options">
                     {catalogEquipments.map((eq) => (
                       <ChoiceButton
-                        active={(equipment || []).includes(eq.name as any)}
+                        active={(equipment || []).includes(eq.id as any)}
                         key={eq.id}
-                        onClick={() => toggleList("equipment", eq.name)}
+                        onClick={() => toggleList("equipment", eq.id)}
                       >
                         <span>{eq.name}</span>
                       </ChoiceButton>
@@ -532,11 +596,13 @@ export function OnboardingFlow() {
                   <div className="chip-options">
                     {catalogMuscles.map((m) => (
                       <ChoiceButton
-                        active={(muscleFocus || []).includes(m.name)}
+                        active={(muscleFocus || []).includes(m.id)}
                         key={m.id}
-                        onClick={() => toggleList("muscleFocus", m.name)}
+                        onClick={() => toggleList("muscleFocus", m.id)}
                       >
-                        <span>{m.name}</span>
+                        <span>
+                          {m.name === "Cardiovascular System" ? "Cardio & Stamina" : m.name}
+                        </span>
                       </ChoiceButton>
                     ))}
                   </div>
@@ -586,13 +652,13 @@ export function OnboardingFlow() {
                   Target Injury Muscle Area
                 </label>
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                  {["Shoulders", "Knee", "Lower Back", "Wrist", "Hip"].map((m) => {
-                    const isSelected = (injuryMuscleGroup || "Shoulders") === m;
+                  {catalogMuscles.map((m) => {
+                    const isSelected = injuryMuscleGroup === m.id;
                     return (
                       <button
-                        key={m}
+                        key={m.id}
                         type="button"
-                        onClick={() => setValue("injuryMuscleGroup", m)}
+                        onClick={() => setValue("injuryMuscleGroup", m.id)}
                         className={cn(
                           "py-2 px-1 text-center rounded-[var(--radius-input)] text-xs font-semibold transition-colors cursor-pointer min-h-[38px] border-[1.5px]",
                           isSelected
@@ -600,7 +666,7 @@ export function OnboardingFlow() {
                             : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
                         )}
                       >
-                        {m}
+                        {m.name}
                       </button>
                     );
                   })}
@@ -696,7 +762,11 @@ export function OnboardingFlow() {
               </div>
               <div>
                 <dt>Equipment</dt>
-                <dd>{(equipment || []).join(", ")}</dd>
+                <dd>
+                  {(equipment || [])
+                    .map((id) => catalogEquipments.find((eq) => eq.id === id)?.name || id)
+                    .join(", ")}
+                </dd>
               </div>
             </dl>
           </section>
