@@ -600,7 +600,9 @@ export function OnboardingFlow() {
                         key={m.id}
                         onClick={() => toggleList("muscleFocus", m.id)}
                       >
-                        <span>{m.name === "Cardiovascular System" ? "Cardio & Stamina" : m.name}</span>
+                        <span>
+                          {m.name === "Cardiovascular System" ? "Cardio & Stamina" : m.name}
+                        </span>
                       </ChoiceButton>
                     ))}
                   </div>

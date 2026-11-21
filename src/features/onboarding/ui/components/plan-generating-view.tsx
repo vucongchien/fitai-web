@@ -67,7 +67,8 @@ export function PlanGeneratingView({
       ? Object.values(rawTimes).reduce((sum, slots) => sum + (slots?.length ?? 0), 0)
       : 0;
   const sessionText = totalSessions > 0 ? `${totalSessions} sessions/week` : "your weekly schedule";
-  const hasInjury = values.injuryStatus && values.injuryStatus !== "none" && values.injuryMuscleGroup;
+  const hasInjury =
+    values.injuryStatus && values.injuryStatus !== "none" && values.injuryMuscleGroup;
 
   const stages = useMemo(
     () => [
@@ -102,7 +103,10 @@ export function PlanGeneratingView({
     <div className="onboarding-flow" role="status" aria-live="polite">
       <div className="mx-auto max-w-2xl space-y-6 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-6 sm:p-8 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-          <FitAiMascotSvg className="h-28 w-28" mood={status === "generating" ? "loading" : "idle"} />
+          <FitAiMascotSvg
+            className="h-28 w-28"
+            mood={status === "generating" ? "loading" : "idle"}
+          />
           <div className="space-y-2.5 flex-1">
             <h1 className="text-2xl font-bold tracking-tight">
               {status === "error"

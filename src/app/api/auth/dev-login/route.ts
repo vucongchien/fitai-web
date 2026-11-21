@@ -1,8 +1,8 @@
 import { createClient } from "@connectrpc/connect";
 import { NextResponse } from "next/server";
 
-import { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
 import { Gender } from "@/shared/api/gen/contracts/generic/auth/v1/message/auth_messages_pb";
+import { AuthService } from "@/shared/api/gen/contracts/generic/auth/v1/service/auth_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
 

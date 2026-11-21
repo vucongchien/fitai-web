@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import type { MealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
-import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
+import { getAccessToken } from "@/shared/auth/session";
 
 export interface LogMealInput {
   calories: number;
@@ -118,7 +118,6 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
 
   const loggedAt = new Date().toISOString();
   const accessToken = await getAccessToken();
-  const userId = await getAuthenticatedUserId();
   const cleanName = cleanMealDisplayName(input.mealName);
 
   if (process.env.FITAI_RPC_URL && accessToken) {
@@ -133,7 +132,6 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
         mealName: cleanName,
         mealType: WIRE_MEAL_TYPE[input.slot],
         protein: input.protein,
-        userId: userId || "",
       });
 
       if (!response.success && cleanName !== input.mealName.trim()) {
@@ -145,7 +143,6 @@ export async function logMeal(input: LogMealInput): Promise<LogMealResult> {
           mealName: input.mealName.trim(),
           mealType: WIRE_MEAL_TYPE[input.slot],
           protein: input.protein,
-          userId: userId || "",
         });
       }
 
@@ -201,12 +198,10 @@ export async function recalibratePantryAction(
 ): Promise<PantryRecalibrateResult> {
   try {
     const accessToken = await getAccessToken();
-    const userId = await getAuthenticatedUserId();
     const client = createClient(NutritionService, createServerTransport(accessToken));
 
     const res = await client.recalibratePlanWithPantry({
       availableIngredients,
-      userId: userId || "",
     });
 
     revalidatePath("/nutrition");

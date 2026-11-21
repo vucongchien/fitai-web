@@ -2,7 +2,6 @@ import { createClient } from "@connectrpc/connect";
 import { notFound, redirect } from "next/navigation";
 
 import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
-
 import {
   isTimedExerciseSlug,
   resolveDialogueAssetUrl,
@@ -487,7 +486,9 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
   // Tuyệt đối KHÔNG BAO GIỜ fallback activeSessionId = planId!
   if (!activeSessionId) {
     if (isConflict) {
-      console.warn("[getLiveSessionData] Active session conflict detected. Redirecting to recovery.");
+      console.warn(
+        "[getLiveSessionData] Active session conflict detected. Redirecting to recovery.",
+      );
       redirect("/roadmap?conflict=active_session");
     }
     console.error("[getLiveSessionData] CRITICAL ERROR: Could not obtain execution session UUID.");

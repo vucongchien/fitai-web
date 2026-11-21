@@ -104,7 +104,11 @@ export function AiChatInput({
               type="button"
             >
               <span>{durationMinutes} min</span>
-              <ChevronDown size={12} className="text-[var(--color-text-muted)]" aria-hidden="true" />
+              <ChevronDown
+                size={12}
+                className="text-[var(--color-text-muted)]"
+                aria-hidden="true"
+              />
             </button>
 
             {openMenu === "duration" && (
@@ -150,7 +154,11 @@ export function AiChatInput({
               type="button"
             >
               <span>{activeEquipmentLabel}</span>
-              <ChevronDown size={12} className="text-[var(--color-text-muted)]" aria-hidden="true" />
+              <ChevronDown
+                size={12}
+                className="text-[var(--color-text-muted)]"
+                aria-hidden="true"
+              />
             </button>
 
             {openMenu === "equipment" && (

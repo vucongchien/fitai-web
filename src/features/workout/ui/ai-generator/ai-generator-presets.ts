@@ -51,9 +51,17 @@ export const WORKOUT_PRESETS: WorkoutPreset[] = [
 export const MODIFIER_CHIPS: ModifierChip[] = [
   { id: "dumbbells", label: "Dumbbells only", promptFragment: "using dumbbells only" },
   { id: "bodyweight", label: "Bodyweight", promptFragment: "bodyweight only, no equipment" },
-  { id: "joint-friendly", label: "Joint-friendly", promptFragment: "joint-friendly, avoid overhead strain" },
+  {
+    id: "joint-friendly",
+    label: "Joint-friendly",
+    promptFragment: "joint-friendly, avoid overhead strain",
+  },
   { id: "low-impact", label: "No jumping", promptFragment: "low impact, no jumping" },
-  { id: "core-finisher", label: "+ Core finisher", promptFragment: "include a short core finisher" },
+  {
+    id: "core-finisher",
+    label: "+ Core finisher",
+    promptFragment: "include a short core finisher",
+  },
 ];
 
 export const DURATION_OPTIONS = [15, 30, 45, 60, 90] as const;

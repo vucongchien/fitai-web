@@ -59,11 +59,13 @@ export async function updateProfileServerAction(
       current?.healthMetrics.goals ?? ["BUILD_MUSCLE"];
     const goalsEnum = await Promise.all(rawGoals.map(mapGoalToEnum));
 
-    const rawEquipment = updated.settings?.availableEquipment ??
-      current?.settings.availableEquipment ?? [];
+    const rawEquipment =
+      updated.settings?.availableEquipment ?? current?.settings.availableEquipment ?? [];
 
-    const rawMuscles = updated.healthMetrics?.preferredMuscleGroups ??
-      current?.healthMetrics.preferredMuscleGroups ?? [];
+    const rawMuscles =
+      updated.healthMetrics?.preferredMuscleGroups ??
+      current?.healthMetrics.preferredMuscleGroups ??
+      [];
 
     const coachStyleStr =
       updated.settings?.coachStyle ?? current?.settings.coachStyle ?? "MOTIVATIONAL";

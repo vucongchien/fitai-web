@@ -57,9 +57,7 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   icons: {
-    icon: [
-      { url: "/icons/icon-192.png?v=2", sizes: "192x192", type: "image/png" },
-    ],
+    icon: [{ url: "/icons/icon-192.png?v=2", sizes: "192x192", type: "image/png" }],
     shortcut: "/icons/icon-192.png?v=2",
     apple: "/icons/icon-192.png?v=2",
   },

@@ -80,7 +80,10 @@ export function ExerciseShowcaseSection({ exercises }: ExerciseShowcaseSectionPr
                 <div className="exercise-showcase-card__header-row">
                   {groupLabel && <span className="exercise-showcase-card__tag">{groupLabel}</span>}
                   {ex.hasAiSupported ? (
-                    <span className="exercise-showcase-card__ai-badge" aria-label="AI form tracking">
+                    <span
+                      className="exercise-showcase-card__ai-badge"
+                      aria-label="AI form tracking"
+                    >
                       <Camera size={11} strokeWidth={2} />
                       AI
                     </span>

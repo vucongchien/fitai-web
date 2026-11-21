@@ -75,9 +75,10 @@ export function useLoginFlow(defaultIdentifier: string = "") {
           popup.close();
         } catch {}
         cleanup();
-        const dest = typeof event.data.dest === "string" && event.data.dest.startsWith("/")
-          ? event.data.dest
-          : "/home";
+        const dest =
+          typeof event.data.dest === "string" && event.data.dest.startsWith("/")
+            ? event.data.dest
+            : "/home";
         window.location.assign(dest);
         return;
       }

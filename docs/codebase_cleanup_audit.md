@@ -12,12 +12,15 @@
 ## 1. Executive Summary
 
 ### 1.1 Context and Purpose
+
 This document delivers an exhaustive, evidence-backed forensic codebase audit of `fitai-web` alongside an actionable, surgical remediation plan. The audit focuses on identifying hardcoded mappings diverging from database schemas and Protobuf contracts, architectural anti-patterns, lifecycle and memory leaks, and logic flaws that threaten production stability.
 
 In accordance with **Rule 13 (Veteran Pragmatism)**, this evaluation rejects architecture theater, superficial fixes, and high-risk speculative rewrites. Instead, each finding is dissected through physical constraints (network I/O, render loops, memory retention, concurrency boundaries) and paired with a surgical, minimal-blast-radius remediation recipe (**Rule 2 & Rule 3**).
 
 ### 1.2 Audit Scope & Methodology
+
 The audit surveyed all layers of `fitai-web` against the authoritative PostgreSQL schemas, database seed datasets, and Protobuf contracts in `gym-companion`:
+
 - **Database Schemas & Migrations**: `gym-companion/internal/shared/database/migrations/core/` (specifically `02-exercise.sql`, `04-profile.sql`, `08-normalize-profile-uuids.sql`).
 - **Catalog Seed Baseline**: `gym-companion/internal/shared/seeder/data/catalog_metadata_seed.json` (authoritative UUIDs for 10 body parts, 27 equipment types, 52 muscles).
 - **Protobuf Specifications**: `gym-companion/proto/contracts/core/` and `supporting/` (coaching, workout execution, exercise, notification).
@@ -25,44 +28,45 @@ The audit surveyed all layers of `fitai-web` against the authoritative PostgreSQ
 - **Runtime & Test Baseline**: Static typecheck (`tsc --noEmit`), test execution (869 passing Vitest tests), and runtime log examination.
 
 ### 1.3 Finding Matrix Summary
+
 A total of **27 distinct findings** were identified across 7 core domains:
 
-| Finding ID | Title / Issue | Severity | Problem Domain | Affected File(s) | Blast Radius |
-|---|---|---|---|---|---|
-| **A1** | Fake Bodyweight & Weighted Equipment UUIDs | **CRITICAL** | Catalog & Schema Divergence | `get-home-page-data.ts`, `get-live-session-data.ts`, `workout-actions.ts` | Medium |
-| **A2** | `ZONE_MUSCLES` String Matching on Normalized UUIDs | **CRITICAL** | Catalog & Schema Divergence | `body-silhouette-card.tsx` | Low |
-| **A3** | Inconsistent Injury Contract (UUIDs vs English Strings) | **HIGH** | Catalog & Schema Divergence | `profile-details-modal.tsx`, `roadmap-page.mapper.ts` | Low |
-| **A4** | Phantom & Duplicate UUIDs in `muscle-uuid-map.ts` | **MEDIUM** | Catalog & Schema Divergence | `muscle-uuid-map.ts` | Low |
-| **A5** | Slug vs UUID Fallback Catalog Drift | **MEDIUM** | Catalog & Schema Divergence | `search-repository.ts`, `catalog-actions.ts` | Low |
-| **A6** | Dropped Catalog Metadata `tags` | **HIGH** | Catalog & Schema Divergence | `catalog-actions.ts` | Low |
-| **A7** | Phantom Fields on `ExerciseInfo` Contract | **LOW** | Catalog & Schema Divergence | `get-live-session-data.ts` | Low |
-| **B1** | Active Session Recovery Deadlock (`COMPLETED` History) | **CRITICAL** | Contract & Protocol Flaw | `get-live-session-data.ts` | Minimal |
-| **B2** | Phantom `userId` on Parameterless Protobuf Messages | **HIGH** | Contract & Protocol Flaw | `coaching-actions.ts`, `notification-actions.ts`, `get-workout-stats-data.ts` | Low |
-| **B3** | Fabricated Non-Existent `getMuscleLoadStats` RPC | **HIGH** | Contract & Protocol Flaw | `get-progress-dashboard-data.ts` | Minimal |
-| **B4** | Multi-Select Filter Truncation (`?.[0]`) | **HIGH** | Contract & Protocol Flaw | `search-repository.ts` | Low |
-| **B5** | Conflicting Coaching Style Enums Across Layers | **MEDIUM** | Contract & Protocol Flaw | `profile.mapper.ts`, `live-session.types.ts` | Low |
-| **B6** | Profile Completion Algorithm Desynchronization | **MEDIUM** | Contract & Protocol Flaw | `get-home-page-data.ts` | Minimal |
-| **B7** | BFF RPC Whitelist Gap (`AdminWorkoutExecutionService`) | **LOW** | Contract & Protocol Flaw | `allowed-services.ts` | Minimal |
-| **C1** | OAuth Popup Indefinite Polling & Listener Leak | **CRITICAL** | Resource & Memory Leaks | `login-actions.tsx` | Minimal |
-| **C2** | Duel Particle Canvas Compounding RAF Leak | **CRITICAL** | Resource & Memory Leaks | `duel-particle-canvas.tsx` | Minimal |
-| **C3** | Unmount Webcam Track & Custom Video Leaks | **HIGH** | Resource & Memory Leaks | `use-camera-stream.ts`, `use-motion-engine.ts` | Low |
-| **C4** | Unbounded Memory & Session Storage Post Cache | **MEDIUM** | Resource & Memory Leaks | `post-cache.ts` | Low |
-| **D1** | Dogmatic Abuse of `useSyncExternalStore` for I/O | **HIGH** | React Anti-Pattern | `use-solo-duel.ts`, `use-matchmaking.ts`, `use-wake-lock.ts`, `use-scroll-lock.ts` | Medium |
-| **D2** | Pseudo-`useEffect` in DOM Ref Callback (`stageRef`) | **HIGH** | React Anti-Pattern | `live-workout.tsx` | Medium |
-| **D3** | Side-Effects & State Updates in Render Body | **HIGH** | React Anti-Pattern | `use-live-session.ts`, `use-matchmaking.ts` | Low |
-| **D4** | Unchecked JWT Expiration in Route Proxy | **HIGH** | Auth & Session Flaw | `proxy.ts` | Low |
-| **D5** | Mock AI Adjustment Timer Without Status Verification | **LOW** | UI Verification Flaw | `ai-adjustment-store.ts`, `use-ai-adjustment-sync.ts` | Low |
-| **E1** | Silent Failure Swallowing on Onboarding Profile Save | **CRITICAL** | Error Handling & Integrity | `onboarding-flow.tsx` | Low |
-| **E2** | Unsolicited Round-Robin Meal Redistribution | **LOW** | Data Integrity Flaw | `nutrition-daily.ts` | Minimal |
-| **F1** | Redundant Sequential Waterfall on Home Page | **MEDIUM** | Performance & Redundancy | `get-home-page-data.ts` | Minimal |
-| **F2** | Triplicate `GROUP_SYNONYMS` & Loop Allocation | **MEDIUM** | Performance & Redundancy | `exercise.ts` | Minimal |
-| **F3** | Duplicate Difficulty Mappers & camelCase Wrappers | **LOW** | Redundancy & Dead Code | `admin-exercise-service.ts`, `search-repository.ts` | Minimal |
-| **F4** | Duplicate BMI Calculation with Conflicting Labels | **LOW** | Redundancy & Dead Code | `progress-aggregator.ts`, `profile.mapper.ts` | Minimal |
-| **G1** | Server-Side Timezone Mismatches (UTC vs Client) | **MEDIUM** | Timezone & Localization | `get-home-page-data.ts`, `streak.ts` | Low |
-| **G2** | Leaky Fullscreen Exit on External Store Unsubscribe | **MEDIUM** | Lifecycle Bug | `use-fullscreen-scope.ts` | Minimal |
-| **G3** | Dummy Context Provider & Global Keydown Listener Leak | **LOW** | Test & DOM Hygiene | `side-panel-context.tsx` | Minimal |
-| **G4** | Cargo-Cult `transitionTypes` Next.js DOM Warnings | **LOW** | Framework Hygiene | `transition-types.ts` & 25+ files | Low |
-| **G5** | Non-Deterministic Mapper with `Math.random()` | **LOW** | Code Cleanliness | `scheduler/types.ts` | Minimal |
+| Finding ID | Title / Issue                                           | Severity     | Problem Domain              | Affected File(s)                                                                   | Blast Radius |
+| ---------- | ------------------------------------------------------- | ------------ | --------------------------- | ---------------------------------------------------------------------------------- | ------------ |
+| **A1**     | Fake Bodyweight & Weighted Equipment UUIDs              | **CRITICAL** | Catalog & Schema Divergence | `get-home-page-data.ts`, `get-live-session-data.ts`, `workout-actions.ts`          | Medium       |
+| **A2**     | `ZONE_MUSCLES` String Matching on Normalized UUIDs      | **CRITICAL** | Catalog & Schema Divergence | `body-silhouette-card.tsx`                                                         | Low          |
+| **A3**     | Inconsistent Injury Contract (UUIDs vs English Strings) | **HIGH**     | Catalog & Schema Divergence | `profile-details-modal.tsx`, `roadmap-page.mapper.ts`                              | Low          |
+| **A4**     | Phantom & Duplicate UUIDs in `muscle-uuid-map.ts`       | **MEDIUM**   | Catalog & Schema Divergence | `muscle-uuid-map.ts`                                                               | Low          |
+| **A5**     | Slug vs UUID Fallback Catalog Drift                     | **MEDIUM**   | Catalog & Schema Divergence | `search-repository.ts`, `catalog-actions.ts`                                       | Low          |
+| **A6**     | Dropped Catalog Metadata `tags`                         | **HIGH**     | Catalog & Schema Divergence | `catalog-actions.ts`                                                               | Low          |
+| **A7**     | Phantom Fields on `ExerciseInfo` Contract               | **LOW**      | Catalog & Schema Divergence | `get-live-session-data.ts`                                                         | Low          |
+| **B1**     | Active Session Recovery Deadlock (`COMPLETED` History)  | **CRITICAL** | Contract & Protocol Flaw    | `get-live-session-data.ts`                                                         | Minimal      |
+| **B2**     | Phantom `userId` on Parameterless Protobuf Messages     | **HIGH**     | Contract & Protocol Flaw    | `coaching-actions.ts`, `notification-actions.ts`, `get-workout-stats-data.ts`      | Low          |
+| **B3**     | Fabricated Non-Existent `getMuscleLoadStats` RPC        | **HIGH**     | Contract & Protocol Flaw    | `get-progress-dashboard-data.ts`                                                   | Minimal      |
+| **B4**     | Multi-Select Filter Truncation (`?.[0]`)                | **HIGH**     | Contract & Protocol Flaw    | `search-repository.ts`                                                             | Low          |
+| **B5**     | Conflicting Coaching Style Enums Across Layers          | **MEDIUM**   | Contract & Protocol Flaw    | `profile.mapper.ts`, `live-session.types.ts`                                       | Low          |
+| **B6**     | Profile Completion Algorithm Desynchronization          | **MEDIUM**   | Contract & Protocol Flaw    | `get-home-page-data.ts`                                                            | Minimal      |
+| **B7**     | BFF RPC Whitelist Gap (`AdminWorkoutExecutionService`)  | **LOW**      | Contract & Protocol Flaw    | `allowed-services.ts`                                                              | Minimal      |
+| **C1**     | OAuth Popup Indefinite Polling & Listener Leak          | **CRITICAL** | Resource & Memory Leaks     | `login-actions.tsx`                                                                | Minimal      |
+| **C2**     | Duel Particle Canvas Compounding RAF Leak               | **CRITICAL** | Resource & Memory Leaks     | `duel-particle-canvas.tsx`                                                         | Minimal      |
+| **C3**     | Unmount Webcam Track & Custom Video Leaks               | **HIGH**     | Resource & Memory Leaks     | `use-camera-stream.ts`, `use-motion-engine.ts`                                     | Low          |
+| **C4**     | Unbounded Memory & Session Storage Post Cache           | **MEDIUM**   | Resource & Memory Leaks     | `post-cache.ts`                                                                    | Low          |
+| **D1**     | Dogmatic Abuse of `useSyncExternalStore` for I/O        | **HIGH**     | React Anti-Pattern          | `use-solo-duel.ts`, `use-matchmaking.ts`, `use-wake-lock.ts`, `use-scroll-lock.ts` | Medium       |
+| **D2**     | Pseudo-`useEffect` in DOM Ref Callback (`stageRef`)     | **HIGH**     | React Anti-Pattern          | `live-workout.tsx`                                                                 | Medium       |
+| **D3**     | Side-Effects & State Updates in Render Body             | **HIGH**     | React Anti-Pattern          | `use-live-session.ts`, `use-matchmaking.ts`                                        | Low          |
+| **D4**     | Unchecked JWT Expiration in Route Proxy                 | **HIGH**     | Auth & Session Flaw         | `proxy.ts`                                                                         | Low          |
+| **D5**     | Mock AI Adjustment Timer Without Status Verification    | **LOW**      | UI Verification Flaw        | `ai-adjustment-store.ts`, `use-ai-adjustment-sync.ts`                              | Low          |
+| **E1**     | Silent Failure Swallowing on Onboarding Profile Save    | **CRITICAL** | Error Handling & Integrity  | `onboarding-flow.tsx`                                                              | Low          |
+| **E2**     | Unsolicited Round-Robin Meal Redistribution             | **LOW**      | Data Integrity Flaw         | `nutrition-daily.ts`                                                               | Minimal      |
+| **F1**     | Redundant Sequential Waterfall on Home Page             | **MEDIUM**   | Performance & Redundancy    | `get-home-page-data.ts`                                                            | Minimal      |
+| **F2**     | Triplicate `GROUP_SYNONYMS` & Loop Allocation           | **MEDIUM**   | Performance & Redundancy    | `exercise.ts`                                                                      | Minimal      |
+| **F3**     | Duplicate Difficulty Mappers & camelCase Wrappers       | **LOW**      | Redundancy & Dead Code      | `admin-exercise-service.ts`, `search-repository.ts`                                | Minimal      |
+| **F4**     | Duplicate BMI Calculation with Conflicting Labels       | **LOW**      | Redundancy & Dead Code      | `progress-aggregator.ts`, `profile.mapper.ts`                                      | Minimal      |
+| **G1**     | Server-Side Timezone Mismatches (UTC vs Client)         | **MEDIUM**   | Timezone & Localization     | `get-home-page-data.ts`, `streak.ts`                                               | Low          |
+| **G2**     | Leaky Fullscreen Exit on External Store Unsubscribe     | **MEDIUM**   | Lifecycle Bug               | `use-fullscreen-scope.ts`                                                          | Minimal      |
+| **G3**     | Dummy Context Provider & Global Keydown Listener Leak   | **LOW**      | Test & DOM Hygiene          | `side-panel-context.tsx`                                                           | Minimal      |
+| **G4**     | Cargo-Cult `transitionTypes` Next.js DOM Warnings       | **LOW**      | Framework Hygiene           | `transition-types.ts` & 25+ files                                                  | Low          |
+| **G5**     | Non-Deterministic Mapper with `Math.random()`           | **LOW**      | Code Cleanliness            | `scheduler/types.ts`                                                               | Minimal      |
 
 ---
 
@@ -73,6 +77,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ### Domain A: Catalog Metadata, Database Schema & Entity Mapping Divergences
 
 #### Finding A1: Fake Bodyweight & Weighted Equipment GUIDs Diverging from DB Catalog
+
 - **Severity**: **CRITICAL**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/workout/server/workout-actions.ts`: lines 36–37
@@ -99,6 +104,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding A2: `ZONE_MUSCLES` String Matching on Normalized Injury UUIDs
+
 - **Severity**: **CRITICAL**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/progress/ui/body-silhouette-card.tsx`: lines 33–37, lines 61–66
@@ -128,6 +134,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding A3: Inconsistent Injury Muscle Contracts (Onboarding UUIDs vs Profile Settings English Strings)
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/onboarding/ui/onboarding-flow.tsx`: line 407
@@ -150,6 +157,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding A4: Phantom & Duplicate Entries in `muscle-uuid-map.ts`
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/progress/model/muscle-uuid-map.ts`: lines 1–102
@@ -163,6 +171,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding A5: Contradictory Fallback Catalogs & Slug vs UUID Drift
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/exercise/api/search-repository.ts`: lines 33–68
@@ -175,6 +184,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding A6: Dropped Catalog Metadata `tags`
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/exercise/server/catalog-actions.ts`: lines 25–31, lines 74–98
@@ -197,6 +207,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding A7: Phantom Fields on `ExerciseInfo` Contract
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/workout/server/get-live-session-data.ts`: line 78, lines 137–138
@@ -212,6 +223,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ### Domain B: Protobuf & gRPC Service Contract Inconsistencies
 
 #### Finding B1: Active Session Recovery Deadlock (Querying `COMPLETED` History & Crashing with `notFound()`)
+
 - **Severity**: **CRITICAL**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/workout/server/get-live-session-data.ts`: lines 471–495
@@ -255,6 +267,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding B2: Phantom `userId` Payloads on Parameterless Protobuf Messages
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/workout-stats/server/get-workout-stats-data.ts`: line 37
@@ -272,6 +285,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding B3: Fabricated Non-Existent `getMuscleLoadStats` RPC Call
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/progress/server/get-progress-dashboard-data.ts`: lines 84–92
@@ -298,6 +312,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding B4: Multi-Select Filter Truncation (`?.[0]`) vs Single-Scalar Protobuf Request
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/exercise/api/search-repository.ts`: lines 91–95
@@ -319,6 +334,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding B5: Conflicting Coaching Style Enums Across Three Layers
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/profile/model/profile.mapper.ts`: lines 17–31
@@ -335,6 +351,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding B6: Profile Completion Algorithm Desynchronization
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/home/server/get-home-page-data.ts`: lines 148–188, lines 196–198
@@ -348,6 +365,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding B7: BFF RPC Route Whitelist Gap
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/shared/api/bff/allowed-services.ts`: lines 1–30
@@ -361,6 +379,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ### Domain C: Resource Leaks, Memory Management & Hardware Lifecycles
 
 #### Finding C1: Indefinite Interval & Event Listener Leak in OAuth Popup
+
 - **Severity**: **CRITICAL**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/auth/ui/login-actions.tsx`: lines 71–105
@@ -383,6 +402,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding C2: Animation Loop Cleanup Leak and `useSyncExternalStore` Misuse in `duel-particle-canvas.tsx`
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/solo-match/ui/duel-particle-canvas.tsx`: lines 90–132
@@ -418,6 +438,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding C3: Unmount Webcam Track & Custom Video Leaks
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/workout/model/use-camera-stream.ts`: lines 10–45, lines 150–164
@@ -431,6 +452,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding C4: Unbounded Memory & Session Storage Post Cache
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/social/lib/post-cache.ts`: lines 3–34
@@ -444,6 +466,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ### Domain D: Architectural Anti-Patterns & React Runtime Smells
 
 #### Finding D1: Dogmatic Abuse of `useSyncExternalStore` for Lifecycle Effects and Hardware I/O ("Zero-useEffect" Smells)
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/solo-match/model/use-solo-duel.ts`: lines 431–435, lines 456–460
@@ -469,6 +492,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding D2: Pseudo-`useEffect` DOM Ref Callback Pattern in `live-workout.tsx` (`stageRef` Re-render Loop)
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/workout/ui/live/live-workout.tsx`: lines 182–242, 356, 375
@@ -495,6 +519,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding D3: Direct Side-Effects and State Updates in Render Body
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/workout/model/use-live-session.ts`: lines 309–316, lines 338–340, lines 379–385
@@ -521,6 +546,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding D4: Unchecked JWT Expiration in Next.js Middleware / Route Proxy
+
 - **Severity**: **HIGH**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/proxy.ts`: lines 48–98
@@ -537,6 +563,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding D5: Mock AI Adjustment Timer Without Backend Plan Status Verification
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/roadmap/model/ai-adjustment-store.ts`: lines 64–68
@@ -551,6 +578,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ### Domain E: Critical Business Logic Flaws & Swallowed Errors
 
 #### Finding E1: Silent Failure & Unhandled Error Swallowing on Onboarding Profile Save
+
 - **Severity**: **CRITICAL**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/onboarding/ui/onboarding-flow.tsx`: lines 245–260
@@ -580,6 +608,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding E2: Unsolicited Round-Robin Meal Redistribution in `nutrition-daily.ts`
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/shared/api/bff/aggregate/nutrition-daily.ts`: lines 302–316
@@ -611,6 +640,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ### Domain F: Performance Waterfalls, Redundancy & Dead Mappers
 
 #### Finding F1: Redundant Sequential RPC Waterfall and Duplicate Data Fetching on Home Page
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/home/server/get-home-page-data.ts`: line 196, lines 211–236
@@ -622,6 +652,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding F2: Triplicate Copy of `GROUP_SYNONYMS` with Per-Keystroke Object Allocation
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/exercise/domain/exercise.ts`:
@@ -636,6 +667,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding F3: Redundant Difficulty Mappers & Artificial camelCase Admin Enums
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/admin/api/admin-exercise-service.ts`: lines 17–29, lines 31–49, lines 51–69
@@ -649,6 +681,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding F4: Duplicate BMI Calculation with Inconsistent Category Labels
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/progress/model/progress-aggregator.ts`: lines 30–55
@@ -663,6 +696,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ### Domain G: Timezone, DOM Noise & Secondary Smells
 
 #### Finding G1: Server-Side Timezone Evaluation Mismatch (UTC vs Local Client Calendar)
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/home/server/get-home-page-data.ts`: lines 353–356
@@ -675,6 +709,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding G2: Leaky Fullscreen Unmount Cleanup in `use-fullscreen-scope.ts`
+
 - **Severity**: **MEDIUM**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/shared/lib/use-fullscreen-scope.ts`: lines 12–16
@@ -692,6 +727,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding G3: Dummy Context Provider & Permanent Global Keydown Listener Leak
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/shared/ui/side-panel/side-panel-context.tsx`: lines 21–29, lines 68–70
@@ -703,6 +739,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding G4: Cargo-Cult `transitionTypes` Next.js DOM Warnings
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/shared/ui/transition-types.ts`
@@ -715,6 +752,7 @@ A total of **27 distinct findings** were identified across 7 core domains:
 ---
 
 #### Finding G5: Non-Deterministic Identifier Generation in Pure Mapper Function
+
 - **Severity**: **LOW**
 - **Exact File Paths & Line Numbers**:
   - `fitai-web/src/features/onboarding/ui/components/scheduler/types.ts`: line 143
@@ -732,28 +770,29 @@ Before prescribing remediation recipes, we deliberate three core architectural d
 ---
 
 ### Dilemma 1: Session Recovery Deadlock (Finding B1)
+
 When starting a workout fails due to a session conflict (an active session is already in progress), how should the application recover?
 
 - **Forensic Contract Reality Check**:
   Direct contract audit of `gym-companion/proto/contracts/core/workout_execution/v1/service/workout_execution_service.proto` and `gym-companion/internal/workout_execution/transport/grpc/handler.go` confirms that **no `GetActiveWorkoutSession` RPC exists** on `WorkoutExecutionService`. Although the persistence layer implements `sessionRepo.FindActiveSessionByUserID(ctx, userID)` in `postgres_workout_session_repository.go:116`, the method is not exposed through gRPC or generated client stubs. Proposing that `getLiveSessionData` call `execution.getActiveWorkoutSession({})` without backend changes will trigger TypeScript compilation errors and gRPC `UNIMPLEMENTED` status 12 errors.
 
 - **Approach A: Cross-Service Contract Alignment (Backend RPC Exposure — Clean Architecture)**
-  - *Mechanism*:
+  - _Mechanism_:
     1. Define `rpc GetActiveWorkoutSession(GetActiveWorkoutSessionRequest) returns (GetActiveWorkoutSessionResponse)` in `workout_execution_service.proto`.
     2. Expose the endpoint in Go `GRPCHandler` by querying `sessionRepo.FindActiveSessionByUserID(ctx, userID)`.
     3. Regenerate TypeScript protobuf stubs in `fitai-web`.
     4. In `getLiveSessionData`, query `execution.getActiveWorkoutSession({})` and call `abortWorkoutSession({ sessionId })` before retrying `startWorkoutSession`.
-  - *Trade-offs*:
+  - _Trade-offs_:
     - Blast Radius: Spans `gym-companion` and `fitai-web` (protobuf schema addition, Go handler implementation, and protobuf client regeneration).
     - Maintainability: Authoritative, cleanest contract alignment; 100% resilient across device crashes and multi-device scenarios.
     - 3 AM Test: Completely eliminates active session deadlocks by querying authoritative backend database state.
 
 - **Approach B: Surgical Frontend Conflict Handling (Zero Backend Changes — Immediate Web Scope)**
-  - *Mechanism*:
+  - _Mechanism_:
     1. In `get-live-session-data.ts`, immediately eliminate the broken call to `abortWorkoutSession` on `getWorkoutHistory` (which is hardcoded to return only `COMPLETED` sessions and always triggers `ErrSessionAlreadyCompleted`).
     2. When `startWorkoutSession` throws a session conflict error (`codes.FailedPrecondition` / `"active session already exists"`), stop crashing with Next.js `notFound()`.
     3. Retrieve any cached active `sessionId` from client storage/cookies if available. If found, abort that specific session and retry; if not found, redirect to `/roadmap?conflict=active_session` or surface an actionable recovery modal ("You have an active workout in progress. Resume or Abandon?") rather than crashing with an unhandled 404 error.
-  - *Trade-offs*:
+  - _Trade-offs_:
     - Blast Radius: Confined strictly to `fitai-web` (no backend deploys or protobuf recompilation required).
     - Maintainability: Simple, prevents the fatal 404 crash immediately, and avoids fabricating non-existent RPCs or aborting completed history.
     - Limitation: Cannot discover an orphaned session ID created on a different browser without backend support or user confirmation.
@@ -764,43 +803,45 @@ When starting a workout fails due to a session conflict (an active session is al
 ---
 
 ### Dilemma 2: Equipment Identification & Bodyweight Detection (Finding A1)
+
 How should `fitai-web` distinguish bodyweight movements from weighted resistance exercises?
 
 - **Approach 1: Authoritative Shared Constant `BODYWEIGHT_EQUIPMENT_ID` (Recommended)**
-  - *Mechanism*: Define `export const BODYWEIGHT_EQUIPMENT_ID = "9d8f6dd0-73fa-46ac-a669-f81d0661e9f7"` matching `catalog_metadata_seed.json` in a shared constants file, and reference it consistently across `workout-actions.ts`, `get-live-session-data.ts`, and `get-home-page-data.ts`.
-  - *Trade-offs*:
+  - _Mechanism_: Define `export const BODYWEIGHT_EQUIPMENT_ID = "9d8f6dd0-73fa-46ac-a669-f81d0661e9f7"` matching `catalog_metadata_seed.json` in a shared constants file, and reference it consistently across `workout-actions.ts`, `get-live-session-data.ts`, and `get-home-page-data.ts`.
+  - _Trade-offs_:
     - Blast Radius: Low (string replacement across 3 files + test fixtures).
     - Performance: Zero runtime overhead, 100% synchronous.
     - 3 AM Test: Immediately fixes 100% of bodyweight exercises being assigned 10kg loads.
 - **Approach 2: Dynamic Category Resolution via Metadata Store**
-  - *Mechanism*: Query `catalogMetadataStore.getEquipmentById(ex.equipmentId)` at runtime and check if `category === "BODYWEIGHT"`.
-  - *Trade-offs*:
+  - _Mechanism_: Query `catalogMetadataStore.getEquipmentById(ex.equipmentId)` at runtime and check if `category === "BODYWEIGHT"`.
+  - _Trade-offs_:
     - Complexity: Introduces asynchronous dependency on metadata store during server action execution.
     - Blast Radius: High (requires passing catalog store into pure server actions and mappers).
 - **Approach 3: Backend Protobuf Schema Mutation**
-  - *Mechanism*: Add `bool is_weighted = 15;` to `Exercise` in Protobuf contracts.
-  - *Trade-offs*:
+  - _Mechanism_: Add `bool is_weighted = 15;` to `Exercise` in Protobuf contracts.
+  - _Trade-offs_:
     - Blast Radius: High (cross-repo schema migration, backend domain updates, frontend contract regeneration).
 - **Recommendation**: Adopt **Approach 1** for immediate surgical remediation, complemented by a fallback check `ex.equipmentCategory === "BODYWEIGHT"` where catalog metadata is already loaded.
 
 ---
 
 ### Dilemma 3: Lifecycle Management vs "Zero-useEffect" Dogmatism (Finding D1, D2, D3)
+
 How should asynchronous hardware, WebSockets, and animation loops be managed?
 
 - **Approach 1: Surgical Migration to Idiomatic `useEffect` (Recommended)**
-  - *Mechanism*: Replace misused `useSyncExternalStore` instances (which use dummy snapshots `() => true` purely to run setup/cleanup) and DOM ref callback pseudo-effects with standard, idiomatic `useEffect` hooks with explicit dependency arrays.
-  - *Trade-offs*:
+  - _Mechanism_: Replace misused `useSyncExternalStore` instances (which use dummy snapshots `() => true` purely to run setup/cleanup) and DOM ref callback pseudo-effects with standard, idiomatic `useEffect` hooks with explicit dependency arrays.
+  - _Trade-offs_:
     - Maintainability: Eliminates 200+ lines of wrapper classes, dummy snapshot functions, and circular dependency workarounds.
     - React Compatibility: Fully compatible with React 18/19 Concurrent Mode and StrictMode.
     - 3 AM Test: Hardware webcams, intervals, and WebSocket connections are deterministically cleaned up on unmount.
 - **Approach 2: Dogmatic Retention of `useSyncExternalStore` with Ref Buffering**
-  - *Mechanism*: Keep `useSyncExternalStore`, but wrap all hardware operations in synchronous ref queues.
-  - *Trade-offs*:
+  - _Mechanism_: Keep `useSyncExternalStore`, but wrap all hardware operations in synchronous ref queues.
+  - _Trade-offs_:
     - Architecture Theater: High complexity, zero tangible benefit, still violates React's expectation of pure store subscriptions.
 - **Approach 3: Full Rewrite to External State Machine (XState / Zustand)**
-  - *Mechanism*: Move the entire workout session into an external state machine library.
-  - *Trade-offs*:
+  - _Mechanism_: Move the entire workout session into an external state machine library.
+  - _Trade-offs_:
     - Blast Radius: Massive rewrite of live workout runner, high risk of introducing new regressions.
 - **Recommendation**: Adopt **Approach 1**. Idiomatic React `useEffect` is practical, simple, well-understood (**Rule 2**), and eliminates the root cause of leaks and ref callback storms.
 
@@ -815,6 +856,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
 ### Phase 1: Critical Remediations (Immediate Bug Fixes & Leaks)
 
 #### Recipe 1.1: Fix Active Session Recovery Deadlock (Finding B1)
+
 - **Target File**: `fitai-web/src/features/workout/server/get-live-session-data.ts`
 - **Context & Defect**:
   In lines 476–485, the conflict catch block queries `execution.getWorkoutHistory()`, which returns only `COMPLETED` sessions from PostgreSQL (`Where("user_id = ? AND status = ?", userID, "COMPLETED")`). Calling `abortWorkoutSession` on completed sessions throws `ErrSessionAlreadyCompleted`, causing the server action to crash with Next.js `notFound()`. Furthermore, `execution.getActiveWorkoutSession` does not currently exist on the gRPC backend.
@@ -822,6 +864,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
 
   **Approach B (Surgical Frontend Fallback — Zero Backend Changes)**:
   Eliminate the invalid history query and completed-session abort call. Safely handle the session conflict by catching the conflict error, attempting to abort known cached session IDs if present, or returning a graceful conflict recovery response instead of crashing with `notFound()`:
+
   ```typescript
   // Replace lines 476–503 in get-live-session-data.ts:
   // BEFORE:
@@ -858,7 +901,9 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
     startErr?.message?.toLowerCase().includes("active session already exists");
 
   if (isConflict) {
-    console.warn("[getLiveSessionData] Active session conflict detected. Initiating safe recovery.");
+    console.warn(
+      "[getLiveSessionData] Active session conflict detected. Initiating safe recovery.",
+    );
     // Attempt targeted abort ONLY if a cached active session ID exists from client context:
     const cachedOrphanSessionId = ""; // e.g. retrieved from request cookies/context if maintained
     if (cachedOrphanSessionId) {
@@ -909,7 +954,10 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
      try {
        const activeRes = await execution.getActiveWorkoutSession({});
        if (activeRes.session?.sessionId) {
-         console.log("[getLiveSessionData] Aborting hanging active session:", activeRes.session.sessionId);
+         console.log(
+           "[getLiveSessionData] Aborting hanging active session:",
+           activeRes.session.sessionId,
+         );
          await execution.abortWorkoutSession({
            sessionId: activeRes.session.sessionId,
            reason: "SYSTEM_ABORT_FOR_NEW_SESSION",
@@ -925,6 +973,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
      ```
 
 #### Recipe 1.2: Standardize Authoritative Bodyweight Equipment GUID (Finding A1)
+
 - **Target Files**:
   - Create `fitai-web/src/features/exercise/constants/equipment.ts`
   - `fitai-web/src/features/workout/server/workout-actions.ts`
@@ -947,6 +996,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   4. **Synchronize Test Fixture**: In `fitai-web/tests/unit/onboarding-schema.test.ts:12`, update the hardcoded equipment ID from `"7740d3bf-cff0-46e2-931e-e6df19988e31"` to `BODYWEIGHT_EQUIPMENT_ID` (or `"9d8f6dd0-73fa-46ac-a669-f81d0661e9f7"`) so unit test fixtures stay 100% aligned with authoritative catalog seeds.
 
 #### Recipe 1.3: Fix `BodySilhouetteCard` Zone Injury Filtering (Finding A2)
+
 - **Target File**: `fitai-web/src/features/progress/ui/body-silhouette-card.tsx`
 - **Context & Defect**:
   `resolveZoneForMuscleId(id: MuscleId)` expects SVG path identifiers (e.g. `"abs-upper-left"`), returning `"neutral"` when passed a database UUID or muscle name. To map injuries correctly to `"upper"`, `"core"`, or `"lower"` body zones, the lookup must first resolve the UUID/name to SVG IDs via `resolveMuscleIdsForGroup(inj.muscleGroup)`.
@@ -970,9 +1020,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
           // 1. Resolve UUID / anatomical muscle group name to SVG path IDs via catalog map
           const svgIds = resolveMuscleIdsForGroup(inj.muscleGroup);
           if (svgIds.length > 0) {
-            const matchesZone = svgIds.some(
-              (id) => resolveZoneForMuscleId(id) === selectedZone,
-            );
+            const matchesZone = svgIds.some((id) => resolveZoneForMuscleId(id) === selectedZone);
             if (matchesZone) return true;
           }
           // 2. Fallback check against ZONE_MUSCLES for legacy unmapped string records
@@ -983,6 +1031,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   ```
 
 #### Recipe 1.4: Fix OAuth Popup Interval & Listener Leak (Finding C1)
+
 - **Target File**: `fitai-web/src/features/auth/ui/login-actions.tsx`
 - **Surgical Edit** (Replace lines 98–105):
   ```typescript
@@ -1010,6 +1059,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   ```
 
 #### Recipe 1.5: Fix Duel Particle Canvas Compounding RAF Leak (Finding C2)
+
 - **Target File**: `fitai-web/src/features/solo-match/ui/duel-particle-canvas.tsx`
 - **Surgical Edit** (Lines 125–126):
   ```typescript
@@ -1028,6 +1078,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   ```
 
 #### Recipe 1.6: Stop Silent Error Swallowing in Onboarding (Finding E1)
+
 - **Target File**: `fitai-web/src/features/onboarding/ui/onboarding-flow.tsx`
 - **Surgical Edit** (Lines 245–260):
   ```typescript
@@ -1057,6 +1108,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
 ### Phase 2: High Severity Remediations (Hardware Lifecycles, Contracts & React Hygiene)
 
 #### Recipe 2.1: Add Webcam Track & Custom Video Unmount Cleanup (Finding C3)
+
 - **Target Files**:
   - `fitai-web/src/features/workout/model/use-camera-stream.ts`
   - `fitai-web/src/features/workout/model/use-motion-engine.ts`
@@ -1093,6 +1145,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   2. In `use-motion-engine.ts`, add unmount effect calling `dispose()` / `stop()`.
 
 #### Recipe 2.2: Remove Phantom `userId` RPC Payloads (Finding B2)
+
 - **Target Files**:
   - `fitai-web/src/features/workout-stats/server/get-workout-stats-data.ts:37`
   - `fitai-web/src/features/roadmap/server/coaching-actions.ts:20, 45, 73`
@@ -1107,6 +1160,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   ```
 
 #### Recipe 2.3: Remove Fabricated `getMuscleLoadStats` RPC Call (Finding B3)
+
 - **Target File**: `fitai-web/src/features/progress/server/get-progress-dashboard-data.ts`
 - **Surgical Edit** (Lines 84–92):
   Remove the fake RPC invocation and return `{ items: [] }` directly (or aggregate stats from `workoutHistory` locally):
@@ -1115,6 +1169,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   ```
 
 #### Recipe 2.4: Move Render-Phase Side-Effects to Effects & Callbacks (Finding D3)
+
 - **Target File**: `fitai-web/src/features/workout/model/use-live-session.ts`
 - **Surgical Edit**:
   1. Move draft persistence (lines 309–316) into `useEffect`:
@@ -1149,6 +1204,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
      ```
 
 #### Recipe 2.5: Replace Pseudo-Effect DOM Ref Callback with `useEffect` (Finding D2)
+
 - **Target File**: `fitai-web/src/features/workout/ui/live/live-workout.tsx`
 - **Surgical Edit**:
   1. Change `stageRef` into a pure DOM ref: `const stageElementRef = useRef<HTMLDivElement | null>(null);`.
@@ -1156,6 +1212,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   3. Move session status handling, toasts, and effect syncing into standard `useEffect` hooks guarded by specific dependencies (`sessionStatus`, `durationWarning`, `protectionNote`).
 
 #### Recipe 2.6: Check JWT Expiration Before Route Forwarding (Finding D4)
+
 - **Target File**: `fitai-web/src/proxy.ts`
 - **Surgical Edit** (Lines 48–52):
   Parse JWT `exp` claim to detect expired tokens before forwarding:
@@ -1180,6 +1237,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
 ### Phase 3: Medium Severity Remediations (Performance, Catalogs & Timezones)
 
 #### Recipe 3.1: Eliminate Sequential RPC Waterfall on Home Page (Finding F1 & Finding B6)
+
 - **Target File**: `fitai-web/src/features/home/server/get-home-page-data.ts`
 - **Surgical Edit**:
   1. Remove lines 196–198: Remove `await getProfileData()` and `computeProfileCompletion`.
@@ -1187,6 +1245,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   3. Latency reduction: **200–500ms saved** on every home page visit.
 
 #### Recipe 3.2: Harmonize Fallback Catalogs & Extract Tags (Finding A5 & Finding A6)
+
 - **Target Files**:
   - `fitai-web/src/features/exercise/server/catalog-actions.ts`
   - `fitai-web/src/features/exercise/api/search-repository.ts`
@@ -1198,11 +1257,13 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   2. Standardize `DEFAULT_CATALOG` in `search-repository.ts` to use identical fallback taxonomy matching `catalog-actions.ts`.
 
 #### Recipe 3.3: Delete Phantom UUIDs in `muscle-uuid-map.ts` (Finding A4)
+
 - **Target File**: `fitai-web/src/features/progress/model/muscle-uuid-map.ts`
 - **Surgical Edit**:
   Delete lines 2–51 (the 50 phantom UUID mappings). Retain only lines 52–101 which match `catalog_metadata_seed.json`.
 
 #### Recipe 3.4: Bounded LRU Cache for Social Feed (Finding C4)
+
 - **Target File**: `fitai-web/src/features/social/lib/post-cache.ts`
 - **Surgical Edit**:
   Enforce maximum cache size of 100 entries with LRU memory eviction and corresponding `sessionStorage` cleanup:
@@ -1239,6 +1300,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   ```
 
 #### Recipe 3.5: Client Timezone Synchronization for Server Actions (Finding G1)
+
 - **Target Files**:
   - `fitai-web/src/features/home/server/get-home-page-data.ts`
   - `fitai-web/src/shared/utils/streak.ts`
@@ -1250,6 +1312,7 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
 ### Phase 4: Low Severity Cleanups (DOM Noise, Duplicates & Dead Code)
 
 #### Recipe 4.1: Consolidate `GROUP_SYNONYMS` and `mapDifficulty` (Finding F2 & Finding F3)
+
 - **Target Files**:
   - `fitai-web/src/features/exercise/domain/exercise.ts`
   - `fitai-web/src/features/admin/api/admin-exercise-service.ts`
@@ -1258,16 +1321,19 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
   2. Export a single `mapDifficulty` function from `domain/exercise.ts` and import it in `admin-exercise-service.ts` and `search-repository.ts`.
 
 #### Recipe 4.2: Remove Unrecognized `transitionTypes` DOM Prop (Finding G4)
+
 - **Target Files**: `transition-types.ts` and call-sites across 25+ files.
 - **Surgical Edit**:
   Remove `transitionTypes` from `<Link>` components or map it to standard CSS view transitions. Eliminates 100% of React DOM attribute console warnings.
 
 #### Recipe 4.3: Remove Unsolicited Meal Redistribution (Finding E2)
+
 - **Target File**: `fitai-web/src/shared/api/bff/aggregate/nutrition-daily.ts`
 - **Surgical Edit**:
   Delete lines 302–316 so logged snacks remain in the user's snack slot.
 
 #### Recipe 4.4: Consolidate Duplicate BMI Calculation (Finding F4)
+
 - **Target Files**: `progress-aggregator.ts`, `profile.mapper.ts`
 - **Surgical Edit**: Extract shared `computeBmi` and `classifyBmi` to `src/shared/utils/bmi.ts`.
 
@@ -1278,7 +1344,9 @@ The remediation plan is organized into **4 prioritized phases** to ensure zero r
 To ensure zero regressions across all 27 findings during execution, every cleanup must be verified against the following protocol:
 
 ### 5.1 Automated Quality Gates
+
 Execute the following verification suite from `fitai-web`:
+
 ```powershell
 # 1. Static Type Checking (Must pass with 0 errors)
 cd e:\LEARN\a\fitai-web
@@ -1292,7 +1360,9 @@ pnpm lint
 ```
 
 ### 5.2 Targeted Regression Test Suites
+
 The following test suites must be executed specifically for affected domains:
+
 - **Workout & Active Session Recovery**:
   `pnpm vitest run tests/unit/workout-grpc-actions.test.ts tests/unit/get-live-session-data.test.ts`
 - **Profile & Injury Normalization**:
@@ -1305,7 +1375,9 @@ The following test suites must be executed specifically for affected domains:
   `pnpm vitest run tests/unit/exercise-search-repository.test.ts`
 
 ### 5.3 Database & Contract Cross-Check Commands
+
 Verify that frontend constants match authoritative database seeds in `gym-companion`:
+
 ```powershell
 # Verify Bodyweight Equipment ID in catalog metadata seed:
 grep -n -C 2 "Body Weight" e:\LEARN\a\gym-companion\internal\shared\seeder\data\catalog_metadata_seed.json
@@ -1321,6 +1393,7 @@ grep -n -A 3 "message GetActiveRoadmapRequest" e:\LEARN\a\gym-companion\proto\co
 ```
 
 ### 5.4 Manual Leak & Lifecycle Verification Flows
+
 1. **OAuth Popup Timer Leak (Finding C1)**:
    - Navigate to `/login`. Click "Continue with Google".
    - Close the Google OAuth popup window manually.
@@ -1343,4 +1416,5 @@ grep -n -A 3 "message GetActiveRoadmapRequest" e:\LEARN\a\gym-companion\proto\co
 ---
 
 ## 6. Conclusion
+
 This audit provides an unvarnished, forensic assessment of the `fitai-web` codebase. By adhering strictly to **Rule 2 (Practical Simplicity)**, **Rule 3 (Surgical Changes)**, and **Rule 13 (Veteran Pragmatism)**, the proposed remediation plan fixes critical crash vectors, stops silent data loss, plugs memory/hardware leaks, and restores contract integrity without embarking on high-risk, speculative rewrites.

@@ -25,13 +25,12 @@ async function getRealNutritionPageData(
   console.info(`[getRealNutritionPageData] Calling gRPC for userId=${userId}, today=${today}`);
 
   const [summaryRes, historyRes, menuRes] = await Promise.allSettled([
-    client.getNutritionSummary({ userId }),
+    client.getNutritionSummary({}),
     client.getNutritionHistory({
       endDate: today,
       startDate: dayKeyRange(today, 7)[0] ?? today,
-      userId,
     }),
-    client.getTodayMenu({ userId }),
+    client.getTodayMenu({}),
   ]);
 
   console.info(

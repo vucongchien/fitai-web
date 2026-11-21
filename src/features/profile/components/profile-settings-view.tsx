@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
+import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-store";
 import type { NotificationSettings } from "@/features/notification/server/notification-actions";
 import { NotificationSettingsSection } from "@/features/notification/ui/notification-settings-section";
-import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-store";
 import { PageHeader } from "@/shared/ui/page-header";
 
 import type { ProfileViewModel } from "../model/profile.types";
