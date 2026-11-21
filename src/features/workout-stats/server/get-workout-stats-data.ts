@@ -11,11 +11,8 @@ import { getAuthenticatedSession } from "@/shared/auth/session";
 
 import { adaptWorkoutStatsData } from "../model/workout-stats.mapper";
 
-/**
- * Fetches real workout stats shared by the Workout and Weekly Progress views.
- */
 export async function getWorkoutStatsData(): Promise<WorkoutStatsData> {
-  const { accessToken, userId } = await getAuthenticatedSession();
+  const { accessToken } = await getAuthenticatedSession();
   const today = toDayKey(new Date());
   const todayStr = today || new Date().toISOString().split("T")[0];
 
@@ -34,7 +31,7 @@ export async function getWorkoutStatsData(): Promise<WorkoutStatsData> {
       const workoutClient = createClient(WorkoutExecutionService, transport);
 
       const [roadmapRes, historyRes] = await Promise.allSettled([
-        coachingClient.getActiveRoadmap({ userId: userId || "" }),
+        coachingClient.getActiveRoadmap({}),
         workoutClient.getWorkoutHistory({ limit: 60, offset: 0 }),
       ]);
 

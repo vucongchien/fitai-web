@@ -110,7 +110,6 @@ describe("getLiveSessionData gRPC Live Session Execution", () => {
     const plan = await getLiveSessionData("plan_bench_squat");
 
     expect(mockGetSessionPlan).toHaveBeenCalledWith({
-      userId: "usr_123",
       sessionPlanId: "plan_bench_squat",
     });
     expect(plan.sessionId).toBe("ses_live_active_999");

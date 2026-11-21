@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 // Camera stream management for AI branch with fallback handling
 export type CameraState = "idle" | "requesting" | "ready" | "denied" | "unavailable";
@@ -29,20 +29,30 @@ export function useCameraStream() {
   }, []);
 
   const stop = useCallback(() => {
-    if (isCustomVideoRef.current) {
-      return;
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.srcObject = null;
+      videoRef.current.removeAttribute("src");
     }
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
     cleanupObjectUrl();
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-      videoRef.current.removeAttribute("src");
-    }
     isCustomVideoRef.current = false;
     setIsCustomVideo(false);
     setState("idle");
   }, [cleanupObjectUrl]);
+
+  const subscribeUnmount = useCallback(() => {
+    return () => {
+      stop();
+    };
+  }, [stop]);
+
+  useSyncExternalStore(
+    subscribeUnmount,
+    () => 0,
+    () => 0,
+  );
 
   const loadVideoFile = useCallback(
     (file: File) => {

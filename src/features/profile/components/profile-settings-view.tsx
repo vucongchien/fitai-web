@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import type { NotificationSettings } from "@/features/notification/server/notification-actions";
 import { NotificationSettingsSection } from "@/features/notification/ui/notification-settings-section";
+import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-store";
 import { PageHeader } from "@/shared/ui/page-header";
 
 import type { ProfileViewModel } from "../model/profile.types";
@@ -23,6 +24,7 @@ export function ProfileSettingsView({
   initialNotificationSettings = null,
   onSaveProfile,
 }: ProfileSettingsViewProps) {
+  const { equipments: catalogEquipments } = useCatalogMetadata();
   const [profile, setProfile] = useState<ProfileViewModel>(initialProfile);
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -97,7 +99,11 @@ export function ProfileSettingsView({
             />
             <SettingsRow
               label="Available Equipment"
-              value={profile.settings.availableEquipment.join(", ") || "Full Gym"}
+              value={
+                profile.settings.availableEquipment
+                  .map((id) => catalogEquipments.find((eq) => eq.id === id)?.name || id)
+                  .join(", ") || "Full Gym"
+              }
               onClick={() => setActiveModal("EQUIPMENT")}
             />
             <SettingsRow

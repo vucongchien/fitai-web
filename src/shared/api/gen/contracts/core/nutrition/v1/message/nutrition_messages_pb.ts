@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/core/nutrition/v1/message/nutrition_messages.proto.
  */
 export const file_contracts_core_nutrition_v1_message_nutrition_messages: GenFile = /*@__PURE__*/
-  fileDesc("Cjxjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZS9udXRyaXRpb25fbWVzc2FnZXMucHJvdG8SI2NvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlIkYKBk1hY3JvcxIVCg1wcm90ZWluX2dyYW1zGAEgASgCEhIKCmNhcmJfZ3JhbXMYAiABKAISEQoJZmF0X2dyYW1zGAMgASgCIp0BCgpNZWFsT3B0aW9uEhEKCW1lYWxfbmFtZRgBIAEoCRISCgpwcmljZV90aWVyGAIgASgJEhAKCGNhbG9yaWVzGAMgASgCEg8KB3Byb3RlaW4YBCABKAISDQoFY2FyYnMYBSABKAISCwoDZmF0GAYgASgCEhMKC2Rlc2NyaXB0aW9uGAcgASgJEhQKDHJlY2lwZV9zdGVwcxgIIAMoCSKRAgoKRGFpbHlNZWFscxJCCglicmVha2Zhc3QYASADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBWx1bmNoGAIgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbhI/CgZkaW5uZXIYAyADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBXNuYWNrGAQgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbiImChNHZXRUb2RheU1lbnVSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkirAEKFEdldFRvZGF5TWVudVJlc3BvbnNlEhcKD3RhcmdldF9jYWxvcmllcxgBIAEoAhI7CgZtYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSPgoFbWVhbHMYAyABKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5EYWlseU1lYWxzIpkBCg5Mb2dNZWFsUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIkgKD0xvZ01lYWxSZXNwb25zZRITCgttZWFsX2xvZ19pZBgBIAEoCRIPCgdzdWNjZXNzGAIgASgIEg8KB21lc3NhZ2UYAyABKAkimgEKC01lYWxMb2dJdGVtEhMKC21lYWxfbG9nX2lkGAEgASgJEhEKCW1lYWxfbmFtZRgCIAEoCRIRCgltZWFsX3R5cGUYAyABKAkSEAoIY2Fsb3JpZXMYBCABKAISDwoHcHJvdGVpbhgFIAEoAhINCgVjYXJicxgGIAEoAhILCgNmYXQYByABKAISEQoJbG9nZ2VkX2F0GAggASgJIlMKGkdldE51dHJpdGlvbkhpc3RvcnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSEgoKc3RhcnRfZGF0ZRgCIAEoCRIQCghlbmRfZGF0ZRgDIAEoCSJeChtHZXROdXRyaXRpb25IaXN0b3J5UmVzcG9uc2USPwoFbWVhbHMYASADKAsyMC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsTG9nSXRlbSItChpHZXROdXRyaXRpb25TdW1tYXJ5UmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJItsBChtHZXROdXRyaXRpb25TdW1tYXJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEkIKDXRhcmdldF9tYWNyb3MYAiABKAsyKy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NYWNyb3MSGQoRY29uc3VtZWRfY2Fsb3JpZXMYAyABKAISRAoPY29uc3VtZWRfbWFjcm9zGAQgASgLMisuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWFjcm9zIlIKIFJlY2FsaWJyYXRlUGxhbldpdGhQYW50cnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkSHQoVYXZhaWxhYmxlX2luZ3JlZGllbnRzGAIgAygJIsoBCiFSZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEjsKBm1hY3JvcxgCIAEoCzIrLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLk1hY3JvcxI+CgVtZWFscxgDIAEoCzIvLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkRhaWx5TWVhbHMSDwoHbWVzc2FnZRgEIAEoCSL7AQoVQ3JlYXRlRm9vZEl0ZW1SZXF1ZXN0EgwKBG5hbWUYASABKAkSEAoIY2F0ZWdvcnkYAiABKAkSGQoRY2Fsb3JpZXNfcGVyXzEwMGcYAyABKAISGAoQcHJvdGVpbl9wZXJfMTAwZxgEIAEoAhIWCg5jYXJic19wZXJfMTAwZxgFIAEoAhIUCgxmYXRfcGVyXzEwMGcYBiABKAISFQoNYWxsZXJnZW5fdGFncxgHIAMoCRIWCg5wcm90ZWluX3NvdXJjZRgIIAEoCRITCgtjYXJiX3NvdXJjZRgJIAEoCRIbChNpc19udXRpZm9vZF9wcm9kdWN0GAogASgIIk8KFkNyZWF0ZUZvb2RJdGVtUmVzcG9uc2USFAoMZm9vZF9pdGVtX2lkGAEgASgJEg4KBnN0YXR1cxgCIAEoCRIPCgdtZXNzYWdlGAMgASgJIi4KFkFwcHJvdmVGb29kSXRlbVJlcXVlc3QSFAoMZm9vZF9pdGVtX2lkGAEgASgJImEKF0FwcHJvdmVGb29kSXRlbVJlc3BvbnNlEhQKDGZvb2RfaXRlbV9pZBgBIAEoCRIOCgZzdGF0dXMYAiABKAkSDwoHc3VjY2VzcxgDIAEoCBIPCgdtZXNzYWdlGAQgASgJIm8KFEltcHJvdmVtZW50QXJlYVByb3RvEgwKBGFyZWEYASABKAkSEwoLY3VycmVudF9hdmcYAiABKAISDgoGdGFyZ2V0GAMgASgCEhIKCnN1Z2dlc3Rpb24YBCABKAkSEAoIcHJpb3JpdHkYBSABKAkiZwobUmVjb21tZW5kZWRBZGp1c3RtZW50c1Byb3RvEhYKDmNhbG9yaWVzX2RlbHRhGAEgASgCEhsKE3Byb3RlaW5fcmF0aW9fZGVsdGEYAiABKAISEwoLZm9jdXNfZm9vZHMYAyADKAkiVAoaR2V0TnV0cml0aW9uSW5zaWdodFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIRCglnb2FsX3R5cGUYAiABKAkSEgoKcmFuZ2VfZGF5cxgDIAEoBSKnAgobR2V0TnV0cml0aW9uSW5zaWdodFJlc3BvbnNlEhUKDW92ZXJhbGxfc2NvcmUYASABKAUSDwoHc3VtbWFyeRgCIAEoCRIRCglzdHJlbmd0aHMYAyADKAkSVAoRaW1wcm92ZW1lbnRfYXJlYXMYBCADKAsyOS5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5JbXByb3ZlbWVudEFyZWFQcm90bxIUCgx3ZWVrbHlfdHJlbmQYBSABKAkSYQoXcmVjb21tZW5kZWRfYWRqdXN0bWVudHMYBiABKAsyQC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5SZWNvbW1lbmRlZEFkanVzdG1lbnRzUHJvdG8iPQoQTWVhbFNjaGVkdWxlSXRlbRIRCgltZWFsX3R5cGUYASABKAkSFgoOc2NoZWR1bGVkX3RpbWUYAiABKAkidgoZVXBkYXRlTWVhbFNjaGVkdWxlUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJEkgKCXNjaGVkdWxlcxgCIAMoCzI1LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLk1lYWxTY2hlZHVsZUl0ZW0iiAEKGlVwZGF0ZU1lYWxTY2hlZHVsZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCRJICglzY2hlZHVsZXMYAyADKAsyNS5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsU2NoZWR1bGVJdGVtQm1aa2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL2NvcmUvbnV0cml0aW9uL3YxL21lc3NhZ2U7bnV0cml0aW9udjFtZXNzYWdlYgZwcm90bzM");
+  fileDesc("Cjxjb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZS9udXRyaXRpb25fbWVzc2FnZXMucHJvdG8SI2NvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlIkYKBk1hY3JvcxIVCg1wcm90ZWluX2dyYW1zGAEgASgCEhIKCmNhcmJfZ3JhbXMYAiABKAISEQoJZmF0X2dyYW1zGAMgASgCIp0BCgpNZWFsT3B0aW9uEhEKCW1lYWxfbmFtZRgBIAEoCRISCgpwcmljZV90aWVyGAIgASgJEhAKCGNhbG9yaWVzGAMgASgCEg8KB3Byb3RlaW4YBCABKAISDQoFY2FyYnMYBSABKAISCwoDZmF0GAYgASgCEhMKC2Rlc2NyaXB0aW9uGAcgASgJEhQKDHJlY2lwZV9zdGVwcxgIIAMoCSKRAgoKRGFpbHlNZWFscxJCCglicmVha2Zhc3QYASADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBWx1bmNoGAIgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbhI/CgZkaW5uZXIYAyADKAsyLy5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsT3B0aW9uEj4KBXNuYWNrGAQgAygLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWVhbE9wdGlvbiIVChNHZXRUb2RheU1lbnVSZXF1ZXN0IqwBChRHZXRUb2RheU1lbnVSZXNwb25zZRIXCg90YXJnZXRfY2Fsb3JpZXMYASABKAISOwoGbWFjcm9zGAIgASgLMisuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWFjcm9zEj4KBW1lYWxzGAMgASgLMi8uY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuRGFpbHlNZWFscyKIAQoOTG9nTWVhbFJlcXVlc3QSEQoJbWVhbF9uYW1lGAEgASgJEhEKCW1lYWxfdHlwZRgCIAEoCRIQCghjYWxvcmllcxgDIAEoAhIPCgdwcm90ZWluGAQgASgCEg0KBWNhcmJzGAUgASgCEgsKA2ZhdBgGIAEoAhIRCglsb2dnZWRfYXQYByABKAkiSAoPTG9nTWVhbFJlc3BvbnNlEhMKC21lYWxfbG9nX2lkGAEgASgJEg8KB3N1Y2Nlc3MYAiABKAgSDwoHbWVzc2FnZRgDIAEoCSKaAQoLTWVhbExvZ0l0ZW0SEwoLbWVhbF9sb2dfaWQYASABKAkSEQoJbWVhbF9uYW1lGAIgASgJEhEKCW1lYWxfdHlwZRgDIAEoCRIQCghjYWxvcmllcxgEIAEoAhIPCgdwcm90ZWluGAUgASgCEg0KBWNhcmJzGAYgASgCEgsKA2ZhdBgHIAEoAhIRCglsb2dnZWRfYXQYCCABKAkiQgoaR2V0TnV0cml0aW9uSGlzdG9yeVJlcXVlc3QSEgoKc3RhcnRfZGF0ZRgBIAEoCRIQCghlbmRfZGF0ZRgCIAEoCSJeChtHZXROdXRyaXRpb25IaXN0b3J5UmVzcG9uc2USPwoFbWVhbHMYASADKAsyMC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsTG9nSXRlbSIcChpHZXROdXRyaXRpb25TdW1tYXJ5UmVxdWVzdCLbAQobR2V0TnV0cml0aW9uU3VtbWFyeVJlc3BvbnNlEhcKD3RhcmdldF9jYWxvcmllcxgBIAEoAhJCCg10YXJnZXRfbWFjcm9zGAIgASgLMisuY29udHJhY3RzLmNvcmUubnV0cml0aW9uLnYxLm1lc3NhZ2UuTWFjcm9zEhkKEWNvbnN1bWVkX2NhbG9yaWVzGAMgASgCEkQKD2NvbnN1bWVkX21hY3JvcxgEIAEoCzIrLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLk1hY3JvcyJUCiBSZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5UmVxdWVzdBIdChVhdmFpbGFibGVfaW5ncmVkaWVudHMYASADKAkSEQoJbWVhbF90eXBlGAIgASgJIsoBCiFSZWNhbGlicmF0ZVBsYW5XaXRoUGFudHJ5UmVzcG9uc2USFwoPdGFyZ2V0X2NhbG9yaWVzGAEgASgCEjsKBm1hY3JvcxgCIAEoCzIrLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLk1hY3JvcxI+CgVtZWFscxgDIAEoCzIvLmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkRhaWx5TWVhbHMSDwoHbWVzc2FnZRgEIAEoCSKmAgoVQ3JlYXRlRm9vZEl0ZW1SZXF1ZXN0EgwKBG5hbWUYASABKAkSEAoIY2F0ZWdvcnkYAiABKAkSGQoRY2Fsb3JpZXNfcGVyXzEwMGcYAyABKAISGAoQcHJvdGVpbl9wZXJfMTAwZxgEIAEoAhIWCg5jYXJic19wZXJfMTAwZxgFIAEoAhIUCgxmYXRfcGVyXzEwMGcYBiABKAISFQoNYWxsZXJnZW5fdGFncxgHIAMoCRIWCg5wcm90ZWluX3NvdXJjZRgIIAEoCRITCgtjYXJiX3NvdXJjZRgJIAEoCRIbChNpc19udXRpZm9vZF9wcm9kdWN0GAogASgIEhYKDnByaWNlX3Blcl8xMDBnGAsgASgCEhEKCWNvc3RfdGllchgMIAEoCSJPChZDcmVhdGVGb29kSXRlbVJlc3BvbnNlEhQKDGZvb2RfaXRlbV9pZBgBIAEoCRIOCgZzdGF0dXMYAiABKAkSDwoHbWVzc2FnZRgDIAEoCSIuChZBcHByb3ZlRm9vZEl0ZW1SZXF1ZXN0EhQKDGZvb2RfaXRlbV9pZBgBIAEoCSJhChdBcHByb3ZlRm9vZEl0ZW1SZXNwb25zZRIUCgxmb29kX2l0ZW1faWQYASABKAkSDgoGc3RhdHVzGAIgASgJEg8KB3N1Y2Nlc3MYAyABKAgSDwoHbWVzc2FnZRgEIAEoCSJiChRJbXByb3ZlbWVudEFyZWFQcm90bxIQCghudXRyaWVudBgBIAEoCRIOCgZhY3Rpb24YAiABKAkSFAoMZGVsdGFfYW1vdW50GAMgASgCEhIKCnN1Z2dlc3Rpb24YBCABKAkijgIKF1dlZWtseU1hY3JvU3VtbWFyeVByb3RvEhkKEWNvbnN1bWVkX2NhbG9yaWVzGAEgASgCEhcKD3RhcmdldF9jYWxvcmllcxgCIAEoAhIYChBjb25zdW1lZF9wcm90ZWluGAMgASgCEhYKDnRhcmdldF9wcm90ZWluGAQgASgCEhYKDmNvbnN1bWVkX2NhcmJzGAUgASgCEhQKDHRhcmdldF9jYXJicxgGIAEoAhIUCgxjb25zdW1lZF9mYXQYByABKAISEgoKdGFyZ2V0X2ZhdBgIIAEoAhIaChJsb2dnZWRfbWVhbHNfY291bnQYCSABKAUSGQoRdG90YWxfbWVhbHNfY291bnQYCiABKAUiNQoaR2V0TnV0cml0aW9uSW5zaWdodFJlcXVlc3QSFwoPd2Vla19zdGFydF9kYXRlGAEgASgJIvICChtHZXROdXRyaXRpb25JbnNpZ2h0UmVzcG9uc2USFQoNb3ZlcmFsbF9zY29yZRgBIAEoBRIPCgdzdW1tYXJ5GAIgASgJEh8KF3ByZWRpY3RlZF9jb29raW5nX3N0eWxlGAMgASgJEh0KFXByZWZlcnJlZF9pbmdyZWRpZW50cxgEIAMoCRJUChFpbXByb3ZlbWVudF9hcmVhcxgFIAMoCzI5LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLkltcHJvdmVtZW50QXJlYVByb3RvEhIKCnN0YXJ0X2RhdGUYBiABKAkSEAoIZW5kX2RhdGUYByABKAkSGQoRZXZhbHVhdGVkX2F0X3VuaXgYCCABKAMSVAoOd2Vla2x5X3N1bW1hcnkYCSABKAsyPC5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5XZWVrbHlNYWNyb1N1bW1hcnlQcm90byI9ChBNZWFsU2NoZWR1bGVJdGVtEhEKCW1lYWxfdHlwZRgBIAEoCRIWCg5zY2hlZHVsZWRfdGltZRgCIAEoCSJlChlVcGRhdGVNZWFsU2NoZWR1bGVSZXF1ZXN0EkgKCXNjaGVkdWxlcxgBIAMoCzI1LmNvbnRyYWN0cy5jb3JlLm51dHJpdGlvbi52MS5tZXNzYWdlLk1lYWxTY2hlZHVsZUl0ZW0iiAEKGlVwZGF0ZU1lYWxTY2hlZHVsZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCRJICglzY2hlZHVsZXMYAyADKAsyNS5jb250cmFjdHMuY29yZS5udXRyaXRpb24udjEubWVzc2FnZS5NZWFsU2NoZWR1bGVJdGVtIhkKF0dldFVzZXJBbGxlcmdpZXNSZXF1ZXN0Ii0KGEdldFVzZXJBbGxlcmdpZXNSZXNwb25zZRIRCglhbGxlcmdpZXMYASADKAkiLwoaVXBkYXRlVXNlckFsbGVyZ2llc1JlcXVlc3QSEQoJYWxsZXJnaWVzGAEgAygJIjAKG1VwZGF0ZVVzZXJBbGxlcmdpZXNSZXNwb25zZRIRCglhbGxlcmdpZXMYASADKAlCbVprZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvY29yZS9udXRyaXRpb24vdjEvbWVzc2FnZTtudXRyaXRpb252MW1lc3NhZ2ViBnByb3RvMw");
 
 /**
  * @generated from message contracts.core.nutrition.v1.message.Macros
@@ -129,10 +129,6 @@ export const DailyMealsSchema: GenMessage<DailyMeals> = /*@__PURE__*/
  * @generated from message contracts.core.nutrition.v1.message.GetTodayMenuRequest
  */
 export type GetTodayMenuRequest = Message<"contracts.core.nutrition.v1.message.GetTodayMenuRequest"> & {
-  /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
 };
 
 /**
@@ -174,44 +170,39 @@ export const GetTodayMenuResponseSchema: GenMessage<GetTodayMenuResponse> = /*@_
  */
 export type LogMealRequest = Message<"contracts.core.nutrition.v1.message.LogMealRequest"> & {
   /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
-
-  /**
-   * @generated from field: string meal_name = 2;
+   * @generated from field: string meal_name = 1;
    */
   mealName: string;
 
   /**
    * "BREAKFAST", "LUNCH", "DINNER", "SNACK"
    *
-   * @generated from field: string meal_type = 3;
+   * @generated from field: string meal_type = 2;
    */
   mealType: string;
 
   /**
-   * @generated from field: float calories = 4;
+   * @generated from field: float calories = 3;
    */
   calories: number;
 
   /**
-   * @generated from field: float protein = 5;
+   * @generated from field: float protein = 4;
    */
   protein: number;
 
   /**
-   * @generated from field: float carbs = 6;
+   * @generated from field: float carbs = 5;
    */
   carbs: number;
 
   /**
-   * @generated from field: float fat = 7;
+   * @generated from field: float fat = 6;
    */
   fat: number;
 
   /**
-   * @generated from field: string logged_at = 8;
+   * @generated from field: string logged_at = 7;
    */
   loggedAt: string;
 };
@@ -307,21 +298,16 @@ export const MealLogItemSchema: GenMessage<MealLogItem> = /*@__PURE__*/
  */
 export type GetNutritionHistoryRequest = Message<"contracts.core.nutrition.v1.message.GetNutritionHistoryRequest"> & {
   /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
-
-  /**
    * YYYY-MM-DD
    *
-   * @generated from field: string start_date = 2;
+   * @generated from field: string start_date = 1;
    */
   startDate: string;
 
   /**
    * YYYY-MM-DD
    *
-   * @generated from field: string end_date = 3;
+   * @generated from field: string end_date = 2;
    */
   endDate: string;
 };
@@ -354,10 +340,6 @@ export const GetNutritionHistoryResponseSchema: GenMessage<GetNutritionHistoryRe
  * @generated from message contracts.core.nutrition.v1.message.GetNutritionSummaryRequest
  */
 export type GetNutritionSummaryRequest = Message<"contracts.core.nutrition.v1.message.GetNutritionSummaryRequest"> & {
-  /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
 };
 
 /**
@@ -404,14 +386,16 @@ export const GetNutritionSummaryResponseSchema: GenMessage<GetNutritionSummaryRe
  */
 export type RecalibratePlanWithPantryRequest = Message<"contracts.core.nutrition.v1.message.RecalibratePlanWithPantryRequest"> & {
   /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
-
-  /**
-   * @generated from field: repeated string available_ingredients = 2;
+   * @generated from field: repeated string available_ingredients = 1;
    */
   availableIngredients: string[];
+
+  /**
+   * "BREAKFAST", "LUNCH", "DINNER", "SNACK"
+   *
+   * @generated from field: string meal_type = 2;
+   */
+  mealType: string;
 };
 
 /**
@@ -508,6 +492,18 @@ export type CreateFoodItemRequest = Message<"contracts.core.nutrition.v1.message
    * @generated from field: bool is_nutifood_product = 10;
    */
   isNutifoodProduct: boolean;
+
+  /**
+   * @generated from field: float price_per_100g = 11;
+   */
+  pricePer100g: number;
+
+  /**
+   * "BUDGET", "STANDARD", "PREMIUM"
+   *
+   * @generated from field: string cost_tier = 12;
+   */
+  costTier: string;
 };
 
 /**
@@ -598,31 +594,32 @@ export const ApproveFoodItemResponseSchema: GenMessage<ApproveFoodItemResponse> 
  */
 export type ImprovementAreaProto = Message<"contracts.core.nutrition.v1.message.ImprovementAreaProto"> & {
   /**
-   * @generated from field: string area = 1;
+   * "CALORIES", "PROTEIN", "CARBS", "FAT"
+   *
+   * @generated from field: string nutrient = 1;
    */
-  area: string;
+  nutrient: string;
 
   /**
-   * @generated from field: float current_avg = 2;
+   * "INCREASE", "DECREASE"
+   *
+   * @generated from field: string action = 2;
    */
-  currentAvg: number;
+  action: string;
 
   /**
-   * @generated from field: float target = 3;
+   * Lượng cần điều chỉnh trong tuần
+   *
+   * @generated from field: float delta_amount = 3;
    */
-  target: number;
+  deltaAmount: number;
 
   /**
+   * Lời khuyên cụ thể từ AI
+   *
    * @generated from field: string suggestion = 4;
    */
   suggestion: string;
-
-  /**
-   * "HIGH", "MEDIUM", "LOW"
-   *
-   * @generated from field: string priority = 5;
-   */
-  priority: string;
 };
 
 /**
@@ -633,30 +630,65 @@ export const ImprovementAreaProtoSchema: GenMessage<ImprovementAreaProto> = /*@_
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 18);
 
 /**
- * @generated from message contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto
+ * @generated from message contracts.core.nutrition.v1.message.WeeklyMacroSummaryProto
  */
-export type RecommendedAdjustmentsProto = Message<"contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto"> & {
+export type WeeklyMacroSummaryProto = Message<"contracts.core.nutrition.v1.message.WeeklyMacroSummaryProto"> & {
   /**
-   * @generated from field: float calories_delta = 1;
+   * @generated from field: float consumed_calories = 1;
    */
-  caloriesDelta: number;
+  consumedCalories: number;
 
   /**
-   * @generated from field: float protein_ratio_delta = 2;
+   * @generated from field: float target_calories = 2;
    */
-  proteinRatioDelta: number;
+  targetCalories: number;
 
   /**
-   * @generated from field: repeated string focus_foods = 3;
+   * @generated from field: float consumed_protein = 3;
    */
-  focusFoods: string[];
+  consumedProtein: number;
+
+  /**
+   * @generated from field: float target_protein = 4;
+   */
+  targetProtein: number;
+
+  /**
+   * @generated from field: float consumed_carbs = 5;
+   */
+  consumedCarbs: number;
+
+  /**
+   * @generated from field: float target_carbs = 6;
+   */
+  targetCarbs: number;
+
+  /**
+   * @generated from field: float consumed_fat = 7;
+   */
+  consumedFat: number;
+
+  /**
+   * @generated from field: float target_fat = 8;
+   */
+  targetFat: number;
+
+  /**
+   * @generated from field: int32 logged_meals_count = 9;
+   */
+  loggedMealsCount: number;
+
+  /**
+   * @generated from field: int32 total_meals_count = 10;
+   */
+  totalMealsCount: number;
 };
 
 /**
- * Describes the message contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto.
- * Use `create(RecommendedAdjustmentsProtoSchema)` to create a new message.
+ * Describes the message contracts.core.nutrition.v1.message.WeeklyMacroSummaryProto.
+ * Use `create(WeeklyMacroSummaryProtoSchema)` to create a new message.
  */
-export const RecommendedAdjustmentsProtoSchema: GenMessage<RecommendedAdjustmentsProto> = /*@__PURE__*/
+export const WeeklyMacroSummaryProtoSchema: GenMessage<WeeklyMacroSummaryProto> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 19);
 
 /**
@@ -664,23 +696,11 @@ export const RecommendedAdjustmentsProtoSchema: GenMessage<RecommendedAdjustment
  */
 export type GetNutritionInsightRequest = Message<"contracts.core.nutrition.v1.message.GetNutritionInsightRequest"> & {
   /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
-
-  /**
-   * "WEIGHT_LOSS", "MUSCLE_GAIN", "MAINTENANCE"
+   * Tùy chọn (YYYY-MM-DD), nếu để trống BE mặc định lấy tuần gần nhất
    *
-   * @generated from field: string goal_type = 2;
+   * @generated from field: string week_start_date = 1;
    */
-  goalType: string;
-
-  /**
-   * số ngày phân tích, mặc định 7
-   *
-   * @generated from field: int32 range_days = 3;
-   */
-  rangeDays: number;
+  weekStartDate: string;
 };
 
 /**
@@ -705,26 +725,39 @@ export type GetNutritionInsightResponse = Message<"contracts.core.nutrition.v1.m
   summary: string;
 
   /**
-   * @generated from field: repeated string strengths = 3;
+   * @generated from field: string predicted_cooking_style = 3;
    */
-  strengths: string[];
+  predictedCookingStyle: string;
 
   /**
-   * @generated from field: repeated contracts.core.nutrition.v1.message.ImprovementAreaProto improvement_areas = 4;
+   * @generated from field: repeated string preferred_ingredients = 4;
+   */
+  preferredIngredients: string[];
+
+  /**
+   * @generated from field: repeated contracts.core.nutrition.v1.message.ImprovementAreaProto improvement_areas = 5;
    */
   improvementAreas: ImprovementAreaProto[];
 
   /**
-   * "IMPROVING", "DECLINING", "STABLE"
-   *
-   * @generated from field: string weekly_trend = 5;
+   * @generated from field: string start_date = 6;
    */
-  weeklyTrend: string;
+  startDate: string;
 
   /**
-   * @generated from field: contracts.core.nutrition.v1.message.RecommendedAdjustmentsProto recommended_adjustments = 6;
+   * @generated from field: string end_date = 7;
    */
-  recommendedAdjustments?: RecommendedAdjustmentsProto | undefined;
+  endDate: string;
+
+  /**
+   * @generated from field: int64 evaluated_at_unix = 8;
+   */
+  evaluatedAtUnix: bigint;
+
+  /**
+   * @generated from field: contracts.core.nutrition.v1.message.WeeklyMacroSummaryProto weekly_summary = 9;
+   */
+  weeklySummary?: WeeklyMacroSummaryProto | undefined;
 };
 
 /**
@@ -765,12 +798,7 @@ export const MealScheduleItemSchema: GenMessage<MealScheduleItem> = /*@__PURE__*
  */
 export type UpdateMealScheduleRequest = Message<"contracts.core.nutrition.v1.message.UpdateMealScheduleRequest"> & {
   /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
-
-  /**
-   * @generated from field: repeated contracts.core.nutrition.v1.message.MealScheduleItem schedules = 2;
+   * @generated from field: repeated contracts.core.nutrition.v1.message.MealScheduleItem schedules = 1;
    */
   schedules: MealScheduleItem[];
 };
@@ -808,4 +836,68 @@ export type UpdateMealScheduleResponse = Message<"contracts.core.nutrition.v1.me
  */
 export const UpdateMealScheduleResponseSchema: GenMessage<UpdateMealScheduleResponse> = /*@__PURE__*/
   messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 24);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.GetUserAllergiesRequest
+ */
+export type GetUserAllergiesRequest = Message<"contracts.core.nutrition.v1.message.GetUserAllergiesRequest"> & {
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.GetUserAllergiesRequest.
+ * Use `create(GetUserAllergiesRequestSchema)` to create a new message.
+ */
+export const GetUserAllergiesRequestSchema: GenMessage<GetUserAllergiesRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 25);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.GetUserAllergiesResponse
+ */
+export type GetUserAllergiesResponse = Message<"contracts.core.nutrition.v1.message.GetUserAllergiesResponse"> & {
+  /**
+   * @generated from field: repeated string allergies = 1;
+   */
+  allergies: string[];
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.GetUserAllergiesResponse.
+ * Use `create(GetUserAllergiesResponseSchema)` to create a new message.
+ */
+export const GetUserAllergiesResponseSchema: GenMessage<GetUserAllergiesResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 26);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.UpdateUserAllergiesRequest
+ */
+export type UpdateUserAllergiesRequest = Message<"contracts.core.nutrition.v1.message.UpdateUserAllergiesRequest"> & {
+  /**
+   * @generated from field: repeated string allergies = 1;
+   */
+  allergies: string[];
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.UpdateUserAllergiesRequest.
+ * Use `create(UpdateUserAllergiesRequestSchema)` to create a new message.
+ */
+export const UpdateUserAllergiesRequestSchema: GenMessage<UpdateUserAllergiesRequest> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 27);
+
+/**
+ * @generated from message contracts.core.nutrition.v1.message.UpdateUserAllergiesResponse
+ */
+export type UpdateUserAllergiesResponse = Message<"contracts.core.nutrition.v1.message.UpdateUserAllergiesResponse"> & {
+  /**
+   * @generated from field: repeated string allergies = 1;
+   */
+  allergies: string[];
+};
+
+/**
+ * Describes the message contracts.core.nutrition.v1.message.UpdateUserAllergiesResponse.
+ * Use `create(UpdateUserAllergiesResponseSchema)` to create a new message.
+ */
+export const UpdateUserAllergiesResponseSchema: GenMessage<UpdateUserAllergiesResponse> = /*@__PURE__*/
+  messageDesc(file_contracts_core_nutrition_v1_message_nutrition_messages, 28);
 

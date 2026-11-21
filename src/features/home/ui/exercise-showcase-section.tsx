@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Clock, Play } from "lucide-react";
+import { ArrowRight, Camera, Clock, Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -77,7 +77,15 @@ export function ExerciseShowcaseSection({ exercises }: ExerciseShowcaseSectionPr
               </div>
 
               <div className="exercise-showcase-card__body">
-                {groupLabel && <span className="exercise-showcase-card__tag">{groupLabel}</span>}
+                <div className="exercise-showcase-card__header-row">
+                  {groupLabel && <span className="exercise-showcase-card__tag">{groupLabel}</span>}
+                  {ex.hasAiSupported ? (
+                    <span className="exercise-showcase-card__ai-badge" aria-label="AI form tracking">
+                      <Camera size={11} strokeWidth={2} />
+                      AI
+                    </span>
+                  ) : null}
+                </div>
 
                 <Link
                   className="exercise-showcase-card__title"
@@ -89,13 +97,17 @@ export function ExerciseShowcaseSection({ exercises }: ExerciseShowcaseSectionPr
 
                 <div className="exercise-showcase-card__meta">
                   {equipmentLabel ? <span>{equipmentLabel}</span> : <span />}
-                  <span className="font-mono">{ex.prescription}</span>
+                  {ex.prescription ? <span className="font-mono">{ex.prescription}</span> : null}
                 </div>
 
                 <div className="exercise-showcase-card__actions">
                   <Link
                     className="exercise-showcase-card__add-btn"
-                    href={`/workouts/adhoc?exerciseId=${encodeURIComponent(ex.id)}&name=${encodeURIComponent(ex.name)}&prescription=${encodeURIComponent(ex.prescription)}`}
+                    href={
+                      ex.prescription
+                        ? `/workouts/adhoc?exerciseId=${encodeURIComponent(ex.id)}&name=${encodeURIComponent(ex.name)}&prescription=${encodeURIComponent(ex.prescription)}`
+                        : `/workouts/adhoc?exerciseId=${encodeURIComponent(ex.id)}&name=${encodeURIComponent(ex.name)}`
+                    }
                     transitionTypes={NAV_FORWARD}
                   >
                     <Play fill="currentColor" size={12} />

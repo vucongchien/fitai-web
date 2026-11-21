@@ -62,7 +62,7 @@ describe("planning & Coaching gRPC Actions", () => {
       await import("@/features/roadmap/server/coaching-actions");
     const res = await initiateRoadmapServerAction();
 
-    expect(mockInitiateRoadmap).toHaveBeenCalledWith({ userId: "usr-plan-456" });
+    expect(mockInitiateRoadmap).toHaveBeenCalledWith({});
     expect(res.success).toBe(true);
     expect(res.roadmapId).toBe("rdm-999");
   });
@@ -79,7 +79,6 @@ describe("planning & Coaching gRPC Actions", () => {
     const res = await regenerateScheduleServerAction("rdm-999", "Injury reported");
 
     expect(mockRegenerateSchedule).toHaveBeenCalledWith({
-      userId: "usr-plan-456",
       roadmapId: "rdm-999",
       reason: "Injury reported",
     });
@@ -98,7 +97,6 @@ describe("planning & Coaching gRPC Actions", () => {
     const res = await createAdhocSessionPlanServerAction(["ex-bench", "ex-squat"]);
 
     expect(mockCreateAdhocSessionPlan).toHaveBeenCalledWith({
-      userId: "usr-plan-456",
       exerciseIds: ["ex-bench", "ex-squat"],
     });
     expect(res.success).toBe(true);

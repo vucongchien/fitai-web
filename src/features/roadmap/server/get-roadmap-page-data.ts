@@ -1,5 +1,5 @@
 import "server-only";
-import { createClient } from "@connectrpc/connect";
+import { Code, ConnectError, createClient } from "@connectrpc/connect";
 
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
@@ -19,20 +19,33 @@ const EMPTY_ROADMAP_DATA: RoadmapPageData = {
 
 async function getRealRoadmapPageData(
   accessToken: string,
-  userId: string,
+  _userId?: string,
 ): Promise<RoadmapPageData> {
   const client = createClient(CoachingService, createServerTransport(accessToken));
-  const res = await client.getActiveRoadmap({ userId });
-  if (!res.roadmap) {
-    return {
-      ...EMPTY_ROADMAP_DATA,
-      error: {
-        type: "NO_ROADMAP",
-        message: "Active roadmap not found.",
-      },
-    };
+  try {
+    const res = await client.getActiveRoadmap({});
+    if (!res.roadmap) {
+      return {
+        ...EMPTY_ROADMAP_DATA,
+        error: {
+          type: "NO_ROADMAP",
+          message: "Active roadmap not found.",
+        },
+      };
+    }
+    return adaptRoadmapPageData(res.roadmap);
+  } catch (error) {
+    if (error instanceof ConnectError && error.code === Code.NotFound) {
+      return {
+        ...EMPTY_ROADMAP_DATA,
+        error: {
+          type: "NO_ROADMAP",
+          message: "Active roadmap not found.",
+        },
+      };
+    }
+    throw error;
   }
-  return adaptRoadmapPageData(res.roadmap);
 }
 
 /**

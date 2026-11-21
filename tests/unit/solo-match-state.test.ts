@@ -189,11 +189,19 @@ describe("Solo Match Domain State & Invariants", () => {
       opponentShare: 50,
     });
 
+    // 1-0 nudges slightly (56%) instead of jumping to 88%
+    expect(computeTugOfWarSplit(1, 0)).toEqual({
+      delta: 1,
+      leader: "me",
+      myShare: 56,
+      opponentShare: 44,
+    });
+
     expect(computeTugOfWarSplit(15, 5)).toEqual({
       delta: 10,
       leader: "me",
-      myShare: 75,
-      opponentShare: 25,
+      myShare: 88,
+      opponentShare: 12,
     });
 
     // Extreme lead clamps at 88 / 12 so the trailing side remains visible

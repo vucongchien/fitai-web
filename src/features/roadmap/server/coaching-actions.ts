@@ -4,7 +4,7 @@ import { createClient } from "@connectrpc/connect";
 
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
-import { getAccessToken, getAuthenticatedUserId } from "@/shared/auth/session";
+import { getAccessToken } from "@/shared/auth/session";
 
 export async function initiateRoadmapServerAction(): Promise<{
   success: boolean;
@@ -13,11 +13,10 @@ export async function initiateRoadmapServerAction(): Promise<{
 }> {
   try {
     const accessToken = await getAccessToken();
-    const userId = await getAuthenticatedUserId();
     const transport = createServerTransport(accessToken);
     const client = createClient(CoachingService, transport);
 
-    const res = await client.initiateRoadmap({ userId: userId || "" });
+    const res = await client.initiateRoadmap({});
     return {
       success: true,
       roadmapId: res.roadmap?.roadmapId,
@@ -38,12 +37,10 @@ export async function regenerateScheduleServerAction(
 ): Promise<{ success: boolean; message?: string }> {
   try {
     const accessToken = await getAccessToken();
-    const userId = await getAuthenticatedUserId();
     const transport = createServerTransport(accessToken);
     const client = createClient(CoachingService, transport);
 
     const res = await client.regenerateSchedule({
-      userId: userId || "",
       roadmapId,
       reason,
     });
@@ -66,12 +63,10 @@ export async function createAdhocSessionPlanServerAction(
 ): Promise<{ success: boolean; sessionPlanId?: string; message?: string }> {
   try {
     const accessToken = await getAccessToken();
-    const userId = await getAuthenticatedUserId();
     const transport = createServerTransport(accessToken);
     const client = createClient(CoachingService, transport);
 
     const res = await client.createAdhocSessionPlan({
-      userId: userId || "",
       exerciseIds,
     });
     return {

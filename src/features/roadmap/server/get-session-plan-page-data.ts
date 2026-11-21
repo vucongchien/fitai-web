@@ -38,7 +38,7 @@ async function getRealSessionPlanData(
   const profileClient = createClient(ProfileService, transport);
 
   const [sessionRes, injuryRes] = await Promise.all([
-    coachingClient.getSessionPlan({ userId, sessionPlanId }),
+    coachingClient.getSessionPlan({ sessionPlanId }),
     profileClient.getInjuryHistory({ userId }),
   ]);
 

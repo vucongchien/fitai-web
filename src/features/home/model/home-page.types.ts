@@ -53,8 +53,9 @@ export interface FeaturedExerciseItem {
   muscleGroup: string;
   equipment: string;
   durationMins: number;
-  prescription: string;
+  prescription?: string;
   isWeighted: boolean;
+  hasAiSupported?: boolean;
   imageUrl?: string;
 }
 

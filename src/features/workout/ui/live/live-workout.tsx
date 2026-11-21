@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 
 import {
   cancelAllSpeech,
@@ -226,9 +226,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           prepTimerRef.current = null;
         }
         cleanupEffects?.();
-        audio.stopAll();
-        camera.stop();
-        motion.dispose();
       };
     },
     [
@@ -242,6 +239,26 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       sessionStatus,
       workoutEffects,
     ],
+  );
+
+  // Clean up media and engine resources safely on unmount without trigger ref loops
+  const subscribeCleanup = useCallback(() => {
+    return () => {
+      if (prepTimerRef.current !== null) {
+        clearInterval(prepTimerRef.current);
+        prepTimerRef.current = null;
+      }
+      audio.stopAll();
+      camera.stop();
+      motion.dispose();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useSyncExternalStore(
+    subscribeCleanup,
+    () => 0,
+    () => 0,
   );
 
   if (!step || !exercise) {

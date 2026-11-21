@@ -137,10 +137,10 @@ describe("profile Mapper", () => {
       expect(vm.user.dateOfBirth).toBe("1989-12-13");
       expect(vm.user.gender).toBe("Other");
       expect(vm.settings.coachStyle).toBe("Scientific");
-      expect(vm.settings.availableEquipment).toContain("Full Gym");
-      expect(vm.settings.availableEquipment).toContain("Kettlebell");
+      expect(vm.settings.availableEquipment).toContain("FULL_GYM");
+      expect(vm.settings.availableEquipment).toContain("KETTLEBELL");
       expect(vm.healthMetrics.goals).toStrictEqual(["Strength", "Endurance"]);
-      expect(vm.healthMetrics.preferredMuscleGroups).toStrictEqual(["Legs", "Glutes", "Core"]);
+      expect(vm.healthMetrics.preferredMuscleGroups).toStrictEqual(["LEGS", "GLUTES", "CORE"]);
       expect(vm.highlights.currentWeightKg).toBe(58);
       expect(vm.bestPr?.exerciseName).toBe("Barbell Back Squat");
       expect(vm.bestPr?.weightKg).toBe(95);

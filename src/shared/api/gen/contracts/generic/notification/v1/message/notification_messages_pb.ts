@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/generic/notification/v1/message/notification_messages.proto.
  */
 export const file_contracts_generic_notification_v1_message_notification_messages: GenFile = /*@__PURE__*/
-  fileDesc("CkVjb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvbWVzc2FnZS9ub3RpZmljYXRpb25fbWVzc2FnZXMucHJvdG8SKWNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlItgBChtTZW5kUHVzaE5vdGlmaWNhdGlvblJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRINCgV0aXRsZRgCIAEoCRIMCgRib2R5GAMgASgJEl4KBGRhdGEYBCADKAsyUC5jb250cmFjdHMuZ2VuZXJpYy5ub3RpZmljYXRpb24udjEubWVzc2FnZS5TZW5kUHVzaE5vdGlmaWNhdGlvblJlcXVlc3QuRGF0YUVudHJ5GisKCURhdGFFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIlgKHFNlbmRQdXNoTm90aWZpY2F0aW9uUmVzcG9uc2USFwoPbm90aWZpY2F0aW9uX2lkGAEgASgJEg4KBnN0YXR1cxgCIAEoCRIPCgdtZXNzYWdlGAMgASgJIkcKGlJlZ2lzdGVyRGV2aWNlVG9rZW5SZXF1ZXN0EhQKDGRldmljZV90b2tlbhgBIAEoCRITCgtkZXZpY2VfdHlwZRgCIAEoCSI/ChtSZWdpc3RlckRldmljZVRva2VuUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIPCgdtZXNzYWdlGAIgASgJIjEKHkdldE5vdGlmaWNhdGlvblNldHRpbmdzUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIqUBCh9HZXROb3RpZmljYXRpb25TZXR0aW5nc1Jlc3BvbnNlEg8KB3VzZXJfaWQYASABKAkSEwoLZW5hYmxlX3B1c2gYAiABKAgSFAoMZW5hYmxlX2VtYWlsGAMgASgIEhIKCmVuYWJsZV9zbXMYBCABKAgSGQoRcXVpZXRfaG91cnNfc3RhcnQYBSABKAkSFwoPcXVpZXRfaG91cnNfZW5kGAYgASgJIqcBCiFVcGRhdGVOb3RpZmljYXRpb25TZXR0aW5nc1JlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRITCgtlbmFibGVfcHVzaBgCIAEoCBIUCgxlbmFibGVfZW1haWwYAyABKAgSEgoKZW5hYmxlX3NtcxgEIAEoCBIZChFxdWlldF9ob3Vyc19zdGFydBgFIAEoCRIXCg9xdWlldF9ob3Vyc19lbmQYBiABKAkiRgoiVXBkYXRlTm90aWZpY2F0aW9uU2V0dGluZ3NSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAki7wEKEE5vdGlmaWNhdGlvbkl0ZW0SFwoPbm90aWZpY2F0aW9uX2lkGAEgASgJEg0KBXRpdGxlGAIgASgJEgwKBGJvZHkYAyABKAkSUwoEZGF0YRgEIAMoCzJFLmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLk5vdGlmaWNhdGlvbkl0ZW0uRGF0YUVudHJ5Eg8KB2lzX3JlYWQYBSABKAgSEgoKY3JlYXRlZF9hdBgGIAEoCRorCglEYXRhRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ASJKChhMaXN0Tm90aWZpY2F0aW9uc1JlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRINCgVsaW1pdBgCIAEoBRIOCgZvZmZzZXQYAyABKAUihAEKGUxpc3ROb3RpZmljYXRpb25zUmVzcG9uc2USUgoNbm90aWZpY2F0aW9ucxgBIAMoCzI7LmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLk5vdGlmaWNhdGlvbkl0ZW0SEwoLdG90YWxfY291bnQYAiABKAUiSQodTWFya05vdGlmaWNhdGlvbkFzUmVhZFJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRIXCg9ub3RpZmljYXRpb25faWQYAiABKAkiQgoeTWFya05vdGlmaWNhdGlvbkFzUmVhZFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCUJ2WnRnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9nZW5lcmljL25vdGlmaWNhdGlvbi92MS9tZXNzYWdlO25vdGlmaWNhdGlvbnYxbWVzc2FnZWIGcHJvdG8z");
+  fileDesc("CkVjb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvbWVzc2FnZS9ub3RpZmljYXRpb25fbWVzc2FnZXMucHJvdG8SKWNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlItgBChtTZW5kUHVzaE5vdGlmaWNhdGlvblJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCRINCgV0aXRsZRgCIAEoCRIMCgRib2R5GAMgASgJEl4KBGRhdGEYBCADKAsyUC5jb250cmFjdHMuZ2VuZXJpYy5ub3RpZmljYXRpb24udjEubWVzc2FnZS5TZW5kUHVzaE5vdGlmaWNhdGlvblJlcXVlc3QuRGF0YUVudHJ5GisKCURhdGFFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIlgKHFNlbmRQdXNoTm90aWZpY2F0aW9uUmVzcG9uc2USFwoPbm90aWZpY2F0aW9uX2lkGAEgASgJEg4KBnN0YXR1cxgCIAEoCRIPCgdtZXNzYWdlGAMgASgJIkcKGlJlZ2lzdGVyRGV2aWNlVG9rZW5SZXF1ZXN0EhQKDGRldmljZV90b2tlbhgBIAEoCRITCgtkZXZpY2VfdHlwZRgCIAEoCSI/ChtSZWdpc3RlckRldmljZVRva2VuUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIPCgdtZXNzYWdlGAIgASgJIiAKHkdldE5vdGlmaWNhdGlvblNldHRpbmdzUmVxdWVzdCKlAQofR2V0Tm90aWZpY2F0aW9uU2V0dGluZ3NSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEhMKC2VuYWJsZV9wdXNoGAIgASgIEhQKDGVuYWJsZV9lbWFpbBgDIAEoCBISCgplbmFibGVfc21zGAQgASgIEhkKEXF1aWV0X2hvdXJzX3N0YXJ0GAUgASgJEhcKD3F1aWV0X2hvdXJzX2VuZBgGIAEoCSKWAQohVXBkYXRlTm90aWZpY2F0aW9uU2V0dGluZ3NSZXF1ZXN0EhMKC2VuYWJsZV9wdXNoGAEgASgIEhQKDGVuYWJsZV9lbWFpbBgCIAEoCBISCgplbmFibGVfc21zGAMgASgIEhkKEXF1aWV0X2hvdXJzX3N0YXJ0GAQgASgJEhcKD3F1aWV0X2hvdXJzX2VuZBgFIAEoCSJGCiJVcGRhdGVOb3RpZmljYXRpb25TZXR0aW5nc1Jlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSLvAQoQTm90aWZpY2F0aW9uSXRlbRIXCg9ub3RpZmljYXRpb25faWQYASABKAkSDQoFdGl0bGUYAiABKAkSDAoEYm9keRgDIAEoCRJTCgRkYXRhGAQgAygLMkUuY29udHJhY3RzLmdlbmVyaWMubm90aWZpY2F0aW9uLnYxLm1lc3NhZ2UuTm90aWZpY2F0aW9uSXRlbS5EYXRhRW50cnkSDwoHaXNfcmVhZBgFIAEoCBISCgpjcmVhdGVkX2F0GAYgASgJGisKCURhdGFFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIjkKGExpc3ROb3RpZmljYXRpb25zUmVxdWVzdBINCgVsaW1pdBgBIAEoBRIOCgZvZmZzZXQYAiABKAUihAEKGUxpc3ROb3RpZmljYXRpb25zUmVzcG9uc2USUgoNbm90aWZpY2F0aW9ucxgBIAMoCzI7LmNvbnRyYWN0cy5nZW5lcmljLm5vdGlmaWNhdGlvbi52MS5tZXNzYWdlLk5vdGlmaWNhdGlvbkl0ZW0SEwoLdG90YWxfY291bnQYAiABKAUiOAodTWFya05vdGlmaWNhdGlvbkFzUmVhZFJlcXVlc3QSFwoPbm90aWZpY2F0aW9uX2lkGAEgASgJIkIKHk1hcmtOb3RpZmljYXRpb25Bc1JlYWRSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAlCdlp0Z2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvZ2VuZXJpYy9ub3RpZmljYXRpb24vdjEvbWVzc2FnZTtub3RpZmljYXRpb252MW1lc3NhZ2ViBnByb3RvMw");
 
 /**
  * @generated from message contracts.generic.notification.v1.message.SendPushNotificationRequest
@@ -123,10 +123,6 @@ export const RegisterDeviceTokenResponseSchema: GenMessage<RegisterDeviceTokenRe
  * @generated from message contracts.generic.notification.v1.message.GetNotificationSettingsRequest
  */
 export type GetNotificationSettingsRequest = Message<"contracts.generic.notification.v1.message.GetNotificationSettingsRequest"> & {
-  /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
 };
 
 /**
@@ -187,32 +183,27 @@ export const GetNotificationSettingsResponseSchema: GenMessage<GetNotificationSe
  */
 export type UpdateNotificationSettingsRequest = Message<"contracts.generic.notification.v1.message.UpdateNotificationSettingsRequest"> & {
   /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
-
-  /**
-   * @generated from field: bool enable_push = 2;
+   * @generated from field: bool enable_push = 1;
    */
   enablePush: boolean;
 
   /**
-   * @generated from field: bool enable_email = 3;
+   * @generated from field: bool enable_email = 2;
    */
   enableEmail: boolean;
 
   /**
-   * @generated from field: bool enable_sms = 4;
+   * @generated from field: bool enable_sms = 3;
    */
   enableSms: boolean;
 
   /**
-   * @generated from field: string quiet_hours_start = 5;
+   * @generated from field: string quiet_hours_start = 4;
    */
   quietHoursStart: string;
 
   /**
-   * @generated from field: string quiet_hours_end = 6;
+   * @generated from field: string quiet_hours_end = 5;
    */
   quietHoursEnd: string;
 };
@@ -293,17 +284,12 @@ export const NotificationItemSchema: GenMessage<NotificationItem> = /*@__PURE__*
  */
 export type ListNotificationsRequest = Message<"contracts.generic.notification.v1.message.ListNotificationsRequest"> & {
   /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
-
-  /**
-   * @generated from field: int32 limit = 2;
+   * @generated from field: int32 limit = 1;
    */
   limit: number;
 
   /**
-   * @generated from field: int32 offset = 3;
+   * @generated from field: int32 offset = 2;
    */
   offset: number;
 };
@@ -342,14 +328,9 @@ export const ListNotificationsResponseSchema: GenMessage<ListNotificationsRespon
  */
 export type MarkNotificationAsReadRequest = Message<"contracts.generic.notification.v1.message.MarkNotificationAsReadRequest"> & {
   /**
-   * @generated from field: string user_id = 1;
-   */
-  userId: string;
-
-  /**
    * Để trống hoặc "all" để đánh dấu đọc hết
    *
-   * @generated from field: string notification_id = 2;
+   * @generated from field: string notification_id = 1;
    */
   notificationId: string;
 };

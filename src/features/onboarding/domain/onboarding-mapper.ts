@@ -50,34 +50,6 @@ export function mapExperienceToProto(exp: string): string {
   }
 }
 
-export function mapEquipmentToProto(equipmentList: string[]): string[] {
-  return equipmentList.map((item) => {
-    const upper = (item || "").trim().toUpperCase();
-    if (upper.includes("FULL GYM") || upper.includes("FULL_GYM")) {
-      return "FULL_GYM";
-    }
-    if (upper.includes("DUMBBELL")) {
-      return "DUMBBELL_ONLY";
-    }
-    if (upper.includes("BARBELL")) {
-      return "BARBELL";
-    }
-    if (upper.includes("BAND")) {
-      return "RESISTANCE_BAND";
-    }
-    if (upper.includes("KETTLEBELL")) {
-      return "KETTLEBELL";
-    }
-    if (upper.includes("MACHINE")) {
-      return "MACHINE";
-    }
-    if (upper.includes("BODYWEIGHT") || upper.includes("BODY WEIGHT") || upper === "BODY WEIGHT") {
-      return "BODYWEIGHT";
-    }
-    return upper.replaceAll(/\s+/g, "_");
-  });
-}
-
 export function mapCoachStyleToProto(style: string): string {
   switch (style?.toLowerCase()) {
     case "motivational":
