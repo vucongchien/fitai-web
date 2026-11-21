@@ -32,8 +32,9 @@ describe("Mobile Viewport & Metadata Configuration", () => {
       title: "FITAI",
     });
     expect(metadata.icons).toEqual({
-      apple: "/icons/icon-192.png",
-      icon: "/icons/icon-192.png",
+      icon: [{ url: "/icons/icon-192.png?v=2", sizes: "192x192", type: "image/png" }],
+      shortcut: "/icons/icon-192.png?v=2",
+      apple: "/icons/icon-192.png?v=2",
     });
   });
 });

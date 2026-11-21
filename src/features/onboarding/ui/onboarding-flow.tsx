@@ -13,7 +13,11 @@ import {
 } from "@/features/onboarding/domain/onboarding-schema";
 import type { OnboardingValues } from "@/features/onboarding/domain/onboarding-schema";
 import { calculateWeeklyScheduleStats } from "@/features/onboarding/domain/workout-times-normalizer";
-import { saveOnboardingProfileServerAction } from "@/features/onboarding/server/onboarding-actions";
+import {
+  initiateOnboardingRoadmapServerAction,
+  saveOnboardingProfileServerAction,
+} from "@/features/onboarding/server/onboarding-actions";
+import { PlanGeneratingView } from "@/features/onboarding/ui/components/plan-generating-view";
 import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { calculateBMI } from "@/features/profile/model/profile.mapper";
 import { cn } from "@/shared/lib/cn";
@@ -125,6 +129,8 @@ export function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [generationState, setGenerationState] = useState<"idle" | "generating" | "error">("idle");
+  const [generationError, setGenerationError] = useState<string | null>(null);
   const {
     equipments: catalogEquipments,
     muscles: catalogMuscles,
@@ -242,6 +248,25 @@ export function OnboardingFlow() {
       return;
     }
 
+    const runRoadmapGeneration = async () => {
+      setGenerationState("generating");
+      setGenerationError(null);
+      try {
+        const roadmapRes = await initiateOnboardingRoadmapServerAction();
+        if (!roadmapRes.success) {
+          setGenerationState("error");
+          setGenerationError(roadmapRes.message);
+          return;
+        }
+        sessionStorage.setItem("fitai-onboarding-complete", "true");
+        router.push("/home", { transitionTypes: ["nav-forward"] });
+      } catch (error) {
+        console.error("Failed to generate roadmap via gRPC:", error);
+        setGenerationState("error");
+        setGenerationError("Network or server error while generating your 4-week plan.");
+      }
+    };
+
     setIsSubmitting(true);
     try {
       // Dùng getValues() để lấy snapshot đầy đủ tại thời điểm submit
@@ -251,14 +276,51 @@ export function OnboardingFlow() {
         toast.error(result.message || "Failed to save profile. Please review your information.");
         return;
       }
-      sessionStorage.setItem("fitai-onboarding-complete", "true");
-      router.push("/home", { transitionTypes: ["nav-forward"] });
     } catch (error) {
       console.error("Failed to submit onboarding via gRPC:", error);
       toast.error("Network or server error while saving profile. Please try again.");
+      return;
     } finally {
       setIsSubmitting(false);
     }
+
+    await runRoadmapGeneration();
+  }
+
+  const handleRetryGeneration = useCallback(async () => {
+    setGenerationState("generating");
+    setGenerationError(null);
+    try {
+      const roadmapRes = await initiateOnboardingRoadmapServerAction();
+      if (!roadmapRes.success) {
+        setGenerationState("error");
+        setGenerationError(roadmapRes.message);
+        return;
+      }
+      sessionStorage.setItem("fitai-onboarding-complete", "true");
+      router.push("/home", { transitionTypes: ["nav-forward"] });
+    } catch (error) {
+      console.error("Failed to retry roadmap generation via gRPC:", error);
+      setGenerationState("error");
+      setGenerationError("Network or server error while generating your 4-week plan.");
+    }
+  }, [router]);
+
+  const handleContinueAnyway = useCallback(() => {
+    sessionStorage.setItem("fitai-onboarding-complete", "true");
+    router.push("/home", { transitionTypes: ["nav-forward"] });
+  }, [router]);
+
+  if (generationState !== "idle") {
+    return (
+      <PlanGeneratingView
+        errorMessage={generationError}
+        onContinueAnyway={handleContinueAnyway}
+        onRetry={handleRetryGeneration}
+        status={generationState}
+        values={getValues()}
+      />
+    );
   }
 
   const errorMessage = Object.values(errors)[0]?.message;

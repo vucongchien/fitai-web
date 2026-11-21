@@ -104,6 +104,7 @@ export interface AdhocAiRecommendationOutput {
     exerciseName: string;
     targetSets: number;
     targetReps: number;
+    durationSeconds?: number;
     notes: string;
     restSetSec: number;
   }[];
@@ -112,6 +113,7 @@ export interface AdhocAiRecommendationOutput {
     exerciseName: string;
     targetSets: number;
     targetReps: number;
+    durationSeconds?: number;
     notes: string;
     restSetSec: number;
   }[];
@@ -164,7 +166,7 @@ export async function getAiRecommendation(
       exerciseId: ex.exerciseId,
       exerciseName: ex.exerciseName,
       targetSets: ex.targetSets || 3,
-      targetReps: ex.targetReps || 10,
+      targetReps: ex.durationSeconds > 0 ? ex.targetReps || 0 : ex.targetReps || 10,
       targetWeight: ex.targetWeight > 0 ? ex.targetWeight : undefined,
       durationSeconds: ex.durationSeconds || 0,
       notes: ex.notes || "",
@@ -175,7 +177,8 @@ export async function getAiRecommendation(
       exerciseId: ex.exerciseId,
       exerciseName: ex.exerciseName,
       targetSets: ex.targetSets || 2,
-      targetReps: ex.targetReps || 15,
+      targetReps: ex.durationSeconds > 0 ? ex.targetReps || 0 : ex.targetReps || 15,
+      durationSeconds: ex.durationSeconds || 0,
       notes: ex.notes || "Warm-up",
       restSetSec: ex.restSetSec || 45,
     })),
@@ -183,7 +186,8 @@ export async function getAiRecommendation(
       exerciseId: ex.exerciseId,
       exerciseName: ex.exerciseName,
       targetSets: ex.targetSets || 2,
-      targetReps: ex.targetReps || 12,
+      targetReps: ex.durationSeconds > 0 ? ex.targetReps || 0 : ex.targetReps || 12,
+      durationSeconds: ex.durationSeconds || 0,
       notes: ex.notes || "Cool-down",
       restSetSec: ex.restSetSec || 30,
     })),
