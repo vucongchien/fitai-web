@@ -50,7 +50,7 @@ export function SortableAdhocItem({ exercise, index, onEdit, onDelete }: Sortabl
         <div className="adhoc-row-info">
           <strong>{exercise.name}</strong>
           <span>
-            {exercise.sets} × {exercise.reps}
+            {exercise.prescription || `${exercise.sets} × ${exercise.reps}`}
             {hasWeight ? ` · ${exercise.weightKg}kg` : ""} · {exercise.rest} rest
           </span>
         </div>
