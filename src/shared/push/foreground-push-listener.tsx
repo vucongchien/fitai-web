@@ -1,9 +1,13 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { onMessage } from "firebase/messaging";
 import { useRouter } from "next/navigation";
 import { useRef, useSyncExternalStore } from "react";
 
+import { resolveNotificationHref } from "@/features/notification/model/notification-routing";
+import { markNotificationAsReadAction } from "@/features/notification/server/notification-actions";
+import { invalidateCachedThread, socialQueryKeys } from "@/features/social/lib/post-cache";
 import { getMessagingIfSupported } from "@/shared/push/firebase-app";
 import { usePushRegistration } from "@/shared/push/use-push-registration";
 import { notificationBadgeStore } from "@/shared/ui/header-actions";
@@ -37,13 +41,27 @@ function playNotificationChime() {
   }
 }
 
-type PushHandler = (title: string, body: string) => void;
+type PushHandler = (title: string, body: string, data?: Record<string, string>) => void;
 const activeHandlers = new Set<PushHandler>();
+let activeNavigate: ((href: string) => void) | null = null;
 let listenerInitialized = false;
 let lastPushKey = "";
 let lastPushAt = 0;
 
-function dispatchPush(title: string, body: string) {
+function navigateFromPushToast(href: string, data?: Record<string, string>) {
+  const notificationId = data?.notificationId;
+  if (notificationId) {
+    notificationListStore.markReadOptimistic(notificationId);
+    void markNotificationAsReadAction(notificationId).then(() => notificationBadgeStore.refresh());
+  }
+  if (activeNavigate) {
+    activeNavigate(href);
+  } else if (typeof globalThis.window !== "undefined") {
+    globalThis.window.location.assign(href);
+  }
+}
+
+function dispatchPush(title: string, body: string, data?: Record<string, string>) {
   const key = `${title}|${body}`;
   const now = Date.now();
   if (key === lastPushKey && now - lastPushAt < 1500) {
@@ -52,11 +70,18 @@ function dispatchPush(title: string, body: string) {
   lastPushKey = key;
   lastPushAt = now;
 
+  if (data?.feedItemId) {
+    invalidateCachedThread(data.feedItemId);
+  }
+
   playNotificationChime();
-  toast.info(body ? `${title}: ${body}` : title);
+  const targetHref = resolveNotificationHref(data) ?? "/notifications";
+  toast.info(body ? `${title}: ${body}` : title, {
+    onClick: () => navigateFromPushToast(targetHref, data),
+  });
   void notificationBadgeStore.refresh();
   void notificationListStore.refresh();
-  activeHandlers.forEach((fn) => fn(title, body));
+  activeHandlers.forEach((fn) => fn(title, body, data));
 }
 
 function ensureGlobalListeners() {
@@ -66,9 +91,11 @@ function ensureGlobalListeners() {
   if ("serviceWorker" in navigator) {
     void navigator.serviceWorker.getRegistration("/").then((reg) => reg?.update());
     navigator.serviceWorker.addEventListener("message", (event: MessageEvent) => {
-      const msg = event.data as { type?: string; title?: string; body?: string } | undefined;
+      const msg = event.data as
+        | { type?: string; title?: string; body?: string; data?: Record<string, string> }
+        | undefined;
       if (msg?.type === "FITAI_PUSH") {
-        dispatchPush(msg.title ?? "FITAI", msg.body ?? "");
+        dispatchPush(msg.title ?? "FITAI", msg.body ?? "", msg.data);
       }
     });
   }
@@ -78,7 +105,7 @@ function ensureGlobalListeners() {
     onMessage(messaging, (payload) => {
       const title = payload.notification?.title ?? payload.data?.title ?? "FITAI";
       const body = payload.notification?.body ?? payload.data?.body ?? "";
-      dispatchPush(title, body);
+      dispatchPush(title, body, payload.data);
     });
   });
 }
@@ -87,19 +114,35 @@ const getSnapshot = () => true;
 
 export function ForegroundPushListener() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const routerRef = useRef(router);
+  const queryClientRef = useRef(queryClient);
   routerRef.current = router;
+  queryClientRef.current = queryClient;
 
   usePushRegistration();
 
   useSyncExternalStore(
     () => {
       ensureGlobalListeners();
-      const handler: PushHandler = () => {
+      const navigate = (href: string) => routerRef.current.push(href);
+      activeNavigate = navigate;
+      const handler: PushHandler = (_title, _body, data) => {
+        if (data?.feedItemId) {
+          void queryClientRef.current.invalidateQueries({
+            queryKey: socialQueryKeys.comments(data.feedItemId),
+          });
+          void queryClientRef.current.invalidateQueries({
+            queryKey: socialQueryKeys.threadBootstrap(data.feedItemId),
+          });
+        }
         routerRef.current.refresh();
       };
       activeHandlers.add(handler);
       return () => {
+        if (activeNavigate === navigate) {
+          activeNavigate = null;
+        }
         activeHandlers.delete(handler);
       };
     },
