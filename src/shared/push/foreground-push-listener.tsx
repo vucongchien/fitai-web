@@ -6,6 +6,8 @@ import { useRef, useSyncExternalStore } from "react";
 
 import { getMessagingIfSupported } from "@/shared/push/firebase-app";
 import { usePushRegistration } from "@/shared/push/use-push-registration";
+import { notificationBadgeStore } from "@/shared/ui/header-actions";
+import { notificationListStore } from "@/shared/ui/side-panel/quick-notifications-pane";
 import { toast } from "@/shared/ui/toast";
 
 function playNotificationChime() {
@@ -52,6 +54,8 @@ function dispatchPush(title: string, body: string) {
 
   playNotificationChime();
   toast.info(body ? `${title}: ${body}` : title);
+  void notificationBadgeStore.refresh();
+  void notificationListStore.refresh();
   activeHandlers.forEach((fn) => fn(title, body));
 }
 
@@ -60,6 +64,7 @@ function ensureGlobalListeners() {
   listenerInitialized = true;
 
   if ("serviceWorker" in navigator) {
+    void navigator.serviceWorker.getRegistration("/").then((reg) => reg?.update());
     navigator.serviceWorker.addEventListener("message", (event: MessageEvent) => {
       const msg = event.data as { type?: string; title?: string; body?: string } | undefined;
       if (msg?.type === "FITAI_PUSH") {
