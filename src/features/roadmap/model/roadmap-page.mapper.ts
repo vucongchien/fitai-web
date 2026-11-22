@@ -261,17 +261,20 @@ export function adaptRoadmapPageData(
         const isRest = sp.targetMuscleGroups?.length === 0;
         const isNext = sp.sessionPlanId === targetNextSessionId;
 
-        const duration = sp.prescription
-          ? Math.round(
-              [
-                ...(sp.prescription.warmUps || []),
-                ...(sp.prescription.mainExercises || []),
-                ...(sp.prescription.coolDowns || []),
-              ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-            ) || 45
-          : isRest
-            ? 20
-            : 40;
+        const duration =
+          sp.estimatedDurationMinutes && sp.estimatedDurationMinutes > 0
+            ? sp.estimatedDurationMinutes
+            : sp.prescription
+              ? Math.round(
+                  [
+                    ...(sp.prescription.warmUps || []),
+                    ...(sp.prescription.mainExercises || []),
+                    ...(sp.prescription.coolDowns || []),
+                  ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
+                ) || 45
+              : isRest
+                ? 20
+                : 40;
 
         const reasoning = sp.reasoning?.trim() || "";
         const isAdapted = Boolean(
@@ -449,15 +452,18 @@ export function adaptSessionPlanPageData(
 ): SessionPlanPageData {
   const { dayStr, dateStr } = formatDate(sessionRes.scheduledDate as any);
 
-  const duration = sessionRes.prescription
-    ? Math.round(
-        [
-          ...(sessionRes.prescription.warmUps || []),
-          ...(sessionRes.prescription.mainExercises || []),
-          ...(sessionRes.prescription.coolDowns || []),
-        ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-      ) || 45 //Hard code: default workout duration
-    : 45; //Hard code: fallback default duration
+  const duration =
+    sessionRes.estimatedDurationMinutes && sessionRes.estimatedDurationMinutes > 0
+      ? sessionRes.estimatedDurationMinutes
+      : sessionRes.prescription
+        ? Math.round(
+            [
+              ...(sessionRes.prescription.warmUps || []),
+              ...(sessionRes.prescription.mainExercises || []),
+              ...(sessionRes.prescription.coolDowns || []),
+            ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
+          ) || 45 //Hard code: default workout duration
+        : 45; //Hard code: fallback default duration
 
   const exercises = sessionRes.prescription
     ? [
@@ -467,7 +473,10 @@ export function adaptSessionPlanPageData(
       ].map((ex) => ({
         exerciseId: ex.exerciseId,
         name: ex.exerciseName,
-        prescription: `${ex.targetSets} × ${ex.targetReps}`,
+        prescription:
+          (ex.durationSeconds ?? 0) > 0 && !(ex.targetReps > 0)
+            ? `${ex.targetSets} × ${ex.durationSeconds}s`
+            : `${ex.targetSets} × ${ex.targetReps}`,
         rest: `${ex.restSetSec || 60} sec`, //Hard code: fallback rest set time
         notes: ex.notes || "Maintain controlled range of motion.", //Hard code: default instructions note
       }))
