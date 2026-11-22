@@ -2,7 +2,7 @@ import { Trophy } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-import { getActivityFeed } from "@/features/social/server/get-activity-feed";
+import { getActivityFeed, getCurrentSocialUser } from "@/features/social/server/get-activity-feed";
 import { CommunityView } from "@/features/social/ui/community-view";
 import { FeedSkeleton } from "@/features/social/ui/feed-skeleton";
 import { getAuthenticatedUserId } from "@/shared/auth/session";
@@ -11,8 +11,19 @@ import { PageTransition } from "@/shared/ui/page-transition";
 export const metadata = { title: "Community — FITAI" };
 
 async function CommunityContent() {
-  const [data, currentUserId] = await Promise.all([getActivityFeed(), getAuthenticatedUserId()]);
-  return <CommunityView data={data} currentUserId={currentUserId} />;
+  const currentUserId = await getAuthenticatedUserId();
+  const [data, currentUser] = await Promise.all([
+    getActivityFeed(),
+    getCurrentSocialUser(currentUserId),
+  ]);
+  return (
+    <CommunityView
+      data={data}
+      currentUserId={currentUserId}
+      currentUserName={currentUser.name}
+      currentUserAvatarUrl={currentUser.avatarUrl}
+    />
+  );
 }
 
 const FEED_FALLBACK = <FeedSkeleton />;

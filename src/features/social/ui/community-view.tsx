@@ -10,11 +10,18 @@ import { FeedList } from "./feed-list";
 interface Props {
   data: ActivityFeedVM;
   currentUserId?: string;
+  currentUserName?: string;
+  currentUserAvatarUrl?: string;
 }
 
 type FeedTab = "all" | "following";
 
-export function CommunityView({ data, currentUserId }: Props) {
+export function CommunityView({
+  data,
+  currentUserId,
+  currentUserName,
+  currentUserAvatarUrl,
+}: Props) {
   const [activeTab, setActiveTab] = useState<FeedTab>("all");
   const [followingFeed, setFollowingFeed] = useState<ActivityFeedVM | null>(null);
   const [loadingFollowing, setLoadingFollowing] = useState(false);
@@ -95,6 +102,8 @@ export function CommunityView({ data, currentUserId }: Props) {
           initialItems={followingFeed.items}
           initialNextCursor={followingFeed.nextCursor}
           currentUserId={currentUserId}
+          currentUserName={currentUserName}
+          currentUserAvatarUrl={currentUserAvatarUrl}
           feedMode="following"
         />
       </div>
@@ -109,6 +118,8 @@ export function CommunityView({ data, currentUserId }: Props) {
         initialItems={data.items}
         initialNextCursor={data.nextCursor}
         currentUserId={currentUserId}
+        currentUserName={currentUserName}
+        currentUserAvatarUrl={currentUserAvatarUrl}
         feedMode="all"
       />
     </div>

@@ -21,7 +21,7 @@ export function CreatePostModal({
   isOpen,
   onClose,
   onPostCreated,
-  userAvatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+  userAvatarUrl = "",
   userName = "You",
 }: CreatePostModalProps) {
   const [caption, setCaption] = useState("");
@@ -104,8 +104,14 @@ export function CreatePostModal({
 
         {/* User Info Bar */}
         <div className="mt-4 flex items-center gap-3">
-          <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-neutral-200 bg-neutral-100 flex-shrink-0">
-            <Image src={userAvatarUrl} alt={userName} fill sizes="40px" className="object-cover" />
+          <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-neutral-200 bg-neutral-100 flex-shrink-0 flex items-center justify-center">
+            {userAvatarUrl ? (
+              <Image src={userAvatarUrl} alt={userName} fill sizes="40px" className="object-cover" />
+            ) : (
+              <span className="text-sm font-semibold text-neutral-600">
+                {userName.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
           <div>
             <span className="text-sm font-semibold text-neutral-900 block leading-tight">

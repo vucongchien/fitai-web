@@ -30,3 +30,28 @@ export async function getActivityFeed(feedMode: ActivityFeedMode = "all"): Promi
     return { items: [], nextCursor: "" };
   }
 }
+
+export async function getCurrentSocialUser(
+  userId?: string,
+): Promise<{ name: string; avatarUrl: string }> {
+  if (!userId || !process.env.FITAI_RPC_URL) {
+    return { name: "You", avatarUrl: "" };
+  }
+  const accessToken = await getAccessToken();
+  if (!accessToken) {
+    return { name: "You", avatarUrl: "" };
+  }
+
+  try {
+    const transport = createServerTransport(accessToken);
+    const client = createClient(SocialService, transport);
+    const res = await client.getSocialSummary({ userId });
+    return {
+      name: res.fullName || "You",
+      avatarUrl: res.avatarUrl || "",
+    };
+  } catch (error) {
+    console.warn("[getCurrentSocialUser] gRPC failed:", error);
+    return { name: "You", avatarUrl: "" };
+  }
+}
