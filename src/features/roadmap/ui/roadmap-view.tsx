@@ -3,12 +3,12 @@
 import { Activity, ArrowRight, CalendarRange, Gauge, Printer, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
-import { printRoadmapPlan } from "@/features/roadmap/model/print-plan";
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
+import { ExportRoadmapPdfDialog } from "@/features/roadmap/ui/export-roadmap-pdf-dialog";
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
 import { ChallengeEntryCard } from "@/features/solo-match/ui/challenge-entry-card";
 import { FeedbackState } from "@/shared/ui/feedback-state";
@@ -38,6 +38,7 @@ function ContextIcon({ iconName }: { iconName: string }) {
 export function RoadmapView({ data }: RoadmapViewProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [exportOpen, setExportOpen] = useState(false);
 
   const handleCreateRoadmap = () => {
     startTransition(async () => {
@@ -94,9 +95,9 @@ export function RoadmapView({ data }: RoadmapViewProps) {
             </div>
             <button
               type="button"
-              onClick={() => printRoadmapPlan(data)}
+              onClick={() => setExportOpen(true)}
               className="ui-button ui-button--secondary ui-button--medium"
-              aria-label="Export week plan as PDF"
+              aria-label="Export roadmap as PDF"
             >
               <span className="ui-button__label">
                 <Printer aria-hidden="true" size={16} />
@@ -131,6 +132,7 @@ export function RoadmapView({ data }: RoadmapViewProps) {
           ))}
         </aside>
       </div>
+      <ExportRoadmapPdfDialog data={data} open={exportOpen} onClose={() => setExportOpen(false)} />
     </>
   );
 }

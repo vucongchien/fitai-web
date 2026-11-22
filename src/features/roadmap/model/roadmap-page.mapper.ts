@@ -11,6 +11,7 @@ import type { GetInjuryHistoryResponse } from "@/shared/api/gen/contracts/suppor
 
 import type {
   ContextItem,
+  PrintExerciseItem,
   RoadmapPageData,
   SchedulePageData,
   ScheduleWeek,
@@ -110,7 +111,73 @@ export function mapSessionStatus(status: SessionPlanStatus, isNext: boolean): Se
   }
 }
 
-export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function formatMuscleLabel(raw: string, muscleLookup?: ReadonlyMap<string, string>): string {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return "";
+  }
+  const catalogName = muscleLookup?.get(trimmed.toLowerCase());
+  if (catalogName) {
+    return catalogName;
+  }
+  if (trimmed.toLowerCase() === "warmup_cooldown") {
+    return "Warm-Up & Cool-Down";
+  }
+  if (UUID_PATTERN.test(trimmed)) {
+    return "Workout Session";
+  }
+  return trimmed.replaceAll("_", " & ").replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+function resolveTargetMuscles(
+  rawMuscles: string[] | undefined,
+  muscleLookup?: ReadonlyMap<string, string>,
+): string[] {
+  if (!rawMuscles || rawMuscles.length === 0) {
+    return [];
+  }
+  const seen = new Set<string>();
+  const resolved: string[] = [];
+  for (const raw of rawMuscles) {
+    const label = formatMuscleLabel(raw, muscleLookup);
+    if (label && !seen.has(label)) {
+      seen.add(label);
+      resolved.push(label);
+    }
+  }
+  return resolved;
+}
+
+function mapPrescriptionExercises(prescription?: SessionPlan["prescription"]): PrintExerciseItem[] {
+  if (!prescription) {
+    return [];
+  }
+  const mapGroup = (
+    items: NonNullable<SessionPlan["prescription"]>["mainExercises"] | undefined,
+    phase: PrintExerciseItem["phase"],
+  ): PrintExerciseItem[] =>
+    (items || []).map((ex) => ({
+      phase,
+      name: ex.exerciseName,
+      sets: ex.targetSets,
+      reps: ex.targetReps,
+      restSec: ex.restSetSec || 60,
+      notes: ex.notes?.trim() || undefined,
+    }));
+
+  return [
+    ...mapGroup(prescription.warmUps, "warmup"),
+    ...mapGroup(prescription.mainExercises, "main"),
+    ...mapGroup(prescription.coolDowns, "cooldown"),
+  ];
+}
+
+export function adaptRoadmapPageData(
+  roadmapRes: Roadmap,
+  muscleLookup?: ReadonlyMap<string, string>,
+): RoadmapPageData {
   const weekPlans = roadmapRes.weekPlans || [];
 
   // Xác định trạng thái của từng tuần và tìm tuần active
@@ -219,18 +286,20 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
             reasoning.toLowerCase().includes("recalibrat")),
         );
 
+        const muscles = resolveTargetMuscles(sp.targetMuscleGroups, muscleLookup);
         currentWeekSessions.push({
           id: sp.sessionPlanId,
           day: dayStr,
           date: dateStr,
-          title: sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
+          title: muscles.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
           time: sp.slotTime || "18:30",
           duration,
           targetRpe: activeWeekPlan.targetRpe || 7,
-          muscles: sp.targetMuscleGroups || [],
+          muscles,
           status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
           reasoning: reasoning || undefined,
           isAdapted,
+          exercises: mapPrescriptionExercises(sp.prescription),
         });
       }
     }
@@ -254,9 +323,12 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
     },
   ];
 
+  const allWeeks = mapScheduleWeeks(roadmapRes, activeWeekNumber, weeks, muscleLookup);
+
   return {
     activeWeek: activeWeekNumber,
     weeks,
+    allWeeks,
     currentWeekSessions,
     currentWeekLabel: `Week ${activeWeekNumber} schedule`,
     currentWeekDateRange,
@@ -264,11 +336,13 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
   };
 }
 
-export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
-  const roadmapData = adaptRoadmapPageData(roadmap);
-  const { activeWeek } = roadmapData;
-
-  const weeks: ScheduleWeek[] = (roadmap.weekPlans || []).map((wp) => {
+function mapScheduleWeeks(
+  roadmap: Roadmap,
+  activeWeek: number,
+  weekSummaries: WeekSummary[],
+  muscleLookup?: ReadonlyMap<string, string>,
+): ScheduleWeek[] {
+  return (roadmap.weekPlans || []).map((wp) => {
     const dateRange = formatWeekDateRange(wp.startDate as any);
 
     const sessions: SessionSummary[] = [];
@@ -325,25 +399,26 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
               reasoning.toLowerCase().includes("recalibrat")),
           );
 
+          const muscles = resolveTargetMuscles(sp.targetMuscleGroups, muscleLookup);
           sessions.push({
             id: sp.sessionPlanId,
             day: dayStr,
             date: dateStr,
-            title:
-              sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
+            title: muscles.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
             time: sp.slotTime || "18:30",
             duration,
-            targetRpe: wp.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
-            muscles: sp.targetMuscleGroups || [],
+            targetRpe: wp.targetRpe || 7,
+            muscles,
             status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
             reasoning: reasoning || undefined,
             isAdapted,
+            exercises: mapPrescriptionExercises(sp.prescription),
           });
         }
       }
     }
 
-    const weekSummary = roadmapData.weeks.find((w) => w.number === wp.weekNumber);
+    const weekSummary = weekSummaries.find((w) => w.number === wp.weekNumber);
     const state = weekSummary ? weekSummary.state : "planned";
 
     return {
@@ -354,16 +429,23 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
       state,
     };
   });
+}
 
+export function adaptSchedulePageData(
+  roadmap: Roadmap,
+  muscleLookup?: ReadonlyMap<string, string>,
+): SchedulePageData {
+  const roadmapData = adaptRoadmapPageData(roadmap, muscleLookup);
   return {
-    activeWeek,
-    weeks,
+    activeWeek: roadmapData.activeWeek,
+    weeks: roadmapData.allWeeks ?? [],
   };
 }
 
 export function adaptSessionPlanPageData(
   sessionRes: SessionPlan,
   injuryRes: GetInjuryHistoryResponse,
+  muscleLookup?: ReadonlyMap<string, string>,
 ): SessionPlanPageData {
   const { dayStr, dateStr } = formatDate(sessionRes.scheduledDate as any);
 
@@ -402,9 +484,11 @@ export function adaptSessionPlanPageData(
       : "No active injury constraints affect today's exercise selection.",
   };
 
+  const resolvedMuscles = resolveTargetMuscles(sessionRes.targetMuscleGroups, muscleLookup);
+
   return {
     sessionPlanId: sessionRes.sessionPlanId,
-    title: sessionRes.targetMuscleGroups?.join(", ") || "Workout Session",
+    title: resolvedMuscles.join(", ") || "Workout Session",
     day: dayStr,
     date: dateStr,
     duration,
