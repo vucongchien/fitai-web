@@ -25,13 +25,6 @@ async function getRealSchedulePageData(
   return adaptSchedulePageData(res.roadmap);
 }
 
-/**
- * Fetches the full four-week schedule.
- *
- * Calls: CoachingService.getActiveRoadmap({ userId }) → every week, day and session plan.
- * `GetActiveRoadmapResponse.roadmap` already carries all four weeks, so the real adapter
- * walks `week_plans → day_plans → session_plans` rather than fetching per week.
- */
 export async function getSchedulePageData(): Promise<SchedulePageData> {
   const { accessToken, userId } = await getAuthenticatedSession();
 

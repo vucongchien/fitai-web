@@ -391,6 +391,10 @@ button {
   border-bottom: 1px solid var(--color-border);
 }
 
+.app-sidebar__brand .brand-mark__wordmark {
+  display: none;
+}
+
 .app-sidebar__nav {
   display: flex;
   flex: 1 1 0%;
@@ -463,6 +467,10 @@ button {
   .app-sidebar__brand {
     justify-content: flex-start;
     padding: 0 1.5rem;
+  }
+
+  .app-sidebar__brand .brand-mark__wordmark {
+    display: inline-flex;
   }
 
   .app-sidebar__nav {

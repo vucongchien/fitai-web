@@ -48,11 +48,6 @@ async function getRealRoadmapPageData(
   }
 }
 
-/**
- * Fetches all data for the Roadmap page.
- *
- * Calls: CoachingService.getActiveRoadmap({ userId }) → weeks, sessions, context
- */
 export async function getRoadmapPageData(): Promise<RoadmapPageData> {
   const { accessToken, userId } = await getAuthenticatedSession();
 

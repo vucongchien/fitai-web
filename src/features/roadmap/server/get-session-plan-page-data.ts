@@ -49,13 +49,6 @@ async function getRealSessionPlanData(
   return adaptSessionPlanPageData(sessionRes.sessionPlan, injuryRes);
 }
 
-/**
- * Fetches all data for the Session Plan preparation page.
- *
- * Calls:
- *   - CoachingService.getSessionPlan({ userId, sessionPlanId }) → exercises, reasoning
- *   - ProfileService.getInjuryHistory({ userId }) → readinessNote
- */
 export async function getSessionPlanPageData(sessionPlanId: string): Promise<SessionPlanPageData> {
   const { accessToken, userId } = await getAuthenticatedSession();
 
