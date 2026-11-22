@@ -126,10 +126,13 @@ export async function deleteCommentAction(commentId: string): Promise<{ success:
   }
 }
 
-export async function fetchMoreFeedAction(cursor: string): Promise<ActivityFeedVM> {
+export async function fetchMoreFeedAction(
+  cursor: string,
+  feedMode: "all" | "following" = "all",
+): Promise<ActivityFeedVM> {
   try {
     const client = await getSocialClient();
-    const res = await client.getActivityFeed({ pageSize: 20, cursor });
+    const res = await client.getActivityFeed({ pageSize: 20, cursor, feedMode });
     return {
       items: res.items.map(mapFeedItem),
       nextCursor: res.nextCursor,

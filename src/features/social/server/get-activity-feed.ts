@@ -8,7 +8,9 @@ import { getAccessToken } from "@/shared/auth/session";
 import { mapFeedItem } from "../model/social.mapper";
 import type { ActivityFeedVM } from "../model/social.types";
 
-export async function getActivityFeed(): Promise<ActivityFeedVM> {
+export type ActivityFeedMode = "all" | "following";
+
+export async function getActivityFeed(feedMode: ActivityFeedMode = "all"): Promise<ActivityFeedVM> {
   const accessToken = await getAccessToken();
   if (!accessToken || !process.env.FITAI_RPC_URL) {
     return { items: [], nextCursor: "" };
@@ -18,7 +20,7 @@ export async function getActivityFeed(): Promise<ActivityFeedVM> {
     const transport = createServerTransport(accessToken);
     const client = createClient(SocialService, transport);
 
-    const res = await client.getActivityFeed({ pageSize: 20, cursor: "" });
+    const res = await client.getActivityFeed({ pageSize: 20, cursor: "", feedMode });
     return {
       items: res.items.map(mapFeedItem),
       nextCursor: res.nextCursor,

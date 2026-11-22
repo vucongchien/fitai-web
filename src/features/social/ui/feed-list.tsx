@@ -16,6 +16,7 @@ interface Props {
   initialNextCursor: string;
   currentUserId?: string;
   profileUserId?: string;
+  feedMode?: "all" | "following";
   header?: React.ReactNode;
 }
 
@@ -24,6 +25,7 @@ export function FeedList({
   initialNextCursor,
   currentUserId,
   profileUserId,
+  feedMode = "all",
   header,
 }: Props) {
   const [items, setItems] = useState<FeedItemVM[]>(initialItems);
@@ -36,13 +38,13 @@ export function FeedList({
     try {
       const res = profileUserId
         ? await fetchMoreProfileFeedAction(profileUserId, cursor)
-        : await fetchMoreFeedAction(cursor);
+        : await fetchMoreFeedAction(cursor, feedMode);
       setItems((prev) => [...prev, ...res.items]);
       setCursor(res.nextCursor);
     } finally {
       setLoading(false);
     }
-  }, [cursor, loading, profileUserId]);
+  }, [cursor, loading, profileUserId, feedMode]);
 
   const sentinelRef = useCallback(
     (node: HTMLDivElement | null) => {
