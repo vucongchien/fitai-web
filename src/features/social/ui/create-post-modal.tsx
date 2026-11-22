@@ -106,7 +106,13 @@ export function CreatePostModal({
         <div className="mt-4 flex items-center gap-3">
           <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-neutral-200 bg-neutral-100 flex-shrink-0 flex items-center justify-center">
             {userAvatarUrl ? (
-              <Image src={userAvatarUrl} alt={userName} fill sizes="40px" className="object-cover" />
+              <Image
+                src={userAvatarUrl}
+                alt={userName}
+                fill
+                sizes="40px"
+                className="object-cover"
+              />
             ) : (
               <span className="text-sm font-semibold text-neutral-600">
                 {userName.charAt(0).toUpperCase()}
