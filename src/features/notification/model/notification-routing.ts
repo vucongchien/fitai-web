@@ -30,9 +30,17 @@ export function resolveNotificationHref(data?: Record<string, string>): string |
     return null;
   }
 
-  const explicitTarget = data.href || data.route;
+  const explicitTarget = data.href || data.route || data.url;
   if (explicitTarget && isSafeInternalPath(explicitTarget)) {
     return explicitTarget;
+  }
+
+  if (data.feedItemId) {
+    return `/community/posts/${encodeURIComponent(data.feedItemId)}`;
+  }
+
+  if (data.type === "USER_FOLLOWED" && data.followerId) {
+    return `/community/users/${encodeURIComponent(data.followerId)}`;
   }
 
   const eventType = data.eventType;
