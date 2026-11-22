@@ -135,11 +135,17 @@ export function ActiveExerciseScreen({
       ? repCount! / exercise.targetReps
       : null;
 
-  const volumeLabel = totalVolumeKg > 0 ? `Volume: ${totalVolumeKg.toLocaleString()} kg` : undefined;
+  const volumeLabel =
+    totalVolumeKg > 0 ? `Volume: ${totalVolumeKg.toLocaleString()} kg` : undefined;
 
   return (
     <div className="live-screen" data-camera-active={cameraActive}>
-      <SessionHeader actions={actions} onBack={onBack} subtitle={volumeLabel} title={exercise.name} />
+      <SessionHeader
+        actions={actions}
+        onBack={onBack}
+        subtitle={volumeLabel}
+        title={exercise.name}
+      />
 
       <ExerciseMedia
         cameraActive={cameraActive}
