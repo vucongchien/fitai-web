@@ -33,9 +33,32 @@ function DingToastItem({ t, i, labels }: ToastItemProps) {
   );
 
   const sticky = t.duration === 0 && t.type !== "loading" && !t.secondary;
+  const clickable = Boolean(t.onClick);
 
   return (
-    <div className="tst-slot" ref={slotRef} style={{ "--tst-i": i } as CSSProperties} tabIndex={-1}>
+    <div
+      className="tst-slot"
+      data-clickable={clickable ? "true" : undefined}
+      onClick={(e) => {
+        if (!clickable) return;
+        if (e.target instanceof Element && e.target.closest("button")) return;
+        const pState = e.currentTarget.dataset.pointerState;
+        if (pState === "dragged" || pState === "tapped") return;
+        dingToast.click(t.id);
+      }}
+      onKeyDown={(e) => {
+        if (!clickable) return;
+        if (e.target instanceof Element && e.target.closest("button")) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          dingToast.click(t.id);
+        }
+      }}
+      ref={slotRef}
+      role={clickable ? "button" : undefined}
+      style={{ "--tst-i": i } as CSSProperties}
+      tabIndex={clickable && t.phase === "open" ? 0 : -1}
+    >
       <div
         className={t.className ? `tst ${t.className}` : "tst"}
         data-phase={t.phase}

@@ -16,6 +16,7 @@ import {
   type NotificationItemDTO,
 } from "@/features/notification/server/notification-actions";
 import { notificationBadgeStore } from "@/shared/ui/header-actions";
+import { useSidePanel } from "@/shared/ui/side-panel/side-panel-context";
 
 const PANE_PAGE_SIZE = 30;
 
@@ -106,6 +107,7 @@ export const notificationListStore = new NotificationListStore();
 
 export function QuickNotificationsPane() {
   const router = useRouter();
+  const { closePanel } = useSidePanel();
   const notifications = useSyncExternalStore(
     notificationListStore.subscribe,
     notificationListStore.getSnapshot,
@@ -155,6 +157,7 @@ export function QuickNotificationsPane() {
     const targetHref = resolveNotificationHref(item.data);
     if (targetHref) {
       router.push(targetHref);
+      closePanel();
     }
   };
 
@@ -182,7 +185,7 @@ export function QuickNotificationsPane() {
         </span>
         {unreadCount > 0 && (
           <button
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:text-brand-700 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-action hover:text-[var(--color-action-hover)] transition-colors cursor-pointer"
             disabled={isPending}
             onClick={handleMarkAllAsRead}
             type="button"
@@ -197,7 +200,7 @@ export function QuickNotificationsPane() {
       <div className="flex-1 overflow-y-auto px-4 py-2 divide-y divide-neutral-100">
         {isLoading ? (
           <div className="flex items-center justify-center py-16 text-neutral-400">
-            <Loader2 className="animate-spin text-brand-500" size={24} />
+            <Loader2 className="animate-spin text-action" size={24} />
           </div>
         ) : notifications.length > 0 ? (
           <>
@@ -211,7 +214,7 @@ export function QuickNotificationsPane() {
                   className={`w-full text-left py-3 px-3 rounded-xl transition-colors flex items-start gap-3 my-0.5 cursor-pointer ${
                     item.isRead
                       ? "hover:bg-neutral-50 opacity-80"
-                      : "bg-brand-50/40 hover:bg-brand-50/70"
+                      : "bg-[var(--color-action-soft)]/50 hover:bg-[var(--color-action-soft)]"
                   }`}
                   onClick={() => handleNotificationClick(item)}
                   type="button"
@@ -220,7 +223,7 @@ export function QuickNotificationsPane() {
                     className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                       item.isRead
                         ? "bg-neutral-100 text-neutral-500"
-                        : "bg-brand-500 text-white shadow-xs"
+                        : "bg-action text-white shadow-xs"
                     }`}
                   >
                     <Icon size={18} />
@@ -239,7 +242,7 @@ export function QuickNotificationsPane() {
                       {!item.isRead && (
                         <span
                           aria-hidden="true"
-                          className="w-2 h-2 rounded-full bg-brand-500 shrink-0"
+                          className="w-2 h-2 rounded-full bg-action shrink-0"
                         />
                       )}
                     </div>

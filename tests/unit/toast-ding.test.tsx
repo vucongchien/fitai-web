@@ -93,4 +93,36 @@ describe("Ding toast integration", () => {
     fireEvent.click(screen.getByRole("button", { name: "Trigger context toast" }));
     expect(screen.getAllByText("Saved via context").length).toBeGreaterThan(0);
   });
+
+  it("invokes onClick when tapping/clicking a clickable toast", () => {
+    const onNavigate = vi.fn();
+    render(<ToastContainer />);
+
+    act(() => {
+      toast.info("New comment on your post", { onClick: onNavigate });
+    });
+
+    const slot = screen.getByRole("button", { name: /new comment on your post/i });
+    fireEvent.pointerDown(slot, { button: 0, clientX: 100, clientY: 50, pointerId: 1 });
+    fireEvent.pointerUp(slot, { button: 0, clientX: 101, clientY: 50, pointerId: 1 });
+
+    expect(onNavigate).toHaveBeenCalledTimes(1);
+  });
+
+  it("dismisses without invoking onClick when swiping a clickable toast away", () => {
+    const onNavigate = vi.fn();
+    render(<ToastContainer />);
+
+    act(() => {
+      toast.info("Swipe me away", { onClick: onNavigate });
+    });
+
+    const slot = screen.getByRole("button", { name: /swipe me away/i });
+    fireEvent.pointerDown(slot, { button: 0, clientX: 100, clientY: 50, pointerId: 1 });
+    fireEvent.pointerMove(slot, { button: 0, clientX: 240, clientY: 50, pointerId: 1 });
+    fireEvent.pointerUp(slot, { button: 0, clientX: 240, clientY: 50, pointerId: 1 });
+    fireEvent.click(slot);
+
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
 });

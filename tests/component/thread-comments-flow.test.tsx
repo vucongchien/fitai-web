@@ -183,4 +183,59 @@ describe("Thread Comments Flow (Threads-style)", () => {
       "comm-1",
     );
   });
+
+  it("renders nested replies to replies (depth >= 2) and displays newly added reply-of-reply", async () => {
+    const nestedInitial: CommentVM[] = [
+      ...mockComments,
+      {
+        id: "comm-nested-1",
+        userId: "user-2",
+        authorName: "arhitekta haosa",
+        authorAvatarUrl: "",
+        feedItemId: "post-101",
+        parentId: "comm-2",
+        content: "@microsoftsecurity Reply to a reply!",
+        createdAt: new Date(Date.now() + 1000).toISOString(),
+      },
+    ];
+
+    vi.spyOn(socialActions, "addCommentAction").mockResolvedValueOnce({
+      comment: {
+        id: "comm-nested-2",
+        userId: "user-viewer",
+        authorName: "Viewer",
+        authorAvatarUrl: "",
+        feedItemId: "post-101",
+        parentId: "comm-nested-1",
+        content: "@arhitekta haosa Depth 3 reply!",
+        createdAt: new Date(Date.now() + 2000).toISOString(),
+      },
+    });
+
+    render(
+      <ThreadView
+        post={mockPost}
+        initialComments={nestedInitial}
+        currentUserId="user-viewer"
+        currentUserName="Viewer"
+      />,
+    );
+
+    expect(screen.getByText("@microsoftsecurity Reply to a reply!")).toBeInTheDocument();
+
+    const replyButtons = screen.getAllByRole("button", { name: /reply to comment/i });
+    fireEvent.click(replyButtons[2]);
+
+    const desktopInput = screen.getByPlaceholderText(/reply to @arhitekta haosa/i);
+    fireEvent.change(desktopInput, {
+      target: { value: "@arhitekta haosa Depth 3 reply!" },
+    });
+
+    const submitButton = screen.getByRole("button", { name: /send reply/i });
+    await act(async () => {
+      fireEvent.click(submitButton);
+    });
+
+    expect(screen.getByText("@arhitekta haosa Depth 3 reply!")).toBeInTheDocument();
+  });
 });

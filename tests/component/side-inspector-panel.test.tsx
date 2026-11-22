@@ -1,8 +1,14 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { searchExercisesServerAction } from "@/features/exercise/server/catalog-actions";
+import { quickSearchStore } from "@/shared/ui/side-panel/quick-search-pane";
 import { SideInspectorPanel } from "@/shared/ui/side-panel/side-inspector-panel";
-import { SidePanelProvider, useSidePanel } from "@/shared/ui/side-panel/side-panel-context";
+import {
+  SidePanelProvider,
+  sidePanelStore,
+  useSidePanel,
+} from "@/shared/ui/side-panel/side-panel-context";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -64,6 +70,12 @@ function PanelTestConsumer() {
 }
 
 describe("SideInspectorPanel", () => {
+  beforeEach(() => {
+    sidePanelStore.close();
+    quickSearchStore.reset();
+    vi.clearAllMocks();
+  });
+
   it("renders nothing when panel is closed", () => {
     const { container } = render(
       <SidePanelProvider>
@@ -74,7 +86,7 @@ describe("SideInspectorPanel", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("opens search pane when openPanel is triggered", async () => {
+  it("opens search pane and loads exercises immediately without clicking All", async () => {
     render(
       <SidePanelProvider>
         <PanelTestConsumer />
@@ -86,6 +98,43 @@ describe("SideInspectorPanel", () => {
     expect(screen.getByPlaceholderText(/search movements/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /filters/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Core" })).toBeInTheDocument();
+    expect(await screen.findByText("Barbell Bench Press")).toBeInTheDocument();
+    expect(searchExercisesServerAction).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows an error state and retries when initial search fails", async () => {
+    vi.mocked(searchExercisesServerAction)
+      .mockRejectedValueOnce(new Error("RPC unavailable"))
+      .mockResolvedValueOnce([
+        {
+          id: "bench-press",
+          name: "Barbell Bench Press",
+          bodyPartId: "chest",
+          equipmentId: "barbell",
+          targetMuscleId: "pectorals",
+          secondaryMuscleIds: [],
+          tagIds: [],
+          instructions: "",
+          videoUrl: "",
+          mediaUrl: "",
+          thumbnailUrl: "",
+          difficulty: "intermediate",
+          defaultRestSeconds: 90,
+          hasAiSupported: true,
+        },
+      ]);
+
+    render(
+      <SidePanelProvider>
+        <PanelTestConsumer />
+      </SidePanelProvider>,
+    );
+
+    fireEvent.click(screen.getByText("Trigger Search"));
+
+    expect(await screen.findByText(/could not load movements/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /try again/i }));
+    expect(await screen.findByText("Barbell Bench Press")).toBeInTheDocument();
   });
 
   it("switches to notifications when clicking notifications tab", async () => {

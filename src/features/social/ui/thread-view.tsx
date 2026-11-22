@@ -1,19 +1,28 @@
 "use client";
 
-import { Send, X } from "lucide-react";
+import { Loader2, Send, X } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 
 import { hapticFeedback } from "@/shared/lib/haptic-feedback";
 
+import { cacheFeedItem } from "../lib/post-cache";
 import type { CommentVM, FeedItemVM } from "../model/social.types";
 import { addCommentAction, deleteCommentAction } from "../server/social-actions";
-import { ThreadCommentItem, type ThreadCommentWithReplies } from "./thread-comment-item";
+import {
+  countDescendantReplies,
+  ThreadCommentItem,
+  type ThreadCommentWithReplies,
+} from "./thread-comment-item";
 import { ThreadPostCard } from "./thread-post-card";
 
 interface Props {
   post: FeedItemVM;
   initialComments: CommentVM[];
+  isLoadingComments?: boolean;
+  commentsError?: boolean;
+  onRetryComments?: () => void;
+  onCommentsMutated?: (nextComments: CommentVM[]) => void;
   currentUserId?: string;
   currentUserAvatar?: string;
   currentUserName?: string;
@@ -24,14 +33,44 @@ interface ReplyContext {
   authorName: string;
 }
 
+function collectDeletedBranchIds(allComments: CommentVM[], seedIds: Set<string>): Set<string> {
+  if (seedIds.size === 0) return seedIds;
+  const removed = new Set(seedIds);
+  let grew = true;
+  while (grew) {
+    grew = false;
+    for (const c of allComments) {
+      if (c.parentId && removed.has(c.parentId) && !removed.has(c.id)) {
+        removed.add(c.id);
+        grew = true;
+      }
+    }
+  }
+  return removed;
+}
+
+function sortRepliesChronologically(nodes: ThreadCommentWithReplies[]) {
+  nodes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  for (const node of nodes) {
+    if (node.replies && node.replies.length > 0) {
+      sortRepliesChronologically(node.replies);
+    }
+  }
+}
+
 export function ThreadView({
   post,
   initialComments,
+  isLoadingComments = false,
+  commentsError = false,
+  onRetryComments,
+  onCommentsMutated,
   currentUserId,
   currentUserAvatar,
   currentUserName,
 }: Props) {
-  const [comments, setComments] = useState<CommentVM[]>(initialComments);
+  const [addedComments, setAddedComments] = useState<CommentVM[]>([]);
+  const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState<"top" | "newest">("top");
   const [inputText, setInputText] = useState("");
   const [replyingTo, setReplyingTo] = useState<ReplyContext | null>(null);
@@ -44,6 +83,21 @@ export function ThreadView({
     currentUserAvatar ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserName ?? "Me")}&background=random`;
 
+  const comments = useMemo(() => {
+    const rawList = [...addedComments, ...initialComments];
+    const deletedSet = collectDeletedBranchIds(rawList, new Set(deletedIds));
+    const seen = new Set<string>();
+    const merged: CommentVM[] = [];
+    for (const c of rawList) {
+      if (seen.has(c.id) || deletedSet.has(c.id)) {
+        continue;
+      }
+      seen.add(c.id);
+      merged.push(c);
+    }
+    return merged;
+  }, [addedComments, initialComments, deletedIds]);
+
   const postWithUpdatedCommentCount = useMemo(() => {
     const delta = comments.length - initialComments.length;
     return {
@@ -52,23 +106,28 @@ export function ThreadView({
     };
   }, [post, comments.length, initialComments.length]);
 
-  // Build tree of comments (Threads hierarchy)
+  // Build recursive tree of comments (supports nested replies at any depth)
   const threadComments = useMemo(() => {
-    const rootComments: ThreadCommentWithReplies[] = [];
-    const replyMap = new Map<string, CommentVM[]>();
-
+    const nodeMap = new Map<string, ThreadCommentWithReplies>();
     for (const c of comments) {
-      if (c.parentId) {
-        const arr = replyMap.get(c.parentId) ?? [];
-        arr.push(c);
-        replyMap.set(c.parentId, arr);
+      nodeMap.set(c.id, { ...c, replies: [] });
+    }
+
+    const rootComments: ThreadCommentWithReplies[] = [];
+    for (const c of comments) {
+      const node = nodeMap.get(c.id)!;
+      const parent = c.parentId ? nodeMap.get(c.parentId) : undefined;
+      if (parent && parent.id !== node.id) {
+        parent.replies!.push(node);
       } else {
-        rootComments.push({ ...c, replies: [] });
+        rootComments.push(node);
       }
     }
 
     for (const root of rootComments) {
-      root.replies = replyMap.get(root.id) ?? [];
+      if (root.replies && root.replies.length > 0) {
+        sortRepliesChronologically(root.replies);
+      }
     }
 
     if (sortOrder === "newest") {
@@ -77,8 +136,8 @@ export function ThreadView({
       );
     }
 
-    // "top" sorting: prioritize items with more replies
-    return [...rootComments].sort((a, b) => (b.replies?.length ?? 0) - (a.replies?.length ?? 0));
+    // "top" sorting: prioritize items with more total descendant replies
+    return [...rootComments].sort((a, b) => countDescendantReplies(b) - countDescendantReplies(a));
   }, [comments, sortOrder]);
 
   // Reply trigger — FB style: prefill @Name and focus input
@@ -124,7 +183,14 @@ export function ThreadView({
 
     const res = await addCommentAction(post.id, textToSend, parentIdToSend);
     if (res.comment) {
-      setComments((prev) => [res.comment!, ...prev]);
+      const createdComment = res.comment;
+      const nextComments = [createdComment, ...comments];
+      setAddedComments((prev) => [createdComment, ...prev]);
+      onCommentsMutated?.(nextComments);
+      cacheFeedItem({
+        ...post,
+        commentCount: Math.max(0, postWithUpdatedCommentCount.commentCount + 1),
+      });
     } else {
       // Revert if failed
       setInputText(textToSend);
@@ -135,7 +201,15 @@ export function ThreadView({
   async function handleDeleteComment(commentId: string) {
     const res = await deleteCommentAction(commentId);
     if (res.success) {
-      setComments((prev) => prev.filter((c) => c.id !== commentId && c.parentId !== commentId));
+      const removedIds = collectDeletedBranchIds(comments, new Set([commentId]));
+      const nextComments = comments.filter((c) => !removedIds.has(c.id));
+      const removedCount = Math.max(1, comments.length - nextComments.length);
+      setDeletedIds((prev) => [...prev, commentId]);
+      onCommentsMutated?.(nextComments);
+      cacheFeedItem({
+        ...post,
+        commentCount: Math.max(0, postWithUpdatedCommentCount.commentCount - removedCount),
+      });
     }
   }
 
@@ -216,7 +290,25 @@ export function ThreadView({
 
       {/* 3. Thread Comments List (Image 2) */}
       <div className="px-4 sm:px-6 divide-y divide-neutral-100 bg-white">
-        {threadComments.length === 0 ? (
+        {isLoadingComments ? (
+          <div className="flex items-center justify-center gap-2 py-10 text-neutral-400">
+            <Loader2 className="animate-spin" size={18} />
+            <span className="text-sm">Loading replies…</span>
+          </div>
+        ) : commentsError ? (
+          <div className="py-10 text-center">
+            <p className="text-sm text-neutral-500">Could not load replies.</p>
+            {onRetryComments && (
+              <button
+                type="button"
+                onClick={onRetryComments}
+                className="mt-2 text-xs font-semibold text-neutral-900 underline cursor-pointer"
+              >
+                Try again
+              </button>
+            )}
+          </div>
+        ) : threadComments.length === 0 ? (
           <p className="text-center text-sm text-neutral-400 py-10">
             No replies yet. Be the first to start the conversation!
           </p>

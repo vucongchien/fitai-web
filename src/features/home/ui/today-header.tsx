@@ -33,24 +33,35 @@ export function TodayHeader({ dateLabel = "Today" }: TodayHeaderProps) {
         <div className="hidden md:flex items-center gap-2">
           <button
             aria-label="Search exercises"
-            className="relative w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all flex items-center justify-center cursor-pointer group"
+            className="relative w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 hover:text-neutral-950 !border !border-solid !border-neutral-200/80 transition-all flex items-center justify-center cursor-pointer group"
             onClick={() => openPanel("search")}
             title="Search exercises (Ctrl+K)"
             type="button"
           >
-            <Search size={18} className="group-hover:scale-105 transition-transform" />
+            <Search
+              size={18}
+              strokeWidth={2.2}
+              className="group-hover:scale-105 transition-transform"
+            />
           </button>
 
           <button
-            aria-label="Notifications"
-            className="relative w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-600 hover:text-neutral-900 transition-all flex items-center justify-center cursor-pointer group"
+            aria-label={hasUnread ? "Notifications, unread items available" : "Notifications"}
+            className="relative w-10 h-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 hover:text-neutral-950 !border !border-solid !border-neutral-200/80 transition-all flex items-center justify-center cursor-pointer group"
             onClick={() => openPanel("notifications")}
             title="Notifications"
             type="button"
           >
-            <Bell size={18} className="group-hover:scale-105 transition-transform" />
+            <Bell
+              size={18}
+              strokeWidth={2.2}
+              className="group-hover:scale-105 transition-transform"
+            />
             {hasUnread && (
-              <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-brand-500 ring-2 ring-white" />
+              <span
+                aria-hidden="true"
+                className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-effort ring-2 ring-white"
+              />
             )}
           </button>
         </div>

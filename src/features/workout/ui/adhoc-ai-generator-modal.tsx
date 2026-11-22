@@ -284,6 +284,34 @@ function AdhocAiGeneratorModalContent({
               <div className="space-y-3">
                 <AiPlanTrace durationMinutes={lastSubmittedDuration} isLoading={isLoading} />
 
+                {isLoading && !result && (
+                  <div
+                    aria-busy="true"
+                    aria-label="Generating workout plan"
+                    className="space-y-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 animate-pulse"
+                  >
+                    <div className="space-y-2">
+                      <div className="h-3.5 w-2/5 rounded bg-[var(--color-surface-subtle)]" />
+                      <div className="h-3 w-full rounded bg-[var(--color-surface-subtle)]" />
+                      <div className="h-3 w-4/5 rounded bg-[var(--color-surface-subtle)]" />
+                    </div>
+                    <div className="space-y-2 pt-1">
+                      {[0, 1, 2, 3].map((row) => (
+                        <div
+                          key={row}
+                          className="flex items-center justify-between rounded-xl border border-[var(--color-border)] px-3 py-2.5"
+                        >
+                          <div className="space-y-1.5 w-3/5">
+                            <div className="h-3.5 w-3/4 rounded bg-[var(--color-surface-subtle)]" />
+                            <div className="h-2.5 w-1/2 rounded bg-[var(--color-surface-subtle)]" />
+                          </div>
+                          <div className="h-5 w-12 rounded-full bg-[var(--color-surface-subtle)]" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {errorMsg && (
                   <div
                     className="space-y-2 rounded-xl bg-[var(--color-danger-soft)] px-3 py-2.5 text-xs text-[var(--color-danger)]"

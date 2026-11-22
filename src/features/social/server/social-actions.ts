@@ -3,13 +3,15 @@
 import { createClient } from "@connectrpc/connect";
 import { revalidatePath } from "next/cache";
 
+import { getProfileData } from "@/features/profile/server/get-profile-data";
 import { ReactionType as ProtoReactionType } from "@/shared/api/gen/contracts/supporting/social/v1/message/social_messages_pb";
 import { SocialService } from "@/shared/api/gen/contracts/supporting/social/v1/service/social_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
-import { getAccessToken } from "@/shared/auth/session";
+import { getAccessToken, getAuthenticatedSession } from "@/shared/auth/session";
 
 import { mapComment, mapFeedItem } from "../model/social.mapper";
 import type { ActivityFeedVM, CommentVM, FeedItemVM } from "../model/social.types";
+import { getFeedItemById } from "./get-feed-item";
 
 async function getSocialClient() {
   const accessToken = await getAccessToken();
@@ -126,10 +128,13 @@ export async function deleteCommentAction(commentId: string): Promise<{ success:
   }
 }
 
-export async function fetchMoreFeedAction(cursor: string): Promise<ActivityFeedVM> {
+export async function fetchMoreFeedAction(
+  cursor: string,
+  feedMode: "all" | "following" = "all",
+): Promise<ActivityFeedVM> {
   try {
     const client = await getSocialClient();
-    const res = await client.getActivityFeed({ pageSize: 20, cursor });
+    const res = await client.getActivityFeed({ pageSize: 20, cursor, feedMode });
     return {
       items: res.items.map(mapFeedItem),
       nextCursor: res.nextCursor,
@@ -192,4 +197,24 @@ export async function createPostAction(input: {
       message,
     };
   }
+}
+
+export async function getThreadBootstrapAction(postId: string): Promise<{
+  post: FeedItemVM | null;
+  currentUserId?: string;
+  currentUserName?: string;
+  currentUserAvatar?: string;
+}> {
+  const session = await getAuthenticatedSession();
+  const [post, profileData] = await Promise.all([
+    getFeedItemById(postId).catch(() => null),
+    session.accessToken ? getProfileData().catch(() => null) : Promise.resolve(null),
+  ]);
+
+  return {
+    post,
+    currentUserId: session.userId,
+    currentUserName: profileData?.user?.name || session.userName,
+    currentUserAvatar: profileData?.user?.avatarUrl,
+  };
 }

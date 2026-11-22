@@ -1,34 +1,88 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MoreHorizontal } from "lucide-react";
-import { use, useState } from "react";
+import { useParams } from "next/navigation";
 
 import { BackButton } from "@/shared/ui/back-button";
 
-import { getCachedFeedItem } from "../lib/post-cache";
-import type { CommentVM, FeedItemVM } from "../model/social.types";
+import {
+  cacheCurrentSocialUser,
+  cacheFeedItem,
+  getCachedComments,
+  getCachedCurrentSocialUser,
+  getCachedFeedItem,
+  getMemoryCachedFeedItem,
+  preloadThreadComments,
+  setCachedComments,
+  socialQueryKeys,
+} from "../lib/post-cache";
+import type { CommentVM } from "../model/social.types";
+import { getThreadBootstrapAction, listCommentsAction } from "../server/social-actions";
 import { SocialContainer } from "./social-container";
+import { ThreadPageSkeleton } from "./thread-skeleton";
 import { ThreadView } from "./thread-view";
 
-interface Props {
-  postId: string;
-  serverPost: FeedItemVM | null;
-  commentsPromise: Promise<{ comments: CommentVM[]; nextCursor: string }>;
-  currentUserId?: string;
-  currentUserAvatar?: string;
-  currentUserName?: string;
-}
+export function ThreadDetailShell() {
+  const queryClient = useQueryClient();
+  const params = useParams<{ postId: string }>();
+  const postId = typeof params?.postId === "string" ? params.postId : "";
 
-export function ThreadDetailShell({
-  postId,
-  serverPost,
-  commentsPromise,
-  currentUserId,
-  currentUserAvatar,
-  currentUserName,
-}: Props) {
-  const [post] = useState<FeedItemVM | null>(() => serverPost ?? getCachedFeedItem(postId));
-  const { comments } = use(commentsPromise);
+  const memoryPost = postId ? getMemoryCachedFeedItem(postId) : null;
+  const cachedUser = getCachedCurrentSocialUser();
+  const cachedComments = postId ? getCachedComments(postId) : null;
+
+  const bootstrapQuery = useQuery({
+    queryKey: socialQueryKeys.threadBootstrap(postId),
+    queryFn: async () => {
+      const storedPost = getCachedFeedItem(postId);
+      const data = await getThreadBootstrapAction(postId);
+      const resolvedPost = data.post ?? storedPost;
+      if (resolvedPost) {
+        cacheFeedItem(resolvedPost);
+      }
+      if (data.currentUserId) {
+        cacheCurrentSocialUser({
+          userId: data.currentUserId,
+          name: data.currentUserName,
+          avatarUrl: data.currentUserAvatar,
+        });
+      }
+      return {
+        ...data,
+        post: resolvedPost,
+      };
+    },
+    enabled: Boolean(postId) && (!memoryPost || !cachedUser?.userId),
+    staleTime: 60_000,
+  });
+
+  const commentsQuery = useQuery({
+    queryKey: socialQueryKeys.comments(postId),
+    queryFn: () => preloadThreadComments(postId, () => listCommentsAction(postId)),
+    initialData: cachedComments ?? undefined,
+    enabled: Boolean(postId),
+    staleTime: 30_000,
+  });
+
+  const post = memoryPost ?? bootstrapQuery.data?.post ?? null;
+  const currentUserId = cachedUser?.userId ?? bootstrapQuery.data?.currentUserId;
+  const currentUserAvatar = cachedUser?.avatarUrl ?? bootstrapQuery.data?.currentUserAvatar;
+  const currentUserName = cachedUser?.name ?? bootstrapQuery.data?.currentUserName;
+
+  function handleCommentsMutated(nextComments: CommentVM[]) {
+    if (!postId) return;
+    const nextData = {
+      comments: nextComments,
+      nextCursor: commentsQuery.data?.nextCursor ?? "",
+    };
+    setCachedComments(postId, nextData);
+    queryClient.setQueryData(socialQueryKeys.comments(postId), nextData);
+  }
+
+  if (!post && bootstrapQuery.isPending) {
+    return <ThreadPageSkeleton />;
+  }
 
   if (!post) {
     return (
@@ -76,7 +130,11 @@ export function ThreadDetailShell({
       <SocialContainer hasDividers={false}>
         <ThreadView
           post={post}
-          initialComments={comments}
+          initialComments={commentsQuery.data?.comments ?? []}
+          isLoadingComments={commentsQuery.isPending}
+          commentsError={commentsQuery.isError}
+          onRetryComments={() => void commentsQuery.refetch()}
+          onCommentsMutated={handleCommentsMutated}
           currentUserId={currentUserId}
           currentUserAvatar={currentUserAvatar}
           currentUserName={currentUserName}

@@ -15,7 +15,10 @@ interface Props {
   initialItems: FeedItemVM[];
   initialNextCursor: string;
   currentUserId?: string;
+  currentUserName?: string;
+  currentUserAvatarUrl?: string;
   profileUserId?: string;
+  feedMode?: "all" | "following";
   header?: React.ReactNode;
 }
 
@@ -23,7 +26,10 @@ export function FeedList({
   initialItems,
   initialNextCursor,
   currentUserId,
+  currentUserName = "You",
+  currentUserAvatarUrl = "",
   profileUserId,
+  feedMode = "all",
   header,
 }: Props) {
   const [items, setItems] = useState<FeedItemVM[]>(initialItems);
@@ -36,13 +42,13 @@ export function FeedList({
     try {
       const res = profileUserId
         ? await fetchMoreProfileFeedAction(profileUserId, cursor)
-        : await fetchMoreFeedAction(cursor);
+        : await fetchMoreFeedAction(cursor, feedMode);
       setItems((prev) => [...prev, ...res.items]);
       setCursor(res.nextCursor);
     } finally {
       setLoading(false);
     }
-  }, [cursor, loading, profileUserId]);
+  }, [cursor, loading, profileUserId, feedMode]);
 
   const sentinelRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -71,14 +77,20 @@ export function FeedList({
             onClick={() => setCreatePostOpen(true)}
             className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
           >
-            <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-neutral-200 bg-neutral-100 flex-shrink-0">
-              <Image
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80"
-                alt="Avatar"
-                fill
-                sizes="40px"
-                className="object-cover"
-              />
+            <div className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-neutral-200 bg-neutral-100 flex-shrink-0 flex items-center justify-center">
+              {currentUserAvatarUrl ? (
+                <Image
+                  src={currentUserAvatarUrl}
+                  alt={currentUserName}
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                />
+              ) : (
+                <span className="text-sm font-semibold text-neutral-600">
+                  {currentUserName.charAt(0).toUpperCase()}
+                </span>
+              )}
             </div>
             <span className="text-[14px] text-neutral-400 font-normal truncate hover:text-neutral-600 transition-colors">
               What&apos;s new?
@@ -97,6 +109,8 @@ export function FeedList({
       <CreatePostModal
         isOpen={createPostOpen}
         onClose={() => setCreatePostOpen(false)}
+        userName={currentUserName}
+        userAvatarUrl={currentUserAvatarUrl}
         onPostCreated={(newItem) => {
           setItems((prev) => [newItem, ...prev]);
           toast.success("Post published to community feed!");
@@ -113,7 +127,13 @@ export function FeedList({
       )}
 
       {items.map((item) => (
-        <FeedCard key={item.id} item={item} currentUserId={currentUserId} />
+        <FeedCard
+          key={item.id}
+          item={item}
+          currentUserId={currentUserId}
+          currentUserName={currentUserName}
+          currentUserAvatarUrl={currentUserAvatarUrl}
+        />
       ))}
 
       {cursor && (
