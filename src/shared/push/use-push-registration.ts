@@ -11,11 +11,6 @@ export interface PushSupport {
   reason: string | null;
 }
 
-/**
- * Why push is or is not possible here. Split out from the hook so it is testable
- * without React and so the UI can explain the "add to home screen first" case,
- * which is the only way iOS Safari grants notification permission.
- */
 export function pushSupport(): PushSupport {
   if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {
     return { reason: "This browser does not support background notifications.", supported: false };
@@ -31,12 +26,6 @@ export function pushSupport(): PushSupport {
 
 export type PushStatus = "idle" | "asking" | "granted" | "denied" | "unsupported" | "failed";
 
-/**
- * Mints an FCM registration token and hands it to the backend.
- *
- * Assumes permission is already granted — callers must check first, because
- * getToken() silently returns null rather than prompting.
- */
 async function mintAndRegister(): Promise<PushStatus> {
   const messaging = await getMessagingIfSupported();
   if (!messaging) {
@@ -49,15 +38,15 @@ async function mintAndRegister(): Promise<PushStatus> {
   const token = await getToken(messaging, {
     serviceWorkerRegistration: registration,
     vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-  }).catch(() => null);
+  }).catch((err) => {
+    console.warn("[push] getToken failed:", err);
+    return null;
+  });
 
   if (!token) {
     return "failed";
   }
 
-  // The backend is the thing that decides whether push actually works. Reporting
-  // "granted" on a failed handoff would tell the user reminders are on while the
-  // Notification service has no token to send to.
   return (await registerDeviceToken(token)) ? "granted" : "failed";
 }
 

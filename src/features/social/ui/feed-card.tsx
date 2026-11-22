@@ -4,16 +4,19 @@ import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import { cacheFeedItem } from "../lib/post-cache";
+import { cacheCurrentSocialUser, cacheFeedItem, preloadThreadComments } from "../lib/post-cache";
 import type { FeedItemVM, ReactionType } from "../model/social.types";
+import { listCommentsAction } from "../server/social-actions";
 import { ReactionBar } from "./reaction-bar";
 import { WorkoutSummaryCard } from "./workout-summary-card";
 
 interface Props {
   item: FeedItemVM;
   currentUserId?: string;
+  currentUserName?: string;
+  currentUserAvatarUrl?: string;
 }
 
 function timeAgo(iso: string): string {
@@ -26,8 +29,9 @@ function timeAgo(iso: string): string {
   return `${Math.floor(hrs / 24)}d`;
 }
 
-export function FeedCard({ item, currentUserId }: Props) {
+export function FeedCard({ item, currentUserId, currentUserName, currentUserAvatarUrl }: Props) {
   const router = useRouter();
+  const preloadedRef = useRef(false);
   const [userReaction, setUserReaction] = useState<ReactionType>(item.userReaction);
   const [reactionCount, setReactionCount] = useState<number>(item.reactionCount);
 
@@ -37,17 +41,38 @@ export function FeedCard({ item, currentUserId }: Props) {
 
   const isSelf = currentUserId === item.userId;
 
+  function preloadThread() {
+    if (!item.id) return;
+    if (!preloadedRef.current) {
+      preloadedRef.current = true;
+      router.prefetch?.(`/community/posts/${item.id}`);
+    }
+    void preloadThreadComments(item.id, () => listCommentsAction(item.id));
+  }
+
   function handleNavigateToThread() {
     cacheFeedItem({
       ...item,
       userReaction,
       reactionCount,
     });
+    if (currentUserId) {
+      cacheCurrentSocialUser({
+        userId: currentUserId,
+        name: currentUserName,
+        avatarUrl: currentUserAvatarUrl,
+      });
+    }
+    preloadThread();
     router.push(`/community/posts/${item.id}`);
   }
 
   return (
-    <article className="flex gap-3.5 px-4 sm:px-6 py-4 bg-white transition-colors">
+    <article
+      className="flex gap-3.5 px-4 sm:px-6 py-4 bg-white transition-colors"
+      onMouseEnter={preloadThread}
+      onTouchStart={preloadThread}
+    >
       {/* 1. Avatar column (Exact 40x40 with Threads '+' badge) */}
       <div className="relative flex-shrink-0 self-start">
         <Link

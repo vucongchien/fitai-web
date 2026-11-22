@@ -1,14 +1,13 @@
 "use client";
 
-import { Dumbbell, Loader2, Search, SlidersHorizontal, X } from "lucide-react";
-import { useCallback, useMemo, useState, useSyncExternalStore, useTransition } from "react";
+import { AlertCircle, Dumbbell, Loader2, Search, SlidersHorizontal, X } from "lucide-react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 
-import {
-  countActiveFilters,
-  EMPTY_FILTERS,
-  type CatalogMetadata,
-  type ExerciseFilters,
-  type ExerciseSummary,
+import { countActiveFilters, EMPTY_FILTERS } from "@/features/exercise/domain/exercise";
+import type {
+  CatalogMetadata,
+  ExerciseFilters,
+  ExerciseSummary,
 } from "@/features/exercise/domain/exercise";
 import { catalogMetadataStore } from "@/features/exercise/model/catalog-metadata-store";
 import { searchExercisesServerAction } from "@/features/exercise/server/catalog-actions";
@@ -25,12 +24,179 @@ const QUICK_BODY_PARTS = [
   { id: "core", label: "Core" },
 ] as const;
 
+const SEARCH_DEBOUNCE_MS = 200;
+
+interface QuickSearchState {
+  filters: ExerciseFilters;
+  results: ExerciseSummary[];
+  isLoading: boolean;
+  hasLoaded: boolean;
+  error: string | null;
+}
+
+const INITIAL_SEARCH_STATE: QuickSearchState = {
+  filters: EMPTY_FILTERS,
+  results: [],
+  isLoading: false,
+  hasLoaded: false,
+  error: null,
+};
+
+class QuickSearchStore {
+  private state: QuickSearchState = INITIAL_SEARCH_STATE;
+  private fetching = false;
+  private requestId = 0;
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private listeners = new Set<() => void>();
+
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+    if (!this.state.hasLoaded && !this.fetching && typeof globalThis.window !== "undefined") {
+      void this.search(this.state.filters);
+    }
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+
+  getSnapshot = () => this.state;
+  getServerSnapshot = () => INITIAL_SEARCH_STATE;
+
+  search = (newFilters: ExerciseFilters, options?: { debounceMs?: number }) => {
+    if (this.debounceTimer !== null) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+
+    const currentRequestId = ++this.requestId;
+    this.fetching = true;
+    this.state = {
+      ...this.state,
+      filters: newFilters,
+      isLoading: true,
+      error: null,
+    };
+    this.emit();
+
+    const debounceMs = options?.debounceMs ?? 0;
+    if (debounceMs > 0) {
+      this.debounceTimer = setTimeout(() => {
+        this.debounceTimer = null;
+        void this.executeSearch(newFilters, currentRequestId);
+      }, debounceMs);
+      return;
+    }
+
+    void this.executeSearch(newFilters, currentRequestId);
+  };
+
+  reset = () => {
+    if (this.debounceTimer !== null) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+    this.requestId += 1;
+    this.fetching = false;
+    this.state = INITIAL_SEARCH_STATE;
+    this.emit();
+  };
+
+  private async executeSearch(filters: ExerciseFilters, requestId: number) {
+    try {
+      const res = await searchExercisesServerAction(filters);
+      if (requestId !== this.requestId) {
+        return;
+      }
+      this.state = {
+        ...this.state,
+        results: res || [],
+        isLoading: false,
+        hasLoaded: true,
+        error: null,
+      };
+    } catch {
+      if (requestId !== this.requestId) {
+        return;
+      }
+      this.state = {
+        ...this.state,
+        results: [],
+        isLoading: false,
+        hasLoaded: true,
+        error: "Could not load movements. Please try again.",
+      };
+    } finally {
+      if (requestId === this.requestId) {
+        this.fetching = false;
+        this.emit();
+      }
+    }
+  }
+
+  private emit() {
+    this.listeners.forEach((l) => l());
+  }
+}
+
+export const quickSearchStore = new QuickSearchStore();
+
+function renderResultsBody(
+  searchState: QuickSearchState,
+  catalog: CatalogMetadata,
+  onRetry: () => void,
+) {
+  if (searchState.results.length > 0) {
+    return searchState.results.map((exercise) => (
+      <div key={exercise.id} className="py-2.5 first:pt-0 last:pb-0">
+        <ExerciseCard catalog={catalog} exercise={exercise} />
+      </div>
+    ));
+  }
+
+  if (searchState.isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
+        <Loader2 className="animate-spin text-neutral-300 mb-2.5" size={32} />
+        <p className="text-sm font-medium text-neutral-600">Loading movements...</p>
+      </div>
+    );
+  }
+
+  if (searchState.error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
+        <AlertCircle className="text-neutral-300 mb-2.5" size={36} />
+        <p className="text-sm font-medium text-neutral-700">{searchState.error}</p>
+        <button
+          className="mt-3 text-xs font-semibold text-[var(--color-action)] hover:underline cursor-pointer"
+          onClick={onRetry}
+          type="button"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
+      <Dumbbell className="text-neutral-300 mb-2.5" size={36} />
+      <p className="text-sm font-medium text-neutral-700">No movements found</p>
+      <p className="text-xs text-neutral-400 mt-1">Try a different keyword or adjust filters</p>
+    </div>
+  );
+}
+
 export function QuickSearchPane() {
-  const [filters, setFilters] = useState<ExerciseFilters>(EMPTY_FILTERS);
   const [panelOpen, setPanelOpen] = useState(false);
-  const [results, setResults] = useState<ExerciseSummary[]>([]);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [isSearching, startTransition] = useTransition();
+
+  const searchState = useSyncExternalStore(
+    quickSearchStore.subscribe,
+    quickSearchStore.getSnapshot,
+    quickSearchStore.getServerSnapshot,
+  );
+
+  const { filters, results, isLoading, hasLoaded } = searchState;
 
   const catalogState = useSyncExternalStore(
     catalogMetadataStore.subscribe,
@@ -58,19 +224,6 @@ export function QuickSearchPane() {
     [catalogState],
   );
 
-  const performSearch = useCallback((newFilters: ExerciseFilters) => {
-    setFilters(newFilters);
-    setHasSearched(true);
-    startTransition(async () => {
-      try {
-        const res = await searchExercisesServerAction(newFilters);
-        setResults(res || []);
-      } catch {
-        setResults([]);
-      }
-    });
-  }, []);
-
   const activeCount = useMemo(() => countActiveFilters(filters, catalog), [filters, catalog]);
 
   return (
@@ -84,18 +237,23 @@ export function QuickSearchPane() {
             aria-label="Search exercises"
             className="w-full text-sm"
             inputMode="search"
-            onChange={(e) => performSearch({ ...filters, q: e.target.value })}
+            onChange={(e) =>
+              quickSearchStore.search(
+                { ...filters, q: e.target.value },
+                { debounceMs: SEARCH_DEBOUNCE_MS },
+              )
+            }
             placeholder="Search movements, muscles, equipment..."
             type="search"
             value={filters.q}
           />
-          {isSearching ? (
+          {isLoading ? (
             <Loader2 className="animate-spin text-[var(--color-text-muted)]" size={16} />
           ) : filters.q ? (
             <button
               aria-label="Clear search"
               className="search-field__clear cursor-pointer"
-              onClick={() => performSearch({ ...filters, q: "" })}
+              onClick={() => quickSearchStore.search({ ...filters, q: "" })}
               type="button"
             >
               <X aria-hidden="true" size={16} />
@@ -132,7 +290,7 @@ export function QuickSearchPane() {
               data-active={active || undefined}
               onClick={() => {
                 const nextBody = isAll ? [] : [item.id];
-                performSearch({ ...filters, bodyPartIds: nextBody });
+                quickSearchStore.search({ ...filters, bodyPartIds: nextBody });
               }}
               type="button"
             >
@@ -144,11 +302,13 @@ export function QuickSearchPane() {
 
       {/* 3. Search Metadata bar */}
       <div className="px-4 py-2 flex items-center justify-between text-xs text-neutral-500 border-b border-neutral-100 bg-neutral-50/50">
-        <span>{results.length} movements</span>
+        <span>
+          {isLoading && !hasLoaded ? "Loading movements..." : `${results.length} movements`}
+        </span>
         {activeCount > 0 && (
           <button
             className="text-xs font-semibold text-[var(--color-action)] hover:underline cursor-pointer"
-            onClick={() => performSearch(EMPTY_FILTERS)}
+            onClick={() => quickSearchStore.search(EMPTY_FILTERS)}
             type="button"
           >
             Reset filters ({activeCount})
@@ -158,37 +318,15 @@ export function QuickSearchPane() {
 
       {/* 4. Exercise Card Results using standard ExerciseCard component */}
       <div className="flex-1 overflow-y-auto px-4 py-3 divide-y divide-neutral-100">
-        {results.length > 0 ? (
-          results.map((exercise) => (
-            <div key={exercise.id} className="py-2.5 first:pt-0 last:pb-0">
-              <ExerciseCard catalog={catalog} exercise={exercise} />
-            </div>
-          ))
-        ) : hasSearched && !isSearching ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
-            <Dumbbell className="text-neutral-300 mb-2.5" size={36} />
-            <p className="text-sm font-medium text-neutral-700">No movements found</p>
-            <p className="text-xs text-neutral-400 mt-1">
-              Try a different keyword or adjust filters
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-neutral-400">
-            <Search className="text-neutral-300 mb-2.5" size={36} />
-            <p className="text-sm font-medium text-neutral-700">Quick Exercise Search</p>
-            <p className="text-xs text-neutral-400 mt-1">
-              Type a movement name or choose a muscle group above to search
-            </p>
-          </div>
-        )}
+        {renderResultsBody(searchState, catalog, () => quickSearchStore.search(filters))}
       </div>
 
       {/* 5. Mobile-style FilterPanel Sheet */}
       <FilterPanel
         catalog={catalog}
         filters={filters}
-        onChange={performSearch}
-        onClear={() => performSearch({ ...EMPTY_FILTERS, q: filters.q })}
+        onChange={(nextFilters) => quickSearchStore.search(nextFilters)}
+        onClear={() => quickSearchStore.search({ ...EMPTY_FILTERS, q: filters.q })}
         onClose={() => setPanelOpen(false)}
         open={panelOpen}
         resultCount={results.length}

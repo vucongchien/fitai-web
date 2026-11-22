@@ -127,7 +127,13 @@ export function FeedList({
       )}
 
       {items.map((item) => (
-        <FeedCard key={item.id} item={item} currentUserId={currentUserId} />
+        <FeedCard
+          key={item.id}
+          item={item}
+          currentUserId={currentUserId}
+          currentUserName={currentUserName}
+          currentUserAvatarUrl={currentUserAvatarUrl}
+        />
       ))}
 
       {cursor && (

@@ -56,7 +56,7 @@ export function SideInspectorPanel() {
             >
               <Bell size={16} />
               <span>Notifications</span>
-              {hasUnread && <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0" />}
+              {hasUnread && <span className="w-2 h-2 rounded-full bg-effort shrink-0" />}
             </TabButton>
           </div>
 

@@ -37,6 +37,7 @@ export interface DingShowOptions {
   duration?: number;
   action?: DingAction;
   secondary?: DingAction;
+  onClick?: () => void;
   meta?: string;
   image?: string;
   progress?: number;
@@ -50,6 +51,7 @@ export interface DingUpdatePatch {
   duration?: number;
   action?: DingAction | null;
   secondary?: DingAction | null;
+  onClick?: (() => void) | null;
   meta?: string | null;
   image?: string | null;
   progress?: number | null;
@@ -65,6 +67,7 @@ export interface DingToastRecord {
   duration: number;
   action?: DingAction;
   secondary?: DingAction;
+  onClick?: () => void;
   meta?: string;
   image?: string;
   progress?: number;
@@ -259,6 +262,7 @@ transform:translate(calc(var(--tx) + var(--dx,0px)),calc(var(--y) + var(--dy,0px
 transform-origin:var(--tst-ox) var(--tst-oy);z-index:calc(100 - var(--tst-i));
 transition-property:transform,opacity;transition-duration:var(--tst-stack-dur),.25s;transition-timing-function:var(--tst-stack),ease-out}
 .tst-slot::after{content:'';position:absolute;z-index:-1;left:0;right:0;top:calc(var(--tst-gap)/-2);bottom:calc(var(--tst-gap)/-2)}
+.tst-slot[data-clickable="true"]{cursor:pointer}
 .tst-slot[data-dragging]{transition:none;cursor:grabbing}
 .tst-slot[data-flung]{transition:transform .38s cubic-bezier(.2,.8,.3,1),opacity .25s ease-out;opacity:0;pointer-events:none}
 .tst-viewport[data-position^=top] .tst-slot{top:calc(var(--tst-pad) + env(safe-area-inset-top,0px));--tst-oy:0%}
@@ -453,6 +457,7 @@ export function createToaster() {
       ...(p.progress !== undefined && { progress: p.progress ?? undefined }),
       ...(p.action !== undefined && { action: p.action ?? undefined }),
       ...(p.secondary !== undefined && { secondary: p.secondary ?? undefined }),
+      ...(p.onClick !== undefined && { onClick: p.onClick ?? undefined }),
       ...(p.meta !== undefined && { meta: p.meta ?? undefined }),
       ...(p.image !== undefined && { image: p.image ?? undefined }),
       ...(p.className !== undefined && { className: p.className ?? undefined }),
@@ -494,6 +499,7 @@ export function createToaster() {
       opts.id === undefined &&
       !opts.action &&
       !opts.secondary &&
+      !opts.onClick &&
       !opts.image &&
       !opts.meta &&
       !opts.className
@@ -522,6 +528,7 @@ export function createToaster() {
         description: opts.description ?? "",
         action: opts.action ?? null,
         secondary: opts.secondary ?? null,
+        onClick: opts.onClick ?? null,
         meta: opts.meta ?? null,
         image: opts.image ?? null,
         className: opts.className ?? null,
@@ -545,6 +552,7 @@ export function createToaster() {
         duration: e.remaining,
         action: opts.action,
         secondary: opts.secondary,
+        onClick: opts.onClick,
         meta: opts.meta,
         image: opts.image,
         progress: opts.progress,
@@ -573,6 +581,13 @@ export function createToaster() {
     } else {
       dismiss(id);
     }
+  }
+
+  function click(id: string) {
+    const t = find(id);
+    if (!t || !t.onClick || t.phase === "closing" || t.phase === "exit") return;
+    t.onClick();
+    dismiss(id);
   }
 
   function dismiss(id?: string, opts: { immediate?: boolean } = {}) {
@@ -666,6 +681,7 @@ export function createToaster() {
     promise,
     update,
     act,
+    click,
     dismiss,
     pause,
     resume,
@@ -1025,6 +1041,7 @@ function watchDrag(slot: HTMLElement, id: string, t: DingToaster) {
   let sy = 0;
   let t0 = 0;
   let active = false;
+  let moved = false;
 
   const edge = () =>
     slot.closest<HTMLElement>(".tst-viewport")?.dataset.position?.startsWith("top") ? -1 : 1;
@@ -1035,14 +1052,21 @@ function watchDrag(slot: HTMLElement, id: string, t: DingToaster) {
     sy = e.clientY;
     t0 = e.timeStamp;
     active = true;
-    slot.setPointerCapture(e.pointerId);
+    moved = false;
+    slot.dataset.pointerState = "down";
+    slot.setPointerCapture?.(e.pointerId);
     slot.setAttribute("data-dragging", "");
   };
 
   const move = (e: PointerEvent) => {
     if (!active) return;
     const dx = e.clientX - sx;
-    let dy = e.clientY - sy;
+    const rawDy = e.clientY - sy;
+    if (Math.hypot(dx, rawDy) >= 8) {
+      moved = true;
+      slot.dataset.pointerState = "dragged";
+    }
+    let dy = rawDy;
     if (dy * edge() < 0) dy *= 0.2;
     slot.style.setProperty("--dx", `${dx}px`);
     slot.style.setProperty("--dy", `${dy}px`);
@@ -1058,6 +1082,7 @@ function watchDrag(slot: HTMLElement, id: string, t: DingToaster) {
     const away = dy > 40 || Math.abs(dx) > 80 || (speed > 0.5 && (dy > 15 || Math.abs(dx) > 15));
     slot.removeAttribute("data-dragging");
     if (away) {
+      slot.dataset.pointerState = "dragged";
       const len = Math.hypot(dx, rawDy) || 1;
       const reach = Math.max(160, speed * 320);
       slot.setAttribute("data-flung", "");
@@ -1067,7 +1092,16 @@ function watchDrag(slot: HTMLElement, id: string, t: DingToaster) {
     } else {
       slot.style.removeProperty("--dx");
       slot.style.removeProperty("--dy");
+      if (e.type === "pointerup" && !moved && Math.hypot(dx, rawDy) < 10) {
+        slot.dataset.pointerState = "tapped";
+        t.click(id);
+      } else {
+        slot.dataset.pointerState = "dragged";
+      }
     }
+    setTimeout(() => {
+      delete slot.dataset.pointerState;
+    }, 0);
   };
 
   slot.addEventListener("pointerdown", down);
