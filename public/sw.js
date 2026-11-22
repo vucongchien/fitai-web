@@ -1,19 +1,4 @@
-/**
- * FITAI service worker.
- *
- * Deliberately has NO `fetch` handler. Its only job is receiving push while the
- * tab is closed, which is the one thing a page cannot do for itself. Adding a
- * fetch handler here would put a caching layer between the app and every request
- * — stale assets after a deploy, swallowed RPCs — for no benefit, since the app
- * is online-first (PRODUCT.md: "Workout logging is online-first").
- *
- * Asset and model caching is done from the page via the Cache Storage API
- * directly (see inference.worker.ts), which needs no service worker at all.
- *
- * FCM delivers through the standard Web Push protocol, so the payload arrives on
- * a plain `push` event. We do not import the Firebase SW SDK: it would register a
- * second push handler and every notification would appear twice.
- */
+// FITAI push-only service worker (no fetch handler; relays push to open tabs).
 
 self.addEventListener("install", () => {
   // Take over immediately rather than waiting for every old tab to close.
@@ -41,13 +26,23 @@ self.addEventListener("push", (event) => {
   const data = payload.data ?? {};
   const title = notification.title ?? data.title ?? "FITAI";
 
+  const body = notification.body ?? data.body ?? "";
+  const url = data.url ?? "/notifications";
+
   event.waitUntil(
-    self.registration.showNotification(title, {
-      body: notification.body ?? data.body ?? "",
-      data: { url: data.url ?? "/notifications" },
-      icon: "/icons/icon-192.png",
-      tag: data.tag ?? "fitai",
-    }),
+    Promise.all([
+      self.registration.showNotification(title, {
+        body,
+        data: { url },
+        icon: "/icons/icon-192.png",
+        tag: data.tag ?? "fitai",
+      }),
+      self.clients.matchAll({ includeUncontrolled: true, type: "window" }).then((clients) => {
+        for (const client of clients) {
+          client.postMessage({ type: "FITAI_PUSH", title, body, url, data });
+        }
+      }),
+    ]),
   );
 });
 

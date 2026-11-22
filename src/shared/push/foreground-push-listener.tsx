@@ -1,7 +1,8 @@
 "use client";
 
 import { onMessage } from "firebase/messaging";
-import { useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
+import { useRef, useSyncExternalStore } from "react";
 
 import { getMessagingIfSupported } from "@/shared/push/firebase-app";
 import { usePushRegistration } from "@/shared/push/use-push-registration";
@@ -34,38 +35,72 @@ function playNotificationChime() {
   }
 }
 
-let foregroundSubscribed = false;
+type PushHandler = (title: string, body: string) => void;
+const activeHandlers = new Set<PushHandler>();
+let listenerInitialized = false;
+let lastPushKey = "";
+let lastPushAt = 0;
 
-function subscribeForegroundMessages(_onStoreChange: () => void): () => void {
-  if (typeof window === "undefined" || foregroundSubscribed) {
-    return () => {};
+function dispatchPush(title: string, body: string) {
+  const key = `${title}|${body}`;
+  const now = Date.now();
+  if (key === lastPushKey && now - lastPushAt < 1500) {
+    return;
   }
-  foregroundSubscribed = true;
+  lastPushKey = key;
+  lastPushAt = now;
 
-  let unsubscribe: (() => void) | undefined;
-  let active = true;
+  playNotificationChime();
+  toast.info(body ? `${title}: ${body}` : title);
+  activeHandlers.forEach((fn) => fn(title, body));
+}
+
+function ensureGlobalListeners() {
+  if (typeof window === "undefined" || listenerInitialized) return;
+  listenerInitialized = true;
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (event: MessageEvent) => {
+      const msg = event.data as { type?: string; title?: string; body?: string } | undefined;
+      if (msg?.type === "FITAI_PUSH") {
+        dispatchPush(msg.title ?? "FITAI", msg.body ?? "");
+      }
+    });
+  }
 
   void getMessagingIfSupported().then((messaging) => {
-    if (!active || !messaging) return;
-    unsubscribe = onMessage(messaging, (payload) => {
+    if (!messaging) return;
+    onMessage(messaging, (payload) => {
       const title = payload.notification?.title ?? payload.data?.title ?? "FITAI";
       const body = payload.notification?.body ?? payload.data?.body ?? "";
-      playNotificationChime();
-      toast.info(body ? `${title}: ${body}` : title);
+      dispatchPush(title, body);
     });
   });
-
-  return () => {
-    active = false;
-    foregroundSubscribed = false;
-    unsubscribe?.();
-  };
 }
 
 const getSnapshot = () => true;
 
 export function ForegroundPushListener() {
+  const router = useRouter();
+  const routerRef = useRef(router);
+  routerRef.current = router;
+
   usePushRegistration();
-  useSyncExternalStore(subscribeForegroundMessages, getSnapshot, getSnapshot);
+
+  useSyncExternalStore(
+    () => {
+      ensureGlobalListeners();
+      const handler: PushHandler = () => {
+        routerRef.current.refresh();
+      };
+      activeHandlers.add(handler);
+      return () => {
+        activeHandlers.delete(handler);
+      };
+    },
+    getSnapshot,
+    getSnapshot,
+  );
+
   return null;
 }

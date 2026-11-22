@@ -24,8 +24,11 @@ export default async function NotificationsPage() {
     console.error("[NotificationsPage] failed to load notifications on server:", error);
   }
 
+  const viewKey = `${initialNotifications[0]?.id ?? "empty"}:${initialTotalCount}:${initialNotifications[0]?.body ?? ""}`;
+
   return (
     <NotificationsView
+      key={viewKey}
       initialNotifications={initialNotifications}
       initialTotalCount={initialTotalCount}
       pageSize={INITIAL_PAGE_SIZE}
