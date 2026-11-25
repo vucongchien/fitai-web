@@ -3,7 +3,6 @@ import type { Client, Transport } from "@connectrpc/connect";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  CreateAdhocSessionPlanResponseSchema,
   InitiateRoadmapResponseSchema,
   RegenerateScheduleResponseSchema,
 } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
@@ -13,13 +12,11 @@ type CoachingClient = Client<typeof CoachingService>;
 
 const mockInitiateRoadmap = vi.fn<CoachingClient["initiateRoadmap"]>();
 const mockRegenerateSchedule = vi.fn<CoachingClient["regenerateSchedule"]>();
-const mockCreateAdhocSessionPlan = vi.fn<CoachingClient["createAdhocSessionPlan"]>();
 
 vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () => ({
   createClient: (_service: unknown, _transport: unknown) => ({
     initiateRoadmap: mockInitiateRoadmap,
     regenerateSchedule: mockRegenerateSchedule,
-    createAdhocSessionPlan: mockCreateAdhocSessionPlan,
   }),
 }));
 
@@ -41,7 +38,6 @@ describe("planning & Coaching gRPC Actions", () => {
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
     mockInitiateRoadmap.mockReset();
     mockRegenerateSchedule.mockReset();
-    mockCreateAdhocSessionPlan.mockReset();
   });
 
   afterEach(() => {
@@ -83,23 +79,5 @@ describe("planning & Coaching gRPC Actions", () => {
       reason: "Injury reported",
     });
     expect(res.success).toBe(true);
-  });
-
-  it("createAdhocSessionPlanServerAction builds flexible adhoc workout", async () => {
-    mockCreateAdhocSessionPlan.mockResolvedValue(
-      create(CreateAdhocSessionPlanResponseSchema, {
-        sessionPlan: { sessionPlanId: "adhoc-plan-888" },
-      }),
-    );
-
-    const { createAdhocSessionPlanServerAction } =
-      await import("@/features/roadmap/server/coaching-actions");
-    const res = await createAdhocSessionPlanServerAction(["ex-bench", "ex-squat"]);
-
-    expect(mockCreateAdhocSessionPlan).toHaveBeenCalledWith({
-      exerciseIds: ["ex-bench", "ex-squat"],
-    });
-    expect(res.success).toBe(true);
-    expect(res.sessionPlanId).toBe("adhoc-plan-888");
   });
 });

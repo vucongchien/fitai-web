@@ -25,6 +25,8 @@ import type { HeaderAction } from "@/features/workout/ui/live/session-header";
 import { NAV_BACK, NAV_FORWARD } from "@/shared/ui/transition-types";
 
 export interface DuelArenaViewProps {
+  /** The coach refused this exercise (e.g. an active injury): show why instead of the duel. */
+  blockedReason?: string;
   currentUserId: string;
   match: SoloMatchSummary | null;
   onnxSkeletonUrl: string;
@@ -33,6 +35,7 @@ export interface DuelArenaViewProps {
 }
 
 export function DuelArenaView({
+  blockedReason,
   currentUserId,
   match,
   onnxSkeletonUrl,
@@ -52,7 +55,8 @@ export function DuelArenaView({
   );
 
   const { camera, forfeitMatch, liveState, pose, submitScore } = useSoloDuel({
-    match,
+    // A blocked duel never starts the camera or the referee.
+    match: blockedReason ? null : match,
     onMatchEnded: handleMatchEnded,
     onnxSkeletonUrl,
     planId,
@@ -70,6 +74,32 @@ export function DuelArenaView({
     ],
     [],
   );
+
+  if (match && blockedReason) {
+    return (
+      <div className="min-h-screen bg-white px-5 pt-6 pb-12 sm:px-7">
+        <div className="mx-auto max-w-[640px] rounded-[20px] border border-neutral-200 bg-white p-6 sm:p-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-action-soft)] text-[var(--color-action)]">
+            <ShieldAlert aria-hidden="true" size={24} />
+          </div>
+          <h1 className="mt-4 text-xl font-bold text-[var(--color-text)]">
+            Cannot Start This Challenge
+          </h1>
+          <p className="mt-2 text-sm text-[var(--color-text-muted)]">{blockedReason}</p>
+          <div className="mt-6 flex justify-center">
+            <Link
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-[12px] bg-[var(--color-action)] px-6 text-sm font-bold text-white transition-colors hover:opacity-90"
+              href="/challenge"
+              transitionTypes={NAV_BACK}
+            >
+              <Swords aria-hidden="true" size={17} />
+              Return to Solo Lobby
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!match) {
     return (

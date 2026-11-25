@@ -57,29 +57,3 @@ export async function regenerateScheduleServerAction(
     };
   }
 }
-
-export async function createAdhocSessionPlanServerAction(
-  exerciseIds: string[],
-): Promise<{ success: boolean; sessionPlanId?: string; message?: string }> {
-  try {
-    const accessToken = await getAccessToken();
-    const transport = createServerTransport(accessToken);
-    const client = createClient(CoachingService, transport);
-
-    const res = await client.createAdhocSessionPlan({
-      exerciseIds,
-    });
-    return {
-      success: true,
-      sessionPlanId: res.sessionPlan?.sessionPlanId,
-      message: "Adhoc session created",
-    };
-  } catch (error: any) {
-    console.error("[gRPC CoachingService.CreateAdhocSessionPlan] Error:", error?.message || error);
-    return {
-      success: true,
-      sessionPlanId: `adhoc-${Date.now()}`,
-      message: "Adhoc session ready",
-    };
-  }
-}

@@ -12,6 +12,7 @@ async function DuelArenaContent({ params }: { params: Promise<{ matchId: string 
 
   return (
     <DuelArenaView
+      blockedReason={data.blockedReason}
       currentUserId={data.currentUserId}
       match={data.match}
       onnxSkeletonUrl={data.onnxSkeletonUrl}
