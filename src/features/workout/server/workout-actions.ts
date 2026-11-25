@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@connectrpc/connect";
+import { Code, ConnectError, createClient } from "@connectrpc/connect";
 import { revalidatePath } from "next/cache";
 
 import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
@@ -13,6 +13,7 @@ import {
 } from "@/features/workout/domain/training-load";
 import type { AbortReason, SetLogDraft } from "@/features/workout/model/live-session.types";
 import type { AdhocConfig, ExerciseResult } from "@/features/workout/model/workout.types";
+import { toAppError } from "@/shared/api/errors/app-error";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
@@ -194,49 +195,70 @@ export async function getAiRecommendation(
   };
 }
 
-// Start an ad-hoc session built from selected exercise IDs.
-export async function beginWorkoutSession(exerciseIds: string[]): Promise<{ sessionId: string }> {
+export type BeginWorkoutSessionResult =
+  | { ok: true; sessionId: string }
+  | { ok: false; message: string };
+
+// Returns failures as a message: Next.js hides thrown server-action errors in production.
+export async function beginWorkoutSession(
+  exerciseIds: string[],
+): Promise<BeginWorkoutSessionResult> {
   if (!exerciseIds || exerciseIds.length === 0) {
-    throw new Error("Cannot begin session without at least one exercise.");
+    return {
+      ok: false,
+      message: "Please select at least 1 exercise before starting the workout session.",
+    };
   }
 
   const accessToken = await getAccessToken();
   const userId = await getAuthenticatedUserId();
 
   if (!accessToken || !userId) {
-    throw new Error("Please log in to start a workout session.");
+    return { ok: false, message: "Please log in to start a workout session." };
   }
 
   const transport = createServerTransport(accessToken);
   const coachingClient = createClient(CoachingService, transport);
 
-  let planId = "";
   try {
-    const adhocPlan = await coachingClient.createAdhocSessionPlan({
-      exerciseIds,
-    });
-    planId = adhocPlan.sessionPlan?.sessionPlanId || "";
-  } catch (error: any) {
-    console.warn(
-      "[beginWorkoutSession] createAdhocSessionPlan failed, attempting auto-initiate roadmap:",
-      error?.message,
-    );
+    let adhocPlan;
     try {
-      await coachingClient.initiateRoadmap({});
-      const retryPlan = await coachingClient.createAdhocSessionPlan({
-        exerciseIds,
-      });
-      planId = retryPlan.sessionPlan?.sessionPlanId || "";
-    } catch (retryErr) {
-      console.error("[beginWorkoutSession] Failed after initiating roadmap:", retryErr);
+      adhocPlan = await coachingClient.createAdhocSessionPlan({ exerciseIds });
+    } catch (error) {
+      // Only NotFound (no active roadmap) is worth a retry; other refusals are the answer.
+      if (ConnectError.from(error).code !== Code.NotFound) {
+        throw error;
+      }
+      try {
+        await coachingClient.initiateRoadmap({});
+      } catch (initErr) {
+        // Another request started the roadmap first; it can be used all the same.
+        if (ConnectError.from(initErr).code !== Code.AlreadyExists) {
+          throw initErr;
+        }
+      }
+      adhocPlan = await coachingClient.createAdhocSessionPlan({ exerciseIds });
     }
-  }
 
-  if (!planId) {
-    throw new Error("Failed to create adhoc session plan on server.");
+    const planId = adhocPlan.sessionPlan?.sessionPlanId;
+    if (!planId) {
+      return { ok: false, message: "Failed to start session. Please try again." };
+    }
+    return { ok: true, sessionId: planId };
+  } catch (error) {
+    console.error("[beginWorkoutSession] createAdhocSessionPlan failed:", error);
+    return { ok: false, message: beginSessionFailureMessage(error) };
   }
+}
 
-  return { sessionId: planId };
+function beginSessionFailureMessage(error: unknown): string {
+  const connectError = ConnectError.from(error);
+  // The coaching service states why the session cannot be built, e.g.
+  // "exercise is excluded by an active injury: <exercise> (<reason>)".
+  if (connectError.code === Code.FailedPrecondition && connectError.rawMessage) {
+    return `Cannot start this session: ${connectError.rawMessage}.`;
+  }
+  return toAppError(error).message;
 }
 
 export async function logWorkoutSet(

@@ -1,8 +1,12 @@
 import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import type { Client, Transport } from "@connectrpc/connect";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { CreateAdhocSessionPlanResponseSchema } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import {
+  CreateAdhocSessionPlanResponseSchema,
+  InitiateRoadmapResponseSchema,
+} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import type { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import {
   AbortWorkoutSessionResponseSchema,
@@ -24,6 +28,7 @@ type WorkoutClient = Client<typeof WorkoutExecutionService>;
 type ExerciseClient = Client<typeof ExerciseService>;
 
 const mockCreateAdhocSessionPlan = vi.fn<CoachingClient["createAdhocSessionPlan"]>();
+const mockInitiateRoadmap = vi.fn<CoachingClient["initiateRoadmap"]>();
 const mockStartWorkoutSession = vi.fn<WorkoutClient["startWorkoutSession"]>();
 const mockStartScheduledWorkoutSession = vi.fn<WorkoutClient["startScheduledWorkoutSession"]>();
 const mockLogWorkoutSet = vi.fn<WorkoutClient["logWorkoutSet"]>();
@@ -35,20 +40,25 @@ const mockGetPersonalRecords = vi.fn<WorkoutClient["getPersonalRecords"]>();
 const mockSearchExercises = vi.fn<ExerciseClient["searchExercises"]>();
 const mockGetCatalogMetadata = vi.fn<ExerciseClient["getCatalogMetadata"]>();
 
-vi.mock<typeof import("@connectrpc/connect")>(import("@connectrpc/connect"), () => ({
-  createClient: (_service: unknown, _transport: unknown) => ({
-    createAdhocSessionPlan: mockCreateAdhocSessionPlan,
-    startWorkoutSession: mockStartWorkoutSession,
-    startScheduledWorkoutSession: mockStartScheduledWorkoutSession,
-    logWorkoutSet: mockLogWorkoutSet,
-    syncWorkoutLogs: mockSyncWorkoutLogs,
-    abortWorkoutSession: mockAbortWorkoutSession,
-    completeWorkoutSession: mockCompleteWorkoutSession,
-    getPersonalRecords: mockGetPersonalRecords,
-    searchExercises: mockSearchExercises,
-    getCatalogMetadata: mockGetCatalogMetadata,
+vi.mock<typeof import("@connectrpc/connect")>(
+  import("@connectrpc/connect"),
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    createClient: (_service: unknown, _transport: unknown) => ({
+      createAdhocSessionPlan: mockCreateAdhocSessionPlan,
+      initiateRoadmap: mockInitiateRoadmap,
+      startWorkoutSession: mockStartWorkoutSession,
+      startScheduledWorkoutSession: mockStartScheduledWorkoutSession,
+      logWorkoutSet: mockLogWorkoutSet,
+      syncWorkoutLogs: mockSyncWorkoutLogs,
+      abortWorkoutSession: mockAbortWorkoutSession,
+      completeWorkoutSession: mockCompleteWorkoutSession,
+      getPersonalRecords: mockGetPersonalRecords,
+      searchExercises: mockSearchExercises,
+      getCatalogMetadata: mockGetCatalogMetadata,
+    }),
   }),
-}));
+);
 
 vi.mock<typeof import("@/shared/api/server/transport")>(
   import("@/shared/api/server/transport"),
@@ -67,6 +77,7 @@ describe("workout Execution gRPC Actions", () => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
     mockCreateAdhocSessionPlan.mockReset();
+    mockInitiateRoadmap.mockReset();
     mockStartWorkoutSession.mockReset();
     mockStartScheduledWorkoutSession.mockReset();
     mockLogWorkoutSet.mockReset();
@@ -103,7 +114,45 @@ describe("workout Execution gRPC Actions", () => {
     expect(mockCreateAdhocSessionPlan).toHaveBeenCalledWith({
       exerciseIds: ["ex-squat"],
     });
-    expect(res.sessionId).toBe("plan-777");
+    expect(res).toEqual({ ok: true, sessionId: "plan-777" });
+    expect(mockInitiateRoadmap).not.toHaveBeenCalled();
+  });
+
+  it("beginWorkoutSession reports why coaching refused the session instead of retrying", async () => {
+    mockCreateAdhocSessionPlan.mockRejectedValue(
+      new ConnectError(
+        "exercise is excluded by an active injury: Barbell Bench Press (SHOULDER (MODERATE))",
+        Code.FailedPrecondition,
+      ),
+    );
+
+    const { beginWorkoutSession } = await import("@/features/workout/server/workout-actions");
+    const res = await beginWorkoutSession(["ex-bench"]);
+
+    expect(res).toEqual({
+      ok: false,
+      message:
+        "Cannot start this session: exercise is excluded by an active injury: Barbell Bench Press (SHOULDER (MODERATE)).",
+    });
+    expect(mockInitiateRoadmap).not.toHaveBeenCalled();
+    expect(mockCreateAdhocSessionPlan).toHaveBeenCalledTimes(1);
+  });
+
+  it("beginWorkoutSession starts a roadmap when the athlete has none, then builds the session", async () => {
+    mockCreateAdhocSessionPlan
+      .mockRejectedValueOnce(new ConnectError("no active roadmap for user", Code.NotFound))
+      .mockResolvedValueOnce(
+        create(CreateAdhocSessionPlanResponseSchema, {
+          sessionPlan: { sessionPlanId: "plan-new" },
+        }),
+      );
+    mockInitiateRoadmap.mockResolvedValue(create(InitiateRoadmapResponseSchema, {}));
+
+    const { beginWorkoutSession } = await import("@/features/workout/server/workout-actions");
+    const res = await beginWorkoutSession(["ex-squat"]);
+
+    expect(mockInitiateRoadmap).toHaveBeenCalledTimes(1);
+    expect(res).toEqual({ ok: true, sessionId: "plan-new" });
   });
 
   it("logWorkoutSet sends set performance to gRPC LogWorkoutSet with per-rep telemetry", async () => {

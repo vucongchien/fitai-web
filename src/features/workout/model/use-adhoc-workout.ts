@@ -197,8 +197,12 @@ export function useAdhocWorkout(options: UseAdhocWorkoutOptions = {}) {
     const exerciseIds = exerciseList.map((ex) => ex.exerciseId || ex.id.split("__")[0] || ex.id);
     startSessionTransition(async () => {
       try {
-        const { sessionId } = await beginWorkoutSession(exerciseIds);
-        router.push(`/workouts/live/${sessionId}`);
+        const result = await beginWorkoutSession(exerciseIds);
+        if (!result.ok) {
+          showToast({ message: result.message, type: "error" });
+          return;
+        }
+        router.push(`/workouts/live/${result.sessionId}`);
       } catch {
         showToast({ message: "Failed to start session. Please try again.", type: "error" });
       }
