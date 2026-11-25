@@ -4,6 +4,7 @@ import { it, afterEach, describe, expect, beforeEach } from "vitest";
 import type { LiveExercise, LiveSessionPlan } from "@/features/workout/model/live-session.types";
 import { useLiveSession } from "@/features/workout/model/use-live-session";
 import type { syncWorkoutLogs } from "@/features/workout/server/workout-actions";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 vi.mock<typeof import("@/features/workout/server/workout-actions")>(
   import("@/features/workout/server/workout-actions"),
@@ -17,11 +18,12 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
     breathingCue: "",
     commonMistakes: [],
     durationSeconds: 30,
-    equipmentId: "eq-bodyweight",
+    equipment: Equipment.BODY_ONLY,
+    images: [],
     exerciseId: "ex-plank",
     formCues: [],
     hasAiSupported: false,
-    instructions: "",
+    instructions: [],
     isWeighted: false,
     name: "Plank Hold",
     notes: "",

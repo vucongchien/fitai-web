@@ -1,4 +1,9 @@
 import {
+  Equipment,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+
+import {
   calculateBMI,
   calculateOneRepMax,
   mapRawDataToProfileViewModel,
@@ -113,8 +118,8 @@ describe("profile Mapper", () => {
           bodyFatPercent: 15,
           experienceLevel: "ADVANCED",
           goals: ["STRENGTH", "ENDURANCE"],
-          preferredMuscleGroups: ["LEGS", "GLUTES", "CORE"],
-          availableEquipment: ["FULL_GYM", "KETTLEBELL"],
+          preferredMuscleGroups: [MuscleGroup.QUADRICEPS, MuscleGroup.GLUTES],
+          availableEquipment: [Equipment.MACHINE, Equipment.KETTLEBELLS],
           dateOfBirth: "1989-12-13",
           gender: "OTHER",
           coachStyle: "SCIENTIFIC",
@@ -137,10 +142,15 @@ describe("profile Mapper", () => {
       expect(vm.user.dateOfBirth).toBe("1989-12-13");
       expect(vm.user.gender).toBe("Other");
       expect(vm.settings.coachStyle).toBe("Scientific");
-      expect(vm.settings.availableEquipment).toContain("FULL_GYM");
-      expect(vm.settings.availableEquipment).toContain("KETTLEBELL");
+      expect(vm.settings.availableEquipment).toStrictEqual([
+        Equipment.MACHINE,
+        Equipment.KETTLEBELLS,
+      ]);
       expect(vm.healthMetrics.goals).toStrictEqual(["Strength", "Endurance"]);
-      expect(vm.healthMetrics.preferredMuscleGroups).toStrictEqual(["LEGS", "GLUTES", "CORE"]);
+      expect(vm.healthMetrics.preferredMuscleGroups).toStrictEqual([
+        MuscleGroup.QUADRICEPS,
+        MuscleGroup.GLUTES,
+      ]);
       expect(vm.highlights.currentWeightKg).toBe(58);
       expect(vm.bestPr?.exerciseName).toBe("Barbell Back Squat");
       expect(vm.bestPr?.weightKg).toBe(95);

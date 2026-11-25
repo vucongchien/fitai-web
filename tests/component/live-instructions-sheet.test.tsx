@@ -3,13 +3,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   return {
     exerciseId: "lateral_raise",
     name: "Dumbbell Lateral Raise",
     phase: "main",
-    equipmentId: "eq-dumbbell",
+    equipment: Equipment.DUMBBELL,
     targetSets: 1,
     targetReps: 5,
     durationSeconds: 0,
@@ -19,12 +20,14 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
     restExerciseSec: 15,
     targetRpe: 7.5,
     notes: "AI Camera Tracking (front view recommended)",
-    instructions: "Raise arms out to the sides up to shoulder height with a slight bend in elbows.",
+    instructions: [
+      "Raise arms out to the sides up to shoulder height with a slight bend in elbows.",
+    ],
     formCues: ["Lead with elbows", "Raise to shoulder level", "No torso momentum"],
     commonMistakes: ["Using body swing to lift weights"],
     breathingCue: "Inhale on eccentric, exhale on effort",
     videoUrl: "https://www.youtube.com/watch?v=AJZRMJ7qlbo",
-    thumbnailUrl: "https://static.exercisedb.dev/media/DsgkuIt.gif",
+    images: ["https://static.exercisedb.dev/media/DsgkuIt.gif"],
     hasAiSupported: true,
     ...overrides,
   };
@@ -44,13 +47,28 @@ describe("InstructionsSheet Component", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders the exercise thumbnail image matching exercise search catalog", () => {
+  it("renders the start frame image", () => {
     const exercise = makeExercise();
     render(<InstructionsSheet exercise={exercise} onClose={vi.fn()} />);
 
-    const img = screen.getByRole("img", { name: "Dumbbell Lateral Raise" });
-    expect(img).toBeInTheDocument();
+    const img = screen.getByRole("img", { name: "Dumbbell Lateral Raise – start position" });
     expect(img).toHaveAttribute("src", expect.stringContaining("DsgkuIt.gif"));
+  });
+
+  it("renders both static frames when the exercise has a start and an end image", () => {
+    const exercise = makeExercise({ images: ["https://img/0.jpg", "https://img/1.jpg"] });
+    render(<InstructionsSheet exercise={exercise} onClose={vi.fn()} />);
+
+    expect(screen.getByRole("img", { name: /start position/u })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /end position/u })).toBeInTheDocument();
+  });
+
+  it("lists every instruction step", () => {
+    const exercise = makeExercise({ instructions: ["Stand tall.", "Raise the arms."] });
+    render(<InstructionsSheet exercise={exercise} onClose={vi.fn()} />);
+
+    expect(screen.getByText("Stand tall.")).toBeInTheDocument();
+    expect(screen.getByText("Raise the arms.")).toBeInTheDocument();
   });
 
   it("displays the AI indicator tag on the thumbnail when exercise has AI support", () => {
@@ -67,8 +85,8 @@ describe("InstructionsSheet Component", () => {
     expect(screen.queryByLabelText("AI form tracking")).not.toBeInTheDocument();
   });
 
-  it("renders fallback icon gracefully when thumbnailUrl is not provided", () => {
-    const exercise = makeExercise({ thumbnailUrl: "" });
+  it("renders fallback icon gracefully when no image is provided", () => {
+    const exercise = makeExercise({ images: [] });
     const { container } = render(<InstructionsSheet exercise={exercise} onClose={vi.fn()} />);
 
     expect(screen.queryByRole("img", { name: "Dumbbell Lateral Raise" })).not.toBeInTheDocument();

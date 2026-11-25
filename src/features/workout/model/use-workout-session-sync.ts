@@ -6,6 +6,8 @@ import { useCallback, useRef, useState } from "react";
 import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
 import { EMPTY_TELEMETRY } from "@/features/workout/domain/motion-engine";
 import type { SetTelemetry } from "@/features/workout/domain/motion-engine";
+import type { PainReport } from "@/features/workout/domain/pain-report";
+import { toPainInjuryDraft } from "@/features/workout/domain/pain-report";
 import { formScore } from "@/features/workout/domain/pose-metrics";
 import { countUnverifiedSets } from "@/features/workout/domain/session-guards";
 import {
@@ -25,6 +27,7 @@ import type {
   SetLogDraft,
 } from "@/features/workout/model/live-session.types";
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
+import { painNoteLabel, reportPainInjury } from "@/features/workout/model/report-pain-injury";
 import type { AudioCoach } from "@/features/workout/model/use-audio-coach";
 import type { useCameraStream } from "@/features/workout/model/use-camera-stream";
 import type { LiveSessionController } from "@/features/workout/model/use-live-session";
@@ -321,7 +324,7 @@ export function useWorkoutSessionSync({
   );
 
   const abortSession = useCallback(
-    async (reason: AbortReason, note?: string) => {
+    async (reason: AbortReason, note?: string, pain?: PainReport) => {
       setFinishing(true);
       audio.stopAll();
       camera.stop();
@@ -331,14 +334,12 @@ export function useWorkoutSessionSync({
         await abortWorkoutSession(plan.sessionId, reason, note);
         session.actions.clearDraft();
         if (reason === "pain") {
-          startAIAdjustment({
-            muscleGroup: note
-              ? note.length > 20
-                ? note.slice(0, 20) + "..."
-                : note
-              : "Reported Area",
-            reason: "injury_reported",
-          });
+          // With a region the adjustment waits for the saved injury; never block the stop on it.
+          if (pain && toPainInjuryDraft(pain)) {
+            void reportPainInjury(pain);
+          } else {
+            startAIAdjustment({ muscleGroup: painNoteLabel(note), reason: "injury_reported" });
+          }
           router.replace(`/workouts/live/${plan.sessionId}/stopped`);
         } else {
           router.replace("/roadmap");

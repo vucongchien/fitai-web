@@ -1,11 +1,7 @@
-/**
- * Types for the live workout session (UC-03 Workout Execution).
- *
- * Shapes mirror the backend contracts so the mock → gRPC swap stays mechanical:
- *   - LiveExercise      ← contracts.core.coaching.v1.PrescribedExercise + supporting.exercise.v1.ExerciseInfo
- *   - MotionSpec        ← contracts.core.workout_execution.v1.GetMotionSpecificationResponse + DialogueEngineConfig
- *   - SetLogDraft       → contracts.core.workout_execution.v1.LogWorkoutSetRequest
- */
+// Live workout session types (UC-03). Shapes mirror the backend contracts (PrescribedExercise,
+// ExerciseInfo, GetMotionSpecificationResponse, LogWorkoutSetRequest) so the swap stays mechanical.
+
+import type { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 /** The three blocks of a session — ux-flow-spec §5.1, FR-AC-07. */
 export type SessionPhase = "warmup" | "main" | "cooldown";
@@ -14,7 +10,7 @@ export interface LiveExercise {
   exerciseId: string;
   name: string;
   phase: SessionPhase;
-  equipmentId: string;
+  equipment: Equipment;
   targetSets: number;
   /** 0 when the exercise is time-based (hold/stretch). */
   targetReps: number;
@@ -22,7 +18,7 @@ export interface LiveExercise {
   durationSeconds: number;
   /** Suggested load. 0 for bodyweight work. */
   targetWeightKg: number;
-  /** BFF resolves: equipment.name !== "bodyweight". */
+  /** Anything but BODY_ONLY carries a load. */
   isWeighted: boolean;
   /** Rest between sets of this exercise. */
   restSetSec: number;
@@ -31,15 +27,16 @@ export interface LiveExercise {
   targetRpe: number;
   /** Coach note for this prescription. */
   notes: string;
-  /** From ExerciseInfo.instructions — the "read the guide" content. */
-  instructions?: string;
+  /** From ExerciseInfo.instructions — one step per entry. */
+  instructions: string[];
   formCues: string[];
   commonMistakes: string[];
-  // NOT IN CONTRACT: see ExerciseSummary.breathingCue.
+  // NOT IN CONTRACT: ExerciseInfo has no breathing field.
   breathingCue?: string;
   /** Demo clip for the "watch the guide" overlay. */
   videoUrl?: string;
-  thumbnailUrl?: string;
+  /** Static frames from ExerciseInfo.images (start, end). */
+  images: string[];
   /** Drives the AI camera branch — ux-flow-spec §5.3. */
   hasAiSupported: boolean;
 }
@@ -83,11 +80,8 @@ export interface FormRule {
   thresholdDeg: number;
 }
 
-/**
- * Range of motion window for the tracked joint of an exercise.
- * Direction-agnostic: a push-up flexes (start 170° → end 90°) while a press
- * extends (start 80° → end 170°), so ROM is measured as travel from start to end.
- */
+// ROM window of an exercise's tracked joint, measured as travel from start to end: a push-up
+// flexes (170° → 90°) while a press extends (80° → 170°).
 export interface RomRange {
   joints: [string, string, string];
   /** Joint angle at the start of the rep. */
@@ -211,12 +205,8 @@ export interface SessionReport {
   /** Set to true when < 50% of camera frames tracked — BR-CC-02. */
   hasUnverifiedSets: boolean;
   personalRecords: { exerciseId: string; name: string; oneRepMaxKg: number }[];
-  /**
-   * The recent average volume this session is compared against on the summary.
-   * A *recent average*, not the immediately preceding session — that is the
-   * only history the plan actually carries, so the summary says so rather than
-   * implying a like-for-like "last time". 0 when there is no history yet.
-   */
+  // Recent average volume the summary compares against, not the previous session (the plan
+  // carries no such history), so the summary does not claim "last time". 0 without history.
   recentAvgVolumeKg: number;
 }
 

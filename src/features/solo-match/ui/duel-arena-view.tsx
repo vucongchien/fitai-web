@@ -22,6 +22,7 @@ import { InstructionsSheet } from "@/features/workout/ui/live/instructions-sheet
 import { PoseStencilOverlay } from "@/features/workout/ui/live/pose-stencil-overlay";
 import { SessionHeader } from "@/features/workout/ui/live/session-header";
 import type { HeaderAction } from "@/features/workout/ui/live/session-header";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 import { NAV_BACK, NAV_FORWARD } from "@/shared/ui/transition-types";
 
 export interface DuelArenaViewProps {
@@ -316,11 +317,16 @@ export function DuelArenaView({
               "Cutting range of motion short",
             ],
             durationSeconds: match.ceilingSeconds || 300,
-            equipmentId: "bodyweight",
+            equipment: Equipment.BODY_ONLY,
             exerciseId: match.exerciseId,
             formCues: ["Maintain strict cadence", "Full range of motion on every repetition"],
             hasAiSupported: true,
-            instructions: `1. Stand clearly in frame with your full body visible.\n2. Perform ${match.exerciseName} with proper form and steady cadence.\n3. The AI referee evaluates joint angles and counts valid repetitions automatically.`,
+            instructions: [
+              "Stand clearly in frame with your full body visible.",
+              `Perform ${match.exerciseName} with proper form and steady cadence.`,
+              "The AI referee evaluates joint angles and counts valid repetitions automatically.",
+            ],
+            images: [],
             isWeighted: false,
             name: match.exerciseName,
             notes:

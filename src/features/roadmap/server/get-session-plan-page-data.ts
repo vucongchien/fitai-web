@@ -1,7 +1,6 @@
 import "server-only";
 import { createClient } from "@connectrpc/connect";
 
-import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
 import type { SessionPlanPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
@@ -38,18 +37,16 @@ async function getRealSessionPlanData(
   const coachingClient = createClient(CoachingService, transport);
   const profileClient = createClient(ProfileService, transport);
 
-  const [sessionRes, injuryRes, catalog] = await Promise.all([
+  const [sessionRes, injuryRes] = await Promise.all([
     coachingClient.getSessionPlan({ sessionPlanId }),
     profileClient.getInjuryHistory({ userId }),
-    getCatalogMetadataServerAction().catch(() => ({ muscles: [], equipment: [] })),
   ]);
 
   if (!sessionRes.sessionPlan) {
     throw new Error("Session plan not found.");
   }
 
-  const muscleLookup = new Map(catalog.muscles.map((m) => [m.id.toLowerCase(), m.name]));
-  return adaptSessionPlanPageData(sessionRes.sessionPlan, injuryRes, muscleLookup);
+  return adaptSessionPlanPageData(sessionRes.sessionPlan, injuryRes);
 }
 
 export async function getSessionPlanPageData(sessionPlanId: string): Promise<SessionPlanPageData> {

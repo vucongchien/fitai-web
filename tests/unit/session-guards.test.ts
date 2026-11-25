@@ -10,13 +10,16 @@ import {
   zeroLoadWarning,
 } from "@/features/workout/domain/session-guards";
 import type { LiveExercise, SetLogDraft } from "@/features/workout/model/live-session.types";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 function exercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   return {
     exerciseId: "row",
     name: "Row",
     phase: "main",
-    equipmentId: "eq-dumbbell",
+    equipment: Equipment.DUMBBELL,
+    instructions: [],
+    images: [],
     targetSets: 3,
     targetReps: 10,
     durationSeconds: 0,

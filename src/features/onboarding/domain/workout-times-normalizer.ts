@@ -1,7 +1,4 @@
-/**
- * Workout Times Normalizer & Schedule Engine
- * Clean, iOS-style, minimal schedule management for Onboarding and Profile.
- */
+/** Workout times normalizer and schedule engine for onboarding and profile. */
 
 export type DayOfWeekKey = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 
@@ -12,6 +9,13 @@ export interface DayOfWeekConfig {
   fullLabel: string;
   order: number;
 }
+
+/** Training sessions the coach schedules at most per week (backend BR-AC-01). */
+export const MAX_SESSIONS_PER_WEEK = 6;
+
+// Weekly slots an athlete may select (backend MaxWorkoutSlotsPerWeek); slots past
+// MAX_SESSIONS_PER_WEEK become 20-30 min active-recovery sessions.
+export const MAX_WEEKLY_SLOTS = 10;
 
 export const DAYS_OF_WEEK: DayOfWeekConfig[] = [
   { key: "mon", shortLabel: "M", label: "Mon", fullLabel: "Monday", order: 1 },
@@ -147,9 +151,7 @@ export const WEEKLY_PRESETS: WeeklyPresetConfig[] = [
   },
 ];
 
-/**
- * Calculates slot duration in minutes from "HH:mm-HH:mm" (e.g. "06:00-07:30" => 90 mins)
- */
+/** Slot length in minutes from "HH:mm-HH:mm" ("06:00-07:30" => 90). */
 export function calculateSlotDurationMinutes(slotStr: string, defaultMinutes = 60): number {
   if (!slotStr || typeof slotStr !== "string") {
     return defaultMinutes;
@@ -195,9 +197,7 @@ function parseTimeToMinutes(timeStr: string): number | null {
   return hours * 60 + mins;
 }
 
-/**
- * Validates start and end time (HH:mm)
- */
+/** Validates start and end time (HH:mm). */
 export function validateTimeSlot(
   startTime: string,
   endTime: string,
@@ -225,9 +225,7 @@ export function validateTimeSlot(
   return { isValid: true, durationMinutes: duration };
 }
 
-/**
- * Normalizes day abbreviation to DayOfWeekKey ("mon", "tue", etc.)
- */
+/** Normalizes a day abbreviation to a DayOfWeekKey ("mon", "tue", ...). */
 export function normalizeDayKey(rawDay: string): DayOfWeekKey | null {
   if (!rawDay || typeof rawDay !== "string") {
     return null;
@@ -265,11 +263,8 @@ export function normalizeDayKey(rawDay: string): DayOfWeekKey | null {
   return null;
 }
 
-/**
- * Universal Normalizer:
- * Converts any input format (Key-Value map, string array "mon:06:00-07:30", legacy array ["Mon PM"])
- * into clean PreferredWorkoutTimesMap.
- */
+// Converts any input (key-value map, "mon:06:00-07:30" strings, legacy ["Mon PM"])
+// into a clean PreferredWorkoutTimesMap.
 export function normalizeWorkoutTimes(input: unknown): PreferredWorkoutTimesMap {
   const result: PreferredWorkoutTimesMap = {};
 
@@ -393,10 +388,7 @@ function normalizeLegacySlot(legacyStr: string): string {
   return "17:30-19:00";
 }
 
-/**
- * Serializes PreferredWorkoutTimesMap to protobuf string array format
- * e.g. ["mon:06:00-07:30", "wed:17:30-19:00"]
- */
+/** Serializes to the proto string list, e.g. ["mon:06:00-07:30", "wed:17:30-19:00"]. */
 export function formatWorkoutTimesToProto(map: PreferredWorkoutTimesMap): string[] {
   const normalized = normalizeWorkoutTimes(map);
   const result: string[] = [];
@@ -432,9 +424,19 @@ export interface WeeklyScheduleStats {
   hasSchedule: boolean;
 }
 
-/**
- * Calculates schedule metrics for live feedback
- */
+/** Calculates schedule metrics for live feedback. */
+// Distinct weekly slots in a picker value (map or legacy list), counted the way the
+// backend counts them against MAX_WEEKLY_SLOTS.
+export function countWorkoutSlots(value: Record<string, string[]> | string[] | undefined): number {
+  if (!value) {
+    return 0;
+  }
+  if (Array.isArray(value)) {
+    return new Set(value.map((slot) => slot.trim().toLowerCase()).filter(Boolean)).size;
+  }
+  return calculateWeeklyScheduleStats(value as PreferredWorkoutTimesMap).totalSlotsCount;
+}
+
 export function calculateWeeklyScheduleStats(map: PreferredWorkoutTimesMap): WeeklyScheduleStats {
   const normalized = normalizeWorkoutTimes(map);
   const activeDays: DayOfWeekKey[] = [];
@@ -470,9 +472,7 @@ export function calculateWeeklyScheduleStats(map: PreferredWorkoutTimesMap): Wee
   };
 }
 
-/**
- * Applies a preset schedule
- */
+/** Applies a preset schedule. */
 export function applyWeeklyPreset(presetId: WeeklyPresetId): PreferredWorkoutTimesMap {
   if (presetId === "CLEAR") {
     return {};
@@ -481,9 +481,7 @@ export function applyWeeklyPreset(presetId: WeeklyPresetId): PreferredWorkoutTim
   return preset ? JSON.parse(JSON.stringify(preset.schedule)) : {};
 }
 
-/**
- * Copies slots from one day to all other active training days
- */
+/** Copies slots from one day to all other active training days. */
 export function copySlotsToOtherActiveDays(
   map: PreferredWorkoutTimesMap,
   sourceDay: DayOfWeekKey,

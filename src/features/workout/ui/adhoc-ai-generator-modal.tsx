@@ -15,6 +15,8 @@ import {
   AiResultPreview,
   type EditableAiExercise,
 } from "@/features/workout/ui/ai-generator/ai-result-preview";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+import { equipmentCode } from "@/shared/lib/taxonomy";
 import { FitAiMascotSvg } from "@/shared/ui/fitai-mascot-svg";
 import { toast } from "@/shared/ui/toast";
 
@@ -28,6 +30,12 @@ interface AdhocAiGeneratorModalProps {
 const EQUIPMENT_SUFFIX: Record<string, string> = {
   dumbbells: "using dumbbells only",
   bodyweight: "bodyweight only, no equipment",
+};
+
+// AdHocHint.available_equipment takes Equipment short codes.
+const EQUIPMENT_HINT_CODES: Record<string, string[]> = {
+  dumbbells: [equipmentCode(Equipment.DUMBBELL)],
+  bodyweight: [equipmentCode(Equipment.BODY_ONLY)],
 };
 
 function extractDurationFromPrompt(text: string): number | null {
@@ -130,6 +138,7 @@ function AdhocAiGeneratorModalContent({
       const res = await getAiRecommendation({
         freeText: finalPrompt,
         durationMinutes: targetDuration,
+        availableEquipment: EQUIPMENT_HINT_CODES[selectedEquipment],
       });
       const combinedExercises: EditableAiExercise[] = [
         ...(res.warmUps ?? []).map((ex) => ({

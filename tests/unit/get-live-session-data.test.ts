@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GetSessionPlanResponseSchema } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import { GetExerciseResponseSchema } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 const mockGetSessionPlan = vi.fn();
 const mockStartWorkoutSession = vi.fn();
@@ -98,8 +99,9 @@ describe("getLiveSessionData gRPC Live Session Execution", () => {
         exercise: {
           id: "ex-bench-press",
           name: "Barbell Bench Press",
-          equipmentId: "eq-barbell",
-          instructions: "Hạ tạ chạm ngực rồi đẩy lên",
+          equipment: Equipment.BARBELL,
+          instructions: ["Hạ tạ chạm ngực rồi đẩy lên"],
+          images: ["https://img/0.jpg", "https://img/1.jpg"],
           hasAiSupported: true,
         },
       }),
@@ -117,10 +119,11 @@ describe("getLiveSessionData gRPC Live Session Execution", () => {
     expect(plan.mainExercises[0]?.exerciseId).toBe("ex-bench-press");
     expect(plan.mainExercises[0]?.name).toBe("Bench Press");
     expect(plan.mainExercises[0]?.isWeighted).toBe(true);
-    expect(plan.mainExercises[0]?.instructions).toBe("Hạ tạ chạm ngực rồi đẩy lên");
+    expect(plan.mainExercises[0]?.instructions).toEqual(["Hạ tạ chạm ngực rồi đẩy lên"]);
+    expect(plan.mainExercises[0]?.images).toEqual(["https://img/0.jpg", "https://img/1.jpg"]);
   });
 
-  it("returns ai-12-exercises suite with populated thumbnails matching search catalog", async () => {
+  it("returns ai-12-exercises suite with populated static images", async () => {
     const { getLiveSessionData } = await import("@/features/workout/server/get-live-session-data");
 
     const plan = await getLiveSessionData("ai-12-exercises");
@@ -129,7 +132,7 @@ describe("getLiveSessionData gRPC Live Session Execution", () => {
     const lateralRaise = plan.mainExercises.find((ex) => ex.exerciseId === "lateral_raise");
     expect(lateralRaise).toBeDefined();
     expect(lateralRaise?.name).toBe("Dumbbell Lateral Raise");
-    expect(lateralRaise?.thumbnailUrl).toBe("https://static.exercisedb.dev/media/DsgkuIt.gif");
+    expect(lateralRaise?.images).toEqual(["https://static.exercisedb.dev/media/DsgkuIt.gif"]);
     expect(lateralRaise?.hasAiSupported).toBe(true);
   });
 

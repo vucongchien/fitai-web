@@ -1,3 +1,4 @@
+import { describeInjury } from "@/features/profile/model/injury";
 import type {
   Roadmap,
   SessionPlan,
@@ -5,9 +6,11 @@ import type {
 } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import {
   RoadmapPhase,
+  SessionKind,
   SessionPlanStatus,
 } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import type { GetInjuryHistoryResponse } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
+import { muscleGroupCodeLabel, parseMuscleGroupCode } from "@/shared/lib/taxonomy";
 
 import type {
   ContextItem,
@@ -113,14 +116,14 @@ export function mapSessionStatus(status: SessionPlanStatus, isNext: boolean): Se
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function formatMuscleLabel(raw: string, muscleLookup?: ReadonlyMap<string, string>): string {
+/** Session targets are MuscleGroup short codes (e.g. `CHEST`); other tokens are legacy labels. */
+export function formatMuscleLabel(raw: string): string {
   const trimmed = raw.trim();
   if (!trimmed) {
     return "";
   }
-  const catalogName = muscleLookup?.get(trimmed.toLowerCase());
-  if (catalogName) {
-    return catalogName;
+  if (parseMuscleGroupCode(trimmed) !== null) {
+    return muscleGroupCodeLabel(trimmed);
   }
   if (trimmed.toLowerCase() === "warmup_cooldown") {
     return "Warm-Up & Cool-Down";
@@ -131,17 +134,14 @@ export function formatMuscleLabel(raw: string, muscleLookup?: ReadonlyMap<string
   return trimmed.replaceAll("_", " & ").replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
-function resolveTargetMuscles(
-  rawMuscles: string[] | undefined,
-  muscleLookup?: ReadonlyMap<string, string>,
-): string[] {
+function resolveTargetMuscles(rawMuscles: string[] | undefined): string[] {
   if (!rawMuscles || rawMuscles.length === 0) {
     return [];
   }
   const seen = new Set<string>();
   const resolved: string[] = [];
   for (const raw of rawMuscles) {
-    const label = formatMuscleLabel(raw, muscleLookup);
+    const label = formatMuscleLabel(raw);
     if (label && !seen.has(label)) {
       seen.add(label);
       resolved.push(label);
@@ -174,10 +174,7 @@ function mapPrescriptionExercises(prescription?: SessionPlan["prescription"]): P
   ];
 }
 
-export function adaptRoadmapPageData(
-  roadmapRes: Roadmap,
-  muscleLookup?: ReadonlyMap<string, string>,
-): RoadmapPageData {
+export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
   const weekPlans = roadmapRes.weekPlans || [];
 
   // Xác định trạng thái của từng tuần và tìm tuần active
@@ -289,7 +286,7 @@ export function adaptRoadmapPageData(
             reasoning.toLowerCase().includes("recalibrat")),
         );
 
-        const muscles = resolveTargetMuscles(sp.targetMuscleGroups, muscleLookup);
+        const muscles = resolveTargetMuscles(sp.targetMuscleGroups);
         currentWeekSessions.push({
           id: sp.sessionPlanId,
           day: dayStr,
@@ -302,6 +299,7 @@ export function adaptRoadmapPageData(
           status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
           reasoning: reasoning || undefined,
           isAdapted,
+          isRecovery: sp.kind === SessionKind.RECOVERY,
           exercises: mapPrescriptionExercises(sp.prescription),
         });
       }
@@ -326,7 +324,7 @@ export function adaptRoadmapPageData(
     },
   ];
 
-  const allWeeks = mapScheduleWeeks(roadmapRes, activeWeekNumber, weeks, muscleLookup);
+  const allWeeks = mapScheduleWeeks(roadmapRes, activeWeekNumber, weeks);
 
   return {
     activeWeek: activeWeekNumber,
@@ -343,7 +341,6 @@ function mapScheduleWeeks(
   roadmap: Roadmap,
   activeWeek: number,
   weekSummaries: WeekSummary[],
-  muscleLookup?: ReadonlyMap<string, string>,
 ): ScheduleWeek[] {
   return (roadmap.weekPlans || []).map((wp) => {
     const dateRange = formatWeekDateRange(wp.startDate as any);
@@ -402,7 +399,7 @@ function mapScheduleWeeks(
               reasoning.toLowerCase().includes("recalibrat")),
           );
 
-          const muscles = resolveTargetMuscles(sp.targetMuscleGroups, muscleLookup);
+          const muscles = resolveTargetMuscles(sp.targetMuscleGroups);
           sessions.push({
             id: sp.sessionPlanId,
             day: dayStr,
@@ -415,6 +412,7 @@ function mapScheduleWeeks(
             status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
             reasoning: reasoning || undefined,
             isAdapted,
+            isRecovery: sp.kind === SessionKind.RECOVERY,
             exercises: mapPrescriptionExercises(sp.prescription),
           });
         }
@@ -434,11 +432,8 @@ function mapScheduleWeeks(
   });
 }
 
-export function adaptSchedulePageData(
-  roadmap: Roadmap,
-  muscleLookup?: ReadonlyMap<string, string>,
-): SchedulePageData {
-  const roadmapData = adaptRoadmapPageData(roadmap, muscleLookup);
+export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
+  const roadmapData = adaptRoadmapPageData(roadmap);
   return {
     activeWeek: roadmapData.activeWeek,
     weeks: roadmapData.allWeeks ?? [],
@@ -448,7 +443,6 @@ export function adaptSchedulePageData(
 export function adaptSessionPlanPageData(
   sessionRes: SessionPlan,
   injuryRes: GetInjuryHistoryResponse,
-  muscleLookup?: ReadonlyMap<string, string>,
 ): SessionPlanPageData {
   const { dayStr, dateStr } = formatDate(sessionRes.scheduledDate as any);
 
@@ -489,11 +483,11 @@ export function adaptSessionPlanPageData(
     variant: (hasInjury ? "warning" : "safe") as "safe" | "warning",
     title: hasInjury ? "Injury Warning" : "Ready to train",
     description: hasInjury
-      ? `Active constraints: ${activeInjuries.map((inj) => inj.muscleGroup).join(", ")}. Please proceed with caution.`
+      ? `Active constraints: ${activeInjuries.map(describeInjury).join(", ")}. Please proceed with caution.`
       : "No active injury constraints affect today's exercise selection.",
   };
 
-  const resolvedMuscles = resolveTargetMuscles(sessionRes.targetMuscleGroups, muscleLookup);
+  const resolvedMuscles = resolveTargetMuscles(sessionRes.targetMuscleGroups);
 
   return {
     sessionPlanId: sessionRes.sessionPlanId,

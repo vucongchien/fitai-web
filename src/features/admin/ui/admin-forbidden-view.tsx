@@ -58,7 +58,7 @@ export function AdminForbiddenView({ userName, role }: AdminForbiddenViewProps) 
           </Link>
 
           <Link
-            href="/login?redirect=/admin"
+            href="/admin/login?redirect=/admin"
             className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-[var(--radius-input)] bg-[var(--color-surface-subtle)] hover:bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] font-semibold text-xs transition-all cursor-pointer"
           >
             <KeyRound className="h-4 w-4" />

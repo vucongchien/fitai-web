@@ -69,13 +69,13 @@ export function BodySilhouetteCard({
     selectedZone === "full"
       ? activeInjuries
       : activeInjuries.filter((inj) => {
-          if (!inj.muscleGroup) return false;
-          const svgIds = resolveMuscleIdsForGroup(inj.muscleGroup);
+          if (!inj.area) return false;
+          const svgIds = resolveMuscleIdsForGroup(inj.area);
           return svgIds.some((id) => resolveZoneForMuscleId(id) === selectedZone);
         });
 
   const goalMuscleIds = resolveGoalMuscleIds(preferredMuscleGroups);
-  const injuryMuscleIds = resolveGoalMuscleIds(activeInjuries.map((inj) => inj.muscleGroup));
+  const injuryMuscleIds = resolveGoalMuscleIds(activeInjuries.map((inj) => inj.area));
   const loadEntries = Object.values(muscleLoad ?? {});
   const hasLoadData = loadEntries.length > 0;
   const loadBySvgId = new Map<string, MuscleLoadSummary>();
@@ -352,11 +352,11 @@ export function BodySilhouetteCard({
             <div className="flex flex-wrap gap-1.5">
               {zoneInjuries.map((inj, idx) => (
                 <span
-                  key={`${inj.muscleGroup}-${idx}`}
+                  key={`${inj.area}-${idx}`}
                   className="inline-flex items-center gap-1 rounded-full bg-[var(--color-effort-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--color-effort-ink)]"
                 >
                   <AlertTriangle size={12} />
-                  Active injury: {formatMuscleLabel(inj.muscleGroup)}
+                  Active injury: {formatMuscleLabel(inj.area)}
                 </span>
               ))}
             </div>

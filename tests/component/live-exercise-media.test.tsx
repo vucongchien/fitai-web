@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ExerciseMedia } from "@/features/workout/ui/live/exercise-media";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 type ExerciseMediaProps = ComponentProps<typeof ExerciseMedia>;
 /** `useReducedMotion` only ever subscribes to the "change" event. */
@@ -19,7 +20,9 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   return {
     commonMistakes: [],
     durationSeconds: 30,
-    equipmentId: "eq-bodyweight",
+    equipment: Equipment.BODY_ONLY,
+    instructions: [],
+    images: [],
     exerciseId: "ex-plank",
     formCues: [],
     hasAiSupported: true,
@@ -50,7 +53,7 @@ describe(ExerciseMedia, () => {
   it("falls back to the thumbnail when there is no video", () => {
     render(
       <ExerciseMedia
-        exercise={makeExercise({ thumbnailUrl: "/demo/plank.jpg", videoUrl: undefined })}
+        exercise={makeExercise({ images: ["/demo/plank.jpg"], videoUrl: undefined })}
       />,
     );
 

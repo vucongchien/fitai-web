@@ -31,9 +31,9 @@ function AdminLoadingFallback() {
 export async function AdminGate({ children }: { children: React.ReactNode }) {
   const session = await getAuthenticatedSession();
 
-  // 1. If not authenticated at all -> Redirect to login
+  // 1. If not authenticated at all -> Redirect to admin login
   if (!session.accessToken) {
-    redirect("/login?redirect=/admin");
+    redirect("/admin/login?redirect=/admin");
   }
 
   // 2. If authenticated but role is not ADMIN -> Show 403 Forbidden (Without deleting cookie)
@@ -46,14 +46,15 @@ export async function AdminGate({ children }: { children: React.ReactNode }) {
   let pendingCount = 0;
   try {
     const pendingExercises = await fetchAdminExercises({
-      filters: { status: "submittedForApproval" },
+      // Drafts are the exercises awaiting an admin's approval.
+      filters: { status: "created" },
       limit: 100,
     });
     pendingCount = pendingExercises.totalCount || pendingExercises.items.length;
   } catch (error) {
     const connectError = ConnectError.from(error);
     if (connectError.code === Code.Unauthenticated) {
-      redirect("/login?redirect=/admin");
+      redirect("/admin/login?redirect=/admin");
     }
     if (connectError.code === Code.PermissionDenied) {
       return <AdminForbiddenView userName={session.userName} role={session.role} />;

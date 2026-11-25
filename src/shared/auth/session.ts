@@ -16,7 +16,7 @@ function decodeJwtPayload(base64Payload: string): Record<string, unknown> {
   throw new Error("No base64 decoder available in current runtime");
 }
 
-function parseJWTRole(token?: string): string | undefined {
+export function parseJWTRole(token?: string): string | undefined {
   if (!token) return undefined;
   try {
     const parts = token.split(".");
@@ -35,6 +35,12 @@ function parseJWTRole(token?: string): string | undefined {
     return "ADMIN";
   }
   return undefined;
+}
+
+export function isAdminRole(role?: string): boolean {
+  if (!role) return false;
+  const upper = role.toUpperCase();
+  return upper === "ADMIN" || upper === "SUPERADMIN";
 }
 
 function parseJWTUserId(token?: string): string | undefined {
@@ -102,8 +108,7 @@ export async function getAuthenticatedRole(): Promise<string | undefined> {
 
 export async function isAdmin(): Promise<boolean> {
   const { role } = await getAuthenticatedSession();
-  if (!role) return false;
-  return role.toUpperCase() === "ADMIN" || role.toUpperCase() === "SUPERADMIN";
+  return isAdminRole(role);
 }
 
 export async function isBrand(): Promise<boolean> {

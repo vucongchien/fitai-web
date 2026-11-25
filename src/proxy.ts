@@ -23,7 +23,8 @@ export async function proxy(request: NextRequest) {
     effectivePathname === "/partner" ||
     effectivePathname === "/lab" ||
     effectivePathname.startsWith("/lab/") ||
-    (process.env.NODE_ENV !== "production" && effectivePathname === "/test-ui") ||
+    (process.env.NODE_ENV !== "production" &&
+      (effectivePathname === "/test-ui" || effectivePathname === "/test-pose")) ||
     effectivePathname === "/guides" ||
     effectivePathname.startsWith("/guides/") ||
     effectivePathname === "/robots.txt" ||
@@ -36,6 +37,7 @@ export async function proxy(request: NextRequest) {
     effectivePathname.startsWith("/opengraph-image") ||
     effectivePathname.startsWith("/twitter-image") ||
     effectivePathname.startsWith("/login") ||
+    effectivePathname === "/admin/login" ||
     effectivePathname.startsWith("/auth") ||
     effectivePathname.startsWith("/api/auth") ||
     effectivePathname.startsWith("/api/execution") ||
@@ -123,7 +125,9 @@ export async function proxy(request: NextRequest) {
           return apiResponse;
         }
 
-        const loginUrl = new URL("/login", request.url);
+        const isAdminRoute =
+          effectivePathname === "/admin" || effectivePathname.startsWith("/admin/");
+        const loginUrl = new URL(isAdminRoute ? "/admin/login" : "/login", request.url);
         loginUrl.searchParams.set("redirect", pathname);
         const response = NextResponse.redirect(loginUrl);
         response.cookies.delete("fitai_access_token");
@@ -140,7 +144,8 @@ export async function proxy(request: NextRequest) {
       );
     }
 
-    const loginUrl = new URL("/login", request.url);
+    const isAdminRoute = effectivePathname === "/admin" || effectivePathname.startsWith("/admin/");
+    const loginUrl = new URL(isAdminRoute ? "/admin/login" : "/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }

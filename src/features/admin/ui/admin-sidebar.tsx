@@ -5,15 +5,16 @@ import {
   Building2,
   ChevronRight,
   Dumbbell,
-  FolderTree,
   LayoutDashboard,
+  LogOut,
   Shield,
   ShieldCheck,
   Sparkles,
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { AdminObservabilityLinks } from "./admin-observability-links";
 
@@ -23,6 +24,20 @@ export interface AdminSidebarProps {
 
 export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      router.push("/admin/login");
+      router.refresh();
+      setIsLoggingOut(false);
+    }
+  };
 
   const navItems = [
     {
@@ -35,11 +50,6 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
       label: "AI Rules & Voice",
       href: "/admin/motion-specs",
       icon: Sparkles,
-    },
-    {
-      label: "Metadata Catalog",
-      href: "/admin/metadata",
-      icon: FolderTree,
     },
     {
       label: "Members (Users)",
@@ -138,7 +148,9 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
             <p className="text-xs font-bold text-[var(--color-text)] truncate">
               System Administrator
             </p>
-            <p className="text-[11px] text-[var(--color-text-muted)] truncate">admin@fitai.com</p>
+            <p className="text-[11px] text-[var(--color-text-muted)] truncate">
+              Admin Control Panel
+            </p>
           </div>
         </div>
 
@@ -149,6 +161,16 @@ export function AdminSidebar({ pendingApprovalCount = 0 }: AdminSidebarProps) {
           <ArrowLeft className="size-3.5" />
           <span>Return to Client App</span>
         </Link>
+
+        <button
+          type="button"
+          onClick={() => void handleLogout()}
+          disabled={isLoggingOut}
+          className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-[var(--radius-input)] bg-[var(--color-danger-soft)] hover:opacity-90 disabled:opacity-60 text-[var(--color-danger)] text-xs font-semibold border border-[color-mix(in_srgb,var(--color-danger)_25%,transparent)] transition-colors cursor-pointer"
+        >
+          <LogOut className="size-3.5" />
+          <span>{isLoggingOut ? "Signing out..." : "Sign out"}</span>
+        </button>
       </div>
     </aside>
   );

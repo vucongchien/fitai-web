@@ -67,7 +67,13 @@ export default function AdminMotionSpecsPage() {
 
   // Specs query
   const { data: listRes, isLoading } = useQuery({
-    queryKey: ["admin-motion-specs", currentPage, pageSize, debouncedSearchQuery],
+    queryKey: [
+      "admin-motion-specs",
+      currentPage,
+      pageSize,
+      debouncedSearchQuery,
+      filterConfiguredOnly,
+    ],
     queryFn: async () => {
       const isSearching = Boolean(debouncedSearchQuery.trim());
       return isSearching
@@ -75,10 +81,12 @@ export default function AdminMotionSpecsPage() {
             keyword: debouncedSearchQuery.trim(),
             page: currentPage,
             pageSize,
+            configuredOnly: filterConfiguredOnly,
           })
         : await fetchMotionSpecifications({
             page: currentPage,
             pageSize,
+            configuredOnly: filterConfiguredOnly,
           });
     },
   });
@@ -209,7 +217,7 @@ export default function AdminMotionSpecsPage() {
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               }`}
             >
-              Tất cả bài tập ({listRes?.totalCount || specs.length})
+              Tất cả bài tập ({stats.totalExercises})
             </button>
           </div>
 

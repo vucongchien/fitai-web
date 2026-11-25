@@ -29,6 +29,8 @@ export interface SessionSummary {
   status: SessionStatus;
   reasoning?: string;
   isAdapted?: boolean;
+  /** Active-recovery session (mobility, stretching, easy cardio), not a training one. */
+  isRecovery?: boolean;
   exercises?: PrintExerciseItem[];
 }
 

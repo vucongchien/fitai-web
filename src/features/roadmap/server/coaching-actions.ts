@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@connectrpc/connect";
+import { Code, ConnectError, createClient } from "@connectrpc/connect";
 
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
@@ -23,6 +23,10 @@ export async function initiateRoadmapServerAction(): Promise<{
       message: "4-week roadmap generated successfully",
     };
   } catch (error: any) {
+    // The ProfileCompleted consumer may have created the roadmap first: that is success.
+    if (ConnectError.from(error).code === Code.AlreadyExists) {
+      return { success: true, message: "Your 4-week roadmap is ready" };
+    }
     console.error("[gRPC CoachingService.InitiateRoadmap] Error:", error?.message || error);
     return {
       success: false,

@@ -1,7 +1,6 @@
 import "server-only";
 import { Code, ConnectError, createClient } from "@connectrpc/connect";
 
-import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
@@ -24,10 +23,7 @@ async function getRealRoadmapPageData(
 ): Promise<RoadmapPageData> {
   const client = createClient(CoachingService, createServerTransport(accessToken));
   try {
-    const [res, catalog] = await Promise.all([
-      client.getActiveRoadmap({}),
-      getCatalogMetadataServerAction().catch(() => ({ muscles: [], equipment: [] })),
-    ]);
+    const res = await client.getActiveRoadmap({});
     if (!res.roadmap) {
       return {
         ...EMPTY_ROADMAP_DATA,
@@ -37,8 +33,7 @@ async function getRealRoadmapPageData(
         },
       };
     }
-    const muscleLookup = new Map(catalog.muscles.map((m) => [m.id.toLowerCase(), m.name]));
-    return adaptRoadmapPageData(res.roadmap, muscleLookup);
+    return adaptRoadmapPageData(res.roadmap);
   } catch (error) {
     if (error instanceof ConnectError && error.code === Code.NotFound) {
       return {

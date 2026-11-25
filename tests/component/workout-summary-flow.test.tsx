@@ -6,6 +6,7 @@ import type { LiveExercise, SessionReport } from "@/features/workout/model/live-
 import { reportStorageKey } from "@/features/workout/model/live-session.types";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
 import { WorkoutSummaryView } from "@/features/workout/ui/live/workout-summary-view";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 type ActiveScreenProps = ComponentProps<typeof ActiveExerciseScreen>;
 
@@ -13,11 +14,12 @@ const mockExercise: LiveExercise = {
   breathingCue: "Exhale as you press.",
   commonMistakes: [],
   durationSeconds: 0,
-  equipmentId: "eq_bench",
+  equipment: Equipment.BARBELL,
+  images: [],
   exerciseId: "ex_bench",
   formCues: [],
   hasAiSupported: false,
-  instructions: "",
+  instructions: [],
   isWeighted: true,
   name: "Bench Press",
   notes: "Control tempo",

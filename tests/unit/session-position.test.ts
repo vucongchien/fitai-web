@@ -2,12 +2,15 @@ import { describe, expect, it } from "vitest";
 
 import { buildTimeline, totalExerciseCount } from "@/features/workout/domain/session-flow";
 import type { LiveExercise, LiveSessionPlan } from "@/features/workout/model/live-session.types";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 function exercise(id: string, phase: LiveExercise["phase"], sets: number): LiveExercise {
   return {
     commonMistakes: [],
     durationSeconds: 0,
-    equipmentId: "eq-bodyweight",
+    equipment: Equipment.BODY_ONLY,
+    instructions: [],
+    images: [],
     exerciseId: id,
     formCues: [],
     hasAiSupported: false,

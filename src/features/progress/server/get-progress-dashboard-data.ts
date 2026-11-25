@@ -2,7 +2,6 @@ import { createClient } from "@connectrpc/connect";
 import { redirect } from "next/navigation";
 import "server-only";
 
-import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
 import { dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
 import { deduplicateMealRows } from "@/shared/api/bff/aggregate/nutrition-daily";
@@ -13,6 +12,12 @@ import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
+import {
+  injurySeverityLabel,
+  jointRegionLabel,
+  MUSCLE_GROUP_OPTIONS,
+  muscleGroupLabel,
+} from "@/shared/lib/taxonomy";
 import { calculateConsecutiveStreakDays } from "@/shared/utils/streak";
 
 import {
@@ -76,7 +81,6 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       muscleLoadRes,
       nutritionSummaryRes,
       nutritionHistoryRes,
-      catalogRes,
     ] = await Promise.allSettled([
       profileClient.getProfile({ userId: userId || "" }),
       profileClient.getBodyMetricsHistory({ userId: userId || "" }),
@@ -101,15 +105,7 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
             endDate: todayStr,
           })
         : Promise.resolve({ meals: [] }),
-      getCatalogMetadataServerAction(),
     ]);
-
-    const muscleNameById = new Map<string, string>(
-      catalogRes.status === "fulfilled"
-        ? catalogRes.value.muscles.map((m) => [m.id.toLowerCase(), m.name])
-        : [],
-    );
-    const resolveMuscleName = (raw: string) => muscleNameById.get(raw.toLowerCase()) ?? raw;
 
     const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
     const rawMetrics =
@@ -168,8 +164,9 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
     const activeInjuries = rawInjuries
       .filter((inj) => !inj.isRecovered)
       .map((inj) => ({
-        muscleGroup: inj.muscleGroup,
-        severity: inj.severity,
+        // The silhouette resolves by name: prefer the muscle, else the joint region.
+        area: muscleGroupLabel(inj.muscle) || jointRegionLabel(inj.region),
+        severity: injurySeverityLabel(inj.severity),
       }));
 
     const muscleLoadItems =
@@ -220,17 +217,11 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       totalVolumeKg,
       adherencePercentage: workoutStats.adherence.percentage || weeklyPercentage,
       heatmapWeeks: buildConsistencyHeatmap(historySessions as any, new Date(), 12),
-      preferredMuscleGroups: (profileProto?.preferredMuscleGroups ?? []).map(resolveMuscleName),
-      activeInjuries: activeInjuries.map((inj) => ({
-        ...inj,
-        muscleGroup: resolveMuscleName(inj.muscleGroup),
-      })),
+      preferredMuscleGroups: (profileProto?.preferredMuscleGroups ?? []).map(muscleGroupLabel),
+      activeInjuries,
       gender: profileProto?.gender ?? "",
       muscleLoad,
-      catalogMuscles:
-        catalogRes.status === "fulfilled"
-          ? catalogRes.value.muscles.map((m) => ({ id: m.id, name: m.name }))
-          : [],
+      catalogMuscles: MUSCLE_GROUP_OPTIONS.map((m) => ({ id: m.code, name: m.label })),
       nutrition,
     };
   } catch (error) {

@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@connectrpc/connect";
+import { Code, ConnectError, createClient } from "@connectrpc/connect";
 
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
@@ -11,12 +11,16 @@ import {
   mapCoachStyleToProto,
   mapExperienceToProto,
   mapGoalToProto,
+  mapOnboardingInjuries,
 } from "../domain/onboarding-mapper";
 import type { OnboardingValues } from "../domain/onboarding-schema";
+import type { PreferredWorkoutTimesMap } from "../domain/workout-times-normalizer";
 import { formatWorkoutTimesToProto } from "../domain/workout-times-normalizer";
 
 export async function saveOnboardingProfileServerAction(
-  values: OnboardingValues | any,
+  values: OnboardingValues,
+  /** IANA zone from the browser; empty lets the backend keep its default (UTC). */
+  timeZone = "",
 ): Promise<{ success: boolean; message: string; aiCoachActivated?: boolean }> {
   try {
     const accessToken = await getAccessToken();
@@ -24,20 +28,13 @@ export async function saveOnboardingProfileServerAction(
     const transport = createServerTransport(accessToken);
     const profileClient = createClient(ProfileService, transport);
 
-    const injuriesPayload =
-      values.injuryStatus !== "none" && values.injuryMuscleGroup
-        ? [
-            {
-              muscleGroup: values.injuryMuscleGroup,
-              severity: (values.injurySeverity || "MILD").toUpperCase(),
-              notes: values.injuryNotes || "Reported during onboarding",
-            },
-          ]
-        : [];
+    const injuriesPayload = mapOnboardingInjuries(values);
 
-    const preferredTimes = formatWorkoutTimesToProto(values.preferredWorkoutTimes);
+    const preferredTimes = formatWorkoutTimesToProto(
+      values.preferredWorkoutTimes as PreferredWorkoutTimesMap,
+    );
 
-    const rawGoals = values.goals || (values.goal ? [values.goal] : ["build-muscle"]);
+    const rawGoals = values.goals.length > 0 ? values.goals : ["build-muscle"];
 
     console.info("[saveOnboardingProfileServerAction] Saving health profile with payload:", {
       userId,
@@ -62,6 +59,7 @@ export async function saveOnboardingProfileServerAction(
       targetWeightKg: values.targetWeightKg,
       targetBodyFatPercent: values.targetBodyFatPercent ?? 15,
       bodyFatPercent: values.bodyFatPercent ?? 18.5,
+      timezone: timeZone,
     });
 
     return {
@@ -95,6 +93,10 @@ export async function initiateOnboardingRoadmapServerAction(): Promise<{
       roadmapId: roadmapRes.roadmap?.roadmapId,
     };
   } catch (error: any) {
+    // The ProfileCompleted consumer may have created the roadmap first: that is success.
+    if (ConnectError.from(error).code === Code.AlreadyExists) {
+      return { success: true, message: "Your 4-week roadmap is ready" };
+    }
     console.error("[gRPC CoachingService.InitiateRoadmap] Error:", error?.message || error);
     return {
       success: false,

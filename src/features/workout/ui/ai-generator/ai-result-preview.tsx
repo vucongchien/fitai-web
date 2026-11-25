@@ -4,6 +4,7 @@ import { Check, Sparkles } from "lucide-react";
 
 import type { AdhocAiRecommendationOutput } from "@/features/workout/server/workout-actions";
 import { cn } from "@/shared/lib/cn";
+import { muscleGroupCodeLabel } from "@/shared/lib/taxonomy";
 
 export interface EditableAiExercise {
   exerciseId: string;
@@ -65,7 +66,7 @@ export function AiResultPreview({
                 className="rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-0.5 text-[11px] font-medium text-[var(--color-text-muted)]"
                 key={muscle}
               >
-                {muscle}
+                {muscleGroupCodeLabel(muscle)}
               </span>
             ))}
           </div>

@@ -6,15 +6,20 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
+import type { BodySide, InjurySeverity, JointRegion, MuscleGroup } from "../../../exercise/v1/message/taxonomy_pb";
+import { file_contracts_supporting_exercise_v1_message_taxonomy } from "../../../exercise/v1/message/taxonomy_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/profile/v1/event/injury_reported.proto.
  */
 export const file_contracts_supporting_profile_v1_event_injury_reported: GenFile = /*@__PURE__*/
-  fileDesc("Cjtjb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L2luanVyeV9yZXBvcnRlZC5wcm90bxIlY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5ldmVudCKKAQoNSW5qdXJ5RGV0YWlscxIRCglpbmp1cnlfaWQYASABKAkSFAoMbXVzY2xlX2dyb3VwGAIgASgJEhAKCHNldmVyaXR5GAMgASgJEg0KBW5vdGVzGAQgASgJEi8KC3JlcG9ydGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCJnCg5Jbmp1cnlSZXBvcnRlZBIPCgd1c2VyX2lkGAEgASgJEkQKBmluanVyeRgCIAEoCzI0LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuSW5qdXJ5RGV0YWlsc0JrWmlnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9zdXBwb3J0aW5nL3Byb2ZpbGUvdjEvZXZlbnQ7cHJvZmlsZXYxZXZlbnRiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("Cjtjb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L2luanVyeV9yZXBvcnRlZC5wcm90bxIlY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5ldmVudCKYAwoNSW5qdXJ5RGV0YWlscxIRCglpbmp1cnlfaWQYASABKAkSDQoFbm90ZXMYBCABKAkSLwoLcmVwb3J0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEkUKBnJlZ2lvbhgGIAEoDjI1LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuSm9pbnRSZWdpb24SRQoGbXVzY2xlGAcgASgOMjUuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGVHcm91cBJACgRzaWRlGAggASgOMjIuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5Cb2R5U2lkZRJKCghzZXZlcml0eRgJIAEoDjI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuSW5qdXJ5U2V2ZXJpdHlKBAgCEANKBAgDEARSDG11c2NsZV9ncm91cCJnCg5Jbmp1cnlSZXBvcnRlZBIPCgd1c2VyX2lkGAEgASgJEkQKBmluanVyeRgCIAEoCzI0LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuSW5qdXJ5RGV0YWlsc0JrWmlnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9zdXBwb3J0aW5nL3Byb2ZpbGUvdjEvZXZlbnQ7cHJvZmlsZXYxZXZlbnRiBnByb3RvMw", [file_google_protobuf_timestamp, file_contracts_supporting_exercise_v1_message_taxonomy]);
 
 /**
+ * InjuryDetails describes one injury. muscle is UNSPECIFIED when the user
+ * reported the region only.
+ *
  * @generated from message contracts.supporting.profile.v1.event.InjuryDetails
  */
 export type InjuryDetails = Message<"contracts.supporting.profile.v1.event.InjuryDetails"> & {
@@ -22,16 +27,6 @@ export type InjuryDetails = Message<"contracts.supporting.profile.v1.event.Injur
    * @generated from field: string injury_id = 1;
    */
   injuryId: string;
-
-  /**
-   * @generated from field: string muscle_group = 2;
-   */
-  muscleGroup: string;
-
-  /**
-   * @generated from field: string severity = 3;
-   */
-  severity: string;
 
   /**
    * @generated from field: string notes = 4;
@@ -42,6 +37,26 @@ export type InjuryDetails = Message<"contracts.supporting.profile.v1.event.Injur
    * @generated from field: google.protobuf.Timestamp reported_at = 5;
    */
   reportedAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.JointRegion region = 6;
+   */
+  region: JointRegion;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.MuscleGroup muscle = 7;
+   */
+  muscle: MuscleGroup;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.BodySide side = 8;
+   */
+  side: BodySide;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.InjurySeverity severity = 9;
+   */
+  severity: InjurySeverity;
 };
 
 /**

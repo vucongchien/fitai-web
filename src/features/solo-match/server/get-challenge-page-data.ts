@@ -76,7 +76,7 @@ export async function getSoloMatchSessionData(matchId: string): Promise<SoloMatc
   const defaultResult: SoloMatchSessionPageData = {
     currentUserId,
     match: null,
-    onnxSkeletonUrl: "/models/yolo11n-pose.onnx",
+    onnxSkeletonUrl: "/models/yolo26n-pose.onnx",
     planId: `solo-${matchId || "default"}`,
     recommendedCameraAngle: "side",
   };
@@ -95,7 +95,7 @@ export async function getSoloMatchSessionData(matchId: string): Promise<SoloMatc
     }
 
     const match = mapProtoMatchToSummary(matchRes.match);
-    let onnxSkeletonUrl = "/models/yolo11n-pose.onnx";
+    let onnxSkeletonUrl = "/models/yolo26n-pose.onnx";
     let recommendedCameraAngle = "side";
     let planId = `solo-${matchId}-${currentUserId}`;
 

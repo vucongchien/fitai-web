@@ -14,31 +14,8 @@ import { useCallback, useState } from "react";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 
-function parseInstructions(text: string): string[] {
-  if (!text) return [];
-
-  // Match pattern: "1. Step text 2. Step text..." or line breaks "\n"
-  const hasStepNumbers = /(?:\d+\.\s+)/.test(text);
-
-  if (hasStepNumbers) {
-    const parts = text
-      .split(/(?=\d+\.\s+)/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-    if (parts.length > 1) {
-      return parts.map((p) => p.replace(/^\d+\.\s*/, "").trim());
-    }
-  }
-
-  const lines = text
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean);
-  if (lines.length > 1) {
-    return lines;
-  }
-
-  return [text];
+function instructionSteps(steps: readonly string[]): string[] {
+  return steps.map((step) => step.trim()).filter(Boolean);
 }
 
 export function InstructionsSheet({
@@ -64,7 +41,7 @@ export function InstructionsSheet({
       return;
     }
 
-    const steps = parseInstructions(exercise.instructions || "");
+    const steps = instructionSteps(exercise.instructions);
     const formattedSteps =
       steps.length > 0 ? steps.map((s, idx) => `Step ${idx + 1}: ${s}`).join(". ") : "";
 
@@ -120,7 +97,7 @@ export function InstructionsSheet({
     }, 220);
   };
 
-  const steps = parseInstructions(exercise.instructions || "");
+  const steps = instructionSteps(exercise.instructions);
 
   return (
     <div
@@ -180,17 +157,23 @@ export function InstructionsSheet({
         </header>
 
         <div className="live-sheet__body">
-          {exercise.thumbnailUrl ? (
+          {exercise.images.length > 0 ? (
             <div className="detail-thumb">
-              <Image
-                alt={exercise.name}
-                className="detail-thumb__img object-contain bg-[var(--color-surface-subtle)]"
-                fill
-                priority
-                sizes="(max-width: 640px) 100vw, 480px"
-                src={exercise.thumbnailUrl}
-                unoptimized={exercise.thumbnailUrl.endsWith(".gif")}
-              />
+              <div className="detail-thumb__frames">
+                {exercise.images.slice(0, 2).map((src, idx) => (
+                  <div className="detail-thumb__frame" key={src}>
+                    <Image
+                      alt={`${exercise.name} – ${idx === 0 ? "start" : "end"} position`}
+                      className="detail-thumb__img object-contain bg-[var(--color-surface-subtle)]"
+                      fill
+                      priority={idx === 0}
+                      sizes="(max-width: 640px) 50vw, 240px"
+                      src={src}
+                      unoptimized={src.endsWith(".gif")}
+                    />
+                  </div>
+                ))}
+              </div>
               {exercise.hasAiSupported ? (
                 <span className="ex-card__ai" aria-label="AI form tracking">
                   <Camera size={11} strokeWidth={2} />
@@ -224,8 +207,8 @@ export function InstructionsSheet({
                 ))}
               </ol>
             </div>
-          ) : exercise.instructions ? (
-            <p className="detail-body">{exercise.instructions}</p>
+          ) : steps.length === 1 ? (
+            <p className="detail-body">{steps[0]}</p>
           ) : null}
 
           {exercise.notes ? (

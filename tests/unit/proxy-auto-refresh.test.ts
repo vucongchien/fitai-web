@@ -178,4 +178,16 @@ describe("Middleware Proxy Auto-refresh (src/proxy.ts)", () => {
       expect(res.headers.get("location")).toContain("/login");
     }
   });
+
+  it("allows /admin/login without authentication and redirects unauthenticated /admin/* to /admin/login", async () => {
+    const { proxy } = await import("@/proxy");
+
+    const loginRes = await proxy(makeNextRequest("/admin/login"));
+    expect(loginRes.status).toBe(200);
+    expect(loginRes.headers.get("location")).toBeNull();
+
+    const adminRes = await proxy(makeNextRequest("/admin/users"));
+    expect(adminRes.status).toBe(307);
+    expect(adminRes.headers.get("location")).toContain("/admin/login?redirect=%2Fadmin%2Fusers");
+  });
 });

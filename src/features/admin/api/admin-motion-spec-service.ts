@@ -1,5 +1,8 @@
 "use server";
 
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import { createClient } from "@connectrpc/connect";
 
 import type {
@@ -31,12 +34,14 @@ export interface MotionSpecStats {
 export interface FetchPaginatedMotionSpecsParams {
   page?: number;
   pageSize?: number;
+  configuredOnly?: boolean;
 }
 
 export interface SearchMotionSpecsParams {
   keyword: string;
   page?: number;
   pageSize?: number;
+  configuredOnly?: boolean;
 }
 
 export interface PaginatedMotionSpecsResponse {
@@ -78,9 +83,136 @@ export async function fetchMotionSpecificationStats(): Promise<MotionSpecStats> 
   }
 }
 
+function normalizePoseRules(raw: unknown): PoseRuleConfig {
+  const obj = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const existingCalibration =
+    obj.calibration && typeof obj.calibration === "object"
+      ? (obj.calibration as Partial<PoseRuleConfig["calibration"]>)
+      : {};
+  const existingRepCounting =
+    obj.repCounting && typeof obj.repCounting === "object"
+      ? (obj.repCounting as Partial<PoseRuleConfig["repCounting"]>)
+      : {};
+  const existingFormScoring =
+    obj.formScoring && typeof obj.formScoring === "object"
+      ? (obj.formScoring as Partial<PoseRuleConfig["formScoring"]>)
+      : {};
+
+  let errorRules: PoseRuleConfig["errorRules"] =
+    obj.errorRules && typeof obj.errorRules === "object"
+      ? (obj.errorRules as PoseRuleConfig["errorRules"])
+      : {};
+
+  // Map snake_case biomechanics rule files (public/models/rules/*_rule.json) into editor errorRules
+  if (Object.keys(errorRules).length === 0 && Array.isArray(obj.rules)) {
+    const mapped: PoseRuleConfig["errorRules"] = {};
+    for (const rule of obj.rules) {
+      if (!rule || typeof rule !== "object") continue;
+      const r = rule as Record<string, unknown>;
+      const metric = typeof r.metric === "string" ? r.metric : "";
+      if (!metric) continue;
+      const ranges = Array.isArray(r.ranges) ? (r.ranges as Record<string, unknown>[]) : [];
+      const warningRange = ranges.find((rg) => rg.severity === 1) ?? ranges[0];
+      const threshold =
+        typeof warningRange?.min === "number"
+          ? warningRange.min
+          : typeof warningRange?.max === "number"
+            ? warningRange.max
+            : 15;
+      mapped[metric.toUpperCase()] = {
+        description: typeof r.description === "string" ? r.description : metric,
+        joint: metric,
+        thresholdDegrees: threshold,
+      };
+    }
+    errorRules = mapped;
+  }
+
+  return {
+    ...(obj as Partial<PoseRuleConfig>),
+    calibration: {
+      minDistanceMeters: existingCalibration.minDistanceMeters ?? 1.5,
+      maxDistanceMeters: existingCalibration.maxDistanceMeters ?? 3.0,
+      targetAngle: existingCalibration.targetAngle ?? 90,
+    },
+    repCounting: {
+      minRomPercentage: existingRepCounting.minRomPercentage ?? 75,
+    },
+    formScoring: {
+      penaltyPerError: existingFormScoring.penaltyPerError ?? 10,
+    },
+    errorRules,
+  };
+}
+
+function normalizeDialogueEngine(raw: unknown): DialogueEngineConfig {
+  const obj = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  if (obj.dialogueMap && typeof obj.dialogueMap === "object") {
+    return {
+      personalityId: typeof obj.personalityId === "string" ? obj.personalityId : "default",
+      cooldowns:
+        obj.cooldowns && typeof obj.cooldowns === "object"
+          ? (obj.cooldowns as Record<string, number>)
+          : {},
+      dialogueMap: obj.dialogueMap as DialogueEngineConfig["dialogueMap"],
+    };
+  }
+
+  // Map snake_case dialogue files (public/models/dialogue/*_dialogue.json)
+  const dialogueMap: DialogueEngineConfig["dialogueMap"] = {};
+  if (obj.voice_feedbacks && typeof obj.voice_feedbacks === "object") {
+    for (const [metricKey, value] of Object.entries(
+      obj.voice_feedbacks as Record<string, Record<string, unknown>>,
+    )) {
+      const severities = (value?.severities ?? {}) as Record<string, Record<string, unknown>>;
+      const mapStyles = (sevKey: string) => {
+        const sev = severities[sevKey];
+        const styles = (sev?.styles ?? {}) as Record<string, { text?: string; url?: string }>;
+        return Object.values(styles).map((style) => ({
+          text: style?.text || "",
+          audioUrl: style?.url || "",
+        }));
+      };
+      dialogueMap[metricKey.toUpperCase()] = {
+        severity1: mapStyles("warning"),
+        severity2: mapStyles("danger"),
+      };
+    }
+  }
+
+  return {
+    personalityId:
+      typeof obj.exercise === "string"
+        ? obj.exercise
+        : typeof obj.display_name === "string"
+          ? obj.display_name
+          : "default",
+    cooldowns: {},
+    dialogueMap,
+  };
+}
+
+async function loadJsonAsset<T>(assetUrl: string): Promise<T | undefined> {
+  if (!assetUrl) return undefined;
+  if (assetUrl.startsWith("/")) {
+    const publicDir = path.resolve(process.cwd(), "public");
+    const cleanRelPath = assetUrl.split("?")[0].replace(/^\/+/, "");
+    const resolved = path.resolve(publicDir, cleanRelPath);
+    if (!resolved.startsWith(publicDir + path.sep)) {
+      return undefined;
+    }
+    const raw = await readFile(resolved, "utf-8");
+    return JSON.parse(raw) as T;
+  }
+  const resp = await fetch(assetUrl, { cache: "no-store" });
+  if (!resp.ok) return undefined;
+  return (await resp.json()) as T;
+}
+
 export async function fetchMotionSpecifications({
   page = 1,
   pageSize = 20,
+  configuredOnly = false,
 }: FetchPaginatedMotionSpecsParams = {}): Promise<PaginatedMotionSpecsResponse> {
   if (!process.env.FITAI_RPC_URL) {
     return {
@@ -95,12 +227,15 @@ export async function fetchMotionSpecifications({
     const { accessToken } = await getAuthenticatedSession();
     const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
 
+    // Backend orders configured specs first (limit capped at 100), so fetching 100
+    // captures all configured specs in one RPC while normal pagination uses pageToken.
+    const requestSize = configuredOnly ? 100 : pageSize;
     const res = await client.listMotionSpecifications({
-      pageSize,
-      pageToken: String(page),
+      pageSize: requestSize,
+      pageToken: configuredOnly ? "1" : String(page),
     });
 
-    const items: AdminMotionSpecification[] = (res.motionSpecifications || []).map((item) => {
+    const mapped: AdminMotionSpecification[] = (res.motionSpecifications || []).map((item) => {
       const hasRules = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
       const hasVoice = Boolean(item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0);
       const hasOnnx = Boolean(item.onnxDetectorUrl && item.onnxDetectorUrl.trim().length > 0);
@@ -122,9 +257,15 @@ export async function fetchMotionSpecifications({
       };
     });
 
+    const filtered = configuredOnly
+      ? mapped.filter((item) => Boolean(item.localRulesUrl || item.dialogueEngineUrl))
+      : mapped;
+    const start = Math.max(0, (page - 1) * pageSize);
+    const items = configuredOnly ? filtered.slice(start, start + pageSize) : filtered;
+
     return {
       items,
-      totalCount: res.totalCount || items.length,
+      totalCount: configuredOnly ? filtered.length : res.totalCount || filtered.length,
       page,
       pageSize,
     };
@@ -143,6 +284,7 @@ export async function searchMotionSpecifications({
   keyword,
   page = 1,
   pageSize = 20,
+  configuredOnly = false,
 }: SearchMotionSpecsParams): Promise<PaginatedMotionSpecsResponse> {
   if (!process.env.FITAI_RPC_URL) {
     return {
@@ -157,13 +299,14 @@ export async function searchMotionSpecifications({
     const { accessToken } = await getAuthenticatedSession();
     const client = createClient(AdminWorkoutExecutionService, createServerTransport(accessToken));
 
+    const requestSize = configuredOnly ? 100 : pageSize;
     const res = await client.searchMotionSpecifications({
       keyword,
-      pageSize,
-      pageToken: String(page),
+      pageSize: requestSize,
+      pageToken: configuredOnly ? "1" : String(page),
     });
 
-    const items: AdminMotionSpecification[] = (res.motionSpecifications || []).map((item) => {
+    const mapped: AdminMotionSpecification[] = (res.motionSpecifications || []).map((item) => {
       const hasRules = Boolean(item.localRulesUrl && item.localRulesUrl.trim().length > 0);
       const hasVoice = Boolean(item.dialogueEngineUrl && item.dialogueEngineUrl.trim().length > 0);
       const hasOnnx = Boolean(item.onnxDetectorUrl && item.onnxDetectorUrl.trim().length > 0);
@@ -185,9 +328,15 @@ export async function searchMotionSpecifications({
       };
     });
 
+    const filtered = configuredOnly
+      ? mapped.filter((item) => Boolean(item.localRulesUrl || item.dialogueEngineUrl))
+      : mapped;
+    const start = Math.max(0, (page - 1) * pageSize);
+    const items = configuredOnly ? filtered.slice(start, start + pageSize) : filtered;
+
     return {
       items,
-      totalCount: res.totalCount || items.length,
+      totalCount: configuredOnly ? filtered.length : res.totalCount || filtered.length,
       page,
       pageSize,
     };
@@ -247,10 +396,9 @@ export async function fetchMotionSpecificationByExerciseId(
 
   if (spec.localRulesUrl) {
     try {
-      const resp = await fetch(spec.localRulesUrl, { cache: "no-store" });
-      if (resp.ok) {
-        const json = await resp.json();
-        spec.poseRules = json as PoseRuleConfig;
+      const json = await loadJsonAsset<unknown>(spec.localRulesUrl);
+      if (json) {
+        spec.poseRules = normalizePoseRules(json);
       }
     } catch (err) {
       console.warn(
@@ -262,10 +410,9 @@ export async function fetchMotionSpecificationByExerciseId(
 
   if (spec.dialogueEngineUrl) {
     try {
-      const resp = await fetch(spec.dialogueEngineUrl, { cache: "no-store" });
-      if (resp.ok) {
-        const json = await resp.json();
-        spec.dialogueEngine = json as DialogueEngineConfig;
+      const json = await loadJsonAsset<unknown>(spec.dialogueEngineUrl);
+      if (json) {
+        spec.dialogueEngine = normalizeDialogueEngine(json);
       }
     } catch (err) {
       console.warn(

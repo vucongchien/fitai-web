@@ -205,6 +205,13 @@ export function AccountManagementView({
   });
 
   const users = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
+  const activeSelectedUser = useMemo(
+    () =>
+      selectedUser
+        ? (users.find((u) => u.userId === selectedUser.userId) ?? selectedUser)
+        : null,
+    [selectedUser, users],
+  );
   const totalCount = useMemo(() => {
     if (filters.hideBots) {
       return users.length;
@@ -299,7 +306,7 @@ export function AccountManagementView({
 
       <UserDialog
         isOpen={isDialogOpen}
-        user={selectedUser}
+        user={activeSelectedUser}
         onClose={handleCloseDialog}
         onToggleStatus={handleToggleStatus}
       />

@@ -1,100 +1,102 @@
-export interface CatalogEntry {
-  id: string;
-  name: string;
+import type { ExerciseInfo } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+import type {
+  ExerciseCategory,
+  ExerciseLevel,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+import {
+  CATEGORY_OPTIONS,
+  categoryCode,
+  categoryLabel,
+  EQUIPMENT_OPTIONS,
+  equipmentCode,
+  equipmentLabel,
+  LEVEL_OPTIONS,
+  levelCode,
+  levelLabel,
+  MUSCLE_GROUP_OPTIONS,
+  muscleGroupCode,
+  muscleGroupLabel,
+  parseCategoryCode,
+  parseEquipmentCode,
+  parseLevelCode,
+  parseMuscleGroupCode,
+} from "@/shared/lib/taxonomy";
+
+/** Plain view of `ExerciseInfo` that crosses the RSC boundary. */
+export type ExerciseSummary = Pick<
+  ExerciseInfo,
+  | "id"
+  | "name"
+  | "slug"
+  | "primaryMuscle"
+  | "secondaryMuscles"
+  | "equipment"
+  | "category"
+  | "level"
+  | "force"
+  | "mechanic"
+  | "instructions"
+  | "images"
+  | "videoUrl"
+  | "defaultRestSeconds"
+  | "hasAiSupported"
+  | "motionSlug"
+>;
+
+export function toExerciseSummary(ex: ExerciseInfo): ExerciseSummary {
+  return {
+    id: ex.id,
+    name: ex.name,
+    slug: ex.slug,
+    primaryMuscle: ex.primaryMuscle,
+    secondaryMuscles: [...ex.secondaryMuscles],
+    equipment: ex.equipment,
+    category: ex.category,
+    level: ex.level,
+    force: ex.force,
+    mechanic: ex.mechanic,
+    instructions: [...ex.instructions],
+    images: [...ex.images],
+    videoUrl: ex.videoUrl,
+    defaultRestSeconds: ex.defaultRestSeconds || 90,
+    hasAiSupported: ex.hasAiSupported,
+    motionSlug: ex.motionSlug,
+  };
 }
 
-export type MuscleEntry = CatalogEntry & {
-  bodyPartId: string;
-};
-
-export interface CatalogMetadata {
-  bodyParts: CatalogEntry[];
-  equipments: CatalogEntry[];
-  muscles: MuscleEntry[];
-  tags: CatalogEntry[];
+/** Spec §8.3: only BODY_ONLY is bodyweight; UNSPECIFIED means the exercise is unknown. */
+export function isWeightedEquipment(equipment: Equipment): boolean {
+  return equipment !== Equipment.UNSPECIFIED && equipment !== Equipment.BODY_ONLY;
 }
 
-export const GROUP_SYNONYMS: Record<string, string[]> = {
-  "arms-shoulders": [
-    "arms",
-    "shoulders",
-    "upper arms",
-    "lower arms",
-    "biceps",
-    "triceps",
-    "deltoids",
-    "forearms",
-  ],
-  arms: ["arms", "upper arms", "lower arms", "biceps", "triceps", "forearms"],
-  shoulders: ["shoulders", "deltoids"],
-
-  "chest-back": ["chest", "back", "pectorals", "lats", "traps", "latissimus", "neck"],
-  chest: ["chest", "pectorals"],
-  back: ["back", "lats", "traps", "latissimus"],
-
-  "legs-glutes": [
-    "legs",
-    "glutes",
-    "upper legs",
-    "lower legs",
-    "quadriceps",
-    "hamstrings",
-    "calves",
-    "thighs",
-  ],
-  legs: ["legs", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves"],
-
-  "core-abs": ["core", "abs", "waist", "abdominals", "midsection"],
-  core: ["core", "abs", "waist", "abdominals"],
-  waist: ["waist", "core", "abs", "abdominals"],
-};
-
-export type Difficulty = "beginner" | "intermediate" | "advanced";
-
-export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
-  beginner: "Beginner",
-  intermediate: "Intermediate",
-  advanced: "Advanced",
-};
-
-export const DIFFICULTY_ORDER: Difficulty[] = ["beginner", "intermediate", "advanced"];
-
-export interface ExerciseSummary {
-  id: string;
-  name: string;
-  bodyPartId: string;
-  equipmentId: string;
-  targetMuscleId: string;
-  secondaryMuscleIds: string[];
-  thumbnailUrl?: string;
-  videoUrl?: string;
-  mediaUrl?: string;
-  difficulty: Difficulty;
-  defaultRestSeconds: number;
-  tagIds: string[];
-  hasAiSupported: boolean;
-  instructions?: string;
-  // NOT IN CONTRACT: supporting.exercise.v1.ExerciseInfo has no breathing field yet.
-  breathingCue?: string;
+/** "Quadriceps · Barbell · Beginner" style meta line. */
+export function exerciseMetaLine(exercise: ExerciseSummary): string {
+  return [
+    muscleGroupLabel(exercise.primaryMuscle),
+    equipmentLabel(exercise.equipment),
+    levelLabel(exercise.level),
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 export interface ExerciseFilters {
   q: string;
-  bodyPartIds: string[];
-  equipmentIds: string[];
-  targetMuscleIds: string[];
-  difficulty: Difficulty[];
-  tagIds: string[];
+  muscles: MuscleGroup[];
+  equipment: Equipment[];
+  categories: ExerciseCategory[];
+  levels: ExerciseLevel[];
   aiOnly: boolean;
 }
 
 export const EMPTY_FILTERS: ExerciseFilters = {
   q: "",
-  bodyPartIds: [],
-  equipmentIds: [],
-  targetMuscleIds: [],
-  difficulty: [],
-  tagIds: [],
+  muscles: [],
+  equipment: [],
+  categories: [],
+  levels: [],
   aiOnly: false,
 };
 
@@ -106,83 +108,12 @@ export const SORT_LABEL: Record<SortMode, string> = {
   difficulty: "Easier first",
 };
 
-export function countActiveFilters(filters: ExerciseFilters, catalog?: CatalogMetadata): number {
-  let bodyPartCount = filters.bodyPartIds.length;
-
-  if (catalog && catalog.bodyParts && filters.bodyPartIds.length > 0) {
-    const groupSynonyms: Record<string, string[]> = {
-      "arms-shoulders": [
-        "arms",
-        "shoulders",
-        "upper arms",
-        "lower arms",
-        "biceps",
-        "triceps",
-        "deltoids",
-        "forearms",
-      ],
-      arms: ["arms", "upper arms", "lower arms", "biceps", "triceps", "forearms"],
-      shoulders: ["shoulders", "deltoids"],
-
-      "chest-back": ["chest", "back", "pectorals", "lats", "traps", "latissimus", "neck"],
-      chest: ["chest", "pectorals"],
-      back: ["back", "lats", "traps", "latissimus"],
-
-      "legs-glutes": [
-        "legs",
-        "glutes",
-        "upper legs",
-        "lower legs",
-        "quadriceps",
-        "hamstrings",
-        "calves",
-        "thighs",
-      ],
-      legs: ["legs", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves"],
-
-      "core-abs": ["core", "abs", "waist", "abdominals", "midsection"],
-      core: ["core", "abs", "waist", "abdominals"],
-      waist: ["waist", "core", "abs", "abdominals"],
-    };
-
-    let matchedChips = 0;
-    catalog.bodyParts.forEach((entry) => {
-      const isMatched = filters.bodyPartIds.some((id) => {
-        if (id === entry.id) return true;
-        const idLower = id.toLowerCase();
-        const eIdLower = entry.id.toLowerCase();
-        const eNameLower = entry.name.toLowerCase();
-
-        if (idLower === eIdLower || idLower === eNameLower) return true;
-
-        const synonyms = groupSynonyms[idLower] || [idLower];
-        return synonyms.some(
-          (syn) =>
-            eIdLower === syn ||
-            eNameLower === syn ||
-            eIdLower.includes(syn) ||
-            syn.includes(eIdLower) ||
-            eNameLower.includes(syn) ||
-            syn.includes(eNameLower),
-        );
-      });
-
-      if (isMatched) {
-        matchedChips++;
-      }
-    });
-
-    if (matchedChips > 0) {
-      bodyPartCount = matchedChips;
-    }
-  }
-
+export function countActiveFilters(filters: ExerciseFilters): number {
   return (
-    bodyPartCount +
-    filters.equipmentIds.length +
-    (filters.targetMuscleIds ? filters.targetMuscleIds.length : 0) +
-    filters.difficulty.length +
-    filters.tagIds.length +
+    filters.muscles.length +
+    filters.equipment.length +
+    filters.categories.length +
+    filters.levels.length +
     (filters.aiOnly ? 1 : 0)
   );
 }
@@ -190,129 +121,35 @@ export function countActiveFilters(filters: ExerciseFilters, catalog?: CatalogMe
 export function filterExercises(
   pool: ExerciseSummary[],
   filters: ExerciseFilters,
-  catalog: CatalogMetadata,
 ): ExerciseSummary[] {
   const q = filters.q.trim().toLowerCase();
-  const tagNameById = new Map(catalog.tags.map((tag) => [tag.id, tag.name.toLowerCase()]));
-  const muscleNameById = new Map(
-    catalog.muscles.map((muscle) => [muscle.id, muscle.name.toLowerCase()]),
-  );
-  const bodyPartNameById = new Map(
-    catalog.bodyParts.map((entry) => [entry.id, entry.name.toLowerCase()]),
-  );
 
   return pool.filter((exercise) => {
     if (q) {
       const haystack = [
-        exercise.name.toLowerCase(),
-        bodyPartNameById.get(exercise.bodyPartId) ?? "",
-        muscleNameById.get(exercise.targetMuscleId) ?? "",
-        ...exercise.secondaryMuscleIds.map((id) => muscleNameById.get(id) ?? ""),
-        ...exercise.tagIds.map((id) => tagNameById.get(id) ?? ""),
-      ].join(" ");
+        exercise.name,
+        muscleGroupLabel(exercise.primaryMuscle),
+        ...exercise.secondaryMuscles.map((muscle) => muscleGroupLabel(muscle)),
+        equipmentLabel(exercise.equipment),
+        categoryLabel(exercise.category),
+      ]
+        .join(" ")
+        .toLowerCase();
       if (!haystack.includes(q)) {
         return false;
       }
     }
-    if (filters.bodyPartIds.length > 0) {
-      const exBp = exercise.bodyPartId.toLowerCase();
-      const exBpName = (bodyPartNameById.get(exercise.bodyPartId) || "").toLowerCase();
-
-      const matched = filters.bodyPartIds.some((id) => {
-        if (exercise.bodyPartId === id) {
-          return true;
-        }
-        const idLower = id.toLowerCase();
-        if (
-          exBp === idLower ||
-          exBpName === idLower ||
-          exBp.includes(idLower) ||
-          idLower.includes(exBp)
-        ) {
-          return true;
-        }
-
-        const groupSynonyms: Record<string, string[]> = {
-          "arms-shoulders": [
-            "arms",
-            "shoulders",
-            "upper arms",
-            "lower arms",
-            "biceps",
-            "triceps",
-            "deltoids",
-            "forearms",
-          ],
-          arms: ["arms", "upper arms", "lower arms", "biceps", "triceps", "forearms"],
-          shoulders: ["shoulders", "deltoids"],
-
-          "chest-back": ["chest", "back", "pectorals", "lats", "traps", "latissimus", "neck"],
-          chest: ["chest", "pectorals"],
-          back: ["back", "lats", "traps", "latissimus"],
-
-          "legs-glutes": [
-            "legs",
-            "glutes",
-            "upper legs",
-            "lower legs",
-            "quadriceps",
-            "hamstrings",
-            "calves",
-            "thighs",
-          ],
-          legs: ["legs", "upper legs", "lower legs", "quadriceps", "hamstrings", "calves"],
-
-          "core-abs": ["core", "abs", "waist", "abdominals", "midsection"],
-          core: ["core", "abs", "waist", "abdominals"],
-          waist: ["waist", "core", "abs", "abdominals"],
-        };
-
-        const synonyms = groupSynonyms[idLower] || [idLower];
-        return synonyms.some(
-          (syn) =>
-            exBp === syn ||
-            exBpName === syn ||
-            exBp.includes(syn) ||
-            syn.includes(exBp) ||
-            exBpName.includes(syn) ||
-            syn.includes(exBpName),
-        );
-      });
-      if (!matched) {
-        return false;
-      }
-    }
-    if (filters.equipmentIds.length > 0 && !filters.equipmentIds.includes(exercise.equipmentId)) {
+    if (filters.muscles.length > 0 && !filters.muscles.includes(exercise.primaryMuscle)) {
       return false;
     }
-    if (filters.targetMuscleIds && filters.targetMuscleIds.length > 0) {
-      const exTm = exercise.targetMuscleId.toLowerCase();
-      const exTmName = (muscleNameById.get(exercise.targetMuscleId) || "").toLowerCase();
-
-      const matchedTm = filters.targetMuscleIds.some((id) => {
-        if (exercise.targetMuscleId === id) return true;
-        const idLower = id.toLowerCase();
-        return (
-          exTm === idLower ||
-          exTmName === idLower ||
-          exTm.includes(idLower) ||
-          idLower.includes(exTm) ||
-          exTmName.includes(idLower) ||
-          idLower.includes(exTmName)
-        );
-      });
-      if (!matchedTm) {
-        return false;
-      }
-    }
-    if (filters.difficulty.length > 0 && !filters.difficulty.includes(exercise.difficulty)) {
+    if (filters.equipment.length > 0 && !filters.equipment.includes(exercise.equipment)) {
       return false;
     }
-    if (filters.tagIds.length > 0) {
-      const overlap = filters.tagIds.some((id) => exercise.tagIds.includes(id));
-      if (!overlap) {
-        return false;
-      }
+    if (filters.categories.length > 0 && !filters.categories.includes(exercise.category)) {
+      return false;
+    }
+    if (filters.levels.length > 0 && !filters.levels.includes(exercise.level)) {
+      return false;
     }
     if (filters.aiOnly && !exercise.hasAiSupported) {
       return false;
@@ -326,9 +163,57 @@ export function sortExercises(pool: ExerciseSummary[], mode: SortMode): Exercise
   if (mode === "name") {
     sorted.sort((a, b) => a.name.localeCompare(b.name));
   } else if (mode === "difficulty") {
-    sorted.sort(
-      (a, b) => DIFFICULTY_ORDER.indexOf(a.difficulty) - DIFFICULTY_ORDER.indexOf(b.difficulty),
-    );
+    sorted.sort((a, b) => a.level - b.level);
   }
   return sorted;
 }
+
+function parseList<T>(raw: string[], parse: (code: string) => T | null): T[] {
+  return [...new Set(raw.map(parse).filter((value): value is T => value !== null))];
+}
+
+type ParamReader = Pick<URLSearchParams, "get" | "getAll">;
+
+/** URL params use short codes, e.g. `muscle=CHEST&equipment=BARBELL&ai=1`. */
+export function parseFilterParams(params: ParamReader): ExerciseFilters {
+  return {
+    q: params.get("q") || params.get("query") || "",
+    muscles: parseList(params.getAll("muscle"), parseMuscleGroupCode),
+    equipment: parseList(params.getAll("equipment"), parseEquipmentCode),
+    categories: parseList(params.getAll("category"), parseCategoryCode),
+    levels: parseList(params.getAll("level"), parseLevelCode),
+    aiOnly: params.get("ai") === "1",
+  };
+}
+
+export function toFilterSearchString(filters: ExerciseFilters): string {
+  const params = new URLSearchParams();
+  if (filters.q) {
+    params.set("q", filters.q);
+  }
+  for (const muscle of filters.muscles) {
+    params.append("muscle", muscleGroupCode(muscle));
+  }
+  for (const equipment of filters.equipment) {
+    params.append("equipment", equipmentCode(equipment));
+  }
+  for (const category of filters.categories) {
+    params.append("category", categoryCode(category));
+  }
+  for (const level of filters.levels) {
+    params.append("level", levelCode(level));
+  }
+  if (filters.aiOnly) {
+    params.set("ai", "1");
+  }
+  return params.toString();
+}
+
+export const FILTER_FACETS = {
+  muscles: { label: "Target muscle", options: MUSCLE_GROUP_OPTIONS },
+  equipment: { label: "Equipment", options: EQUIPMENT_OPTIONS },
+  categories: { label: "Category", options: CATEGORY_OPTIONS },
+  levels: { label: "Level", options: LEVEL_OPTIONS },
+} as const;
+
+export type FilterFacet = keyof typeof FILTER_FACETS;

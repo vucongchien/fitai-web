@@ -48,11 +48,18 @@ export function WeekRoute({ sessions }: WeekRouteProps) {
               <span>{session.date}</span>
             </div>
             <div className="week-route__session">
-              <strong>{session.title}</strong>
+              <strong>
+                {session.title}
+                {session.isRecovery && (
+                  <span className="ml-2 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-700">
+                    Recovery
+                  </span>
+                )}
+              </strong>
               <span>
                 {statusLabel[session.status]} · {session.time}
               </span>
-              {session.isAdapted && session.reasoning && (
+              {session.isAdapted && !session.isRecovery && session.reasoning && (
                 <p className="text-[11px] text-[var(--color-action)] mt-1 line-clamp-1 italic">
                   &ldquo;{session.reasoning}&rdquo;
                 </p>

@@ -104,7 +104,9 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         if (exercise) {
           const textToRead = [
             `Exercise ${exercise.name}.`,
-            exercise.instructions ? `Instructions: ${exercise.instructions}` : "",
+            exercise.instructions.length > 0
+              ? `Instructions: ${exercise.instructions.join(" ")}`
+              : "",
             exercise.breathingCue ? `Breathing cue: ${exercise.breathingCue}` : "",
             exercise.formCues.length > 0 ? `Form cues: ${exercise.formCues.join(", ")}` : "",
           ]
@@ -334,8 +336,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     exercise,
     guideOpen,
     loggedSets: session.loggedSets,
-    onAbortSession: (reason: Parameters<typeof abortSession>[0], note?: string) =>
-      void abortSession(reason, note),
+    onAbortSession: (...args: Parameters<typeof abortSession>) => void abortSession(...args),
     onCloseConfirmSet: () => setConfirmSetOpen(false),
     onCloseEnd: () => setEndOpen(false),
     onCloseGuide: () => setGuideOpen(false),

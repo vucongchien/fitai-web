@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { notFound, redirect } from "next/navigation";
 
-import { getCatalogMetadataServerAction } from "@/features/exercise/server/catalog-actions";
+import { isWeightedEquipment } from "@/features/exercise/domain/exercise";
 import {
   isTimedExerciseSlug,
   resolveDialogueAssetUrl,
@@ -16,9 +16,11 @@ import type {
 } from "@/features/workout/model/live-session.types";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
+import { muscleGroupCodeLabel } from "@/shared/lib/taxonomy";
 
 const STATIC_PLAYLISTS: Playlist[] = [
   {
@@ -44,7 +46,6 @@ function adaptLiveSessionPlan({
   specsRes,
   historyRes,
   recordsRes,
-  bodyweightEquipmentIds = new Set<string>(),
 }: {
   sessionId: string;
   planId: string;
@@ -53,34 +54,33 @@ function adaptLiveSessionPlan({
   specsRes: any[];
   historyRes: any;
   recordsRes: any;
-  bodyweightEquipmentIds?: ReadonlySet<string>;
 }): LiveSessionPlan {
   const prescription = sessionRes.prescription || { warmUps: [], mainExercises: [], coolDowns: [] };
 
   const mapExercise = (prescribed: any, phase: "warmup" | "main" | "cooldown"): LiveExercise => {
     const info = infosRes.find((inf) => inf.exercise?.id === prescribed.exerciseId)?.exercise;
-    const isWeighted = info?.equipmentId ? !bodyweightEquipmentIds.has(info.equipmentId) : false;
+    const equipment: Equipment = info?.equipment ?? Equipment.UNSPECIFIED;
 
     return {
       exerciseId: prescribed.exerciseId,
       name: prescribed.exerciseName || info?.name || "Exercise",
       phase,
-      equipmentId: info?.equipmentId || "",
+      equipment,
       targetSets: prescribed.targetSets || 3,
       targetReps: prescribed.targetReps || 0,
       durationSeconds: prescribed.durationSeconds || 0,
       targetWeightKg: prescribed.targetWeight || 0,
-      isWeighted,
+      isWeighted: isWeightedEquipment(equipment),
       restSetSec: prescribed.restSetSec || 60,
       restExerciseSec: prescribed.restExerciseSec || 90,
       targetRpe: prescribed.targetRpe || 7,
       notes: prescribed.notes || "",
-      instructions: info?.instructions || "",
+      instructions: info?.instructions ?? [],
       formCues: [],
       commonMistakes: [],
       breathingCue: info?.breathingCue || "",
       videoUrl: info?.videoUrl || "",
-      thumbnailUrl: info?.thumbnailUrl || "",
+      images: info?.images ?? [],
       hasAiSupported: Boolean(info?.hasAiSupported),
     };
   };
@@ -103,9 +103,9 @@ function adaptLiveSessionPlan({
         motionSpecs[exId] = {
           exerciseId: exId,
           onnxDetectorUrl:
-            spec.onnxDetectorUrl || spec.onnx_detector_url || "/models/yolo11n-pose.onnx",
+            spec.onnxDetectorUrl || spec.onnx_detector_url || "/models/yolo26n-pose.onnx",
           onnxSkeletonUrl:
-            spec.onnxSkeletonUrl || spec.onnx_skeleton_url || "/models/yolo11n-pose.onnx",
+            spec.onnxSkeletonUrl || spec.onnx_skeleton_url || "/models/yolo26n-pose.onnx",
           localRulesUrl: resolveRulesAssetUrl(rawRulesUrl, exId, info?.name),
           dialogueEngineUrl: resolveDialogueAssetUrl(rawDialogueUrl, exId, info?.name),
           recommendedCameraAngle: (spec.recommendedCameraAngle || "side").toLowerCase(),
@@ -142,8 +142,8 @@ function adaptLiveSessionPlan({
       const isTimedName = isTimedExerciseSlug(ex.id, ex.name, rawRulesUrl);
       motionSpecs[ex.id] = {
         exerciseId: ex.id,
-        onnxDetectorUrl: ex.onnxDetectorUrl || ex.onnx_detector_url || "/models/yolo11n-pose.onnx",
-        onnxSkeletonUrl: ex.onnxSkeletonUrl || ex.onnx_skeleton_url || "/models/yolo11n-pose.onnx",
+        onnxDetectorUrl: ex.onnxDetectorUrl || ex.onnx_detector_url || "/models/yolo26n-pose.onnx",
+        onnxSkeletonUrl: ex.onnxSkeletonUrl || ex.onnx_skeleton_url || "/models/yolo26n-pose.onnx",
         localRulesUrl: resolveRulesAssetUrl(rawRulesUrl, ex.id, ex.name),
         dialogueEngineUrl: resolveDialogueAssetUrl(rawDialogueUrl, ex.id, ex.name),
         recommendedCameraAngle: "side",
@@ -187,7 +187,10 @@ function adaptLiveSessionPlan({
   const plan: LiveSessionPlan = {
     sessionId,
     sessionPlanId: planId,
-    title: sessionRes.targetMuscleGroups?.join(", ") || "Workout Session",
+    title:
+      (sessionRes.targetMuscleGroups as string[] | undefined)
+        ?.map(muscleGroupCodeLabel)
+        .join(", ") || "Workout Session",
     targetRpe: mainExercises?.[0]?.targetRpe || 7,
     estimatedDurationMin: 0,
     warmUps,
@@ -214,7 +217,7 @@ const AI_12_EXERCISES_CONFIG: {
   durationSeconds: number;
   instructions: string;
   formCues: string[];
-  thumbnailUrl?: string;
+  imageUrl?: string;
   videoUrl?: string;
 }[] = [
   {
@@ -226,7 +229,7 @@ const AI_12_EXERCISES_CONFIG: {
     instructions:
       "Keep body in a straight line from shoulders to ankles, lower chest until elbows reach 90°.",
     formCues: ["Keep core braced", "Elbows at 45°", "Full lockout at top"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/I4hDWkc.gif",
+    imageUrl: "https://static.exercisedb.dev/media/I4hDWkc.gif",
     videoUrl: "https://www.youtube.com/watch?v=bSkNEdRaJlg",
   },
   {
@@ -238,7 +241,7 @@ const AI_12_EXERCISES_CONFIG: {
     instructions:
       "Send hips back and down until thighs are parallel to the floor, keeping chest upright.",
     formCues: ["Knees track over toes", "Hit parallel depth", "Drive through heels"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/qXTaZnJ.gif",
+    imageUrl: "https://static.exercisedb.dev/media/qXTaZnJ.gif",
     videoUrl: "https://www.youtube.com/watch?v=wFOgKtxNCiI",
   },
   {
@@ -250,7 +253,7 @@ const AI_12_EXERCISES_CONFIG: {
     durationSeconds: 30,
     instructions: "Hold a rigid straight line from shoulders through hips to ankles.",
     formCues: ["Squeeze glutes", "Do not let hips sag or pike", "Neutral neck"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/VBAWRPG.gif",
+    imageUrl: "https://static.exercisedb.dev/media/VBAWRPG.gif",
     videoUrl: "https://www.youtube.com/watch?v=pSHjTRCQxIw",
   },
   {
@@ -261,7 +264,7 @@ const AI_12_EXERCISES_CONFIG: {
     durationSeconds: 0,
     instructions: "Step forward and lower hips until both knees are bent at ~90 degrees.",
     formCues: ["Upright torso", "Front knee aligned with foot", "Push back to start"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/RRWFUcw.gif",
+    imageUrl: "https://static.exercisedb.dev/media/RRWFUcw.gif",
     videoUrl: "https://www.youtube.com/watch?v=QOVaHwm-Q6U",
   },
   {
@@ -273,7 +276,7 @@ const AI_12_EXERCISES_CONFIG: {
     durationSeconds: 0,
     instructions: "Curl weights toward shoulders while keeping elbows pinned to your sides.",
     formCues: ["Pin elbows to ribs", "Avoid swinging torso", "Full extension at bottom"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/NbVPDMW.gif",
+    imageUrl: "https://static.exercisedb.dev/media/NbVPDMW.gif",
     videoUrl: "https://www.youtube.com/watch?v=ykJmrZ5v0Oo",
   },
   {
@@ -285,7 +288,7 @@ const AI_12_EXERCISES_CONFIG: {
     durationSeconds: 0,
     instructions: "Press weights overhead to full lockout without arching your lower back.",
     formCues: ["Core tight", "Full overhead lockout", "Control descent to shoulders"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/znQUdHY.gif",
+    imageUrl: "https://static.exercisedb.dev/media/znQUdHY.gif",
     videoUrl: "https://www.youtube.com/watch?v=qEwKCR5JCog",
   },
   {
@@ -297,7 +300,7 @@ const AI_12_EXERCISES_CONFIG: {
     durationSeconds: 0,
     instructions: "Lower the bar under control to mid-chest and press back to full extension.",
     formCues: ["Retract shoulder blades", "Controlled touch on chest", "Full elbow extension"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/EIeI8Vf.gif",
+    imageUrl: "https://static.exercisedb.dev/media/EIeI8Vf.gif",
     videoUrl: "https://www.youtube.com/watch?v=bSkNEdRaJlg",
   },
   {
@@ -314,7 +317,7 @@ const AI_12_EXERCISES_CONFIG: {
       "Bar stays close to shins",
       "Lock out hips and knees together",
     ],
-    thumbnailUrl: "https://static.exercisedb.dev/media/ila4NZS.gif",
+    imageUrl: "https://static.exercisedb.dev/media/ila4NZS.gif",
     videoUrl: "https://www.youtube.com/watch?v=wFOgKtxNCiI",
   },
   {
@@ -325,7 +328,7 @@ const AI_12_EXERCISES_CONFIG: {
     durationSeconds: 0,
     instructions: "Pull from a dead hang until your chin clears the bar, then lower with control.",
     formCues: ["Start from full hang", "Pull elbows down to ribs", "Chin over bar"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/lBDjFxJ.gif",
+    imageUrl: "https://static.exercisedb.dev/media/lBDjFxJ.gif",
     videoUrl: "https://www.youtube.com/watch?v=m7mwLAyR3k4",
   },
   {
@@ -337,7 +340,7 @@ const AI_12_EXERCISES_CONFIG: {
     instructions:
       "Engage abs to curl your torso all the way up toward your knees, then lower back down.",
     formCues: ["Do not yank neck", "Exhale on the way up", "Controlled eccentric"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/Bn6TXyO.gif",
+    imageUrl: "https://static.exercisedb.dev/media/Bn6TXyO.gif",
     videoUrl: "https://www.youtube.com/watch?v=1fbU_MkV7NE",
   },
   {
@@ -349,7 +352,7 @@ const AI_12_EXERCISES_CONFIG: {
     instructions:
       "Lower your body by bending elbows until upper arms are parallel to floor, then press up.",
     formCues: ["Keep shoulders down", "Hit 90° elbow flexion", "Lock out at top"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/X6C6i5Y.gif",
+    imageUrl: "https://static.exercisedb.dev/media/X6C6i5Y.gif",
     videoUrl: "https://www.youtube.com/watch?v=pjo7EMsSWwc",
   },
   {
@@ -361,7 +364,7 @@ const AI_12_EXERCISES_CONFIG: {
     durationSeconds: 0,
     instructions: "Raise arms out to the sides up to shoulder height with a slight bend in elbows.",
     formCues: ["Lead with elbows", "Raise to shoulder level", "No torso momentum"],
-    thumbnailUrl: "https://static.exercisedb.dev/media/DsgkuIt.gif",
+    imageUrl: "https://static.exercisedb.dev/media/DsgkuIt.gif",
     videoUrl: "https://www.youtube.com/watch?v=AJZRMJ7qlbo",
   },
 ];
@@ -371,7 +374,7 @@ function buildAi12ExercisesSessionPlan(sessionId: string): LiveSessionPlan {
     exerciseId: cfg.id,
     name: cfg.name,
     phase: "main",
-    equipmentId: "",
+    equipment: cfg.isWeighted ? Equipment.DUMBBELL : Equipment.BODY_ONLY,
     targetSets: 1,
     targetReps: cfg.targetReps,
     durationSeconds: cfg.durationSeconds,
@@ -381,12 +384,12 @@ function buildAi12ExercisesSessionPlan(sessionId: string): LiveSessionPlan {
     restExerciseSec: 15,
     targetRpe: 7.5,
     notes: `AI Camera Tracking (${cfg.angle} view recommended)`,
-    instructions: cfg.instructions,
+    instructions: [cfg.instructions],
     formCues: cfg.formCues,
     commonMistakes: [],
     breathingCue: "Inhale on eccentric, exhale on effort",
     videoUrl: cfg.videoUrl || "",
-    thumbnailUrl: cfg.thumbnailUrl || "",
+    images: cfg.imageUrl ? [cfg.imageUrl] : [],
     hasAiSupported: true,
   }));
 
@@ -394,8 +397,8 @@ function buildAi12ExercisesSessionPlan(sessionId: string): LiveSessionPlan {
   for (const cfg of AI_12_EXERCISES_CONFIG) {
     motionSpecs[cfg.id] = {
       exerciseId: cfg.id,
-      onnxDetectorUrl: "/models/yolo11n-pose.onnx",
-      onnxSkeletonUrl: "/models/yolo11n-pose.onnx",
+      onnxDetectorUrl: "/models/yolo26n-pose.onnx",
+      onnxSkeletonUrl: "/models/yolo26n-pose.onnx",
       localRulesUrl: resolveRulesAssetUrl(undefined, cfg.id, cfg.name),
       dialogueEngineUrl: resolveDialogueAssetUrl(undefined, cfg.id, cfg.name),
       recommendedCameraAngle: cfg.angle,
@@ -519,10 +522,10 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
             .replace(/^ex-/, "")
             .replace(/[-_]/g, " ")
             .replace(/\b\w/g, (c: string) => c.toUpperCase()),
-          equipmentId: "",
-          instructions: "",
+          equipment: Equipment.UNSPECIFIED,
+          instructions: [],
           videoUrl: "",
-          thumbnailUrl: "",
+          images: [],
           hasAiSupported: false,
           formCues: [],
           commonMistakes: [],
@@ -536,7 +539,7 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
   const aiIds = infosRes
     .filter((res: any) => res.exercise?.hasAiSupported)
     .map((res: any) => res.exercise!.id);
-  const [specsRes, historyRes, recordsRes, catalog] = await Promise.all([
+  const [specsRes, historyRes, recordsRes] = await Promise.all([
     Promise.all(
       aiIds.map((id: string) =>
         execution
@@ -548,14 +551,7 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
     ),
     execution.getWorkoutHistory({ limit: 10, offset: 0 }).catch(() => ({ sessions: [] })),
     execution.getPersonalRecords({ exerciseIds: ids }).catch(() => ({ records: [] })),
-    getCatalogMetadataServerAction(),
   ]);
-
-  const bodyweightEquipmentIds = new Set(
-    catalog.equipments
-      .filter((e) => e.name.toLowerCase().replaceAll(/[\s_-]+/g, "") === "bodyweight")
-      .map((e) => e.id),
-  );
 
   return adaptLiveSessionPlan({
     sessionId: activeSessionId,
@@ -565,6 +561,5 @@ export async function getLiveSessionData(planId: string): Promise<LiveSessionPla
     specsRes,
     historyRes,
     recordsRes,
-    bodyweightEquipmentIds,
   });
 }

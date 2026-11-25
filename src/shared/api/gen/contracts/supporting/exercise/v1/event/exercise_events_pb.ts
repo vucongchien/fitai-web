@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file contracts/supporting/exercise/v1/event/exercise_events.proto.
  */
 export const file_contracts_supporting_exercise_v1_event_exercise_events: GenFile = /*@__PURE__*/
-  fileDesc("Cjxjb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9ldmVudC9leGVyY2lzZV9ldmVudHMucHJvdG8SJmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLmV2ZW50InUKFEV4ZXJjaXNlQ3JlYXRlZEV2ZW50EhMKC2V4ZXJjaXNlX2lkGAEgASgJEkgKCGV4ZXJjaXNlGAIgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iggEKIUV4ZXJjaXNlU3VibWl0dGVkRm9yQXBwcm92YWxFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvInYKFUV4ZXJjaXNlQXBwcm92ZWRFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvInYKFUV4ZXJjaXNlQXJjaGl2ZWRFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvInYKFUV4ZXJjaXNlUmVzdG9yZWRFdmVudBITCgtleGVyY2lzZV9pZBgBIAEoCRJICghleGVyY2lzZRgCIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvQm1aa2dpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvZXhlcmNpc2UvdjEvZXZlbnQ7ZXhlcmNpc2V2MWV2ZW50YgZwcm90bzM", [file_contracts_supporting_exercise_v1_message_exercise_messages]);
+  fileDesc("Cjxjb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9ldmVudC9leGVyY2lzZV9ldmVudHMucHJvdG8SJmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLmV2ZW50InUKFEV4ZXJjaXNlQ3JlYXRlZEV2ZW50EhMKC2V4ZXJjaXNlX2lkGAEgASgJEkgKCGV4ZXJjaXNlGAIgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8idgoVRXhlcmNpc2VBcHByb3ZlZEV2ZW50EhMKC2V4ZXJjaXNlX2lkGAEgASgJEkgKCGV4ZXJjaXNlGAIgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8idgoVRXhlcmNpc2VBcmNoaXZlZEV2ZW50EhMKC2V4ZXJjaXNlX2lkGAEgASgJEkgKCGV4ZXJjaXNlGAIgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8idgoVRXhlcmNpc2VSZXN0b3JlZEV2ZW50EhMKC2V4ZXJjaXNlX2lkGAEgASgJEkgKCGV4ZXJjaXNlGAIgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm9CbVprZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9ldmVudDtleGVyY2lzZXYxZXZlbnRiBnByb3RvMw", [file_contracts_supporting_exercise_v1_message_exercise_messages]);
 
 /**
  * Event payload when a new exercise is created in Draft state
@@ -39,30 +39,6 @@ export const ExerciseCreatedEventSchema: GenMessage<ExerciseCreatedEvent> = /*@_
   messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 0);
 
 /**
- * Event payload when an exercise is submitted for approval
- *
- * @generated from message contracts.supporting.exercise.v1.event.ExerciseSubmittedForApprovalEvent
- */
-export type ExerciseSubmittedForApprovalEvent = Message<"contracts.supporting.exercise.v1.event.ExerciseSubmittedForApprovalEvent"> & {
-  /**
-   * @generated from field: string exercise_id = 1;
-   */
-  exerciseId: string;
-
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseInfo exercise = 2;
-   */
-  exercise?: ExerciseInfo | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.event.ExerciseSubmittedForApprovalEvent.
- * Use `create(ExerciseSubmittedForApprovalEventSchema)` to create a new message.
- */
-export const ExerciseSubmittedForApprovalEventSchema: GenMessage<ExerciseSubmittedForApprovalEvent> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 1);
-
-/**
  * Event payload when an exercise is approved and goes Active
  *
  * @generated from message contracts.supporting.exercise.v1.event.ExerciseApprovedEvent
@@ -84,7 +60,7 @@ export type ExerciseApprovedEvent = Message<"contracts.supporting.exercise.v1.ev
  * Use `create(ExerciseApprovedEventSchema)` to create a new message.
  */
 export const ExerciseApprovedEventSchema: GenMessage<ExerciseApprovedEvent> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 2);
+  messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 1);
 
 /**
  * Event payload when an exercise is archived
@@ -108,7 +84,7 @@ export type ExerciseArchivedEvent = Message<"contracts.supporting.exercise.v1.ev
  * Use `create(ExerciseArchivedEventSchema)` to create a new message.
  */
 export const ExerciseArchivedEventSchema: GenMessage<ExerciseArchivedEvent> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 3);
+  messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 2);
 
 /**
  * Event payload when an exercise is restored
@@ -132,5 +108,5 @@ export type ExerciseRestoredEvent = Message<"contracts.supporting.exercise.v1.ev
  * Use `create(ExerciseRestoredEventSchema)` to create a new message.
  */
 export const ExerciseRestoredEventSchema: GenMessage<ExerciseRestoredEvent> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 4);
+  messageDesc(file_contracts_supporting_exercise_v1_event_exercise_events, 3);
 

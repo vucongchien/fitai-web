@@ -2,56 +2,26 @@ import { ArrowLeft, ArrowRight, Camera, Dumbbell, Play, Video } from "lucide-rea
 import Image from "next/image";
 import Link from "next/link";
 
-import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
-import type { CatalogMetadata, ExerciseSummary } from "@/features/exercise/domain/exercise";
+import { exerciseMetaLine } from "@/features/exercise/domain/exercise";
+import type { ExerciseSummary } from "@/features/exercise/domain/exercise";
+import {
+  categoryLabel,
+  equipmentLabel,
+  forceLabel,
+  levelLabel,
+  mechanicLabel,
+  muscleGroupLabel,
+} from "@/shared/lib/taxonomy";
 import { BrandMark } from "@/shared/ui/brand-mark";
 import { HeaderActions } from "@/shared/ui/header-actions";
 import { NAV_BACK, NAV_FORWARD } from "@/shared/ui/transition-types";
 
 interface ExerciseDetailProps {
   exercise: ExerciseSummary;
-  catalog: CatalogMetadata;
 }
 
-function isUuid(str?: string): boolean {
-  if (!str) {
-    return false;
-  }
-  const trimmed = str.trim();
-  return (
-    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
-    /^[0-9a-fA-F-]{24,}$/.test(trimmed)
-  );
-}
-
-function findName(pool: { id: string; name: string }[], id: string): string | undefined {
-  if (!id || isUuid(id)) {
-    return undefined;
-  }
-  return pool.find((entry) => entry.id === id || entry.name.toLowerCase() === id.toLowerCase())
-    ?.name;
-}
-
-function parseInstructionSteps(raw?: string): string[] {
-  if (!raw) {
-    return [];
-  }
-  const splitSteps = raw
-    .split(/(?=\b\d+\.\s+)/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  if (splitSteps.length > 1) {
-    return splitSteps.map((s) => s.replace(/^\d+\.\s*/, ""));
-  }
-
-  const lineSteps = raw
-    .split(/\r?\n+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  return lineSteps;
-}
+// Source data ships a start and an end frame per exercise.
+const MAX_FRAMES = 2;
 
 function formatYouTubeEmbedUrl(url: string): string | null {
   try {
@@ -72,26 +42,14 @@ function formatYouTubeEmbedUrl(url: string): string | null {
   return null;
 }
 
-export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
-  const bodyPart =
-    findName(catalog.bodyParts, exercise.bodyPartId) ||
-    (isUuid(exercise.bodyPartId) ? undefined : exercise.bodyPartId);
-  const equipment =
-    findName(catalog.equipments, exercise.equipmentId) ||
-    (isUuid(exercise.equipmentId) ? undefined : exercise.equipmentId);
-  const targetMuscle =
-    findName(catalog.muscles, exercise.targetMuscleId) ||
-    (isUuid(exercise.targetMuscleId) ? undefined : exercise.targetMuscleId);
-  const secondaryMuscles = (exercise.secondaryMuscleIds || [])
-    .map((id) => findName(catalog.muscles, id) || (isUuid(id) ? undefined : id))
-    .filter((name): name is string => Boolean(name));
-  const tagNames = (exercise.tagIds || [])
-    .map((id) => findName(catalog.tags, id) || (isUuid(id) ? undefined : id))
-    .filter((name): name is string => Boolean(name));
-
-  const instructionSteps = parseInstructionSteps(exercise.instructions);
-  const videoMediaUrl = exercise.videoUrl || exercise.mediaUrl;
+export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
+  const frames = exercise.images.slice(0, MAX_FRAMES);
+  const secondaryMuscles = exercise.secondaryMuscles.map(muscleGroupLabel).filter(Boolean);
+  const instructionSteps = exercise.instructions.map((step) => step.trim()).filter(Boolean);
+  const videoMediaUrl = exercise.videoUrl;
   const youtubeEmbed = videoMediaUrl ? formatYouTubeEmbedUrl(videoMediaUrl) : null;
+  const force = forceLabel(exercise.force);
+  const mechanic = mechanicLabel(exercise.mechanic);
   const startAdhocUrl = `/workouts/adhoc?exerciseId=${encodeURIComponent(exercise.id)}&name=${encodeURIComponent(exercise.name)}&prescription=3%20%C3%97%2010%20reps`;
 
   return (
@@ -111,15 +69,21 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
 
       <main className="focused-main detail-main">
         <div className="detail-thumb">
-          {exercise.thumbnailUrl ? (
-            <Image
-              alt={exercise.name}
-              className="detail-thumb__img"
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 600px"
-              src={exercise.thumbnailUrl}
-            />
+          {frames.length > 0 ? (
+            <div className="detail-thumb__frames">
+              {frames.map((src, idx) => (
+                <div className="detail-thumb__frame" key={src}>
+                  <Image
+                    alt={`${exercise.name} – ${idx === 0 ? "start" : "end"} position`}
+                    className="detail-thumb__img"
+                    fill
+                    priority={idx === 0}
+                    sizes="(max-width: 768px) 50vw, 300px"
+                    src={src}
+                  />
+                </div>
+              ))}
+            </div>
           ) : videoMediaUrl ? (
             <div className="detail-thumb__fallback">
               <Video size={56} strokeWidth={1.2} />
@@ -140,11 +104,7 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
 
         <section className="detail-lede">
           <h1 className="detail-title">{exercise.name}</h1>
-          <p className="detail-meta">
-            {[bodyPart, equipment, DIFFICULTY_LABEL[exercise.difficulty]]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
+          <p className="detail-meta">{exerciseMetaLine(exercise)}</p>
 
           {instructionSteps.length > 0 ? (
             <div className="detail-instructions">
@@ -169,7 +129,7 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
         <dl className="detail-facts">
           <div>
             <dt>Target Muscle</dt>
-            <dd>{targetMuscle ?? bodyPart ?? "Full Body"}</dd>
+            <dd>{muscleGroupLabel(exercise.primaryMuscle)}</dd>
           </div>
 
           {secondaryMuscles.length > 0 ? (
@@ -181,31 +141,37 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
 
           <div>
             <dt>Equipment</dt>
-            <dd>{equipment ?? "Standard Equipment"}</dd>
+            <dd>{equipmentLabel(exercise.equipment)}</dd>
           </div>
+
+          <div>
+            <dt>Category</dt>
+            <dd>{categoryLabel(exercise.category)}</dd>
+          </div>
+
+          <div>
+            <dt>Level</dt>
+            <dd>{levelLabel(exercise.level)}</dd>
+          </div>
+
+          {force ? (
+            <div>
+              <dt>Force</dt>
+              <dd>{force}</dd>
+            </div>
+          ) : null}
+
+          {mechanic ? (
+            <div>
+              <dt>Mechanic</dt>
+              <dd>{mechanic}</dd>
+            </div>
+          ) : null}
 
           <div>
             <dt>Rest Per Set</dt>
-            <dd>{exercise.defaultRestSeconds ? `${exercise.defaultRestSeconds}s` : "90s"}</dd>
+            <dd>{exercise.defaultRestSeconds}s</dd>
           </div>
-
-          <div>
-            <dt>Difficulty</dt>
-            <dd>{DIFFICULTY_LABEL[exercise.difficulty] || "Beginner"}</dd>
-          </div>
-
-          {tagNames.length > 0 ? (
-            <div>
-              <dt>Tags</dt>
-              <dd className="detail-facts__chip-row">
-                {tagNames.map((name) => (
-                  <span className="chip" key={name}>
-                    {name}
-                  </span>
-                ))}
-              </dd>
-            </div>
-          ) : null}
         </dl>
 
         {videoMediaUrl ? (
@@ -221,7 +187,7 @@ export function ExerciseDetail({ exercise, catalog }: ExerciseDetailProps) {
                   title={`${exercise.name} video demonstration`}
                 />
               ) : (
-                <video controls src={videoMediaUrl} poster={exercise.thumbnailUrl || undefined}>
+                <video controls src={videoMediaUrl} poster={frames[0]}>
                   <track kind="captions" />
                   Your browser does not support HTML5 video playback.
                 </video>

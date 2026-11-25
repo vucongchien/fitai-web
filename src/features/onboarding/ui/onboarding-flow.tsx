@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-store";
 import {
   onboardingDefaults,
+  onboardingDraftSchema,
   onboardingSchema,
 } from "@/features/onboarding/domain/onboarding-schema";
 import type { OnboardingValues } from "@/features/onboarding/domain/onboarding-schema";
@@ -19,12 +19,15 @@ import {
 } from "@/features/onboarding/server/onboarding-actions";
 import { PlanGeneratingView } from "@/features/onboarding/ui/components/plan-generating-view";
 import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
+import { InjuryFields } from "@/features/profile/components/injury-fields";
 import { calculateBMI } from "@/features/profile/model/profile.mapper";
-import { cn } from "@/shared/lib/cn";
+import { browserTimeZone } from "@/shared/lib/browser-timezone";
+import { equipmentLabel, EQUIPMENT_OPTIONS, MUSCLE_GROUP_OPTIONS } from "@/shared/lib/taxonomy";
 import { Button } from "@/shared/ui/button";
 import { toast } from "@/shared/ui/toast";
 
-const storageKey = "fitai-onboarding-draft-v2";
+// v3: equipment / muscles / injury became proto enums.
+const storageKey = "fitai-onboarding-draft-v3";
 
 function getInitialOnboardingValues(): OnboardingValues {
   if (typeof window === "undefined") {
@@ -43,7 +46,7 @@ function getInitialOnboardingValues(): OnboardingValues {
       const time = parsedRaw.preferredTime || "PM";
       parsedRaw.preferredWorkoutTimes = parsedRaw.availableDays.map((d: string) => `${d} ${time}`);
     }
-    const parsed = onboardingSchema.partial().safeParse(parsedRaw);
+    const parsed = onboardingDraftSchema.safeParse(parsedRaw);
     if (parsed.success) {
       return { ...onboardingDefaults, ...parsed.data };
     }
@@ -79,7 +82,7 @@ const steps = [
   },
   { title: "Shape your week", fields: ["preferredWorkoutTimes"] },
   { title: "Choose your training setup", fields: ["equipment", "muscleFocus"] },
-  { title: "Add safety constraints", fields: ["injuryStatus"] },
+  { title: "Add safety constraints", fields: ["injuryStatus", "injuryRegion"] },
   { title: "Review & Choose coach style", fields: ["coachStyle"] },
 ] as const;
 
@@ -131,11 +134,6 @@ export function OnboardingFlow() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [generationState, setGenerationState] = useState<"idle" | "generating" | "error">("idle");
   const [generationError, setGenerationError] = useState<string | null>(null);
-  const {
-    equipments: catalogEquipments,
-    muscles: catalogMuscles,
-    isLoading: isLoadingCatalog,
-  } = useCatalogMetadata();
 
   const {
     formState: { errors },
@@ -163,7 +161,10 @@ export function OnboardingFlow() {
     equipment,
     muscleFocus,
     injuryStatus,
-    injuryMuscleGroup,
+    injuryRegion,
+    injuryMuscle,
+    injurySide,
+    injurySeverity,
     injuryNotes,
     coachStyle,
     dateOfBirth,
@@ -179,7 +180,10 @@ export function OnboardingFlow() {
     "equipment",
     "muscleFocus",
     "injuryStatus",
-    "injuryMuscleGroup",
+    "injuryRegion",
+    "injuryMuscle",
+    "injurySide",
+    "injurySeverity",
     "injuryNotes",
     "coachStyle",
     "dateOfBirth",
@@ -208,9 +212,9 @@ export function OnboardingFlow() {
   };
 
   // Toggle equipment or muscle focus
-  function toggleList(field: "equipment" | "muscleFocus", item: string) {
-    const current = getValues(field) || [];
-    const next = current.includes(item as any)
+  function toggleList(field: "equipment" | "muscleFocus", item: number) {
+    const current: number[] = getValues(field) || [];
+    const next = current.includes(item)
       ? current.filter((value) => value !== item)
       : [...current, item];
     setValue(field, next as any, { shouldDirty: true, shouldValidate: true });
@@ -270,7 +274,7 @@ export function OnboardingFlow() {
     setIsSubmitting(true);
     try {
       // Dùng getValues() để lấy snapshot đầy đủ tại thời điểm submit
-      const result = await saveOnboardingProfileServerAction(getValues());
+      const result = await saveOnboardingProfileServerAction(getValues(), browserTimeZone());
       if (!result.success) {
         console.error("[OnboardingFlow] Server returned error:", result.message);
         toast.error(result.message || "Failed to save profile. Please review your information.");
@@ -561,54 +565,40 @@ export function OnboardingFlow() {
             <h1 id="setup-heading">Build around what you have.</h1>
             <p>The plan will only prescribe exercises matching your equipment setup.</p>
 
-            {isLoadingCatalog ? (
-              <div className="py-8 text-center text-xs font-semibold text-[var(--color-text-muted)] animate-pulse space-y-2">
-                <div className="h-6 w-32 bg-[var(--color-surface-subtle)] rounded-[var(--radius-input)] mx-auto" />
-                <p>Loading real equipment & muscle catalog from server...</p>
+            <fieldset className="form-fieldset">
+              <legend>Available equipment</legend>
+              <div className="chip-options">
+                {EQUIPMENT_OPTIONS.map((eq) => (
+                  <ChoiceButton
+                    active={(equipment || []).includes(eq.value)}
+                    key={eq.value}
+                    onClick={() => toggleList("equipment", eq.value)}
+                  >
+                    <span>{eq.label}</span>
+                  </ChoiceButton>
+                ))}
               </div>
-            ) : (
-              <>
-                <fieldset className="form-fieldset">
-                  <legend>Available equipment</legend>
-                  <div className="chip-options">
-                    {catalogEquipments.map((eq) => (
-                      <ChoiceButton
-                        active={(equipment || []).includes(eq.id as any)}
-                        key={eq.id}
-                        onClick={() => toggleList("equipment", eq.id)}
-                      >
-                        <span>{eq.name}</span>
-                      </ChoiceButton>
-                    ))}
-                  </div>
-                  {errors.equipment ? (
-                    <p
-                      className="mt-2 text-xs font-semibold text-[var(--color-danger)]"
-                      role="alert"
-                    >
-                      {errors.equipment.message}
-                    </p>
-                  ) : null}
-                </fieldset>
+              {errors.equipment ? (
+                <p className="mt-2 text-xs font-semibold text-[var(--color-danger)]" role="alert">
+                  {errors.equipment.message}
+                </p>
+              ) : null}
+            </fieldset>
 
-                <fieldset className="form-fieldset mt-6">
-                  <legend>Focus areas (Optional)</legend>
-                  <div className="chip-options">
-                    {catalogMuscles.map((m) => (
-                      <ChoiceButton
-                        active={(muscleFocus || []).includes(m.id)}
-                        key={m.id}
-                        onClick={() => toggleList("muscleFocus", m.id)}
-                      >
-                        <span>
-                          {m.name === "Cardiovascular System" ? "Cardio & Stamina" : m.name}
-                        </span>
-                      </ChoiceButton>
-                    ))}
-                  </div>
-                </fieldset>
-              </>
-            )}
+            <fieldset className="form-fieldset mt-6">
+              <legend>Focus areas (Optional)</legend>
+              <div className="chip-options">
+                {MUSCLE_GROUP_OPTIONS.map((m) => (
+                  <ChoiceButton
+                    active={(muscleFocus || []).includes(m.value)}
+                    key={m.value}
+                    onClick={() => toggleList("muscleFocus", m.value)}
+                  >
+                    <span>{m.label}</span>
+                  </ChoiceButton>
+                ))}
+              </div>
+            </fieldset>
           </section>
         ) : null}
 
@@ -626,7 +616,7 @@ export function OnboardingFlow() {
                 [
                   "active",
                   "Report pain or injury",
-                  "Specify muscle area so AI Coach adjusts prescribed exercises.",
+                  "Pick the painful area so AI Coach adjusts prescribed exercises.",
                 ],
               ].map(([value, label, description]) => (
                 <ChoiceButton
@@ -648,29 +638,22 @@ export function OnboardingFlow() {
 
             {injuryStatus !== "none" && (
               <div className="mt-4 p-4 rounded-[var(--radius-card)] border border-[color-mix(in_srgb,var(--color-danger)_20%,transparent)] bg-[var(--color-danger-soft)] space-y-3 text-left">
-                <label className="block text-xs font-semibold text-[var(--color-danger)]">
-                  Target Injury Muscle Area
-                </label>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5">
-                  {catalogMuscles.map((m) => {
-                    const isSelected = injuryMuscleGroup === m.id;
-                    return (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => setValue("injuryMuscleGroup", m.id)}
-                        className={cn(
-                          "py-2 px-1 text-center rounded-[var(--radius-input)] text-xs font-semibold transition-colors cursor-pointer min-h-[38px] border-[1.5px]",
-                          isSelected
-                            ? "border-[var(--color-danger)] bg-[var(--color-surface)] text-[var(--color-danger)]"
-                            : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
-                        )}
-                      >
-                        {m.name}
-                      </button>
-                    );
-                  })}
-                </div>
+                <InjuryFields
+                  value={{
+                    region: injuryRegion,
+                    muscle: injuryMuscle,
+                    side: injurySide,
+                    severity: injurySeverity,
+                    notes: injuryNotes || "",
+                  }}
+                  onChange={(next) => {
+                    setValue("injuryRegion", next.region, { shouldValidate: true });
+                    setValue("injuryMuscle", next.muscle);
+                    setValue("injurySide", next.side);
+                    setValue("injurySeverity", next.severity);
+                  }}
+                  regionError={errors.injuryRegion?.message}
+                />
                 <label className="block text-xs font-semibold text-[var(--color-danger)]">
                   Notes for AI Coach
                 </label>
@@ -762,11 +745,7 @@ export function OnboardingFlow() {
               </div>
               <div>
                 <dt>Equipment</dt>
-                <dd>
-                  {(equipment || [])
-                    .map((id) => catalogEquipments.find((eq) => eq.id === id)?.name || id)
-                    .join(", ")}
-                </dd>
+                <dd>{(equipment || []).map(equipmentLabel).join(", ")}</dd>
               </div>
             </dl>
           </section>

@@ -1,10 +1,18 @@
-import type { Difficulty, ExerciseSummary } from "@/features/exercise/domain/exercise";
+import type { ExerciseSummary } from "@/features/exercise/domain/exercise";
+import {
+  Equipment,
+  ExerciseCategory,
+  ExerciseForce,
+  ExerciseLevel,
+  ExerciseMechanic,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
-export type AdminExerciseStatus = "created" | "submittedForApproval" | "approved" | "archived";
+/** Exercise lifecycle: draft ("created", awaiting approval) -> approved <-> archived. */
+export type AdminExerciseStatus = "created" | "approved" | "archived";
 
 export const EXERCISE_STATUS_LABEL: Record<AdminExerciseStatus, string> = {
   created: "Draft",
-  submittedForApproval: "Pending Approval",
   approved: "Approved",
   archived: "Archived",
 };
@@ -17,11 +25,6 @@ export const EXERCISE_STATUS_STYLE: Record<
     bg: "bg-[var(--color-effort-soft)]",
     text: "text-[var(--color-effort-ink)]",
     border: "border-[color-mix(in_srgb,var(--color-effort)_25%,transparent)]",
-  },
-  submittedForApproval: {
-    bg: "bg-[var(--color-action-soft)]",
-    text: "text-[var(--color-action)]",
-    border: "border-[color-mix(in_srgb,var(--color-action)_25%,transparent)]",
   },
   approved: {
     bg: "bg-[var(--color-recovery-soft)]",
@@ -37,10 +40,32 @@ export const EXERCISE_STATUS_STYLE: Record<
 
 export type AdminExercise = ExerciseSummary & {
   status: AdminExerciseStatus;
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
 };
+
+/** Editable fields; slug is fixed after create and AI support is set by the motion spec flow. */
+export type AdminExerciseInput = Omit<AdminExercise, "id" | "slug" | "hasAiSupported">;
+
+/** Starting values for an unsaved exercise; nothing is created until the first save. */
+export const NEW_ADMIN_EXERCISE: AdminExerciseInput = {
+  name: "",
+  primaryMuscle: MuscleGroup.CHEST,
+  secondaryMuscles: [],
+  equipment: Equipment.BODY_ONLY,
+  category: ExerciseCategory.STRENGTH,
+  level: ExerciseLevel.BEGINNER,
+  force: ExerciseForce.UNSPECIFIED,
+  mechanic: ExerciseMechanic.UNSPECIFIED,
+  instructions: [],
+  images: [],
+  videoUrl: "",
+  defaultRestSeconds: 60,
+  motionSlug: "",
+  status: "created",
+};
+
+export type AdminExerciseResult =
+  | { ok: true; exercise: AdminExercise }
+  | { ok: false; message: string };
 
 export type AdminUserRole = "admin" | "brand" | "user";
 
@@ -86,22 +111,23 @@ export interface AdminUser {
   lastActiveAt: string;
 }
 
+/** UNSPECIFIED (0) on an enum filter means "all". */
 export interface ExerciseAdminFilters {
   q: string;
   status: AdminExerciseStatus | "all";
-  bodyPartId: string;
-  equipmentId: string;
-  difficulty: Difficulty | "all";
-  hasMotionSpec?: boolean;
-  hasVoiceSpec?: boolean;
+  primaryMuscle: MuscleGroup;
+  equipment: Equipment;
+  category: ExerciseCategory;
+  level: ExerciseLevel;
 }
 
 export const DEFAULT_EXERCISE_ADMIN_FILTERS: ExerciseAdminFilters = {
   q: "",
   status: "all",
-  bodyPartId: "",
-  equipmentId: "",
-  difficulty: "all",
+  primaryMuscle: MuscleGroup.UNSPECIFIED,
+  equipment: Equipment.UNSPECIFIED,
+  category: ExerciseCategory.UNSPECIFIED,
+  level: ExerciseLevel.UNSPECIFIED,
 };
 
 export interface UserAdminFilters {
@@ -117,13 +143,6 @@ export const DEFAULT_USER_ADMIN_FILTERS: UserAdminFilters = {
   status: "all",
   hideBots: false,
 };
-
-export interface MetadataItem {
-  id: string;
-  name: string;
-  category: "bodyPart" | "equipment" | "muscle" | "tag";
-  bodyPartId?: string;
-}
 
 export interface PaginatedResponse<T> {
   items: T[];

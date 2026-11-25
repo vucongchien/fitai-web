@@ -5,11 +5,16 @@ import {
   onboardingSchema,
   validateAgeBetween,
 } from "@/features/onboarding/domain/onboarding-schema";
+import {
+  Equipment,
+  JointRegion,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 describe("onboarding Zod Schema & Validation Rules", () => {
   const validDefaults = {
     ...onboardingDefaults,
-    equipment: ["7740d3bf-cff0-46e2-931e-e6df19988e31"],
+    equipment: [Equipment.BODY_ONLY],
   };
   it("accepts a valid onboarding profile with multi-goals and valid attributes", () => {
     const result = onboardingSchema.safeParse({
@@ -19,8 +24,8 @@ describe("onboarding Zod Schema & Validation Rules", () => {
       dateOfBirth: "1995-06-20",
       bodyFatPercent: 18.5,
       preferredWorkoutTimes: ["Mon PM", "Wed PM", "Fri PM"],
-      equipment: ["Full Gym", "Dumbbells", "Barbell", "Bodyweight", "Resistance Band"],
-      muscleFocus: ["Chest", "Back"],
+      equipment: [Equipment.DUMBBELL, Equipment.BARBELL, Equipment.BANDS],
+      muscleFocus: [MuscleGroup.CHEST, MuscleGroup.LATS],
     });
 
     expect(result.success).toBe(true);
@@ -140,6 +145,40 @@ describe("onboarding Zod Schema & Validation Rules", () => {
       expect(result.success).toBe(true);
     });
 
+    it("accepts more than six slots: extras become recovery sessions", () => {
+      const daily = ["06:00-07:00"];
+      const result = onboardingSchema.safeParse({
+        ...validDefaults,
+        preferredWorkoutTimes: {
+          mon: daily,
+          tue: daily,
+          wed: daily,
+          thu: ["06:00-07:00", "18:00-19:00"],
+          fri: daily,
+          sat: daily,
+          sun: daily,
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects more than ten weekly slots", () => {
+      const twice = ["06:00-07:00", "18:00-19:00"];
+      const result = onboardingSchema.safeParse({
+        ...validDefaults,
+        preferredWorkoutTimes: {
+          mon: twice,
+          tue: twice,
+          wed: twice,
+          thu: twice,
+          fri: twice,
+          sat: twice,
+        },
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0]?.message).toBe("Choose at most 10 weekly slots.");
+    });
+
     it("accepts legacy string array workout slots", () => {
       const result = onboardingSchema.safeParse({
         ...validDefaults,
@@ -172,12 +211,22 @@ describe("onboarding Zod Schema & Validation Rules", () => {
   });
 
   describe("equipment validation", () => {
-    it("accepts dynamic equipment list from catalog (Assisted, Band, Barbell, Body Weight, Bosu Ball, Cable)", () => {
+    it("accepts every Equipment enum value", () => {
       const result = onboardingSchema.safeParse({
         ...validDefaults,
-        equipment: ["Assisted", "Band", "Barbell", "Body Weight", "Bosu Ball", "Cable"],
+        equipment: [Equipment.BODY_ONLY, Equipment.CABLE, Equipment.OTHER],
       });
       expect(result.success).toBe(true);
+    });
+
+    it("rejects free-text equipment and UNSPECIFIED", () => {
+      expect(
+        onboardingSchema.safeParse({ ...validDefaults, equipment: ["Full Gym"] }).success,
+      ).toBe(false);
+      expect(
+        onboardingSchema.safeParse({ ...validDefaults, equipment: [Equipment.UNSPECIFIED] })
+          .success,
+      ).toBe(false);
     });
 
     it("rejects empty equipment array", () => {
@@ -187,6 +236,33 @@ describe("onboarding Zod Schema & Validation Rules", () => {
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues[0]?.message).toBe("Choose the equipment you can use.");
+    });
+  });
+
+  describe("injury validation", () => {
+    it("requires a region when an injury is reported", () => {
+      const result = onboardingSchema.safeParse({
+        ...validDefaults,
+        injuryStatus: "active",
+        injuryRegion: JointRegion.UNSPECIFIED,
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues[0]?.path).toEqual(["injuryRegion"]);
+    });
+
+    it("accepts an injury with a region and no specific muscle", () => {
+      const result = onboardingSchema.safeParse({
+        ...validDefaults,
+        injuryStatus: "active",
+        injuryRegion: JointRegion.KNEE,
+        injuryMuscle: MuscleGroup.UNSPECIFIED,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("ignores the region when no injury is reported", () => {
+      const result = onboardingSchema.safeParse({ ...validDefaults, injuryStatus: "none" });
+      expect(result.success).toBe(true);
     });
   });
 });
