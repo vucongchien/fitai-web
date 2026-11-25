@@ -1,4 +1,4 @@
-import { createClient } from "@connectrpc/connect";
+import { Code, ConnectError, createClient } from "@connectrpc/connect";
 import { cookies } from "next/headers";
 
 import { mapProtoMatchToSummary } from "@/features/solo-match/domain/match-state";
@@ -61,11 +61,41 @@ export async function getChallengePageData(): Promise<ChallengePageData> {
 }
 
 export interface SoloMatchSessionPageData {
+  /** Why the coach refused this exercise (e.g. an active injury); the duel must not start. */
+  blockedReason?: string;
   currentUserId: string;
   match: SoloMatchSummary | null;
   onnxSkeletonUrl: string;
   planId: string;
   recommendedCameraAngle: string;
+}
+
+export interface SoloMatchResultPageData {
+  currentUserId: string;
+  match: SoloMatchSummary | null;
+}
+
+// Read-only: the result page only shows the match, so it must not create a
+// session plan the way the arena does.
+export async function getSoloMatchResultData(matchId: string): Promise<SoloMatchResultPageData> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("fitai_access_token")?.value;
+  const currentUserId = cookieStore.get("fitai_user_id")?.value ?? "";
+
+  if (!matchId || !process.env.FITAI_RPC_URL || !accessToken) {
+    return { currentUserId, match: null };
+  }
+
+  try {
+    const soloClient = createClient(SoloMatchService, createServerTransport(accessToken));
+    const matchRes = await soloClient.getMatch({ matchId });
+    return {
+      currentUserId,
+      match: matchRes.match ? mapProtoMatchToSummary(matchRes.match) : null,
+    };
+  } catch {
+    return { currentUserId, match: null };
+  }
 }
 
 export async function getSoloMatchSessionData(matchId: string): Promise<SoloMatchSessionPageData> {
@@ -98,6 +128,7 @@ export async function getSoloMatchSessionData(matchId: string): Promise<SoloMatc
     let onnxSkeletonUrl = "/models/yolo26n-pose.onnx";
     let recommendedCameraAngle = "side";
     let planId = `solo-${matchId}-${currentUserId}`;
+    let blockedReason: string | undefined;
 
     if (match.exerciseId) {
       try {
@@ -131,14 +162,20 @@ export async function getSoloMatchSessionData(matchId: string): Promise<SoloMatc
           if (planRes.sessionPlan?.sessionPlanId) {
             planId = planRes.sessionPlan.sessionPlanId;
           }
-        } catch {
-          // Fallback to deterministic match-session ID if user has no active roadmap
-          planId = `solo-${matchId}-${currentUserId}`;
+        } catch (error) {
+          const connectError = ConnectError.from(error);
+          // The coach refused the exercise, e.g. an active injury excludes it:
+          // that is the answer, not something to train around.
+          if (connectError.code === Code.FailedPrecondition) {
+            blockedReason = connectError.rawMessage || "This exercise cannot be trained right now.";
+          }
+          // Otherwise (e.g. no active roadmap) fall back to a match-session ID.
         }
       }
     }
 
     return {
+      blockedReason,
       currentUserId,
       match,
       onnxSkeletonUrl,
