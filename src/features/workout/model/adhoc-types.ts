@@ -11,6 +11,55 @@ export interface AdhocExercise {
   sets: number;
   reps: number;
   weightKg?: number;
+  /** Part of the session; a hand-picked movement is main work. */
+  phase?: AdhocPhase;
+  durationSeconds?: number;
+  restSetSec?: number;
+}
+
+export type AdhocPhase = "warmup" | "main" | "cooldown";
+
+/** Line as sent to CreateAdhocSessionPlan, so the coach's numbers survive the save. */
+export interface AdhocPrescriptionLine {
+  exerciseId: string;
+  targetSets: number;
+  targetReps: number;
+  targetWeight: number;
+  durationSeconds: number;
+  restSetSec: number;
+}
+
+export interface AdhocPrescription {
+  warmUps: AdhocPrescriptionLine[];
+  mainExercises: AdhocPrescriptionLine[];
+  coolDowns: AdhocPrescriptionLine[];
+}
+
+/** Rest seconds from a "90 sec" label, when the line carries no number. */
+function restSeconds(ex: AdhocExercise): number {
+  if (ex.restSetSec && ex.restSetSec > 0) return ex.restSetSec;
+  const parsed = Number.parseInt(ex.rest, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+}
+
+/** Groups the builder list into the session the coach is asked to store, in order. */
+export function toAdhocPrescription(list: AdhocExercise[]): AdhocPrescription {
+  const out: AdhocPrescription = { warmUps: [], mainExercises: [], coolDowns: [] };
+  for (const ex of list) {
+    const timed = (ex.durationSeconds ?? 0) > 0;
+    const line: AdhocPrescriptionLine = {
+      exerciseId: ex.exerciseId || ex.id.split("__")[0] || ex.id,
+      targetSets: ex.sets,
+      targetReps: timed ? 0 : ex.reps,
+      targetWeight: ex.weightKg ?? 0,
+      durationSeconds: timed ? (ex.durationSeconds ?? 0) : 0,
+      restSetSec: restSeconds(ex),
+    };
+    if (ex.phase === "warmup") out.warmUps.push(line);
+    else if (ex.phase === "cooldown") out.coolDowns.push(line);
+    else out.mainExercises.push(line);
+  }
+  return out;
 }
 
 export function toAdhocExercise(ex: ExerciseResult, uniqueSuffix?: string): AdhocExercise {

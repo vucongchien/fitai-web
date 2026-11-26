@@ -229,6 +229,9 @@ function AdhocAiGeneratorModalContent({
           sets: ex.targetSets,
           reps: ex.targetReps,
           weightKg: ex.targetWeight,
+          phase: ex.phase,
+          durationSeconds: ex.durationSeconds,
+          restSetSec: ex.restSetSec,
         };
       });
 

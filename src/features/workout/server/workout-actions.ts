@@ -11,6 +11,7 @@ import {
   bestOneRepMaxByExercise,
   sessionVolumeKg,
 } from "@/features/workout/domain/training-load";
+import type { AdhocPrescription } from "@/features/workout/model/adhoc-types";
 import type { AbortReason, SetLogDraft } from "@/features/workout/model/live-session.types";
 import type { AdhocConfig, ExerciseResult } from "@/features/workout/model/workout.types";
 import { toAppError } from "@/shared/api/errors/app-error";
@@ -185,6 +186,7 @@ export type BeginWorkoutSessionResult =
 // Returns failures as a message: Next.js hides thrown server-action errors in production.
 export async function beginWorkoutSession(
   exerciseIds: string[],
+  prescription?: AdhocPrescription,
 ): Promise<BeginWorkoutSessionResult> {
   if (!exerciseIds || exerciseIds.length === 0) {
     return {
@@ -206,7 +208,7 @@ export async function beginWorkoutSession(
   try {
     let adhocPlan;
     try {
-      adhocPlan = await coachingClient.createAdhocSessionPlan({ exerciseIds });
+      adhocPlan = await coachingClient.createAdhocSessionPlan({ exerciseIds, prescription });
     } catch (error) {
       // Only NotFound (no active roadmap) is worth a retry; other refusals are the answer.
       if (ConnectError.from(error).code !== Code.NotFound) {
@@ -220,7 +222,7 @@ export async function beginWorkoutSession(
           throw initErr;
         }
       }
-      adhocPlan = await coachingClient.createAdhocSessionPlan({ exerciseIds });
+      adhocPlan = await coachingClient.createAdhocSessionPlan({ exerciseIds, prescription });
     }
 
     const planId = adhocPlan.sessionPlan?.sessionPlanId;

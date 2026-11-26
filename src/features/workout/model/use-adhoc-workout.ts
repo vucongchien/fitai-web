@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore, useTransition } from "react";
 
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
-import { toAdhocExercise } from "@/features/workout/model/adhoc-types";
+import { toAdhocExercise, toAdhocPrescription } from "@/features/workout/model/adhoc-types";
 import type { AdhocConfig, ExerciseResult } from "@/features/workout/model/workout.types";
 import { beginWorkoutSession } from "@/features/workout/server/workout-actions";
 import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
@@ -176,7 +176,11 @@ export function useAdhocWorkout(options: UseAdhocWorkoutOptions = {}) {
             ? {
                 ...item,
                 ...updated,
-                prescription: `${updated.sets} × ${updated.reps}`,
+                restSetSec: undefined,
+                prescription:
+                  (item.durationSeconds ?? 0) > 0
+                    ? `${updated.sets} × ${item.durationSeconds}s`
+                    : `${updated.sets} × ${updated.reps}`,
               }
             : item,
         ),
@@ -196,9 +200,10 @@ export function useAdhocWorkout(options: UseAdhocWorkoutOptions = {}) {
     }
 
     const exerciseIds = exerciseList.map((ex) => ex.exerciseId || ex.id.split("__")[0] || ex.id);
+    const prescription = toAdhocPrescription(exerciseList);
     startSessionTransition(async () => {
       try {
-        const result = await beginWorkoutSession(exerciseIds);
+        const result = await beginWorkoutSession(exerciseIds, prescription);
         if (!result.ok) {
           showToast({ message: result.message, type: "error" });
           return;
