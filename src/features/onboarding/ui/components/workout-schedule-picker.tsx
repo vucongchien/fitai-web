@@ -92,10 +92,9 @@ export function WorkoutSchedulePicker({
 
       {/* Guidance */}
       <p className="text-[11px] leading-relaxed text-neutral-500" data-testid="schedule-guidance">
-        Beginners do best with 3–4 sessions a week. Your coach plans up to{" "}
-        {MAX_SESSIONS_PER_WEEK} training sessions; any extra slot becomes a 20–30 min recovery
-        session (mobility, stretching, easy cardio) so each muscle group gets about 48 hours to
-        recover.
+        Beginners do best with 3–4 sessions a week. Your coach plans up to {MAX_SESSIONS_PER_WEEK}{" "}
+        training sessions; any extra slot becomes a 20–30 min recovery session (mobility,
+        stretching, easy cardio) so each muscle group gets about 48 hours to recover.
       </p>
 
       {limitHit && (

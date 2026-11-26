@@ -207,9 +207,7 @@ export function AccountManagementView({
   const users = useMemo(() => data?.pages.flatMap((page) => page.items) ?? [], [data]);
   const activeSelectedUser = useMemo(
     () =>
-      selectedUser
-        ? (users.find((u) => u.userId === selectedUser.userId) ?? selectedUser)
-        : null,
+      selectedUser ? (users.find((u) => u.userId === selectedUser.userId) ?? selectedUser) : null,
     [selectedUser, users],
   );
   const totalCount = useMemo(() => {
