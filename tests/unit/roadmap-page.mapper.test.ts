@@ -5,10 +5,15 @@ import {
   formatDate,
   formatPrescriptionLine,
   formatWeekDateRange,
+  mapSessionStatus,
+  recoveryLine,
 } from "@/features/roadmap/model/roadmap-page.mapper";
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
 import type { Roadmap } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
-import { SessionKind } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import {
+  SessionKind,
+  SessionPlanStatus,
+} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 
 describe("formatWeekDateRange", () => {
   it("calculates a standard 7-day range (Mon to Sun) from start date", () => {
@@ -178,5 +183,20 @@ describe("formatPrescriptionLine", () => {
     expect(formatPrescriptionLine({ targetSets: 1, targetReps: 0, durationSeconds: 60 })).toBe(
       "1 × 60s",
     );
+  });
+});
+
+describe("recoveryLine", () => {
+  it("only promises recovery sessions the week has", () => {
+    expect(recoveryLine(0)).toBe("Rest days between sessions");
+    expect(recoveryLine(1)).toBe("Plus 1 guided recovery session");
+    expect(recoveryLine(2)).toBe("Plus 2 guided recovery sessions");
+  });
+});
+
+describe("mapSessionStatus", () => {
+  it("shows a session stopped mid-workout as stopped, not skipped", () => {
+    expect(mapSessionStatus(SessionPlanStatus.ABORTED, false)).toBe("stopped");
+    expect(mapSessionStatus(SessionPlanStatus.SKIPPED, false)).toBe("skipped");
   });
 });

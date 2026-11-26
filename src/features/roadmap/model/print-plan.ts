@@ -56,6 +56,7 @@ const COPY = {
       planned: "DỰ KIẾN",
       rest: "NGHỈ NGƠI",
       skipped: "ĐÃ BỎ QUA",
+      stopped: "ĐÃ DỪNG",
     },
   },
   en: {
@@ -80,6 +81,7 @@ const COPY = {
       planned: "PLANNED",
       rest: "REST",
       skipped: "SKIPPED",
+      stopped: "STOPPED",
     },
   },
 } as const;

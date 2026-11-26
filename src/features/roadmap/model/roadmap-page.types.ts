@@ -6,7 +6,7 @@ export interface WeekSummary {
   state: WeekState;
 }
 
-export type SessionStatus = "complete" | "next" | "planned" | "rest" | "skipped";
+export type SessionStatus = "complete" | "next" | "planned" | "rest" | "skipped" | "stopped";
 
 export interface PrintExerciseItem {
   phase: "warmup" | "main" | "cooldown";

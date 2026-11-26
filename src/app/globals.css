@@ -1071,7 +1071,8 @@ a.week-route__row:hover {
   border-color: var(--color-recovery, #10b981);
 }
 
-.week-route__item--skipped .week-route__marker {
+.week-route__item--skipped .week-route__marker,
+.week-route__item--stopped .week-route__marker {
   color: var(--color-text-muted);
   background: var(--color-surface-subtle);
   border-color: var(--color-border-strong);

@@ -103,7 +103,8 @@ export function mapSessionStatus(status: SessionPlanStatus, isNext: boolean): Se
       return "skipped";
     }
     case SessionPlanStatus.ABORTED: {
-      return "skipped";
+      // Stopped mid-workout (pain, out of time): it was started, not skipped.
+      return "stopped";
     }
     case SessionPlanStatus.PENDING: {
       return isNext ? "next" : "planned";
@@ -313,8 +314,8 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
     {
       id: "sessions-count",
       iconName: "calendar-range",
-      title: `${currentWeekSessions.filter((s) => s.status !== "rest").length} strength sessions`,
-      description: "Plus scheduled guided recovery days",
+      title: `${currentWeekSessions.filter((s) => !s.isRecovery && s.status !== "rest").length} strength sessions`,
+      description: recoveryLine(currentWeekSessions.filter((s) => s.isRecovery).length),
     },
     {
       id: "effort-target",
@@ -452,6 +453,12 @@ export function formatPrescriptionLine(ex: {
   }
   const load = (ex.targetWeight ?? 0) > 0 ? ` · ${ex.targetWeight} kg` : "";
   return `${ex.targetSets} × ${ex.targetReps}${load}`;
+}
+
+/** The recovery note under the week's session count; none when the week has none. */
+export function recoveryLine(recoverySessions: number): string {
+  if (recoverySessions === 0) return "Rest days between sessions";
+  return `Plus ${recoverySessions} guided recovery ${recoverySessions === 1 ? "session" : "sessions"}`;
 }
 
 export function adaptSessionPlanPageData(

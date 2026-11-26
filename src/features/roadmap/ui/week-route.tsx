@@ -16,6 +16,7 @@ const statusLabel = {
   planned: "Planned",
   rest: "Recovery",
   skipped: "Skipped",
+  stopped: "Stopped",
 } as const;
 
 function StatusIcon({ status }: { status: SessionSummary["status"] }) {
@@ -25,7 +26,7 @@ function StatusIcon({ status }: { status: SessionSummary["status"] }) {
   if (status === "rest") {
     return <Moon aria-hidden="true" size={14} />;
   }
-  if (status === "skipped") {
+  if (status === "skipped" || status === "stopped") {
     return <SkipForward aria-hidden="true" size={14} />;
   }
   if (status === "next") {
