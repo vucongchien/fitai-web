@@ -14,6 +14,11 @@ import type {
   UserFriendVM,
 } from "./gamification.types";
 
+/** Only hosted icons; "" falls back to the built-in badge art. */
+export function hostedIconUrl(url?: string): string {
+  return url && /^https?:\/\//u.test(url) ? url : "";
+}
+
 export function safeBigIntToNumber(value?: bigint | number | null): number {
   if (value === undefined || value === null) {
     return 0;
@@ -71,7 +76,7 @@ export function mapBadgeItem(
     name: item.name || "Achievement",
     description: item.description || "",
     category: item.category || "GENERAL",
-    iconUrl: item.iconUrl || "",
+    iconUrl: hostedIconUrl(item.iconUrl),
     isUnlocked,
     unlockedAt: protoTimestampToISO(item.unlockedAt as any),
     progressCurrent: current,
