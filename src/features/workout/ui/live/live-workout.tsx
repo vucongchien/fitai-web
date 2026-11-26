@@ -189,7 +189,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
   workoutEffectsRef.current = workoutEffects;
 
   const stageRef = useCallback(
-    (node: HTMLDivElement | null) => {
+    (node: HTMLElement | null) => {
       if (!node) return;
 
       if (sessionStatus === "ready") {
@@ -260,9 +260,24 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     () => 0,
   );
 
+  // Every hook runs before the early return below: once the last set is
+  // logged there is no step, and a hook after it would crash the screen.
+  const totalVolumeKg = useMemo(
+    () =>
+      Math.round(
+        session.loggedSets.reduce(
+          (sum, s) => sum + (s.weightKg > 0 && s.actualReps > 0 ? s.weightKg * s.actualReps : 0),
+          0,
+        ),
+      ),
+    [session.loggedSets],
+  );
+
   if (!step || !exercise) {
+    // stageRef runs the session effects, finishing the session among them, so
+    // the wrap-up screen needs it too or the last set never completes.
     return (
-      <main className="live-screen live-screen--empty">
+      <main className="live-screen live-screen--empty" ref={stageRef}>
         <h1>Wrapping up…</h1>
       </main>
     );
@@ -317,16 +332,6 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
 
   const secondsElapsed = session.setTotal > 0 ? session.setTotal - session.setLeft : 0;
   const aiCountedReps = cameraActive ? (motion.repCount ?? 0) : 0;
-  const totalVolumeKg = useMemo(
-    () =>
-      Math.round(
-        session.loggedSets.reduce(
-          (sum, s) => sum + (s.weightKg > 0 && s.actualReps > 0 ? s.weightKg * s.actualReps : 0),
-          0,
-        ),
-      ),
-    [session.loggedSets],
-  );
 
   const modalsProps = {
     aiCountedReps,
