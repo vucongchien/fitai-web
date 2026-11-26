@@ -440,6 +440,20 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
   };
 }
 
+/** "3 × 10 · 15 kg", "1 × 60s": the coach's load is what progression changes, so it is shown. */
+export function formatPrescriptionLine(ex: {
+  targetSets: number;
+  targetReps: number;
+  durationSeconds?: number;
+  targetWeight?: number;
+}): string {
+  if ((ex.durationSeconds ?? 0) > 0 && !(ex.targetReps > 0)) {
+    return `${ex.targetSets} × ${ex.durationSeconds}s`;
+  }
+  const load = (ex.targetWeight ?? 0) > 0 ? ` · ${ex.targetWeight} kg` : "";
+  return `${ex.targetSets} × ${ex.targetReps}${load}`;
+}
+
 export function adaptSessionPlanPageData(
   sessionRes: SessionPlan,
   injuryRes: GetInjuryHistoryResponse,
@@ -467,10 +481,7 @@ export function adaptSessionPlanPageData(
       ].map((ex) => ({
         exerciseId: ex.exerciseId,
         name: ex.exerciseName,
-        prescription:
-          (ex.durationSeconds ?? 0) > 0 && !(ex.targetReps > 0)
-            ? `${ex.targetSets} × ${ex.durationSeconds}s`
-            : `${ex.targetSets} × ${ex.targetReps}`,
+        prescription: formatPrescriptionLine(ex),
         rest: `${ex.restSetSec || 60} sec`, //Hard code: fallback rest set time
         notes: ex.notes || "Maintain controlled range of motion.", //Hard code: default instructions note
       }))

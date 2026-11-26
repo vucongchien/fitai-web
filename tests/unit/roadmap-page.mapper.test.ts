@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   adaptRoadmapPageData,
   formatDate,
+  formatPrescriptionLine,
   formatWeekDateRange,
 } from "@/features/roadmap/model/roadmap-page.mapper";
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
@@ -160,5 +161,22 @@ describe("adaptWorkoutStatsData window sync", () => {
     expect(stats.dateLabel).toBe("10 – 16 August");
     expect(stats.adherence.scheduled).toBe(2);
     expect(stats.adherence.completed).toBe(0);
+  });
+});
+
+describe("formatPrescriptionLine", () => {
+  it("shows the prescribed load so a progression is visible", () => {
+    expect(formatPrescriptionLine({ targetSets: 4, targetReps: 6, targetWeight: 17.5 })).toBe(
+      "4 × 6 · 17.5 kg",
+    );
+  });
+
+  it("leaves bodyweight lines and holds without a load", () => {
+    expect(formatPrescriptionLine({ targetSets: 3, targetReps: 12, targetWeight: 0 })).toBe(
+      "3 × 12",
+    );
+    expect(formatPrescriptionLine({ targetSets: 1, targetReps: 0, durationSeconds: 60 })).toBe(
+      "1 × 60s",
+    );
   });
 });
