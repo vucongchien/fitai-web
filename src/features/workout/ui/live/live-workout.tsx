@@ -352,7 +352,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       actualReps: number;
       actualSeconds: number;
       weightKg: number;
-      rpe: number;
+      rpe?: number;
     }) => {
       audio.stopCues();
       setConfirmSetOpen(false);
