@@ -173,7 +173,8 @@ export function useWorkoutSessionSync({
 
       const weightKg =
         customData?.weightKg !== undefined ? customData.weightKg : (exercise.targetWeightKg ?? 0);
-      const rpe = customData?.rpe !== undefined ? customData.rpe : 8.0;
+      // Unrated stays null: a made-up RPE 8 hid "effort not reported" and skewed ΔRPE.
+      const rpe = customData?.rpe ?? null;
 
       let calculatedFormScore: number | null = null;
       if (isCamera) {
