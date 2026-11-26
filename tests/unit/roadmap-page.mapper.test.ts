@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   adaptRoadmapPageData,
+  countPlanned,
   formatDate,
   formatPrescriptionLine,
   formatWeekDateRange,
@@ -9,9 +10,13 @@ import {
   recoveryLine,
 } from "@/features/roadmap/model/roadmap-page.mapper";
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
-import type { Roadmap } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import type {
+  Roadmap,
+  WeekPlan,
+} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import {
   SessionKind,
+  SessionPlanSource,
   SessionPlanStatus,
 } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 
@@ -198,5 +203,24 @@ describe("mapSessionStatus", () => {
   it("shows a session stopped mid-workout as stopped, not skipped", () => {
     expect(mapSessionStatus(SessionPlanStatus.ABORTED, false)).toBe("stopped");
     expect(mapSessionStatus(SessionPlanStatus.SKIPPED, false)).toBe("skipped");
+  });
+});
+
+describe("countPlanned", () => {
+  it("counts the coach's sessions, not the athlete's own extras", () => {
+    const week = {
+      dayPlans: [
+        {
+          sessionPlans: [
+            { source: SessionPlanSource.COACH_SCHEDULED, kind: SessionKind.TRAINING },
+            { source: SessionPlanSource.USER_ADHOC, kind: SessionKind.TRAINING },
+            { source: SessionPlanSource.COACH_SCHEDULED, kind: SessionKind.RECOVERY },
+          ],
+        },
+      ],
+    } as unknown as WeekPlan;
+    expect(countPlanned(week, false)).toBe(1);
+    expect(countPlanned(week, true)).toBe(1);
+    expect(countPlanned(undefined, false)).toBe(0);
   });
 });

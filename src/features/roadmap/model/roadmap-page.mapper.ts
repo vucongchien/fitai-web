@@ -7,6 +7,7 @@ import type {
 import {
   RoadmapPhase,
   SessionKind,
+  SessionPlanSource,
   SessionPlanStatus,
 } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import type { GetInjuryHistoryResponse } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
@@ -314,8 +315,8 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
     {
       id: "sessions-count",
       iconName: "calendar-range",
-      title: `${currentWeekSessions.filter((s) => !s.isRecovery && s.status !== "rest").length} strength sessions`,
-      description: recoveryLine(currentWeekSessions.filter((s) => s.isRecovery).length),
+      title: `${countPlanned(activeWeekPlan, false)} strength sessions`,
+      description: recoveryLine(countPlanned(activeWeekPlan, true)),
     },
     {
       id: "effort-target",
@@ -453,6 +454,20 @@ export function formatPrescriptionLine(ex: {
   }
   const load = (ex.targetWeight ?? 0) > 0 ? ` · ${ex.targetWeight} kg` : "";
   return `${ex.targetSets} × ${ex.targetReps}${load}`;
+}
+
+/** Coach-scheduled sessions of the week, ad-hoc extras excluded. */
+export function countPlanned(week: WeekPlan | undefined, recovery: boolean): number {
+  let n = 0;
+  for (const dp of week?.dayPlans || []) {
+    for (const sp of dp.sessionPlans || []) {
+      const scheduled =
+        sp.source === SessionPlanSource.COACH_SCHEDULED ||
+        sp.source === SessionPlanSource.UNSPECIFIED;
+      if (scheduled && (sp.kind === SessionKind.RECOVERY) === recovery) n++;
+    }
+  }
+  return n;
 }
 
 /** The recovery note under the week's session count; none when the week has none. */
