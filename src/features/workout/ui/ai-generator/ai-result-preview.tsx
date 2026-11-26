@@ -16,6 +16,7 @@ export interface EditableAiExercise {
   durationSeconds?: number;
   restSetSec: number;
   notes?: string;
+  targetRpe?: number;
 }
 
 interface AiResultPreviewProps {

@@ -15,6 +15,8 @@ export interface AdhocExercise {
   phase?: AdhocPhase;
   durationSeconds?: number;
   restSetSec?: number;
+  /** The coach's suggested effort; the backend applies its default when absent. */
+  targetRpe?: number;
 }
 
 export type AdhocPhase = "warmup" | "main" | "cooldown";
@@ -27,6 +29,7 @@ export interface AdhocPrescriptionLine {
   targetWeight: number;
   durationSeconds: number;
   restSetSec: number;
+  targetRpe: number;
 }
 
 export interface AdhocPrescription {
@@ -54,6 +57,7 @@ export function toAdhocPrescription(list: AdhocExercise[]): AdhocPrescription {
       targetWeight: ex.weightKg ?? 0,
       durationSeconds: timed ? (ex.durationSeconds ?? 0) : 0,
       restSetSec: restSeconds(ex),
+      targetRpe: ex.targetRpe ?? 0,
     };
     if (ex.phase === "warmup") out.warmUps.push(line);
     else if (ex.phase === "cooldown") out.coolDowns.push(line);

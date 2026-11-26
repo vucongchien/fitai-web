@@ -25,7 +25,14 @@ describe("toAdhocPrescription", () => {
         durationSeconds: 60,
         restSetSec: 30,
       }),
-      item({ exerciseId: "squat", phase: "main", sets: 4, reps: 10, weightKg: 12.5 }),
+      item({
+        exerciseId: "squat",
+        phase: "main",
+        sets: 4,
+        reps: 10,
+        weightKg: 12.5,
+        targetRpe: 6.5,
+      }),
       item({ exerciseId: "picked" }),
       item({ exerciseId: "cool", phase: "cooldown", sets: 1, reps: 8, durationSeconds: 60 }),
     ]);
@@ -38,6 +45,7 @@ describe("toAdhocPrescription", () => {
         targetWeight: 0,
         durationSeconds: 60,
         restSetSec: 30,
+        targetRpe: 0,
       },
     ]);
     expect(p.mainExercises.map((l) => l.exerciseId)).toEqual(["squat", "picked"]);
@@ -46,6 +54,7 @@ describe("toAdhocPrescription", () => {
       targetReps: 10,
       targetWeight: 12.5,
       restSetSec: 90,
+      targetRpe: 6.5,
     });
     // A hold is sent as a duration, not as the reps the builder defaulted it to.
     expect(p.coolDowns[0]).toMatchObject({ targetReps: 0, durationSeconds: 60 });

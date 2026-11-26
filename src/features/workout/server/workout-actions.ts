@@ -83,6 +83,7 @@ export interface AdhocAiRecommendationOutput {
     notes: string;
     restSetSec: number;
     restExerciseSec: number;
+    targetRpe?: number;
   }[];
   warmUps?: {
     exerciseId: string;
@@ -157,6 +158,7 @@ export async function getAiRecommendation(
       notes: ex.notes || "",
       restSetSec: ex.restSetSec || 90,
       restExerciseSec: ex.restExerciseSec || 120,
+      targetRpe: ex.targetRpe > 0 ? ex.targetRpe : undefined,
     })),
     warmUps: warmUps.map((ex) => ({
       exerciseId: ex.exerciseId,

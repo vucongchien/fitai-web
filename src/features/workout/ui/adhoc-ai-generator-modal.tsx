@@ -161,6 +161,7 @@ function AdhocAiGeneratorModalContent({
           durationSeconds: ex.durationSeconds,
           restSetSec: ex.restSetSec,
           notes: ex.notes,
+          targetRpe: ex.targetRpe,
         })),
         ...(res.coolDowns ?? []).map((ex) => ({
           exerciseId: ex.exerciseId,
@@ -232,6 +233,7 @@ function AdhocAiGeneratorModalContent({
           phase: ex.phase,
           durationSeconds: ex.durationSeconds,
           restSetSec: ex.restSetSec,
+          targetRpe: ex.targetRpe,
         };
       });
 
