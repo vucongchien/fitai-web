@@ -97,15 +97,6 @@ export interface ActiveInjurySummary {
   severity: string;
 }
 
-export interface MuscleLoadSummary {
-  muscleId: string;
-  muscleName: string;
-  weightedSets: number;
-  previousWeightedSets: number;
-  volumeKg: number;
-  loadScore: number;
-}
-
 export interface ProgressDashboardData {
   athleteName: string;
   currentWeightKg: number;
@@ -128,7 +119,6 @@ export interface ProgressDashboardData {
   preferredMuscleGroups: string[];
   activeInjuries: ActiveInjurySummary[];
   gender?: string;
-  muscleLoad?: Record<string, MuscleLoadSummary>;
   catalogMuscles?: Array<{ id: string; name: string }>;
   nutrition?: ProgressNutritionSummary;
 }
