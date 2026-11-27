@@ -16,7 +16,7 @@ import {
 } from "../model/body-muscles";
 import { FEMALE_BACK_MUSCLES, FEMALE_FRONT_MUSCLES } from "../model/female-muscles";
 import { classifyBmi, computeBmi, computeBodyComposition } from "../model/progress-aggregator";
-import type { ActiveInjurySummary, BodyZoneId, MuscleLoadSummary } from "../model/types";
+import type { ActiveInjurySummary, BodyZoneId } from "../model/types";
 
 type MuscleViewSide = "front" | "back";
 
@@ -38,7 +38,6 @@ interface BodySilhouetteCardProps {
   preferredMuscleGroups: readonly string[];
   activeInjuries: readonly ActiveInjurySummary[];
   gender?: string;
-  muscleLoad?: Record<string, MuscleLoadSummary>;
   catalogMuscles?: readonly { id: string; name: string }[];
 }
 
@@ -49,7 +48,6 @@ export function BodySilhouetteCard({
   preferredMuscleGroups,
   activeInjuries,
   gender,
-  muscleLoad,
   catalogMuscles,
 }: BodySilhouetteCardProps) {
   const [selectedZone, setSelectedZone] = useState<BodyZoneId>("full");
@@ -76,17 +74,6 @@ export function BodySilhouetteCard({
 
   const goalMuscleIds = resolveGoalMuscleIds(preferredMuscleGroups);
   const injuryMuscleIds = resolveGoalMuscleIds(activeInjuries.map((inj) => inj.area));
-  const loadEntries = Object.values(muscleLoad ?? {});
-  const hasLoadData = loadEntries.length > 0;
-  const loadBySvgId = new Map<string, MuscleLoadSummary>();
-  for (const entry of loadEntries) {
-    for (const svgId of resolveMuscleIdsForGroup(entry.muscleName)) {
-      const existing = loadBySvgId.get(svgId);
-      if (!existing || entry.loadScore > existing.loadScore) {
-        loadBySvgId.set(svgId, entry);
-      }
-    }
-  }
   const muscles = isFemale
     ? viewSide === "front"
       ? FEMALE_FRONT_MUSCLES
@@ -237,16 +224,9 @@ export function BodySilhouetteCard({
                 const isGoal = goalMuscleIds.has(m.id);
                 const isCalloutActive = activeCalloutIds.has(m.id);
                 const matchesZone = selectedZone === "full" || zone === selectedZone;
-                const muscleLoadScore = loadBySvgId.get(m.id)?.loadScore ?? 0;
 
-                let fillOpacity = hasLoadData
-                  ? matchesZone
-                    ? 0.22 + (muscleLoadScore / 10) * 0.78
-                    : 0.14
-                  : matchesZone
-                    ? 0.56
-                    : 0.14;
-                if (!hasLoadData && isGoal && matchesZone) fillOpacity = 0.86;
+                let fillOpacity = matchesZone ? 0.56 : 0.14;
+                if (isGoal && matchesZone) fillOpacity = 0.86;
                 if (activeCalloutObj) {
                   fillOpacity = isCalloutActive ? 1 : 0.16;
                 }
@@ -276,11 +256,7 @@ export function BodySilhouetteCard({
               const matchesZone = selectedZone === "full" || c.zone === selectedZone;
               const hasGoal = c.muscleIds.some((id) => goalMuscleIds.has(id));
               const hasInjury = c.muscleIds.some((id) => injuryMuscleIds.has(id));
-              const calloutScore = c.muscleIds.reduce(
-                (max, id) => Math.max(max, loadBySvgId.get(id)?.loadScore ?? 0),
-                0,
-              );
-              const pillLabel = hasLoadData ? `${c.label} · ${calloutScore}/10` : c.label;
+              const pillLabel = c.label;
               const [rawAx, ay] = c.anchor;
               const ax = isFemale
                 ? +(centerX + (rawAx - centerX) * getFemaleAnchorFactor(ay)).toFixed(2)

@@ -26,7 +26,7 @@ import {
   calculateAdherencePercentage,
   mapPeriodicMetricsToEntries,
 } from "../model/progress-aggregator";
-import type { MuscleLoadSummary, ProgressDashboardData } from "../model/types";
+import type { ProgressDashboardData } from "../model/types";
 
 export async function getProgressDashboardData(): Promise<ProgressDashboardData> {
   const { accessToken, userId, userName } = await getAuthenticatedSession();
@@ -78,7 +78,6 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       injuryHistoryRes,
       workoutHistoryRes,
       roadmapRes,
-      muscleLoadRes,
       nutritionSummaryRes,
       nutritionHistoryRes,
     ] = await Promise.allSettled([
@@ -87,15 +86,6 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       profileClient.getInjuryHistory({ userId: userId || "" }),
       workoutClient.getWorkoutHistory({ limit: 120, offset: 0 }),
       coachingClient.getActiveRoadmap({}),
-      typeof (workoutClient as { getMuscleLoadStats?: unknown }).getMuscleLoadStats === "function"
-        ? (
-            workoutClient as unknown as {
-              getMuscleLoadStats: (req: {
-                windowDays: number;
-              }) => Promise<{ items?: MuscleLoadSummary[] }>;
-            }
-          ).getMuscleLoadStats({ windowDays: 7 })
-        : Promise.resolve({ items: [] as MuscleLoadSummary[] }),
       typeof nutritionClient.getNutritionSummary === "function"
         ? nutritionClient.getNutritionSummary({})
         : Promise.resolve({ targetCalories: 0 }),
@@ -169,22 +159,6 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
         severity: injurySeverityLabel(inj.severity),
       }));
 
-    const muscleLoadItems =
-      muscleLoadRes.status === "fulfilled" ? (muscleLoadRes.value.items ?? []) : [];
-    const muscleLoad = Object.fromEntries(
-      muscleLoadItems.map((item) => [
-        item.muscleId,
-        {
-          muscleId: item.muscleId,
-          muscleName: item.muscleName,
-          weightedSets: item.weightedSets,
-          previousWeightedSets: item.previousWeightedSets,
-          volumeKg: item.volumeKg,
-          loadScore: item.loadScore,
-        },
-      ]),
-    );
-
     const targetDailyCalories =
       nutritionSummaryRes.status === "fulfilled" && nutritionSummaryRes.value?.targetCalories
         ? nutritionSummaryRes.value.targetCalories
@@ -220,7 +194,6 @@ export async function getProgressDashboardData(): Promise<ProgressDashboardData>
       preferredMuscleGroups: (profileProto?.preferredMuscleGroups ?? []).map(muscleGroupLabel),
       activeInjuries,
       gender: profileProto?.gender ?? "",
-      muscleLoad,
       catalogMuscles: MUSCLE_GROUP_OPTIONS.map((m) => ({ id: m.code, name: m.label })),
       nutrition,
     };

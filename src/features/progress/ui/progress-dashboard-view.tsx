@@ -71,7 +71,6 @@ export function ProgressDashboardView({ data }: ProgressDashboardViewProps) {
         preferredMuscleGroups={data.preferredMuscleGroups}
         activeInjuries={data.activeInjuries}
         gender={data.gender}
-        muscleLoad={data.muscleLoad}
         catalogMuscles={data.catalogMuscles}
       />
 
