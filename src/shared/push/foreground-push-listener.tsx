@@ -14,8 +14,15 @@ import { notificationBadgeStore } from "@/shared/ui/header-actions";
 import { notificationListStore } from "@/shared/ui/side-panel/quick-notifications-pane";
 import { toast } from "@/shared/ui/toast";
 
+const CHIME_COOLDOWN_MS = 1500;
+const PUSH_REFRESH_THROTTLE_MS = 2500;
+let lastChimeAt = 0;
+
 function playNotificationChime() {
   if (typeof window === "undefined") return;
+  const now = Date.now();
+  if (now - lastChimeAt < CHIME_COOLDOWN_MS) return;
+  lastChimeAt = now;
   try {
     const AudioCtx =
       window.AudioContext ||
@@ -41,12 +48,62 @@ function playNotificationChime() {
   }
 }
 
-type PushHandler = (title: string, body: string, data?: Record<string, string>) => void;
-const activeHandlers = new Set<PushHandler>();
+type RefreshFlushHandler = (feedItemIds: string[]) => void;
+
+export function createPushRefreshCoalescer(
+  onFlush: RefreshFlushHandler,
+  windowMs: number = PUSH_REFRESH_THROTTLE_MS,
+) {
+  let cooldownTimer: ReturnType<typeof setTimeout> | null = null;
+  let hasTrailing = false;
+  const pendingFeedItemIds = new Set<string>();
+
+  function flushNow() {
+    const ids = Array.from(pendingFeedItemIds);
+    pendingFeedItemIds.clear();
+    hasTrailing = false;
+    onFlush(ids);
+    cooldownTimer = setTimeout(() => {
+      cooldownTimer = null;
+      if (hasTrailing) {
+        flushNow();
+      }
+    }, windowMs);
+  }
+
+  return {
+    schedule(feedItemId?: string) {
+      if (feedItemId) {
+        pendingFeedItemIds.add(feedItemId);
+      }
+      if (cooldownTimer === null) {
+        flushNow();
+      } else {
+        hasTrailing = true;
+      }
+    },
+    reset() {
+      if (cooldownTimer !== null) {
+        clearTimeout(cooldownTimer);
+        cooldownTimer = null;
+      }
+      hasTrailing = false;
+      pendingFeedItemIds.clear();
+    },
+  };
+}
+
+const activeHandlers = new Set<RefreshFlushHandler>();
 let activeNavigate: ((href: string) => void) | null = null;
 let listenerInitialized = false;
 let lastPushKey = "";
 let lastPushAt = 0;
+
+const pushRefreshCoalescer = createPushRefreshCoalescer((feedItemIds) => {
+  void notificationBadgeStore.refresh();
+  void notificationListStore.refresh();
+  activeHandlers.forEach((fn) => fn(feedItemIds));
+});
 
 function navigateFromPushToast(href: string, data?: Record<string, string>) {
   const notificationId = data?.notificationId;
@@ -79,9 +136,7 @@ function dispatchPush(title: string, body: string, data?: Record<string, string>
   toast.info(body ? `${title}: ${body}` : title, {
     onClick: () => navigateFromPushToast(targetHref, data),
   });
-  void notificationBadgeStore.refresh();
-  void notificationListStore.refresh();
-  activeHandlers.forEach((fn) => fn(title, body, data));
+  pushRefreshCoalescer.schedule(data?.feedItemId);
 }
 
 function ensureGlobalListeners() {
@@ -127,13 +182,13 @@ export function ForegroundPushListener() {
       ensureGlobalListeners();
       const navigate = (href: string) => routerRef.current.push(href);
       activeNavigate = navigate;
-      const handler: PushHandler = (_title, _body, data) => {
-        if (data?.feedItemId) {
+      const handler: RefreshFlushHandler = (feedItemIds) => {
+        for (const feedItemId of feedItemIds) {
           void queryClientRef.current.invalidateQueries({
-            queryKey: socialQueryKeys.comments(data.feedItemId),
+            queryKey: socialQueryKeys.comments(feedItemId),
           });
           void queryClientRef.current.invalidateQueries({
-            queryKey: socialQueryKeys.threadBootstrap(data.feedItemId),
+            queryKey: socialQueryKeys.threadBootstrap(feedItemId),
           });
         }
         routerRef.current.refresh();

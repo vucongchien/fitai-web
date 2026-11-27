@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings } from "lucide-react";
+import { Bell, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, useSyncExternalStore } from "react";
@@ -63,9 +63,36 @@ function AppSidebarInner({ className }: AppSidebarProps) {
 
       <div className="app-sidebar__footer">
         <Link
-          href="/profile/settings"
+          href="/notifications"
+          title="Notifications"
+          aria-current={pathname === "/notifications" ? "page" : undefined}
+          aria-label={hasUnread ? "Notifications, unread items available" : "Notifications"}
+          data-active={pathname === "/notifications" || undefined}
+          transitionTypes={NAV_LATERAL}
+          className="app-sidebar__link"
+        >
+          <div className="relative flex items-center justify-center shrink-0">
+            <Bell
+              aria-hidden="true"
+              size={18}
+              strokeWidth={pathname === "/notifications" ? 2.3 : 1.8}
+            />
+            {hasUnread ? (
+              <span
+                aria-label="Unread notifications"
+                className="absolute -top-1 -right-1 size-2 rounded-full bg-[var(--color-effort)] ring-2 ring-[var(--color-surface)]"
+              />
+            ) : null}
+          </div>
+          <span className="app-sidebar__label">Notifications</span>
+        </Link>
+
+        <Link
+          href="/settings"
           title="Settings"
-          data-active={pathname === "/profile/settings" || undefined}
+          aria-current={pathname === "/settings" ? "page" : undefined}
+          data-active={pathname === "/settings" || undefined}
+          transitionTypes={NAV_LATERAL}
           className="app-sidebar__link"
         >
           <Settings aria-hidden="true" size={18} strokeWidth={1.8} className="shrink-0" />

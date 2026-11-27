@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from "react";
+
 import type { CommentVM, FeedItemVM } from "../model/social.types";
 
 export interface CachedSocialUser {
@@ -19,9 +21,23 @@ export const socialQueryKeys = {
 const MAX_CACHE_SIZE = 100;
 const COMMENTS_TTL_MS = 30_000;
 const memoryCache = new Map<string, FeedItemVM>();
+const feedItemListeners = new Set<() => void>();
 const commentsCache = new Map<string, { data: CommentsPageData; fetchedAt: number }>();
 const inFlightComments = new Map<string, Promise<CommentsPageData>>();
 let cachedCurrentUser: CachedSocialUser | null = null;
+
+function emitFeedItemChange(): void {
+  for (const listener of feedItemListeners) {
+    listener();
+  }
+}
+
+export function subscribeFeedItemCache(listener: () => void): () => void {
+  feedItemListeners.add(listener);
+  return () => {
+    feedItemListeners.delete(listener);
+  };
+}
 
 export function getCachedComments(postId: string): CommentsPageData | null {
   const entry = commentsCache.get(postId);
@@ -47,7 +63,17 @@ export function setCachedComments(postId: string, data: CommentsPageData): void 
 export function invalidateCachedThread(postId: string): void {
   if (!postId) return;
   commentsCache.delete(postId);
-  memoryCache.delete(postId);
+  const removed = memoryCache.delete(postId);
+  try {
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      window.sessionStorage.removeItem(`feed_post_${postId}`);
+    }
+  } catch {
+    // Ignore sessionStorage errors
+  }
+  if (removed) {
+    emitFeedItemChange();
+  }
 }
 
 export function preloadThreadComments(
@@ -105,6 +131,7 @@ export function cacheFeedItem(item: FeedItemVM): void {
   }
 
   memoryCache.set(item.id, item);
+  emitFeedItemChange();
   try {
     if (typeof window !== "undefined" && window.sessionStorage) {
       window.sessionStorage.setItem(`feed_post_${item.id}`, JSON.stringify(item));
@@ -112,6 +139,14 @@ export function cacheFeedItem(item: FeedItemVM): void {
   } catch {
     // Ignore storage quota or disabled errors
   }
+}
+
+export function useCachedFeedItem(postId: string): FeedItemVM | null {
+  return useSyncExternalStore(
+    subscribeFeedItemCache,
+    () => (postId ? (memoryCache.get(postId) ?? null) : null),
+    () => null,
+  );
 }
 
 // Sync memory-only read (safe for initial render without SSR hydration mismatch)

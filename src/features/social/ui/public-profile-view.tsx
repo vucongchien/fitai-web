@@ -97,7 +97,7 @@ export function PublicProfileView({ profile, currentUserId, gamification }: Prop
           <div className="flex items-center gap-3">
             {isOwnProfile ? (
               <Link
-                href="/profile/settings"
+                href="/settings"
                 aria-label="Account Settings"
                 className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-900 hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
               >
@@ -159,7 +159,7 @@ export function PublicProfileView({ profile, currentUserId, gamification }: Prop
                 Progress
               </Link>
               <Link
-                href="/profile/settings"
+                href="/settings"
                 className="flex-1 h-9 rounded-xl !border !border-solid !border-neutral-300 bg-transparent text-sm font-semibold text-neutral-900 hover:bg-neutral-50 active:scale-98 transition-all shadow-none cursor-pointer flex items-center justify-center"
               >
                 Edit Profile

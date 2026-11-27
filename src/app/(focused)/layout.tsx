@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { ForegroundPushListener } from "@/shared/push/foreground-push-listener";
 import { AppSidebar } from "@/shared/ui/app-sidebar";
+import { SideInspectorPanel } from "@/shared/ui/side-panel/side-inspector-panel";
 
 export const metadata: Metadata = {
   robots: {
@@ -19,6 +20,7 @@ export default function FocusedLayout({ children }: { children: ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0">
         <div className="focused-shell flex-1">{children}</div>
       </div>
+      <SideInspectorPanel />
     </div>
   );
 }
