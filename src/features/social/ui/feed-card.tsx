@@ -4,10 +4,15 @@ import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
-import { cacheCurrentSocialUser, cacheFeedItem, preloadThreadComments } from "../lib/post-cache";
-import type { FeedItemVM, ReactionType } from "../model/social.types";
+import {
+  cacheCurrentSocialUser,
+  cacheFeedItem,
+  preloadThreadComments,
+  useCachedFeedItem,
+} from "../lib/post-cache";
+import type { FeedItemVM } from "../model/social.types";
 import { listCommentsAction } from "../server/social-actions";
 import { ReactionBar } from "./reaction-bar";
 import { WorkoutSummaryCard } from "./workout-summary-card";
@@ -32,30 +37,26 @@ function timeAgo(iso: string): string {
 export function FeedCard({ item, currentUserId, currentUserName, currentUserAvatarUrl }: Props) {
   const router = useRouter();
   const preloadedRef = useRef(false);
-  const [userReaction, setUserReaction] = useState<ReactionType>(item.userReaction);
-  const [reactionCount, setReactionCount] = useState<number>(item.reactionCount);
+  const cachedItem = useCachedFeedItem(item.id);
+  const effectiveItem = cachedItem ?? item;
 
   const avatarSrc =
-    item.authorAvatarUrl ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(item.authorName)}&background=random`;
+    effectiveItem.authorAvatarUrl ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(effectiveItem.authorName)}&background=random`;
 
-  const isSelf = currentUserId === item.userId;
+  const isSelf = currentUserId === effectiveItem.userId;
 
   function preloadThread() {
-    if (!item.id) return;
+    if (!effectiveItem.id) return;
     if (!preloadedRef.current) {
       preloadedRef.current = true;
-      router.prefetch?.(`/community/posts/${item.id}`);
+      router.prefetch?.(`/community/posts/${effectiveItem.id}`);
     }
-    void preloadThreadComments(item.id, () => listCommentsAction(item.id));
+    void preloadThreadComments(effectiveItem.id, () => listCommentsAction(effectiveItem.id));
   }
 
   function handleNavigateToThread() {
-    cacheFeedItem({
-      ...item,
-      userReaction,
-      reactionCount,
-    });
+    cacheFeedItem(effectiveItem);
     if (currentUserId) {
       cacheCurrentSocialUser({
         userId: currentUserId,
@@ -64,7 +65,7 @@ export function FeedCard({ item, currentUserId, currentUserName, currentUserAvat
       });
     }
     preloadThread();
-    router.push(`/community/posts/${item.id}`);
+    router.push(`/community/posts/${effectiveItem.id}`);
   }
 
   return (
@@ -145,14 +146,17 @@ export function FeedCard({ item, currentUserId, currentUserName, currentUserAvat
 
         {/* Reaction Bar (Heart, Message, Send) */}
         <ReactionBar
-          feedItemId={item.id}
-          initialReaction={userReaction}
-          initialCount={reactionCount}
-          commentCount={item.commentCount}
+          feedItemId={effectiveItem.id}
+          initialReaction={effectiveItem.userReaction}
+          initialCount={effectiveItem.reactionCount}
+          commentCount={effectiveItem.commentCount}
           onCommentClick={handleNavigateToThread}
           onReactionChange={(nextReaction, nextCount) => {
-            setUserReaction(nextReaction);
-            setReactionCount(nextCount);
+            cacheFeedItem({
+              ...effectiveItem,
+              userReaction: nextReaction,
+              reactionCount: nextCount,
+            });
           }}
         />
       </div>

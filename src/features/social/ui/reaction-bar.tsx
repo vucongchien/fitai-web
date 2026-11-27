@@ -38,8 +38,22 @@ export function ReactionBar({
 }: Props) {
   const [current, setCurrent] = useState<ReactionType>(initialReaction);
   const [count, setCount] = useState(initialCount ?? 0);
+  const [syncedProps, setSyncedProps] = useState({
+    reaction: initialReaction,
+    count: initialCount ?? 0,
+  });
   const [pending, setPending] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const normalizedInitialCount = initialCount ?? 0;
+  if (
+    !pending &&
+    (syncedProps.reaction !== initialReaction || syncedProps.count !== normalizedInitialCount)
+  ) {
+    setSyncedProps({ reaction: initialReaction, count: normalizedInitialCount });
+    setCurrent(initialReaction);
+    setCount(normalizedInitialCount);
+  }
 
   const isLiked =
     current === "LIKE" || current === "FIRE" || current === "MUSCLE" || current === "CLAP";

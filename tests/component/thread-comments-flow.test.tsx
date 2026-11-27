@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useRouter } from "next/navigation";
 import { describe, expect, it, vi } from "vitest";
 
+import { cacheFeedItem, invalidateCachedThread } from "@/features/social/lib/post-cache";
 import type { CommentVM, FeedItemVM } from "@/features/social/model/social.types";
 import * as socialActions from "@/features/social/server/social-actions";
 import { FeedCard } from "@/features/social/ui/feed-card";
@@ -237,5 +238,29 @@ describe("Thread Comments Flow (Threads-style)", () => {
     });
 
     expect(screen.getByText("@arhitekta haosa Depth 3 reply!")).toBeInTheDocument();
+  });
+
+  it("syncs FeedCard reactionCount and commentCount from post-cache when updated", () => {
+    const pushMock = vi.fn();
+    vi.mocked(useRouter).mockReturnValue({ push: pushMock } as any);
+    invalidateCachedThread(mockPost.id);
+
+    render(<FeedCard item={mockPost} currentUserId="author-1" />);
+
+    expect(screen.getByText("41")).toBeInTheDocument();
+    expect(screen.getByText("8")).toBeInTheDocument();
+
+    act(() => {
+      cacheFeedItem({
+        ...mockPost,
+        reactionCount: 42,
+        commentCount: 9,
+      });
+    });
+
+    expect(screen.getByText("42")).toBeInTheDocument();
+    expect(screen.getByText("9")).toBeInTheDocument();
+
+    invalidateCachedThread(mockPost.id);
   });
 });

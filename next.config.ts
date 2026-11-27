@@ -125,6 +125,11 @@ const nextConfig: NextConfig = {
         destination: "/nutrition/:path*",
         permanent: true,
       },
+      {
+        source: "/profile/settings",
+        destination: "/settings",
+        permanent: true,
+      },
     ];
   },
 };
