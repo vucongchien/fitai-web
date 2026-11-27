@@ -1,9 +1,10 @@
+import type { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+
 export interface ExerciseResult {
   id: string;
   name: string;
-  /** From ExerciseInfo.equipment_id */
-  equipmentId: string;
-  /** BFF resolves: equipment.name !== "bodyweight" */
+  equipment: Equipment;
+  /** Anything but BODY_ONLY carries a load. */
   isWeighted: boolean;
   /** BFF-provided default weight based on equipment type */
   defaultWeightKg?: number;

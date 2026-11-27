@@ -1,3 +1,11 @@
+import type {
+  BodySide,
+  Equipment,
+  InjurySeverity,
+  JointRegion,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+
 export interface ProfileUser {
   id: string;
   name: string;
@@ -35,20 +43,22 @@ export interface HealthMetricsDetail {
   bmiCategory: string;
   targetBodyFatPercent: number;
   goals: string[];
-  preferredMuscleGroups: string[];
+  preferredMuscleGroups: MuscleGroup[];
 }
 
 export interface InjuryItem {
   id: string;
-  muscleGroup: string;
-  severity: "MILD" | "MODERATE" | "SEVERE" | string;
+  region: JointRegion;
+  muscle: MuscleGroup;
+  side: BodySide;
+  severity: InjurySeverity;
   notes: string;
   isRecovered: boolean;
   reportedAt: string;
 }
 
 export interface ProfileSettings {
-  availableEquipment: string[];
+  availableEquipment: Equipment[];
   preferredWorkoutTimes: string[] | Record<string, string[]>;
   coachStyle: string;
 }

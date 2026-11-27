@@ -11,16 +11,13 @@ export async function generateMetadata({ params }: { params: Promise<{ exerciseI
 }
 
 async function ExerciseDetailContent({ exerciseId }: { exerciseId: string }) {
-  const [exercise, catalog] = await Promise.all([
-    exerciseSearchRepository.getById(exerciseId),
-    exerciseSearchRepository.getCatalog(),
-  ]);
+  const exercise = await exerciseSearchRepository.getById(exerciseId);
 
   if (!exercise) {
     notFound();
   }
 
-  return <ExerciseDetail exercise={exercise} catalog={catalog} />;
+  return <ExerciseDetail exercise={exercise} />;
 }
 
 function ExerciseDetailSkeleton() {

@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@connectrpc/connect";
+import { Code, ConnectError, createClient } from "@connectrpc/connect";
 import { cookies } from "next/headers";
 
 import {
@@ -14,7 +14,7 @@ import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1
 import { createServerTransport } from "@/shared/api/server/transport";
 import { createAuthCookieOptions } from "@/shared/auth/cookies";
 import { resolveEntryRoute } from "@/shared/auth/route-decision";
-import { getAccessToken } from "@/shared/auth/session";
+import { getAccessToken, isAdminRole, parseJWTRole } from "@/shared/auth/session";
 
 export type AuthActionResult<T = void> =
   | { success: true; data: T }
@@ -160,6 +160,87 @@ export async function loginWithPasswordAction(
   } catch {
     // Security: Mask login errors to generic message to prevent account enumeration
     return { success: false, error: "Invalid email, phone number, or password. Please try again." };
+  }
+}
+
+function resolveSafeAdminRedirect(redirectTarget?: string): string {
+  if (
+    redirectTarget &&
+    redirectTarget.startsWith("/admin") &&
+    !redirectTarget.startsWith("//") &&
+    !redirectTarget.startsWith("/admin/login")
+  ) {
+    return redirectTarget;
+  }
+  return "/admin";
+}
+
+export async function adminLoginAction(
+  rawIdentifier: string,
+  password: string,
+  redirectTarget?: string,
+): Promise<AuthActionResult<{ redirectUrl: string }>> {
+  const identifier = rawIdentifier.trim();
+  if (!identifier || !password) {
+    return { success: false, error: "Please enter your admin email and password." };
+  }
+
+  const redirectUrl = resolveSafeAdminRedirect(redirectTarget);
+
+  if (!process.env.FITAI_RPC_URL) {
+    await persistSessionCookies(
+      "mock_dev_access_token_admin",
+      "mock_refresh_token_admin",
+      "mock_admin_id",
+    );
+    return { success: true, data: { redirectUrl } };
+  }
+
+  try {
+    const client = createClient(AuthService, createServerTransport());
+    const response = await client.login({ identifier, password });
+
+    const role = parseJWTRole(response.accessToken);
+    if (!isAdminRole(role)) {
+      if (response.refreshToken) {
+        await client.logout({ refreshToken: response.refreshToken }).catch(() => {});
+      }
+      return {
+        success: false,
+        code: "FORBIDDEN",
+        error: "This account does not have administrator privileges.",
+      };
+    }
+
+    await persistSessionCookies(response.accessToken, response.refreshToken, response.userId);
+    return { success: true, data: { redirectUrl } };
+  } catch (error) {
+    const connectError = ConnectError.from(error);
+    if (
+      connectError.code === Code.Unavailable ||
+      connectError.code === Code.DeadlineExceeded ||
+      connectError.code === Code.Unknown
+    ) {
+      const causeMsg = error instanceof Error ? error.message : "";
+      if (
+        connectError.code === Code.Unavailable ||
+        connectError.code === Code.DeadlineExceeded ||
+        /fetch failed|ECONNREFUSED|ENOTFOUND|network/i.test(causeMsg)
+      ) {
+        return {
+          success: false,
+          code: "SERVICE_UNAVAILABLE",
+          error:
+            "Cannot reach authentication server. Please verify the backend service is running.",
+        };
+      }
+    }
+
+    return {
+      success: false,
+      code: "UNAUTHENTICATED",
+      error: "Invalid email or password. Please try again.",
+    };
   }
 }
 

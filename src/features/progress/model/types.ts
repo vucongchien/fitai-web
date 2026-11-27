@@ -92,7 +92,8 @@ export interface HeatmapWeek {
 export type BodyZoneId = "full" | "upper" | "core" | "lower";
 
 export interface ActiveInjurySummary {
-  muscleGroup: string;
+  /** Muscle label when reported, otherwise the joint region label. */
+  area: string;
   severity: string;
 }
 
@@ -128,5 +129,6 @@ export interface ProgressDashboardData {
   activeInjuries: ActiveInjurySummary[];
   gender?: string;
   muscleLoad?: Record<string, MuscleLoadSummary>;
+  catalogMuscles?: Array<{ id: string; name: string }>;
   nutrition?: ProgressNutritionSummary;
 }

@@ -327,9 +327,21 @@ export function resolveZoneForMuscleId(id: MuscleId): MuscleZone {
   return MUSCLE_ZONE_MAP[id] ?? "neutral";
 }
 
+// MuscleGroup / JointRegion labels (shared taxonomy) that have no direct entry above.
+const TAXONOMY_ALIASES: Record<string, string> = {
+  "middle back": "rhomboids",
+  neck: "sternocleidomastoid",
+  shoulder: "shoulders",
+  elbow: "forearms",
+  "wrist / hand": "wrists",
+  hip: "hip flexors",
+  knee: "quadriceps",
+  "ankle / foot": "ankles",
+};
+
 export function resolveMuscleIdsForGroup(name: string): readonly MuscleId[] {
   const normalized = name.trim().toLowerCase().replace(/[_-]+/g, " ");
-  return DB_MUSCLE_TO_IDS[normalized] ?? [];
+  return DB_MUSCLE_TO_IDS[TAXONOMY_ALIASES[normalized] ?? normalized] ?? [];
 }
 
 export function resolveGoalMuscleIds(groups: readonly string[]): Set<MuscleId> {

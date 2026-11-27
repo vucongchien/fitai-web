@@ -62,3 +62,10 @@ skills-lock.json
 # SEO / AEO / GEO benchmark reports
 /reports/
 /.stitch/
+
+# Local camera-AI training data and model experiments: too large for git
+/datasets/
+/public/test-videos/
+/public/models/*.pt
+# Pose models: only the tracked ones ship; add a new one with git add -f
+/public/models/*.onnx

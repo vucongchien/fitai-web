@@ -4,37 +4,24 @@ import { createClient } from "@connectrpc/connect";
 
 import type {
   AdminExercise,
+  AdminExerciseInput,
+  AdminExerciseResult,
   AdminExerciseStatus,
   ExerciseAdminFilters,
-  MetadataItem,
   PaginatedResponse,
 } from "@/features/admin/domain/admin-types";
+import { describeExerciseError } from "@/features/admin/domain/exercise-ai-support";
+import { toExerciseSummary } from "@/features/exercise/domain/exercise";
+import type { ExerciseInfo } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
 import { ExerciseStatus } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/exercise_messages_pb";
 import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
 
-function mapDifficulty(diff?: string): "beginner" | "intermediate" | "advanced" {
-  switch (diff?.toUpperCase()) {
-    case "BEGINNER": {
-      return "beginner";
-    }
-    case "ADVANCED": {
-      return "advanced";
-    }
-    default: {
-      return "intermediate";
-    }
-  }
-}
-
 function mapStatusToProto(status?: AdminExerciseStatus): ExerciseStatus {
   switch (status) {
     case "created": {
       return ExerciseStatus.DRAFT;
-    }
-    case "submittedForApproval": {
-      return ExerciseStatus.PENDING_APPROVAL;
     }
     case "approved": {
       return ExerciseStatus.ACTIVE;
@@ -53,9 +40,6 @@ function mapStatusToUI(status: ExerciseStatus): AdminExerciseStatus {
     case ExerciseStatus.DRAFT: {
       return "created";
     }
-    case ExerciseStatus.PENDING_APPROVAL: {
-      return "submittedForApproval";
-    }
     case ExerciseStatus.ACTIVE: {
       return "approved";
     }
@@ -68,6 +52,33 @@ function mapStatusToUI(status: ExerciseStatus): AdminExerciseStatus {
   }
 }
 
+function toAdminExercise(ex: ExerciseInfo): AdminExercise {
+  return { ...toExerciseSummary(ex), status: mapStatusToUI(ex.status) };
+}
+
+function anyOf<T extends number>(value: T): T[] {
+  return value === 0 ? [] : [value];
+}
+
+function toWriteFields(data: AdminExerciseInput) {
+  return {
+    name: data.name,
+    primaryMuscle: data.primaryMuscle,
+    secondaryMuscles: data.secondaryMuscles,
+    equipment: data.equipment,
+    category: data.category,
+    level: data.level,
+    force: data.force,
+    mechanic: data.mechanic,
+    instructions: data.instructions,
+    images: data.images,
+    videoUrl: data.videoUrl,
+    defaultRestSeconds: data.defaultRestSeconds,
+    motionSlug: data.motionSlug,
+    status: mapStatusToProto(data.status),
+  };
+}
+
 export interface FetchExercisesParams {
   cursor?: string | null;
   limit?: number;
@@ -76,7 +87,7 @@ export interface FetchExercisesParams {
 
 export async function fetchAdminExercises({
   cursor = null,
-  limit = 10,
+  limit = 50,
   filters,
 }: FetchExercisesParams): Promise<PaginatedResponse<AdminExercise>> {
   if (!process.env.FITAI_RPC_URL) {
@@ -87,72 +98,41 @@ export async function fetchAdminExercises({
     };
   }
 
-  try {
-    const { accessToken } = await getAuthenticatedSession();
-    const client = createClient(ExerciseService, createServerTransport(accessToken));
+  const { accessToken } = await getAuthenticatedSession();
+  const client = createClient(ExerciseService, createServerTransport(accessToken));
 
-    const keyword = filters?.q || "";
-    const bodyPartId = filters?.bodyPartId || "";
-    const equipmentId = filters?.equipmentId || "";
-    const difficulty =
-      filters?.difficulty && filters.difficulty !== "all" ? filters.difficulty : "";
-    const protoStatus =
-      filters?.status && filters.status !== "all"
-        ? mapStatusToProto(filters.status)
-        : ExerciseStatus.UNSPECIFIED;
-    const includeAllStatuses = !filters?.status || filters.status === "all";
+  const protoStatus =
+    filters?.status && filters.status !== "all"
+      ? mapStatusToProto(filters.status)
+      : ExerciseStatus.UNSPECIFIED;
+  const includeAllStatuses = !filters?.status || filters.status === "all";
 
-    const offset = cursor ? Math.max(0, parseInt(cursor, 10) || 0) : 0;
+  const offset = cursor ? Math.max(0, parseInt(cursor, 10) || 0) : 0;
 
-    const res = await client.searchExercises({
-      keyword,
-      bodyPartId,
-      equipmentId,
-      difficulty,
-      limit,
-      offset,
-      status: protoStatus,
-      includeAllStatuses,
-    });
+  const res = await client.searchExercises({
+    keyword: filters?.q || "",
+    primaryMuscles: anyOf(filters?.primaryMuscle ?? 0),
+    equipment: anyOf(filters?.equipment ?? 0),
+    categories: anyOf(filters?.category ?? 0),
+    levels: anyOf(filters?.level ?? 0),
+    limit,
+    offset,
+    status: protoStatus,
+    includeAllStatuses,
+  });
 
-    const exercisesList: AdminExercise[] = (res.exercises || []).map((ex) => ({
-      id: ex.id,
-      name: ex.name,
-      bodyPartId: ex.bodyPartId,
-      equipmentId: ex.equipmentId,
-      targetMuscleId: ex.targetMuscleId,
-      secondaryMuscleIds: ex.secondaryMuscleIds || [],
-      tagIds: ex.tagIds || [],
-      instructions: ex.instructions || "",
-      videoUrl: ex.videoUrl || "",
-      thumbnailUrl: ex.thumbnailUrl || "",
-      difficulty: mapDifficulty(ex.difficulty),
-      defaultRestSeconds: ex.defaultRestSeconds || 90,
-      hasAiSupported: Boolean(ex.hasAiSupported),
-      status: mapStatusToUI(ex.status),
-      createdBy: "system",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
+  const exercisesList = res.exercises.map(toAdminExercise);
 
-    const totalCount = res.totalCount;
-    const nextOffset = offset + exercisesList.length;
-    const hasMore = nextOffset < totalCount && exercisesList.length > 0;
-    const nextCursor = hasMore ? String(nextOffset) : null;
+  const totalCount = res.totalCount;
+  const nextOffset = offset + exercisesList.length;
+  const hasMore = nextOffset < totalCount && exercisesList.length > 0;
+  const nextCursor = hasMore ? String(nextOffset) : null;
 
-    return {
-      items: exercisesList,
-      nextCursor,
-      totalCount,
-    };
-  } catch (error) {
-    console.warn("[fetchAdminExercises] RPC failed:", error);
-    return {
-      items: [],
-      nextCursor: null,
-      totalCount: 0,
-    };
-  }
+  return {
+    items: exercisesList,
+    nextCursor,
+    totalCount,
+  };
 }
 
 export async function fetchAdminExerciseById(id: string): Promise<AdminExercise | null> {
@@ -169,25 +149,7 @@ export async function fetchAdminExerciseById(id: string): Promise<AdminExercise 
       return null;
     }
 
-    return {
-      id: ex.id,
-      name: ex.name,
-      bodyPartId: ex.bodyPartId,
-      equipmentId: ex.equipmentId,
-      targetMuscleId: ex.targetMuscleId,
-      secondaryMuscleIds: ex.secondaryMuscleIds || [],
-      tagIds: ex.tagIds || [],
-      instructions: ex.instructions || "",
-      videoUrl: ex.videoUrl || "",
-      thumbnailUrl: ex.thumbnailUrl || "",
-      difficulty: mapDifficulty(ex.difficulty),
-      defaultRestSeconds: ex.defaultRestSeconds || 90,
-      hasAiSupported: Boolean(ex.hasAiSupported),
-      status: mapStatusToUI(ex.status),
-      createdBy: "system",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    return toAdminExercise(ex);
   } catch (error) {
     console.warn("[fetchAdminExerciseById] failed:", error);
     return null;
@@ -206,25 +168,7 @@ export async function approveExercise(id: string): Promise<AdminExercise> {
     throw new Error(`Failed to approve exercise: ${id}`);
   }
 
-  return {
-    id: ex.id,
-    name: ex.name,
-    bodyPartId: ex.bodyPartId,
-    equipmentId: ex.equipmentId,
-    targetMuscleId: ex.targetMuscleId,
-    secondaryMuscleIds: ex.secondaryMuscleIds || [],
-    tagIds: ex.tagIds || [],
-    instructions: ex.instructions || "",
-    videoUrl: ex.videoUrl || "",
-    thumbnailUrl: ex.thumbnailUrl || "",
-    difficulty: mapDifficulty(ex.difficulty),
-    defaultRestSeconds: ex.defaultRestSeconds || 90,
-    hasAiSupported: Boolean(ex.hasAiSupported),
-    status: mapStatusToUI(ex.status),
-    createdBy: "system",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+  return toAdminExercise(ex);
 }
 
 export async function restoreExercise(id: string): Promise<AdminExercise> {
@@ -239,28 +183,10 @@ export async function restoreExercise(id: string): Promise<AdminExercise> {
     throw new Error(`Failed to restore exercise: ${id}`);
   }
 
-  return {
-    id: ex.id,
-    name: ex.name,
-    bodyPartId: ex.bodyPartId,
-    equipmentId: ex.equipmentId,
-    targetMuscleId: ex.targetMuscleId,
-    secondaryMuscleIds: ex.secondaryMuscleIds || [],
-    tagIds: ex.tagIds || [],
-    instructions: ex.instructions || "",
-    videoUrl: ex.videoUrl || "",
-    thumbnailUrl: ex.thumbnailUrl || "",
-    difficulty: mapDifficulty(ex.difficulty),
-    defaultRestSeconds: ex.defaultRestSeconds || 90,
-    hasAiSupported: Boolean(ex.hasAiSupported),
-    status: mapStatusToUI(ex.status),
-    createdBy: "system",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+  return toAdminExercise(ex);
 }
 
-export async function archiveExercise(id: string): Promise<AdminExercise> {
+export async function archiveExercise(id: string): Promise<void> {
   if (!process.env.FITAI_RPC_URL) {
     throw new Error("[archiveExercise] FITAI_RPC_URL not configured or RPC failed.");
   }
@@ -270,126 +196,45 @@ export async function archiveExercise(id: string): Promise<AdminExercise> {
   if (!res.success) {
     throw new Error(`Failed to archive exercise: ${id}`);
   }
-
-  return {
-    id,
-    name: "",
-    bodyPartId: "",
-    equipmentId: "",
-    targetMuscleId: "",
-    secondaryMuscleIds: [],
-    tagIds: [],
-    instructions: "",
-    videoUrl: "",
-    thumbnailUrl: "",
-    difficulty: "beginner",
-    defaultRestSeconds: 90,
-    hasAiSupported: false,
-    status: "archived",
-    createdBy: "system",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
 }
 
-export async function createExercise(
-  data: Omit<AdminExercise, "id" | "createdAt" | "updatedAt">,
-): Promise<AdminExercise> {
+export async function createExercise(data: AdminExerciseInput): Promise<AdminExerciseResult> {
   if (!process.env.FITAI_RPC_URL) {
-    throw new Error("[createExercise] FITAI_RPC_URL not configured or RPC failed.");
+    return { ok: false, message: "Exercise service is not configured." };
   }
-  const { accessToken } = await getAuthenticatedSession();
-  const client = createClient(ExerciseService, createServerTransport(accessToken));
-  const res = await client.createExercise({
-    name: data.name,
-    bodyPartId: data.bodyPartId,
-    equipmentId: data.equipmentId,
-    targetMuscleId: data.targetMuscleId,
-    secondaryMuscleIds: data.secondaryMuscleIds,
-    tagIds: data.tagIds,
-    instructions: data.instructions,
-    videoUrl: data.videoUrl,
-    thumbnailUrl: data.thumbnailUrl,
-    difficulty: data.difficulty,
-    defaultRestSeconds: data.defaultRestSeconds,
-    status: mapStatusToProto(data.status),
-  });
-
-  const ex = res.exercise;
-  if (!ex) {
-    throw new Error("Failed to create exercise.");
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(ExerciseService, createServerTransport(accessToken));
+    const res = await client.createExercise(toWriteFields(data));
+    if (!res.exercise) {
+      return { ok: false, message: "Failed to create exercise." };
+    }
+    return { ok: true, exercise: toAdminExercise(res.exercise) };
+  } catch (error) {
+    console.warn("[createExercise] failed:", error);
+    return { ok: false, message: describeExerciseError(error) };
   }
-
-  return {
-    id: ex.id,
-    name: ex.name,
-    bodyPartId: ex.bodyPartId,
-    equipmentId: ex.equipmentId,
-    targetMuscleId: ex.targetMuscleId,
-    secondaryMuscleIds: ex.secondaryMuscleIds || [],
-    tagIds: ex.tagIds || [],
-    instructions: ex.instructions || "",
-    videoUrl: ex.videoUrl || "",
-    thumbnailUrl: ex.thumbnailUrl || "",
-    difficulty: mapDifficulty(ex.difficulty),
-    defaultRestSeconds: ex.defaultRestSeconds || 90,
-    hasAiSupported: Boolean(ex.hasAiSupported),
-    status: mapStatusToUI(ex.status),
-    createdBy: "system",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
 }
 
 export async function updateExercise(
   id: string,
-  data: Partial<AdminExercise>,
-): Promise<AdminExercise> {
+  data: AdminExerciseInput,
+): Promise<AdminExerciseResult> {
   if (!process.env.FITAI_RPC_URL) {
-    throw new Error("[updateExercise] FITAI_RPC_URL not configured or RPC failed.");
+    return { ok: false, message: "Exercise service is not configured." };
   }
-  const { accessToken } = await getAuthenticatedSession();
-  const client = createClient(ExerciseService, createServerTransport(accessToken));
-  const res = await client.updateExercise({
-    id,
-    name: data.name,
-    bodyPartId: data.bodyPartId,
-    equipmentId: data.equipmentId,
-    targetMuscleId: data.targetMuscleId,
-    secondaryMuscleIds: data.secondaryMuscleIds,
-    tagIds: data.tagIds,
-    instructions: data.instructions,
-    videoUrl: data.videoUrl,
-    thumbnailUrl: data.thumbnailUrl,
-    difficulty: data.difficulty,
-    defaultRestSeconds: data.defaultRestSeconds,
-    status: data.status ? mapStatusToProto(data.status) : undefined,
-  });
-
-  const ex = res.exercise;
-  if (!ex) {
-    throw new Error(`Failed to update exercise: ${id}`);
+  try {
+    const { accessToken } = await getAuthenticatedSession();
+    const client = createClient(ExerciseService, createServerTransport(accessToken));
+    const res = await client.updateExercise({ id, ...toWriteFields(data) });
+    if (!res.exercise) {
+      return { ok: false, message: `Failed to update exercise: ${id}` };
+    }
+    return { ok: true, exercise: toAdminExercise(res.exercise) };
+  } catch (error) {
+    console.warn(`[updateExercise] failed for id ${id}:`, error);
+    return { ok: false, message: describeExerciseError(error) };
   }
-
-  return {
-    id: ex.id,
-    name: ex.name,
-    bodyPartId: ex.bodyPartId,
-    equipmentId: ex.equipmentId,
-    targetMuscleId: ex.targetMuscleId,
-    secondaryMuscleIds: ex.secondaryMuscleIds || [],
-    tagIds: ex.tagIds || [],
-    instructions: ex.instructions || "",
-    videoUrl: ex.videoUrl || "",
-    thumbnailUrl: ex.thumbnailUrl || "",
-    difficulty: mapDifficulty(ex.difficulty),
-    defaultRestSeconds: ex.defaultRestSeconds || 90,
-    hasAiSupported: Boolean(ex.hasAiSupported),
-    status: mapStatusToUI(ex.status),
-    createdBy: "system",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
 }
 
 export async function deleteExercise(id: string): Promise<boolean> {
@@ -405,150 +250,4 @@ export async function deleteExercise(id: string): Promise<boolean> {
     console.warn(`[deleteExercise] failed for id ${id}:`, error);
     return false;
   }
-}
-
-// METADATA APIS (BodyParts, Equipments, Muscles, Tags)
-export async function fetchMetadataList(
-  category?: MetadataItem["category"],
-): Promise<MetadataItem[]> {
-  if (!process.env.FITAI_RPC_URL) {
-    return [];
-  }
-
-  try {
-    const { accessToken } = await getAuthenticatedSession();
-    const client = createClient(ExerciseService, createServerTransport(accessToken));
-    const res = await client.getCatalogMetadata({});
-
-    const bodyParts = res.bodyParts.map((bp) => ({
-      id: bp.id,
-      name: bp.name,
-      category: "bodyPart" as const,
-    }));
-    const equipments = res.equipments.map((eq) => ({
-      id: eq.id,
-      name: eq.name,
-      category: "equipment" as const,
-    }));
-    const muscles = res.muscles.map((ms) => ({
-      id: ms.id,
-      name: ms.name,
-      category: "muscle" as const,
-      bodyPartId: ms.bodyPartId,
-    }));
-    const tags = res.tags.map((tg) => ({
-      id: tg.id,
-      name: tg.name,
-      category: "tag" as const,
-    }));
-
-    const allItems = [...bodyParts, ...equipments, ...muscles, ...tags];
-
-    if (!category) {
-      return allItems;
-    }
-    return allItems.filter((item) => item.category === category);
-  } catch (error) {
-    console.warn("[fetchMetadataList] failed:", error);
-    return [];
-  }
-}
-
-export async function createMetadataItem(item: Omit<MetadataItem, "id">): Promise<MetadataItem> {
-  if (!process.env.FITAI_RPC_URL) {
-    throw new Error("[createMetadataItem] FITAI_RPC_URL not configured or RPC failed.");
-  }
-  const { accessToken } = await getAuthenticatedSession();
-  const client = createClient(ExerciseService, createServerTransport(accessToken));
-
-  if (item.category === "bodyPart") {
-    const res = await client.createBodyPart({ name: item.name });
-    return { id: res.bodyPart?.id || "", name: res.bodyPart?.name || "", category: "bodyPart" };
-  } else if (item.category === "equipment") {
-    const res = await client.createEquipment({ name: item.name });
-    return { id: res.equipment?.id || "", name: res.equipment?.name || "", category: "equipment" };
-  } else if (item.category === "muscle") {
-    const res = await client.createMuscle({ name: item.name, bodyPartId: item.bodyPartId || "" });
-    return {
-      id: res.muscle?.id || "",
-      name: res.muscle?.name || "",
-      category: "muscle",
-      bodyPartId: res.muscle?.bodyPartId || item.bodyPartId,
-    };
-  }
-  const res = await client.createTag({ name: item.name });
-  return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
-}
-
-export async function updateMetadataItem(
-  id: string,
-  data: Partial<MetadataItem>,
-): Promise<MetadataItem> {
-  if (!process.env.FITAI_RPC_URL) {
-    throw new Error("[updateMetadataItem] FITAI_RPC_URL not configured or RPC failed.");
-  }
-  const { accessToken } = await getAuthenticatedSession();
-  const client = createClient(ExerciseService, createServerTransport(accessToken));
-
-  if (data.category === "bodyPart") {
-    const res = await client.updateBodyPart({ id, name: data.name });
-    return { id: res.bodyPart?.id || "", name: res.bodyPart?.name || "", category: "bodyPart" };
-  } else if (data.category === "equipment") {
-    const res = await client.updateEquipment({ id, name: data.name });
-    return { id: res.equipment?.id || "", name: res.equipment?.name || "", category: "equipment" };
-  } else if (data.category === "muscle") {
-    const res = await client.updateMuscle({
-      id,
-      name: data.name,
-      bodyPartId: data.bodyPartId || "",
-    });
-    return {
-      id: res.muscle?.id || "",
-      name: res.muscle?.name || "",
-      category: "muscle",
-      bodyPartId: res.muscle?.bodyPartId || data.bodyPartId,
-    };
-  }
-  const res = await client.updateTag({ id, name: data.name });
-  return { id: res.tag?.id || "", name: res.tag?.name || "", category: "tag" };
-}
-
-export async function deleteMetadataItem(
-  id: string,
-  category?: MetadataItem["category"],
-): Promise<boolean> {
-  if (!process.env.FITAI_RPC_URL) {
-    return false;
-  }
-  try {
-    const { accessToken } = await getAuthenticatedSession();
-    const client = createClient(ExerciseService, createServerTransport(accessToken));
-    const targetCat =
-      category ||
-      (id.startsWith("bp")
-        ? "bodyPart"
-        : id.startsWith("eq")
-          ? "equipment"
-          : id.startsWith("ms")
-            ? "muscle"
-            : "tag");
-
-    if (targetCat === "bodyPart") {
-      await client.deleteBodyPart({ id });
-    } else if (targetCat === "equipment") {
-      await client.deleteEquipment({ id });
-    } else if (targetCat === "muscle") {
-      await client.deleteMuscle({ id });
-    } else {
-      await client.deleteTag({ id });
-    }
-    return true;
-  } catch (error) {
-    console.warn(`[deleteMetadataItem] failed for id ${id}:`, error);
-    return false;
-  }
-}
-
-export async function resetExerciseStore(): Promise<void> {
-  // Deprecated: In-memory store removed in favor of direct ConnectRPC.
 }

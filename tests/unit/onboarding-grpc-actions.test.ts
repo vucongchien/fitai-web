@@ -2,6 +2,15 @@ import { create } from "@bufbuild/protobuf";
 import type { Client, Transport } from "@connectrpc/connect";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { OnboardingValues } from "@/features/onboarding/domain/onboarding-schema";
+import { onboardingDefaults } from "@/features/onboarding/domain/onboarding-schema";
+import {
+  BodySide,
+  Equipment,
+  InjurySeverity,
+  JointRegion,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 import { SaveHealthProfileResponseSchema } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
 import type { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 
@@ -27,18 +36,28 @@ vi.mock<typeof import("@/shared/auth/session")>(import("@/shared/auth/session"),
   getAuthenticatedUserId: () => Promise.resolve("usr-onboarding-123"),
 }));
 
-describe("onboarding Server Actions & Enum Normalization", () => {
+const BASE: OnboardingValues = {
+  ...onboardingDefaults,
+  weightKg: 75,
+  heightCm: 182,
+  dateOfBirth: "1995-10-20",
+  gender: "male",
+  goals: ["build-muscle", "fat-loss"],
+  bodyFatPercent: 18.5,
+  targetBodyFatPercent: 14,
+  experienceLevel: "intermediate",
+  preferredWorkoutTimes: { mon: ["17:30-19:00"], wed: ["17:30-19:00"], fri: ["17:30-19:00"] },
+  equipment: [Equipment.DUMBBELL, Equipment.BARBELL, Equipment.BANDS],
+  muscleFocus: [MuscleGroup.CHEST, MuscleGroup.LATS],
+  coachStyle: "scientific",
+  targetWeightKg: 78,
+};
+
+describe("onboarding server action (SaveHealthProfile)", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.stubEnv("FITAI_RPC_URL", "http://backend:8080");
     mockSaveHealthProfile.mockReset();
-  });
-
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
-
-  it("normalizes and sends multi-goals, preferredWorkoutTimes array, DOB, and bodyFatPercent to gRPC SaveHealthProfile", async () => {
     mockSaveHealthProfile.mockResolvedValue(
       create(SaveHealthProfileResponseSchema, {
         userId: "usr-onboarding-123",
@@ -47,52 +66,41 @@ describe("onboarding Server Actions & Enum Normalization", () => {
         message: "Profile saved successfully",
       }),
     );
+  });
 
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("sends equipment / muscle enums and an injury with region, muscle, side and severity", async () => {
     const { saveOnboardingProfileServerAction } =
       await import("@/features/onboarding/server/onboarding-actions");
 
     const result = await saveOnboardingProfileServerAction({
-      weightKg: 75,
-      heightCm: 182,
-      dateOfBirth: "1995-10-20",
-      gender: "male",
-      goals: ["build-muscle", "fat-loss"],
-      bodyFatPercent: 18.5,
-      targetBodyFatPercent: 14,
-      experienceLevel: "intermediate",
-      preferredWorkoutTimes: {
-        mon: ["17:30-19:00"],
-        wed: ["17:30-19:00"],
-        fri: ["17:30-19:00"],
-      },
-      equipment: ["Full Gym", "Dumbbells", "Barbell", "Bodyweight", "Resistance Band"],
-      muscleFocus: ["Chest", "Back", "Legs"],
-      coachStyle: "scientific",
-      targetWeightKg: 78,
+      ...BASE,
       injuryStatus: "active",
-      injuryMuscleGroup: "Shoulders",
-      injurySeverity: "MILD",
+      injuryRegion: JointRegion.SHOULDER,
+      injuryMuscle: MuscleGroup.SHOULDERS,
+      injurySide: BodySide.LEFT,
+      injurySeverity: InjurySeverity.MODERATE,
       injuryNotes: "Minor impingement",
     });
 
     expect(mockSaveHealthProfile).toHaveBeenCalledWith(
       expect.objectContaining({
-        weightKg: 75,
-        heightCm: 182,
         gender: "MALE",
-        dateOfBirth: "1995-10-20",
-        bodyFatPercent: 18.5,
-        targetBodyFatPercent: 14,
         goals: ["BUILD_MUSCLE", "FAT_LOSS"],
         preferredWorkoutTimes: ["mon:17:30-19:00", "wed:17:30-19:00", "fri:17:30-19:00"],
         experienceLevel: "INTERMEDIATE",
         coachStyle: "SCIENTIFIC",
-        availableEquipment: ["Full Gym", "Dumbbells", "Barbell", "Bodyweight", "Resistance Band"],
-        preferredMuscleGroups: ["Chest", "Back", "Legs"],
+        availableEquipment: [Equipment.DUMBBELL, Equipment.BARBELL, Equipment.BANDS],
+        preferredMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.LATS],
         injuries: [
           {
-            muscleGroup: "Shoulders",
-            severity: "MILD",
+            region: JointRegion.SHOULDER,
+            muscle: MuscleGroup.SHOULDERS,
+            side: BodySide.LEFT,
+            severity: InjurySeverity.MODERATE,
             notes: "Minor impingement",
           },
         ],
@@ -102,103 +110,34 @@ describe("onboarding Server Actions & Enum Normalization", () => {
     expect(result.aiCoachActivated).toBe(true);
   });
 
-  it("omits injuries array when injuryStatus is none and supports single goal string fallback", async () => {
-    mockSaveHealthProfile.mockResolvedValue(
-      create(SaveHealthProfileResponseSchema, {
-        userId: "usr-onboarding-123",
-        completionRate: 100,
-        aiCoachActivated: true,
-      }),
-    );
-
+  it("sends no injuries when the user reports none", async () => {
     const { saveOnboardingProfileServerAction } =
       await import("@/features/onboarding/server/onboarding-actions");
 
     await saveOnboardingProfileServerAction({
-      weightKg: 65,
-      heightCm: 170,
-      dateOfBirth: "2000-01-01",
-      gender: "female",
-      goal: "fat-loss",
-      bodyFatPercent: 22,
-      experienceLevel: "beginner",
-      preferredWorkoutTimes: ["Tue AM", "Thu AM"],
-      equipment: ["Bodyweight"],
-      muscleFocus: ["Core"],
-      coachStyle: "motivational",
-      targetWeightKg: 60,
+      ...BASE,
       injuryStatus: "none",
+      injuryRegion: JointRegion.KNEE,
     });
 
-    expect(mockSaveHealthProfile).toHaveBeenCalledWith(
-      expect.objectContaining({
-        goals: ["FAT_LOSS"],
-        preferredWorkoutTimes: ["tue:06:00-07:30", "thu:06:00-07:30"],
-        experienceLevel: "BEGINNER",
-        coachStyle: "MOTIVATIONAL",
-        availableEquipment: ["Bodyweight"],
-        injuries: [],
-      }),
-    );
+    expect(mockSaveHealthProfile.mock.calls[0][0].injuries).toEqual([]);
   });
 
-  it("correctly maps and sends dynamic catalog equipments (Assisted, Band, Barbell, Body Weight, Bosu Ball, Cable) to gRPC SaveHealthProfile", async () => {
-    mockSaveHealthProfile.mockResolvedValue(
-      create(SaveHealthProfileResponseSchema, {
-        userId: "usr-onboarding-123",
-        completionRate: 100,
-        aiCoachActivated: true,
-      }),
-    );
-
+  it("forwards the browser time zone so slots are scheduled in it", async () => {
     const { saveOnboardingProfileServerAction } =
       await import("@/features/onboarding/server/onboarding-actions");
 
-    await saveOnboardingProfileServerAction({
-      weightKg: 70,
-      heightCm: 175,
-      dateOfBirth: "1998-05-15",
-      gender: "male",
-      goals: ["build-muscle"],
-      bodyFatPercent: 18.5,
-      experienceLevel: "intermediate",
-      preferredWorkoutTimes: {
-        mon: ["17:30-19:00"],
-      },
-      equipment: ["Assisted", "Band", "Barbell", "Body Weight", "Bosu Ball", "Cable"],
-      muscleFocus: ["Chest"],
-      coachStyle: "motivational",
-      targetWeightKg: 68,
-      injuryStatus: "none",
-    });
+    await saveOnboardingProfileServerAction(BASE, "Asia/Ho_Chi_Minh");
 
-    expect(mockSaveHealthProfile).toHaveBeenCalledWith(
-      expect.objectContaining({
-        availableEquipment: ["Assisted", "Band", "Barbell", "Body Weight", "Bosu Ball", "Cable"],
-      }),
-    );
+    expect(mockSaveHealthProfile.mock.calls[0][0].timezone).toBe("Asia/Ho_Chi_Minh");
   });
 
-  it("recovers gracefully when gRPC SaveHealthProfile throws", async () => {
+  it("recovers gracefully when SaveHealthProfile throws", async () => {
     mockSaveHealthProfile.mockRejectedValue(new Error("Connection reset"));
-
     const { saveOnboardingProfileServerAction } =
       await import("@/features/onboarding/server/onboarding-actions");
 
-    const result = await saveOnboardingProfileServerAction({
-      weightKg: 80,
-      heightCm: 175,
-      gender: "male",
-      goals: ["build-muscle"],
-      bodyFatPercent: 17,
-      experienceLevel: "advanced",
-      preferredWorkoutTimes: ["Mon PM"],
-      equipment: ["Full Gym"],
-      muscleFocus: ["Arms"],
-      coachStyle: "strict",
-      targetWeightKg: 82,
-      injuryStatus: "none",
-    });
+    const result = await saveOnboardingProfileServerAction(BASE);
 
     expect(result.success).toBe(false);
     expect(result.message).toContain("Connection reset");

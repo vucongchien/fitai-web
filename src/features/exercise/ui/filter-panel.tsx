@@ -2,86 +2,42 @@
 
 import { X } from "lucide-react";
 
-import {
-  countActiveFilters,
-  DIFFICULTY_LABEL,
-  DIFFICULTY_ORDER,
-  GROUP_SYNONYMS,
-} from "@/features/exercise/domain/exercise";
-import type {
-  CatalogEntry,
-  CatalogMetadata,
-  Difficulty,
-  ExerciseFilters,
-} from "@/features/exercise/domain/exercise";
+import { countActiveFilters, FILTER_FACETS } from "@/features/exercise/domain/exercise";
+import type { ExerciseFilters, FilterFacet } from "@/features/exercise/domain/exercise";
+import type { EnumOption } from "@/shared/lib/taxonomy";
 
 interface FilterPanelProps {
   open: boolean;
   filters: ExerciseFilters;
-  catalog: CatalogMetadata;
   resultCount: number;
   onChange: (next: ExerciseFilters) => void;
   onClear: () => void;
   onClose: () => void;
 }
 
+const FACET_ORDER: FilterFacet[] = ["muscles", "equipment", "categories", "levels"];
+
 export function FilterPanel({
   open,
   filters,
-  catalog,
   resultCount,
   onChange,
   onClear,
   onClose,
 }: FilterPanelProps) {
-  const activeCount = countActiveFilters(filters, catalog);
+  const activeCount = countActiveFilters(filters);
 
-  const toggleList = (
-    key: "bodyPartIds" | "equipmentIds" | "targetMuscleIds" | "tagIds",
-    id: string,
-  ) => {
-    const current = (filters[key] as string[]) || [];
-    const next = current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id];
-    onChange({ ...filters, [key]: next });
-  };
-
-  const toggleDifficulty = (value: Difficulty) => {
-    const current = filters.difficulty;
+  const toggle = (facet: FilterFacet, value: number) => {
+    const current = filters[facet] as number[];
     const next = current.includes(value)
       ? current.filter((entry) => entry !== value)
       : [...current, value];
-    onChange({ ...filters, difficulty: next });
+    onChange({ ...filters, [facet]: next });
   };
 
   if (!open) {
     return null;
   }
-
-  const musclesList =
-    catalog.muscles && catalog.muscles.length > 0
-      ? catalog.muscles
-      : [
-          { id: "quadriceps", name: "Quadriceps", bodyPartId: "legs" },
-          { id: "glutes", name: "Glutes", bodyPartId: "legs" },
-          { id: "hamstrings", name: "Hamstrings", bodyPartId: "legs" },
-          { id: "pectorals", name: "Pectorals", bodyPartId: "chest" },
-          { id: "latissimus", name: "Lats", bodyPartId: "back" },
-          { id: "abs", name: "Abs", bodyPartId: "core" },
-          { id: "biceps", name: "Biceps", bodyPartId: "arms" },
-          { id: "triceps", name: "Triceps", bodyPartId: "arms" },
-          { id: "deltoids", name: "Deltoids", bodyPartId: "shoulders" },
-        ];
-
-  const tagsList =
-    catalog.tags && catalog.tags.length > 0
-      ? catalog.tags
-      : [
-          { id: "strength", name: "Strength" },
-          { id: "hypertrophy", name: "Hypertrophy" },
-          { id: "home-friendly", name: "Home Friendly" },
-          { id: "no-equipment", name: "No Equipment" },
-          { id: "warm-up", name: "Warm-up" },
-        ];
 
   return (
     <div className="filter-sheet">
@@ -108,54 +64,15 @@ export function FilterPanel({
         </header>
 
         <div className="filter-sheet__body">
-          <ChipGroup
-            label="Body area"
-            entries={catalog.bodyParts}
-            activeIds={filters.bodyPartIds}
-            onToggle={(id) => toggleList("bodyPartIds", id)}
-          />
-
-          <ChipGroup
-            label="Target Muscle"
-            entries={musclesList}
-            activeIds={filters.targetMuscleIds || []}
-            onToggle={(id) => toggleList("targetMuscleIds", id)}
-          />
-
-          <ChipGroup
-            label="Equipment"
-            entries={catalog.equipments}
-            activeIds={filters.equipmentIds}
-            onToggle={(id) => toggleList("equipmentIds", id)}
-          />
-
-          <fieldset className="chip-set">
-            <legend className="chip-set__label">Difficulty</legend>
-            <div className="chip-set__row">
-              {DIFFICULTY_ORDER.map((value) => {
-                const active = filters.difficulty.includes(value);
-                return (
-                  <button
-                    aria-pressed={active}
-                    className="chip"
-                    data-active={active || undefined}
-                    key={value}
-                    onClick={() => toggleDifficulty(value)}
-                    type="button"
-                  >
-                    {DIFFICULTY_LABEL[value]}
-                  </button>
-                );
-              })}
-            </div>
-          </fieldset>
-
-          <ChipGroup
-            label="Tag"
-            entries={tagsList}
-            activeIds={filters.tagIds}
-            onToggle={(id) => toggleList("tagIds", id)}
-          />
+          {FACET_ORDER.map((facet) => (
+            <ChipGroup
+              key={facet}
+              label={FILTER_FACETS[facet].label}
+              options={FILTER_FACETS[facet].options}
+              activeValues={filters[facet]}
+              onToggle={(value) => toggle(facet, value)}
+            />
+          ))}
 
           <label aria-label="AI form tracking only" className="switch-row">
             <div className="switch-row__text">
@@ -193,50 +110,28 @@ export function FilterPanel({
 
 interface ChipGroupProps {
   label: string;
-  entries: CatalogEntry[];
-  activeIds: string[];
-  onToggle: (id: string) => void;
+  options: readonly EnumOption<number>[];
+  activeValues: readonly number[];
+  onToggle: (value: number) => void;
 }
 
-function ChipGroup({ label, entries, activeIds, onToggle }: ChipGroupProps) {
+function ChipGroup({ label, options, activeValues, onToggle }: ChipGroupProps) {
   return (
     <fieldset className="chip-set">
       <legend className="chip-set__label">{label}</legend>
       <div className="chip-set__row">
-        {entries.map((entry) => {
-          const active = activeIds.some((id) => {
-            if (id === entry.id) {
-              return true;
-            }
-            const idLower = id.toLowerCase();
-            const eIdLower = entry.id.toLowerCase();
-            const eNameLower = entry.name.toLowerCase();
-
-            if (idLower === eIdLower || idLower === eNameLower) {
-              return true;
-            }
-
-            const synonyms = GROUP_SYNONYMS[idLower] || [idLower];
-            return synonyms.some(
-              (syn) =>
-                eIdLower === syn ||
-                eNameLower === syn ||
-                eIdLower.includes(syn) ||
-                syn.includes(eIdLower) ||
-                eNameLower.includes(syn) ||
-                syn.includes(eNameLower),
-            );
-          });
+        {options.map((option) => {
+          const active = activeValues.includes(option.value);
           return (
             <button
               aria-pressed={active}
               className="chip"
               data-active={active || undefined}
-              key={entry.id}
-              onClick={() => onToggle(entry.id)}
+              key={option.value}
+              onClick={() => onToggle(option.value)}
               type="button"
             >
-              {entry.name}
+              {option.label}
             </button>
           );
         })}

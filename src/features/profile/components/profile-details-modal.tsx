@@ -12,12 +12,24 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 
-import { useCatalogMetadata } from "@/features/exercise/model/catalog-metadata-store";
 import type { PreferredWorkoutTimesMap } from "@/features/onboarding/domain/workout-times-normalizer";
 import { WorkoutSchedulePicker } from "@/features/onboarding/ui/components/workout-schedule-picker";
 import { startAIAdjustment } from "@/features/roadmap/model/ai-adjustment-store";
+import {
+  Equipment,
+  JointRegion,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+import { browserTimeZone } from "@/shared/lib/browser-timezone";
 import { cn } from "@/shared/lib/cn";
+import {
+  EQUIPMENT_OPTIONS,
+  injurySeverityLabel,
+  MUSCLE_GROUP_OPTIONS,
+} from "@/shared/lib/taxonomy";
 
+import type { InjuryDraft } from "../model/injury";
+import { describeInjury, EMPTY_INJURY_DRAFT } from "../model/injury";
 import { calculateBMI } from "../model/profile.mapper";
 import type { InjuryItem, ProfileViewModel } from "../model/profile.types";
 import {
@@ -25,6 +37,7 @@ import {
   reportInjuryServerAction,
   updateProfileServerAction,
 } from "../server/profile-actions";
+import { InjuryFields } from "./injury-fields";
 
 export type ModalType =
   | "BODY_METRICS"
@@ -220,7 +233,7 @@ function BodyMetricsForm({
     };
 
     onSave(updatedPayload);
-    await updateProfileServerAction(updatedPayload);
+    await updateProfileServerAction(updatedPayload, browserTimeZone());
     startAIAdjustment({
       reason: "profile_updated",
       targetWeightKg: Number(data.targetWeightKg) || undefined,
@@ -355,10 +368,9 @@ function GoalsForm({
 }) {
   const [experience, setExperience] = useState(profile.user.experienceLevel || "Intermediate");
   const [goals, setGoals] = useState<string[]>(profile.healthMetrics.goals || ["Build Muscle"]);
-  const [muscles, setMuscles] = useState<string[]>(
-    profile.healthMetrics.preferredMuscleGroups || ["Chest", "Back", "Legs"],
+  const [muscles, setMuscles] = useState<MuscleGroup[]>(
+    profile.healthMetrics.preferredMuscleGroups,
   );
-  const { muscles: catalogMuscleGroups, isLoading: isLoadingMuscles } = useCatalogMetadata();
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -372,7 +384,7 @@ function GoalsForm({
     }
   };
 
-  const toggleMuscle = (item: string) => {
+  const toggleMuscle = (item: MuscleGroup) => {
     if (muscles.includes(item)) {
       setMuscles(muscles.filter((i) => i !== item));
     } else {
@@ -388,7 +400,7 @@ function GoalsForm({
     };
 
     onSave(updatedPayload);
-    await updateProfileServerAction(updatedPayload);
+    await updateProfileServerAction(updatedPayload, browserTimeZone());
     startAIAdjustment({
       reason: "profile_updated",
     });
@@ -471,34 +483,27 @@ function GoalsForm({
           <label className="block text-xs font-semibold text-[var(--color-text-muted)] mb-2.5">
             Preferred Muscle Groups (Optional)
           </label>
-          {isLoadingMuscles ? (
-            <div className="py-4 text-center text-xs text-[var(--color-text-muted)] animate-pulse">
-              Loading muscles catalog from server...
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {catalogMuscleGroups.map((mg) => {
-                const isSelected = muscles.includes(mg.id);
-                return (
-                  <button
-                    key={mg.id}
-                    type="button"
-                    onClick={() => toggleMuscle(mg.id)}
-                    className={cn(
-                      "flex items-center justify-center p-3 rounded-[var(--radius-input)] text-center transition-colors cursor-pointer min-h-[48px] border-[1.5px]",
-                      isSelected
-                        ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)]"
-                        : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
-                    )}
-                  >
-                    <span className="text-xs font-semibold">
-                      {mg.name === "Cardiovascular System" ? "Cardio & Stamina" : mg.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {MUSCLE_GROUP_OPTIONS.map((mg) => {
+              const isSelected = muscles.includes(mg.value);
+              return (
+                <button
+                  key={mg.value}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => toggleMuscle(mg.value)}
+                  className={cn(
+                    "flex items-center justify-center p-3 rounded-[var(--radius-input)] text-center transition-colors cursor-pointer min-h-[48px] border-[1.5px]",
+                    isSelected
+                      ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)]"
+                      : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
+                  )}
+                >
+                  <span className="text-xs font-semibold">{mg.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -530,16 +535,16 @@ function EquipmentForm({
   onSave: (updated: Partial<ProfileViewModel>) => void;
   onClose: () => void;
 }) {
-  const [equipment, setEquipment] = useState<string[]>(
-    profile.settings.availableEquipment && profile.settings.availableEquipment.length > 0
+  // BODY_ONLY is always available (spec §8.3), so it is the safe starting pick.
+  const [equipment, setEquipment] = useState<Equipment[]>(
+    profile.settings.availableEquipment.length > 0
       ? profile.settings.availableEquipment
-      : ["Full Gym"],
+      : [Equipment.BODY_ONLY],
   );
-  const { equipments: catalogEquipments, isLoading: isLoadingEquipments } = useCatalogMetadata();
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const toggleEquipment = (item: string) => {
+  const toggleEquipment = (item: Equipment) => {
     if (equipment.includes(item)) {
       if (equipment.length > 1) {
         setEquipment(equipment.filter((i) => i !== item));
@@ -556,7 +561,7 @@ function EquipmentForm({
     };
 
     onSave(updatedPayload);
-    await updateProfileServerAction(updatedPayload);
+    await updateProfileServerAction(updatedPayload, browserTimeZone());
     startAIAdjustment({
       reason: "profile_updated",
     });
@@ -581,22 +586,16 @@ function EquipmentForm({
         </div>
       </div>
 
-      {isLoadingEquipments ? (
-        <div className="py-8 text-center text-xs font-semibold text-[var(--color-text-muted)] animate-pulse">
-          Loading equipment catalog from server...
-        </div>
-      ) : (
-        <div className="space-y-2.5 mb-8">
-          {catalogEquipments.map((item) => (
-            <SelectableTile
-              key={item.id}
-              label={item.name}
-              selected={equipment.includes(item.id)}
-              onClick={() => toggleEquipment(item.id)}
-            />
-          ))}
-        </div>
-      )}
+      <div className="space-y-2.5 mb-8">
+        {EQUIPMENT_OPTIONS.map((item) => (
+          <SelectableTile
+            key={item.value}
+            label={item.label}
+            selected={equipment.includes(item.value)}
+            onClick={() => toggleEquipment(item.value)}
+          />
+        ))}
+      </div>
 
       <button
         onClick={() => setShowConfirm(true)}
@@ -642,7 +641,7 @@ function PersonalInfoForm({
     };
 
     onSave(updatedPayload);
-    await updateProfileServerAction(updatedPayload);
+    await updateProfileServerAction(updatedPayload, browserTimeZone());
     startAIAdjustment({
       reason: "profile_updated",
     });
@@ -759,67 +758,35 @@ function InjuryHistoryForm({
   const [showReport, setShowReport] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmReport, setShowConfirmReport] = useState(false);
-  const [categoryFilter, setCategoryFilter] = useState<
-    "All" | "Upper Body" | "Lower Body" | "Core & Joints"
-  >("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const { muscles: dynamicDbMuscles, bodyParts: dynamicDbBodyParts } = useCatalogMetadata();
-  const [newInjury, setNewInjury] = useState({
-    muscleGroup: "",
-    severity: "Mild",
-    notes: "",
-  });
+  const [newInjury, setNewInjury] = useState<InjuryDraft>(EMPTY_INJURY_DRAFT);
+  const [reportError, setReportError] = useState<string | null>(null);
   const [confirmRecoverId, setConfirmRecoverId] = useState<string | null>(null);
 
-  const bodyPartNameById = new Map(dynamicDbBodyParts.map((bp) => [bp.id, bp.name]));
-  const resolveCategoryFromBodyPart = (
-    bodyPartId?: string,
-  ): "Upper Body" | "Lower Body" | "Core & Joints" => {
-    const bpName = (bodyPartId ? bodyPartNameById.get(bodyPartId) || bodyPartId : "").toLowerCase();
-    if (bpName.includes("leg") || bpName.includes("lower")) return "Lower Body";
-    if (bpName.includes("waist") || bpName.includes("core") || bpName.includes("abs")) {
-      return "Core & Joints";
-    }
-    return "Upper Body";
-  };
-
-  const anatomyAreas = dynamicDbMuscles.map((dbM) => ({
-    id: dbM.id,
-    name: dbM.name,
-    category: resolveCategoryFromBodyPart(dbM.bodyPartId),
-    hint: (dbM.bodyPartId && bodyPartNameById.get(dbM.bodyPartId)) || "Muscle Group",
-  }));
-
-  const selectedMuscleId = newInjury.muscleGroup || anatomyAreas[0]?.id || "";
-  const selectedMuscleName =
-    anatomyAreas.find((a) => a.id === selectedMuscleId)?.name || selectedMuscleId;
-
-  const filteredMuscles = anatomyAreas.filter((m) => {
-    const matchesCategory = categoryFilter === "All" || m.category === categoryFilter;
-    const matchesSearch =
-      !searchQuery.trim() ||
-      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.hint.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const hasRegion = newInjury.region !== JointRegion.UNSPECIFIED;
+  const newInjuryLabel = describeInjury(newInjury);
 
   const handleSubmitInjury = async () => {
-    if (!selectedMuscleId) return;
+    if (!hasRegion) {
+      return;
+    }
     setIsSubmitting(true);
     setShowConfirmReport(false);
+    setReportError(null);
     try {
-      const notesPayload = newInjury.notes.trim() || "Reported via profile";
-      const res = await reportInjuryServerAction({
-        muscleGroup: selectedMuscleId,
-        severity: newInjury.severity,
-        notes: notesPayload,
-      });
+      const draft = { ...newInjury, notes: newInjury.notes.trim() || "Reported via profile" };
+      const res = await reportInjuryServerAction(draft);
+      if (!res.success) {
+        setReportError(res.message || "Failed to report injury");
+        return;
+      }
 
       const item: InjuryItem = {
         id: res.injuryId || Date.now().toString(),
-        muscleGroup: selectedMuscleName,
-        severity: newInjury.severity,
-        notes: notesPayload,
+        region: draft.region,
+        muscle: draft.muscle,
+        side: draft.side,
+        severity: draft.severity,
+        notes: draft.notes,
         isRecovered: false,
         reportedAt: new Date().toISOString().split("T")[0],
       };
@@ -828,12 +795,10 @@ function InjuryHistoryForm({
       onSave({ injuries: updated });
       startAIAdjustment({
         reason: "injury_reported",
-        muscleGroup: selectedMuscleName,
+        muscleGroup: newInjuryLabel,
       });
       setShowReport(false);
-      setNewInjury({ muscleGroup: "", severity: "Mild", notes: "" });
-    } catch (error) {
-      console.error("Failed to submit injury report:", error);
+      setNewInjury(EMPTY_INJURY_DRAFT);
     } finally {
       setIsSubmitting(false);
     }
@@ -854,7 +819,7 @@ function InjuryHistoryForm({
     onSave({ injuries: updated });
     startAIAdjustment({
       reason: "injury_recovered",
-      muscleGroup: targetInj?.muscleGroup,
+      muscleGroup: targetInj ? describeInjury(targetInj) : undefined,
     });
     setConfirmRecoverId(null);
   };
@@ -889,118 +854,7 @@ function InjuryHistoryForm({
         <div className="p-4 rounded-[var(--radius-card)] mb-6 border border-[var(--color-border)] bg-[var(--color-surface-subtle)] space-y-4">
           <h3 className="text-xs font-bold text-[var(--color-text)]">Report New Injury</h3>
           <div className="space-y-3">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-[var(--color-text-muted)]">
-                  Muscle Group & Joint Area
-                </label>
-                <span className="text-[11px] text-[var(--color-action)] font-semibold">
-                  Selected: {newInjury.muscleGroup}
-                </span>
-              </div>
-
-              {/* Category Filter Chips */}
-              <div className="flex flex-wrap gap-1.5">
-                {(["All", "Upper Body", "Lower Body", "Core & Joints"] as const).map((cat) => {
-                  const isCatSelected = categoryFilter === cat;
-                  return (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setCategoryFilter(cat)}
-                      className={cn(
-                        "px-2.5 py-1 text-[11px] font-semibold rounded-[var(--radius-input)] transition-colors cursor-pointer",
-                        isCatSelected
-                          ? "bg-[var(--color-action)] text-[var(--color-action-contrast)]"
-                          : "bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]",
-                      )}
-                    >
-                      {cat}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Search Bar */}
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search muscle or joint (e.g. Biceps, Hamstrings, Elbow...)"
-                className="w-full h-9 px-3 text-xs rounded-[var(--radius-input)] border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] font-body outline-none focus:border-[var(--color-action)]"
-              />
-
-              {/* Muscle Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-48 overflow-y-auto pr-1">
-                {filteredMuscles.map((m) => {
-                  const isSelected = selectedMuscleId === m.id;
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setNewInjury({ ...newInjury, muscleGroup: m.id })}
-                      className={cn(
-                        "p-2 text-left rounded-[var(--radius-input)] transition-all cursor-pointer border-[1.5px]",
-                        isSelected
-                          ? "border-[var(--color-action)] bg-[var(--color-action-soft)]"
-                          : "border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)]",
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "text-xs font-bold",
-                          isSelected ? "text-[var(--color-action)]" : "text-[var(--color-text)]",
-                        )}
-                      >
-                        {m.name}
-                      </div>
-                      <div className="text-[10px] text-[var(--color-text-muted)] truncate">
-                        {m.hint}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[var(--color-text-muted)]">
-                Severity & AI Protocol
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {[
-                  { id: "Mild", label: "Mild", desc: "Reduce load & sets by 30%" },
-                  { id: "Moderate", label: "Moderate", desc: "Substitute compound with isolation" },
-                  { id: "Severe", label: "Severe", desc: "Complete rest & exclude area" },
-                ].map((s) => {
-                  const isSelected = newInjury.severity === s.id;
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => setNewInjury({ ...newInjury, severity: s.id })}
-                      className={cn(
-                        "p-2.5 text-left rounded-[var(--radius-input)] text-xs transition-all cursor-pointer border-[1.5px]",
-                        isSelected
-                          ? "border-[var(--color-danger)] bg-[var(--color-danger-soft)]"
-                          : "border-[var(--color-border)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-subtle)]",
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "font-bold",
-                          isSelected ? "text-[var(--color-danger)]" : "text-[var(--color-text)]",
-                        )}
-                      >
-                        {s.label}
-                      </div>
-                      <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
-                        {s.desc}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            <InjuryFields value={newInjury} onChange={setNewInjury} />
             <div className="space-y-1">
               <label className="text-xs font-medium text-[var(--color-text-muted)]">Notes</label>
               <input
@@ -1020,12 +874,17 @@ function InjuryHistoryForm({
               <button
                 type="button"
                 onClick={() => setShowConfirmReport(true)}
-                disabled={isSubmitting}
+                disabled={isSubmitting || !hasRegion}
                 className="px-3.5 py-1.5 text-xs font-bold text-[var(--color-action-contrast)] bg-[var(--color-danger)] hover:bg-[color-mix(in_srgb,var(--color-danger)_90%,black)] disabled:opacity-50 rounded-[var(--radius-input)] cursor-pointer"
               >
                 {isSubmitting ? "Submitting..." : "Submit Report"}
               </button>
             </div>
+            {reportError ? (
+              <p className="text-xs font-semibold text-[var(--color-danger)]" role="alert">
+                {reportError}
+              </p>
+            ) : null}
           </div>
         </div>
       )}
@@ -1059,7 +918,7 @@ function InjuryHistoryForm({
                         : "text-[var(--color-danger)]",
                     )}
                   >
-                    {injury.muscleGroup}
+                    {describeInjury(injury)}
                   </span>
                   <span
                     className={cn(
@@ -1069,7 +928,7 @@ function InjuryHistoryForm({
                         : "bg-[var(--color-surface)] text-[var(--color-danger)] border border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)]",
                     )}
                   >
-                    {injury.severity}
+                    {injurySeverityLabel(injury.severity)}
                   </span>
                 </div>
                 <p
@@ -1100,7 +959,7 @@ function InjuryHistoryForm({
       {showConfirmReport && (
         <ConfirmDialog
           title="Confirm Injury Report & Recalibrate"
-          message={`Reporting an active injury on your ${newInjury.muscleGroup} will instruct AI Coach to immediately adjust and remove affected muscle exercises from your upcoming schedule. Past workouts stay untouched.`}
+          message={`Reporting an active injury on your ${newInjuryLabel} will instruct AI Coach to immediately adjust and remove affected muscle exercises from your upcoming schedule. Past workouts stay untouched.`}
           confirmText="Confirm & Recalibrate"
           onConfirm={handleSubmitInjury}
           onCancel={() => setShowConfirmReport(false)}

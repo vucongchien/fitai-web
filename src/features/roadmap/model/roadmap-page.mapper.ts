@@ -1,3 +1,4 @@
+import { describeInjury } from "@/features/profile/model/injury";
 import type {
   Roadmap,
   SessionPlan,
@@ -5,12 +6,16 @@ import type {
 } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import {
   RoadmapPhase,
+  SessionKind,
+  SessionPlanSource,
   SessionPlanStatus,
 } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import type { GetInjuryHistoryResponse } from "@/shared/api/gen/contracts/supporting/profile/v1/message/profile_messages_pb";
+import { muscleGroupCodeLabel, parseMuscleGroupCode } from "@/shared/lib/taxonomy";
 
 import type {
   ContextItem,
+  PrintExerciseItem,
   RoadmapPageData,
   SchedulePageData,
   ScheduleWeek,
@@ -99,7 +104,8 @@ export function mapSessionStatus(status: SessionPlanStatus, isNext: boolean): Se
       return "skipped";
     }
     case SessionPlanStatus.ABORTED: {
-      return "skipped";
+      // Stopped mid-workout (pain, out of time): it was started, not skipped.
+      return "stopped";
     }
     case SessionPlanStatus.PENDING: {
       return isNext ? "next" : "planned";
@@ -108,6 +114,66 @@ export function mapSessionStatus(status: SessionPlanStatus, isNext: boolean): Se
       return "rest";
     }
   }
+}
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Session targets are MuscleGroup short codes (e.g. `CHEST`); other tokens are legacy labels. */
+export function formatMuscleLabel(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return "";
+  }
+  if (parseMuscleGroupCode(trimmed) !== null) {
+    return muscleGroupCodeLabel(trimmed);
+  }
+  if (trimmed.toLowerCase() === "warmup_cooldown") {
+    return "Warm-Up & Cool-Down";
+  }
+  if (UUID_PATTERN.test(trimmed)) {
+    return "Workout Session";
+  }
+  return trimmed.replaceAll("_", " & ").replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+function resolveTargetMuscles(rawMuscles: string[] | undefined): string[] {
+  if (!rawMuscles || rawMuscles.length === 0) {
+    return [];
+  }
+  const seen = new Set<string>();
+  const resolved: string[] = [];
+  for (const raw of rawMuscles) {
+    const label = formatMuscleLabel(raw);
+    if (label && !seen.has(label)) {
+      seen.add(label);
+      resolved.push(label);
+    }
+  }
+  return resolved;
+}
+
+function mapPrescriptionExercises(prescription?: SessionPlan["prescription"]): PrintExerciseItem[] {
+  if (!prescription) {
+    return [];
+  }
+  const mapGroup = (
+    items: NonNullable<SessionPlan["prescription"]>["mainExercises"] | undefined,
+    phase: PrintExerciseItem["phase"],
+  ): PrintExerciseItem[] =>
+    (items || []).map((ex) => ({
+      phase,
+      name: ex.exerciseName,
+      sets: ex.targetSets,
+      reps: ex.targetReps,
+      restSec: ex.restSetSec || 60,
+      notes: ex.notes?.trim() || undefined,
+    }));
+
+  return [
+    ...mapGroup(prescription.warmUps, "warmup"),
+    ...mapGroup(prescription.mainExercises, "main"),
+    ...mapGroup(prescription.coolDowns, "cooldown"),
+  ];
 }
 
 export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
@@ -194,17 +260,20 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
         const isRest = sp.targetMuscleGroups?.length === 0;
         const isNext = sp.sessionPlanId === targetNextSessionId;
 
-        const duration = sp.prescription
-          ? Math.round(
-              [
-                ...(sp.prescription.warmUps || []),
-                ...(sp.prescription.mainExercises || []),
-                ...(sp.prescription.coolDowns || []),
-              ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-            ) || 45
-          : isRest
-            ? 20
-            : 40;
+        const duration =
+          sp.estimatedDurationMinutes && sp.estimatedDurationMinutes > 0
+            ? sp.estimatedDurationMinutes
+            : sp.prescription
+              ? Math.round(
+                  [
+                    ...(sp.prescription.warmUps || []),
+                    ...(sp.prescription.mainExercises || []),
+                    ...(sp.prescription.coolDowns || []),
+                  ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
+                ) || 45
+              : isRest
+                ? 20
+                : 40;
 
         const reasoning = sp.reasoning?.trim() || "";
         const isAdapted = Boolean(
@@ -219,18 +288,21 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
             reasoning.toLowerCase().includes("recalibrat")),
         );
 
+        const muscles = resolveTargetMuscles(sp.targetMuscleGroups);
         currentWeekSessions.push({
           id: sp.sessionPlanId,
           day: dayStr,
           date: dateStr,
-          title: sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
+          title: muscles.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
           time: sp.slotTime || "18:30",
           duration,
           targetRpe: activeWeekPlan.targetRpe || 7,
-          muscles: sp.targetMuscleGroups || [],
+          muscles,
           status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
           reasoning: reasoning || undefined,
           isAdapted,
+          isRecovery: sp.kind === SessionKind.RECOVERY,
+          exercises: mapPrescriptionExercises(sp.prescription),
         });
       }
     }
@@ -243,8 +315,8 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
     {
       id: "sessions-count",
       iconName: "calendar-range",
-      title: `${currentWeekSessions.filter((s) => s.status !== "rest").length} strength sessions`,
-      description: "Plus scheduled guided recovery days",
+      title: `${countPlanned(activeWeekPlan, false)} strength sessions`,
+      description: recoveryLine(countPlanned(activeWeekPlan, true)),
     },
     {
       id: "effort-target",
@@ -254,9 +326,12 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
     },
   ];
 
+  const allWeeks = mapScheduleWeeks(roadmapRes, activeWeekNumber, weeks);
+
   return {
     activeWeek: activeWeekNumber,
     weeks,
+    allWeeks,
     currentWeekSessions,
     currentWeekLabel: `Week ${activeWeekNumber} schedule`,
     currentWeekDateRange,
@@ -264,11 +339,12 @@ export function adaptRoadmapPageData(roadmapRes: Roadmap): RoadmapPageData {
   };
 }
 
-export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
-  const roadmapData = adaptRoadmapPageData(roadmap);
-  const { activeWeek } = roadmapData;
-
-  const weeks: ScheduleWeek[] = (roadmap.weekPlans || []).map((wp) => {
+function mapScheduleWeeks(
+  roadmap: Roadmap,
+  activeWeek: number,
+  weekSummaries: WeekSummary[],
+): ScheduleWeek[] {
+  return (roadmap.weekPlans || []).map((wp) => {
     const dateRange = formatWeekDateRange(wp.startDate as any);
 
     const sessions: SessionSummary[] = [];
@@ -325,25 +401,27 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
               reasoning.toLowerCase().includes("recalibrat")),
           );
 
+          const muscles = resolveTargetMuscles(sp.targetMuscleGroups);
           sessions.push({
             id: sp.sessionPlanId,
             day: dayStr,
             date: dateStr,
-            title:
-              sp.targetMuscleGroups?.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
+            title: muscles.join(", ") || (isRest ? "Recovery Day" : "Workout Session"),
             time: sp.slotTime || "18:30",
             duration,
-            targetRpe: wp.targetRpe || 7, //Hard code: fallback default RPE of 7 if weekly plan doesn't specify target RPE
-            muscles: sp.targetMuscleGroups || [],
+            targetRpe: wp.targetRpe || 7,
+            muscles,
             status: isRest ? "rest" : mapSessionStatus(sp.status, isNext),
             reasoning: reasoning || undefined,
             isAdapted,
+            isRecovery: sp.kind === SessionKind.RECOVERY,
+            exercises: mapPrescriptionExercises(sp.prescription),
           });
         }
       }
     }
 
-    const weekSummary = roadmapData.weeks.find((w) => w.number === wp.weekNumber);
+    const weekSummary = weekSummaries.find((w) => w.number === wp.weekNumber);
     const state = weekSummary ? weekSummary.state : "planned";
 
     return {
@@ -354,11 +432,48 @@ export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
       state,
     };
   });
+}
 
+export function adaptSchedulePageData(roadmap: Roadmap): SchedulePageData {
+  const roadmapData = adaptRoadmapPageData(roadmap);
   return {
-    activeWeek,
-    weeks,
+    activeWeek: roadmapData.activeWeek,
+    weeks: roadmapData.allWeeks ?? [],
   };
+}
+
+/** "3 × 10 · 15 kg", "1 × 60s": the coach's load is what progression changes, so it is shown. */
+export function formatPrescriptionLine(ex: {
+  targetSets: number;
+  targetReps: number;
+  durationSeconds?: number;
+  targetWeight?: number;
+}): string {
+  if ((ex.durationSeconds ?? 0) > 0 && !(ex.targetReps > 0)) {
+    return `${ex.targetSets} × ${ex.durationSeconds}s`;
+  }
+  const load = (ex.targetWeight ?? 0) > 0 ? ` · ${ex.targetWeight} kg` : "";
+  return `${ex.targetSets} × ${ex.targetReps}${load}`;
+}
+
+/** Coach-scheduled sessions of the week, ad-hoc extras excluded. */
+export function countPlanned(week: WeekPlan | undefined, recovery: boolean): number {
+  let n = 0;
+  for (const dp of week?.dayPlans || []) {
+    for (const sp of dp.sessionPlans || []) {
+      const scheduled =
+        sp.source === SessionPlanSource.COACH_SCHEDULED ||
+        sp.source === SessionPlanSource.UNSPECIFIED;
+      if (scheduled && (sp.kind === SessionKind.RECOVERY) === recovery) n++;
+    }
+  }
+  return n;
+}
+
+/** The recovery note under the week's session count; none when the week has none. */
+export function recoveryLine(recoverySessions: number): string {
+  if (recoverySessions === 0) return "Rest days between sessions";
+  return `Plus ${recoverySessions} guided recovery ${recoverySessions === 1 ? "session" : "sessions"}`;
 }
 
 export function adaptSessionPlanPageData(
@@ -367,15 +482,18 @@ export function adaptSessionPlanPageData(
 ): SessionPlanPageData {
   const { dayStr, dateStr } = formatDate(sessionRes.scheduledDate as any);
 
-  const duration = sessionRes.prescription
-    ? Math.round(
-        [
-          ...(sessionRes.prescription.warmUps || []),
-          ...(sessionRes.prescription.mainExercises || []),
-          ...(sessionRes.prescription.coolDowns || []),
-        ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
-      ) || 45 //Hard code: default workout duration
-    : 45; //Hard code: fallback default duration
+  const duration =
+    sessionRes.estimatedDurationMinutes && sessionRes.estimatedDurationMinutes > 0
+      ? sessionRes.estimatedDurationMinutes
+      : sessionRes.prescription
+        ? Math.round(
+            [
+              ...(sessionRes.prescription.warmUps || []),
+              ...(sessionRes.prescription.mainExercises || []),
+              ...(sessionRes.prescription.coolDowns || []),
+            ].reduce((acc, curr) => acc + (curr.durationSeconds || 0), 0) / 60,
+          ) || 45 //Hard code: default workout duration
+        : 45; //Hard code: fallback default duration
 
   const exercises = sessionRes.prescription
     ? [
@@ -385,7 +503,7 @@ export function adaptSessionPlanPageData(
       ].map((ex) => ({
         exerciseId: ex.exerciseId,
         name: ex.exerciseName,
-        prescription: `${ex.targetSets} × ${ex.targetReps}`,
+        prescription: formatPrescriptionLine(ex),
         rest: `${ex.restSetSec || 60} sec`, //Hard code: fallback rest set time
         notes: ex.notes || "Maintain controlled range of motion.", //Hard code: default instructions note
       }))
@@ -398,13 +516,15 @@ export function adaptSessionPlanPageData(
     variant: (hasInjury ? "warning" : "safe") as "safe" | "warning",
     title: hasInjury ? "Injury Warning" : "Ready to train",
     description: hasInjury
-      ? `Active constraints: ${activeInjuries.map((inj) => inj.muscleGroup).join(", ")}. Please proceed with caution.`
+      ? `Active constraints: ${activeInjuries.map(describeInjury).join(", ")}. Please proceed with caution.`
       : "No active injury constraints affect today's exercise selection.",
   };
 
+  const resolvedMuscles = resolveTargetMuscles(sessionRes.targetMuscleGroups);
+
   return {
     sessionPlanId: sessionRes.sessionPlanId,
-    title: sessionRes.targetMuscleGroups?.join(", ") || "Workout Session",
+    title: resolvedMuscles.join(", ") || "Workout Session",
     day: dayStr,
     date: dateStr,
     duration,

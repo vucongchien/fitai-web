@@ -53,6 +53,11 @@ vi.mock("@connectrpc/connect", () => ({
 }));
 
 import { getProgressDashboardData } from "@/features/progress/server/get-progress-dashboard-data";
+import {
+  InjurySeverity,
+  JointRegion,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 describe("getProgressDashboardData", () => {
   const originalRpcUrl = process.env.FITAI_RPC_URL;
@@ -103,7 +108,7 @@ describe("getProgressDashboardData", () => {
       bodyFatPercent: 18,
       targetWeightKg: 70,
       targetBodyFatPercent: 15,
-      preferredMuscleGroups: ["CHEST", "BACK"],
+      preferredMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.LATS],
       preferredWorkoutTimes: ["07:00", "18:00", "19:00", "08:00"],
     });
     mockGetBodyMetricsHistory.mockResolvedValue({
@@ -120,8 +125,14 @@ describe("getProgressDashboardData", () => {
     });
     mockGetInjuryHistory.mockResolvedValue({
       injuries: [
-        { muscleGroup: "SHOULDERS", severity: "MILD", isRecovered: false },
-        { muscleGroup: "KNEE", severity: "MILD", isRecovered: true },
+        {
+          region: JointRegion.SHOULDER,
+          muscle: MuscleGroup.SHOULDERS,
+          severity: InjurySeverity.MILD,
+          isRecovered: false,
+        },
+        { region: JointRegion.KNEE, severity: InjurySeverity.MODERATE, isRecovered: false },
+        { region: JointRegion.ELBOW, severity: InjurySeverity.MILD, isRecovered: true },
       ],
     });
     mockGetWorkoutHistory.mockResolvedValue({
@@ -143,7 +154,11 @@ describe("getProgressDashboardData", () => {
     expect(result.currentWeightKg).toBe(73.5);
     expect(result.heightCm).toBe(175);
     expect(result.photos).toHaveLength(1);
-    expect(result.activeInjuries).toEqual([{ muscleGroup: "SHOULDERS", severity: "MILD" }]);
+    expect(result.activeInjuries).toEqual([
+      { area: "Shoulders", severity: "Mild" },
+      { area: "Knee", severity: "Moderate" },
+    ]);
+    expect(result.preferredMuscleGroups).toEqual(["Chest", "Lats"]);
     expect(result.totalWorkouts).toBe(2);
     expect(result.totalVolumeKg).toBe(4200);
     expect(result.weeklyGoal).toEqual({ completed: 2, target: 4, percentage: 50 });

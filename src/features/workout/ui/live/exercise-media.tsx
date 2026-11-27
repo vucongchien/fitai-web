@@ -77,14 +77,14 @@ export function ExerciseMedia({
           playsInline
           src={parsedVideo.directUrl}
         />
-      ) : exercise.thumbnailUrl ? (
+      ) : exercise.images[0] ? (
         <Image
           alt={exercise.name}
           className="live-media__poster"
           fill
           priority
           sizes="(max-width: 640px) 100vw, 400px"
-          src={exercise.thumbnailUrl}
+          src={exercise.images[0]}
         />
       ) : (
         <div aria-hidden="true" className="live-media__fallback">

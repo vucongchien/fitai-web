@@ -6,13 +6,15 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
+import type { InjuryDetails } from "./injury_reported_pb";
+import { file_contracts_supporting_profile_v1_event_injury_reported } from "./injury_reported_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/profile/v1/event/profile_completed.proto.
  */
 export const file_contracts_supporting_profile_v1_event_profile_completed: GenFile = /*@__PURE__*/
-  fileDesc("Cj1jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L3Byb2ZpbGVfY29tcGxldGVkLnByb3RvEiVjb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLmV2ZW50IlYKEUJpb2xvZ2ljYWxNZXRyaWNzEhEKCXdlaWdodF9rZxgBIAEoAhIRCgloZWlnaHRfY20YAiABKAISCwoDYWdlGAMgASgFEg4KBmdlbmRlchgEIAEoCSL4AQoQUHJvZmlsZUNvbXBsZXRlZBIPCgd1c2VyX2lkGAEgASgJElQKEmJpb2xvZ2ljYWxfbWV0cmljcxgCIAEoCzI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuQmlvbG9naWNhbE1ldHJpY3MSDQoFZ29hbHMYAyADKAkSGwoTcmVnaXN0ZXJlZF9pbmp1cmllcxgEIAMoCRIfChdwcmVmZXJyZWRfd29ya291dF90aW1lcxgFIAMoCRIwCgxjb21wbGV0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQmtaaWdpdGh1Yi5jb20vdmlldGh1bmcyMTMvZ3ltLWNvbXBhbmlvbi9pbnRlcm5hbC9nZW4vZ28vY29udHJhY3RzL3N1cHBvcnRpbmcvcHJvZmlsZS92MS9ldmVudDtwcm9maWxldjFldmVudGIGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("Cj1jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL2V2ZW50L3Byb2ZpbGVfY29tcGxldGVkLnByb3RvEiVjb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLmV2ZW50IlYKEUJpb2xvZ2ljYWxNZXRyaWNzEhEKCXdlaWdodF9rZxgBIAEoAhIRCgloZWlnaHRfY20YAiABKAISCwoDYWdlGAMgASgFEg4KBmdlbmRlchgEIAEoCSK+AgoQUHJvZmlsZUNvbXBsZXRlZBIPCgd1c2VyX2lkGAEgASgJElQKEmJpb2xvZ2ljYWxfbWV0cmljcxgCIAEoCzI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuQmlvbG9naWNhbE1ldHJpY3MSDQoFZ29hbHMYAyADKAkSHwoXcHJlZmVycmVkX3dvcmtvdXRfdGltZXMYBSADKAkSMAoMY29tcGxldGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBJGCghpbmp1cmllcxgHIAMoCzI0LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEuZXZlbnQuSW5qdXJ5RGV0YWlsc0oECAQQBVITcmVnaXN0ZXJlZF9pbmp1cmllc0JrWmlnaXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9zdXBwb3J0aW5nL3Byb2ZpbGUvdjEvZXZlbnQ7cHJvZmlsZXYxZXZlbnRiBnByb3RvMw", [file_google_protobuf_timestamp, file_contracts_supporting_profile_v1_event_injury_reported]);
 
 /**
  * @generated from message contracts.supporting.profile.v1.event.BiologicalMetrics
@@ -66,11 +68,6 @@ export type ProfileCompleted = Message<"contracts.supporting.profile.v1.event.Pr
   goals: string[];
 
   /**
-   * @generated from field: repeated string registered_injuries = 4;
-   */
-  registeredInjuries: string[];
-
-  /**
    * @generated from field: repeated string preferred_workout_times = 5;
    */
   preferredWorkoutTimes: string[];
@@ -79,6 +76,11 @@ export type ProfileCompleted = Message<"contracts.supporting.profile.v1.event.Pr
    * @generated from field: google.protobuf.Timestamp completed_at = 6;
    */
   completedAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: repeated contracts.supporting.profile.v1.event.InjuryDetails injuries = 7;
+   */
+  injuries: InjuryDetails[];
 };
 
 /**

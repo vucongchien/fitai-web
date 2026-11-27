@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { RestScreen } from "@/features/workout/ui/live/rest-screen";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 type RestScreenProps = ComponentProps<typeof RestScreen>;
 
@@ -13,7 +14,9 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
   return {
     commonMistakes: [],
     durationSeconds: 0,
-    equipmentId: "eq-bodyweight",
+    equipment: Equipment.BODY_ONLY,
+    instructions: [],
+    images: [],
     exerciseId: "ex-russian-twist",
     formCues: [],
     hasAiSupported: true,

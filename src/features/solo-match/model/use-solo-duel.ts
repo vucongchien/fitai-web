@@ -317,7 +317,7 @@ export function useSoloDuel({
           exerciseId: match.exerciseId || "push_up",
           localRulesUrl: "",
           onnxDetectorUrl: "",
-          onnxSkeletonUrl: onnxSkeletonUrl || "/models/yolo11n-pose.onnx",
+          onnxSkeletonUrl: onnxSkeletonUrl || "/models/yolo26n-pose.onnx",
           recommendedCameraAngle: recommendedCameraAngle || "side",
           rep_type: match.challengeType === "DURATION" ? "timed" : "rep",
           romRange: {

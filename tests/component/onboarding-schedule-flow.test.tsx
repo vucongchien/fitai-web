@@ -3,27 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as onboardingActions from "@/features/onboarding/server/onboarding-actions";
 import { OnboardingFlow } from "@/features/onboarding/ui/onboarding-flow";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 // Mock next/navigation
 const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: mockPush,
-  }),
-}));
-
-// Mock catalog server action
-vi.mock("@/features/exercise/server/catalog-actions", () => ({
-  getCatalogMetadataServerAction: vi.fn().mockResolvedValue({
-    success: true,
-    equipments: [
-      { id: "eq-1", name: "Dumbbells" },
-      { id: "eq-2", name: "Bodyweight" },
-    ],
-    muscles: [
-      { id: "m-1", name: "Chest" },
-      { id: "m-2", name: "Back" },
-    ],
   }),
 }));
 
@@ -82,7 +68,7 @@ describe("OnboardingFlow Component & Schedule State Lifecycle", () => {
 
     // STEP 4: Training Setup
     expect(await screen.findByText(/build around what you have/i)).toBeInTheDocument();
-    const dumbbellBtn = screen.getByRole("button", { name: /dumbbells/i });
+    const dumbbellBtn = screen.getByRole("button", { name: /^dumbbell$/i });
     fireEvent.click(dumbbellBtn);
     clickNext();
 
@@ -106,6 +92,7 @@ describe("OnboardingFlow Component & Schedule State Lifecycle", () => {
     // Kiểm tra payload gửi vào Server Action
     const submittedFormValues = saveActionSpy.mock.calls[0][0];
     const preferredTimes = submittedFormValues.preferredWorkoutTimes;
+    expect(submittedFormValues.equipment).toEqual([Equipment.DUMBBELL]);
 
     // Phải chứa cả 5 ngày (mon, tue, wed, thu, fri)
     expect(preferredTimes).toBeDefined();

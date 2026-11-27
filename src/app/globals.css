@@ -1071,7 +1071,8 @@ a.week-route__row:hover {
   border-color: var(--color-recovery, #10b981);
 }
 
-.week-route__item--skipped .week-route__marker {
+.week-route__item--skipped .week-route__marker,
+.week-route__item--stopped .week-route__marker {
   color: var(--color-text-muted);
   background: var(--color-surface-subtle);
   border-color: var(--color-border-strong);
@@ -4238,6 +4239,20 @@ a.week-route__row:hover {
   color: var(--color-text-muted);
 }
 
+.detail-thumb__frames {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+.detail-thumb__frame {
+  position: relative;
+  overflow: hidden;
+}
+
 .detail-thumb__ai {
   top: 0.75rem;
   right: 0.75rem;
@@ -7298,6 +7313,19 @@ a.week-route__row:hover {
   text-align: left;
 }
 
+fieldset.pain-dialog__field {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.pain-dialog__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.pain-dialog__field legend,
 .pain-dialog__field label {
   display: block;
   margin-bottom: var(--space-2);

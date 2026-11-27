@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import type { LiveExercise } from "@/features/workout/model/live-session.types";
 import { ActiveExerciseScreen } from "@/features/workout/ui/live/active-exercise-screen";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 type ActiveScreenProps = ComponentProps<typeof ActiveExerciseScreen>;
 
@@ -14,11 +15,12 @@ function makeExercise(overrides: Partial<LiveExercise> = {}): LiveExercise {
     breathingCue: "Breathe slowly and consistently throughout the exercise.",
     commonMistakes: ["Avoid letting your hips drop or rise too high."],
     durationSeconds: 30,
-    equipmentId: "eq-bodyweight",
+    equipment: Equipment.BODY_ONLY,
+    images: [],
     exerciseId: "ex-plank",
     formCues: ["Keep your elbows directly under your shoulders."],
     hasAiSupported: true,
-    instructions: "Maintain a straight body line while keeping your core engaged.",
+    instructions: ["Maintain a straight body line while keeping your core engaged."],
     isWeighted: false,
     name: "Plank Hold",
     notes: "",

@@ -7,9 +7,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useSyncExternalStore, useTransition } from "react";
 
 import type { AdhocExercise } from "@/features/workout/model/adhoc-types";
-import { toAdhocExercise } from "@/features/workout/model/adhoc-types";
+import { toAdhocExercise, toAdhocPrescription } from "@/features/workout/model/adhoc-types";
 import type { AdhocConfig, ExerciseResult } from "@/features/workout/model/workout.types";
 import { beginWorkoutSession } from "@/features/workout/server/workout-actions";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 import { useToast } from "@/shared/ui/toast/toast-context";
 
 const emptySubscribe = () => () => {};
@@ -41,7 +42,7 @@ export function useAdhocWorkout(options: UseAdhocWorkoutOptions = {}) {
       const matched: ExerciseResult = {
         id: targetExerciseId || `ex-${Date.now()}`,
         name: targetName || "Selected Movement",
-        equipmentId: "eq-standard",
+        equipment: Equipment.UNSPECIFIED,
         isWeighted: true,
         prescription: targetPrescription || "3 × 10",
         rest: "90 sec",
@@ -175,7 +176,11 @@ export function useAdhocWorkout(options: UseAdhocWorkoutOptions = {}) {
             ? {
                 ...item,
                 ...updated,
-                prescription: `${updated.sets} × ${updated.reps}`,
+                restSetSec: undefined,
+                prescription:
+                  (item.durationSeconds ?? 0) > 0
+                    ? `${updated.sets} × ${item.durationSeconds}s`
+                    : `${updated.sets} × ${updated.reps}`,
               }
             : item,
         ),
@@ -195,10 +200,15 @@ export function useAdhocWorkout(options: UseAdhocWorkoutOptions = {}) {
     }
 
     const exerciseIds = exerciseList.map((ex) => ex.exerciseId || ex.id.split("__")[0] || ex.id);
+    const prescription = toAdhocPrescription(exerciseList);
     startSessionTransition(async () => {
       try {
-        const { sessionId } = await beginWorkoutSession(exerciseIds);
-        router.push(`/workouts/live/${sessionId}`);
+        const result = await beginWorkoutSession(exerciseIds, prescription);
+        if (!result.ok) {
+          showToast({ message: result.message, type: "error" });
+          return;
+        }
+        router.push(`/workouts/live/${result.sessionId}`);
       } catch {
         showToast({ message: "Failed to start session. Please try again.", type: "error" });
       }

@@ -1,3 +1,4 @@
+import { toInjuryItem } from "./injury";
 import type { BestPersonalRecord, HealthMetricsDetail, ProfileViewModel } from "./profile.types";
 
 export function mapGoalToEnum(goal: string): string {
@@ -290,14 +291,7 @@ export function mapRawDataToProfileViewModel(raw: {
       targetWeightKg: profile.targetWeightKg || 0,
     },
     healthMetrics,
-    injuries: (profile.injuries || []).map((inj: any, idx: number) => ({
-      id: inj.injuryId || `inj-${idx}`,
-      muscleGroup: inj.muscleGroup || "",
-      severity: inj.severity || "MILD",
-      notes: inj.notes || "",
-      isRecovered: Boolean(inj.isRecovered),
-      reportedAt: inj.reportedAt || new Date().toISOString().split("T")[0],
-    })),
+    injuries: (profile.injuries || []).map(toInjuryItem),
     settings: {
       availableEquipment: profile.availableEquipment || [],
       preferredWorkoutTimes: profile.preferredWorkoutTimes || [],

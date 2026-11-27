@@ -20,6 +20,12 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "gym-companion-production.up.railway.app" },
       { protocol: "https", hostname: "static.exercisedb.dev" },
+      // free-exercise-db start/end frames (ExerciseInfo.images).
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        pathname: "/yuhonas/free-exercise-db/**",
+      },
       { protocol: "https", hostname: "**.supabase.co" },
       { protocol: "https", hostname: "**.fitai.io" },
       { protocol: "https", hostname: "ui-avatars.com" },

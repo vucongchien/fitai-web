@@ -2,6 +2,14 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { searchExercisesServerAction } from "@/features/exercise/server/catalog-actions";
+import {
+  Equipment,
+  ExerciseCategory,
+  ExerciseForce,
+  ExerciseLevel,
+  ExerciseMechanic,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 import { quickSearchStore } from "@/shared/ui/side-panel/quick-search-pane";
 import { SideInspectorPanel } from "@/shared/ui/side-panel/side-inspector-panel";
 import {
@@ -17,21 +25,27 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+const BENCH = {
+  id: "bench-press",
+  name: "Barbell Bench Press",
+  slug: "Barbell_Bench_Press_-_Medium_Grip",
+  primaryMuscle: MuscleGroup.CHEST,
+  secondaryMuscles: [],
+  equipment: Equipment.BARBELL,
+  category: ExerciseCategory.STRENGTH,
+  level: ExerciseLevel.INTERMEDIATE,
+  force: ExerciseForce.PUSH,
+  mechanic: ExerciseMechanic.COMPOUND,
+  instructions: [],
+  images: [],
+  videoUrl: "",
+  defaultRestSeconds: 90,
+  hasAiSupported: true,
+  motionSlug: "bench_press",
+};
+
 vi.mock("@/features/exercise/server/catalog-actions", () => ({
-  getCatalogMetadataServerAction: vi.fn().mockResolvedValue({
-    success: true,
-    equipments: [],
-    muscles: [],
-    bodyParts: [],
-  }),
-  searchExercisesServerAction: vi.fn().mockResolvedValue([
-    {
-      id: "bench-press",
-      name: "Barbell Bench Press",
-      bodyPartId: "chest",
-      difficulty: "INTERMEDIATE",
-    },
-  ]),
+  searchExercisesServerAction: vi.fn(async () => [BENCH]),
 }));
 
 vi.mock("@/features/notification/server/notification-actions", () => ({
@@ -97,7 +111,7 @@ describe("SideInspectorPanel", () => {
 
     expect(screen.getByPlaceholderText(/search movements/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /filters/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Core" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Abdominals" })).toBeInTheDocument();
     expect(await screen.findByText("Barbell Bench Press")).toBeInTheDocument();
     expect(searchExercisesServerAction).toHaveBeenCalledTimes(1);
   });
@@ -105,24 +119,7 @@ describe("SideInspectorPanel", () => {
   it("shows an error state and retries when initial search fails", async () => {
     vi.mocked(searchExercisesServerAction)
       .mockRejectedValueOnce(new Error("RPC unavailable"))
-      .mockResolvedValueOnce([
-        {
-          id: "bench-press",
-          name: "Barbell Bench Press",
-          bodyPartId: "chest",
-          equipmentId: "barbell",
-          targetMuscleId: "pectorals",
-          secondaryMuscleIds: [],
-          tagIds: [],
-          instructions: "",
-          videoUrl: "",
-          mediaUrl: "",
-          thumbnailUrl: "",
-          difficulty: "intermediate",
-          defaultRestSeconds: 90,
-          hasAiSupported: true,
-        },
-      ]);
+      .mockResolvedValueOnce([BENCH]);
 
     render(
       <SidePanelProvider>

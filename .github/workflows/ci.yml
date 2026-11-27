@@ -2,14 +2,14 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, dev]
     paths-ignore:
       - "**/*.md"
       - "docs/**"
       - ".gitignore"
       - ".gitattributes"
   pull_request:
-    branches: [main, master]
+    branches: [main, master, dev]
     paths-ignore:
       - "**/*.md"
       - "docs/**"

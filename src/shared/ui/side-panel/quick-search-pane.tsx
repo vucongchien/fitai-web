@@ -1,28 +1,24 @@
 "use client";
 
 import { AlertCircle, Dumbbell, Loader2, Search, SlidersHorizontal, X } from "lucide-react";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 
 import { countActiveFilters, EMPTY_FILTERS } from "@/features/exercise/domain/exercise";
-import type {
-  CatalogMetadata,
-  ExerciseFilters,
-  ExerciseSummary,
-} from "@/features/exercise/domain/exercise";
-import { catalogMetadataStore } from "@/features/exercise/model/catalog-metadata-store";
+import type { ExerciseFilters, ExerciseSummary } from "@/features/exercise/domain/exercise";
 import { searchExercisesServerAction } from "@/features/exercise/server/catalog-actions";
 import { ExerciseCard } from "@/features/exercise/ui/exercise-card";
 import { FilterPanel } from "@/features/exercise/ui/filter-panel";
+import { MuscleGroup } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+import { muscleGroupLabel } from "@/shared/lib/taxonomy";
 
-const QUICK_BODY_PARTS = [
-  { id: "", label: "All" },
-  { id: "chest", label: "Chest" },
-  { id: "back", label: "Back" },
-  { id: "legs", label: "Legs" },
-  { id: "shoulders", label: "Shoulders" },
-  { id: "arms", label: "Arms" },
-  { id: "core", label: "Core" },
-] as const;
+const QUICK_MUSCLES: MuscleGroup[] = [
+  MuscleGroup.CHEST,
+  MuscleGroup.LATS,
+  MuscleGroup.QUADRICEPS,
+  MuscleGroup.SHOULDERS,
+  MuscleGroup.BICEPS,
+  MuscleGroup.ABDOMINALS,
+];
 
 const SEARCH_DEBOUNCE_MS = 200;
 
@@ -140,15 +136,11 @@ class QuickSearchStore {
 
 export const quickSearchStore = new QuickSearchStore();
 
-function renderResultsBody(
-  searchState: QuickSearchState,
-  catalog: CatalogMetadata,
-  onRetry: () => void,
-) {
+function renderResultsBody(searchState: QuickSearchState, onRetry: () => void) {
   if (searchState.results.length > 0) {
     return searchState.results.map((exercise) => (
       <div key={exercise.id} className="py-2.5 first:pt-0 last:pb-0">
-        <ExerciseCard catalog={catalog} exercise={exercise} />
+        <ExerciseCard exercise={exercise} />
       </div>
     ));
   }
@@ -198,33 +190,7 @@ export function QuickSearchPane() {
 
   const { filters, results, isLoading, hasLoaded } = searchState;
 
-  const catalogState = useSyncExternalStore(
-    catalogMetadataStore.subscribe,
-    catalogMetadataStore.getSnapshot,
-    catalogMetadataStore.getServerSnapshot,
-  );
-
-  const catalog: CatalogMetadata = useMemo(
-    () => ({
-      bodyParts: catalogState.bodyParts,
-      equipments: catalogState.equipments,
-      muscles: catalogState.muscles.map((m) => ({
-        id: m.id,
-        name: m.name,
-        bodyPartId: m.bodyPartId || "",
-      })),
-      tags: [
-        { id: "strength", name: "Strength" },
-        { id: "hypertrophy", name: "Hypertrophy" },
-        { id: "home-friendly", name: "Home Friendly" },
-        { id: "no-equipment", name: "No Equipment" },
-        { id: "warm-up", name: "Warm-up" },
-      ],
-    }),
-    [catalogState],
-  );
-
-  const activeCount = useMemo(() => countActiveFilters(filters, catalog), [filters, catalog]);
+  const activeCount = countActiveFilters(filters);
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -276,25 +242,27 @@ export function QuickSearchPane() {
 
       {/* 2. Quick Body Area Chips using native .chip design tokens */}
       <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-4 py-2.5 border-b border-neutral-100 bg-white">
-        {QUICK_BODY_PARTS.map((item) => {
-          const isAll = item.id === "";
-          const active = isAll
-            ? filters.bodyPartIds.length === 0
-            : filters.bodyPartIds.includes(item.id);
-
+        <button
+          aria-pressed={filters.muscles.length === 0}
+          className="chip cursor-pointer"
+          data-active={filters.muscles.length === 0 || undefined}
+          onClick={() => quickSearchStore.search({ ...filters, muscles: [] })}
+          type="button"
+        >
+          All
+        </button>
+        {QUICK_MUSCLES.map((muscle) => {
+          const active = filters.muscles.includes(muscle);
           return (
             <button
-              key={item.id}
+              key={muscle}
               aria-pressed={active}
               className="chip cursor-pointer"
               data-active={active || undefined}
-              onClick={() => {
-                const nextBody = isAll ? [] : [item.id];
-                quickSearchStore.search({ ...filters, bodyPartIds: nextBody });
-              }}
+              onClick={() => quickSearchStore.search({ ...filters, muscles: [muscle] })}
               type="button"
             >
-              {item.label}
+              {muscleGroupLabel(muscle)}
             </button>
           );
         })}
@@ -318,12 +286,11 @@ export function QuickSearchPane() {
 
       {/* 4. Exercise Card Results using standard ExerciseCard component */}
       <div className="flex-1 overflow-y-auto px-4 py-3 divide-y divide-neutral-100">
-        {renderResultsBody(searchState, catalog, () => quickSearchStore.search(filters))}
+        {renderResultsBody(searchState, () => quickSearchStore.search(filters))}
       </div>
 
       {/* 5. Mobile-style FilterPanel Sheet */}
       <FilterPanel
-        catalog={catalog}
         filters={filters}
         onChange={(nextFilters) => quickSearchStore.search(nextFilters)}
         onClear={() => quickSearchStore.search({ ...EMPTY_FILTERS, q: filters.q })}

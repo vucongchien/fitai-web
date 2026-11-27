@@ -1,5 +1,6 @@
 "use client";
 
+import type { PainReport } from "@/features/workout/domain/pain-report";
 import {
   isAnomalousLoad,
   loadRatio,
@@ -30,7 +31,7 @@ export interface LiveWorkoutModalsProps {
   guideOpen: boolean;
   includeActiveModals?: boolean;
   loggedSets: SetLogDraft[];
-  onAbortSession: (reason: AbortReason, note?: string) => void;
+  onAbortSession: (reason: AbortReason, note?: string, pain?: PainReport) => void;
   onCloseConfirmSet: () => void;
   onCloseEnd: () => void;
   onCloseGuide: () => void;
@@ -105,7 +106,7 @@ export function LiveWorkoutModals({
         <DemoVideoOverlay
           name={exercise.name}
           onClose={onCloseVideo}
-          posterUrl={exercise.thumbnailUrl}
+          posterUrl={exercise.images[0]}
           videoUrl={exercise.videoUrl}
         />
       ) : null}
@@ -117,9 +118,9 @@ export function LiveWorkoutModals({
       {painOpen ? (
         <PainReportDialog
           onDismiss={onClosePain}
-          onStop={(note) => {
+          onStop={(report) => {
             onClosePain();
-            onAbortSession("pain", note);
+            onAbortSession("pain", report.note, report);
           }}
         />
       ) : null}

@@ -130,7 +130,8 @@ export function AdhocWorkoutBuilder({ initialConfig }: AdhocWorkoutBuilderProps 
                     <div className="adhoc-row-info">
                       <strong>{exercise.name}</strong>
                       <span>
-                        {exercise.sets} × {exercise.reps} · {exercise.rest} rest
+                        {exercise.prescription || `${exercise.sets} × ${exercise.reps}`} ·{" "}
+                        {exercise.rest} rest
                       </span>
                     </div>
                     <div className="adhoc-row-actions">

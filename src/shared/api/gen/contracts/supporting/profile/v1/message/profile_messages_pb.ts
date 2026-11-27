@@ -4,34 +4,47 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { BodySide, Equipment, InjurySeverity, JointRegion, MuscleGroup } from "../../../exercise/v1/message/taxonomy_pb";
+import { file_contracts_supporting_exercise_v1_message_taxonomy } from "../../../exercise/v1/message/taxonomy_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/profile/v1/message/profile_messages.proto.
  */
 export const file_contracts_supporting_profile_v1_message_profile_messages: GenFile = /*@__PURE__*/
-  fileDesc("Cj5jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL21lc3NhZ2UvcHJvZmlsZV9tZXNzYWdlcy5wcm90bxInY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlIkQKC0luanVyeUlucHV0EhQKDG11c2NsZV9ncm91cBgBIAEoCRIQCghzZXZlcml0eRgCIAEoCRINCgVub3RlcxgDIAEoCSKTAQoGSW5qdXJ5EhEKCWluanVyeV9pZBgBIAEoCRIUCgxtdXNjbGVfZ3JvdXAYAiABKAkSEAoIc2V2ZXJpdHkYAyABKAkSDQoFbm90ZXMYBCABKAkSEwoLcmVwb3J0ZWRfYXQYBSABKAkSFAoMaXNfcmVjb3ZlcmVkGAYgASgIEhQKDHJlY292ZXJlZF9hdBgHIAEoCSKLAQoOUGVyaW9kaWNNZXRyaWMSCgoCaWQYASABKAkSEQoJd2VpZ2h0X2tnGAIgASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYAyABKAISGgoScHJvZ3Jlc3NfcGhvdG9fdXJsGAQgASgJEhEKCWxvZ2dlZF9hdBgFIAEoCRIRCgloZWlnaHRfY20YBiABKAIioQMKGFNhdmVIZWFsdGhQcm9maWxlUmVxdWVzdBIRCgl3ZWlnaHRfa2cYASABKAISEQoJaGVpZ2h0X2NtGAIgASgCEhUKDWRhdGVfb2ZfYmlydGgYAyABKAkSDgoGZ2VuZGVyGAQgASgJEg0KBWdvYWxzGAUgAygJEkYKCGluanVyaWVzGAYgAygLMjQuY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeUlucHV0EhgKEGV4cGVyaWVuY2VfbGV2ZWwYByABKAkSHwoXcHJlZmVycmVkX3dvcmtvdXRfdGltZXMYCCADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgJIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgKIAMoCRITCgtjb2FjaF9zdHlsZRgLIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGAwgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GA0gASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYDiABKAIicgoZU2F2ZUhlYWx0aFByb2ZpbGVSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEhcKD2NvbXBsZXRpb25fcmF0ZRgCIAEoAhIaChJhaV9jb2FjaF9hY3RpdmF0ZWQYAyABKAgSDwoHbWVzc2FnZRgEIAEoCSIkChFHZXRQcm9maWxlUmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIpwEChJHZXRQcm9maWxlUmVzcG9uc2USDwoHdXNlcl9pZBgBIAEoCRIRCgl3ZWlnaHRfa2cYAiABKAISEQoJaGVpZ2h0X2NtGAMgASgCEhUKDWRhdGVfb2ZfYmlydGgYBCABKAkSCwoDYWdlGAUgASgFEg4KBmdlbmRlchgGIAEoCRINCgVnb2FscxgHIAMoCRIYChBleHBlcmllbmNlX2xldmVsGAggASgJEh8KF3ByZWZlcnJlZF93b3Jrb3V0X3RpbWVzGAkgAygJEkEKCGluanVyaWVzGAogAygLMi8uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeRISCgpjcmVhdGVkX2F0GAsgASgJEhIKCnVwZGF0ZWRfYXQYDCABKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgNIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgOIAMoCRITCgtjb2FjaF9zdHlsZRgPIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGBAgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GBEgASgCEhcKD2NvbXBsZXRpb25fcmF0ZRgSIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GBMgASgCEhEKCWZ1bGxfbmFtZRgUIAEoCRISCgphdmF0YXJfdXJsGBUgASgJItUCChRVcGRhdGVQcm9maWxlUmVxdWVzdBIRCgl3ZWlnaHRfa2cYASABKAISEQoJaGVpZ2h0X2NtGAIgASgCEhUKDWRhdGVfb2ZfYmlydGgYAyABKAkSDgoGZ2VuZGVyGAQgASgJEg0KBWdvYWxzGAUgAygJEhgKEGV4cGVyaWVuY2VfbGV2ZWwYBiABKAkSHwoXcHJlZmVycmVkX3dvcmtvdXRfdGltZXMYByADKAkSGwoTYXZhaWxhYmxlX2VxdWlwbWVudBgIIAMoCRIfChdwcmVmZXJyZWRfbXVzY2xlX2dyb3VwcxgJIAMoCRITCgtjb2FjaF9zdHlsZRgKIAEoCRIYChB0YXJnZXRfd2VpZ2h0X2tnGAsgASgCEh8KF3RhcmdldF9ib2R5X2ZhdF9wZXJjZW50GAwgASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYDSABKAIiOQoVVXBkYXRlUHJvZmlsZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSJ3ChlMb2dQZXJpb2RpY01ldHJpY3NSZXF1ZXN0EhEKCXdlaWdodF9rZxgBIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GAIgASgCEhoKEnByb2dyZXNzX3Bob3RvX3VybBgDIAEoCRIRCgloZWlnaHRfY20YBCABKAIiowEKGkxvZ1BlcmlvZGljTWV0cmljc1Jlc3BvbnNlEg4KBmxvZ19pZBgBIAEoCRIPCgd1c2VyX2lkGAIgASgJEhEKCXdlaWdodF9rZxgDIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GAQgASgCEhMKC3N5bmNfc3RhdHVzGAUgASgJEg8KB21lc3NhZ2UYBiABKAkSEQoJaGVpZ2h0X2NtGAcgASgCIi8KHEdldEJvZHlNZXRyaWNzSGlzdG9yeVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSJ6Ch1HZXRCb2R5TWV0cmljc0hpc3RvcnlSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEkgKB21ldHJpY3MYAiADKAsyNy5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuUGVyaW9kaWNNZXRyaWMiTAoTUmVwb3J0SW5qdXJ5UmVxdWVzdBIUCgxtdXNjbGVfZ3JvdXAYASABKAkSEAoIc2V2ZXJpdHkYAiABKAkSDQoFbm90ZXMYAyABKAkiSwoUUmVwb3J0SW5qdXJ5UmVzcG9uc2USEQoJaW5qdXJ5X2lkGAEgASgJEg8KB3N1Y2Nlc3MYAiABKAgSDwoHbWVzc2FnZRgDIAEoCSIpChRSZWNvdmVySW5qdXJ5UmVxdWVzdBIRCglpbmp1cnlfaWQYASABKAkiOQoVUmVjb3ZlckluanVyeVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgSDwoHbWVzc2FnZRgCIAEoCSIqChdHZXRJbmp1cnlIaXN0b3J5UmVxdWVzdBIPCgd1c2VyX2lkGAEgASgJIm4KGEdldEluanVyeUhpc3RvcnlSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEkEKCGluanVyaWVzGAIgAygLMi8uY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLkluanVyeSJlChVVcGRhdGVJZGVudGl0eVJlcXVlc3QSFgoJZnVsbF9uYW1lGAEgASgJSACIAQESFwoKYXZhdGFyX3VybBgCIAEoCUgBiAEBQgwKCl9mdWxsX25hbWVCDQoLX2F2YXRhcl91cmwiYQoWVXBkYXRlSWRlbnRpdHlSZXNwb25zZRIPCgd1c2VyX2lkGAEgASgJEhEKCWZ1bGxfbmFtZRgCIAEoCRISCgphdmF0YXJfdXJsGAMgASgJEg8KB21lc3NhZ2UYBCABKAlCb1ptZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL21lc3NhZ2U7cHJvZmlsZXYxbWVzc2FnZWIGcHJvdG8z");
+  fileDesc("Cj5jb250cmFjdHMvc3VwcG9ydGluZy9wcm9maWxlL3YxL21lc3NhZ2UvcHJvZmlsZV9tZXNzYWdlcy5wcm90bxInY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlItICCgtJbmp1cnlJbnB1dBINCgVub3RlcxgDIAEoCRJFCgZyZWdpb24YBCABKA4yNS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkpvaW50UmVnaW9uEkUKBm11c2NsZRgFIAEoDjI1LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlR3JvdXASQAoEc2lkZRgGIAEoDjIyLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQm9keVNpZGUSSgoIc2V2ZXJpdHkYByABKA4yOC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkluanVyeVNldmVyaXR5SgQIARACSgQIAhADUgxtdXNjbGVfZ3JvdXAioQMKBkluanVyeRIRCglpbmp1cnlfaWQYASABKAkSDQoFbm90ZXMYBCABKAkSEwoLcmVwb3J0ZWRfYXQYBSABKAkSFAoMaXNfcmVjb3ZlcmVkGAYgASgIEhQKDHJlY292ZXJlZF9hdBgHIAEoCRJFCgZyZWdpb24YCCABKA4yNS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkpvaW50UmVnaW9uEkUKBm11c2NsZRgJIAEoDjI1LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlR3JvdXASQAoEc2lkZRgKIAEoDjIyLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQm9keVNpZGUSSgoIc2V2ZXJpdHkYCyABKA4yOC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkluanVyeVNldmVyaXR5SgQIAhADSgQIAxAEUgxtdXNjbGVfZ3JvdXAiiwEKDlBlcmlvZGljTWV0cmljEgoKAmlkGAEgASgJEhEKCXdlaWdodF9rZxgCIAEoAhIYChBib2R5X2ZhdF9wZXJjZW50GAMgASgCEhoKEnByb2dyZXNzX3Bob3RvX3VybBgEIAEoCRIRCglsb2dnZWRfYXQYBSABKAkSEQoJaGVpZ2h0X2NtGAYgASgCIqsEChhTYXZlSGVhbHRoUHJvZmlsZVJlcXVlc3QSEQoJd2VpZ2h0X2tnGAEgASgCEhEKCWhlaWdodF9jbRgCIAEoAhIVCg1kYXRlX29mX2JpcnRoGAMgASgJEg4KBmdlbmRlchgEIAEoCRINCgVnb2FscxgFIAMoCRJGCghpbmp1cmllcxgGIAMoCzI0LmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5Jbmp1cnlJbnB1dBIYChBleHBlcmllbmNlX2xldmVsGAcgASgJEh8KF3ByZWZlcnJlZF93b3Jrb3V0X3RpbWVzGAggAygJEhMKC2NvYWNoX3N0eWxlGAsgASgJEhgKEHRhcmdldF93ZWlnaHRfa2cYDCABKAISHwoXdGFyZ2V0X2JvZHlfZmF0X3BlcmNlbnQYDSABKAISGAoQYm9keV9mYXRfcGVyY2VudBgOIAEoAhJQChNhdmFpbGFibGVfZXF1aXBtZW50GA8gAygOMjMuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FcXVpcG1lbnQSVgoXcHJlZmVycmVkX211c2NsZV9ncm91cHMYECADKA4yNS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZUdyb3VwEhAKCHRpbWV6b25lGBEgASgJSgQICRAKSgQIChALInIKGVNhdmVIZWFsdGhQcm9maWxlUmVzcG9uc2USDwoHdXNlcl9pZBgBIAEoCRIXCg9jb21wbGV0aW9uX3JhdGUYAiABKAISGgoSYWlfY29hY2hfYWN0aXZhdGVkGAMgASgIEg8KB21lc3NhZ2UYBCABKAkiJAoRR2V0UHJvZmlsZVJlcXVlc3QSDwoHdXNlcl9pZBgBIAEoCSKmBQoSR2V0UHJvZmlsZVJlc3BvbnNlEg8KB3VzZXJfaWQYASABKAkSEQoJd2VpZ2h0X2tnGAIgASgCEhEKCWhlaWdodF9jbRgDIAEoAhIVCg1kYXRlX29mX2JpcnRoGAQgASgJEgsKA2FnZRgFIAEoBRIOCgZnZW5kZXIYBiABKAkSDQoFZ29hbHMYByADKAkSGAoQZXhwZXJpZW5jZV9sZXZlbBgIIAEoCRIfChdwcmVmZXJyZWRfd29ya291dF90aW1lcxgJIAMoCRJBCghpbmp1cmllcxgKIAMoCzIvLmNvbnRyYWN0cy5zdXBwb3J0aW5nLnByb2ZpbGUudjEubWVzc2FnZS5Jbmp1cnkSEgoKY3JlYXRlZF9hdBgLIAEoCRISCgp1cGRhdGVkX2F0GAwgASgJEhMKC2NvYWNoX3N0eWxlGA8gASgJEhgKEHRhcmdldF93ZWlnaHRfa2cYECABKAISHwoXdGFyZ2V0X2JvZHlfZmF0X3BlcmNlbnQYESABKAISFwoPY29tcGxldGlvbl9yYXRlGBIgASgCEhgKEGJvZHlfZmF0X3BlcmNlbnQYEyABKAISEQoJZnVsbF9uYW1lGBQgASgJEhIKCmF2YXRhcl91cmwYFSABKAkSUAoTYXZhaWxhYmxlX2VxdWlwbWVudBgWIAMoDjIzLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXF1aXBtZW50ElYKF3ByZWZlcnJlZF9tdXNjbGVfZ3JvdXBzGBcgAygOMjUuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGVHcm91cBIQCgh0aW1lem9uZRgYIAEoCUoECA0QDkoECA4QDyLfAwoUVXBkYXRlUHJvZmlsZVJlcXVlc3QSEQoJd2VpZ2h0X2tnGAEgASgCEhEKCWhlaWdodF9jbRgCIAEoAhIVCg1kYXRlX29mX2JpcnRoGAMgASgJEg4KBmdlbmRlchgEIAEoCRINCgVnb2FscxgFIAMoCRIYChBleHBlcmllbmNlX2xldmVsGAYgASgJEh8KF3ByZWZlcnJlZF93b3Jrb3V0X3RpbWVzGAcgAygJEhMKC2NvYWNoX3N0eWxlGAogASgJEhgKEHRhcmdldF93ZWlnaHRfa2cYCyABKAISHwoXdGFyZ2V0X2JvZHlfZmF0X3BlcmNlbnQYDCABKAISGAoQYm9keV9mYXRfcGVyY2VudBgNIAEoAhJQChNhdmFpbGFibGVfZXF1aXBtZW50GA4gAygOMjMuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FcXVpcG1lbnQSVgoXcHJlZmVycmVkX211c2NsZV9ncm91cHMYDyADKA4yNS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZUdyb3VwEhAKCHRpbWV6b25lGBAgASgJSgQICBAJSgQICRAKIjkKFVVwZGF0ZVByb2ZpbGVSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIEg8KB21lc3NhZ2UYAiABKAkidwoZTG9nUGVyaW9kaWNNZXRyaWNzUmVxdWVzdBIRCgl3ZWlnaHRfa2cYASABKAISGAoQYm9keV9mYXRfcGVyY2VudBgCIAEoAhIaChJwcm9ncmVzc19waG90b191cmwYAyABKAkSEQoJaGVpZ2h0X2NtGAQgASgCIqMBChpMb2dQZXJpb2RpY01ldHJpY3NSZXNwb25zZRIOCgZsb2dfaWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRIRCgl3ZWlnaHRfa2cYAyABKAISGAoQYm9keV9mYXRfcGVyY2VudBgEIAEoAhITCgtzeW5jX3N0YXR1cxgFIAEoCRIPCgdtZXNzYWdlGAYgASgJEhEKCWhlaWdodF9jbRgHIAEoAiIvChxHZXRCb2R5TWV0cmljc0hpc3RvcnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkiegodR2V0Qm9keU1ldHJpY3NIaXN0b3J5UmVzcG9uc2USDwoHdXNlcl9pZBgBIAEoCRJICgdtZXRyaWNzGAIgAygLMjcuY29udHJhY3RzLnN1cHBvcnRpbmcucHJvZmlsZS52MS5tZXNzYWdlLlBlcmlvZGljTWV0cmljItoCChNSZXBvcnRJbmp1cnlSZXF1ZXN0Eg0KBW5vdGVzGAMgASgJEkUKBnJlZ2lvbhgEIAEoDjI1LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuSm9pbnRSZWdpb24SRQoGbXVzY2xlGAUgASgOMjUuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGVHcm91cBJACgRzaWRlGAYgASgOMjIuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5Cb2R5U2lkZRJKCghzZXZlcml0eRgHIAEoDjI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuSW5qdXJ5U2V2ZXJpdHlKBAgBEAJKBAgCEANSDG11c2NsZV9ncm91cCJLChRSZXBvcnRJbmp1cnlSZXNwb25zZRIRCglpbmp1cnlfaWQYASABKAkSDwoHc3VjY2VzcxgCIAEoCBIPCgdtZXNzYWdlGAMgASgJIikKFFJlY292ZXJJbmp1cnlSZXF1ZXN0EhEKCWluanVyeV9pZBgBIAEoCSI5ChVSZWNvdmVySW5qdXJ5UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCBIPCgdtZXNzYWdlGAIgASgJIioKF0dldEluanVyeUhpc3RvcnlSZXF1ZXN0Eg8KB3VzZXJfaWQYASABKAkibgoYR2V0SW5qdXJ5SGlzdG9yeVJlc3BvbnNlEg8KB3VzZXJfaWQYASABKAkSQQoIaW5qdXJpZXMYAiADKAsyLy5jb250cmFjdHMuc3VwcG9ydGluZy5wcm9maWxlLnYxLm1lc3NhZ2UuSW5qdXJ5ImUKFVVwZGF0ZUlkZW50aXR5UmVxdWVzdBIWCglmdWxsX25hbWUYASABKAlIAIgBARIXCgphdmF0YXJfdXJsGAIgASgJSAGIAQFCDAoKX2Z1bGxfbmFtZUINCgtfYXZhdGFyX3VybCJhChZVcGRhdGVJZGVudGl0eVJlc3BvbnNlEg8KB3VzZXJfaWQYASABKAkSEQoJZnVsbF9uYW1lGAIgASgJEhIKCmF2YXRhcl91cmwYAyABKAkSDwoHbWVzc2FnZRgEIAEoCUJvWm1naXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9zdXBwb3J0aW5nL3Byb2ZpbGUvdjEvbWVzc2FnZTtwcm9maWxldjFtZXNzYWdlYgZwcm90bzM", [file_contracts_supporting_exercise_v1_message_taxonomy]);
 
 /**
+ * InjuryInput reports pain by joint region (required). muscle is optional;
+ * side UNSPECIFIED means BOTH.
+ *
  * @generated from message contracts.supporting.profile.v1.message.InjuryInput
  */
 export type InjuryInput = Message<"contracts.supporting.profile.v1.message.InjuryInput"> & {
   /**
-   * @generated from field: string muscle_group = 1;
-   */
-  muscleGroup: string;
-
-  /**
-   * "MILD", "MODERATE", "SEVERE"
-   *
-   * @generated from field: string severity = 2;
-   */
-  severity: string;
-
-  /**
    * @generated from field: string notes = 3;
    */
   notes: string;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.JointRegion region = 4;
+   */
+  region: JointRegion;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.MuscleGroup muscle = 5;
+   */
+  muscle: MuscleGroup;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.BodySide side = 6;
+   */
+  side: BodySide;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.InjurySeverity severity = 7;
+   */
+  severity: InjurySeverity;
 };
 
 /**
@@ -49,16 +62,6 @@ export type Injury = Message<"contracts.supporting.profile.v1.message.Injury"> &
    * @generated from field: string injury_id = 1;
    */
   injuryId: string;
-
-  /**
-   * @generated from field: string muscle_group = 2;
-   */
-  muscleGroup: string;
-
-  /**
-   * @generated from field: string severity = 3;
-   */
-  severity: string;
 
   /**
    * @generated from field: string notes = 4;
@@ -79,6 +82,26 @@ export type Injury = Message<"contracts.supporting.profile.v1.message.Injury"> &
    * @generated from field: string recovered_at = 7;
    */
   recoveredAt: string;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.JointRegion region = 8;
+   */
+  region: JointRegion;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.MuscleGroup muscle = 9;
+   */
+  muscle: MuscleGroup;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.BodySide side = 10;
+   */
+  side: BodySide;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.InjurySeverity severity = 11;
+   */
+  severity: InjurySeverity;
 };
 
 /**
@@ -179,16 +202,6 @@ export type SaveHealthProfileRequest = Message<"contracts.supporting.profile.v1.
   preferredWorkoutTimes: string[];
 
   /**
-   * @generated from field: repeated string available_equipment = 9;
-   */
-  availableEquipment: string[];
-
-  /**
-   * @generated from field: repeated string preferred_muscle_groups = 10;
-   */
-  preferredMuscleGroups: string[];
-
-  /**
    * @generated from field: string coach_style = 11;
    */
   coachStyle: string;
@@ -207,6 +220,23 @@ export type SaveHealthProfileRequest = Message<"contracts.supporting.profile.v1.
    * @generated from field: float body_fat_percent = 14;
    */
   bodyFatPercent: number;
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.Equipment available_equipment = 15;
+   */
+  availableEquipment: Equipment[];
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup preferred_muscle_groups = 16;
+   */
+  preferredMuscleGroups: MuscleGroup[];
+
+  /**
+   * IANA name from the browser, e.g. "Asia/Ho_Chi_Minh"; empty = UTC
+   *
+   * @generated from field: string timezone = 17;
+   */
+  timezone: string;
 };
 
 /**
@@ -332,16 +362,6 @@ export type GetProfileResponse = Message<"contracts.supporting.profile.v1.messag
   updatedAt: string;
 
   /**
-   * @generated from field: repeated string available_equipment = 13;
-   */
-  availableEquipment: string[];
-
-  /**
-   * @generated from field: repeated string preferred_muscle_groups = 14;
-   */
-  preferredMuscleGroups: string[];
-
-  /**
    * @generated from field: string coach_style = 15;
    */
   coachStyle: string;
@@ -375,6 +395,23 @@ export type GetProfileResponse = Message<"contracts.supporting.profile.v1.messag
    * @generated from field: string avatar_url = 21;
    */
   avatarUrl: string;
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.Equipment available_equipment = 22;
+   */
+  availableEquipment: Equipment[];
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup preferred_muscle_groups = 23;
+   */
+  preferredMuscleGroups: MuscleGroup[];
+
+  /**
+   * IANA name; slot times and scheduled dates are wall clock in this zone
+   *
+   * @generated from field: string timezone = 24;
+   */
+  timezone: string;
 };
 
 /**
@@ -426,16 +463,6 @@ export type UpdateProfileRequest = Message<"contracts.supporting.profile.v1.mess
   preferredWorkoutTimes: string[];
 
   /**
-   * @generated from field: repeated string available_equipment = 8;
-   */
-  availableEquipment: string[];
-
-  /**
-   * @generated from field: repeated string preferred_muscle_groups = 9;
-   */
-  preferredMuscleGroups: string[];
-
-  /**
    * @generated from field: string coach_style = 10;
    */
   coachStyle: string;
@@ -454,6 +481,23 @@ export type UpdateProfileRequest = Message<"contracts.supporting.profile.v1.mess
    * @generated from field: float body_fat_percent = 13;
    */
   bodyFatPercent: number;
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.Equipment available_equipment = 14;
+   */
+  availableEquipment: Equipment[];
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup preferred_muscle_groups = 15;
+   */
+  preferredMuscleGroups: MuscleGroup[];
+
+  /**
+   * IANA name; empty keeps the stored zone
+   *
+   * @generated from field: string timezone = 16;
+   */
+  timezone: string;
 };
 
 /**
@@ -606,23 +650,36 @@ export const GetBodyMetricsHistoryResponseSchema: GenMessage<GetBodyMetricsHisto
   messageDesc(file_contracts_supporting_profile_v1_message_profile_messages, 12);
 
 /**
+ * ReportInjuryRequest reports pain by joint region (required). muscle is
+ * optional; side UNSPECIFIED means BOTH.
+ *
  * @generated from message contracts.supporting.profile.v1.message.ReportInjuryRequest
  */
 export type ReportInjuryRequest = Message<"contracts.supporting.profile.v1.message.ReportInjuryRequest"> & {
   /**
-   * @generated from field: string muscle_group = 1;
-   */
-  muscleGroup: string;
-
-  /**
-   * @generated from field: string severity = 2;
-   */
-  severity: string;
-
-  /**
    * @generated from field: string notes = 3;
    */
   notes: string;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.JointRegion region = 4;
+   */
+  region: JointRegion;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.MuscleGroup muscle = 5;
+   */
+  muscle: MuscleGroup;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.BodySide side = 6;
+   */
+  side: BodySide;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.InjurySeverity severity = 7;
+   */
+  severity: InjurySeverity;
 };
 
 /**

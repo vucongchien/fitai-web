@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+import {
+  BodySide,
+  Equipment,
+  InjurySeverity,
+  JointRegion,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+
+import { countWorkoutSlots, MAX_WEEKLY_SLOTS } from "./workout-times-normalizer";
+
 export function validateAgeBetween(dobString?: string, minAge = 14, maxAge = 90): boolean {
   if (!dobString) {
     return false;
@@ -17,11 +27,16 @@ export function validateAgeBetween(dobString?: string, minAge = 14, maxAge = 90)
   return age >= minAge && age <= maxAge;
 }
 
-export const onboardingEquipmentEnum = z.string().min(1);
+// Zod enums straight from the generated proto enums; UNSPECIFIED (0) is never a valid pick.
+const specified = <T extends z.core.util.EnumLike>(values: T) =>
+  z.enum(values).refine((value) => value !== 0, "Choose a value.");
+
+export const onboardingEquipmentEnum = specified(Equipment);
+export const onboardingMuscleGroupEnum = specified(MuscleGroup);
 
 export const onboardingGoalEnum = z.enum(["build-muscle", "fat-loss", "strength", "endurance"]);
 
-export const onboardingSchema = z.object({
+const onboardingObjectSchema = z.object({
   goals: z.array(onboardingGoalEnum).min(1, "Choose at least one goal."),
   experienceLevel: z.enum(["beginner", "intermediate", "advanced"]),
   heightCm: z.number().min(120, "Enter a height from 120 to 230 cm.").max(230),
@@ -61,15 +76,28 @@ export const onboardingSchema = z.object({
       {
         message: "Choose at least one preferred workout time window.",
       },
-    ),
+    )
+    .refine((val) => countWorkoutSlots(val) <= MAX_WEEKLY_SLOTS, {
+      message: `Choose at most ${MAX_WEEKLY_SLOTS} weekly slots.`,
+    }),
   equipment: z.array(onboardingEquipmentEnum).min(1, "Choose the equipment you can use."),
-  muscleFocus: z.array(z.string()),
+  muscleFocus: z.array(onboardingMuscleGroupEnum),
   injuryStatus: z.enum(["none", "active"]),
-  injuryMuscleGroup: z.string().optional(),
-  injurySeverity: z.string().optional(),
+  injuryRegion: z.enum(JointRegion),
+  injuryMuscle: z.enum(MuscleGroup),
+  injurySide: z.enum(BodySide),
+  injurySeverity: z.enum(InjurySeverity),
   injuryNotes: z.string().optional(),
   coachStyle: z.enum(["motivational", "strict", "scientific"]),
 });
+
+export const onboardingSchema = onboardingObjectSchema.refine(
+  (values) => values.injuryStatus === "none" || values.injuryRegion !== JointRegion.UNSPECIFIED,
+  { message: "Choose the painful area.", path: ["injuryRegion"] },
+);
+
+/** Draft restore uses the unrefined object so partial drafts still parse. */
+export const onboardingDraftSchema = onboardingObjectSchema.partial();
 
 export type OnboardingValues = z.infer<typeof onboardingSchema>;
 
@@ -91,8 +119,10 @@ export const onboardingDefaults: OnboardingValues = {
   equipment: [],
   muscleFocus: [],
   injuryStatus: "none",
-  injuryMuscleGroup: "",
-  injurySeverity: "Mild",
+  injuryRegion: JointRegion.UNSPECIFIED,
+  injuryMuscle: MuscleGroup.UNSPECIFIED,
+  injurySide: BodySide.BOTH,
+  injurySeverity: InjurySeverity.MILD,
   injuryNotes: "",
   coachStyle: "motivational",
 };

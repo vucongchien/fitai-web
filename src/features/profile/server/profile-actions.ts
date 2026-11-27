@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@connectrpc/connect";
+import { Code, ConnectError, createClient } from "@connectrpc/connect";
 import { revalidatePath } from "next/cache";
 
 import { formatWorkoutTimesToProto } from "@/features/onboarding/domain/workout-times-normalizer";
@@ -8,6 +8,8 @@ import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAccessToken } from "@/shared/auth/session";
 
+import type { InjuryDraft } from "../model/injury";
+import { toInjuryInput } from "../model/injury";
 import { mapCoachStyleToEnum, mapGoalToEnum } from "../model/profile.mapper";
 import type { ProfileViewModel } from "../model/profile.types";
 import { getProfileData } from "./get-profile-data";
@@ -22,6 +24,8 @@ function safeRevalidatePath(path: string): void {
 
 export async function updateProfileServerAction(
   updated: Partial<ProfileViewModel>,
+  /** IANA zone from the browser; empty keeps the stored zone. */
+  timeZone = "",
 ): Promise<{ success: boolean; message: string }> {
   try {
     const accessToken = await getAccessToken();
@@ -89,6 +93,7 @@ export async function updateProfileServerAction(
       targetWeightKg,
       targetBodyFatPercent,
       bodyFatPercent,
+      timezone: timeZone,
     });
 
     if (res.success) {
@@ -136,23 +141,19 @@ export async function logBodyMetricsServerAction(metrics: {
   }
 }
 
-export async function reportInjuryServerAction(injury: {
-  muscleGroup: string;
-  severity: string;
-  notes: string;
-}): Promise<{ success: boolean; injuryId?: string; message?: string }> {
+export async function reportInjuryServerAction(
+  injury: InjuryDraft,
+): Promise<{ success: boolean; injuryId?: string; message?: string; alreadyExists?: boolean }> {
+  const input = toInjuryInput(injury);
+  if (!input) {
+    return { success: false, message: "Choose the painful area first." };
+  }
   try {
     const accessToken = await getAccessToken();
     const transport = createServerTransport(accessToken);
     const client = createClient(ProfileService, transport);
 
-    const severityUpper = (injury.severity || "MILD").toUpperCase();
-
-    const res = await client.reportInjury({
-      muscleGroup: injury.muscleGroup,
-      severity: severityUpper,
-      notes: injury.notes,
-    });
+    const res = await client.reportInjury(input);
 
     if (res.success) {
       safeRevalidatePath("/profile");
@@ -162,6 +163,13 @@ export async function reportInjuryServerAction(injury: {
     return { success: res.success, injuryId: res.injuryId, message: res.message };
   } catch (error: any) {
     console.error("[gRPC ProfileService.ReportInjury] Error:", error?.message || error);
+    if (ConnectError.from(error).code === Code.AlreadyExists) {
+      return {
+        success: false,
+        alreadyExists: true,
+        message: "This injury is already reported as active.",
+      };
+    }
     return { success: false, message: error?.message || "Failed to report injury" };
   }
 }

@@ -17,7 +17,7 @@ export function MuscleGroupSelector({ categories }: MuscleGroupSelectorProps) {
 
       <div className="muscle-selector-grid">
         {categories.map((cat) => {
-          const filterHref = cat.href || `/search?body=${encodeURIComponent(cat.id)}`;
+          const filterHref = cat.href || "/search";
           return (
             <Link
               key={cat.id}

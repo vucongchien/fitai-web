@@ -1,13 +1,14 @@
 "use client";
 
-import { Activity, ArrowRight, CalendarRange, Gauge, Sparkles } from "lucide-react";
+import { Activity, ArrowRight, CalendarRange, Gauge, Printer, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import type { RoadmapPageData } from "@/features/roadmap/model/roadmap-page.types";
 import { initiateRoadmapServerAction } from "@/features/roadmap/server/coaching-actions";
 import { AIAdjustmentBanner } from "@/features/roadmap/ui/ai-adjustment-banner";
+import { ExportRoadmapPdfDialog } from "@/features/roadmap/ui/export-roadmap-pdf-dialog";
 import { WeekRoute } from "@/features/roadmap/ui/week-route";
 import { ChallengeEntryCard } from "@/features/solo-match/ui/challenge-entry-card";
 import { FeedbackState } from "@/shared/ui/feedback-state";
@@ -37,6 +38,7 @@ function ContextIcon({ iconName }: { iconName: string }) {
 export function RoadmapView({ data }: RoadmapViewProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [exportOpen, setExportOpen] = useState(false);
 
   const handleCreateRoadmap = () => {
     startTransition(async () => {
@@ -85,10 +87,23 @@ export function RoadmapView({ data }: RoadmapViewProps) {
         <ChallengeEntryCard />
         <section className="content-section">
           <div className="content-section__header">
-            <h2>
-              Week <span className="data-value">{data.activeWeek}</span>
-            </h2>
-            <p>{data.currentWeekDateRange}</p>
+            <div>
+              <h2>
+                Week <span className="data-value">{data.activeWeek}</span>
+              </h2>
+              <p>{data.currentWeekDateRange}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setExportOpen(true)}
+              className="ui-button ui-button--secondary ui-button--medium"
+              aria-label="Export roadmap as PDF"
+            >
+              <span className="ui-button__label">
+                <Printer aria-hidden="true" size={16} />
+                Export PDF
+              </span>
+            </button>
           </div>
 
           <WeekRoute sessions={data.currentWeekSessions} />
@@ -117,6 +132,7 @@ export function RoadmapView({ data }: RoadmapViewProps) {
           ))}
         </aside>
       </div>
+      <ExportRoadmapPdfDialog data={data} open={exportOpen} onClose={() => setExportOpen(false)} />
     </>
   );
 }

@@ -46,12 +46,14 @@ export function ActiveExerciseScreen({
   secondsLeft,
   setTotalSeconds = 0,
   totalSets,
+  totalVolumeKg = 0,
   voiceOn,
 }: {
   exercise: LiveExercise;
   spec?: MotionSpec | null;
   currentSet: number;
   totalSets: number;
+  totalVolumeKg?: number;
   recommendedAngle?: string;
   secondsLeft: number;
   setTotalSeconds?: number;
@@ -133,9 +135,17 @@ export function ActiveExerciseScreen({
       ? repCount! / exercise.targetReps
       : null;
 
+  const volumeLabel =
+    totalVolumeKg > 0 ? `Volume: ${totalVolumeKg.toLocaleString()} kg` : undefined;
+
   return (
     <div className="live-screen" data-camera-active={cameraActive}>
-      <SessionHeader actions={actions} onBack={onBack} title={exercise.name} />
+      <SessionHeader
+        actions={actions}
+        onBack={onBack}
+        subtitle={volumeLabel}
+        title={exercise.name}
+      />
 
       <ExerciseMedia
         cameraActive={cameraActive}

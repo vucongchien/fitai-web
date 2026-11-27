@@ -3,6 +3,11 @@ import "server-only";
 import { redirect } from "next/navigation";
 
 import { exerciseSearchRepository } from "@/features/exercise/api/search-repository";
+import {
+  EMPTY_FILTERS,
+  toExerciseSummary,
+  toFilterSearchString,
+} from "@/features/exercise/domain/exercise";
 import type { ExerciseSummary } from "@/features/exercise/domain/exercise";
 import { getHomeGamificationData } from "@/features/gamification/server/get-gamification";
 import type {
@@ -21,15 +26,27 @@ import type { ProfileViewModel } from "@/features/profile/model/profile.types";
 import { getProfileData } from "@/features/profile/server/get-profile-data";
 import { dayKeyFromLoggedAt, dayKeyRange, toDayKey } from "@/shared/api/bff/aggregate/day-key";
 import { deduplicateMealRows, toMealSlot } from "@/shared/api/bff/aggregate/nutrition-daily";
-import { SessionPlanStatus } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import {
+  SessionKind,
+  SessionPlanStatus,
+} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 import { CoachingService } from "@/shared/api/gen/contracts/core/coaching/v1/service/coaching_service_pb";
 import { NutritionService } from "@/shared/api/gen/contracts/core/nutrition/v1/service/nutrition_service_pb";
 import { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/workout_execution/v1/service/workout_execution_service_pb";
+import {
+  Equipment,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 import { ExerciseService } from "@/shared/api/gen/contracts/supporting/exercise/v1/service/exercise_service_pb";
 import { ProfileService } from "@/shared/api/gen/contracts/supporting/profile/v1/service/profile_service_pb";
 import { createServerTransport } from "@/shared/api/server/transport";
 import { getAuthenticatedSession } from "@/shared/auth/session";
+import { equipmentLabel, muscleGroupCodeLabel, muscleGroupLabel } from "@/shared/lib/taxonomy";
 import { calculateConsecutiveStreakDays } from "@/shared/utils/streak";
+
+// Home waits at most this long for today's menu: a cache miss makes the backend generate it
+// with the LLM (30s+), and it keeps going after we give up, so the next load shows the meals.
+const HOME_MENU_WAIT_MS = 1500;
 
 const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
   {
@@ -55,94 +72,84 @@ const DEFAULT_QUICK_ACTIONS: QuickAction[] = [
   },
 ];
 
-const DEFAULT_MUSCLE_GROUPS: MuscleGroupCategoryItem[] = [
+// Home cards group MuscleGroup enum values; links filter search by primary muscle.
+const MUSCLE_GROUP_CARDS: Array<{
+  id: string;
+  name: string;
+  tagline: string;
+  icon: string;
+  muscles: MuscleGroup[];
+}> = [
   {
     id: "arms-shoulders",
     name: "Arms & Shoulders",
-    labelVi: "BICEPS & DELTS",
+    tagline: "BICEPS & DELTS",
     icon: "biceps",
-    bgGradient: "var(--color-surface)",
-    accentColor: "var(--color-border)",
-    queryParam: "arms-shoulders",
-    href: "/search?body=arms-shoulders",
+    muscles: [MuscleGroup.BICEPS, MuscleGroup.TRICEPS, MuscleGroup.FOREARMS, MuscleGroup.SHOULDERS],
   },
   {
     id: "chest-back",
     name: "Chest & Back",
-    labelVi: "UPPER PUSH/PULL",
+    tagline: "UPPER PUSH/PULL",
     icon: "target",
-    bgGradient: "var(--color-surface)",
-    accentColor: "var(--color-border)",
-    queryParam: "chest-back",
-    href: "/search?body=chest-back",
+    muscles: [
+      MuscleGroup.CHEST,
+      MuscleGroup.LATS,
+      MuscleGroup.MIDDLE_BACK,
+      MuscleGroup.LOWER_BACK,
+      MuscleGroup.TRAPS,
+    ],
   },
   {
     id: "legs-glutes",
     name: "Legs & Glutes",
-    labelVi: "LOWER BODY",
+    tagline: "LOWER BODY",
     icon: "dumbbell",
-    bgGradient: "var(--color-surface)",
-    accentColor: "var(--color-border)",
-    queryParam: "legs-glutes",
-    href: "/search?body=legs-glutes",
+    muscles: [
+      MuscleGroup.QUADRICEPS,
+      MuscleGroup.HAMSTRINGS,
+      MuscleGroup.GLUTES,
+      MuscleGroup.CALVES,
+      MuscleGroup.ADDUCTORS,
+      MuscleGroup.ABDUCTORS,
+    ],
   },
   {
     id: "core-abs",
     name: "Core & Abs",
-    labelVi: "MIDSECTION",
+    tagline: "MIDSECTION",
     icon: "flame",
-    bgGradient: "var(--color-surface)",
-    accentColor: "var(--color-border)",
-    queryParam: "core-abs",
-    href: "/search?body=core-abs",
+    muscles: [MuscleGroup.ABDOMINALS],
   },
 ];
 
-function buildDynamicMuscleGroups(
-  bodyParts: Array<{ id: string; name: string }>,
-): MuscleGroupCategoryItem[] {
-  if (!bodyParts || bodyParts.length === 0) {
-    return DEFAULT_MUSCLE_GROUPS;
-  }
-
-  const mapIcon = (name: string): string => {
-    const n = name.toLowerCase();
-    if (n.includes("arm") || n.includes("bicep") || n.includes("tricep")) return "biceps";
-    if (
-      n.includes("leg") ||
-      n.includes("thigh") ||
-      n.includes("quad") ||
-      n.includes("glute") ||
-      n.includes("calf")
-    )
-      return "dumbbell";
-    if (n.includes("waist") || n.includes("abs") || n.includes("core")) return "flame";
-    if (n.includes("chest") || n.includes("back") || n.includes("shoulder") || n.includes("neck"))
-      return "target";
-    return "activity";
-  };
-
-  return bodyParts.map((bp) => ({
-    id: bp.id,
-    name: bp.name,
-    labelVi: bp.name.toUpperCase(),
-    icon: mapIcon(bp.name),
+const HOME_MUSCLE_GROUPS: MuscleGroupCategoryItem[] = MUSCLE_GROUP_CARDS.map((card) => {
+  const query = toFilterSearchString({ ...EMPTY_FILTERS, muscles: card.muscles });
+  return {
+    id: card.id,
+    name: card.name,
+    labelVi: card.tagline,
+    icon: card.icon,
     bgGradient: "var(--color-surface)",
     accentColor: "var(--color-border)",
-    queryParam: bp.id,
-    href: `/search?body=${encodeURIComponent(bp.id)}`,
-  }));
-}
+    queryParam: query,
+    href: `/search?${query}`,
+  };
+});
 
-function isUuid(str?: string): boolean {
-  if (!str) {
-    return false;
-  }
-  const trimmed = str.trim();
-  return (
-    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed) ||
-    /^[0-9a-fA-F-]{24,}$/.test(trimmed)
-  );
+function toFeaturedExercise(ex: ExerciseSummary): FeaturedExerciseItem {
+  return {
+    id: ex.id,
+    name: ex.name,
+    muscleGroup: muscleGroupLabel(ex.primaryMuscle).toUpperCase() || "FULL BODY",
+    equipment: equipmentLabel(ex.equipment),
+    durationMins: ex.defaultRestSeconds
+      ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
+      : 10,
+    isWeighted: ex.equipment !== Equipment.BODY_ONLY,
+    hasAiSupported: ex.hasAiSupported,
+    imageUrl: ex.images[0] || undefined,
+  };
 }
 
 function computeProfileCompletion(profileVm: ProfileViewModel): {
@@ -215,17 +222,15 @@ export async function getHomePageData(): Promise<HomePageData> {
         historyRes,
         profileRes,
         exerciseRes,
-        catalog,
         nutHistoryRes,
         gamificationRes,
       ] = await Promise.allSettled([
         coachingClient.getActiveRoadmap({}),
         nutritionClient.getNutritionSummary({}),
-        nutritionClient.getTodayMenu({}),
+        nutritionClient.getTodayMenu({}, { signal: AbortSignal.timeout(HOME_MENU_WAIT_MS) }),
         workoutClient.getWorkoutHistory({ limit: 20, offset: 0 }),
         profileClient.getProfile({ userId: userId || "" }),
         exerciseClient.searchExercises({ keyword: "", limit: 4 }),
-        exerciseSearchRepository.getCatalog(),
         typeof nutritionClient.getNutritionHistory === "function"
           ? nutritionClient.getNutritionHistory({
               endDate: todayStr,
@@ -240,10 +245,6 @@ export async function getHomePageData(): Promise<HomePageData> {
       const menu = menuRes.status === "fulfilled" ? menuRes.value : undefined;
       const history = historyRes.status === "fulfilled" ? historyRes.value.sessions : [];
       const profileProto = profileRes.status === "fulfilled" ? profileRes.value : undefined;
-      const catalogData =
-        catalog.status === "fulfilled"
-          ? catalog.value
-          : { bodyParts: [], muscles: [], equipments: [] };
 
       const nutHistoryMeals =
         nutHistoryRes.status === "fulfilled" && nutHistoryRes.value?.meals
@@ -258,82 +259,12 @@ export async function getHomePageData(): Promise<HomePageData> {
         return key === todayStr || dayKeyRange(todayStr, 1).includes(key);
       });
 
-      const bodyPartMap = new Map(catalogData.bodyParts.map((b) => [b.id, b.name]));
-      const muscleMap = new Map((catalogData.muscles || []).map((m) => [m.id, m.name]));
-      const equipmentMap = new Map(catalogData.equipments.map((e) => [e.id, e.name]));
-
-      const resolveMuscleGroup = (targetId?: string, bodyPartId?: string): string => {
-        if (targetId && muscleMap.has(targetId)) {
-          return muscleMap.get(targetId)!.toUpperCase();
-        }
-        if (bodyPartId && bodyPartMap.has(bodyPartId)) {
-          return bodyPartMap.get(bodyPartId)!.toUpperCase();
-        }
-        if (targetId && !isUuid(targetId)) {
-          return targetId.toUpperCase();
-        }
-        if (bodyPartId && !isUuid(bodyPartId)) {
-          return bodyPartId.toUpperCase();
-        }
-        return "FULL BODY";
-      };
-
-      const resolveEquipment = (eqId?: string): string => {
-        if (eqId && equipmentMap.has(eqId)) {
-          return equipmentMap.get(eqId)!;
-        }
-        if (eqId && !isUuid(eqId)) {
-          return eqId;
-        }
-        return "";
-      };
-
-      const dynamicMuscleGroups = buildDynamicMuscleGroups(catalogData.bodyParts);
-
-      let featuredExercises: FeaturedExerciseItem[] = [];
-
-      const isBodyweightEquipment = (equipmentId?: string) => {
-        if (!equipmentId) return true;
-        const name = resolveEquipment(equipmentId);
-        return name.toLowerCase().replaceAll(/[\s_-]+/g, "") === "bodyweight";
-      };
-
-      if (exerciseRes.status === "fulfilled" && exerciseRes.value.exercises?.length) {
-        featuredExercises = exerciseRes.value.exercises.slice(0, 4).map((ex, idx) => ({
-          id: ex.id || `ex-${idx}`,
-          name: ex.name,
-          muscleGroup: resolveMuscleGroup(ex.targetMuscleId, ex.bodyPartId),
-          equipment: resolveEquipment(ex.equipmentId),
-          durationMins: ex.defaultRestSeconds
-            ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
-            : 10,
-          isWeighted: !isBodyweightEquipment(ex.equipmentId),
-          hasAiSupported: Boolean(ex.hasAiSupported),
-          imageUrl: ex.thumbnailUrl || ex.mediaUrl || ex.videoUrl || undefined,
-        }));
-      } else {
-        const repoResults = await exerciseSearchRepository.search({
-          q: "",
-          bodyPartIds: [],
-          targetMuscleIds: [],
-          equipmentIds: [],
-          difficulty: [],
-          tagIds: [],
-          aiOnly: false,
-        });
-        featuredExercises = repoResults.slice(0, 4).map((ex: ExerciseSummary) => ({
-          id: ex.id,
-          name: ex.name,
-          muscleGroup: resolveMuscleGroup(ex.targetMuscleId, ex.bodyPartId),
-          equipment: resolveEquipment(ex.equipmentId),
-          durationMins: ex.defaultRestSeconds
-            ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
-            : 10,
-          isWeighted: !isBodyweightEquipment(ex.equipmentId),
-          hasAiSupported: Boolean(ex.hasAiSupported),
-          imageUrl: ex.thumbnailUrl || undefined,
-        }));
-      }
+      const featuredExercises: FeaturedExerciseItem[] =
+        exerciseRes.status === "fulfilled" && exerciseRes.value.exercises.length > 0
+          ? exerciseRes.value.exercises
+              .slice(0, 4)
+              .map((ex) => toFeaturedExercise(toExerciseSummary(ex)))
+          : (await exerciseSearchRepository.search(EMPTY_FILTERS, 4)).map(toFeaturedExercise);
 
       let completionRate = computedRate;
       let missingFields = computedMissing;
@@ -387,7 +318,9 @@ export async function getHomePageData(): Promise<HomePageData> {
               todayTimeline.push({
                 id: session.sessionPlanId || `today-workout-${todayTimeline.length}`,
                 time: session.slotTime || "17:30",
-                title: session.targetMuscleGroups!.join(", "),
+                title:
+                  (session.kind === SessionKind.RECOVERY ? "Recovery · " : "") +
+                  session.targetMuscleGroups!.map(muscleGroupCodeLabel).join(", "),
                 subtitle:
                   session.reasoning ||
                   (matchedWeekPlan
@@ -535,42 +468,16 @@ export async function getHomePageData(): Promise<HomePageData> {
         },
         quickActions: DEFAULT_QUICK_ACTIONS,
         featuredExercises,
-        muscleGroups: dynamicMuscleGroups,
+        muscleGroups: HOME_MUSCLE_GROUPS,
       };
     } catch (error) {
       console.warn("[getHomePageData] gRPC error:", error);
     }
   }
 
-  const [fallbackRepoResults, fallbackCatalog] = await Promise.all([
-    exerciseSearchRepository.search({
-      q: "",
-      bodyPartIds: [],
-      targetMuscleIds: [],
-      equipmentIds: [],
-      difficulty: [],
-      tagIds: [],
-      aiOnly: false,
-    }),
-    exerciseSearchRepository.getCatalog(),
-  ]);
-  const fallbackFeatured: FeaturedExerciseItem[] = fallbackRepoResults.map(
-    (ex: ExerciseSummary) => ({
-      id: ex.id,
-      name: ex.name,
-      muscleGroup:
-        ex.bodyPartId && !isUuid(ex.bodyPartId) ? ex.bodyPartId.toUpperCase() : "FULL BODY",
-      equipment: ex.equipmentId && !isUuid(ex.equipmentId) ? ex.equipmentId : "",
-      durationMins: ex.defaultRestSeconds
-        ? Math.max(5, Math.round((ex.defaultRestSeconds * 3) / 60))
-        : 10,
-      isWeighted:
-        Boolean(ex.equipmentId) &&
-        ex.equipmentId.toLowerCase().replaceAll(/[\s_-]+/g, "") !== "bodyweight",
-      hasAiSupported: Boolean(ex.hasAiSupported),
-      imageUrl: ex.thumbnailUrl || undefined,
-    }),
-  );
+  const fallbackFeatured: FeaturedExerciseItem[] = (
+    await exerciseSearchRepository.search(EMPTY_FILTERS)
+  ).map(toFeaturedExercise);
 
   const todayLoggedMeals: any[] = [];
 
@@ -642,6 +549,6 @@ export async function getHomePageData(): Promise<HomePageData> {
     },
     quickActions: DEFAULT_QUICK_ACTIONS,
     featuredExercises: fallbackFeatured,
-    muscleGroups: buildDynamicMuscleGroups(fallbackCatalog.bodyParts),
+    muscleGroups: HOME_MUSCLE_GROUPS,
   };
 }

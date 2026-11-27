@@ -40,15 +40,15 @@ describe("AdminGate Access Control & gRPC Backend Verification", () => {
     vi.restoreAllMocks();
   });
 
-  it("redirects to /login when user has no access token", async () => {
+  it("redirects to /admin/login when user has no access token", async () => {
     vi.spyOn(sessionModule, "getAuthenticatedSession").mockResolvedValue({
       accessToken: undefined,
     });
 
     await expect(AdminGate({ children: <div>Child</div> })).rejects.toThrow(
-      "REDIRECT:/login?redirect=/admin",
+      "REDIRECT:/admin/login?redirect=/admin",
     );
-    expect(mockRedirect).toHaveBeenCalledWith("/login?redirect=/admin");
+    expect(mockRedirect).toHaveBeenCalledWith("/admin/login?redirect=/admin");
   });
 
   it("shows AdminForbiddenView when user has token but role is not ADMIN", async () => {
@@ -65,7 +65,7 @@ describe("AdminGate Access Control & gRPC Backend Verification", () => {
     expect(screen.getByText(/Access Denied/i)).toBeInTheDocument();
   });
 
-  it("redirects to /login when gRPC backend returns Code.Unauthenticated for forged token", async () => {
+  it("redirects to /admin/login when gRPC backend returns Code.Unauthenticated for forged token", async () => {
     vi.spyOn(sessionModule, "getAuthenticatedSession").mockResolvedValue({
       accessToken: "forged_tampered_token",
       role: "ADMIN",
@@ -77,9 +77,9 @@ describe("AdminGate Access Control & gRPC Backend Verification", () => {
     );
 
     await expect(AdminGate({ children: <div>Child</div> })).rejects.toThrow(
-      "REDIRECT:/login?redirect=/admin",
+      "REDIRECT:/admin/login?redirect=/admin",
     );
-    expect(mockRedirect).toHaveBeenCalledWith("/login?redirect=/admin");
+    expect(mockRedirect).toHaveBeenCalledWith("/admin/login?redirect=/admin");
   });
 
   it("shows AdminForbiddenView when gRPC backend returns Code.PermissionDenied", async () => {

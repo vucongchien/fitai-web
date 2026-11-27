@@ -9,17 +9,7 @@ import {
 } from "@/features/workout/domain/audio-cues";
 import type { CoachCue, MusicTrack, Playlist } from "@/features/workout/model/live-session.types";
 
-/**
- * Background music + spoken coaching cues for the session.
- *
- * ux-flow-spec §5.2: the playlist plays under everything, warm-up and cooldown
- * included, and can be changed at any moment.
- * FR-WL-03 / ux-flow-spec §5.3: while a cue plays the music ducks by 70%, then
- * comes back — the coach is never fighting the music.
- *
- * Every asset is best effort. A missing mp3 leaves the session running in silence
- * instead of throwing.
- */
+/** Background music + spoken coaching cues for the session. */
 
 /** Music drops to 30% of its level while the coach talks (a 70% reduction). */
 const DUCK_FACTOR = 0.3;
@@ -243,10 +233,7 @@ export function useAudioCoach(playlists: Playlist[]) {
     });
   }, [duckMusic]);
 
-  /**
-   * Queue a cue. `cooldownSec` keeps the coach from repeating the same
-   * correction every rep (DialogueEngineConfig.cooldowns).
-   */
+  /** Queue a cue with per-code cooldown. */
   const playCue = useCallback(
     (cue: CoachCue, cooldownSec = 0) => {
       const last = lastCueAt.current[cue.code] ?? 0;
@@ -274,14 +261,14 @@ export function useAudioCoach(playlists: Playlist[]) {
       cueRef.current.pause();
       cueRef.current.currentTime = 0;
     }
-    setCueText(null);
+    setCueText((prev) => (prev === null ? prev : null));
     cancelAllSpeech();
   }, []);
 
   const stopAll = useCallback(() => {
     stopCues();
     musicRef.current?.pause();
-    setIsPlaying(false);
+    setIsPlaying((prev) => (prev ? false : prev));
   }, [stopCues]);
 
   return useMemo(

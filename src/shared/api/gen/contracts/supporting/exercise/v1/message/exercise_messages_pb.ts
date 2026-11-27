@@ -4,15 +4,20 @@
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Equipment, ExerciseCategory, ExerciseForce, ExerciseLevel, ExerciseMechanic, MuscleGroup } from "./taxonomy_pb";
+import { file_contracts_supporting_exercise_v1_message_taxonomy } from "./taxonomy_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file contracts/supporting/exercise/v1/message/exercise_messages.proto.
  */
 export const file_contracts_supporting_exercise_v1_message_exercise_messages: GenFile = /*@__PURE__*/
-  fileDesc("CkBjb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9tZXNzYWdlL2V4ZXJjaXNlX21lc3NhZ2VzLnByb3RvEihjb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlIuMDCgxFeGVyY2lzZUluZm8SCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIUCgxib2R5X3BhcnRfaWQYAyABKAkSFAoMZXF1aXBtZW50X2lkGAQgASgJEhgKEHRhcmdldF9tdXNjbGVfaWQYBSABKAkSFAoMaW5zdHJ1Y3Rpb25zGAYgASgJEhwKFHNlY29uZGFyeV9tdXNjbGVfaWRzGAcgAygJEhUKDXRodW1ibmFpbF91cmwYCCABKAkSEQoJbWVkaWFfdXJsGAkgASgJEhEKCXZpZGVvX3VybBgKIAEoCRISCgpkaWZmaWN1bHR5GAsgASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAwgASgFEg8KB3RhZ19pZHMYDSADKAkSSAoGc3RhdHVzGA4gASgOMjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZVN0YXR1cxIYChBoYXNfYWlfc3VwcG9ydGVkGA8gASgIElsKEG1lYXN1cmVtZW50X3R5cGUYECABKA4yQS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTWVhc3VyZW1lbnRUeXBlIsYDChVDcmVhdGVFeGVyY2lzZVJlcXVlc3QSDAoEbmFtZRgBIAEoCRIUCgxib2R5X3BhcnRfaWQYAiABKAkSFAoMZXF1aXBtZW50X2lkGAMgASgJEhgKEHRhcmdldF9tdXNjbGVfaWQYBCABKAkSFAoMaW5zdHJ1Y3Rpb25zGAUgASgJEhwKFHNlY29uZGFyeV9tdXNjbGVfaWRzGAYgAygJEhUKDXRodW1ibmFpbF91cmwYByABKAkSEQoJbWVkaWFfdXJsGAggASgJEhEKCXZpZGVvX3VybBgJIAEoCRISCgpkaWZmaWN1bHR5GAogASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAsgASgFEg8KB3RhZ19pZHMYDCADKAkSWwoQbWVhc3VyZW1lbnRfdHlwZRgNIAEoDjJBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VNZWFzdXJlbWVudFR5cGUSSAoGc3RhdHVzGA4gASgOMjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZVN0YXR1cyJiChZDcmVhdGVFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8i1gMKFVVwZGF0ZUV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEhQKDGJvZHlfcGFydF9pZBgDIAEoCRIUCgxlcXVpcG1lbnRfaWQYBCABKAkSGAoQdGFyZ2V0X211c2NsZV9pZBgFIAEoCRIUCgxpbnN0cnVjdGlvbnMYBiABKAkSHAoUc2Vjb25kYXJ5X211c2NsZV9pZHMYByADKAkSFQoNdGh1bWJuYWlsX3VybBgIIAEoCRIRCgltZWRpYV91cmwYCSABKAkSEQoJdmlkZW9fdXJsGAogASgJEhIKCmRpZmZpY3VsdHkYCyABKAkSHAoUZGVmYXVsdF9yZXN0X3NlY29uZHMYDCABKAUSDwoHdGFnX2lkcxgNIAMoCRJMCgZzdGF0dXMYDiABKA4yOC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlU3RhdHVzQgIYARJbChBtZWFzdXJlbWVudF90eXBlGA8gASgOMkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZU1lYXN1cmVtZW50VHlwZSJiChZVcGRhdGVFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iIwoVRGVsZXRlRXhlcmNpc2VSZXF1ZXN0EgoKAmlkGAEgASgJIikKFkRlbGV0ZUV4ZXJjaXNlUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCIkChZSZXN0b3JlRXhlcmNpc2VSZXF1ZXN0EgoKAmlkGAEgASgJImMKF1Jlc3RvcmVFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iLgogU3VibWl0RXhlcmNpc2VGb3JBcHByb3ZhbFJlcXVlc3QSCgoCaWQYASABKAkibQohU3VibWl0RXhlcmNpc2VGb3JBcHByb3ZhbFJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iJAoWQXBwcm92ZUV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSJjChdBcHByb3ZlRXhlcmNpc2VSZXNwb25zZRJICghleGVyY2lzZRgBIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvIiAKEkdldEV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSJfChNHZXRFeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8iGgoYR2V0UmFuZG9tRXhlcmNpc2VSZXF1ZXN0ImUKGUdldFJhbmRvbUV4ZXJjaXNlUmVzcG9uc2USSAoIZXhlcmNpc2UYASABKAsyNi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlSW5mbyKUBAoWU2VhcmNoRXhlcmNpc2VzUmVxdWVzdBIUCgxib2R5X3BhcnRfaWQYASABKAkSFAoMZXF1aXBtZW50X2lkGAIgASgJEhoKEmF2b2lkX2luanVyeV9hcmVhcxgDIAMoCRIPCgd0YWdfaWRzGAQgAygJEhgKEHRhcmdldF9tdXNjbGVfaWQYBSABKAkSHAoUc2Vjb25kYXJ5X211c2NsZV9pZHMYBiADKAkSDwoHa2V5d29yZBgHIAEoCRISCgpkaWZmaWN1bHR5GAggASgJEg0KBWxpbWl0GAkgASgFEg4KBm9mZnNldBgKIAEoBRJbChBtZWFzdXJlbWVudF90eXBlGAsgASgOMkEuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZU1lYXN1cmVtZW50VHlwZRJICgZzdGF0dXMYDCABKA4yOC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlU3RhdHVzEhwKFGluY2x1ZGVfYWxsX3N0YXR1c2VzGA0gASgIEhwKD2hhc19tb3Rpb25fc3BlYxgOIAEoCEgAiAEBEhsKDmhhc192b2ljZV9zcGVjGA8gASgISAGIAQFCEgoQX2hhc19tb3Rpb25fc3BlY0IRCg9faGFzX3ZvaWNlX3NwZWMieQoXU2VhcmNoRXhlcmNpc2VzUmVzcG9uc2USSQoJZXhlcmNpc2VzGAEgAygLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8SEwoLdG90YWxfY291bnQYAiABKAUiJAoIQm9keVBhcnQSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCSIlCglFcXVpcG1lbnQSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCSI4CgZNdXNjbGUSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIUCgxib2R5X3BhcnRfaWQYAyABKAkiHwoDVGFnEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkiGwoZR2V0Q2F0YWxvZ01ldGFkYXRhUmVxdWVzdCKtAgoaR2V0Q2F0YWxvZ01ldGFkYXRhUmVzcG9uc2USRgoKYm9keV9wYXJ0cxgBIAMoCzIyLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQm9keVBhcnQSRwoKZXF1aXBtZW50cxgCIAMoCzIzLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXF1aXBtZW50EkEKB211c2NsZXMYAyADKAsyMC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZRI7CgR0YWdzGAQgAygLMi0uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5UYWciJQoVQ3JlYXRlQm9keVBhcnRSZXF1ZXN0EgwKBG5hbWUYASABKAkiXwoWQ3JlYXRlQm9keVBhcnRSZXNwb25zZRJFCglib2R5X3BhcnQYASABKAsyMi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkJvZHlQYXJ0IiAKEkdldEJvZHlQYXJ0UmVxdWVzdBIKCgJpZBgBIAEoCSJcChNHZXRCb2R5UGFydFJlc3BvbnNlEkUKCWJvZHlfcGFydBgBIAEoCzIyLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQm9keVBhcnQiNQoUTGlzdEJvZHlQYXJ0c1JlcXVlc3QSDQoFbGltaXQYASABKAUSDgoGb2Zmc2V0GAIgASgFIm4KFUxpc3RCb2R5UGFydHNSZXNwb25zZRJGCgpib2R5X3BhcnRzGAEgAygLMjIuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5Cb2R5UGFydBINCgV0b3RhbBgCIAEoBSIxChVVcGRhdGVCb2R5UGFydFJlcXVlc3QSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCSJfChZVcGRhdGVCb2R5UGFydFJlc3BvbnNlEkUKCWJvZHlfcGFydBgBIAEoCzIyLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuQm9keVBhcnQiIwoVRGVsZXRlQm9keVBhcnRSZXF1ZXN0EgoKAmlkGAEgASgJIikKFkRlbGV0ZUJvZHlQYXJ0UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCImChZDcmVhdGVFcXVpcG1lbnRSZXF1ZXN0EgwKBG5hbWUYASABKAkiYQoXQ3JlYXRlRXF1aXBtZW50UmVzcG9uc2USRgoJZXF1aXBtZW50GAEgASgLMjMuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FcXVpcG1lbnQiIQoTR2V0RXF1aXBtZW50UmVxdWVzdBIKCgJpZBgBIAEoCSJeChRHZXRFcXVpcG1lbnRSZXNwb25zZRJGCgllcXVpcG1lbnQYASABKAsyMy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkVxdWlwbWVudCI2ChVMaXN0RXF1aXBtZW50c1JlcXVlc3QSDQoFbGltaXQYASABKAUSDgoGb2Zmc2V0GAIgASgFInAKFkxpc3RFcXVpcG1lbnRzUmVzcG9uc2USRwoKZXF1aXBtZW50cxgBIAMoCzIzLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXF1aXBtZW50Eg0KBXRvdGFsGAIgASgFIjIKFlVwZGF0ZUVxdWlwbWVudFJlcXVlc3QSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCSJhChdVcGRhdGVFcXVpcG1lbnRSZXNwb25zZRJGCgllcXVpcG1lbnQYASABKAsyMy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkVxdWlwbWVudCIkChZEZWxldGVFcXVpcG1lbnRSZXF1ZXN0EgoKAmlkGAEgASgJIioKF0RlbGV0ZUVxdWlwbWVudFJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiOQoTQ3JlYXRlTXVzY2xlUmVxdWVzdBIMCgRuYW1lGAEgASgJEhQKDGJvZHlfcGFydF9pZBgCIAEoCSJYChRDcmVhdGVNdXNjbGVSZXNwb25zZRJACgZtdXNjbGUYASABKAsyMC5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZSIeChBHZXRNdXNjbGVSZXF1ZXN0EgoKAmlkGAEgASgJIlUKEUdldE11c2NsZVJlc3BvbnNlEkAKBm11c2NsZRgBIAEoCzIwLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlIkkKEkxpc3RNdXNjbGVzUmVxdWVzdBIUCgxib2R5X3BhcnRfaWQYASABKAkSDQoFbGltaXQYAiABKAUSDgoGb2Zmc2V0GAMgASgFImcKE0xpc3RNdXNjbGVzUmVzcG9uc2USQQoHbXVzY2xlcxgBIAMoCzIwLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlEg0KBXRvdGFsGAIgASgFIkUKE1VwZGF0ZU11c2NsZVJlcXVlc3QSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIUCgxib2R5X3BhcnRfaWQYAyABKAkiWAoUVXBkYXRlTXVzY2xlUmVzcG9uc2USQAoGbXVzY2xlGAEgASgLMjAuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGUiIQoTRGVsZXRlTXVzY2xlUmVxdWVzdBIKCgJpZBgBIAEoCSInChREZWxldGVNdXNjbGVSZXNwb25zZRIPCgdzdWNjZXNzGAEgASgIIiAKEENyZWF0ZVRhZ1JlcXVlc3QSDAoEbmFtZRgBIAEoCSJPChFDcmVhdGVUYWdSZXNwb25zZRI6CgN0YWcYASABKAsyLS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLlRhZyIbCg1HZXRUYWdSZXF1ZXN0EgoKAmlkGAEgASgJIkwKDkdldFRhZ1Jlc3BvbnNlEjoKA3RhZxgBIAEoCzItLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVGFnIjAKD0xpc3RUYWdzUmVxdWVzdBINCgVsaW1pdBgBIAEoBRIOCgZvZmZzZXQYAiABKAUiXgoQTGlzdFRhZ3NSZXNwb25zZRI7CgR0YWdzGAEgAygLMi0uY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5UYWcSDQoFdG90YWwYAiABKAUiLAoQVXBkYXRlVGFnUmVxdWVzdBIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJIk8KEVVwZGF0ZVRhZ1Jlc3BvbnNlEjoKA3RhZxgBIAEoCzItLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuVGFnIh4KEERlbGV0ZVRhZ1JlcXVlc3QSCgoCaWQYASABKAkiJAoRRGVsZXRlVGFnUmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCqsAQoORXhlcmNpc2VTdGF0dXMSHwobRVhFUkNJU0VfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGQoVRVhFUkNJU0VfU1RBVFVTX0RSQUZUEAESJAogRVhFUkNJU0VfU1RBVFVTX1BFTkRJTkdfQVBQUk9WQUwQAhIaChZFWEVSQ0lTRV9TVEFUVVNfQUNUSVZFEAMSHAoYRVhFUkNJU0VfU1RBVFVTX0FSQ0hJVkVEEAQqkAEKF0V4ZXJjaXNlTWVhc3VyZW1lbnRUeXBlEikKJUVYRVJDSVNFX01FQVNVUkVNRU5UX1RZUEVfVU5TUEVDSUZJRUQQABIiCh5FWEVSQ0lTRV9NRUFTVVJFTUVOVF9UWVBFX1JFUFMQARImCiJFWEVSQ0lTRV9NRUFTVVJFTUVOVF9UWVBFX0RVUkFUSU9OEAJCcVpvZ2l0aHViLmNvbS92aWV0aHVuZzIxMy9neW0tY29tcGFuaW9uL2ludGVybmFsL2dlbi9nby9jb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9tZXNzYWdlO2V4ZXJjaXNldjFtZXNzYWdlYgZwcm90bzM");
+  fileDesc("CkBjb250cmFjdHMvc3VwcG9ydGluZy9leGVyY2lzZS92MS9tZXNzYWdlL2V4ZXJjaXNlX21lc3NhZ2VzLnByb3RvEihjb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlIqEICgxFeGVyY2lzZUluZm8SCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIRCgl2aWRlb191cmwYCiABKAkSHAoUZGVmYXVsdF9yZXN0X3NlY29uZHMYDCABKAUSSAoGc3RhdHVzGA4gASgOMjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZVN0YXR1cxIYChBoYXNfYWlfc3VwcG9ydGVkGA8gASgIElsKEG1lYXN1cmVtZW50X3R5cGUYECABKA4yQS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTWVhc3VyZW1lbnRUeXBlEgwKBHNsdWcYESABKAkSTQoOcHJpbWFyeV9tdXNjbGUYEiABKA4yNS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZUdyb3VwElAKEXNlY29uZGFyeV9tdXNjbGVzGBMgAygOMjUuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGVHcm91cBJGCgllcXVpcG1lbnQYFCABKA4yMy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkVxdWlwbWVudBJMCghjYXRlZ29yeRgVIAEoDjI6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VDYXRlZ29yeRJGCgVsZXZlbBgWIAEoDjI3LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VMZXZlbBJGCgVmb3JjZRgXIAEoDjI3LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VGb3JjZRJMCghtZWNoYW5pYxgYIAEoDjI6LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VNZWNoYW5pYxIUCgxpbnN0cnVjdGlvbnMYGSADKAkSDgoGaW1hZ2VzGBogAygJEhMKC21vdGlvbl9zbHVnGBsgASgJSgQIAxAESgQIBBAFSgQIBRAGSgQIBhAHSgQIBxAISgQICBAJSgQICRAKSgQICxAMSgQIDRAOUgxib2R5X3BhcnRfaWRSDGVxdWlwbWVudF9pZFIQdGFyZ2V0X211c2NsZV9pZFIUc2Vjb25kYXJ5X211c2NsZV9pZHNSDXRodW1ibmFpbF91cmxSCW1lZGlhX3VybFIKZGlmZmljdWx0eVIHdGFnX2lkcyKECAoVQ3JlYXRlRXhlcmNpc2VSZXF1ZXN0EgwKBG5hbWUYASABKAkSEQoJdmlkZW9fdXJsGAkgASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAsgASgFElsKEG1lYXN1cmVtZW50X3R5cGUYDSABKA4yQS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTWVhc3VyZW1lbnRUeXBlEkgKBnN0YXR1cxgOIAEoDjI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VTdGF0dXMSDAoEc2x1ZxgPIAEoCRJNCg5wcmltYXJ5X211c2NsZRgQIAEoDjI1LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlR3JvdXASUAoRc2Vjb25kYXJ5X211c2NsZXMYESADKA4yNS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZUdyb3VwEkYKCWVxdWlwbWVudBgSIAEoDjIzLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXF1aXBtZW50EkwKCGNhdGVnb3J5GBMgASgOMjouY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUNhdGVnb3J5EkYKBWxldmVsGBQgASgOMjcuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUxldmVsEkYKBWZvcmNlGBUgASgOMjcuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUZvcmNlEkwKCG1lY2hhbmljGBYgASgOMjouY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZU1lY2hhbmljEhQKDGluc3RydWN0aW9ucxgXIAMoCRIOCgZpbWFnZXMYGCADKAkSEwoLbW90aW9uX3NsdWcYGSABKAlKBAgCEANKBAgDEARKBAgEEAVKBAgFEAZKBAgGEAdKBAgHEAhKBAgIEAlKBAgKEAtKBAgMEA1SDGJvZHlfcGFydF9pZFIMZXF1aXBtZW50X2lkUhB0YXJnZXRfbXVzY2xlX2lkUhRzZWNvbmRhcnlfbXVzY2xlX2lkc1INdGh1bWJuYWlsX3VybFIJbWVkaWFfdXJsUgpkaWZmaWN1bHR5Ugd0YWdfaWRzImIKFkNyZWF0ZUV4ZXJjaXNlUmVzcG9uc2USSAoIZXhlcmNpc2UYASABKAsyNi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlSW5mbyKGCAoVVXBkYXRlRXhlcmNpc2VSZXF1ZXN0EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEQoJdmlkZW9fdXJsGAogASgJEhwKFGRlZmF1bHRfcmVzdF9zZWNvbmRzGAwgASgFEkwKBnN0YXR1cxgOIAEoDjI4LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VTdGF0dXNCAhgBElsKEG1lYXN1cmVtZW50X3R5cGUYDyABKA4yQS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTWVhc3VyZW1lbnRUeXBlEk0KDnByaW1hcnlfbXVzY2xlGBAgASgOMjUuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5NdXNjbGVHcm91cBJQChFzZWNvbmRhcnlfbXVzY2xlcxgRIAMoDjI1LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlR3JvdXASRgoJZXF1aXBtZW50GBIgASgOMjMuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FcXVpcG1lbnQSTAoIY2F0ZWdvcnkYEyABKA4yOi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlQ2F0ZWdvcnkSRgoFbGV2ZWwYFCABKA4yNy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTGV2ZWwSRgoFZm9yY2UYFSABKA4yNy5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlRm9yY2USTAoIbWVjaGFuaWMYFiABKA4yOi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTWVjaGFuaWMSFAoMaW5zdHJ1Y3Rpb25zGBcgAygJEg4KBmltYWdlcxgYIAMoCRITCgttb3Rpb25fc2x1ZxgZIAEoCUoECAMQBEoECAQQBUoECAUQBkoECAYQB0oECAcQCEoECAgQCUoECAkQCkoECAsQDEoECA0QDlIMYm9keV9wYXJ0X2lkUgxlcXVpcG1lbnRfaWRSEHRhcmdldF9tdXNjbGVfaWRSFHNlY29uZGFyeV9tdXNjbGVfaWRzUg10aHVtYm5haWxfdXJsUgltZWRpYV91cmxSCmRpZmZpY3VsdHlSB3RhZ19pZHMiYgoWVXBkYXRlRXhlcmNpc2VSZXNwb25zZRJICghleGVyY2lzZRgBIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvIiMKFURlbGV0ZUV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSIpChZEZWxldGVFeGVyY2lzZVJlc3BvbnNlEg8KB3N1Y2Nlc3MYASABKAgiJAoWUmVzdG9yZUV4ZXJjaXNlUmVxdWVzdBIKCgJpZBgBIAEoCSJjChdSZXN0b3JlRXhlcmNpc2VSZXNwb25zZRJICghleGVyY2lzZRgBIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvIiQKFkFwcHJvdmVFeGVyY2lzZVJlcXVlc3QSCgoCaWQYASABKAkiYwoXQXBwcm92ZUV4ZXJjaXNlUmVzcG9uc2USSAoIZXhlcmNpc2UYASABKAsyNi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlSW5mbyIgChJHZXRFeGVyY2lzZVJlcXVlc3QSCgoCaWQYASABKAkiXwoTR2V0RXhlcmNpc2VSZXNwb25zZRJICghleGVyY2lzZRgBIAEoCzI2LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VJbmZvIhoKGEdldFJhbmRvbUV4ZXJjaXNlUmVxdWVzdCJlChlHZXRSYW5kb21FeGVyY2lzZVJlc3BvbnNlEkgKCGV4ZXJjaXNlGAEgASgLMjYuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUluZm8ixAkKFlNlYXJjaEV4ZXJjaXNlc1JlcXVlc3QSDwoHa2V5d29yZBgHIAEoCRINCgVsaW1pdBgJIAEoBRIOCgZvZmZzZXQYCiABKAUSWwoQbWVhc3VyZW1lbnRfdHlwZRgLIAEoDjJBLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXhlcmNpc2VNZWFzdXJlbWVudFR5cGUSSAoGc3RhdHVzGAwgASgOMjguY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZVN0YXR1cxIcChRpbmNsdWRlX2FsbF9zdGF0dXNlcxgNIAEoCBIcCg9oYXNfbW90aW9uX3NwZWMYDiABKAhIAIgBARIbCg5oYXNfdm9pY2Vfc3BlYxgPIAEoCEgBiAEBEk4KD3ByaW1hcnlfbXVzY2xlcxgQIAMoDjI1LmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuTXVzY2xlR3JvdXASUAoRc2Vjb25kYXJ5X211c2NsZXMYESADKA4yNS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZUdyb3VwEkYKCWVxdWlwbWVudBgSIAMoDjIzLmNvbnRyYWN0cy5zdXBwb3J0aW5nLmV4ZXJjaXNlLnYxLm1lc3NhZ2UuRXF1aXBtZW50Ek4KCmNhdGVnb3JpZXMYEyADKA4yOi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlQ2F0ZWdvcnkSRwoGbGV2ZWxzGBQgAygOMjcuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUxldmVsEksKBWZvcmNlGBUgASgOMjcuY29udHJhY3RzLnN1cHBvcnRpbmcuZXhlcmNpc2UudjEubWVzc2FnZS5FeGVyY2lzZUZvcmNlSAKIAQESUQoIbWVjaGFuaWMYFiABKA4yOi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlTWVjaGFuaWNIA4gBARJOCg9leGNsdWRlX211c2NsZXMYFyADKA4yNS5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLk11c2NsZUdyb3VwEh0KEGhhc19haV9zdXBwb3J0ZWQYGCABKAhIBIgBAUISChBfaGFzX21vdGlvbl9zcGVjQhEKD19oYXNfdm9pY2Vfc3BlY0IICgZfZm9yY2VCCwoJX21lY2hhbmljQhMKEV9oYXNfYWlfc3VwcG9ydGVkSgQIARACSgQIAhADSgQIAxAESgQIBBAFSgQIBRAGSgQIBhAHSgQICBAJUgxib2R5X3BhcnRfaWRSDGVxdWlwbWVudF9pZFISYXZvaWRfaW5qdXJ5X2FyZWFzUgd0YWdfaWRzUhB0YXJnZXRfbXVzY2xlX2lkUhRzZWNvbmRhcnlfbXVzY2xlX2lkc1IKZGlmZmljdWx0eSJ5ChdTZWFyY2hFeGVyY2lzZXNSZXNwb25zZRJJCglleGVyY2lzZXMYASADKAsyNi5jb250cmFjdHMuc3VwcG9ydGluZy5leGVyY2lzZS52MS5tZXNzYWdlLkV4ZXJjaXNlSW5mbxITCgt0b3RhbF9jb3VudBgCIAEoBSquAQoORXhlcmNpc2VTdGF0dXMSHwobRVhFUkNJU0VfU1RBVFVTX1VOU1BFQ0lGSUVEEAASGQoVRVhFUkNJU0VfU1RBVFVTX0RSQUZUEAESGgoWRVhFUkNJU0VfU1RBVFVTX0FDVElWRRADEhwKGEVYRVJDSVNFX1NUQVRVU19BUkNISVZFRBAEIgQIAhACKiBFWEVSQ0lTRV9TVEFUVVNfUEVORElOR19BUFBST1ZBTCqQAQoXRXhlcmNpc2VNZWFzdXJlbWVudFR5cGUSKQolRVhFUkNJU0VfTUVBU1VSRU1FTlRfVFlQRV9VTlNQRUNJRklFRBAAEiIKHkVYRVJDSVNFX01FQVNVUkVNRU5UX1RZUEVfUkVQUxABEiYKIkVYRVJDSVNFX01FQVNVUkVNRU5UX1RZUEVfRFVSQVRJT04QAkJxWm9naXRodWIuY29tL3ZpZXRodW5nMjEzL2d5bS1jb21wYW5pb24vaW50ZXJuYWwvZ2VuL2dvL2NvbnRyYWN0cy9zdXBwb3J0aW5nL2V4ZXJjaXNlL3YxL21lc3NhZ2U7ZXhlcmNpc2V2MW1lc3NhZ2ViBnByb3RvMw", [file_contracts_supporting_exercise_v1_message_taxonomy]);
 
 /**
+ * ExerciseInfo is one catalog exercise. force and mechanic are UNSPECIFIED
+ * when the source has no value; images are absolute URLs.
+ *
  * @generated from message contracts.supporting.exercise.v1.message.ExerciseInfo
  */
 export type ExerciseInfo = Message<"contracts.supporting.exercise.v1.message.ExerciseInfo"> & {
@@ -27,59 +32,14 @@ export type ExerciseInfo = Message<"contracts.supporting.exercise.v1.message.Exe
   name: string;
 
   /**
-   * @generated from field: string body_part_id = 3;
-   */
-  bodyPartId: string;
-
-  /**
-   * @generated from field: string equipment_id = 4;
-   */
-  equipmentId: string;
-
-  /**
-   * @generated from field: string target_muscle_id = 5;
-   */
-  targetMuscleId: string;
-
-  /**
-   * @generated from field: string instructions = 6;
-   */
-  instructions: string;
-
-  /**
-   * @generated from field: repeated string secondary_muscle_ids = 7;
-   */
-  secondaryMuscleIds: string[];
-
-  /**
-   * @generated from field: string thumbnail_url = 8;
-   */
-  thumbnailUrl: string;
-
-  /**
-   * @generated from field: string media_url = 9;
-   */
-  mediaUrl: string;
-
-  /**
    * @generated from field: string video_url = 10;
    */
   videoUrl: string;
 
   /**
-   * @generated from field: string difficulty = 11;
-   */
-  difficulty: string;
-
-  /**
    * @generated from field: int32 default_rest_seconds = 12;
    */
   defaultRestSeconds: number;
-
-  /**
-   * @generated from field: repeated string tag_ids = 13;
-   */
-  tagIds: string[];
 
   /**
    * @generated from field: contracts.supporting.exercise.v1.message.ExerciseStatus status = 14;
@@ -95,6 +55,61 @@ export type ExerciseInfo = Message<"contracts.supporting.exercise.v1.message.Exe
    * @generated from field: contracts.supporting.exercise.v1.message.ExerciseMeasurementType measurement_type = 16;
    */
   measurementType: ExerciseMeasurementType;
+
+  /**
+   * @generated from field: string slug = 17;
+   */
+  slug: string;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.MuscleGroup primary_muscle = 18;
+   */
+  primaryMuscle: MuscleGroup;
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup secondary_muscles = 19;
+   */
+  secondaryMuscles: MuscleGroup[];
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.Equipment equipment = 20;
+   */
+  equipment: Equipment;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseCategory category = 21;
+   */
+  category: ExerciseCategory;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseLevel level = 22;
+   */
+  level: ExerciseLevel;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseForce force = 23;
+   */
+  force: ExerciseForce;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseMechanic mechanic = 24;
+   */
+  mechanic: ExerciseMechanic;
+
+  /**
+   * @generated from field: repeated string instructions = 25;
+   */
+  instructions: string[];
+
+  /**
+   * @generated from field: repeated string images = 26;
+   */
+  images: string[];
+
+  /**
+   * @generated from field: string motion_slug = 27;
+   */
+  motionSlug: string;
 };
 
 /**
@@ -105,6 +120,12 @@ export const ExerciseInfoSchema: GenMessage<ExerciseInfo> = /*@__PURE__*/
   messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 0);
 
 /**
+ * CreateExerciseRequest creates a catalog exercise. A non-empty slug marks an
+ * exercise imported from free-exercise-db (slug = source id); without it the
+ * exercise is custom and the slug is derived from the name. force and mechanic
+ * may be UNSPECIFIED (no value); images are paths relative to the media base
+ * URL or absolute URLs.
+ *
  * @generated from message contracts.supporting.exercise.v1.message.CreateExerciseRequest
  */
 export type CreateExerciseRequest = Message<"contracts.supporting.exercise.v1.message.CreateExerciseRequest"> & {
@@ -114,59 +135,14 @@ export type CreateExerciseRequest = Message<"contracts.supporting.exercise.v1.me
   name: string;
 
   /**
-   * @generated from field: string body_part_id = 2;
-   */
-  bodyPartId: string;
-
-  /**
-   * @generated from field: string equipment_id = 3;
-   */
-  equipmentId: string;
-
-  /**
-   * @generated from field: string target_muscle_id = 4;
-   */
-  targetMuscleId: string;
-
-  /**
-   * @generated from field: string instructions = 5;
-   */
-  instructions: string;
-
-  /**
-   * @generated from field: repeated string secondary_muscle_ids = 6;
-   */
-  secondaryMuscleIds: string[];
-
-  /**
-   * @generated from field: string thumbnail_url = 7;
-   */
-  thumbnailUrl: string;
-
-  /**
-   * @generated from field: string media_url = 8;
-   */
-  mediaUrl: string;
-
-  /**
    * @generated from field: string video_url = 9;
    */
   videoUrl: string;
 
   /**
-   * @generated from field: string difficulty = 10;
-   */
-  difficulty: string;
-
-  /**
    * @generated from field: int32 default_rest_seconds = 11;
    */
   defaultRestSeconds: number;
-
-  /**
-   * @generated from field: repeated string tag_ids = 12;
-   */
-  tagIds: string[];
 
   /**
    * @generated from field: contracts.supporting.exercise.v1.message.ExerciseMeasurementType measurement_type = 13;
@@ -177,6 +153,61 @@ export type CreateExerciseRequest = Message<"contracts.supporting.exercise.v1.me
    * @generated from field: contracts.supporting.exercise.v1.message.ExerciseStatus status = 14;
    */
   status: ExerciseStatus;
+
+  /**
+   * @generated from field: string slug = 15;
+   */
+  slug: string;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.MuscleGroup primary_muscle = 16;
+   */
+  primaryMuscle: MuscleGroup;
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup secondary_muscles = 17;
+   */
+  secondaryMuscles: MuscleGroup[];
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.Equipment equipment = 18;
+   */
+  equipment: Equipment;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseCategory category = 19;
+   */
+  category: ExerciseCategory;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseLevel level = 20;
+   */
+  level: ExerciseLevel;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseForce force = 21;
+   */
+  force: ExerciseForce;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseMechanic mechanic = 22;
+   */
+  mechanic: ExerciseMechanic;
+
+  /**
+   * @generated from field: repeated string instructions = 23;
+   */
+  instructions: string[];
+
+  /**
+   * @generated from field: repeated string images = 24;
+   */
+  images: string[];
+
+  /**
+   * @generated from field: string motion_slug = 25;
+   */
+  motionSlug: string;
 };
 
 /**
@@ -204,6 +235,9 @@ export const CreateExerciseResponseSchema: GenMessage<CreateExerciseResponse> = 
   messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 2);
 
 /**
+ * UpdateExerciseRequest replaces the editable fields of an exercise; the slug
+ * is immutable.
+ *
  * @generated from message contracts.supporting.exercise.v1.message.UpdateExerciseRequest
  */
 export type UpdateExerciseRequest = Message<"contracts.supporting.exercise.v1.message.UpdateExerciseRequest"> & {
@@ -218,59 +252,14 @@ export type UpdateExerciseRequest = Message<"contracts.supporting.exercise.v1.me
   name: string;
 
   /**
-   * @generated from field: string body_part_id = 3;
-   */
-  bodyPartId: string;
-
-  /**
-   * @generated from field: string equipment_id = 4;
-   */
-  equipmentId: string;
-
-  /**
-   * @generated from field: string target_muscle_id = 5;
-   */
-  targetMuscleId: string;
-
-  /**
-   * @generated from field: string instructions = 6;
-   */
-  instructions: string;
-
-  /**
-   * @generated from field: repeated string secondary_muscle_ids = 7;
-   */
-  secondaryMuscleIds: string[];
-
-  /**
-   * @generated from field: string thumbnail_url = 8;
-   */
-  thumbnailUrl: string;
-
-  /**
-   * @generated from field: string media_url = 9;
-   */
-  mediaUrl: string;
-
-  /**
    * @generated from field: string video_url = 10;
    */
   videoUrl: string;
 
   /**
-   * @generated from field: string difficulty = 11;
-   */
-  difficulty: string;
-
-  /**
    * @generated from field: int32 default_rest_seconds = 12;
    */
   defaultRestSeconds: number;
-
-  /**
-   * @generated from field: repeated string tag_ids = 13;
-   */
-  tagIds: string[];
 
   /**
    * @generated from field: contracts.supporting.exercise.v1.message.ExerciseStatus status = 14 [deprecated = true];
@@ -282,6 +271,56 @@ export type UpdateExerciseRequest = Message<"contracts.supporting.exercise.v1.me
    * @generated from field: contracts.supporting.exercise.v1.message.ExerciseMeasurementType measurement_type = 15;
    */
   measurementType: ExerciseMeasurementType;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.MuscleGroup primary_muscle = 16;
+   */
+  primaryMuscle: MuscleGroup;
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup secondary_muscles = 17;
+   */
+  secondaryMuscles: MuscleGroup[];
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.Equipment equipment = 18;
+   */
+  equipment: Equipment;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseCategory category = 19;
+   */
+  category: ExerciseCategory;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseLevel level = 20;
+   */
+  level: ExerciseLevel;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseForce force = 21;
+   */
+  force: ExerciseForce;
+
+  /**
+   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseMechanic mechanic = 22;
+   */
+  mechanic: ExerciseMechanic;
+
+  /**
+   * @generated from field: repeated string instructions = 23;
+   */
+  instructions: string[];
+
+  /**
+   * @generated from field: repeated string images = 24;
+   */
+  images: string[];
+
+  /**
+   * @generated from field: string motion_slug = 25;
+   */
+  motionSlug: string;
 };
 
 /**
@@ -377,40 +416,6 @@ export const RestoreExerciseResponseSchema: GenMessage<RestoreExerciseResponse> 
   messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 8);
 
 /**
- * @generated from message contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalRequest
- */
-export type SubmitExerciseForApprovalRequest = Message<"contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalRequest.
- * Use `create(SubmitExerciseForApprovalRequestSchema)` to create a new message.
- */
-export const SubmitExerciseForApprovalRequestSchema: GenMessage<SubmitExerciseForApprovalRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 9);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalResponse
- */
-export type SubmitExerciseForApprovalResponse = Message<"contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.ExerciseInfo exercise = 1;
-   */
-  exercise?: ExerciseInfo | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.SubmitExerciseForApprovalResponse.
- * Use `create(SubmitExerciseForApprovalResponseSchema)` to create a new message.
- */
-export const SubmitExerciseForApprovalResponseSchema: GenMessage<SubmitExerciseForApprovalResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 10);
-
-/**
  * @generated from message contracts.supporting.exercise.v1.message.ApproveExerciseRequest
  */
 export type ApproveExerciseRequest = Message<"contracts.supporting.exercise.v1.message.ApproveExerciseRequest"> & {
@@ -425,7 +430,7 @@ export type ApproveExerciseRequest = Message<"contracts.supporting.exercise.v1.m
  * Use `create(ApproveExerciseRequestSchema)` to create a new message.
  */
 export const ApproveExerciseRequestSchema: GenMessage<ApproveExerciseRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 11);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 9);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.ApproveExerciseResponse
@@ -442,7 +447,7 @@ export type ApproveExerciseResponse = Message<"contracts.supporting.exercise.v1.
  * Use `create(ApproveExerciseResponseSchema)` to create a new message.
  */
 export const ApproveExerciseResponseSchema: GenMessage<ApproveExerciseResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 12);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 10);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetExerciseRequest
@@ -459,7 +464,7 @@ export type GetExerciseRequest = Message<"contracts.supporting.exercise.v1.messa
  * Use `create(GetExerciseRequestSchema)` to create a new message.
  */
 export const GetExerciseRequestSchema: GenMessage<GetExerciseRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 13);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 11);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetExerciseResponse
@@ -476,7 +481,7 @@ export type GetExerciseResponse = Message<"contracts.supporting.exercise.v1.mess
  * Use `create(GetExerciseResponseSchema)` to create a new message.
  */
 export const GetExerciseResponseSchema: GenMessage<GetExerciseResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 14);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 12);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetRandomExerciseRequest
@@ -489,7 +494,7 @@ export type GetRandomExerciseRequest = Message<"contracts.supporting.exercise.v1
  * Use `create(GetRandomExerciseRequestSchema)` to create a new message.
  */
 export const GetRandomExerciseRequestSchema: GenMessage<GetRandomExerciseRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 15);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 13);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.GetRandomExerciseResponse
@@ -506,51 +511,20 @@ export type GetRandomExerciseResponse = Message<"contracts.supporting.exercise.v
  * Use `create(GetRandomExerciseResponseSchema)` to create a new message.
  */
 export const GetRandomExerciseResponseSchema: GenMessage<GetRandomExerciseResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 16);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 14);
 
 /**
+ * SearchExercisesRequest filters the catalog. Repeated filters match any of
+ * the given values; exclude_muscles drops exercises whose primary or any
+ * secondary muscle is listed.
+ *
  * @generated from message contracts.supporting.exercise.v1.message.SearchExercisesRequest
  */
 export type SearchExercisesRequest = Message<"contracts.supporting.exercise.v1.message.SearchExercisesRequest"> & {
   /**
-   * @generated from field: string body_part_id = 1;
-   */
-  bodyPartId: string;
-
-  /**
-   * @generated from field: string equipment_id = 2;
-   */
-  equipmentId: string;
-
-  /**
-   * @generated from field: repeated string avoid_injury_areas = 3;
-   */
-  avoidInjuryAreas: string[];
-
-  /**
-   * @generated from field: repeated string tag_ids = 4;
-   */
-  tagIds: string[];
-
-  /**
-   * @generated from field: string target_muscle_id = 5;
-   */
-  targetMuscleId: string;
-
-  /**
-   * @generated from field: repeated string secondary_muscle_ids = 6;
-   */
-  secondaryMuscleIds: string[];
-
-  /**
    * @generated from field: string keyword = 7;
    */
   keyword: string;
-
-  /**
-   * @generated from field: string difficulty = 8;
-   */
-  difficulty: string;
 
   /**
    * @generated from field: int32 limit = 9;
@@ -586,6 +560,51 @@ export type SearchExercisesRequest = Message<"contracts.supporting.exercise.v1.m
    * @generated from field: optional bool has_voice_spec = 15;
    */
   hasVoiceSpec?: boolean | undefined;
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup primary_muscles = 16;
+   */
+  primaryMuscles: MuscleGroup[];
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup secondary_muscles = 17;
+   */
+  secondaryMuscles: MuscleGroup[];
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.Equipment equipment = 18;
+   */
+  equipment: Equipment[];
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.ExerciseCategory categories = 19;
+   */
+  categories: ExerciseCategory[];
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.ExerciseLevel levels = 20;
+   */
+  levels: ExerciseLevel[];
+
+  /**
+   * @generated from field: optional contracts.supporting.exercise.v1.message.ExerciseForce force = 21;
+   */
+  force?: ExerciseForce | undefined;
+
+  /**
+   * @generated from field: optional contracts.supporting.exercise.v1.message.ExerciseMechanic mechanic = 22;
+   */
+  mechanic?: ExerciseMechanic | undefined;
+
+  /**
+   * @generated from field: repeated contracts.supporting.exercise.v1.message.MuscleGroup exclude_muscles = 23;
+   */
+  excludeMuscles: MuscleGroup[];
+
+  /**
+   * @generated from field: optional bool has_ai_supported = 24;
+   */
+  hasAiSupported?: boolean | undefined;
 };
 
 /**
@@ -593,7 +612,7 @@ export type SearchExercisesRequest = Message<"contracts.supporting.exercise.v1.m
  * Use `create(SearchExercisesRequestSchema)` to create a new message.
  */
 export const SearchExercisesRequestSchema: GenMessage<SearchExercisesRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 17);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 15);
 
 /**
  * @generated from message contracts.supporting.exercise.v1.message.SearchExercisesResponse
@@ -615,912 +634,12 @@ export type SearchExercisesResponse = Message<"contracts.supporting.exercise.v1.
  * Use `create(SearchExercisesResponseSchema)` to create a new message.
  */
 export const SearchExercisesResponseSchema: GenMessage<SearchExercisesResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 18);
+  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 16);
 
 /**
- * Lookup metadata definitions
+ * ExerciseStatus is the exercise lifecycle: DRAFT -> ACTIVE (approve) -> ARCHIVED
+ * (archive) -> ACTIVE (restore). DRAFT means awaiting an admin's approval.
  *
- * @generated from message contracts.supporting.exercise.v1.message.BodyPart
- */
-export type BodyPart = Message<"contracts.supporting.exercise.v1.message.BodyPart"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.BodyPart.
- * Use `create(BodyPartSchema)` to create a new message.
- */
-export const BodyPartSchema: GenMessage<BodyPart> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 19);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.Equipment
- */
-export type Equipment = Message<"contracts.supporting.exercise.v1.message.Equipment"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.Equipment.
- * Use `create(EquipmentSchema)` to create a new message.
- */
-export const EquipmentSchema: GenMessage<Equipment> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 20);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.Muscle
- */
-export type Muscle = Message<"contracts.supporting.exercise.v1.message.Muscle"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-
-  /**
-   * @generated from field: string body_part_id = 3;
-   */
-  bodyPartId: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.Muscle.
- * Use `create(MuscleSchema)` to create a new message.
- */
-export const MuscleSchema: GenMessage<Muscle> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 21);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.Tag
- */
-export type Tag = Message<"contracts.supporting.exercise.v1.message.Tag"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.Tag.
- * Use `create(TagSchema)` to create a new message.
- */
-export const TagSchema: GenMessage<Tag> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 22);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetCatalogMetadataRequest
- */
-export type GetCatalogMetadataRequest = Message<"contracts.supporting.exercise.v1.message.GetCatalogMetadataRequest"> & {
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetCatalogMetadataRequest.
- * Use `create(GetCatalogMetadataRequestSchema)` to create a new message.
- */
-export const GetCatalogMetadataRequestSchema: GenMessage<GetCatalogMetadataRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 23);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetCatalogMetadataResponse
- */
-export type GetCatalogMetadataResponse = Message<"contracts.supporting.exercise.v1.message.GetCatalogMetadataResponse"> & {
-  /**
-   * @generated from field: repeated contracts.supporting.exercise.v1.message.BodyPart body_parts = 1;
-   */
-  bodyParts: BodyPart[];
-
-  /**
-   * @generated from field: repeated contracts.supporting.exercise.v1.message.Equipment equipments = 2;
-   */
-  equipments: Equipment[];
-
-  /**
-   * @generated from field: repeated contracts.supporting.exercise.v1.message.Muscle muscles = 3;
-   */
-  muscles: Muscle[];
-
-  /**
-   * @generated from field: repeated contracts.supporting.exercise.v1.message.Tag tags = 4;
-   */
-  tags: Tag[];
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetCatalogMetadataResponse.
- * Use `create(GetCatalogMetadataResponseSchema)` to create a new message.
- */
-export const GetCatalogMetadataResponseSchema: GenMessage<GetCatalogMetadataResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 24);
-
-/**
- * BodyPart CRUD
- *
- * @generated from message contracts.supporting.exercise.v1.message.CreateBodyPartRequest
- */
-export type CreateBodyPartRequest = Message<"contracts.supporting.exercise.v1.message.CreateBodyPartRequest"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.CreateBodyPartRequest.
- * Use `create(CreateBodyPartRequestSchema)` to create a new message.
- */
-export const CreateBodyPartRequestSchema: GenMessage<CreateBodyPartRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 25);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.CreateBodyPartResponse
- */
-export type CreateBodyPartResponse = Message<"contracts.supporting.exercise.v1.message.CreateBodyPartResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.BodyPart body_part = 1;
-   */
-  bodyPart?: BodyPart | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.CreateBodyPartResponse.
- * Use `create(CreateBodyPartResponseSchema)` to create a new message.
- */
-export const CreateBodyPartResponseSchema: GenMessage<CreateBodyPartResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 26);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetBodyPartRequest
- */
-export type GetBodyPartRequest = Message<"contracts.supporting.exercise.v1.message.GetBodyPartRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetBodyPartRequest.
- * Use `create(GetBodyPartRequestSchema)` to create a new message.
- */
-export const GetBodyPartRequestSchema: GenMessage<GetBodyPartRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 27);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetBodyPartResponse
- */
-export type GetBodyPartResponse = Message<"contracts.supporting.exercise.v1.message.GetBodyPartResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.BodyPart body_part = 1;
-   */
-  bodyPart?: BodyPart | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetBodyPartResponse.
- * Use `create(GetBodyPartResponseSchema)` to create a new message.
- */
-export const GetBodyPartResponseSchema: GenMessage<GetBodyPartResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 28);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.ListBodyPartsRequest
- */
-export type ListBodyPartsRequest = Message<"contracts.supporting.exercise.v1.message.ListBodyPartsRequest"> & {
-  /**
-   * @generated from field: int32 limit = 1;
-   */
-  limit: number;
-
-  /**
-   * @generated from field: int32 offset = 2;
-   */
-  offset: number;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.ListBodyPartsRequest.
- * Use `create(ListBodyPartsRequestSchema)` to create a new message.
- */
-export const ListBodyPartsRequestSchema: GenMessage<ListBodyPartsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 29);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.ListBodyPartsResponse
- */
-export type ListBodyPartsResponse = Message<"contracts.supporting.exercise.v1.message.ListBodyPartsResponse"> & {
-  /**
-   * @generated from field: repeated contracts.supporting.exercise.v1.message.BodyPart body_parts = 1;
-   */
-  bodyParts: BodyPart[];
-
-  /**
-   * @generated from field: int32 total = 2;
-   */
-  total: number;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.ListBodyPartsResponse.
- * Use `create(ListBodyPartsResponseSchema)` to create a new message.
- */
-export const ListBodyPartsResponseSchema: GenMessage<ListBodyPartsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 30);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.UpdateBodyPartRequest
- */
-export type UpdateBodyPartRequest = Message<"contracts.supporting.exercise.v1.message.UpdateBodyPartRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.UpdateBodyPartRequest.
- * Use `create(UpdateBodyPartRequestSchema)` to create a new message.
- */
-export const UpdateBodyPartRequestSchema: GenMessage<UpdateBodyPartRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 31);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.UpdateBodyPartResponse
- */
-export type UpdateBodyPartResponse = Message<"contracts.supporting.exercise.v1.message.UpdateBodyPartResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.BodyPart body_part = 1;
-   */
-  bodyPart?: BodyPart | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.UpdateBodyPartResponse.
- * Use `create(UpdateBodyPartResponseSchema)` to create a new message.
- */
-export const UpdateBodyPartResponseSchema: GenMessage<UpdateBodyPartResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 32);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.DeleteBodyPartRequest
- */
-export type DeleteBodyPartRequest = Message<"contracts.supporting.exercise.v1.message.DeleteBodyPartRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.DeleteBodyPartRequest.
- * Use `create(DeleteBodyPartRequestSchema)` to create a new message.
- */
-export const DeleteBodyPartRequestSchema: GenMessage<DeleteBodyPartRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 33);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.DeleteBodyPartResponse
- */
-export type DeleteBodyPartResponse = Message<"contracts.supporting.exercise.v1.message.DeleteBodyPartResponse"> & {
-  /**
-   * @generated from field: bool success = 1;
-   */
-  success: boolean;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.DeleteBodyPartResponse.
- * Use `create(DeleteBodyPartResponseSchema)` to create a new message.
- */
-export const DeleteBodyPartResponseSchema: GenMessage<DeleteBodyPartResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 34);
-
-/**
- * Equipment CRUD
- *
- * @generated from message contracts.supporting.exercise.v1.message.CreateEquipmentRequest
- */
-export type CreateEquipmentRequest = Message<"contracts.supporting.exercise.v1.message.CreateEquipmentRequest"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.CreateEquipmentRequest.
- * Use `create(CreateEquipmentRequestSchema)` to create a new message.
- */
-export const CreateEquipmentRequestSchema: GenMessage<CreateEquipmentRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 35);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.CreateEquipmentResponse
- */
-export type CreateEquipmentResponse = Message<"contracts.supporting.exercise.v1.message.CreateEquipmentResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Equipment equipment = 1;
-   */
-  equipment?: Equipment | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.CreateEquipmentResponse.
- * Use `create(CreateEquipmentResponseSchema)` to create a new message.
- */
-export const CreateEquipmentResponseSchema: GenMessage<CreateEquipmentResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 36);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetEquipmentRequest
- */
-export type GetEquipmentRequest = Message<"contracts.supporting.exercise.v1.message.GetEquipmentRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetEquipmentRequest.
- * Use `create(GetEquipmentRequestSchema)` to create a new message.
- */
-export const GetEquipmentRequestSchema: GenMessage<GetEquipmentRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 37);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetEquipmentResponse
- */
-export type GetEquipmentResponse = Message<"contracts.supporting.exercise.v1.message.GetEquipmentResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Equipment equipment = 1;
-   */
-  equipment?: Equipment | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetEquipmentResponse.
- * Use `create(GetEquipmentResponseSchema)` to create a new message.
- */
-export const GetEquipmentResponseSchema: GenMessage<GetEquipmentResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 38);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.ListEquipmentsRequest
- */
-export type ListEquipmentsRequest = Message<"contracts.supporting.exercise.v1.message.ListEquipmentsRequest"> & {
-  /**
-   * @generated from field: int32 limit = 1;
-   */
-  limit: number;
-
-  /**
-   * @generated from field: int32 offset = 2;
-   */
-  offset: number;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.ListEquipmentsRequest.
- * Use `create(ListEquipmentsRequestSchema)` to create a new message.
- */
-export const ListEquipmentsRequestSchema: GenMessage<ListEquipmentsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 39);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.ListEquipmentsResponse
- */
-export type ListEquipmentsResponse = Message<"contracts.supporting.exercise.v1.message.ListEquipmentsResponse"> & {
-  /**
-   * @generated from field: repeated contracts.supporting.exercise.v1.message.Equipment equipments = 1;
-   */
-  equipments: Equipment[];
-
-  /**
-   * @generated from field: int32 total = 2;
-   */
-  total: number;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.ListEquipmentsResponse.
- * Use `create(ListEquipmentsResponseSchema)` to create a new message.
- */
-export const ListEquipmentsResponseSchema: GenMessage<ListEquipmentsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 40);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.UpdateEquipmentRequest
- */
-export type UpdateEquipmentRequest = Message<"contracts.supporting.exercise.v1.message.UpdateEquipmentRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.UpdateEquipmentRequest.
- * Use `create(UpdateEquipmentRequestSchema)` to create a new message.
- */
-export const UpdateEquipmentRequestSchema: GenMessage<UpdateEquipmentRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 41);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.UpdateEquipmentResponse
- */
-export type UpdateEquipmentResponse = Message<"contracts.supporting.exercise.v1.message.UpdateEquipmentResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Equipment equipment = 1;
-   */
-  equipment?: Equipment | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.UpdateEquipmentResponse.
- * Use `create(UpdateEquipmentResponseSchema)` to create a new message.
- */
-export const UpdateEquipmentResponseSchema: GenMessage<UpdateEquipmentResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 42);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.DeleteEquipmentRequest
- */
-export type DeleteEquipmentRequest = Message<"contracts.supporting.exercise.v1.message.DeleteEquipmentRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.DeleteEquipmentRequest.
- * Use `create(DeleteEquipmentRequestSchema)` to create a new message.
- */
-export const DeleteEquipmentRequestSchema: GenMessage<DeleteEquipmentRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 43);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.DeleteEquipmentResponse
- */
-export type DeleteEquipmentResponse = Message<"contracts.supporting.exercise.v1.message.DeleteEquipmentResponse"> & {
-  /**
-   * @generated from field: bool success = 1;
-   */
-  success: boolean;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.DeleteEquipmentResponse.
- * Use `create(DeleteEquipmentResponseSchema)` to create a new message.
- */
-export const DeleteEquipmentResponseSchema: GenMessage<DeleteEquipmentResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 44);
-
-/**
- * Muscle CRUD
- *
- * @generated from message contracts.supporting.exercise.v1.message.CreateMuscleRequest
- */
-export type CreateMuscleRequest = Message<"contracts.supporting.exercise.v1.message.CreateMuscleRequest"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-
-  /**
-   * @generated from field: string body_part_id = 2;
-   */
-  bodyPartId: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.CreateMuscleRequest.
- * Use `create(CreateMuscleRequestSchema)` to create a new message.
- */
-export const CreateMuscleRequestSchema: GenMessage<CreateMuscleRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 45);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.CreateMuscleResponse
- */
-export type CreateMuscleResponse = Message<"contracts.supporting.exercise.v1.message.CreateMuscleResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Muscle muscle = 1;
-   */
-  muscle?: Muscle | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.CreateMuscleResponse.
- * Use `create(CreateMuscleResponseSchema)` to create a new message.
- */
-export const CreateMuscleResponseSchema: GenMessage<CreateMuscleResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 46);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetMuscleRequest
- */
-export type GetMuscleRequest = Message<"contracts.supporting.exercise.v1.message.GetMuscleRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetMuscleRequest.
- * Use `create(GetMuscleRequestSchema)` to create a new message.
- */
-export const GetMuscleRequestSchema: GenMessage<GetMuscleRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 47);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetMuscleResponse
- */
-export type GetMuscleResponse = Message<"contracts.supporting.exercise.v1.message.GetMuscleResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Muscle muscle = 1;
-   */
-  muscle?: Muscle | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetMuscleResponse.
- * Use `create(GetMuscleResponseSchema)` to create a new message.
- */
-export const GetMuscleResponseSchema: GenMessage<GetMuscleResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 48);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.ListMusclesRequest
- */
-export type ListMusclesRequest = Message<"contracts.supporting.exercise.v1.message.ListMusclesRequest"> & {
-  /**
-   * @generated from field: string body_part_id = 1;
-   */
-  bodyPartId: string;
-
-  /**
-   * @generated from field: int32 limit = 2;
-   */
-  limit: number;
-
-  /**
-   * @generated from field: int32 offset = 3;
-   */
-  offset: number;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.ListMusclesRequest.
- * Use `create(ListMusclesRequestSchema)` to create a new message.
- */
-export const ListMusclesRequestSchema: GenMessage<ListMusclesRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 49);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.ListMusclesResponse
- */
-export type ListMusclesResponse = Message<"contracts.supporting.exercise.v1.message.ListMusclesResponse"> & {
-  /**
-   * @generated from field: repeated contracts.supporting.exercise.v1.message.Muscle muscles = 1;
-   */
-  muscles: Muscle[];
-
-  /**
-   * @generated from field: int32 total = 2;
-   */
-  total: number;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.ListMusclesResponse.
- * Use `create(ListMusclesResponseSchema)` to create a new message.
- */
-export const ListMusclesResponseSchema: GenMessage<ListMusclesResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 50);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.UpdateMuscleRequest
- */
-export type UpdateMuscleRequest = Message<"contracts.supporting.exercise.v1.message.UpdateMuscleRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-
-  /**
-   * @generated from field: string body_part_id = 3;
-   */
-  bodyPartId: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.UpdateMuscleRequest.
- * Use `create(UpdateMuscleRequestSchema)` to create a new message.
- */
-export const UpdateMuscleRequestSchema: GenMessage<UpdateMuscleRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 51);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.UpdateMuscleResponse
- */
-export type UpdateMuscleResponse = Message<"contracts.supporting.exercise.v1.message.UpdateMuscleResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Muscle muscle = 1;
-   */
-  muscle?: Muscle | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.UpdateMuscleResponse.
- * Use `create(UpdateMuscleResponseSchema)` to create a new message.
- */
-export const UpdateMuscleResponseSchema: GenMessage<UpdateMuscleResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 52);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.DeleteMuscleRequest
- */
-export type DeleteMuscleRequest = Message<"contracts.supporting.exercise.v1.message.DeleteMuscleRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.DeleteMuscleRequest.
- * Use `create(DeleteMuscleRequestSchema)` to create a new message.
- */
-export const DeleteMuscleRequestSchema: GenMessage<DeleteMuscleRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 53);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.DeleteMuscleResponse
- */
-export type DeleteMuscleResponse = Message<"contracts.supporting.exercise.v1.message.DeleteMuscleResponse"> & {
-  /**
-   * @generated from field: bool success = 1;
-   */
-  success: boolean;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.DeleteMuscleResponse.
- * Use `create(DeleteMuscleResponseSchema)` to create a new message.
- */
-export const DeleteMuscleResponseSchema: GenMessage<DeleteMuscleResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 54);
-
-/**
- * Tag CRUD
- *
- * @generated from message contracts.supporting.exercise.v1.message.CreateTagRequest
- */
-export type CreateTagRequest = Message<"contracts.supporting.exercise.v1.message.CreateTagRequest"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.CreateTagRequest.
- * Use `create(CreateTagRequestSchema)` to create a new message.
- */
-export const CreateTagRequestSchema: GenMessage<CreateTagRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 55);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.CreateTagResponse
- */
-export type CreateTagResponse = Message<"contracts.supporting.exercise.v1.message.CreateTagResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Tag tag = 1;
-   */
-  tag?: Tag | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.CreateTagResponse.
- * Use `create(CreateTagResponseSchema)` to create a new message.
- */
-export const CreateTagResponseSchema: GenMessage<CreateTagResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 56);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetTagRequest
- */
-export type GetTagRequest = Message<"contracts.supporting.exercise.v1.message.GetTagRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetTagRequest.
- * Use `create(GetTagRequestSchema)` to create a new message.
- */
-export const GetTagRequestSchema: GenMessage<GetTagRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 57);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.GetTagResponse
- */
-export type GetTagResponse = Message<"contracts.supporting.exercise.v1.message.GetTagResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Tag tag = 1;
-   */
-  tag?: Tag | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.GetTagResponse.
- * Use `create(GetTagResponseSchema)` to create a new message.
- */
-export const GetTagResponseSchema: GenMessage<GetTagResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 58);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.ListTagsRequest
- */
-export type ListTagsRequest = Message<"contracts.supporting.exercise.v1.message.ListTagsRequest"> & {
-  /**
-   * @generated from field: int32 limit = 1;
-   */
-  limit: number;
-
-  /**
-   * @generated from field: int32 offset = 2;
-   */
-  offset: number;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.ListTagsRequest.
- * Use `create(ListTagsRequestSchema)` to create a new message.
- */
-export const ListTagsRequestSchema: GenMessage<ListTagsRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 59);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.ListTagsResponse
- */
-export type ListTagsResponse = Message<"contracts.supporting.exercise.v1.message.ListTagsResponse"> & {
-  /**
-   * @generated from field: repeated contracts.supporting.exercise.v1.message.Tag tags = 1;
-   */
-  tags: Tag[];
-
-  /**
-   * @generated from field: int32 total = 2;
-   */
-  total: number;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.ListTagsResponse.
- * Use `create(ListTagsResponseSchema)` to create a new message.
- */
-export const ListTagsResponseSchema: GenMessage<ListTagsResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 60);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.UpdateTagRequest
- */
-export type UpdateTagRequest = Message<"contracts.supporting.exercise.v1.message.UpdateTagRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.UpdateTagRequest.
- * Use `create(UpdateTagRequestSchema)` to create a new message.
- */
-export const UpdateTagRequestSchema: GenMessage<UpdateTagRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 61);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.UpdateTagResponse
- */
-export type UpdateTagResponse = Message<"contracts.supporting.exercise.v1.message.UpdateTagResponse"> & {
-  /**
-   * @generated from field: contracts.supporting.exercise.v1.message.Tag tag = 1;
-   */
-  tag?: Tag | undefined;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.UpdateTagResponse.
- * Use `create(UpdateTagResponseSchema)` to create a new message.
- */
-export const UpdateTagResponseSchema: GenMessage<UpdateTagResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 62);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.DeleteTagRequest
- */
-export type DeleteTagRequest = Message<"contracts.supporting.exercise.v1.message.DeleteTagRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.DeleteTagRequest.
- * Use `create(DeleteTagRequestSchema)` to create a new message.
- */
-export const DeleteTagRequestSchema: GenMessage<DeleteTagRequest> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 63);
-
-/**
- * @generated from message contracts.supporting.exercise.v1.message.DeleteTagResponse
- */
-export type DeleteTagResponse = Message<"contracts.supporting.exercise.v1.message.DeleteTagResponse"> & {
-  /**
-   * @generated from field: bool success = 1;
-   */
-  success: boolean;
-};
-
-/**
- * Describes the message contracts.supporting.exercise.v1.message.DeleteTagResponse.
- * Use `create(DeleteTagResponseSchema)` to create a new message.
- */
-export const DeleteTagResponseSchema: GenMessage<DeleteTagResponse> = /*@__PURE__*/
-  messageDesc(file_contracts_supporting_exercise_v1_message_exercise_messages, 64);
-
-/**
  * @generated from enum contracts.supporting.exercise.v1.message.ExerciseStatus
  */
 export enum ExerciseStatus {
@@ -1533,11 +652,6 @@ export enum ExerciseStatus {
    * @generated from enum value: EXERCISE_STATUS_DRAFT = 1;
    */
   DRAFT = 1,
-
-  /**
-   * @generated from enum value: EXERCISE_STATUS_PENDING_APPROVAL = 2;
-   */
-  PENDING_APPROVAL = 2,
 
   /**
    * @generated from enum value: EXERCISE_STATUS_ACTIVE = 3;

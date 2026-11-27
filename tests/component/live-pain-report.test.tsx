@@ -3,6 +3,10 @@ import type { ComponentProps } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { PainReportDialog } from "@/features/workout/ui/live/pain-report-dialog";
+import {
+  BodySide,
+  JointRegion,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 type PainReportProps = ComponentProps<typeof PainReportDialog>;
 
@@ -29,7 +33,11 @@ describe(PainReportDialog, () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Yes, stop now" }));
 
-    expect(onStop).toHaveBeenCalledWith("");
+    expect(onStop).toHaveBeenCalledWith({
+      note: "",
+      region: JointRegion.UNSPECIFIED,
+      side: BodySide.BOTH,
+    });
   });
 
   it("passes the note along when the user does explain", () => {
@@ -41,7 +49,53 @@ describe(PainReportDialog, () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Yes, stop now" }));
 
-    expect(onStop).toHaveBeenCalledWith("sharp pain in left knee");
+    expect(onStop).toHaveBeenCalledWith(
+      expect.objectContaining({ note: "sharp pain in left knee", region: JointRegion.UNSPECIFIED }),
+    );
+  });
+
+  it("hides the side picker until a region is picked", () => {
+    render(
+      <PainReportDialog
+        onDismiss={vi.fn<PainReportProps["onDismiss"]>()}
+        onStop={vi.fn<PainReportProps["onStop"]>()}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "Left" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Knee" }));
+    expect(screen.getByRole("button", { name: "Left" })).toBeInTheDocument();
+  });
+
+  it("passes the picked region and side, still in one tap on stop", () => {
+    const onStop = vi.fn<PainReportProps["onStop"]>();
+    render(<PainReportDialog onDismiss={vi.fn<PainReportProps["onDismiss"]>()} onStop={onStop} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Knee" }));
+    fireEvent.click(screen.getByRole("button", { name: "Left" }));
+    fireEvent.click(screen.getByRole("button", { name: "Yes, stop now" }));
+
+    expect(onStop).toHaveBeenCalledOnce();
+    expect(onStop).toHaveBeenCalledWith({
+      note: "",
+      region: JointRegion.KNEE,
+      side: BodySide.LEFT,
+    });
+  });
+
+  it("clears the region when it is tapped again", () => {
+    const onStop = vi.fn<PainReportProps["onStop"]>();
+    render(<PainReportDialog onDismiss={vi.fn<PainReportProps["onDismiss"]>()} onStop={onStop} />);
+
+    const knee = screen.getByRole("button", { name: "Knee" });
+    fireEvent.click(knee);
+    expect(knee).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(knee);
+    fireEvent.click(screen.getByRole("button", { name: "Yes, stop now" }));
+
+    expect(onStop).toHaveBeenCalledWith(
+      expect.objectContaining({ region: JointRegion.UNSPECIFIED }),
+    );
   });
 
   it("keeps training when the user says no", () => {

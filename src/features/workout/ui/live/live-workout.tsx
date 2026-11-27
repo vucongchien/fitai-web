@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import {
   cancelAllSpeech,
@@ -104,7 +104,9 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         if (exercise) {
           const textToRead = [
             `Exercise ${exercise.name}.`,
-            exercise.instructions ? `Instructions: ${exercise.instructions}` : "",
+            exercise.instructions.length > 0
+              ? `Instructions: ${exercise.instructions.join(" ")}`
+              : "",
             exercise.breathingCue ? `Breathing cue: ${exercise.breathingCue}` : "",
             exercise.formCues.length > 0 ? `Form cues: ${exercise.formCues.join(", ")}` : "",
           ]
@@ -179,13 +181,20 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     startSetRef.current(listeningRef.current);
   }, [motion]);
 
+  const cameraRef = useRef(camera);
+  cameraRef.current = camera;
+  const motionRef = useRef(motion);
+  motionRef.current = motion;
+  const workoutEffectsRef = useRef(workoutEffects);
+  workoutEffectsRef.current = workoutEffects;
+
   const stageRef = useCallback(
     (node: HTMLElement | null) => {
       if (!node) return;
 
       if (sessionStatus === "ready") {
         if (cameraActive) {
-          motion.startCalibration();
+          motionRef.current.startCalibration();
         } else {
           startSetRef.current(listeningRef.current);
         }
@@ -194,7 +203,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
           clearInterval(prepTimerRef.current);
           prepTimerRef.current = null;
         }
-        setPrepCountdown(null);
+        setPrepCountdown((prev) => (prev === null ? prev : null));
       }
 
       if (sessionStatus === "resting" || sessionStatus === "complete") {
@@ -218,7 +227,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         toast.info(`${protectionNote.title}: ${protectionNote.description}`);
       }
 
-      const cleanupEffects = workoutEffects.syncEffects(node);
+      const cleanupEffects = workoutEffectsRef.current.syncEffects(node);
 
       return () => {
         if (prepTimerRef.current !== null) {
@@ -228,17 +237,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         cleanupEffects?.();
       };
     },
-    [
-      audio,
-      camera,
-      cameraActive,
-      durationWarning,
-      motion,
-      online,
-      protectionNote,
-      sessionStatus,
-      workoutEffects,
-    ],
+    [cameraActive, durationWarning, online, protectionNote, sessionStatus],
   );
 
   // Clean up media and engine resources safely on unmount without trigger ref loops
@@ -261,9 +260,24 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     () => 0,
   );
 
+  // Every hook runs before the early return below: once the last set is
+  // logged there is no step, and a hook after it would crash the screen.
+  const totalVolumeKg = useMemo(
+    () =>
+      Math.round(
+        session.loggedSets.reduce(
+          (sum, s) => sum + (s.weightKg > 0 && s.actualReps > 0 ? s.weightKg * s.actualReps : 0),
+          0,
+        ),
+      ),
+    [session.loggedSets],
+  );
+
   if (!step || !exercise) {
+    // stageRef runs the session effects, finishing the session among them, so
+    // the wrap-up screen needs it too or the last set never completes.
     return (
-      <main className="live-screen live-screen--empty">
+      <main className="live-screen live-screen--empty" ref={stageRef}>
         <h1>Wrapping up…</h1>
       </main>
     );
@@ -327,8 +341,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
     exercise,
     guideOpen,
     loggedSets: session.loggedSets,
-    onAbortSession: (reason: Parameters<typeof abortSession>[0], note?: string) =>
-      void abortSession(reason, note),
+    onAbortSession: (...args: Parameters<typeof abortSession>) => void abortSession(...args),
     onCloseConfirmSet: () => setConfirmSetOpen(false),
     onCloseEnd: () => setEndOpen(false),
     onCloseGuide: () => setGuideOpen(false),
@@ -339,7 +352,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
       actualReps: number;
       actualSeconds: number;
       weightKg: number;
-      rpe: number;
+      rpe?: number;
     }) => {
       audio.stopCues();
       setConfirmSetOpen(false);
@@ -406,6 +419,7 @@ export function LiveWorkout({ plan }: { plan: LiveSessionPlan }) {
         setTotalSeconds={session.setTotal}
         spec={workoutEffects.spec}
         totalSets={Math.max(1, exercise.targetSets)}
+        totalVolumeKg={totalVolumeKg}
         voiceOn={listening}
       />
       <LiveWorkoutModals {...modalsProps} includeActiveModals />

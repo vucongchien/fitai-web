@@ -47,8 +47,8 @@ describe("Progress UI components", () => {
         weightKg={73.2}
         heightCm={175}
         bodyFatPercent={18.5}
-        preferredMuscleGroups={["CHEST", "LEGS"]}
-        activeInjuries={[{ muscleGroup: "SHOULDERS", severity: "MILD" }]}
+        preferredMuscleGroups={["Chest", "Quadriceps"]}
+        activeInjuries={[{ area: "Shoulders", severity: "Mild" }]}
       />,
     );
 

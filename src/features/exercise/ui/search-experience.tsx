@@ -6,17 +6,17 @@ import { useCallback, useMemo, useState, useTransition } from "react";
 
 import {
   countActiveFilters,
-  DIFFICULTY_ORDER,
   EMPTY_FILTERS,
+  FILTER_FACETS,
   filterExercises,
-  GROUP_SYNONYMS,
+  parseFilterParams,
   sortExercises,
+  toFilterSearchString,
 } from "@/features/exercise/domain/exercise";
 import type {
-  CatalogMetadata,
-  Difficulty,
   ExerciseFilters,
   ExerciseSummary,
+  FilterFacet,
 } from "@/features/exercise/domain/exercise";
 import { ExerciseCard } from "@/features/exercise/ui/exercise-card";
 import { FilterPanel } from "@/features/exercise/ui/filter-panel";
@@ -24,133 +24,17 @@ import { EmptyState } from "@/shared/ui/empty-state";
 import { NAV_BACK } from "@/shared/ui/transition-types";
 
 interface SearchExperienceProps {
-  initialExercises?: ExerciseSummary[];
-  exercises?: ExerciseSummary[];
-  catalog: CatalogMetadata;
+  initialExercises: ExerciseSummary[];
 }
 
-function parseFilters(params: URLSearchParams, catalog: CatalogMetadata): ExerciseFilters {
-  const queryVal = params.get("q") || params.get("query") || "";
-
-  const rawBodyParams = [
-    ...params.getAll("body"),
-    ...params.getAll("bodyPart"),
-    ...params.getAll("bodyPartId"),
-    ...params.getAll("muscle"),
-  ];
-
-  const bodyPartIds: string[] = [];
-
-  rawBodyParams.forEach((rawParam) => {
-    const pLower = rawParam.toLowerCase();
-    if (GROUP_SYNONYMS[pLower]) {
-      if (!bodyPartIds.includes(pLower)) {
-        bodyPartIds.push(pLower);
-      }
-      return;
-    }
-
-    const exactMatch = catalog.bodyParts.find(
-      (entry) => entry.id === rawParam || entry.id.toLowerCase() === pLower,
-    );
-
-    if (exactMatch) {
-      if (!bodyPartIds.includes(exactMatch.id)) {
-        bodyPartIds.push(exactMatch.id);
-      }
-      return;
-    }
-
-    let foundAny = false;
-    const synonyms: string[] = GROUP_SYNONYMS[pLower] || [pLower];
-    catalog.bodyParts.forEach((entry) => {
-      const eId = entry.id.toLowerCase();
-      const eName = entry.name.toLowerCase();
-
-      const isMatch = synonyms.some(
-        (syn: string) =>
-          eId === syn ||
-          eName === syn ||
-          eId.includes(syn) ||
-          syn.includes(eId) ||
-          eName.includes(syn) ||
-          syn.includes(eName),
-      );
-
-      if (isMatch && !bodyPartIds.includes(entry.id)) {
-        bodyPartIds.push(entry.id);
-        foundAny = true;
-      }
-    });
-
-    if (!foundAny && !bodyPartIds.includes(rawParam)) {
-      bodyPartIds.push(rawParam);
-    }
-  });
-
-  const targetMuscleIds = [...params.getAll("targetMuscle"), ...params.getAll("muscle")].filter(
-    (id) => Boolean(id),
-  );
-
-  const equipmentIds = params
-    .getAll("equipment")
-    .map(
-      (eq) =>
-        catalog.equipments.find(
-          (entry) =>
-            entry.id === eq ||
-            entry.id.toLowerCase() === eq.toLowerCase() ||
-            entry.name.toLowerCase() === eq.toLowerCase(),
-        )?.id || eq,
-    );
-
-  const tagIds = params.getAll("tag").filter((id) => catalog.tags.some((entry) => entry.id === id));
-  const difficulty = params
-    .getAll("level")
-    .filter((entry): entry is Difficulty => DIFFICULTY_ORDER.includes(entry as Difficulty));
-
-  return {
-    q: queryVal,
-    bodyPartIds,
-    equipmentIds,
-    targetMuscleIds,
-    difficulty,
-    tagIds,
-    aiOnly: params.get("ai") === "1",
-  };
+interface ActiveChip {
+  id: string;
+  label: string;
+  facet: FilterFacet | "aiOnly";
+  value: number;
 }
 
-function toSearchString(filters: ExerciseFilters): string {
-  const params = new URLSearchParams();
-  if (filters.q) {
-    params.set("q", filters.q);
-  }
-  for (const id of filters.bodyPartIds) {
-    params.append("body", id);
-  }
-  for (const id of filters.equipmentIds) {
-    params.append("equipment", id);
-  }
-  for (const id of filters.targetMuscleIds || []) {
-    params.append("targetMuscle", id);
-  }
-  for (const id of filters.tagIds) {
-    params.append("tag", id);
-  }
-  for (const level of filters.difficulty) {
-    params.append("level", level);
-  }
-  if (filters.aiOnly) {
-    params.set("ai", "1");
-  }
-  return params.toString();
-}
-
-export function SearchExperience({
-  initialExercises,
-  exercises: legacyExercises,
-  catalog,
-}: SearchExperienceProps) {
+export function SearchExperience({ initialExercises }: SearchExperienceProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -159,15 +43,15 @@ export function SearchExperience({
   const searchParamsString = searchParams.toString();
 
   const filters = useMemo(
-    () => parseFilters(new URLSearchParams(searchParamsString), catalog),
-    [searchParamsString, catalog],
+    () => parseFilterParams(new URLSearchParams(searchParamsString)),
+    [searchParamsString],
   );
   const [panelOpen, setPanelOpen] = useState(false);
-  const rawExercises = initialExercises || legacyExercises || [];
+  const rawExercises = initialExercises;
 
   const syncUrl = useCallback(
     (next: ExerciseFilters) => {
-      const qs = toSearchString(next);
+      const qs = toFilterSearchString(next);
       const target = qs ? `${pathname}?${qs}` : pathname;
       startTransition(() => {
         router.replace(target, { scroll: false });
@@ -205,47 +89,36 @@ export function SearchExperience({
   const closePanel = useCallback(() => setPanelOpen(false), []);
 
   const results = useMemo(
-    () => sortExercises(filterExercises(rawExercises, filters, catalog), "relevance"),
-    [rawExercises, filters, catalog],
+    () => sortExercises(filterExercises(rawExercises, filters), "relevance"),
+    [rawExercises, filters],
   );
 
-  const activeCount = countActiveFilters(filters, catalog);
+  const activeCount = countActiveFilters(filters);
 
   const activeChips = useMemo(() => {
-    const chips: { id: string; label: string; type: keyof ExerciseFilters; value: string }[] = [];
-    for (const id of filters.bodyPartIds) {
-      const name = catalog.bodyParts.find((b) => b.id === id)?.name || id;
-      chips.push({ id: `bp-${id}`, label: name, type: "bodyPartIds", value: id });
-    }
-    for (const id of filters.targetMuscleIds) {
-      const name = catalog.muscles?.find((m) => m.id === id)?.name || id;
-      chips.push({ id: `tm-${id}`, label: name, type: "targetMuscleIds", value: id });
-    }
-    for (const id of filters.equipmentIds) {
-      const name = catalog.equipments?.find((e) => e.id === id)?.name || id;
-      chips.push({ id: `eq-${id}`, label: name, type: "equipmentIds", value: id });
-    }
-    for (const id of filters.tagIds) {
-      const name = catalog.tags.find((t) => t.id === id)?.name || id;
-      chips.push({ id: `tag-${id}`, label: name, type: "tagIds", value: id });
-    }
-    for (const diff of filters.difficulty) {
-      chips.push({ id: `diff-${diff}`, label: diff, type: "difficulty", value: diff });
+    const chips: ActiveChip[] = [];
+    for (const facet of Object.keys(FILTER_FACETS) as FilterFacet[]) {
+      for (const value of filters[facet]) {
+        const option = FILTER_FACETS[facet].options.find((entry) => entry.value === value);
+        chips.push({ id: `${facet}-${value}`, label: option?.label ?? "", facet, value });
+      }
     }
     if (filters.aiOnly) {
-      chips.push({ id: "ai-only", label: "AI Feedback", type: "aiOnly", value: "ai" });
+      chips.push({ id: "ai-only", label: "AI Feedback", facet: "aiOnly", value: 1 });
     }
     return chips;
-  }, [filters, catalog]);
+  }, [filters]);
 
   const removeChip = useCallback(
-    (type: keyof ExerciseFilters, value: string) => {
-      if (type === "aiOnly") {
+    (facet: ActiveChip["facet"], value: number) => {
+      if (facet === "aiOnly") {
         updateFilters({ ...filters, aiOnly: false });
-      } else if (Array.isArray(filters[type])) {
-        const arr = (filters[type] as string[]).filter((v) => v !== value);
-        updateFilters({ ...filters, [type]: arr });
+        return;
       }
+      updateFilters({
+        ...filters,
+        [facet]: (filters[facet] as number[]).filter((entry) => entry !== value),
+      });
     },
     [filters, updateFilters],
   );
@@ -268,7 +141,7 @@ export function SearchExperience({
             autoFocus
             type="search"
             inputMode="search"
-            placeholder="Find movements, muscles, tags"
+            placeholder="Find movements, muscles, equipment"
             value={filters.q}
             onChange={(event) => setQuery(event.target.value)}
             aria-label="Search exercises"
@@ -323,7 +196,7 @@ export function SearchExperience({
                 key={chip.id}
                 type="button"
                 className="inline-flex items-center gap-1 rounded-full bg-[var(--color-surface-subtle)] px-2.5 py-1 text-xs font-medium text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-action)]"
-                onClick={() => removeChip(chip.type, chip.value)}
+                onClick={() => removeChip(chip.facet, chip.value)}
               >
                 <span>{chip.label}</span>
                 <X size={12} className="text-[var(--color-text-muted)]" />
@@ -353,7 +226,7 @@ export function SearchExperience({
                 <ol className="ex-grid">
                   {rawExercises.slice(0, 8).map((exercise) => (
                     <li key={`rec-${exercise.id}`}>
-                      <ExerciseCard exercise={exercise} catalog={catalog} />
+                      <ExerciseCard exercise={exercise} />
                     </li>
                   ))}
                 </ol>
@@ -364,7 +237,7 @@ export function SearchExperience({
           <ol className="ex-grid">
             {results.map((exercise) => (
               <li key={exercise.id}>
-                <ExerciseCard exercise={exercise} catalog={catalog} />
+                <ExerciseCard exercise={exercise} />
               </li>
             ))}
           </ol>
@@ -374,7 +247,6 @@ export function SearchExperience({
       <FilterPanel
         open={panelOpen}
         filters={filters}
-        catalog={catalog}
         resultCount={results.length}
         onChange={updateFilters}
         onClear={clearFacets}

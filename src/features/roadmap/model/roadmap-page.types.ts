@@ -6,7 +6,16 @@ export interface WeekSummary {
   state: WeekState;
 }
 
-export type SessionStatus = "complete" | "next" | "planned" | "rest" | "skipped";
+export type SessionStatus = "complete" | "next" | "planned" | "rest" | "skipped" | "stopped";
+
+export interface PrintExerciseItem {
+  phase: "warmup" | "main" | "cooldown";
+  name: string;
+  sets: number;
+  reps: number;
+  restSec: number;
+  notes?: string;
+}
 
 export interface SessionSummary {
   id: string;
@@ -20,6 +29,9 @@ export interface SessionSummary {
   status: SessionStatus;
   reasoning?: string;
   isAdapted?: boolean;
+  /** Active-recovery session (mobility, stretching, easy cardio), not a training one. */
+  isRecovery?: boolean;
+  exercises?: PrintExerciseItem[];
 }
 
 export interface ContextItem {
@@ -32,6 +44,7 @@ export interface ContextItem {
 export interface RoadmapPageData {
   activeWeek: number;
   weeks: WeekSummary[];
+  allWeeks?: ScheduleWeek[];
   currentWeekSessions: SessionSummary[];
   currentWeekLabel: string;
   currentWeekDateRange: string;
@@ -55,10 +68,6 @@ export interface SchedulePageData {
   activeWeek: number;
   weeks: ScheduleWeek[];
 }
-
-// ---------------------------------------------------------------------------
-// Session Plan types
-// ---------------------------------------------------------------------------
 
 export interface PrescribedExercise {
   exerciseId: string;

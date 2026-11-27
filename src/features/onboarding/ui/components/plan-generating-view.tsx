@@ -4,6 +4,8 @@ import { ArrowRight, Check, Loader2, RefreshCw } from "lucide-react";
 import { useMemo, useSyncExternalStore } from "react";
 
 import type { OnboardingValues } from "@/features/onboarding/domain/onboarding-schema";
+import { MAX_SESSIONS_PER_WEEK } from "@/features/onboarding/domain/workout-times-normalizer";
+import { describeInjury } from "@/features/profile/model/injury";
 import { cn } from "@/shared/lib/cn";
 import { Button } from "@/shared/ui/button";
 import { FitAiMascotSvg } from "@/shared/ui/fitai-mascot-svg";
@@ -66,9 +68,23 @@ export function PlanGeneratingView({
     : rawTimes
       ? Object.values(rawTimes).reduce((sum, slots) => sum + (slots?.length ?? 0), 0)
       : 0;
-  const sessionText = totalSessions > 0 ? `${totalSessions} sessions/week` : "your weekly schedule";
-  const hasInjury =
-    values.injuryStatus && values.injuryStatus !== "none" && values.injuryMuscleGroup;
+  const trainingSessions = Math.min(totalSessions, MAX_SESSIONS_PER_WEEK);
+  const recoverySessions = totalSessions - trainingSessions;
+  const sessionText =
+    trainingSessions === 0
+      ? "your weekly schedule"
+      : recoverySessions > 0
+        ? `${trainingSessions} training + ${recoverySessions} recovery sessions/week`
+        : `${trainingSessions} sessions/week`;
+  const injuryArea =
+    values.injuryStatus === "active"
+      ? describeInjury({
+          region: values.injuryRegion,
+          muscle: values.injuryMuscle,
+          side: values.injurySide,
+        })
+      : "";
+  const hasInjury = Boolean(injuryArea);
 
   const stages = useMemo(
     () => [
@@ -82,10 +98,10 @@ export function PlanGeneratingView({
       },
       {
         label: hasInjury
-          ? `Filtering exercises to protect your ${values.injuryMuscleGroup}`
+          ? `Filtering exercises to protect your ${injuryArea}`
           : "Matching exercises to your available equipment",
         mascotLine: hasInjury
-          ? `Making sure every movement stays safe around your ${values.injuryMuscleGroup} while keeping progress strong!`
+          ? `Making sure every movement stays safe around your ${injuryArea} while keeping progress strong!`
           : `Picking evidence-based exercises that fit your equipment and experience level...`,
       },
       {
@@ -93,7 +109,7 @@ export function PlanGeneratingView({
         mascotLine: `Almost there — locking in ${sessionText} with progressive overload for the next 4 weeks!`,
       },
     ],
-    [goalLabel, hasInjury, sessionText, values.injuryMuscleGroup],
+    [goalLabel, hasInjury, sessionText, injuryArea],
   );
 
   const progressPercent =
@@ -183,7 +199,7 @@ export function PlanGeneratingView({
           </div>
         ) : (
           <p className="text-xs text-slate-500">
-            This usually takes 5–15 seconds while your AI coach tailors workouts and meals.
+            This usually takes 30–60 seconds while your AI coach tailors workouts and meals.
           </p>
         )}
       </div>

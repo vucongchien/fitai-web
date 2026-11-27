@@ -1,17 +1,14 @@
 "use client";
 
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Archive, CheckCircle2, Dumbbell, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Archive, CheckCircle2, Dumbbell, Pencil, Plus, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 import {
   approveExercise,
   archiveExercise,
-  createExercise,
-  deleteExercise,
   fetchAdminExercises,
-  fetchMetadataList,
   restoreExercise,
 } from "@/features/admin/api/admin-exercise-service";
 import type { AdminExercise, ExerciseAdminFilters } from "@/features/admin/domain/admin-types";
@@ -23,17 +20,16 @@ import {
 import type { Column } from "@/features/admin/ui/admin-table";
 import { AdminTable } from "@/features/admin/ui/admin-table";
 import { ExerciseFilters } from "@/features/admin/ui/exercise-filters";
-import { DIFFICULTY_LABEL } from "@/features/exercise/domain/exercise";
+import { levelLabel, muscleGroupLabel } from "@/shared/lib/taxonomy";
 
 /** Closes over nothing, so it lives at module scope with one stable identity. */
 const exerciseKey = (exercise: AdminExercise) => exercise.id;
 
 interface ExerciseColumnHandlers {
   onApprove: (id: string) => void;
-  onArchive: (id: string) => void;
+  onArchive: (exercise: AdminExercise) => void;
   onRestore: (id: string) => void;
   onEdit: (id: string) => void;
-  onDelete: (event: React.MouseEvent, exercise: AdminExercise) => void;
   isApproving: boolean;
   isArchiving: boolean;
   isRestoring: boolean;
@@ -47,7 +43,6 @@ function buildExerciseColumns({
   onApprove,
   onArchive,
   onRestore,
-  onDelete,
   onEdit,
 }: ExerciseColumnHandlers): Column<AdminExercise>[] {
   return [
@@ -63,7 +58,7 @@ function buildExerciseColumns({
               {ex.name}
             </h4>
             <p className="text-xs text-[var(--color-text-muted)] truncate">
-              Created by: {ex.createdBy}
+              {muscleGroupLabel(ex.primaryMuscle)} · {ex.slug}
             </p>
           </div>
         </div>
@@ -84,10 +79,10 @@ function buildExerciseColumns({
       },
     },
     {
-      header: "Difficulty",
+      header: "Level",
       cell: (ex) => (
-        <span className="text-xs text-[var(--color-text)] font-semibold capitalize">
-          {DIFFICULTY_LABEL[ex.difficulty] || ex.difficulty}
+        <span className="text-xs text-[var(--color-text)] font-semibold">
+          {levelLabel(ex.level)}
         </span>
       ),
     },
@@ -105,7 +100,7 @@ function buildExerciseColumns({
       cell: (ex) => (
         <div className="flex items-center justify-end gap-1.5">
           {/* Approve Action */}
-          {(ex.status === "created" || ex.status === "submittedForApproval") && (
+          {ex.status === "created" && (
             <button
               type="button"
               title="Approve Exercise"
@@ -129,9 +124,9 @@ function buildExerciseColumns({
               disabled={isArchiving}
               onClick={(e) => {
                 e.stopPropagation();
-                onArchive(ex.id);
+                onArchive(ex);
               }}
-              className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
+              className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-danger-soft)] text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors cursor-pointer"
             >
               <Archive className="size-4" />
             </button>
@@ -166,16 +161,6 @@ function buildExerciseColumns({
           >
             <Pencil className="size-4" />
           </button>
-
-          {/* Delete Action */}
-          <button
-            type="button"
-            title="Delete Exercise"
-            onClick={(e) => onDelete(e, ex)}
-            className="p-1.5 rounded-[var(--radius-input)] hover:bg-[var(--color-danger-soft)] text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors cursor-pointer"
-          >
-            <Trash2 className="size-4" />
-          </button>
         </div>
       ),
     },
@@ -186,22 +171,6 @@ export default function AdminExercisesPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [filters, setFilters] = useState<ExerciseAdminFilters>(DEFAULT_EXERCISE_ADMIN_FILTERS);
-
-  // Metadata for filters and draft defaults
-  const { data: allMetadata = [] } = useQuery({
-    queryKey: ["admin-metadata"],
-    queryFn: () => fetchMetadataList(),
-  });
-
-  const bodyParts = useMemo(
-    () => allMetadata.filter((m) => m.category === "bodyPart"),
-    [allMetadata],
-  );
-  const equipments = useMemo(
-    () => allMetadata.filter((m) => m.category === "equipment"),
-    [allMetadata],
-  );
-  const muscles = useMemo(() => allMetadata.filter((m) => m.category === "muscle"), [allMetadata]);
 
   // TanStack Infinite Query
   const {
@@ -218,7 +187,7 @@ export default function AdminExercisesPage() {
     queryFn: ({ pageParam = null }) =>
       fetchAdminExercises({
         cursor: pageParam,
-        limit: 10,
+        limit: 50,
         filters,
       }),
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -251,49 +220,19 @@ export default function AdminExercisesPage() {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteExercise(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-exercises"] });
-    },
-  });
-
-  const handleCreateNew = async () => {
-    const defaultBodyPartId = bodyParts[0]?.id || "bp-chest";
-    const defaultEquipmentId = equipments[0]?.id || "eq-dumbbell";
-    const defaultMuscleId = muscles[0]?.id || "ms-pectoralis-major";
-
-    const created = await createExercise({
-      name: "New Exercise Draft",
-      bodyPartId: defaultBodyPartId,
-      equipmentId: defaultEquipmentId,
-      targetMuscleId: defaultMuscleId,
-      secondaryMuscleIds: [],
-      difficulty: "beginner",
-      defaultRestSeconds: 60,
-      tagIds: [],
-      hasAiSupported: false,
-      instructions: "Add detailed step-by-step instructions here...",
-      status: "created",
-      createdBy: "admin@fitai.com",
-    });
-    queryClient.invalidateQueries({ queryKey: ["admin-exercises"] });
-    router.push(`/admin/exercises/${created.id}`);
-  };
-
-  const handleDelete = useCallback(
-    async (e: React.MouseEvent, ex: AdminExercise) => {
-      e.stopPropagation();
-      if (confirm(`Are you sure you want to delete "${ex.name}"?`)) {
-        await deleteMutation.mutateAsync(ex.id);
-      }
-    },
-    [deleteMutation],
-  );
+  // Nothing is created until the form is saved with a real name.
+  const handleCreateNew = useCallback(() => router.push("/admin/exercises/new"), [router]);
 
   const handleApprove = useCallback((id: string) => approveMutation.mutate(id), [approveMutation]);
 
-  const handleArchive = useCallback((id: string) => archiveMutation.mutate(id), [archiveMutation]);
+  const handleArchive = useCallback(
+    (ex: AdminExercise) => {
+      if (confirm(`Archive "${ex.name}"? You can restore it later from the catalog.`)) {
+        archiveMutation.mutate(ex.id);
+      }
+    },
+    [archiveMutation],
+  );
 
   const handleRestore = useCallback((id: string) => restoreMutation.mutate(id), [restoreMutation]);
 
@@ -320,7 +259,6 @@ export default function AdminExercisesPage() {
         onApprove: handleApprove,
         onArchive: handleArchive,
         onRestore: handleRestore,
-        onDelete: handleDelete,
         onEdit: handleEdit,
       }),
     [
@@ -330,7 +268,6 @@ export default function AdminExercisesPage() {
       handleApprove,
       handleArchive,
       handleRestore,
-      handleDelete,
       handleEdit,
     ],
   );
@@ -362,13 +299,7 @@ export default function AdminExercisesPage() {
       </div>
 
       {/* Filters */}
-      <ExerciseFilters
-        filters={filters}
-        onChange={setFilters}
-        onReset={handleResetFilters}
-        bodyParts={bodyParts}
-        equipments={equipments}
-      />
+      <ExerciseFilters filters={filters} onChange={setFilters} onReset={handleResetFilters} />
 
       {/* Table with Infinite Scroll */}
       <AdminTable

@@ -13,7 +13,7 @@ function makeExercise(): LiveExercise {
     targetSets: 3,
     targetReps: 8,
     targetWeightKg: 80,
-    instructions: "Maintain a straight body line while keeping your core engaged.",
+    instructions: ["Maintain a straight body line while keeping your core engaged."],
     cues: ["Maintain a straight body line while keeping your core engaged."],
     targetRestSeconds: 90,
   };

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { getSoloMatchSessionData } from "@/features/solo-match/server/get-challenge-page-data";
+import { getSoloMatchResultData } from "@/features/solo-match/server/get-challenge-page-data";
 import { ChallengeResultView } from "@/features/solo-match/ui/challenge-result-view";
 import { PageTransition } from "@/shared/ui/page-transition";
 
@@ -8,7 +8,7 @@ export const metadata = { title: "Match Result — Solo Challenge | FITAI" };
 
 async function ChallengeResultContent({ params }: { params: Promise<{ matchId: string }> }) {
   const { matchId } = await params;
-  const data = await getSoloMatchSessionData(matchId);
+  const data = await getSoloMatchResultData(matchId);
   return <ChallengeResultView currentUserId={data.currentUserId} match={data.match} />;
 }
 

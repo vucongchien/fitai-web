@@ -7,6 +7,13 @@ import type { WorkoutExecutionService } from "@/shared/api/gen/contracts/core/wo
 import { GetNotificationSettingsResponseSchema } from "@/shared/api/gen/contracts/generic/notification/v1/message/notification_messages_pb";
 import type { NotificationService } from "@/shared/api/gen/contracts/generic/notification/v1/service/notification_service_pb";
 import {
+  BodySide,
+  Equipment,
+  InjurySeverity,
+  JointRegion,
+  MuscleGroup,
+} from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
+import {
   GetProfileResponseSchema,
   LogPeriodicMetricsResponseSchema,
   RecoverInjuryResponseSchema,
@@ -85,8 +92,8 @@ describe("user Health Profile gRPC Services & Actions", () => {
         heightCm: 180,
         experienceLevel: "ADVANCED",
         goals: ["BUILD_MUSCLE", "FAT_LOSS"],
-        availableEquipment: ["FULL_GYM"],
-        preferredMuscleGroups: ["CHEST", "BACK"],
+        availableEquipment: [Equipment.BARBELL, Equipment.CABLE],
+        preferredMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.LATS],
         coachStyle: "SCIENTIFIC",
         targetWeightKg: 68,
         bodyFatPercent: 16,
@@ -94,8 +101,10 @@ describe("user Health Profile gRPC Services & Actions", () => {
         injuries: [
           {
             injuryId: "inj-99",
-            muscleGroup: "SHOULDERS",
-            severity: "MILD",
+            region: JointRegion.SHOULDER,
+            muscle: MuscleGroup.SHOULDERS,
+            side: BodySide.LEFT,
+            severity: InjurySeverity.MILD,
             notes: "Avoid overhead shoulder press",
             isRecovered: false,
             reportedAt: "2026-08-01",
@@ -145,7 +154,18 @@ describe("user Health Profile gRPC Services & Actions", () => {
     expect(result.highlights.currentWeightKg).toBe(70);
     expect(result.bestPr?.oneRepMax).toBe(160);
     expect(result.injuries).toHaveLength(1);
-    expect(result.injuries[0].id).toBe("inj-99");
+    expect(result.injuries[0]).toMatchObject({
+      id: "inj-99",
+      region: JointRegion.SHOULDER,
+      muscle: MuscleGroup.SHOULDERS,
+      side: BodySide.LEFT,
+      severity: InjurySeverity.MILD,
+    });
+    expect(result.settings.availableEquipment).toEqual([Equipment.BARBELL, Equipment.CABLE]);
+    expect(result.healthMetrics.preferredMuscleGroups).toEqual([
+      MuscleGroup.CHEST,
+      MuscleGroup.LATS,
+    ]);
   });
 
   it("falls back to local safe defaults when gRPC backend throws an error", async () => {
@@ -173,16 +193,21 @@ describe("user Health Profile gRPC Services & Actions", () => {
         bmiCategory: "Normal",
         targetBodyFatPercent: 14,
         goals: ["Build Muscle"],
-        preferredMuscleGroups: ["Chest", "Back"],
+        preferredMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.LATS],
       },
       settings: {
-        availableEquipment: ["Full Gym"],
+        availableEquipment: [Equipment.DUMBBELL],
         preferredWorkoutTimes: ["Mon PM"],
         coachStyle: "Scientific",
       },
     });
 
-    expect(mockUpdateProfile).toHaveBeenCalled();
+    expect(mockUpdateProfile).toHaveBeenCalledWith(
+      expect.objectContaining({
+        availableEquipment: [Equipment.DUMBBELL],
+        preferredMuscleGroups: [MuscleGroup.CHEST, MuscleGroup.LATS],
+      }),
+    );
     expect(res.success).toBe(true);
   });
 
@@ -231,14 +256,18 @@ describe("user Health Profile gRPC Services & Actions", () => {
       await import("@/features/profile/server/profile-actions");
 
     const reportRes = await reportInjuryServerAction({
-      muscleGroup: "Knee",
-      severity: "Moderate",
-      notes: "Slight pain during deep squat",
+      region: JointRegion.KNEE,
+      muscle: MuscleGroup.QUADRICEPS,
+      side: BodySide.RIGHT,
+      severity: InjurySeverity.MODERATE,
+      notes: "  Slight pain during deep squat ",
     });
 
     expect(mockReportInjury).toHaveBeenCalledWith({
-      muscleGroup: "Knee",
-      severity: "MODERATE",
+      region: JointRegion.KNEE,
+      muscle: MuscleGroup.QUADRICEPS,
+      side: BodySide.RIGHT,
+      severity: InjurySeverity.MODERATE,
       notes: "Slight pain during deep squat",
     });
     expect(reportRes.success).toBe(true);

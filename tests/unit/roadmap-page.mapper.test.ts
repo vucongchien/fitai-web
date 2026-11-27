@@ -2,11 +2,23 @@ import { describe, expect, it } from "vitest";
 
 import {
   adaptRoadmapPageData,
+  countPlanned,
   formatDate,
+  formatPrescriptionLine,
   formatWeekDateRange,
+  mapSessionStatus,
+  recoveryLine,
 } from "@/features/roadmap/model/roadmap-page.mapper";
 import { adaptWorkoutStatsData } from "@/features/workout-stats/model/workout-stats.mapper";
-import type { Roadmap } from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import type {
+  Roadmap,
+  WeekPlan,
+} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
+import {
+  SessionKind,
+  SessionPlanSource,
+  SessionPlanStatus,
+} from "@/shared/api/gen/contracts/core/coaching/v1/message/coaching_messages_pb";
 
 describe("formatWeekDateRange", () => {
   it("calculates a standard 7-day range (Mon to Sun) from start date", () => {
@@ -37,7 +49,7 @@ describe("adaptRoadmapPageData", () => {
                 {
                   sessionPlanId: "sp-1",
                   status: 1, // PENDING
-                  targetMuscleGroups: ["CHEST", "BACK"],
+                  targetMuscleGroups: ["CHEST", "MIDDLE_BACK"],
                   slotTime: "17:30-19:00",
                 } as any,
               ],
@@ -51,7 +63,7 @@ describe("adaptRoadmapPageData", () => {
     expect(data.currentWeekDateRange).toBe("Aug 10–Aug 16");
     expect(data.activeWeek).toBe(1);
     expect(data.currentWeekSessions).toHaveLength(1);
-    expect(data.currentWeekSessions[0]?.title).toBe("CHEST, BACK");
+    expect(data.currentWeekSessions[0]?.title).toBe("Chest, Middle Back");
   });
 
   it("sets future pending sessions to planned status (grey) and only sets today pending sessions to next (green)", () => {
@@ -103,6 +115,41 @@ describe("adaptRoadmapPageData", () => {
     expect(futureSession?.status).toBe("planned");
     expect(todaySession?.status).toBe("next");
   });
+
+  it("marks active-recovery sessions so the week route can label them", () => {
+    const roadmapMock: Partial<Roadmap> = {
+      weekPlans: [
+        {
+          weekNumber: 1,
+          phase: 1,
+          targetRpe: 7,
+          dayPlans: [
+            {
+              scheduledDate: { day: 10, month: 8, year: 2050 } as any,
+              sessionPlans: [
+                {
+                  sessionPlanId: "sp-train",
+                  status: 1,
+                  targetMuscleGroups: ["CHEST"],
+                  kind: SessionKind.TRAINING,
+                } as any,
+                {
+                  sessionPlanId: "sp-recover",
+                  status: 1,
+                  targetMuscleGroups: ["HAMSTRINGS"],
+                  kind: SessionKind.RECOVERY,
+                } as any,
+              ],
+            },
+          ],
+        } as any,
+      ],
+    };
+
+    const data = adaptRoadmapPageData(roadmapMock as Roadmap);
+    expect(data.currentWeekSessions.find((s) => s.id === "sp-train")?.isRecovery).toBe(false);
+    expect(data.currentWeekSessions.find((s) => s.id === "sp-recover")?.isRecovery).toBe(true);
+  });
 });
 
 describe("adaptWorkoutStatsData window sync", () => {
@@ -124,5 +171,56 @@ describe("adaptWorkoutStatsData window sync", () => {
     expect(stats.dateLabel).toBe("10 – 16 August");
     expect(stats.adherence.scheduled).toBe(2);
     expect(stats.adherence.completed).toBe(0);
+  });
+});
+
+describe("formatPrescriptionLine", () => {
+  it("shows the prescribed load so a progression is visible", () => {
+    expect(formatPrescriptionLine({ targetSets: 4, targetReps: 6, targetWeight: 17.5 })).toBe(
+      "4 × 6 · 17.5 kg",
+    );
+  });
+
+  it("leaves bodyweight lines and holds without a load", () => {
+    expect(formatPrescriptionLine({ targetSets: 3, targetReps: 12, targetWeight: 0 })).toBe(
+      "3 × 12",
+    );
+    expect(formatPrescriptionLine({ targetSets: 1, targetReps: 0, durationSeconds: 60 })).toBe(
+      "1 × 60s",
+    );
+  });
+});
+
+describe("recoveryLine", () => {
+  it("only promises recovery sessions the week has", () => {
+    expect(recoveryLine(0)).toBe("Rest days between sessions");
+    expect(recoveryLine(1)).toBe("Plus 1 guided recovery session");
+    expect(recoveryLine(2)).toBe("Plus 2 guided recovery sessions");
+  });
+});
+
+describe("mapSessionStatus", () => {
+  it("shows a session stopped mid-workout as stopped, not skipped", () => {
+    expect(mapSessionStatus(SessionPlanStatus.ABORTED, false)).toBe("stopped");
+    expect(mapSessionStatus(SessionPlanStatus.SKIPPED, false)).toBe("skipped");
+  });
+});
+
+describe("countPlanned", () => {
+  it("counts the coach's sessions, not the athlete's own extras", () => {
+    const week = {
+      dayPlans: [
+        {
+          sessionPlans: [
+            { source: SessionPlanSource.COACH_SCHEDULED, kind: SessionKind.TRAINING },
+            { source: SessionPlanSource.USER_ADHOC, kind: SessionKind.TRAINING },
+            { source: SessionPlanSource.COACH_SCHEDULED, kind: SessionKind.RECOVERY },
+          ],
+        },
+      ],
+    } as unknown as WeekPlan;
+    expect(countPlanned(week, false)).toBe(1);
+    expect(countPlanned(week, true)).toBe(1);
+    expect(countPlanned(undefined, false)).toBe(0);
   });
 });

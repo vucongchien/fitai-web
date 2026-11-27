@@ -15,6 +15,7 @@ import type {
   LiveSessionPlan,
   SessionPhase,
 } from "@/features/workout/model/live-session.types";
+import { Equipment } from "@/shared/api/gen/contracts/supporting/exercise/v1/message/taxonomy_pb";
 
 function exercise(
   id: string,
@@ -25,7 +26,9 @@ function exercise(
     exerciseId: id,
     name: id,
     phase,
-    equipmentId: "eq-bodyweight",
+    equipment: Equipment.BODY_ONLY,
+    instructions: [],
+    images: [],
     targetSets: 2,
     targetReps: 10,
     durationSeconds: 0,

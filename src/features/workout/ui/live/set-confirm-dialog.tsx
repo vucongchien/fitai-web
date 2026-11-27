@@ -11,7 +11,14 @@ export interface SetConfirmData {
   actualReps: number;
   actualSeconds: number;
   weightKg: number;
-  rpe: number;
+  /** Absent for a warm-up or cool-down set: effort is rated on main work only. */
+  rpe?: number;
+}
+
+/** Slider start: the set's target RPE, so an untouched confirm reports the plan. */
+export function initialFatiguePercent(targetRpe: number): number {
+  if (!(targetRpe > 0)) return 70;
+  return Math.min(100, Math.max(10, Math.round((targetRpe * 10) / 5) * 5));
 }
 
 export function SetConfirmDialog(props: {
@@ -53,7 +60,12 @@ function SetConfirmDialogContent({
   const [reps, setReps] = useState<number>(initialReps);
   const [seconds, setSeconds] = useState<number>(initialSeconds);
   const [weightKg, setWeightKg] = useState<number>(initialWeight);
-  const [fatiguePercent, setFatiguePercent] = useState<number>(80); // Default 80% fatigue (RPE 8.0)
+  // Effort is rated on main work only: an unrated warm-up says nothing, while a
+  // rated one drags the session's RPE and the coach's progression off.
+  const ratesEffort = exercise.phase === "main";
+  const [fatiguePercent, setFatiguePercent] = useState<number>(() =>
+    initialFatiguePercent(exercise.targetRpe),
+  );
 
   const [isClosing, setIsClosing] = useState(false);
 
@@ -75,7 +87,7 @@ function SetConfirmDialogContent({
         actualReps: Math.max(1, reps),
         actualSeconds: Math.max(1, seconds),
         weightKg: Math.max(0, weightKg),
-        rpe: fatiguePercent / 10,
+        ...(ratesEffort ? { rpe: fatiguePercent / 10 } : {}),
       });
     });
   };
@@ -225,7 +237,7 @@ function SetConfirmDialogContent({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setWeightKg((w) => Math.max(0, parseFloat((w - 1).toFixed(1))))}
+                  onClick={() => setWeightKg((w) => Math.max(0, parseFloat((w - 0.5).toFixed(1))))}
                   className="w-8 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
                   aria-label="Decrease weight"
                 >
@@ -240,7 +252,7 @@ function SetConfirmDialogContent({
                 />
                 <button
                   type="button"
-                  onClick={() => setWeightKg((w) => parseFloat((w + 1).toFixed(1)))}
+                  onClick={() => setWeightKg((w) => parseFloat((w + 0.5).toFixed(1)))}
                   className="w-8 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] flex items-center justify-center font-bold cursor-pointer hover:bg-[var(--color-surface-subtle)]"
                   aria-label="Increase weight"
                 >
@@ -252,58 +264,59 @@ function SetConfirmDialogContent({
         )}
 
         {/* Fatigue Level (0% - 100% scale) */}
-        {(() => {
-          const { color, label } = getFatigueLevel(fatiguePercent);
-          return (
-            <div className="bg-[var(--color-surface-subtle)] rounded-[var(--radius-card)] p-4 mb-5 border border-[var(--color-border)]">
-              <div className="flex justify-between items-center mb-2.5">
-                <span className="font-semibold text-sm text-[var(--color-text)]">
-                  Perceived Exertion
-                </span>
-                <span className="font-extrabold text-sm font-mono" style={{ color }}>
-                  {fatiguePercent}% ({label})
-                </span>
-              </div>
+        {ratesEffort &&
+          (() => {
+            const { color, label } = getFatigueLevel(fatiguePercent);
+            return (
+              <div className="bg-[var(--color-surface-subtle)] rounded-[var(--radius-card)] p-4 mb-5 border border-[var(--color-border)]">
+                <div className="flex justify-between items-center mb-2.5">
+                  <span className="font-semibold text-sm text-[var(--color-text)]">
+                    Perceived Exertion
+                  </span>
+                  <span className="font-extrabold text-sm font-mono" style={{ color }}>
+                    {fatiguePercent}% ({label})
+                  </span>
+                </div>
 
-              {/* Slider */}
-              <input
-                type="range"
-                min="10"
-                max="100"
-                step="5"
-                value={fatiguePercent}
-                onChange={(e) => setFatiguePercent(parseInt(e.target.value, 10))}
-                className="w-full accent-[var(--color-action)] cursor-pointer mb-2.5"
-              />
+                {/* Slider */}
+                <input
+                  type="range"
+                  min="10"
+                  max="100"
+                  step="5"
+                  value={fatiguePercent}
+                  onChange={(e) => setFatiguePercent(parseInt(e.target.value, 10))}
+                  className="w-full accent-[var(--color-action)] cursor-pointer mb-2.5"
+                />
 
-              {/* Quick Presets */}
-              <div className="flex justify-between gap-1.5">
-                {[
-                  { label: "Light (40%)", val: 40 },
-                  { label: "Moderate (60%)", val: 60 },
-                  { label: "High (80%)", val: 80 },
-                  { label: "Max (100%)", val: 100 },
-                ].map((p) => {
-                  const isActive = fatiguePercent === p.val;
-                  return (
-                    <button
-                      key={p.val}
-                      type="button"
-                      onClick={() => setFatiguePercent(p.val)}
-                      className={`flex-1 py-1.5 px-0.5 rounded-[var(--radius-input)] text-xs font-semibold cursor-pointer border transition-colors ${
-                        isActive
-                          ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)] font-bold"
-                          : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:border-[var(--color-action)]"
-                      }`}
-                    >
-                      {p.label}
-                    </button>
-                  );
-                })}
+                {/* Quick Presets */}
+                <div className="flex justify-between gap-1.5">
+                  {[
+                    { label: "Light (40%)", val: 40 },
+                    { label: "Moderate (60%)", val: 60 },
+                    { label: "High (80%)", val: 80 },
+                    { label: "Max (100%)", val: 100 },
+                  ].map((p) => {
+                    const isActive = fatiguePercent === p.val;
+                    return (
+                      <button
+                        key={p.val}
+                        type="button"
+                        onClick={() => setFatiguePercent(p.val)}
+                        className={`flex-1 py-1.5 px-0.5 rounded-[var(--radius-input)] text-xs font-semibold cursor-pointer border transition-colors ${
+                          isActive
+                            ? "border-[var(--color-action)] bg-[var(--color-action-soft)] text-[var(--color-action)] font-bold"
+                            : "border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:border-[var(--color-action)]"
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
 
         {/* Action Buttons */}
         <div className="flex gap-3">

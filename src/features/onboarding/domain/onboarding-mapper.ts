@@ -1,3 +1,8 @@
+import type { InjuryInputInit } from "@/features/profile/model/injury";
+import { toInjuryInput } from "@/features/profile/model/injury";
+
+import type { OnboardingValues } from "./onboarding-schema";
+
 export function mapGoalToProto(goals: string[] | string): string[] {
   const list = Array.isArray(goals) ? goals : [goals];
   const result: string[] = [];
@@ -65,4 +70,28 @@ export function mapCoachStyleToProto(style: string): string {
       return "MOTIVATIONAL";
     }
   }
+}
+
+export function mapOnboardingInjuries(
+  values: Pick<
+    OnboardingValues,
+    | "injuryStatus"
+    | "injuryRegion"
+    | "injuryMuscle"
+    | "injurySide"
+    | "injurySeverity"
+    | "injuryNotes"
+  >,
+): InjuryInputInit[] {
+  if (values.injuryStatus === "none") {
+    return [];
+  }
+  const input = toInjuryInput({
+    region: values.injuryRegion,
+    muscle: values.injuryMuscle,
+    side: values.injurySide,
+    severity: values.injurySeverity,
+    notes: values.injuryNotes?.trim() || "Reported during onboarding",
+  });
+  return input ? [input] : [];
 }
