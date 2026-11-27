@@ -1,21 +1,23 @@
 {
   "display_name": "Bicep Curl",
   "rep_type": "counted",
+  "min_eccentric_duration_ms": 0,
+  "min_rep_duration_ms": 500,
   "notes": "Bài tập đếm rep. Cùi chỏ cố định sát sườn, không vung/lắc. Cột sống thẳng, không ngửa ra sau.",
   "phase_detection": {
     "metric": "elbow_angle",
     "thresholds": {
       "rest": {
-        "gt": 135,
-        "comment": "Tay duỗi thẳng (đáy rep), chuẩn bị cuốn lên"
+        "gt": 152,
+        "comment": "Tay duỗi thẳng hoàn toàn (đáy rep), chuẩn bị cuốn lên"
       },
       "transition": {
-        "gt": 85,
-        "lte": 135,
+        "gt": 102,
+        "lte": 152,
         "comment": "Đang cuốn lên/xuống (giữa ROM)"
       },
       "active": {
-        "lte": 85,
+        "lte": 102,
         "comment": "Đỉnh curl (tạ gần vai), peak contraction"
       }
     },
@@ -31,29 +33,29 @@
       "metric": "elbow_sway",
       "description": "Độ di chuyển cùi chỏ ra trước/sau (Elbow Sway - Cheat Curl)",
       "evaluation_type": "upper_bound",
-      "apply_in_phases": ["rest", "transition", "active"],
+      "apply_in_phases": ["transition", "active"],
       "apply_for_view": "side",
       "ranges": [
         {
           "severity": 0,
           "status": "Correct",
           "min": 0.0,
-          "max": 0.09,
-          "comment": "≤9% torso_length: cùi chỏ cố định"
+          "max": 0.155,
+          "comment": "≤15.5% torso_length: cùi chỏ cố định"
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 0.09,
-          "max": 0.18,
-          "comment": "9-18% torso_length: cùi chỏ bắt đầu vung"
+          "min": 0.155,
+          "max": 0.24,
+          "comment": "15.5-24% torso_length: cùi chỏ bắt đầu vung"
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 0.18,
+          "min": 0.24,
           "max": null,
-          "comment": ">18% torso_length: cheat curl rõ"
+          "comment": ">24% torso_length: cheat curl rõ"
         }
       ],
       "calculation": {

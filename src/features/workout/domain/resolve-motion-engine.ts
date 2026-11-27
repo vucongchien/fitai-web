@@ -23,7 +23,11 @@ export async function resolveMotionEngine(spec: MotionSpec | null): Promise<Moti
     return new WorkerMotionEngine();
   }
 
-  for (const fallbackUrl of ["/models/yolo11n-pose.onnx", "/models/yolov8n-pose.onnx"]) {
+  for (const fallbackUrl of [
+    "/models/yolo26n-pose.onnx",
+    "/models/yolo11n-pose.onnx",
+    "/models/yolov8n-pose.onnx",
+  ]) {
     if (fallbackUrl !== spec.onnxSkeletonUrl && (await isReachable(fallbackUrl))) {
       return new WorkerMotionEngine(fallbackUrl);
     }

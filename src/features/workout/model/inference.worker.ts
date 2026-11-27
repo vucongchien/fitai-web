@@ -157,15 +157,20 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
   activeSpec = next;
   ort = await import("onnxruntime-web/all");
   ort.env.wasm.wasmPaths = wasmPaths;
-  ort.env.wasm.numThreads = 1;
+  ort.env.wasm.numThreads =
+    typeof crossOriginIsolated !== "undefined" && crossOriginIsolated
+      ? Math.min(4, Math.max(1, navigator.hardwareConcurrency || 2))
+      : 1;
 
   const skeletonBuffer = await fetchModel(next.onnxSkeletonUrl);
+  let activeEp: string = "wasm";
 
   for (const ep of ["webgpu", "webgl", "wasm"] as const) {
     try {
       poseSession = await ort.InferenceSession.create(skeletonBuffer, {
         executionProviders: [ep],
       });
+      activeEp = ep;
       break;
     } catch {
       // Fallback to next execution provider
@@ -175,6 +180,7 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
     poseSession = await ort.InferenceSession.create(skeletonBuffer, {
       executionProviders: ["wasm"],
     });
+    activeEp = "wasm";
   }
 
   const firstInputName = poseSession.inputNames?.[0] ?? MODEL_IO.poseInputName;
@@ -188,22 +194,34 @@ async function init(next: MotionSpec, wasmPaths: string): Promise<void> {
   activeInputHeight = isYoloPoseModel ? MODEL_IO.yoloInputHeight : MODEL_IO.inputHeight;
   inputBuffer = null;
 
+  console.info(
+    `[AI Worker] Ready | ep=${activeEp} | threads=${ort.env.wasm.numThreads} | input=${activeInputWidth}x${activeInputHeight} | model=${next.onnxSkeletonUrl}`,
+  );
+
   sampler = new BitmapSampler(activeInputWidth, activeInputHeight);
   poseFilter = new PoseFilter(KEYPOINT_NAMES.length, 2.5, 0.04, 1.0);
 }
+
+type PoseOutputs = Record<string, { data: unknown; dims?: readonly number[]; dispose?: () => void }>;
 
 async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
   if (!ort || !poseSession) {
     return null;
   }
 
+  let tensor: InstanceType<OrtModule["Tensor"]> | null = null;
+  let output: PoseOutputs | null = null;
+
   try {
     inputBuffer ??= new Float32Array(activeInputWidth * activeInputHeight * 3);
     const input = isYoloPoseModel
       ? normaliseFrameRgb01(frame, inputBuffer)
       : normaliseFrame(frame, inputBuffer);
-    const tensor = new ort.Tensor("float32", input, [1, 3, activeInputHeight, activeInputWidth]);
-    const output = await poseSession.run({ [activeInputName]: tensor });
+    tensor = new ort.Tensor("float32", input, [1, 3, activeInputHeight, activeInputWidth]);
+    output = (await poseSession.run({ [activeInputName]: tensor })) as unknown as PoseOutputs;
+    if (!output) {
+      return null;
+    }
 
     let decoded: DecodedPoseKeypoints | null = null;
 
@@ -246,8 +264,8 @@ async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
           return null;
         }
         const { dims } = single;
-        const mapHeight = Number(dims[2] ?? 64);
-        const mapWidth = Number(dims[3] ?? 48);
+        const mapHeight = Number(dims?.[2] ?? 64);
+        const mapWidth = Number(dims?.[3] ?? 48);
         decoded = decodeHeatmap(
           single.data as Float32Array,
           KEYPOINT_NAMES.length,
@@ -282,6 +300,13 @@ async function inferPose(frame: CroppedLetterboxedFrame): Promise<Pose | null> {
   } catch (error) {
     console.warn("[AI Worker] inferPose execution error:", error);
     return null;
+  } finally {
+    tensor?.dispose?.();
+    if (output) {
+      for (const outTensor of Object.values(output)) {
+        outTensor?.dispose?.();
+      }
+    }
   }
 }
 

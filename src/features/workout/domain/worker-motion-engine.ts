@@ -13,6 +13,8 @@ import type { MotionSpec } from "@/features/workout/model/live-session.types";
 
 const WASM_PATHS = "/ort/";
 const TELEMETRY_TIMEOUT_MS = 2000;
+// Cap inference dispatch to ~15 FPS (66ms) to prevent 60 FPS GPU/React render saturation.
+const MIN_INFERENCE_INTERVAL_MS = 66;
 
 export function supportsInferenceWorker(): boolean {
   return (
@@ -216,13 +218,21 @@ export class WorkerMotionEngine implements MotionEngine {
   private startLoop(): void {
     this.stopLoop();
     let lastVideoTime = -1;
-    const loop = () => {
+    let lastDispatchMs = 0;
+    const loop = (now: number) => {
       const video = this.video;
-      if (!this.pending && video && video.videoWidth > 0 && video.videoHeight > 0) {
+      if (
+        !this.pending &&
+        now - lastDispatchMs >= MIN_INFERENCE_INTERVAL_MS &&
+        video &&
+        video.videoWidth > 0 &&
+        video.videoHeight > 0
+      ) {
         const currentTime = video.currentTime;
         const isVideoFile = Boolean(video.src);
         if (!isVideoFile || (!video.paused && Math.abs(currentTime - lastVideoTime) > 0.001)) {
           lastVideoTime = currentTime;
+          lastDispatchMs = now;
           this.pending = true;
           createImageBitmap(video).then(
             (bitmap) => {

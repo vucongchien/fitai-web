@@ -193,15 +193,70 @@ export function PoseOverlay({
       }
       const fallbackAlert = alert && errorJoints.size === 0;
 
+      // Reference body scale: shoulder span or visible upper arm length
+      const ls = pose.keypoints[5];
+      const rs = pose.keypoints[6];
+      const le = pose.keypoints[7];
+      const re = pose.keypoints[8];
+
+      const lsVis = ls && ls.score >= MIN_DRAW_SCORE;
+      const rsVis = rs && rs.score >= MIN_DRAW_SCORE;
+      const shoulderSpan = lsVis && rsVis ? Math.hypot(rs.x - ls.x, rs.y - ls.y) : 0;
+      const leftArmLen = lsVis && le && le.score >= MIN_DRAW_SCORE ? Math.hypot(le.x - ls.x, le.y - ls.y) : 0;
+      const rightArmLen = rsVis && re && re.score >= MIN_DRAW_SCORE ? Math.hypot(re.x - rs.x, re.y - rs.y) : 0;
+      const refSpan = Math.max(shoulderSpan, leftArmLen, rightArmLen);
+
+      // Drop lower-body joints (11..16) with impossible proportions: in prone poses a clipped
+      // box can make YOLO cram hips, knees and ankles onto the chest.
+      const validJointIndices = new Set<number>();
+      for (let i = 0; i < pose.keypoints.length; i++) {
+        const pt = pose.keypoints[i];
+        if (!pt || pt.score < MIN_DRAW_SCORE) continue;
+        if (i < 11) {
+          validJointIndices.add(i);
+          continue;
+        }
+
+        if (refSpan >= 15) {
+          if (pt.score < 0.28) continue;
+
+          const refX = lsVis && rsVis ? (ls.x + rs.x) / 2 : lsVis ? ls.x : rsVis ? rs.x : pt.x;
+          const refY = lsVis && rsVis ? (ls.y + rs.y) / 2 : lsVis ? ls.y : rsVis ? rs.y : pt.y;
+          const distToShoulder = Math.hypot(pt.x - refX, pt.y - refY);
+
+          // Hips (11, 12): Torso distance from shoulder to hip must be at least 0.50 * refSpan
+          if (i === 11 || i === 12) {
+            if (distToShoulder < 0.50 * refSpan) continue;
+          }
+          // Knees (13, 14): Thigh must extend away from shoulder and corresponding hip must be valid
+          else if (i === 13 || i === 14) {
+            const hipIdx = i === 13 ? 11 : 12;
+            if (!validJointIndices.has(hipIdx)) continue;
+            const hipPt = pose.keypoints[hipIdx]!;
+            const femurLen = Math.hypot(pt.x - hipPt.x, pt.y - hipPt.y);
+            if (distToShoulder < 0.80 * refSpan || femurLen < 0.35 * refSpan) continue;
+          }
+          // Ankles (15, 16): Shank must extend away from shoulder and corresponding knee must be valid
+          else if (i === 15 || i === 16) {
+            const kneeIdx = i === 15 ? 13 : 14;
+            if (!validJointIndices.has(kneeIdx)) continue;
+            const kneePt = pose.keypoints[kneeIdx]!;
+            const tibiaLen = Math.hypot(pt.x - kneePt.x, pt.y - kneePt.y);
+            if (distToShoulder < 1.05 * refSpan || tibiaLen < 0.35 * refSpan) continue;
+          }
+        }
+        validJointIndices.add(i);
+      }
+
       // 1. Draw 17-keypoint skeleton edges with Targeted Color Coding
       for (const [from, to] of SKELETON_EDGES) {
         const idxA = KEYPOINT_NAMES.indexOf(from);
         const idxB = KEYPOINT_NAMES.indexOf(to);
-        const a = pose.keypoints[idxA];
-        const b = pose.keypoints[idxB];
-        if (!a || !b || a.score < MIN_DRAW_SCORE || b.score < MIN_DRAW_SCORE) {
+        if (!validJointIndices.has(idxA) || !validJointIndices.has(idxB)) {
           continue;
         }
+        const a = pose.keypoints[idxA]!;
+        const b = pose.keypoints[idxB]!;
         const start = project(a.x, a.y);
         const end = project(b.x, b.y);
         const edgeScore = (a.score + b.score) / 2;
@@ -227,10 +282,10 @@ export function PoseOverlay({
 
       // 2. Draw 17 keypoint joint nodes (Targeted Glowing Circles)
       for (let i = 0; i < pose.keypoints.length; i++) {
-        const point = pose.keypoints[i]!;
-        if (point.score < MIN_DRAW_SCORE) {
+        if (!validJointIndices.has(i)) {
           continue;
         }
+        const point = pose.keypoints[i]!;
         const projected = project(point.x, point.y);
         const opacity = Math.min(1, Math.max(0.7, point.score));
 

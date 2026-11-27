@@ -7,7 +7,13 @@ import {
   EdgeRefereeSession,
   keypointsToSkeletonPoints,
 } from "@/features/workout/domain/edge-referee";
-import { evaluateMotionRule, type SkeletonPoint } from "@/features/workout/domain/rule-evaluator";
+import {
+  calculateSignedPointToLineDistanceRatio,
+  evaluateMotionRule,
+  inferCameraView,
+  matchesView,
+  type SkeletonPoint,
+} from "@/features/workout/domain/rule-evaluator";
 import { parseMotionRule } from "@/features/workout/domain/rule-parser";
 import { isTimedExercise } from "@/features/workout/domain/session-guards";
 import { resolveVoiceFeedbackCueText } from "@/features/workout/model/use-live-workout-effects";
@@ -671,5 +677,187 @@ describe("Edge Biomechanical Referee Engine — 12 Exercises x 5 Scenarios (60 B
         "/models/rules/plank_rule.json",
       ),
     ).toBe(true);
+  });
+
+  it("evaluates signed point-to-line deviation across all 6 orientation and degeneracy scenarios", () => {
+    const pt = (x: number, y: number): SkeletonPoint => ({ index: 0, visibility: 0.95, x, y });
+
+    // 1. Head left, horizontal: Sag (+y) vs Pike (-y)
+    const sagLeft = calculateSignedPointToLineDistanceRatio(pt(0.2, 0.5), pt(0.5, 0.6), pt(0.8, 0.5));
+    const pikeLeft = calculateSignedPointToLineDistanceRatio(pt(0.2, 0.5), pt(0.5, 0.4), pt(0.8, 0.5));
+    expect(sagLeft).not.toBeNull();
+    expect(pikeLeft).not.toBeNull();
+    expect(sagLeft!).toBeGreaterThan(0.25);
+    expect(pikeLeft!).toBeLessThan(-0.25);
+
+    // 2. Head right, horizontal: Must return identical sign & value as Head left!
+    const sagRight = calculateSignedPointToLineDistanceRatio(pt(0.8, 0.5), pt(0.5, 0.6), pt(0.2, 0.5));
+    const pikeRight = calculateSignedPointToLineDistanceRatio(pt(0.8, 0.5), pt(0.5, 0.4), pt(0.2, 0.5));
+    expect(sagRight).toBeCloseTo(sagLeft!, 5);
+    expect(pikeRight).toBeCloseTo(pikeLeft!, 5);
+
+    // 3 & 4. Inclined up / Declined down
+    const sagInclined = calculateSignedPointToLineDistanceRatio(pt(0.2, 0.4), pt(0.5, 0.62), pt(0.8, 0.6));
+    expect(sagInclined!).toBeGreaterThan(0.2);
+
+    // 5. Degenerate collapsed body (Shoulder and Ankle nearly coincident)
+    const collapsed = calculateSignedPointToLineDistanceRatio(pt(0.5, 0.5), pt(0.5, 0.75), pt(0.55, 0.52));
+    expect(collapsed).toBeNull();
+
+    // 6. Degenerate vertical standing posture (|dx| < 0.35 * lineLen)
+    const standing = calculateSignedPointToLineDistanceRatio(pt(0.5, 0.2), pt(0.55, 0.55), pt(0.5, 0.9));
+    expect(standing).toBeNull();
+  });
+
+  it("handles oblique camera view, mid-rep occlusion guard, ready posture gate, and fast tempo warning", () => {
+    // Oblique view detection (shoulderSpan / torsoLen = 0.40 -> oblique)
+    const obliquePts = makeBaseSkeleton(false);
+    setBilateral(obliquePts, 5, 6, 0.5, 0.3, 0.06); // span = 0.12
+    setBilateral(obliquePts, 11, 12, 0.5, 0.6, 0.04); // torso = 0.30 -> ratio = 0.40
+    const map = new Map(obliquePts.map((p) => [p.index, p]));
+    const view = inferCameraView(map, 0.3, 0.5);
+    expect(view).toBe("oblique");
+    expect(matchesView("side", view, "VERTICAL_ANGLE")).toBe(true);
+    expect(matchesView("front", view, "BILATERAL_WIDTH_RATIO")).toBe(false);
+
+    // 16:9 aspect ratio correction: normalized span = 0.10 in 16:9 frame -> real ratio = 0.10 * (16/9) / 0.30 = 0.59 -> front view
+    const front169Pts = makeBaseSkeleton(false);
+    setBilateral(front169Pts, 5, 6, 0.5, 0.3, 0.05); // normalized span = 0.10
+    setBilateral(front169Pts, 11, 12, 0.5, 0.6, 0.02);
+    const map169 = new Map(front169Pts.map((p) => [p.index, p]));
+    const view169 = inferCameraView(map169, 0.30, 0.5, 16 / 9);
+    expect(view169).toBe("front");
+
+    // Ready gate & fast tempo check
+    const squatSpec = specs.find((s) => s.slug === "squat")!;
+    const squatRulePath = path.resolve(process.cwd(), "public/models/rules/squat_rule.json");
+    const rawSquat = JSON.parse(fs.readFileSync(squatRulePath, "utf-8"));
+    rawSquat.ready_gate_frames = 3;
+    rawSquat.min_eccentric_duration_ms = 500;
+    const squatRule = parseMotionRule("squat", rawSquat);
+    const ref = new EdgeRefereeSession(squatRule, "SIDE");
+
+    // Entering mid-squat (t=0.8) without standing in REST first must NOT trigger a rep
+    ref.processFrame(squatSpec.poseGen(0.8, "good", false), 100, "SIDE");
+    ref.processFrame(squatSpec.poseGen(1.0, "good", false), 150, "SIDE");
+    const unArmedReturn = ref.processFrame(squatSpec.poseGen(0.0, "good", false), 200, "SIDE");
+    expect(unArmedReturn.repCount).toBe(0);
+
+    // Stand in REST for 3 frames to arm Ready Gate
+    ref.processFrame(squatSpec.poseGen(0.0, "good", false), 250, "SIDE");
+    ref.processFrame(squatSpec.poseGen(0.0, "good", false), 300, "SIDE");
+
+    // Fast eccentric drop (only 150ms < 500ms) -> counts rep AND emits ERR_TEMPO_TOO_FAST
+    ref.processFrame(squatSpec.poseGen(0.5, "good", false), 350, "SIDE");
+    ref.processFrame(squatSpec.poseGen(1.0, "good", false), 400, "SIDE");
+    ref.processFrame(squatSpec.poseGen(0.5, "good", false), 450, "SIDE");
+    ref.processFrame(squatSpec.poseGen(0.0, "good", false), 500, "SIDE");
+    const fastRepSnap = ref.processFrame(squatSpec.poseGen(0.0, "good", false), 550, "SIDE");
+    expect(fastRepSnap.repCount).toBe(1);
+    expect(fastRepSnap.detectedErrors).toContain("ERR_TEMPO_TOO_FAST");
+  });
+
+  it("evaluates real YouTube Push-up clips (IODxDxX7oi4) extracted via YOLO26n-pose when scratch keypoints exist", () => {
+    const scratchJson =
+      "C:/Users/123ch/.gemini/antigravity/brain/493afebe-e17e-49a3-b64e-16abd9d24c04/scratch/pushup_clips_yolo26n.json";
+    if (!fs.existsSync(scratchJson)) {
+      return;
+    }
+    const clips = JSON.parse(fs.readFileSync(scratchJson, "utf-8"));
+    const rulePath = path.resolve(process.cwd(), "public/models/rules/push_up_rule.json");
+    const pushupRule = parseMotionRule("push_up", JSON.parse(fs.readFileSync(rulePath, "utf-8")));
+
+    const runClip = (clipName: string, view: string) => {
+      const ref = new EdgeRefereeSession(pushupRule, view);
+      const allErrors = new Set<string>();
+      const errDebug: string[] = [];
+      for (const fr of clips[clipName].frames) {
+        const snap = ref.processFrame(fr.keypoints, fr.timestamp_ms, view);
+        for (const err of snap.detectedErrors) {
+          allErrors.add(err);
+          errDebug.push(`f=${fr.frame_index}@${fr.timestamp_ms}ms:${err}(ang=${snap.currentAngle.toFixed(1)},rom=${snap.rom})`);
+        }
+      }
+      return { errDebug, errors: Array.from(allErrors), reps: ref.getConfirmedValue() };
+    };
+
+    const goodSide = runClip("good_side.mp4", "SIDE");
+    const goodFront = runClip("good_front.mp4", "FRONT");
+    const faultHipSag = runClip("fault_hip_sag_side.mp4", "SIDE");
+    const faultElbowFlare = runClip("fault_elbow_flare_front.mp4", "FRONT");
+    const faultHalfRep = runClip("fault_half_rep_side.mp4", "SIDE");
+    const faultHeadDrop = runClip("fault_head_drop_side.mp4", "SIDE");
+
+    expect(goodSide.errors, goodSide.errDebug.join(", ")).toStrictEqual([]);
+    expect(goodSide.reps).toBeGreaterThanOrEqual(2);
+    expect(goodFront.errors).toStrictEqual([]);
+    expect(faultHipSag.errors).toContain("ERR_SIGNED_HIP_Y_DIFF_TOO_HIGH");
+    expect(faultElbowFlare.errors).toContain("ERR_HAND_WIDTH_RATIO_TOO_HIGH");
+    expect(faultHalfRep.errors).toContain("ERR_INCORRECT_DEPTH");
+    expect(faultHeadDrop.errors).toContain("ERR_INCORRECT_DEPTH");
+  });
+
+  // Regression: a coach standing and gesturing while talking (video intro) cycles the elbow angle
+  // 170° -> 25° -> 170°, which is exactly the push-up phase signal. Push-up must require a non-upright
+  // torso, otherwise talking-head footage inflates the rep count (observed: 6 fake reps in a 56 s intro).
+  it("push-up posture gate: standing + bending elbows counts 0 reps; same arm cycle when prone still counts", () => {
+    const rulePath = path.resolve(process.cwd(), "public/models/rules/push_up_rule.json");
+    const pushupRule = parseMotionRule("push_up", JSON.parse(fs.readFileSync(rulePath, "utf-8")));
+    expect(pushupRule.postureGate).toBe("reject_upright");
+
+    const standing = (bent: boolean): SkeletonPoint[] => {
+      const pts = makeBaseSkeleton(false);
+      for (const p of pts) p.visibility = 0.95;
+      setBilateral(pts, 5, 6, 0.5, 0.25, 0.08); // shoulders
+      setBilateral(pts, 7, 8, 0.5, 0.4, 0.1); // elbows
+      setBilateral(pts, 9, 10, 0.5, bent ? 0.3 : 0.55, bent ? 0.04 : 0.12); // wrists: up to shoulders vs hanging
+      setBilateral(pts, 11, 12, 0.5, 0.55, 0.06); // hips directly below shoulders
+      setBilateral(pts, 13, 14, 0.5, 0.75, 0.06);
+      setBilateral(pts, 15, 16, 0.5, 0.95, 0.06);
+      return pts;
+    };
+
+    const ref = new EdgeRefereeSession(pushupRule, "FRONT");
+    let t = 0;
+    let sawMismatch = false;
+    for (let rep = 0; rep < 4; rep++) {
+      for (const bent of [false, true, false]) {
+        for (let i = 0; i < 10; i++) {
+          t += 50;
+          const snap = ref.processFrame(standing(bent), t, "FRONT");
+          sawMismatch ||= snap.postureMismatch === true;
+          expect(snap.detectedErrors).toStrictEqual([]);
+        }
+      }
+    }
+    expect(ref.getConfirmedValue()).toBe(0);
+    expect(sawMismatch).toBe(true);
+
+    // Same elbow cycle with a horizontal (side-view prone) torso must still count:
+    // guards against a gate so aggressive that it blocks real push-ups.
+    const prone = (depth: number): SkeletonPoint[] => {
+      const pts = makeBaseSkeleton(false);
+      for (const p of pts) p.visibility = 0.95;
+      const shoulderY = 0.45 + 0.15 * depth;
+      setBilateral(pts, 5, 6, 0.3, shoulderY);
+      setBilateral(pts, 11, 12, 0.6, shoulderY + 0.08);
+      setBilateral(pts, 15, 16, 0.9, 0.78);
+      setBilateral(pts, 13, 14, 0.75, (shoulderY + 0.08 + 0.78) / 2);
+      setBilateral(pts, 9, 10, 0.3, 0.8); // wrists on floor under shoulders
+      setBilateral(pts, 7, 8, 0.3 + 0.1 * depth, 0.625 + 0.075 * depth); // 180° -> 130° -> 90°
+      return pts;
+    };
+    const proneRef = new EdgeRefereeSession(pushupRule, "SIDE");
+    t = 0;
+    for (let rep = 0; rep < 3; rep++) {
+      for (const depth of [0, 0.5, 1, 0.5, 0]) {
+        for (let i = 0; i < 6; i++) {
+          t += 50;
+          const snap = proneRef.processFrame(prone(depth), t, "SIDE");
+          expect(snap.postureMismatch).toBeFalsy();
+        }
+      }
+    }
+    expect(proneRef.getConfirmedValue()).toBe(3);
   });
 });

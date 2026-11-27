@@ -6,17 +6,17 @@
     "metric": "hip_flexion_angle",
     "thresholds": {
       "rest": {
-        "gt": 125,
-        "comment": "Nằm ngửa lưng chạm sàn"
+        "gt": 86,
+        "comment": "Nằm ngửa lưng chạm sàn, gối co (>86°)"
       },
       "transition": {
-        "gt": 102,
-        "lte": 125,
-        "comment": "Đang gập bụng lên hoặc hạ lưng xuống"
+        "gt": 66,
+        "lte": 86,
+        "comment": "Đang gập bụng lên hoặc hạ lưng xuống (66°-86°)"
       },
       "active": {
-        "lte": 102,
-        "comment": "Đỉnh Sit-up: Thân trên gập sát về phía đùi"
+        "lte": 66,
+        "comment": "Đỉnh Sit-up: Thân trên gập sát về phía đùi (<=66°)"
       }
     },
     "calculation": {

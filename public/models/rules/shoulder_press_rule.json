@@ -1,22 +1,25 @@
 {
   "display_name": "Shoulder Press",
   "rep_type": "counted",
-  "notes": "Bài tập đẩy vai qua đầu. Bắt đầu từ ngang vai (góc khuỷu tay ≤90°) và đẩy thẳng lên qua đầu (≥158°).",
+  "ready_gate_frames": 3,
+  "min_rep_duration_ms": 1000,
+  "posture_gate": "reject_low_hands",
+  "notes": "Bài tập đẩy vai qua đầu. Bắt đầu từ ngang vai (góc khuỷu tay ≤105°) và đẩy thẳng lên qua đầu (≥140°).",
   "phase_detection": {
     "metric": "elbow_angle",
     "thresholds": {
       "rest": {
-        "lte": 98,
-        "comment": "Vị trí chuẩn bị ngang vai (khuỷu tay gập ≤98°)"
+        "lte": 105,
+        "comment": "Vị trí chuẩn bị ngang vai (khuỷu tay gập ≤105°)"
       },
       "transition": {
-        "gt": 98,
-        "lt": 148,
+        "gt": 105,
+        "lt": 140,
         "comment": "Đang đẩy tạ lên hoặc hạ tạ xuống"
       },
       "active": {
-        "gte": 148,
-        "comment": "Đỉnh rep: Tay đẩy thẳng qua đầu"
+        "gte": 140,
+        "comment": "Đỉnh rep: Tay đẩy thẳng qua đầu (≥140°)"
       }
     },
     "calculation": {
@@ -29,25 +32,25 @@
       "metric": "wrist_symmetry",
       "description": "Chênh lệch độ cao hai tay khi đẩy vai",
       "evaluation_type": "upper_bound",
-      "apply_in_phases": ["transition", "active"],
+      "apply_in_phases": ["active"],
       "apply_for_view": "front",
       "ranges": [
         {
           "severity": 0,
           "status": "Correct",
           "min": 0.0,
-          "max": 0.2
+          "max": 0.28
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 0.2,
-          "max": 0.3
+          "min": 0.28,
+          "max": 0.40
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 0.3,
+          "min": 0.40,
           "max": null
         }
       ],
@@ -67,18 +70,18 @@
           "severity": 0,
           "status": "Correct",
           "min": 0.0,
-          "max": 12.0
+          "max": 18.0
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 12.0,
-          "max": 20.0
+          "min": 18.0,
+          "max": 25.0
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 20.0,
+          "min": 25.0,
           "max": null
         }
       ],

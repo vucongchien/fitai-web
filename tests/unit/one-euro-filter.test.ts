@@ -56,7 +56,7 @@ describe("PoseFilter", () => {
     expect(smoothed[5]?.y).toBe(100);
   });
 
-  it("skips filtering low confidence keypoints", () => {
+  it("skips filtering low confidence keypoints when no prior memory exists", () => {
     const poseFilter = new PoseFilter(17);
     const kps = Array.from({ length: 17 }, (_, i) => ({
       x: 100,
@@ -66,5 +66,48 @@ describe("PoseFilter", () => {
 
     const filtered = poseFilter.filter(kps, 1000);
     expect(filtered[0]?.x).toBe(100);
+  });
+
+  it("coasts on last valid position during brief <160ms occlusion instead of jumping to raw noise", () => {
+    const poseFilter = new PoseFilter(17, 1.0, 0.007, 1.0);
+    const frame1 = Array.from({ length: 17 }, () => ({ x: 200, y: 300, score: 0.92 }));
+    poseFilter.filter(frame1, 1000);
+
+    // Frame 2 (40ms later): Wrist (9) gets briefly occluded by dumbbell plate and jumps to raw outlier (10, 10) with score=0.05
+    const frame2 = Array.from({ length: 17 }, () => ({ x: 200, y: 300, score: 0.92 }));
+    frame2[9] = { x: 10, y: 10, score: 0.05 };
+    const filtered2 = poseFilter.filter(frame2, 1040);
+
+    expect(filtered2[9]?.x).toBe(200);
+    expect(filtered2[9]?.y).toBe(300);
+    expect(filtered2[9]?.score).toBeGreaterThan(0.5);
+
+    // Frame 3 (300ms later, exceeding maxCoastMs=160ms): no longer coasts
+    const filtered3 = poseFilter.filter(frame2, 1300);
+    expect(filtered3[9]?.x).toBe(10);
+    expect(filtered3[9]?.score).toBe(0.05);
+  });
+
+  it("unswaps left/right knees in side view when YOLO flips their labels mid-movement", () => {
+    const poseFilter = new PoseFilter(17, 1.0, 0.007, 1.0);
+    const makeSidePose = (leftKneeX: number, rightKneeX: number) => {
+      const kps = Array.from({ length: 17 }, () => ({ x: 300, y: 300, score: 0.95 }));
+      // Side profile: shoulders (5, 6) overlapped at x=300, y=150; hips (11, 12) at x=300, y=300 -> torsoLen=150, span=0
+      kps[5] = { x: 300, y: 150, score: 0.95 };
+      kps[6] = { x: 305, y: 150, score: 0.95 };
+      kps[11] = { x: 300, y: 300, score: 0.95 };
+      kps[12] = { x: 305, y: 300, score: 0.95 };
+      kps[13] = { x: leftKneeX, y: 420, score: 0.95 };
+      kps[14] = { x: rightKneeX, y: 420, score: 0.95 };
+      return kps;
+    };
+
+    // Frame 1: Left knee at x=240, Right knee at x=360
+    poseFilter.filter(makeSidePose(240, 360), 1000);
+
+    // Frame 2: YOLO swaps Left and Right labels (reports 13 at 360, 14 at 240)
+    const swappedOut = poseFilter.filter(makeSidePose(360, 240), 1033);
+    expect(swappedOut[13]?.x).toBeCloseTo(240, 0);
+    expect(swappedOut[14]?.x).toBeCloseTo(360, 0);
   });
 });

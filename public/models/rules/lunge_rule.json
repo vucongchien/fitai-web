@@ -1,21 +1,23 @@
 {
   "display_name": "Lunge",
   "rep_type": "counted",
+  "recommended_camera_angle": "side",
   "notes": "Bài tập chùng chân. Yêu cầu thân người thẳng đứng, đầu gối chân bước lên vuông góc và không vượt quá xa cổ chân.",
   "phase_detection": {
     "metric": "knee_angle",
     "thresholds": {
       "rest": {
-        "gt": 158,
+        "gt": 152,
         "comment": "Đứng thẳng chuẩn bị"
       },
       "transition": {
-        "gt": 146,
-        "lte": 158,
+        "gt": 118,
+        "lte": 152,
         "comment": "Đang hạ gối xuống hoặc đạp lên"
       },
       "active": {
-        "lte": 146,
+        "gt": 45,
+        "lte": 118,
         "comment": "Đáy Lunge (gối trước hạ vuông góc)"
       }
     },
@@ -37,22 +39,22 @@
           "severity": 0,
           "status": "Correct",
           "min": 0.0,
-          "max": 22.0,
-          "comment": "≤22°: thân người giữ thẳng đứng"
+          "max": 24.0,
+          "comment": "≤24°: thân người giữ thẳng đứng"
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 22.0,
-          "max": 32.0,
-          "comment": "22-32°: bắt đầu đổ người về trước"
+          "min": 24.0,
+          "max": 34.0,
+          "comment": "24-34°: bắt đầu đổ người về trước"
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 32.0,
+          "min": 34.0,
           "max": null,
-          "comment": ">32°: đổ lưng quá sâu"
+          "comment": ">34°: đổ lưng quá sâu"
         }
       ],
       "calculation": {
@@ -72,18 +74,18 @@
           "severity": 0,
           "status": "Correct",
           "min": 0.0,
-          "max": 0.35
+          "max": 0.27
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 0.35,
-          "max": 0.48
+          "min": 0.27,
+          "max": 0.35
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 0.48,
+          "min": 0.35,
           "max": null
         }
       ],

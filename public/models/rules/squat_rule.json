@@ -1,6 +1,7 @@
 {
   "display_name": "Squat",
   "rep_type": "counted",
+  "recommended_camera_angle": "side",
   "notes": "Bài tập đếm rep thân dưới. Yêu cầu hạ đùi song song sàn, giữ thẳng cột sống, đầu gối mở theo hướng mũi chân.",
   "phase_detection": {
     "metric": "knee_angle",
@@ -10,17 +11,22 @@
         "comment": "Đứng thẳng chuẩn bị (đỉnh rep)"
       },
       "transition": {
-        "gt": 100,
+        "gt": 105,
         "lte": 160,
         "comment": "Đang hạ người xuống hoặc đứng lên"
       },
       "active": {
-        "lte": 100,
-        "comment": "Đáy Squat (đùi song song mặt sàn)"
+        "gt": 45,
+        "lte": 105,
+        "comment": "Đáy Squat (đùi song song mặt sàn, góc gối 45°-105°)"
       }
     },
     "calculation": {
-      "landmarks": ["Hip (P11, P12)", "Knee (P13, P14)", "Ankle (P15, P16)"],
+      "landmarks": [
+        "Hip (P11, P12)",
+        "Knee (P13, P14)",
+        "Ankle (P15, P16)"
+      ],
       "formula": "θ = arccos((U · W) / (||U|| * ||W||)) * (180 / π)",
       "description": "Góc gập khớp gối tạo bởi đùi (Hip-Knee) và cẳng chân (Ankle-Knee)"
     }
@@ -30,33 +36,40 @@
       "metric": "torso_lean",
       "description": "Góc đổ thân người về phía trước quá mức (Good-Morning Squat)",
       "evaluation_type": "upper_bound",
-      "apply_in_phases": ["transition", "active"],
-      "apply_for_view": "side",
+      "apply_in_phases": [
+        "rest",
+        "transition",
+        "active"
+      ],
+      "apply_for_view": "side, front, oblique",
       "ranges": [
         {
           "severity": 0,
           "status": "Correct",
-          "min": 0.0,
-          "max": 42.0,
+          "min": 0,
+          "max": 42,
           "comment": "≤42°: độ nghiêng lưng an toàn"
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 42.0,
-          "max": 52.0,
+          "min": 42,
+          "max": 52,
           "comment": "42-52°: lưng bắt đầu gập sâu về trước"
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 52.0,
+          "min": 52,
           "max": null,
           "comment": ">52°: gập lưng quá mức, nguy cơ chấn thương thắt lưng"
         }
       ],
       "calculation": {
-        "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)"],
+        "landmarks": [
+          "Shoulder (P5, P6)",
+          "Hip (P11, P12)"
+        ],
         "formula": "torso_lean = atan2(|X_shoulder - X_hip|, |Y_shoulder - Y_hip|) * (180 / π)",
         "description": "Góc nghiêng của lưng so với trục thẳng đứng"
       }
@@ -65,13 +78,15 @@
       "metric": "knee_over_toe",
       "description": "Đầu gối đẩy quá xa về phía trước so với cổ chân",
       "evaluation_type": "upper_bound",
-      "apply_in_phases": ["active"],
+      "apply_in_phases": [
+        "active"
+      ],
       "apply_for_view": "side",
       "ranges": [
         {
           "severity": 0,
           "status": "Correct",
-          "min": 0.0,
+          "min": 0,
           "max": 0.38,
           "comment": "Đầu gối ở vị trí an toàn so với cổ chân"
         },
@@ -91,14 +106,57 @@
         }
       ],
       "calculation": {
-        "landmarks": ["Knee (P13, P14)", "Ankle (P15, P16)"],
+        "landmarks": [
+          "Knee (P13, P14)",
+          "Ankle (P15, P16)"
+        ],
         "formula": "knee_over_toe = |X_knee - X_ankle| / torso_length",
         "description": "Độ lệch ngang của đầu gối so với cổ chân chuẩn hóa theo chiều dài lưng"
+      }
+    },
+    {
+      "metric": "knee_valgus",
+      "description": "Đầu gối sụp vào trong so với cổ chân ở mặt phẳng trước (Knee Valgus)",
+      "evaluation_type": "lower_bound",
+      "apply_in_phases": [
+        "all"
+      ],
+      "apply_for_view": "front",
+      "ranges": [
+        {
+          "severity": 0,
+          "status": "Correct",
+          "min": 0.85,
+          "max": null,
+          "comment": "Đầu gối mở thẳng hàng hoặc rộng hơn cổ chân"
+        },
+        {
+          "severity": 1,
+          "status": "Warning",
+          "min": 0.75,
+          "max": 0.85,
+          "comment": "Đầu gối bắt đầu sụp vào trong"
+        },
+        {
+          "severity": 2,
+          "status": "Danger",
+          "min": 0.0,
+          "max": 0.75,
+          "comment": "Sụp gối nặng (Knee Valgus)"
+        }
+      ],
+      "calculation": {
+        "landmarks": [
+          "Ankle (P15, P16)",
+          "Knee (P13, P14)"
+        ],
+        "formula": "knee_valgus = |X_knee_left - X_knee_right| / |X_ankle_left - X_ankle_right|",
+        "description": "Tỷ lệ bề rộng hai đầu gối so với bề rộng hai cổ chân ở mặt phẳng trước"
       }
     }
   ],
   "audio_cooldown_seconds": {
-    "warning": 3.0,
+    "warning": 3,
     "danger": 1.5
   }
 }

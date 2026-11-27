@@ -30,7 +30,7 @@
       "description": "Gập cẳng tay quá nhiều làm giảm cánh tay đòn",
       "evaluation_type": "lower_bound",
       "apply_in_phases": ["transition", "active"],
-      "apply_for_view": "front",
+      "apply_for_view": "front,oblique",
       "ranges": [
         {
           "severity": 0,
@@ -60,25 +60,25 @@
       "metric": "wrist_symmetry",
       "description": "Hai tay nâng cao thấp không đều nhau",
       "evaluation_type": "upper_bound",
-      "apply_in_phases": ["active"],
-      "apply_for_view": "front",
+      "apply_in_phases": ["transition", "active"],
+      "apply_for_view": "front,oblique",
       "ranges": [
         {
           "severity": 0,
           "status": "Correct",
           "min": 0.0,
-          "max": 0.25
+          "max": 0.30
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 0.25,
-          "max": 0.35
+          "min": 0.30,
+          "max": 0.45
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 0.35,
+          "min": 0.45,
           "max": null
         }
       ],

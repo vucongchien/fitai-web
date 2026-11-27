@@ -1,7 +1,10 @@
 {
   "display_name": "Push-up",
   "rep_type": "counted",
-  "notes": "Bài tập hít đất. Thân người thẳng từ vai xuống cổ chân, hạ ngực sát sàn khuỷu tay ≤95°.",
+  "posture_gate": "reject_upright",
+  "min_eccentric_duration_ms": 0,
+  "min_rep_duration_ms": 700,
+  "notes": "Bài tập hít đất. Thân người thẳng từ vai xuống cổ chân, hạ ngực sát sàn khuỷu tay ≤98°.",
   "phase_detection": {
     "metric": "elbow_angle",
     "thresholds": {
@@ -28,56 +31,56 @@
   "rules": [
     {
       "metric": "signed_hip_y_diff",
-      "description": "Độ lệch hông (võng lưng hoặc chổng mông) so với đường thẳng Vai-Cổ chân",
-      "evaluation_type": "upper_bound",
+      "description": "Độ lệch hông có dấu (Dương > +0.035: Võng lưng sập hông; Âm < -0.45: Chổng mông cao / Gục đầu)",
+      "evaluation_type": "two_sided",
       "apply_in_phases": ["rest", "transition", "active"],
       "apply_for_view": "side",
       "ranges": [
         {
           "severity": 0,
           "status": "Correct",
-          "min": 0.0,
-          "max": 0.26,
-          "comment": "Thân người giữ thẳng như tấm ván"
+          "min": -0.65,
+          "max": 0.13,
+          "comment": "Thân người giữ thẳng và siết core chuẩn"
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 0.26,
-          "max": 0.35,
-          "comment": "Hông bắt đầu sụp xuống hoặc đẩy cao"
+          "min": -0.80,
+          "max": 0.22,
+          "comment": "Hông bắt đầu võng xuống hoặc nhô quá cao"
         },
         {
           "severity": 2,
           "status": "Danger",
-          "min": 0.35,
+          "min": null,
           "max": null,
-          "comment": "Võng lưng/chổng mông nặng"
+          "comment": "Võng thắt lưng hoặc chổng mông/gục đầu nặng"
         }
       ],
       "calculation": {
         "landmarks": ["Shoulder (P5, P6)", "Hip (P11, P12)", "Ankle (P15, P16)"],
-        "formula": "signed_hip_y_diff = distance_point_to_line(P_hip, P_shoulder, P_ankle) / torso_length"
+        "formula": "signed_hip_y_diff = signed_line_deviation(P_shoulder, P_hip, P_ankle) / torso_length"
       }
     },
     {
       "metric": "hand_width_ratio",
-      "description": "Độ rộng hai bàn tay so với độ rộng hai vai",
+      "description": "Độ rộng hai bàn tay và độ mở khuỷu tay so với độ rộng hai vai ở góc nhìn trước",
       "evaluation_type": "two_sided",
-      "apply_in_phases": ["rest", "transition", "active"],
+      "apply_in_phases": ["rest"],
       "apply_for_view": "front",
       "ranges": [
         {
           "severity": 0,
           "status": "Correct",
-          "min": 0.85,
-          "max": 1.65
+          "min": 0.0,
+          "max": 2.15
         },
         {
           "severity": 1,
           "status": "Warning",
-          "min": 0.65,
-          "max": 1.9
+          "min": 0.0,
+          "max": 2.35
         },
         {
           "severity": 2,

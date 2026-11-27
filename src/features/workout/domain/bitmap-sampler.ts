@@ -76,7 +76,7 @@ export class BitmapSampler {
     this.context = this.canvas.getContext("2d", { willReadFrequently: true });
     if (this.context) {
       this.context.imageSmoothingEnabled = true;
-      this.context.imageSmoothingQuality = "high";
+      this.context.imageSmoothingQuality = "low";
     }
   }
 

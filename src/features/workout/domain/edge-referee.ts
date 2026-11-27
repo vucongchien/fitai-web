@@ -3,8 +3,11 @@
 import type { SetTelemetry } from "@/features/workout/domain/motion-engine";
 import {
   type EvaluatedViolation,
+  type InsufficientCriterionReport,
   type SkeletonPoint,
+  areHandsBelowChest,
   evaluateMotionRule,
+  isUprightTorso,
 } from "@/features/workout/domain/rule-evaluator";
 import {
   type ExerciseMotionRule,
@@ -40,6 +43,9 @@ export interface EdgeFrameUpdate {
   audioCue: string;
   repCompleted: { count: number; romPercentage: number; counted: boolean } | null;
   newFormErrors: EdgeFormErrorEvent[];
+  insufficientDataRules?: InsufficientCriterionReport[];
+  /** True while the rule's posture gate blocks evaluation (e.g. standing during a push-up set). */
+  postureMismatch?: boolean;
 }
 
 export function resolvePhaseRomBounds(rule: ExerciseMotionRule): {
@@ -115,7 +121,21 @@ export class EdgeRefereeSession {
   private hasTransitionedOut = false;
   private phaseFrames = 0;
   private phaseDurationMs = 0;
+  private eccentricDurationMs = 0;
   private lastDepthWarningMs = -10_000;
+  private lastTempoWarningMs = -10_000;
+  private lastLockoutWarningMs = -10_000;
+  private lastBottomStuckWarningMs = -10_000;
+
+  private isArmed = false;
+  private restStableFrames = 0;
+  private restReturnFrames = 0;
+  private lockedRepDominantSide: "left" | "right" | null = null;
+  private hadOcclusionInCycle = false;
+  private uprightStreakFrames = 0;
+  private lowHandsStreakFrames = 0;
+  private frameAspect = 1;
+  private resolvedCameraView: "front" | "side" | "oblique" = "side";
 
   private currentRepPeakRom = 0;
   private currentRepPeakAngles: Record<string, number> = {};
@@ -151,6 +171,9 @@ export class EdgeRefereeSession {
     sourceHeight = 1,
     boostLiveConfidence = false,
   ): EdgeFrameUpdate {
+    if (sourceWidth > 1 && sourceHeight > 1) {
+      this.frameAspect = sourceWidth / sourceHeight;
+    }
     const landmarks = keypointsToSkeletonPoints(
       keypoints,
       sourceWidth,
@@ -173,15 +196,52 @@ export class EdgeRefereeSession {
     const deltaMs = this.resolveDeltaMs(timestampMs);
     this.elapsedDurationMs += deltaMs;
 
-    const rawResult = evaluateMotionRule(landmarks, this.rule, this.cameraAngle);
+    const preferredSide = this.repPhase !== "REST" ? this.lockedRepDominantSide : null;
+    const rawResult = evaluateMotionRule(
+      landmarks,
+      this.rule,
+      this.cameraAngle,
+      preferredSide,
+      this.frameAspect,
+    );
+    if (rawResult.activeView) {
+      this.resolvedCameraView = rawResult.activeView;
+    }
     const isNoPerson =
       rawResult.detectedErrors.length === 1 &&
       rawResult.detectedErrors[0] === "ERR_NO_PERSON_DETECTED";
     this.personDetected = !isNoPerson;
 
+    if (isNoPerson) {
+      this.isArmed = false;
+      this.restStableFrames = 0;
+    }
+
+    // Posture gate: e.g. push-up must not count elbow-angle cycles while the user stands and gestures.
+    // Debounced (3 frames) so a single mis-detected frame mid-rep does not abort the rep.
+    if (!isNoPerson && this.rule.postureGate === "reject_upright") {
+      const upright = isUprightTorso(landmarks, this.frameAspect);
+      this.uprightStreakFrames = upright === true ? this.uprightStreakFrames + 1 : 0;
+      if (this.uprightStreakFrames >= 3) {
+        return this.buildPostureMismatchUpdate();
+      }
+    }
+    if (!isNoPerson && this.rule.postureGate === "reject_low_hands") {
+      const lowHands = areHandsBelowChest(landmarks);
+      this.lowHandsStreakFrames = lowHands === true ? this.lowHandsStreakFrames + 1 : 0;
+      if (this.lowHandsStreakFrames >= 3) {
+        return this.buildPostureMismatchUpdate();
+      }
+    }
+
     const hasAngle = Boolean(rawResult.hasCalculatedAngle) || rawResult.calculatedAngle > 0;
     if (hasAngle) {
       this.currentAngle = rawResult.calculatedAngle;
+      if (this.repPhase !== "REST" && !this.lockedRepDominantSide && rawResult.dominantSide) {
+        this.lockedRepDominantSide = rawResult.dominantSide;
+      }
+    } else if (this.repPhase !== "REST") {
+      this.hadOcclusionInCycle = true;
     }
 
     const { persistedErrors, persistedViolations, filteredScore, filteredCue } =
@@ -228,8 +288,10 @@ export class EdgeRefereeSession {
       } else {
         const repOut = this.processRepFrame(
           this.currentAngle,
+          hasAngle,
           rom,
           rawResult.metricValues,
+          rawResult.dominantSide ?? null,
           deltaMs,
         );
         repCompleted = repOut.repCompleted;
@@ -237,6 +299,12 @@ export class EdgeRefereeSession {
           newFormErrors.push(repOut.halfRepError);
           if (!persistedErrors.includes(repOut.halfRepError.code)) {
             persistedErrors.push(repOut.halfRepError.code);
+          }
+        }
+        if (repOut.tempoError) {
+          newFormErrors.push(repOut.tempoError);
+          if (!persistedErrors.includes(repOut.tempoError.code)) {
+            persistedErrors.push(repOut.tempoError.code);
           }
         }
       }
@@ -259,6 +327,7 @@ export class EdgeRefereeSession {
       frameIndex: this.frameIndex,
       holdDurationSeconds:
         this.rule.challengeType === "DURATION" ? Math.floor(this.accumulatedDurationMs / 1000) : 0,
+      insufficientDataRules: rawResult.insufficientDataRules,
       isValidForm: persistedErrors.length === 0 && !isNoPerson,
       metricName,
       newFormErrors,
@@ -267,6 +336,59 @@ export class EdgeRefereeSession {
       repCount: this.confirmedValue,
       repPhase: this.repPhase,
       rom,
+      startDeg,
+    };
+  }
+
+  private buildPostureMismatchUpdate(): EdgeFrameUpdate {
+    // Disarm and silently abort any in-progress rep (no half-rep error: the user left the posture,
+    // they did not perform a shallow rep). Clear form-fault streaks so nothing is nagged while standing.
+    this.isArmed = false;
+    this.restStableFrames = 0;
+    this.repPhase = "REST";
+    this.hasTransitionedIn = false;
+    this.hasReachedActive = false;
+    this.hasTransitionedOut = false;
+    this.phaseFrames = 0;
+    this.phaseDurationMs = 0;
+    this.eccentricDurationMs = 0;
+    this.restReturnFrames = 0;
+    this.currentRepPeakRom = 0;
+    this.currentRepPeakAngles = {};
+    this.lockedRepDominantSide = null;
+    this.hadOcclusionInCycle = false;
+    this.pendingRepErrors.clear();
+    this.errorStreakFrames.clear();
+    this.errorStreakDurationMs.clear();
+    this.prevConfirmedErrors.clear();
+
+    if (this.elapsedDurationMs >= this.rule.timeCeilingMs) {
+      this.elapsedDurationMs = this.rule.timeCeilingMs;
+      this.isCompleted = true;
+      if (!this.completionReason) {
+        this.completionReason = "TIMEOUT";
+      }
+    }
+
+    const { startDeg, endDeg, metricName } = resolvePhaseRomBounds(this.rule);
+    return {
+      audioCue: "",
+      currentAngle: this.currentAngle,
+      detectedErrors: [],
+      endDeg,
+      formScore: 100,
+      frameIndex: this.frameIndex,
+      holdDurationSeconds:
+        this.rule.challengeType === "DURATION" ? Math.floor(this.accumulatedDurationMs / 1000) : 0,
+      isValidForm: false,
+      metricName,
+      newFormErrors: [],
+      personDetected: this.personDetected,
+      postureMismatch: true,
+      repCompleted: null,
+      repCount: this.confirmedValue,
+      repPhase: this.repPhase,
+      rom: 0,
       startDeg,
     };
   }
@@ -409,15 +531,26 @@ export class EdgeRefereeSession {
 
   private processRepFrame(
     angle: number,
+    hasAngle: boolean,
     rom: number,
     metricValues: Record<string, number>,
+    dominantSide: "left" | "right" | null,
     deltaMs: number,
   ): {
     repCompleted: { count: number; romPercentage: number; counted: boolean } | null;
     halfRepError: EdgeFormErrorEvent | null;
+    tempoError: EdgeFormErrorEvent | null;
   } {
     if (angle <= 0 || !this.rule.phaseDetection) {
-      return { halfRepError: null, repCompleted: null };
+      return { halfRepError: null, repCompleted: null, tempoError: null };
+    }
+
+    // If primary joint angle dropped out this frame due to brief occlusion, hold current phase
+    // rather than resetting or misinterpreting stale angle.
+    if (!hasAngle && this.repPhase !== "REST") {
+      this.hadOcclusionInCycle = true;
+      this.phaseDurationMs += deltaMs;
+      return { halfRepError: null, repCompleted: null, tempoError: null };
     }
 
     const th = this.rule.phaseDetection.thresholds;
@@ -434,6 +567,32 @@ export class EdgeRefereeSession {
         }
         this.currentRepPeakAngles = snapshot;
       }
+    };
+
+    const checkTempoFault = (): EdgeFormErrorEvent | null => {
+      const minEcc = this.rule.minEccentricDurationMs ?? 0;
+      const minRep = this.rule.minRepDurationMs ?? 0;
+      const tooFastEcc = minEcc > 0 && this.eccentricDurationMs > 0 && this.eccentricDurationMs < minEcc;
+      const tooFastRep = minRep > 0 && this.phaseDurationMs > 0 && this.phaseDurationMs < minRep;
+
+      if (
+        (tooFastEcc || tooFastRep) &&
+        this.elapsedDurationMs - this.lastTempoWarningMs > 2500
+      ) {
+        this.lastTempoWarningMs = this.elapsedDurationMs;
+        if (!this.pendingRepErrors.has("ERR_TEMPO_TOO_FAST")) {
+          this.pendingRepErrors.add("ERR_TEMPO_TOO_FAST");
+          this.totalErrorEvents += 1;
+        }
+        return {
+          code: "ERR_TEMPO_TOO_FAST",
+          message: "Bạn đang tập quá nhanh, hãy kiểm soát nhịp độ chậm lại!",
+          metric: "tempo",
+          severity: 1,
+          source: "referee-error",
+        };
+      }
+      return null;
     };
 
     const completeRep = (): { count: number; romPercentage: number; counted: boolean } => {
@@ -459,12 +618,32 @@ export class EdgeRefereeSession {
       this.hasTransitionedOut = false;
       this.phaseFrames = 0;
       this.phaseDurationMs = 0;
+      this.eccentricDurationMs = 0;
+      this.restReturnFrames = 0;
       this.currentRepPeakRom = 0;
       this.currentRepPeakAngles = {};
+      this.lockedRepDominantSide = null;
+      this.hadOcclusionInCycle = false;
     };
+
+    const requiredReadyFrames = Math.max(1, this.rule.readyGateFrames ?? 1);
 
     switch (this.repPhase) {
       case "REST": {
+        if (isRest) {
+          this.restStableFrames += 1;
+          if (this.restStableFrames >= requiredReadyFrames) {
+            this.isArmed = true;
+          }
+          return { halfRepError: null, repCompleted: null, tempoError: null };
+        }
+
+        // Ready Posture Gate: do not start a rep if the user entered the frame mid-flexion
+        // without first passing through REST posture.
+        if (!this.isArmed) {
+          return { halfRepError: null, repCompleted: null, tempoError: null };
+        }
+
         if (isTransition) {
           this.repPhase = "TRANSITION";
           this.hasTransitionedIn = true;
@@ -472,8 +651,11 @@ export class EdgeRefereeSession {
           this.hasTransitionedOut = false;
           this.phaseFrames = 1;
           this.phaseDurationMs = deltaMs;
+          this.eccentricDurationMs = deltaMs;
           this.currentRepPeakRom = 0;
           this.currentRepPeakAngles = {};
+          this.lockedRepDominantSide = dominantSide;
+          this.hadOcclusionInCycle = false;
           recordPeak();
         } else if (isActive) {
           this.repPhase = "ACTIVE";
@@ -482,57 +664,143 @@ export class EdgeRefereeSession {
           this.hasTransitionedOut = false;
           this.phaseFrames = 1;
           this.phaseDurationMs = deltaMs;
+          this.eccentricDurationMs = deltaMs;
           this.currentRepPeakRom = 0;
           this.currentRepPeakAngles = {};
+          this.lockedRepDominantSide = dominantSide;
+          this.hadOcclusionInCycle = false;
           recordPeak();
         }
-        return { halfRepError: null, repCompleted: null };
+        return { halfRepError: null, repCompleted: null, tempoError: null };
       }
 
       case "TRANSITION": {
         this.phaseFrames += 1;
         this.phaseDurationMs += deltaMs;
+        if (!this.hasReachedActive) {
+          this.eccentricDurationMs += deltaMs;
+        }
         recordPeak();
 
         if (isActive) {
+          this.restReturnFrames = 0;
+          let halfRepError: EdgeFormErrorEvent | null = null;
+          if (this.hasTransitionedIn && this.hasReachedActive && this.hasTransitionedOut) {
+            // User reached bottom, pushed up toward top, but sank back into ACTIVE without locking out!
+            // Suppress for lateral_raise in unsupported side view (coronal foreshortening causes 2D tracking jitter across torso line)
+            const exerciseSlug = (this.rule.exerciseId || this.rule.displayName || "").toLowerCase();
+            const isSideLateralRaise =
+              exerciseSlug.includes("lateral_raise") &&
+              (this.cameraAngle === "side" || this.resolvedCameraView === "side");
+            if (!isSideLateralRaise && this.elapsedDurationMs - this.lastLockoutWarningMs > 2500) {
+              this.lastLockoutWarningMs = this.elapsedDurationMs;
+              halfRepError = {
+                code: "ERR_INCOMPLETE_LOCKOUT",
+                message: this.resolveLockoutCueMessage(),
+                metric: "lockout",
+                severity: 1,
+                source: "referee-error",
+              };
+            }
+            this.hasTransitionedOut = false;
+          }
           if (this.hasTransitionedIn) {
             this.hasReachedActive = true;
           }
           this.repPhase = "ACTIVE";
-          return { halfRepError: null, repCompleted: null };
+          return { halfRepError, repCompleted: null, tempoError: null };
         }
 
         if (isRest) {
+          this.restReturnFrames += 1;
+          // Need 2 REST frames so a 1-frame spike cannot close the rep; an upright torso
+          // (standing up from a push-up) does not count as returning to the top either.
+          if (
+            this.restReturnFrames < 2 ||
+            this.uprightStreakFrames > 0 ||
+            this.lowHandsStreakFrames > 0
+          ) {
+            return { halfRepError: null, repCompleted: null, tempoError: null };
+          }
+
           let repCompleted: { count: number; romPercentage: number; counted: boolean } | null =
             null;
           let halfRepError: EdgeFormErrorEvent | null = null;
+          let tempoError: EdgeFormErrorEvent | null = null;
 
-          if (this.hasTransitionedIn && this.hasReachedActive && this.hasTransitionedOut) {
+          if (this.hasTransitionedIn && this.hasReachedActive) {
+            tempoError = checkTempoFault();
             repCompleted = completeRep();
           } else if (
             this.hasTransitionedIn &&
             !this.hasReachedActive &&
-            this.phaseFrames >= 3 &&
+            this.hadOcclusionInCycle &&
+            this.currentRepPeakRom >= 35
+          ) {
+            // Peak was briefly occluded near bottom/top of movement: avoid false Half-Rep penalty
+            repCompleted = null;
+          } else if (
+            this.hasTransitionedIn &&
+            !this.hasReachedActive &&
+            this.phaseDurationMs >= 350 &&
+            this.phaseFrames >= 4 &&
+            this.currentRepPeakRom >= 30 &&
             this.elapsedDurationMs - this.lastDepthWarningMs > 2500
           ) {
-            this.lastDepthWarningMs = this.elapsedDurationMs;
-            halfRepError = {
-              code: "ERR_INCORRECT_DEPTH",
-              message: "Chưa đủ biên độ, hãy hạ sâu hơn!",
-              metric: "depth",
-              severity: 1,
-              source: "referee-error",
-            };
+            // Suppress unobservable 2D front-view squat/lunge depth (sagittal knee flexion foreshortened along line of sight)
+            const isFrontSagittalKnee =
+              ((this.rule.exerciseId || "").includes("squat") ||
+                (this.rule.exerciseId || "").includes("lunge")) &&
+              (this.cameraAngle === "front" || this.resolvedCameraView === "front");
+            if (!isFrontSagittalKnee) {
+              this.lastDepthWarningMs = this.elapsedDurationMs;
+              halfRepError = {
+                code: "ERR_INCORRECT_DEPTH",
+                message: this.resolveDepthCueMessage(),
+                metric: "depth",
+                severity: 1,
+                source: "referee-error",
+              };
+            }
           }
 
           resetCycle();
-          return { halfRepError, repCompleted };
+          this.restStableFrames = 1;
+          return { halfRepError, repCompleted, tempoError };
         }
 
-        if (isTransition && this.hasReachedActive) {
+        // Proactive coaching cue: user is bouncing mid-range without reaching ACTIVE or REST for > 2.5s
+        if (
+          this.hasTransitionedIn &&
+          !this.hasReachedActive &&
+          this.phaseDurationMs > 2500 &&
+          this.currentRepPeakRom >= 25 &&
+          this.elapsedDurationMs - this.lastDepthWarningMs > 3000 &&
+          !(
+            ((this.rule.exerciseId || "").includes("squat") ||
+              (this.rule.exerciseId || "").includes("lunge")) &&
+            (this.cameraAngle === "front" || this.resolvedCameraView === "front")
+          )
+        ) {
+          this.lastDepthWarningMs = this.elapsedDurationMs;
+          return {
+            halfRepError: {
+              code: "ERR_INCORRECT_DEPTH",
+              message: this.resolveDepthCueMessage(),
+              metric: "depth",
+              severity: 1,
+              source: "referee-error",
+            },
+            repCompleted: null,
+            tempoError: null,
+          };
+        }
+
+        this.restReturnFrames = 0;
+        if (isTransition && this.hasReachedActive && rom <= 55) {
           this.hasTransitionedOut = true;
         }
-        return { halfRepError: null, repCompleted: null };
+        return { halfRepError: null, repCompleted: null, tempoError: null };
       }
 
       case "ACTIVE": {
@@ -540,36 +808,108 @@ export class EdgeRefereeSession {
         this.phaseDurationMs += deltaMs;
         recordPeak();
 
+        // Proactive coaching cue: stuck at the bottom of the movement for > 3.0s (only for bottom-active movements)
+        const exerciseSlug = (this.rule.exerciseId || this.rule.displayName || "").toLowerCase();
+        const isBottomActiveExercise =
+          exerciseSlug.includes("squat") ||
+          exerciseSlug.includes("lunge") ||
+          exerciseSlug.includes("push_up") ||
+          exerciseSlug.includes("pushup") ||
+          exerciseSlug.includes("dip");
+        if (
+          isBottomActiveExercise &&
+          this.phaseDurationMs > 3000 &&
+          this.elapsedDurationMs - this.lastBottomStuckWarningMs > 3500
+        ) {
+          this.lastBottomStuckWarningMs = this.elapsedDurationMs;
+          const msg =
+            exerciseSlug.includes("squat") || exerciseSlug.includes("lunge")
+              ? "Đang ở đáy động tác, hãy đứng thẳng dậy!"
+              : "Đang ở đáy động tác, hãy đẩy người lên!";
+          return {
+            halfRepError: {
+              code: "ERR_STALLED_AT_BOTTOM",
+              message: msg,
+              metric: "depth",
+              severity: 1,
+              source: "referee-error",
+            },
+            repCompleted: null,
+            tempoError: null,
+          };
+        }
+
         if (isTransition) {
-          if (this.hasReachedActive) {
+          if (this.hasReachedActive && rom <= 55) {
             this.hasTransitionedOut = true;
           }
           this.repPhase = "TRANSITION";
-          return { halfRepError: null, repCompleted: null };
+          return { halfRepError: null, repCompleted: null, tempoError: null };
         }
 
         if (isRest) {
+          // Same posture-gate hold as TRANSITION -> REST (bottom -> standing jump in one frame).
+          if (this.uprightStreakFrames > 0 || this.lowHandsStreakFrames > 0) {
+            return { halfRepError: null, repCompleted: null, tempoError: null };
+          }
           let repCompleted: { count: number; romPercentage: number; counted: boolean } | null =
             null;
+          let tempoError: EdgeFormErrorEvent | null = null;
           if (
             this.hasTransitionedIn &&
             this.hasReachedActive &&
             this.phaseFrames >= 8 &&
             this.phaseDurationMs >= 400
           ) {
+            tempoError = checkTempoFault();
             repCompleted = completeRep();
           }
           resetCycle();
-          return { halfRepError: null, repCompleted };
+          this.restStableFrames = 1;
+          return { halfRepError: null, repCompleted, tempoError };
         }
 
         if (isActive && !this.hasReachedActive && this.phaseFrames >= 15) {
           this.hasTransitionedIn = true;
           this.hasReachedActive = true;
         }
-        return { halfRepError: null, repCompleted: null };
+        return { halfRepError: null, repCompleted: null, tempoError: null };
       }
     }
+  }
+
+  private resolveDepthCueMessage(): string {
+    const slug = (this.rule.exerciseId || this.rule.displayName || "").toLowerCase();
+    if (slug.includes("push_up") || slug.includes("pushup") || slug.includes("dip") || slug.includes("press")) {
+      return "Chưa đủ biên độ, hãy hạ ngực sâu hơn để tính rep!";
+    }
+    if (slug.includes("squat") || slug.includes("lunge")) {
+      return "Chưa đủ biên độ, hãy hạ đùi sâu hơn để tính rep!";
+    }
+    if (slug.includes("curl")) {
+      return "Chưa đủ biên độ, hãy gập tay cao hơn để tính rep!";
+    }
+    if (slug.includes("lateral_raise") || slug.includes("raise")) {
+      return "Chưa đủ biên độ, hãy nâng tay cao ngang vai để tính rep!";
+    }
+    return "Chưa đủ biên độ, hãy hạ sâu hơn!";
+  }
+
+  private resolveLockoutCueMessage(): string {
+    const slug = (this.rule.exerciseId || this.rule.displayName || "").toLowerCase();
+    if (slug.includes("push_up") || slug.includes("pushup") || slug.includes("dip") || slug.includes("press")) {
+      return "Đẩy thẳng tay khóa khớp ở đỉnh để tính rep!";
+    }
+    if (slug.includes("squat") || slug.includes("lunge")) {
+      return "Đứng thẳng người lên hết cỡ để tính rep!";
+    }
+    if (slug.includes("curl") || slug.includes("pull_up") || slug.includes("pullup")) {
+      return "Hạ duỗi thẳng tay ở cuối động tác để tính rep!";
+    }
+    if (slug.includes("lateral_raise") || slug.includes("raise")) {
+      return "Hạ tay xuống sát thân người để hoàn thành rep!";
+    }
+    return "Hãy trở về tư thế ban đầu để hoàn thành rep!";
   }
 
   buildSetTelemetry(validFrameRatio: number): SetTelemetry {

@@ -5,7 +5,9 @@ import type { CueSeverity, VoiceFeedbackMetric } from "@/features/workout/model/
 export type FormulaType =
   | "ANGLE_3D"
   | "DISTANCE"
+  | "SIGNED_DISTANCE"
   | "HORIZONTAL_OFFSET_RATIO"
+  | "SIGNED_HORIZONTAL_OFFSET"
   | "VERTICAL_ANGLE"
   | "HORIZONTAL_ANGLE"
   | "BILATERAL_WIDTH_RATIO"
@@ -53,6 +55,8 @@ export interface RuleRange {
 export interface ValidAngleRange {
   min: number;
   max: number;
+  hasMin?: boolean;
+  hasMax?: boolean;
 }
 
 export interface RuleCriterion {
@@ -83,6 +87,12 @@ export interface ExerciseMotionRule {
   timeCeilingMs: number;
   violationMaxDurationMs: number;
   recommendedCameraAngle: string;
+  minEccentricDurationMs?: number;
+  minRepDurationMs?: number;
+  readyGateFrames?: number;
+  // Pause counting and form faults while the torso is upright (floor exercises) or the
+  // hands hang below the chest (shoulder press).
+  postureGate?: "reject_upright" | "reject_low_hands";
   voiceFeedbacks?: Record<string, VoiceFeedbackMetric>;
 }
 
@@ -158,10 +168,16 @@ export function classifyFormula(
 
   if (numJoints >= 3) {
     if (
-      m === "signed_hip_y_diff" ||
-      m.includes("distance") ||
       m.includes("hip_sag") ||
       m.includes("hip_pike") ||
+      m.includes("signed_line") ||
+      f.includes("signed_line")
+    ) {
+      return "SIGNED_DISTANCE";
+    }
+    if (
+      m === "signed_hip_y_diff" ||
+      m.includes("distance") ||
       f.includes("point_to_line") ||
       f.includes("distance")
     ) {
@@ -175,6 +191,8 @@ export function classifyFormula(
       m.includes("hand_width") ||
       m.includes("stance_width") ||
       m.includes("grip_width") ||
+      m.includes("knee_valgus") ||
+      m.includes("knee_varus") ||
       f.includes("width_ratio") ||
       f.includes("x_shoulder_left - x_shoulder_right")
     ) {
@@ -197,12 +215,22 @@ export function classifyFormula(
     if (
       m.includes("chin") ||
       m.includes("wrist_symmetry") ||
+      m.includes("hip_asymmetry") ||
+      m.includes("shoulder_asymmetry") ||
       m.includes("foot_lift") ||
       m.includes("ankle_lift") ||
       m.includes("vertical_diff") ||
       f.includes("y_diff")
     ) {
       return "VERTICAL_DIFF_RATIO";
+    }
+    if (
+      m.includes("signed_offset") ||
+      m.includes("elbow_forward_sway") ||
+      m.includes("elbow_backward_drift") ||
+      f.includes("signed_horizontal_offset")
+    ) {
+      return "SIGNED_HORIZONTAL_OFFSET";
     }
     return "HORIZONTAL_OFFSET_RATIO";
   }
@@ -394,14 +422,16 @@ export function parseMotionRule(
         }))
       : [];
 
-    const validRange: ValidAngleRange = { max: 0, min: 0 };
+    const validRange: ValidAngleRange = { hasMax: false, hasMin: false, max: 0, min: 0 };
     for (const rng of ranges) {
       if (rng.severity === 0) {
         if (rng.min !== null) {
           validRange.min = rng.min;
+          validRange.hasMin = true;
         }
         if (rng.max !== null) {
           validRange.max = rng.max;
+          validRange.hasMax = true;
         }
         break;
       }
@@ -432,9 +462,23 @@ export function parseMotionRule(
     exerciseId,
     exerciseName: displayName,
     minConfidence: 0.5,
+    minEccentricDurationMs:
+      typeof rawRule.min_eccentric_duration_ms === "number"
+        ? rawRule.min_eccentric_duration_ms
+        : undefined,
+    minRepDurationMs:
+      typeof rawRule.min_rep_duration_ms === "number" ? rawRule.min_rep_duration_ms : undefined,
     notes: String(rawRule.notes || ""),
     passCondition: "ALL_MATCH",
     phaseDetection,
+    postureGate:
+      rawRule.posture_gate === "reject_upright"
+        ? "reject_upright"
+        : rawRule.posture_gate === "reject_low_hands"
+          ? "reject_low_hands"
+          : undefined,
+    readyGateFrames:
+      typeof rawRule.ready_gate_frames === "number" ? rawRule.ready_gate_frames : 1,
     recommendedCameraAngle: (recommendedCameraAngle || "side").toLowerCase(),
     repType,
     rules: criteria,
